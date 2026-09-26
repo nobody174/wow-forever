@@ -4,6 +4,16 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-27
+
+- Fixed 5 rank-badge errors across the builds.html talent cards, found after the
+  user caught a wrong rank on Mage's Elemental Precision: Mage Elemental Precision
+  3/3→5/5 (also reordered so Frostbite comes before Ice Shards, matching the
+  actual level-up order); Priest Spirit Tap 1/1→5/5 and Twin Disciplines 2/2→2/5;
+  Warlock Pandemic 1/1→1/3; Warrior Deflection 2/2→2/5. Cross-checked every
+  talent's true max rank against foreverchanges.pro's WoW Forever talent
+  calculator — everything else in every card was already correct.
+
 ## 2026-09-26 (later)
 
 - Added the Rogue level-20 talent build card to builds.html (Improved Sinister

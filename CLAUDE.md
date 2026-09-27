@@ -40,11 +40,18 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   (ForeverPlus, Platynator, Leatrix Maps, Forever Bag Mover — all CurseForge links,
   verified working) plus a link to wow4ever.quest's addon compatibility tracker.
   Hand-edit directly.
-- `launch-plan.html` — hand-written launch plan for the Alliance Skyborne mage duo
-  (+ possible druid): rules, before-launch / launch-night / 12→20 / 20→30 / 30→60
-  checklists, new-dungeon table, duo tips, and a "test in beta" list. Checkboxes
-  persist per browser in localStorage (key `wf-launch-plan-v1`; bump it if item ids
-  change meaningfully). Steps past level 30 are tagged `unverified` until beta/launch
+- `launch-plan.html` — hand-written launch plan for the Alliance Skyborne duo
+  (+ possible druid) with a Dual Mage / Dual Hunter / Compare switch. Checklists
+  (before-launch / launch-night / 12→20 / 20→30 / 30→60 / test-in-beta) and the
+  duo-play cards are rendered by JS from the `PHASES` and `DUO` objects at the
+  bottom of the file — edit steps there, not in the HTML. An item is shared by both
+  plans unless it has a `mage`/`hunter` key (object = override fields for that
+  class, `false` = hidden for that class); Compare renders shared items full-width
+  and class-specific ones side by side. The "Key differences" table and rules/
+  dungeon sections are static HTML. Mode comes from `?plan=mage|hunter|compare`,
+  then localStorage `wf-launch-plan-mode`. Checkboxes persist per browser in
+  localStorage (key `wf-launch-plan-v1`, keyed by item id — keep ids stable; shared
+  steps share one checkbox across both plans). Steps past level 30 are tagged `unverified` until beta/launch
   confirms them. Launch time uses the same `2026-11-04T23:00:00Z` target as index.html.
   Hand-edit directly.
 - `assets/hero.webp` — landing page hero background (dwarf/gnome group in front of

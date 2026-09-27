@@ -4,6 +4,17 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-27 (evening)
+
+- Launch Plan now has a Dual Mage / Dual Hunter / Compare switch. The route is the
+  same for both; the hunter plan adds the level-10 pet quest, ammo/pet-food stocking,
+  loot rules, pet roles, Aspect of the Cheetah, and swaps the Legacy, Deadmines-detour,
+  dungeon-group and duo-play advice. Compare shows a key-differences table plus every
+  phase side by side (shared steps full width, with a "show only differences"
+  filter). Steps are now data-driven (`PHASES`/`DUO` in the page script); existing
+  checkbox ids were kept so saved progress carries over. Choice is shareable via
+  `?plan=`.
+
 ## 2026-09-27 (even later)
 
 - Mage: added "Polymorph + Diamond mark" — marks the target with a diamond

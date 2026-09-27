@@ -138,6 +138,7 @@ ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--mut
 .card{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--accent);border-radius:5px;padding:14px 16px}
 .card.cls-mage{border-left-color:var(--frost)}
 .card.cls-hunter{border-left-color:var(--hunt)}
+body.mode-mage .legacy-path.cls-hunter,body.mode-hunter .legacy-path.cls-mage{display:none}
 .card h4{margin:0 0 6px;font:400 17px/1.2 var(--serif);color:var(--gold)}
 .card h4 .tag{font-family:var(--sans)}
 .card p,.card ul{margin:0;color:var(--text);font-size:14px}
@@ -208,6 +209,7 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
     <a href="#p3">30 → 60</a>
     <a href="#dungeons">Dungeons</a>
     <a href="#duo">Duo play</a>
+    <a href="#legacy">Legacy points</a>
     <a href="#beta">Test in beta</a>
   </nav>
 
@@ -225,7 +227,7 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
           <tr><td>Killing</td><td>AoE clears of dense camps</td><td>Single target, pets tank, kiting; elite quests doable as a duo</td></tr>
           <tr><td>Level 10</td><td>Nothing special</td><td>Pet quest in the middle of Zephras</td></tr>
           <tr><td>Dungeons</td><td>Bring AoE and crowd control; easy to group</td><td>No AoE. Need a real tank <em>and</em> healer</td></tr>
-          <tr><td>Legacy points</td><td>Reagent Economy (free teleports and reagents)</td><td>Reagent Economy almost certainly excludes ammo (a weapon consumable, not a spell reagent) — food and camping perks instead</td></tr>
+          <tr><td>Legacy points</td><td>Thrill of Adventure while leveling. Reagent Economy (free teleports) needs 10 points in Resourcefulness first, so it's a later goal</td><td>Thrill of Adventure, then Adventure toward Frequent Flier (cheaper, faster flights). Reagent Economy almost certainly excludes ammo</td></tr>
           <tr><td>Loot</td><td>Cloth and caster gear; few clashes with a druid</td><td>Both want the same bows, guns, agility and mail. Agree on rules first</td></tr>
           <tr><td>Deadmines detour</td><td>Cheap with Teleport: Stormwind</td><td>Costs real travel time; combine with training or skip</td></tr>
         </tbody>
@@ -283,6 +285,55 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
   <h2 id="duo">Duo play</h2>
   <div class="cards" id="duo-cards"></div>
 
+  <h2 id="legacy">Legacy points</h2>
+  <p class="section-note">Account-wide perks. Easy to misread: nobody starts with 16 points.</p>
+  <div class="cards two">
+    <div class="card"><h4>How it works</h4><ul>
+      <li>Every account starts at <strong>0</strong>. Each completed Legacy challenge gives <strong>1 point</strong>.</li>
+      <li>Points are shared by every character on the Battle.net account, so each of us earns our own.</li>
+      <li>Each character spends the points separately and can pick different perks.</li>
+      <li><strong>16 is a cap</strong>: the most one character can spend at launch.</li>
+    </ul></div>
+    <div class="card"><h4>Fastest points for us</h4><ul>
+      <li>First time a class reaches <strong>25, 45 and 60</strong>: 3 points, earned just by leveling.</li>
+      <li><strong>Spelunker</strong> challenges: clear a set of dungeons in each level bracket (exact lists unconfirmed).</li>
+      <li>Crafting professions at 150 / 225 / 300. Skinning and Cooking <strong>don't</strong> count.</li>
+      <li>Realistic total at our first 60: <strong>about 5–6 points</strong>. 16 needs alts, crafting or PvP.</li>
+    </ul></div>
+    <div class="card"><h4>Column gates</h4><ul>
+      <li><strong>Column 1</strong>: open from the first point.</li>
+      <li><strong>Column 2</strong>: needs 5 points spent in <em>that</em> tree.</li>
+      <li><strong>Column 3</strong>: needs 10 points in that tree, plus a rank in the perk it's connected to. Its perk is point 11 at the earliest.</li>
+    </ul></div>
+    <div class="card"><h4>Well Rested &amp; Talented, simply</h4><ul>
+      <li><strong>Well Rested</strong> (col 1, 5 ranks): rested XP builds 4% faster and the rested pool holds 4% more, per rank. Rested XP only doubles kill XP, not quest XP. Best on alts left logged out for days.</li>
+      <li><strong>Talented</strong> (col 2, 5 ranks, needs a rank in Well Rested): first talent point one level earlier per rank, level 9 → level 5 at 5/5. The total stays 51. Only helps a new character, so it's an alt perk.</li>
+    </ul></div>
+  </div>
+  <div class="table-wrap" style="margin-top:14px">
+    <table>
+      <thead><tr><th>Tree</th><th>Column 1 · open</th><th>Column 2 · 5 in tree</th><th>Column 3 · 10 in tree</th></tr></thead>
+      <tbody>
+        <tr><td>Adventure</td><td>Well Rested (5)<br>Thrill of Adventure (5)</td><td>Talented (5)<br>Field Guide (3)<br>High Alert (2)<br>Field Medicine (2)</td><td>Frequent Flier (1) — via Field Guide</td></tr>
+        <tr><td>Resourcefulness</td><td>Gourmand (3)<br>The Quick and the Dead (2)<br>Reinforce (5)</td><td>Permanence (2)<br>For Great Honor (5)<br>Diplomat (5)</td><td>Reagent Economy (1) — via The Quick and the Dead</td></tr>
+        <tr><td>Professions</td><td>Working Overtime (5)<br>Bountiful Harvest (5)</td><td>Master Chef (5)<br>Bartering (2)<br>Performance Bonus (3)<br>Luremaster (2)</td><td>Dedicated Study (1) — via Bartering</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="section-note">Positions follow <a href="https://www.wowhead.com/forever/legacy-calculator" target="_blank" rel="noopener">Wowhead's Legacy Calculator</a> (beta build). Ranks in brackets.</p>
+  <div class="cards two">
+    <div class="card cls-mage legacy-path"><h4>Mage path <span class="tag cls-mage">mage</span></h4><ul>
+      <li>Points 1–5: <strong>Thrill of Adventure 5/5</strong> while leveling.</li>
+      <li>Then Resourcefulness: Gourmand, The Quick and the Dead, then column 2, until 10 are spent there.</li>
+      <li>Point 16: <strong>Reagent Economy</strong>. Thrill 5 + Resourcefulness 11 is exactly the 16 cap.</li>
+    </ul></div>
+    <div class="card cls-hunter legacy-path"><h4>Hunter path <span class="tag cls-hunter">hunter</span></h4><ul>
+      <li>Points 1–5: <strong>Thrill of Adventure 5/5</strong>. It also saves food and water we'd otherwise buy.</li>
+      <li>Then stay in Adventure: Field Guide first (Frequent Flier's connector), then High Alert or Field Medicine.</li>
+      <li>Point 11: <strong>Frequent Flier</strong> (50% cheaper flights, 20% faster). The last 5 go to Resourcefulness column 1: Gourmand 3/3 plus The Quick and the Dead 2/2.</li>
+    </ul></div>
+  </div>
+
   <h2 id="beta">Test in beta</h2>
   <p class="section-note">Beta runs until Oct 21 (cap 20, later 30) — exactly the 12–30 stretch. Split the list between us.</p>
   <div class="phase" data-phase="beta"></div>
@@ -319,9 +370,9 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
         n: 'Save the bar layout and copy the macros from the <a href="macros.html">Macros</a> page so we play from minute one.' },
       { id: "b-addons", lvl: "Beta", t: "Test every addon on the beta client",
         n: 'Quest helpers especially. Nothing gets installed for the first time on launch night. See <a href="addons.html">Addons</a>.' },
-      { id: "b-legacy", lvl: "Plan", t: "Plan the 16 Legacy Points",
-        mage: { n: "Go deep in one tree. Top mage pick: Reagent Economy (no vendor reagents for class abilities, so free teleports). Gourmand for longer food buffs." },
-        hunter: { n: "Go deep in one tree. In-game, Reagent Economy reads “class abilities no longer require reagents purchasable from vendors” — ammo is a weapon consumable, not a spell reagent, so it almost certainly isn't covered. Go for Gourmand (longer food buffs) and camping/rested perks instead.", tags: [["unv", "confirm ammo excluded"]] } },
+      { id: "b-legacy", lvl: "Plan", t: "Legacy points: we start at 0",
+        mage: { n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan: Thrill of Adventure while leveling; Reagent Economy is a later goal because it sits behind 10 points in Resourcefulness. See <a href="#legacy">Legacy points</a>.' },
+        hunter: { n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan: Thrill of Adventure first, then stay in Adventure toward Frequent Flier. Reagent Economy (“class abilities no longer require reagents purchasable from vendors”) almost certainly excludes ammo, a weapon consumable. See <a href="#legacy">Legacy points</a>.', tags: [["unv", "confirm ammo excluded"]] } },
       { id: "b-voice", lvl: "Plan", t: "Discord voice ready",
         n: "Push-to-talk. Calling pulls and quest splits out loud saves more time than any route trick." },
       { id: "b-druid", lvl: "Plan", t: "Settle the third player",
@@ -388,6 +439,8 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
         n: "Collect City of Dalaran quests while there." },
       { id: "p2-fill", lvl: "27–30", t: "Fill with Duskwood / Ashenvale leftovers",
         n: "Wherever the crowd isn't." },
+      { id: "p2-legacy25", lvl: "25", t: "First Legacy point → Thrill of Adventure",
+        n: "Reaching 25 completes the class's Novice challenge (first time on the account). Thrill of Adventure is in Adventure column 1, so no gate: each rank gives 1% of max health and mana back over 10 sec on a killing blow (open world only). Less eating and drinking." },
       { id: "p2-dal", lvl: "29–31", t: "City of Dalaran — one clear", tags: [["dng", "28–33"]],
         n: "Alterac Mountains, right next to Hillsbrad." }
     ],
@@ -402,6 +455,8 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
         n: "Outdoor ogre dungeon in the Riverglades." },
       { id: "p3-shen", lvl: "~43", t: "Shen'dralas",
         n: "Beta footage shows level 43 mobs; no official range yet." },
+      { id: "p3-legacy45", lvl: "45", t: "Next Legacy point",
+        n: "Experienced class challenge. Keep filling Thrill of Adventure; add any Spelunker dungeon points as they come in." },
       { id: "p3-mid", lvl: "44–50", t: "Tanaris, Feralas, Hinterlands, Dustwallow" },
       { id: "p3-alcaz", lvl: "49–51", t: "Alcaz Prison — one clear", tags: [["dng", "48–53"]],
         n: "Alcaz Island, off Dustwallow." },
@@ -426,6 +481,8 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
       { id: "t-tele", lvl: "Mage", t: "Level we learn Teleport: Stormwind / Ironforge", hunter: false, mage: {} },
       { id: "h-t-reagent", lvl: "Legacy", t: "Confirm Reagent Economy doesn't refund ammo purchases", mage: false, hunter: {} },
       { id: "h-t-ammo", lvl: "Gold", t: "How much ammo and pet food cost per session", mage: false, hunter: {} },
+      { id: "t-spelunker", lvl: "Legacy", t: "Which dungeons count for Novice Spelunker (a free point if they're on our route)" },
+      { id: "t-respec", lvl: "Legacy", t: "Can spent Legacy points be reset, and does it cost anything?" },
       { id: "t-skin", lvl: "Camping", t: "Does Skinning get a campsite object at skill 20?" },
       { id: "t-food", lvl: "Cooking", t: "Which early foods give the XP bonus" }
     ]

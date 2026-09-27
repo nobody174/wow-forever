@@ -16,6 +16,20 @@ user-facing release notes.
 - Corrected: beastmaster.io/forever is a Hunter pet database (588 tameable pets),
   not a talent calculator as originally assumed — filed it under Tools accordingly.
 
+## 2026-09-27 (late evening)
+
+- Launch Plan: fixed the Legacy points misunderstanding. Everyone starts at 0 points
+  (earned from challenges, first at level 25); 16 is the per-character spend cap at
+  launch, not a starting pool. Reagent Economy sits in Resourcefulness column 3 (needs
+  10 points in that tree, so point 11 at the earliest), so it's no longer the "first
+  pick". New "Legacy points" section: how points work, fastest sources, column gates
+  (col 1 open / col 2 = 5 in tree / col 3 = 10 in tree), Well Rested and Talented
+  explained, a perk-by-column table per tree (from Wowhead's Legacy Calculator), and a
+  mage path (Thrill 5 → Resourcefulness 11 → Reagent Economy at 16) vs hunter path
+  (Thrill 5 → Adventure → Frequent Flier at 11). Added level-25 and level-45 Legacy
+  steps, two beta checks (Novice Spelunker dungeon list, respec rules), and updated
+  the Compare table row.
+
 ## 2026-09-27 (night)
 
 - Launch Plan: confirmed in-game that Aspect of the Cheetah trains at level 20 —

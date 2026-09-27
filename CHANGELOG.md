@@ -4,6 +4,15 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-28 (evening)
+
+- Added "DPS Sim Tier List" (mythicsim.com) to the landing page's Tools column —
+  a simulated (not real-parse) DPS ranking, the only source found so far that
+  discloses its methodology and is dated after the Sept 24 wand/Wizard Oil nerf
+  patch. Chosen after a research pass found several other tier-list sites
+  contradicting each other and predating that patch (see prior research in this
+  conversation — not separately logged since no file changed for that research).
+
 ## 2026-09-28 (later)
 
 - Replaced the Paladin "Hybrid (Prot/Ret)" build card on builds.html with two

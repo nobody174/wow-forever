@@ -4,6 +4,15 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-28 (later)
+
+- Replaced the Paladin "Hybrid (Prot/Ret)" build card on builds.html with two
+  separate cards: Retribution (PvE) — the pure 0/0/11 build (Benediction 5/5 →
+  Conviction 5/5 → Seal of Command 1/1) — and Protection (Tank) — the 0/11/0 build
+  (Redoubt 5/5 → Precision 3/3 → Anticipation 2/5 → Shield Specialization 1/3).
+  Verified talent existence/ranks/icons against foreverchanges.pro and
+  cross-checked against community leveling-build guides.
+
 ## 2026-09-28
 
 - Reorganized the landing page's side-links overlay: split into "General Resources"

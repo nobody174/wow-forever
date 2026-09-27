@@ -4,6 +4,16 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-27 (later)
+
+- Fixed the top bar on `launch-plan.html`, `macros.html`, `builds.html`, and
+  `addons.html` (plus `template.html`, which `macros.html` is generated from):
+  they were still using the older flex `space-between` layout, which pushes the
+  nav links to the right edge instead of centering them like `index.html`'s top
+  bar (title left / nav centered) has done since an earlier session. All 5 now
+  share the same 3-column grid topbar style — pages without a mute button simply
+  leave the third grid column empty.
+
 ## 2026-09-27
 
 - Added `launch-plan.html`: the launch-week plan for the Alliance Skyborne mage duo

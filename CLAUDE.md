@@ -65,6 +65,12 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 ## Workflow
 1. Macro changes: edit `data.py` (or `template.html` for cheatsheet layout/top bar
    changes), then run `python build.py`.
+   The top bar CSS (3-column grid: title left / nav centered / optional right-side
+   item like index.html's mute button) must stay identical across all 5 pages —
+   `index.html`, `builds.html`, `addons.html`, `launch-plan.html` are hand-written and
+   each carry their own copy, while `macros.html` gets its copy from `template.html`.
+   A hand-edit to one page's topbar CSS needs to be repeated in the other 4, or they
+   drift out of sync (this happened once already — see CHANGELOG 2026-09-27).
 2. Landing/builds page changes: hand-edit `index.html` / `builds.html` directly.
 3. Check every macro is <= 255 characters.
 4. Test locally with `python -m http.server` before pushing.

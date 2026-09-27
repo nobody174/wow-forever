@@ -5,8 +5,9 @@ Live site: GitHub Pages from `main` / root → https://nobody174.github.io/wow-f
 
 Small multi-page site: `index.html` is the countdown/landing page ("Venom & Trollmann's
 Road to Forever"), `macros.html` is the macro cheatsheet, `builds.html` lists talent
-builds per class, `addons.html` lists addons. All four share a top bar (site title,
-Macros / Builds / Addons / Talent Calc links, current page highlighted).
+builds per class, `addons.html` lists addons, `launch-plan.html` is the launch-week
+leveling plan. All five share a top bar (site title, Macros / Builds / Addons /
+Launch Plan / Talent Calc links, current page highlighted).
 
 Class roster order on both `macros.html` and `builds.html` follows armor type,
 Cloth → Leather → Mail → Plate: Priest, Warlock, Mage, Rogue, Shaman, Hunter,
@@ -16,7 +17,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - `data.py` — single source of truth for every macro. Edit macros HERE only.
 - `template.html` — HTML/CSS/JS shell (shared top bar + macro cheatsheet UI);
   `__DATA__` is replaced with the macro JSON at build time, `__PAGE_MACROS__` /
-  `__PAGE_BUILDS__` / `__PAGE_ADDONS__` are replaced with `aria-current="page"` markers.
+  `__PAGE_BUILDS__` / `__PAGE_ADDONS__` / `__PAGE_LAUNCH__` are replaced with `aria-current="page"` markers.
   Each macro-type group (Damage/offensive, Wand, etc.) renders as a "tabbed picker":
   a row of pill buttons (one per macro in that group) plus a single code panel below
   that swaps when a pill is clicked, styled after warcrafttavern.com/forever's macro
@@ -38,6 +39,13 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - `addons.html` — hand-written page listing the addons Venom & Trollmann actually run
   (ForeverPlus, Platynator, Leatrix Maps, Forever Bag Mover — all CurseForge links,
   verified working) plus a link to wow4ever.quest's addon compatibility tracker.
+  Hand-edit directly.
+- `launch-plan.html` — hand-written launch plan for the Alliance Skyborne mage duo
+  (+ possible druid): rules, before-launch / launch-night / 12→20 / 20→30 / 30→60
+  checklists, new-dungeon table, duo tips, and a "test in beta" list. Checkboxes
+  persist per browser in localStorage (key `wf-launch-plan-v1`; bump it if item ids
+  change meaningfully). Steps past level 30 are tagged `unverified` until beta/launch
+  confirms them. Launch time uses the same `2026-11-04T23:00:00Z` target as index.html.
   Hand-edit directly.
 - `assets/hero.webp` — landing page hero background (dwarf/gnome group in front of
   Frostforge Pass gate, nameplates "Venom" and "Trollmann" over the two dwarves).

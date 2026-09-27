@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Launch Plan — WoW Forever</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1428; --panel:#161E38; --edge:#3A4468; --gold:#FFD100;
+  --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100;
+  --ok:#6FCF7F; --warn:#E8A33D; --frost:#69CCF0;
+  --serif:"Marcellus","Palatino Linotype",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+a{color:var(--gold)}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge);flex-wrap:wrap}
+.topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em}
+.topbar nav{display:flex;gap:8px;flex-wrap:wrap}
+.topbar nav a{
+  font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;
+  color:var(--gold);text-decoration:none;padding:10px 16px;border-radius:6px;
+  background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);
+  border:1px solid var(--edge);border-top-color:#4A5688;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.35);
+  transition:transform .08s ease, box-shadow .08s ease, border-color .08s ease;
+}
+.topbar nav a:hover{
+  border-color:var(--gold);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 0 10px rgba(255,209,0,.35), 0 2px 4px rgba(0,0,0,.35);
+  transform:translateY(-1px);
+}
+.topbar nav a:active{transform:translateY(0);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
+.topbar nav a[aria-current="page"]{
+  color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);
+  border-color:#FFE566;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(255,209,0,.5);
+}
+@media (prefers-reduced-motion:reduce){.topbar nav a,.bar span{transition:none}}
+.wrap{max-width:820px;margin:0 auto;padding:36px 20px 80px}
+h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6px;letter-spacing:.01em}
+.lede{color:var(--muted);margin:0 0 16px;max-width:66ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.chip{font:600 12px/1 var(--sans);letter-spacing:.03em;text-transform:uppercase;padding:7px 10px;border-radius:999px;border:1px solid var(--edge);background:var(--panel);color:var(--text)}
+.chip.frost{border-color:var(--frost);color:var(--frost)}
+.chip.gold{border-color:var(--gold);color:var(--gold)}
+.draft{background:rgba(232,163,61,.08);border:1px solid rgba(232,163,61,.45);border-radius:6px;padding:12px 14px;color:var(--text);font-size:14px;margin:0 0 26px}
+.draft strong{color:var(--warn)}
+.toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;margin:0 0 10px}
+.toc a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--edge)}
+.toc a:hover{color:var(--gold);border-color:var(--gold)}
+h2{font:400 22px/1.2 var(--serif);color:var(--accent);margin:40px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--edge);scroll-margin-top:90px}
+h3{font:600 15px/1.3 var(--sans);color:var(--text);margin:22px 0 8px;text-transform:uppercase;letter-spacing:.04em}
+.section-note{color:var(--muted);font-size:14px;margin:6px 0 14px}
+.progress{display:flex;align-items:center;gap:10px;margin:8px 0 14px;font-size:13px;color:var(--muted)}
+.bar{flex:1;height:6px;border-radius:3px;background:#0A0F20;border:1px solid var(--edge);overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--frost),var(--gold));transition:width .2s ease}
+ul.check{list-style:none;margin:0;padding:0}
+ul.check li{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--edge);border-radius:5px;margin-bottom:8px}
+ul.check li.done{border-left-color:var(--ok);opacity:.72}
+ul.check label{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;cursor:pointer}
+ul.check input{flex:none;width:18px;height:18px;margin:3px 0 0;accent-color:var(--gold);cursor:pointer}
+ul.check .lvl{flex:none;min-width:58px;font:600 13px/1.6 var(--sans);color:var(--frost)}
+ul.check .body{flex:1}
+ul.check .t{font-weight:600}
+ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--muted)}
+ul.check .n{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.tag{display:inline-block;font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;padding:3px 6px;border-radius:3px;margin-left:6px;vertical-align:2px}
+.tag.unv{color:var(--warn);border:1px solid rgba(232,163,61,.55)}
+.tag.dng{color:var(--frost);border:1px solid rgba(105,204,240,.55)}
+.tag.opt{color:var(--muted);border:1px solid var(--edge)}
+.cards.two{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.card{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--accent);border-radius:5px;padding:14px 16px}
+.card h4{margin:0 0 6px;font:400 17px/1.2 var(--serif);color:var(--gold)}
+.card p,.card ul{margin:0;color:var(--text);font-size:14px}
+.card ul{padding-left:18px}
+.card li{margin-bottom:4px}
+.card .muted{color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 4px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--edge);vertical-align:top}
+th{font:600 12px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+td:first-child{font-weight:600}
+.table-wrap{overflow-x:auto}
+.toolbar{display:flex;justify-content:flex-end;gap:8px;margin-top:44px}
+button.reset{font:500 13px var(--sans);background:transparent;border:1px solid var(--edge);color:var(--muted);padding:6px 12px;border-radius:4px;cursor:pointer}
+button.reset:hover{border-color:var(--warn);color:var(--warn)}
+.sources{font-size:13px;color:var(--muted);columns:2 260px;padding-left:18px}
+.sources li{margin-bottom:4px}
+.sources a{color:var(--muted)}
+.sources a:hover{color:var(--gold)}
+@media (max-width:560px){
+  ul.check label{flex-wrap:wrap}
+  ul.check .lvl{min-width:0}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="site-title" href="index.html">Venom &amp; Trollmann's Road to Forever</a>
+  <nav aria-label="Site">
+    <a href="macros.html">Macros</a>
+    <a href="builds.html">Builds</a>
+    <a href="addons.html">Addons</a>
+    <a href="launch-plan.html" aria-current="page">Launch Plan</a>
+    <a href="https://www.zockify.com/forever/talents/" target="_blank" rel="noopener">Talent Calc</a>
+  </nav>
+</div>
+<div class="wrap">
+  <h1>Launch Plan</h1>
+  <p class="lede">How Venom &amp; Trollmann get ahead of the launch crowd: two Alliance Skyborne mages questing together, skipping the busy human route, and clearing every new dungeon once for its first-clear quest XP.</p>
+  <div class="meta">
+    <span class="chip gold">Alliance</span>
+    <span class="chip">Skyborne (High Order)</span>
+    <span class="chip frost">2× Mage</span>
+    <span class="chip">+ maybe a Druid</span>
+    <span class="chip" id="launch-chip">Launch: Nov 4, 3:00 PM PST</span>
+  </div>
+  <div class="draft"><strong>Draft.</strong> Levels 1–30 are checked against what the beta shows so far; anything marked <span class="tag unv">unverified</span> is based on published level ranges only and will change as we test. Checkboxes save in this browser only — each of us ticks our own.</div>
+
+  <nav class="toc" aria-label="On this page">
+    <a href="#rules">The rules</a>
+    <a href="#before">Before launch</a>
+    <a href="#night">Launch night</a>
+    <a href="#p1">12 → 20</a>
+    <a href="#p2">20 → 30</a>
+    <a href="#p3">30 → 60</a>
+    <a href="#dungeons">Dungeons</a>
+    <a href="#duo">Duo play</a>
+    <a href="#beta">Test in beta</a>
+  </nav>
+
+  <h2 id="rules">The rules that shape the route</h2>
+  <div class="cards two">
+    <div class="card"><h4>Quests carry XP</h4><p>Same XP curve as Classic, but dungeon mob kills pay less. Quests are the engine.</p></div>
+    <div class="card"><h4>First clear, then leave</h4><p>The first clear of each dungeon pays raised quest XP. Collect every quest for it first, clear once, move on.</p></div>
+    <div class="card"><h4>Dodge the wave</h4><p>Crowds move through zones in a wave. Skip Westfall on day one, go where fewer people start, and revisit busy zones after the wave has passed.</p></div>
+    <div class="card"><h4>No scaling, no flying</h4><p>Zones are as dangerous as their level. New boats shorten travel: Stormwind → Auberdine and Menethil → Southshore.</p></div>
+  </div>
+
+  <h2 id="before">Before launch</h2>
+  <p class="section-note">Everything we can set up before the servers open.</p>
+  <div class="progress" data-for="before"><div class="bar"><span></span></div><span class="count"></span></div>
+  <ul class="check" data-group="before">
+    <li><label><input type="checkbox" data-id="b-names"><span class="lvl">Oct 27</span><span class="body"><span class="t">Reserve names (Oct 27 – Nov 3)</span><span class="n">Both mages, plus the druid if they're in. Up to 3 characters per account in that window.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="b-ui"><span class="lvl">Beta</span><span class="body"><span class="t">Lock in UI, keybinds and macros</span><span class="n">Save the mage bar layout and copy the macros from the <a href="macros.html">Macros</a> page so we play from minute one.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="b-addons"><span class="lvl">Beta</span><span class="body"><span class="t">Test every addon on the beta client</span><span class="n">Quest helpers especially. Nothing gets installed for the first time on launch night. See <a href="addons.html">Addons</a>.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="b-legacy"><span class="lvl">Plan</span><span class="body"><span class="t">Plan the 16 Legacy Points</span><span class="n">Go deep in one tree. Top mage pick: Reagent Economy (no vendor reagents for class abilities, so free teleports). Gourmand for longer food buffs.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="b-voice"><span class="lvl">Plan</span><span class="body"><span class="t">Discord voice ready</span><span class="n">Push-to-talk. Calling pulls and quest splits out loud saves more time than any route trick.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="b-druid"><span class="lvl">Plan</span><span class="body"><span class="t">Settle the third player</span><span class="n">A druid (bear tank in dungeons, healer when needed) fits two mages better than a third mage.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="b-group"><span class="lvl">Plan</span><span class="body"><span class="t">Line up a Hall of Thanes group</span><span class="n">Group size isn't announced yet. If it's 5, we need 1–2 more — find them in advance (guild or Discord).</span></span></label></li>
+  </ul>
+
+  <h2 id="night">Launch night</h2>
+  <p class="section-note">Servers open at <strong id="launch-local">00:00 Thursday Nov 5 (Norway)</strong>. The first long session decides whether we're ahead of the wave or inside it.</p>
+  <div class="progress" data-for="night"><div class="bar"><span></span></div><span class="count"></span></div>
+  <ul class="check" data-group="night">
+    <li><label><input type="checkbox" data-id="n-zephras"><span class="lvl">1–12</span><span class="body"><span class="t">Zephras Isle together, share every quest</span><span class="n">Both factions share the island, so it's busy. Finish the main chain and leave; you don't have to wait for 12.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="n-camp"><span class="lvl">~5</span><span class="body"><span class="t">The Great Outdoors → train Cooking → Basic Campfire</span><span class="n">Cooking unlocks your own campfire (1-hour camp buffs) and XP food. At least one of us takes it.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="n-skin"><span class="lvl">Early</span><span class="body"><span class="t">Train Skinning</span><span class="n">The only other profession for now. Whoever didn't loot the mob skins it.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="n-dalaran"><span class="lvl">12</span><span class="body"><span class="t">Skycutter to Dalaran → Skyborne portal to Stormwind</span><span class="n">Turn in <em>The Magical City of Dalaran</em> in the Sky Enclave, pick up <em>Welcome to Azeroth</em>, take the portal.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="n-if"><span class="lvl">12</span><span class="body"><span class="t">Tram to Ironforge, collect all Hall of Thanes quests</span><span class="n">Grab both flight paths on the way.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="n-day"><span class="lvl">Thu–Fri</span><span class="body"><span class="t">Keep playing through the day</span><span class="n">Launch is a weekday. Most players are at work or school; that's our biggest head start.</span></span></label></li>
+  </ul>
+
+  <h2 id="p1">Phase 1 — 12 → 20</h2>
+  <p class="section-note">Hall of Thanes early, then Kalimdor while the human wave floods Westfall.</p>
+  <div class="progress" data-for="p1"><div class="bar"><span></span></div><span class="count"></span></div>
+  <ul class="check" data-group="p1">
+    <li><label><input type="checkbox" data-id="p1-filler"><span class="lvl">12–14</span><span class="body"><span class="t">Short filler in Dun Morogh / Loch Modan <span class="tag opt">only if needed</span></span><span class="n">Just enough to be ready for Hall of Thanes. Expect crowds there too (Dwarf Shaman hype).</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p1-hot"><span class="lvl">13–15</span><span class="body"><span class="t">Hall of Thanes — one clear <span class="tag dng">13–18</span></span><span class="n">Under Ironforge. Every quest in the log before entering.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p1-boat"><span class="lvl">14</span><span class="body"><span class="t">Tram to Stormwind → boat to Auberdine, set hearth</span><span class="n">New Stormwind Harbor → Auberdine route.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p1-darkshore"><span class="lvl">14–19</span><span class="body"><span class="t">Darkshore — quest against the flow</span><span class="n">Night Elves arrive at the same time and fan out from Auberdine. Do the far ends first (north toward Cliffspring, south toward the Grove of the Ancients) and the Auberdine quests last. Walk on Air for cliff shortcuts.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p1-bfdq"><span class="lvl">14–19</span><span class="body"><span class="t">Collect Blackfathom Deeps quests if offered</span><span class="n">Hold them for the BFD clear in phase 2.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p1-ashen"><span class="lvl">19–20</span><span class="body"><span class="t">Ashenvale (Astranaar)</span><span class="n">Stay on Kalimdor, away from the Redridge/Duskwood stream.</span></span></label></li>
+  </ul>
+
+  <h2 id="p2">Phase 2 — 20 → 30</h2>
+  <p class="section-note">Mage teleports make hearth management easy from here. Boats do the long legs.</p>
+  <div class="progress" data-for="p2"><div class="bar"><span></span></div><span class="count"></span></div>
+  <ul class="check" data-group="p2">
+    <li><label><input type="checkbox" data-id="p2-ashen"><span class="lvl">20–22</span><span class="body"><span class="t">Finish Ashenvale</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p2-dm"><span class="lvl">20–21</span><span class="body"><span class="t">Deadmines detour <span class="tag opt">optional</span></span><span class="n">By day 3–4 the wave has left Westfall. Teleport to Stormwind, do only the Defias chain + one Deadmines clear. Check in beta that the quests aren't gray by then.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p2-bfd"><span class="lvl">22–24</span><span class="body"><span class="t">Blackfathom Deeps — one clear <span class="tag unv">check range</span></span><span class="n">Only if its Forever level range fits.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p2-wet"><span class="lvl">22–26</span><span class="body"><span class="t">Boat Auberdine → Menethil, quest the Wetlands</span><span class="n">The Wetlands are expanded with new quests.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p2-exc"><span class="lvl">24–25</span><span class="body"><span class="t">Excavation Site: Wetlands — one clear <span class="tag dng">24–29</span></span><span class="n">Above Whelgar's Excavation.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p2-hills"><span class="lvl">25–28</span><span class="body"><span class="t">Boat Menethil → Southshore, quest Hillsbrad</span><span class="n">Collect City of Dalaran quests while there.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p2-fill"><span class="lvl">27–30</span><span class="body"><span class="t">Fill with Duskwood / Ashenvale leftovers</span><span class="n">Wherever the crowd isn't.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p2-dal"><span class="lvl">29–31</span><span class="body"><span class="t">City of Dalaran — one clear <span class="tag dng">28–33</span></span><span class="n">Alterac Mountains, right next to Hillsbrad.</span></span></label></li>
+  </ul>
+
+  <h2 id="p3">Phase 3 — 30 → 60 <span class="tag unv">unverified</span></h2>
+  <p class="section-note">Beta caps at 30, so this is built from published level ranges only. We'll rework it as info comes in.</p>
+  <div class="progress" data-for="p3"><div class="bar"><span></span></div><span class="count"></span></div>
+  <ul class="check" data-group="p3">
+    <li><label><input type="checkbox" data-id="p3-stv"><span class="lvl">30–37</span><span class="body"><span class="t">Stranglethorn + Arathi, Scarlet Monastery</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-drowned"><span class="lvl">35–38</span><span class="body"><span class="t">The Drowned City — one clear <span class="tag dng">35–40</span></span><span class="n">Off the Stranglethorn coast; do it while questing in STV.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-deso"><span class="lvl">36–40</span><span class="body"><span class="t">Desolace (expanded)</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-river"><span class="lvl">38–45</span><span class="body"><span class="t">Riverglades — 150 quests, neutral goblin port</span><span class="n">Ship from Tanaris to Powderfuse Port.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-krol"><span class="lvl">41–43</span><span class="body"><span class="t">Krol'dok Stronghold — one clear <span class="tag dng">40–45</span></span><span class="n">Outdoor ogre dungeon in the Riverglades.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-shen"><span class="lvl">~43</span><span class="body"><span class="t">Shen'dralas</span><span class="n">Beta footage shows level 43 mobs; no official range yet.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-mid"><span class="lvl">44–50</span><span class="body"><span class="t">Tanaris, Feralas, Hinterlands, Dustwallow</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-alcaz"><span class="lvl">49–51</span><span class="body"><span class="t">Alcaz Prison — one clear <span class="tag dng">48–53</span></span><span class="n">Alcaz Island, off Dustwallow.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-50s"><span class="lvl">50–55</span><span class="body"><span class="t">Un'Goro, Felwood, Burning Steppes, Sunken Temple, BRD quests</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-hyjal"><span class="lvl">55–60</span><span class="body"><span class="t">Mount Hyjal, Winterspring, Plaguelands</span><span class="n">Hyjal is the endgame leveling zone with new reputations.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-blackmaw"><span class="lvl">56–58</span><span class="body"><span class="t">Blackmaw Hold — one clear <span class="tag dng">55–60</span></span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-shaper"><span class="lvl">58–60</span><span class="body"><span class="t">Shaper's Terrace — one clear <span class="tag dng">58–60</span></span><span class="n">Un'Goro Crater.</span></span></label></li>
+    <li><label><input type="checkbox" data-id="p3-60"><span class="lvl">60</span><span class="body"><span class="t">Level 60 before the raids open on Dec 9</span></span></label></li>
+  </ul>
+
+  <h2 id="dungeons">New dungeons at a glance</h2>
+  <p class="section-note">One clear each, with every quest collected first. The tenth clear pays almost nothing.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Dungeon</th><th>Levels</th><th>Where</th><th>Our plan</th></tr></thead>
+      <tbody>
+        <tr><td>Hall of Thanes</td><td>13–18</td><td>Under Ironforge</td><td>~14, on the way out of Ironforge</td></tr>
+        <tr><td>Ruins of Lordaeron</td><td>15–20</td><td>Tirisfal Glades</td><td>Skip — Horde side</td></tr>
+        <tr><td>Excavation Site: Wetlands</td><td>24–29</td><td>Wetlands</td><td>~24–25</td></tr>
+        <tr><td>City of Dalaran</td><td>28–33</td><td>Alterac Mountains</td><td>~30, after Hillsbrad</td></tr>
+        <tr><td>The Drowned City</td><td>35–40</td><td>Off the Stranglethorn coast</td><td>~36, during STV</td></tr>
+        <tr><td>Krol'dok Stronghold</td><td>40–45</td><td>Riverglades (outdoors)</td><td>~42</td></tr>
+        <tr><td>Alcaz Prison</td><td>48–53</td><td>Alcaz Island</td><td>~49–50</td></tr>
+        <tr><td>Blackmaw Hold</td><td>55–60</td><td>Furbolg hold</td><td>~57</td></tr>
+        <tr><td>Shaper's Terrace</td><td>58–60</td><td>Un'Goro Crater</td><td>~59</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="duo">Duo play</h2>
+  <div class="cards">
+    <div class="card"><h4>Mage duo tactics</h4><ul>
+      <li>Frost for leveling: Nova, then Frostbolt from range.</li>
+      <li>Alternate Frost Nova so one is always ready.</li>
+      <li>Decide up front who Polymorphs and who Counterspells.</li>
+      <li>One conjures food/water for both; the other keeps killing.</li>
+      <li>Keep Arcane Intellect on each other.</li>
+    </ul></div>
+    <div class="card"><h4>Skyborne racials</h4><ul>
+      <li><strong>Read Ley Line</strong>: +100% health and mana regen. Stagger it so we're never both drinking.</li>
+      <li><strong>Walk on Air</strong>: glide off cliffs for shortcuts.</li>
+      <li><strong>Wind Blessed</strong>: +1% haste, passive.</li>
+    </ul></div>
+    <div class="card"><h4>Crowded camps</h4><ul>
+      <li>Invite anyone fighting us for the same mobs — kill credit is shared in a group.</li>
+      <li>Kill quests go fast as a duo; collection quests can be slower. Do those where mobs are dense.</li>
+      <li>Always carry a backup quest nearby so a packed camp never means waiting.</li>
+      <li>Deliveries and object pickups first when a camp is contested.</li>
+    </ul></div>
+    <div class="card"><h4>Professions &amp; gold</h4><ul>
+      <li>Skinning for both; whoever didn't loot skins.</li>
+      <li>Cooking on at least one of us: campfire buffs + XP food.</li>
+      <li>Keep linen/wool to sell (or bandages later).</li>
+      <li>Spend in order: training → bags → mount fund.</li>
+    </ul></div>
+    <div class="card"><h4>XP extras</h4><ul>
+      <li>Start every session at a campfire (sit ~1 min, 1-hour buffs).</li>
+      <li>Keep a food buff up; food is being tested with a kill-XP bonus.</li>
+      <li>Log out in inns or cities for rested XP.</li>
+      <li>Don't let quests go gray — drop escorts and low-drop-rate quests.</li>
+    </ul></div>
+    <div class="card"><h4>The third player</h4><p>A <strong>druid</strong> is the best fit: bear tank for first clears while two mages AoE, healer on elite quests, cat or bear for questing. Skyborne druids also get their own forms.</p></div>
+  </div>
+
+  <h2 id="beta">Test in beta</h2>
+  <p class="section-note">Beta runs until Oct 21 (cap 20, later 30) — exactly the 12–30 stretch. Split the list between us.</p>
+  <div class="progress" data-for="beta"><div class="bar"><span></span></div><span class="count"></span></div>
+  <ul class="check" data-group="beta">
+    <li><label><input type="checkbox" data-id="t-exit"><span class="lvl">Zephras</span><span class="body"><span class="t">What level we actually leave Zephras at, and which quests to skip</span></span></label></li>
+    <li><label><input type="checkbox" data-id="t-hot"><span class="lvl">Ironforge</span><span class="body"><span class="t">Where the Hall of Thanes quests start + any level or prerequisite requirements</span></span></label></li>
+    <li><label><input type="checkbox" data-id="t-size"><span class="lvl">Dungeons</span><span class="body"><span class="t">Group size for the new dungeons</span></span></label></li>
+    <li><label><input type="checkbox" data-id="t-boat"><span class="lvl">Travel</span><span class="body"><span class="t">Stormwind → Auberdine boat: how often it sails</span></span></label></li>
+    <li><label><input type="checkbox" data-id="t-gray"><span class="lvl">Darkshore</span><span class="body"><span class="t">When Darkshore quests go gray (~19–20?)</span></span></label></li>
+    <li><label><input type="checkbox" data-id="t-bfd"><span class="lvl">BFD</span><span class="body"><span class="t">Blackfathom Deeps' level range in Forever</span></span></label></li>
+    <li><label><input type="checkbox" data-id="t-defias"><span class="lvl">Westfall</span><span class="body"><span class="t">Is the Defias chain + Deadmines still green at 20–21?</span></span></label></li>
+    <li><label><input type="checkbox" data-id="t-tele"><span class="lvl">Mage</span><span class="body"><span class="t">Level we learn Teleport: Stormwind / Ironforge</span></span></label></li>
+    <li><label><input type="checkbox" data-id="t-skin"><span class="lvl">Camping</span><span class="body"><span class="t">Does Skinning get a campsite object at skill 20?</span></span></label></li>
+    <li><label><input type="checkbox" data-id="t-food"><span class="lvl">Cooking</span><span class="body"><span class="t">Which early foods give the XP bonus</span></span></label></li>
+  </ul>
+
+  <div class="toolbar"><button class="reset" type="button" id="reset">Reset my checkboxes</button></div>
+
+  <h2>Sources</h2>
+  <ul class="sources">
+    <li><a href="https://news.blizzard.com/en-us/article/24302071/wow-forever-meet-the-new-skyborne" target="_blank" rel="noopener">Blizzard — Meet the New Skyborne</a></li>
+    <li><a href="https://lfcarry.com/guides/wow-forever-leveling" target="_blank" rel="noopener">LFCarry — Leveling route &amp; XP rules</a></li>
+    <li><a href="https://www.foreverwisp.com/guides/wow-forever-alliance-skyborne-leveling-guide" target="_blank" rel="noopener">ForeverWisp — Alliance Skyborne 1–20</a></li>
+    <li><a href="https://skycoach.gg/blog/wow-forever/articles/all-new-zones-guide" target="_blank" rel="noopener">Skycoach — New zones</a></li>
+    <li><a href="https://www.icy-veins.com/wow-forever/camping" target="_blank" rel="noopener">Icy Veins — Camping</a></li>
+    <li><a href="https://kingboost.net/blogs/wow-forever/wow-forever-camping-guide/" target="_blank" rel="noopener">KingBoost — Camping &amp; Legacy perks</a></li>
+    <li><a href="https://lfcarry.com/guides/wow-forever-mage" target="_blank" rel="noopener">LFCarry — Mage &amp; Skyborne racials</a></li>
+  </ul>
+</div>
+<script>
+(function () {
+  "use strict";
+  var KEY = "wf-launch-plan-v1";
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; }
+  }
+  function save(state) {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* storage blocked: checkboxes still work for this visit */ }
+  }
+
+  var state = load();
+  var boxes = document.querySelectorAll('ul.check input[type="checkbox"]');
+
+  function updateProgress() {
+    document.querySelectorAll(".progress").forEach(function (p) {
+      var list = document.querySelector('ul.check[data-group="' + p.dataset.for + '"]');
+      var all = list.querySelectorAll("input");
+      var done = list.querySelectorAll("input:checked").length;
+      p.querySelector(".bar span").style.width = (all.length ? (done / all.length) * 100 : 0) + "%";
+      p.querySelector(".count").textContent = done + " / " + all.length;
+    });
+  }
+
+  boxes.forEach(function (box) {
+    box.checked = !!state[box.dataset.id];
+    box.closest("li").classList.toggle("done", box.checked);
+    box.addEventListener("change", function () {
+      state[box.dataset.id] = box.checked;
+      if (!box.checked) delete state[box.dataset.id];
+      box.closest("li").classList.toggle("done", box.checked);
+      save(state);
+      updateProgress();
+    });
+  });
+
+  // Let links inside a checklist row work without toggling the checkbox.
+  document.querySelectorAll("ul.check label a").forEach(function (a) {
+    a.addEventListener("click", function (e) { e.stopPropagation(); });
+  });
+
+  document.getElementById("reset").addEventListener("click", function () {
+    if (!confirm("Clear all your checkboxes on this page?")) return;
+    state = {};
+    save(state);
+    boxes.forEach(function (box) {
+      box.checked = false;
+      box.closest("li").classList.remove("done");
+    });
+    updateProgress();
+  });
+
+  // Show launch time in the visitor's own time zone (same target as the landing page countdown).
+  try {
+    var launch = new Date("2026-11-04T23:00:00Z");
+    var local = new Intl.DateTimeFormat(undefined, {
+      weekday: "long", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZoneName: "short"
+    }).format(launch);
+    document.getElementById("launch-local").textContent = local + " (your time)";
+    document.getElementById("launch-chip").textContent = "Launch: " + local;
+  } catch (e) { /* keep the static fallback text */ }
+
+  updateProgress();
+})();
+</script>
+</body>
+</html>

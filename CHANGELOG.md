@@ -6,6 +6,12 @@ user-facing release notes.
 
 ## 2026-09-27
 
+- Added `launch-plan.html`: the launch-week plan for the Alliance Skyborne mage duo
+  (Zephras → Dalaran → Ironforge/Hall of Thanes → Darkshore → Ashenvale → Wetlands →
+  Hillsbrad → Dalaran dungeon, then an unverified 30→60 outline), with checklists that
+  save per browser, a table of all 9 new dungeons, duo/camping/Legacy tips and a
+  beta-verification list. Added a Launch Plan link to the top bar on every page
+  (`__PAGE_LAUNCH__` placeholder in template.html, rebuilt macros.html).
 - Fixed 5 rank-badge errors across the builds.html talent cards, found after the
   user caught a wrong rank on Mage's Elemental Precision: Mage Elemental Precision
   3/3→5/5 (also reordered so Frostbite comes before Ice Shards, matching the

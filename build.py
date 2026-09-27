@@ -102,6 +102,7 @@ html = (
     .replace("__PAGE_MACROS__", 'aria-current="page"')
     .replace("__PAGE_BUILDS__", "")
     .replace("__PAGE_ADDONS__", "")
+    .replace("__PAGE_LAUNCH__", "")
 )
 
 with open("macros.html", "w", encoding="utf-8") as f:

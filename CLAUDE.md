@@ -30,9 +30,14 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - `index.html` — hand-written landing page. Hero background (`assets/hero.webp`),
   title, countdown to the WoW Forever launch, and the visitor's local launch time via
   `Intl.DateTimeFormat`. Countdown target: `2026-11-04T23:00:00Z`. Left-side overlay
-  (`.side-links`) has three link "plaques": Zockify, a Cozy Sleeping Bag plaque
-  (icon + description + a sub-link to the quest-chain guide), and Dungeon Loot Tables.
-  Hand-edit directly.
+  (`.side-links`) has a featured Cozy Sleeping Bag card on top, then two side-by-side
+  boxed columns (`.link-cols`): "General Resources" (Zockify, Wowhead, Icy Veins,
+  Warcraft Tavern, Mobalytics, ForeverChanges) and "Tools" (talent calculators,
+  Legacy Calculator, Best-in-Slot Gear, Dungeon Loot Tables, Hunter Pet Database).
+  Each link is its own compact icon+title card (`.mini-plaque`/`.mini-icon`), title
+  only — no per-link description. New tool/resource links go in whichever column
+  fits; keep favicons via `google.com/s2/favicons?domain=...` and verify with curl
+  before adding. Hand-edit directly.
 - `builds.html` — hand-written page with one talent-build card per class (icons +
   hover tooltips, arrows between picks — see `builds_page_pattern` project memory
   for the exact pattern). Hand-edit directly.

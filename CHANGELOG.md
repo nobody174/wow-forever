@@ -4,6 +4,18 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-28
+
+- Reorganized the landing page's side-links overlay: split into "General Resources"
+  (Zockify, Wowhead, Icy Veins, Warcraft Tavern, Mobalytics, ForeverChanges) and
+  "Tools" (2 talent calculators, Legacy Calculator, Best-in-Slot Gear, Dungeon Loot
+  Tables, a new Hunter Pet Database link to beastmaster.io) as two side-by-side
+  boxed columns, each link its own compact icon+title card. Cozy Sleeping Bag stays
+  its own featured card above them with a shortened one-line description. Moved the
+  Talent Calc link out of the top nav into the new Tools column.
+- Corrected: beastmaster.io/forever is a Hunter pet database (588 tameable pets),
+  not a talent calculator as originally assumed — filed it under Tools accordingly.
+
 ## 2026-09-27 (night)
 
 - Launch Plan: confirmed in-game that Aspect of the Cheetah trains at level 20 —

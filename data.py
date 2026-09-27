@@ -383,6 +383,9 @@ CLASSES = [
                 M("Counterspell (interrupt)", "#showtooltip Counterspell\n/stopcasting\n/cast [harm] Counterspell",
                   "Clears your current cast first so the interrupt fires instantly."),
                 M("Polymorph", dpsHarm("Polymorph")),
+                M("Polymorph + Diamond mark",
+                  "#showtooltip Polymorph\n/tm [harm] 3\n/cast [harm] Polymorph",
+                  "Marks the sheep target with a diamond so the group knows not to break it."),
             ]),
             G(HEAL, [
                 M("Mana Shield", plain("Mana Shield")),

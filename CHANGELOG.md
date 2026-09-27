@@ -4,6 +4,12 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-27 (even later)
+
+- Mage: added "Polymorph + Diamond mark" — marks the target with a diamond
+  (`/tm ... 3`) and casts Polymorph in one macro, so the group can see at a
+  glance which target is sheeped and not to break it.
+
 ## 2026-09-27 (later)
 
 - Fixed the top bar on `launch-plan.html`, `macros.html`, `builds.html`, and

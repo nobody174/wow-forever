@@ -879,6 +879,13 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Polymorph
 ```
 
+**Polymorph + Diamond mark** — Marks the sheep target with a diamond so the group knows not to break it.
+```
+#showtooltip Polymorph
+/tm [harm] 3
+/cast [harm] Polymorph
+```
+
 #### Mouseover healing / utility
 
 **Mana Shield**

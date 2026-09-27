@@ -4,6 +4,16 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-27 (night)
+
+- Launch Plan: confirmed in-game that Aspect of the Cheetah trains at level 20 —
+  dropped the `unverified` tag on that step. Tightened the Reagent Economy wording
+  after checking its actual in-game tooltip ("class abilities no longer require
+  reagents purchasable from vendors"): ammo is a weapon consumable, not a spell
+  reagent, so it's almost certainly not covered — the beta test-list item now
+  asks to confirm that exclusion rather than asking an open "does it cover ammo?"
+  question.
+
 ## 2026-09-27 (evening)
 
 - Launch Plan now has a Dual Mage / Dual Hunter / Compare switch. The route is the

@@ -225,7 +225,7 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
           <tr><td>Killing</td><td>AoE clears of dense camps</td><td>Single target, pets tank, kiting; elite quests doable as a duo</td></tr>
           <tr><td>Level 10</td><td>Nothing special</td><td>Pet quest in the middle of Zephras</td></tr>
           <tr><td>Dungeons</td><td>Bring AoE and crowd control; easy to group</td><td>No AoE. Need a real tank <em>and</em> healer</td></tr>
-          <tr><td>Legacy points</td><td>Reagent Economy (free teleports and reagents)</td><td>Reagent Economy probably doesn't cover ammo, so food and camping perks instead</td></tr>
+          <tr><td>Legacy points</td><td>Reagent Economy (free teleports and reagents)</td><td>Reagent Economy almost certainly excludes ammo (a weapon consumable, not a spell reagent) — food and camping perks instead</td></tr>
           <tr><td>Loot</td><td>Cloth and caster gear; few clashes with a druid</td><td>Both want the same bows, guns, agility and mail. Agree on rules first</td></tr>
           <tr><td>Deadmines detour</td><td>Cheap with Teleport: Stormwind</td><td>Costs real travel time; combine with training or skip</td></tr>
         </tbody>
@@ -321,7 +321,7 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
         n: 'Quest helpers especially. Nothing gets installed for the first time on launch night. See <a href="addons.html">Addons</a>.' },
       { id: "b-legacy", lvl: "Plan", t: "Plan the 16 Legacy Points",
         mage: { n: "Go deep in one tree. Top mage pick: Reagent Economy (no vendor reagents for class abilities, so free teleports). Gourmand for longer food buffs." },
-        hunter: { n: "Go deep in one tree. Reagent Economy probably doesn't cover ammo (not a class reagent) — test in beta. If not, go for Gourmand (longer food buffs) and camping/rested perks instead.", tags: [["unv", "check in beta"]] } },
+        hunter: { n: "Go deep in one tree. In-game, Reagent Economy reads “class abilities no longer require reagents purchasable from vendors” — ammo is a weapon consumable, not a spell reagent, so it almost certainly isn't covered. Go for Gourmand (longer food buffs) and camping/rested perks instead.", tags: [["unv", "confirm ammo excluded"]] } },
       { id: "b-voice", lvl: "Plan", t: "Discord voice ready",
         n: "Push-to-talk. Calling pulls and quest splits out loud saves more time than any route trick." },
       { id: "b-druid", lvl: "Plan", t: "Settle the third player",
@@ -373,8 +373,8 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
     ],
     p2: [
       { id: "p2-ashen", lvl: "20–22", t: "Finish Ashenvale" },
-      { id: "h-cheetah", lvl: "~20", t: "Train Aspect of the Cheetah", mage: false,
-        hunter: { tags: [["unv", "level unconfirmed"]], n: "Classic level 20; confirm in Forever. Makes the long runs between hubs much faster — our replacement for teleports." } },
+      { id: "h-cheetah", lvl: "20", t: "Train Aspect of the Cheetah", mage: false,
+        hunter: { n: "Confirmed level 20 in Forever. Makes the long runs between hubs much faster — our replacement for teleports." } },
       { id: "p2-dm", lvl: "20–21", t: "Deadmines detour", tags: [["opt", "optional"]],
         mage: { n: "By day 3–4 the wave has left Westfall. Teleport to Stormwind, do only the Defias chain + one Deadmines clear. Check in beta that the quests aren't gray by then." },
         hunter: { n: "No teleport, so the trip from Ashenvale to Stormwind and back costs real time. Only worth it combined with a training trip — otherwise skip it." } },
@@ -424,8 +424,7 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
       { id: "t-bfd", lvl: "BFD", t: "Blackfathom Deeps' level range in Forever" },
       { id: "t-defias", lvl: "Westfall", t: "Is the Defias chain + Deadmines still green at 20–21?" },
       { id: "t-tele", lvl: "Mage", t: "Level we learn Teleport: Stormwind / Ironforge", hunter: false, mage: {} },
-      { id: "h-t-cheetah", lvl: "Hunter", t: "Level we learn Aspect of the Cheetah", mage: false, hunter: {} },
-      { id: "h-t-reagent", lvl: "Legacy", t: "Does Reagent Economy cover ammo?", mage: false, hunter: {} },
+      { id: "h-t-reagent", lvl: "Legacy", t: "Confirm Reagent Economy doesn't refund ammo purchases", mage: false, hunter: {} },
       { id: "h-t-ammo", lvl: "Gold", t: "How much ammo and pet food cost per session", mage: false, hunter: {} },
       { id: "t-skin", lvl: "Camping", t: "Does Skinning get a campsite object at skill 20?" },
       { id: "t-food", lvl: "Cooking", t: "Which early foods give the XP bonus" }

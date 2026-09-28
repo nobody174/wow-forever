@@ -69,7 +69,13 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   dungeon sections are static HTML. Mode comes from `?plan=mage|hunter|compare`,
   then localStorage `wf-launch-plan-mode`. Checkboxes persist per browser in
   localStorage (key `wf-launch-plan-v1`, keyed by item id — keep ids stable; shared
-  steps share one checkbox across both plans). Steps past level 30 are tagged `unverified` until beta/launch
+  steps share one checkbox across both plans). A floating "Buyable quests" button (and a
+  TOC link, or `#buyable` in the URL) opens a right-hand sidebar listing quests whose
+  objectives are tradeable AH/vendor items, switchable between "Along our route"
+  (grouped p1/p2/p3/off) and "By zone". Its data is the `QUESTS` array in the second
+  `<script>` block (quest level, items, route phase, status forever/classic/verify);
+  its checkboxes use their own localStorage key `wf-launch-plan-buy-v1` (ids `bq-*`).
+  Steps past level 30 are tagged `unverified` until beta/launch
   confirms them. Launch time uses the same `2026-11-04T23:00:00Z` target as index.html.
   Hand-edit directly.
 - `assets/hero.webp` — landing page hero background (dwarf/gnome group in front of

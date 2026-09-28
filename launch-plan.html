@@ -163,6 +163,47 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
   .mode-switch{display:flex;width:100%}
   .mode-switch button{flex:1;padding:9px 6px;font-size:13px;gap:6px}
 }
+
+/* Buyable-quests sidebar */
+.buy-fab{position:fixed;right:18px;bottom:18px;z-index:30;display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--sans);color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border:1px solid #FFE566;border-radius:999px;padding:12px 16px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.buy-fab:hover{filter:brightness(1.06)}
+.buy-fab .count{background:#0E1428;color:var(--gold);border-radius:999px;padding:3px 7px;font-size:12px}
+.buy-overlay{position:fixed;inset:0;z-index:40;background:rgba(4,7,18,.6);opacity:0;pointer-events:none;transition:opacity .15s ease}
+.buy-drawer{position:fixed;top:0;right:0;bottom:0;z-index:41;width:min(440px,100vw);background:var(--bg);border-left:1px solid var(--edge);box-shadow:-8px 0 24px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .2s ease;display:flex;flex-direction:column}
+body.buy-open .buy-overlay{opacity:1;pointer-events:auto}
+body.buy-open .buy-drawer{transform:none}
+@media (prefers-reduced-motion:reduce){.buy-drawer,.buy-overlay{transition:none}}
+.buy-head{padding:16px 18px 12px;border-bottom:1px solid var(--edge);background:var(--panel)}
+.buy-head .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.buy-head h3{margin:0;font:400 22px/1.2 var(--serif);color:var(--gold)}
+.buy-close{font:600 20px/1 var(--sans);background:transparent;border:1px solid var(--edge);color:var(--muted);width:36px;height:36px;border-radius:6px;cursor:pointer}
+.buy-close:hover{color:var(--text);border-color:var(--gold)}
+.buy-head p{margin:8px 0 12px;color:var(--muted);font-size:13px}
+.buy-view{display:inline-flex;background:#0A0F20;border:1px solid var(--edge);border-radius:8px;padding:3px;gap:3px}
+.buy-view button{font:600 13px/1 var(--sans);color:var(--muted);background:transparent;border:1px solid transparent;border-radius:6px;padding:8px 12px;cursor:pointer}
+.buy-view button[aria-pressed="true"]{background:var(--panel);color:var(--text);border-color:var(--gold)}
+.buy-body{flex:1;overflow-y:auto;padding:6px 18px 40px}
+.buy-group{font:600 12px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--gold);margin:18px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--edge)}
+.buy-card{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--edge);border-radius:5px;padding:10px 12px;margin-bottom:8px}
+.buy-card.st-forever{border-left-color:var(--ok)}
+.buy-card.st-classic{border-left-color:var(--frost)}
+.buy-card.st-verify{border-left-color:var(--warn)}
+.buy-card.done{opacity:.6}
+.buy-card label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.buy-card input{flex:none;width:17px;height:17px;margin:2px 0 0;accent-color:var(--gold)}
+.buy-card .bt{font-weight:600}
+.buy-card.done .bt{text-decoration:line-through;text-decoration-color:var(--muted)}
+.buy-card .bt a{color:var(--text);text-decoration:none;border-bottom:1px dotted var(--edge)}
+.buy-card .bt a:hover{color:var(--gold);border-color:var(--gold)}
+.buy-card .bm{color:var(--muted);font-size:13px;margin-top:2px}
+.buy-items{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0 2px;padding:0;list-style:none}
+.buy-items li{font-size:12px;background:#0A0F20;border:1px solid var(--edge);border-radius:4px;padding:3px 7px}
+.buy-items b{color:var(--gold)}
+.buy-card .bn{font-size:13px;margin-top:6px}
+.buy-card .bx{font-size:13px;margin-top:4px;color:var(--warn)}
+.buy-legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted);margin-top:10px}
+.buy-legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;background:var(--c)}
+@media (max-width:560px){.buy-fab{right:12px;bottom:12px;padding:11px 14px}}
 </style>
 </head>
 <body class="mode-mage">
@@ -210,6 +251,7 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
     <a href="#dungeons">Dungeons</a>
     <a href="#duo">Duo play</a>
     <a href="#legacy">Legacy points</a>
+    <a href="#buyable" data-open-buy>Buyable quests</a>
     <a href="#beta">Test in beta</a>
   </nav>
 
@@ -351,6 +393,24 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
     <li><a href="https://lfcarry.com/guides/wow-forever-mage" target="_blank" rel="noopener">LFCarry — Mage &amp; Skyborne racials</a></li>
   </ul>
 </div>
+<button class="buy-fab" type="button" data-open-buy aria-haspopup="dialog" aria-controls="buy-drawer">Buyable quests <span class="count" id="buy-count"></span></button>
+<div class="buy-overlay" id="buy-overlay"></div>
+<aside class="buy-drawer" id="buy-drawer" role="dialog" aria-modal="true" aria-labelledby="buy-title" aria-hidden="true">
+  <div class="buy-head">
+    <div class="row"><h3 id="buy-title">Buyable quests</h3><button class="buy-close" type="button" id="buy-close" aria-label="Close">&times;</button></div>
+    <p>Quests you can finish with Auction House (or vendor) items instead of farming drops. Buy the items before you reach the quest giver, then turn in straight away.</p>
+    <div class="buy-view" role="group" aria-label="Sort">
+      <button type="button" data-view="route" aria-pressed="true">Along our route</button>
+      <button type="button" data-view="zone" aria-pressed="false">By zone</button>
+    </div>
+    <div class="buy-legend">
+      <span style="--c:var(--ok)">Confirmed in Forever</span>
+      <span style="--c:var(--frost)">Classic data</span>
+      <span style="--c:var(--warn)">Verify in beta</span>
+    </div>
+  </div>
+  <div class="buy-body" id="buy-body"></div>
+</aside>
 <script>
 (function () {
   "use strict";
@@ -712,6 +772,167 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
   var initial = null;
   try { initial = new URL(location.href).searchParams.get("plan"); } catch (e) { /* ignore */ }
   setMode(MODES.indexOf(initial) !== -1 ? initial : load(MODE_KEY, "mage"), false);
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  // ---------------------------------------------------------------------------
+  // Quests whose objectives are tradeable items (Auction House or vendor), so
+  // they can be bought instead of farmed. `q` = quest level (full XP until
+  // roughly q+5). `phase` places it on our route: p1 / p2 / p3 / off.
+  // `st`: forever = confirmed on the Forever database, classic = Classic data
+  // (should still apply), verify = recalled from Classic, check in beta.
+  // Ids are checkbox keys: keep them stable.
+  // ---------------------------------------------------------------------------
+  var QUESTS = [
+    { id: "bq-sausage", name: "Thelsamar Blood Sausages", zone: "Loch Modan", q: 7, phase: "p1", where: "Loch Modan filler (12–14)", st: "classic",
+      items: [["Boar Intestines", 3], ["Bear Meat", 3], ["Spider Ichor", 3]],
+      xp: "Level 7 quest: already reduced XP at 12–14. Only if the mats are cheap." },
+    { id: "bq-harvest", name: "Harvesting the Harvesters", zone: "Westfall", q: 15, phase: "p1", where: "Westfall (optional Deadmines detour, 20–21)", st: "forever",
+      items: [["Golem Isospring", 14], ["Harvester Gyrostabilizer", 5]],
+      note: "New in Forever, from Ozwin Ironsprocket at Saldean's Farm. Very low drop rate, so buying beats farming. Also gives Gnomeregan Exiles reputation." },
+    { id: "bq-stew", name: "Westfall Stew", zone: "Westfall", q: 9, phase: "p1", where: "Westfall (optional Deadmines detour)", st: "classic",
+      items: [["Stringy Vulture Meat", 3], ["Murloc Eye", 3], ["Goretusk Snout", 3], ["Okra", 3]],
+      xp: "Gray by 20–21. Only worth it if we pass Westfall before ~14." },
+    { id: "bq-liver", name: "Goretusk Liver Pie", zone: "Westfall", q: 9, phase: "p1", where: "Westfall (optional Deadmines detour)", st: "classic",
+      items: [["Goretusk Liver", 8]],
+      xp: "Gray by 20–21. Only worth it if we pass Westfall before ~14." },
+    { id: "bq-flame", name: "Keeper of the Flame", zone: "Westfall", q: 10, phase: "p1", where: "Westfall (optional Deadmines detour)", st: "classic",
+      items: [["Flask of Oil", 5]],
+      xp: "Gray by 20–21. Only worth it if we pass Westfall before ~15." },
+
+    { id: "bq-stars", name: "Look to the Stars", zone: "Duskwood", q: 20, phase: "p2", where: "Duskwood filler (27–30)", st: "classic",
+      items: [["Bronze Tube", 1]],
+      note: "Engineering item. Starts a short chain.",
+      xp: "Reduced XP at 27–30; better value if we pass Duskwood earlier." },
+    { id: "bq-bisque", name: "Soothing Turtle Bisque", zone: "Hillsbrad Foothills", q: 28, phase: "p2", where: "Hillsbrad (25–28)", st: "classic",
+      items: [["Turtle Meat", 10], ["Soothing Spices", 1]],
+      note: "Soothing Spices is sold by cooking supply vendors." },
+
+    { id: "bq-greenhills", name: "The Green Hills of Stranglethorn", zone: "Stranglethorn Vale", q: 30, phase: "p3", where: "Stranglethorn (30–37)", st: "classic",
+      items: [["specific Green Hills pages", 15]],
+      note: "Four chapter quests plus the final turn-in: a lot of XP for 15 pages. Pages sell on the AH, so buy the missing ones." },
+    { id: "bq-fever", name: "Stranglethorn Fever", zone: "Stranglethorn Vale", q: 32, phase: "p3", where: "Stranglethorn (30–37)", st: "verify",
+      items: [["Gorilla Fang", 10]],
+      note: "Ends with a fight against a summoned elite. Bring the group." },
+    { id: "bq-water", name: "Water Pouch Bounty", zone: "Tanaris", q: 40, phase: "p3", where: "Tanaris (44–50)", st: "classic",
+      items: [["Wastewander Water Pouch", 5]],
+      note: "Repeatable. The first turn-in gives the XP." },
+    { id: "bq-necklace", name: "Troll Necklace Bounty", zone: "The Hinterlands", q: 45, phase: "p3", where: "Hinterlands (44–50)", st: "verify",
+      items: [["Troll Tribal Necklace", 5]],
+      note: "Aerie Peak. Repeatable for Wildhammer reputation." },
+    { id: "bq-crystals", name: "Crystals of Power", zone: "Un'Goro Crater", q: 47, phase: "p3", where: "Un'Goro (50–55)", st: "classic",
+      items: [["Red Power Crystal", 7], ["Yellow Power Crystal", 7], ["Green Power Crystal", 7], ["Blue Power Crystal", 7]],
+      note: "Leftover crystals turn into short buffs at the pylons." },
+    { id: "bq-soil", name: "Un'Goro Soil", zone: "Un'Goro Crater", q: 47, phase: "p3", where: "Un'Goro (50–55)", st: "classic",
+      items: [["Un'Goro Soil", 20]] },
+    { id: "bq-frostsaber", name: "Frostsaber Provisions", zone: "Winterspring", q: 59, phase: "p3", where: "Winterspring (55–60)", st: "verify",
+      items: [["Chillwind Meat", 5], ["Shardtooth Meat", 5]] },
+    { id: "bq-timbermaw", name: "Timbermaw reputation turn-ins", zone: "Felwood", q: 50, phase: "p3", where: "Felwood / Winterspring (50–60)", st: "verify",
+      items: [["Deadwood Headdress Feather", 5], ["Winterfall Spirit Beads", 5]],
+      note: "Reputation, little XP. Friendly opens the Timbermaw Hold tunnel between Felwood, Winterspring and Moonglade." },
+
+    { id: "bq-goulash", name: "Redridge Goulash", zone: "Redridge Mountains", q: 15, phase: "off", where: "Not on our route", st: "classic",
+      items: [["Great Goretusk Snout", 5], ["Tough Condor Meat", 5], ["Crisp Spider Meat", 5]] },
+    { id: "bq-poachers", name: "Murloc Poachers", zone: "Redridge Mountains", q: 20, phase: "off", where: "Not on our route", st: "classic",
+      items: [["Murloc Fin", 8]] },
+    { id: "bq-caught", name: "Caught!", zone: "Searing Gorge", q: 43, phase: "off", where: "Not on our route", st: "classic",
+      items: [["Silk Cloth", 15]] },
+    { id: "bq-blasted", name: "Blasted Lands buff quests (5 quests)", zone: "Blasted Lands", q: 45, phase: "off", where: "Not on our route", st: "classic",
+      items: [["Blasted Boar Lung", 1], ["Scorpok Pincer", 1], ["Vulture Gizzard", 1], ["Snickerfang Jowl", 1], ["Basilisk Brain", 1]],
+      note: "Each quest wants its own mix (up to 10 of one part) and gives a strong 1-hour buff plus XP. All parts sell on the AH." }
+  ];
+
+  var PHASES = [
+    ["p1", "Phase 1 · 12 → 20"],
+    ["p2", "Phase 2 · 20 → 30"],
+    ["p3", "Phase 3 · 30 → 60 (unverified route)"],
+    ["off", "Off our route (for reference)"]
+  ];
+  var ST_LABEL = { forever: "Confirmed in Forever", classic: "Classic data", verify: "Verify in beta" };
+  var KEY = "wf-launch-plan-buy-v1";
+  var VIEW_KEY = "wf-launch-plan-buy-view";
+
+  function load(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } }
+  var state = load(KEY, {}) || {};
+  var view = load(VIEW_KEY, "route") === "zone" ? "zone" : "route";
+
+  var body = document.getElementById("buy-body");
+  var drawer = document.getElementById("buy-drawer");
+  var lastFocus = null;
+
+  function card(qd) {
+    var done = !!state[qd.id];
+    var url = "https://www.wowhead.com/forever/search?q=" + encodeURIComponent(qd.name.replace(/ \(.*\)$/, ""));
+    var items = qd.items.map(function (it) { return "<li><b>" + it[1] + "×</b> " + it[0] + "</li>"; }).join("");
+    return '<div class="buy-card st-' + qd.st + (done ? " done" : "") + '"><label>' +
+      '<input type="checkbox" data-buy-id="' + qd.id + '"' + (done ? " checked" : "") + ' aria-label="Done: ' + qd.name + '">' +
+      '<span><span class="bt"><a href="' + url + '" target="_blank" rel="noopener">' + qd.name + "</a></span>" +
+      '<span class="bm" style="display:block">' + qd.zone + " · quest level " + qd.q + " · " + (view === "zone" ? qd.where : ST_LABEL[qd.st]) + "</span>" +
+      '<ul class="buy-items">' + items + "</ul>" +
+      (qd.note ? '<span class="bn" style="display:block">' + qd.note + "</span>" : "") +
+      (qd.xp ? '<span class="bx" style="display:block">' + qd.xp + "</span>" : "") +
+      "</span></label></div>";
+  }
+
+  function render() {
+    var html = "";
+    if (view === "route") {
+      PHASES.forEach(function (ph) {
+        var list = QUESTS.filter(function (qd) { return qd.phase === ph[0]; });
+        if (!list.length) return;
+        html += '<div class="buy-group">' + ph[1] + "</div>" + list.map(card).join("");
+      });
+    } else {
+      var zones = {};
+      QUESTS.forEach(function (qd) { (zones[qd.zone] = zones[qd.zone] || []).push(qd); });
+      Object.keys(zones).sort().forEach(function (z) {
+        html += '<div class="buy-group">' + z + "</div>" + zones[z].sort(function (a, b) { return a.q - b.q; }).map(card).join("");
+      });
+    }
+    body.innerHTML = html;
+    document.querySelectorAll(".buy-view button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.view === view)); });
+    var open = QUESTS.filter(function (qd) { return qd.phase !== "off" && !state[qd.id]; }).length;
+    document.getElementById("buy-count").textContent = open;
+  }
+
+  function openDrawer() {
+    lastFocus = document.activeElement;
+    document.body.classList.add("buy-open");
+    drawer.setAttribute("aria-hidden", "false");
+    document.getElementById("buy-close").focus();
+  }
+  function closeDrawer() {
+    document.body.classList.remove("buy-open");
+    drawer.setAttribute("aria-hidden", "true");
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  document.querySelectorAll("[data-open-buy]").forEach(function (el) {
+    el.addEventListener("click", function (e) { e.preventDefault(); openDrawer(); });
+  });
+  document.getElementById("buy-close").addEventListener("click", closeDrawer);
+  document.getElementById("buy-overlay").addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && document.body.classList.contains("buy-open")) closeDrawer(); });
+  document.querySelector(".buy-view").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-view]");
+    if (!b) return;
+    view = b.dataset.view; save(VIEW_KEY, view); render();
+  });
+  body.addEventListener("change", function (e) {
+    var box = e.target;
+    if (!box.dataset || !box.dataset.buyId) return;
+    if (box.checked) state[box.dataset.buyId] = true; else delete state[box.dataset.buyId];
+    save(KEY, state);
+    box.closest(".buy-card").classList.toggle("done", box.checked);
+    render();
+  });
+  body.addEventListener("click", function (e) { if (e.target.closest("a")) e.stopPropagation(); }, true);
+
+  render();
+  if (location.hash === "#buyable") openDrawer();
 })();
 </script>
 </body>

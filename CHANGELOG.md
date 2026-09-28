@@ -4,6 +4,16 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-28 (evening)
+
+- Launch Plan: added a "Buyable quests" sidebar (floating button bottom-right, TOC
+  link, or `#buyable`). Lists quests that can be finished with Auction House/vendor
+  items instead of farming, sorted along our route (phase 1/2/3 + off-route) or by
+  zone, with item counts, quest level, a gray-XP warning where our route reaches the
+  zone too late, per-browser "done" checkboxes, and a Wowhead Forever search link.
+  Harvesting the Harvesters is confirmed on Forever's Wowhead; the rest is Classic
+  data, with a few recalled-from-Classic entries tagged "verify in beta".
+
 ## 2026-09-28
 
 - Hunter: added three pet attack macros next to "Pet attack TT / target" —

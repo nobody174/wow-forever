@@ -109,7 +109,7 @@ h2:first-of-type{margin-top:0}
   </div>
   <div class="card">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/threatmaster" target="_blank" rel="noopener">ThreatMaster</a>
-    <div class="note">A threat meter styled after the game's built-in Damage Meter. Shows threat standing against the current target and warns both DPS and tanks when aggro is about to switch. <strong class="warn">Known issue:</strong> silently claims Alt+1 and Alt+2, breaking any other keybinds already on those combos — no setting for it found in-game or in the addon's own options, confirmed by disabling the addon (bindings came right back). Check your own Alt+1/Alt+2 after installing.</div>
+    <div class="note">A threat meter styled after the game's built-in Damage Meter. Shows threat standing against the current target and warns both DPS and tanks when aggro is about to switch. <strong class="warn">Slash command conflict:</strong> claims <code>/tm</code> for itself, which is also the shorthand for WoW's built-in <code>/targetmarker</code> command — if you have a raid-mark macro using <code>/tm</code> (like our own mark macros used to), it'll silently call ThreatMaster instead of marking your target. Fixed on our macros page by switching to the full <code>/targetmarker</code> name — do the same for any of your own macros using <code>/tm</code>.</div>
   </div>
   <div class="card">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/tomtom" target="_blank" rel="noopener">TomTom</a>

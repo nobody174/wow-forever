@@ -115,8 +115,10 @@ UNIVERSAL = [
         M("Clear dead target",
           "/cleartarget [dead]"),
         M("Skull mark mouseover / target",
-          "/tm [@mouseover, exists][] 8",
-          "8 = skull, 7 = cross, 5 = moon, 6 = square."),
+          "/targetmarker [@mouseover, exists][] 8",
+          "8 = skull, 7 = cross, 5 = moon, 6 = square. Uses the full /targetmarker "
+          "name, not the /tm shorthand — the ThreatMaster addon claims /tm for "
+          "itself, which silently breaks this macro if you use the short form."),
     ]),
 
     G(FOCUS, [
@@ -146,10 +148,12 @@ UNIVERSAL = [
           "/console UnitNamePlayerPVPTitle 0",
           "Removes PvP rank titles from nameplates and unit frames."),
         M("Mark mouseover/target with skull",
-          "/tm [@mouseover,exists] 8; 8",
-          "Marks your mouseover target with a skull, or your current target if no mouseover."),
+          "/targetmarker [@mouseover,exists] 8; 8",
+          "Marks your mouseover target with a skull, or your current target if no mouseover. "
+          "Uses the full /targetmarker name — the ThreatMaster addon claims the /tm "
+          "shorthand for itself, which silently breaks this macro if you use it."),
         M("Mark mouseover/target with cross",
-          "/tm [@mouseover,exists] 7; 7",
+          "/targetmarker [@mouseover,exists] 7; 7",
           "Same as skull mark, using the cross icon instead."),
         M("Weapon swap: 1H+offhand ↔ 2H",
           "/equipslot 16 Durgen's Crescent Axe\n"
@@ -384,8 +388,10 @@ CLASSES = [
                   "Clears your current cast first so the interrupt fires instantly."),
                 M("Polymorph", dpsHarm("Polymorph")),
                 M("Polymorph + Diamond mark",
-                  "#showtooltip Polymorph\n/tm [harm] 3\n/cast [harm] Polymorph",
-                  "Marks the sheep target with a diamond so the group knows not to break it."),
+                  "#showtooltip Polymorph\n/targetmarker [harm] 3\n/cast [harm] Polymorph",
+                  "Marks the sheep target with a diamond so the group knows not to break it. "
+                  "Uses the full /targetmarker name, not /tm — the ThreatMaster addon claims "
+                  "/tm for itself, which silently breaks this macro if you use the short form."),
             ]),
             G(HEAL, [
                 M("Mana Shield", plain("Mana Shield")),

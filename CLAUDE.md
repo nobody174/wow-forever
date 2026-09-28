@@ -136,5 +136,13 @@ Use helpers: dps() (Priest only — target-of-target-aware), dpsHarm() (every ot
 class — plain [harm] targeting, no TT), heal(), util(), buff(), chan(), foc(),
 plain(), me(), stance(). Every helper prepends #showtooltip; hand-written
 multi-line /cast or /castsequence macros must add #showtooltip as their own
-first line. Pure utility commands (/console, /tm, /target, /focus, /petattack,
-/use item) do not get #showtooltip.
+first line. Pure utility commands (/console, /targetmarker, /target, /focus,
+/petattack, /use item) do not get #showtooltip.
+
+## Slash command conflicts
+Always use `/targetmarker`, never the `/tm` shorthand, for raid target-icon
+macros — the ThreatMaster addon (see addons.html) claims `/tm` for itself,
+which silently breaks any macro using the short form once that addon is
+installed, with no error shown. Found and fixed 2026-09-29 after a real
+in-game keybind investigation. If a future slash-command shorthand turns out
+to collide with a popular addon, prefer the full command name here too.

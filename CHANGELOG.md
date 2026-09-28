@@ -4,6 +4,24 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-29 (night)
+
+- Found the real cause of the earlier "ThreatMaster steals Alt+1/Alt+2" report:
+  it's not a keybind conflict at all — ThreatMaster registers the `/tm` slash
+  command for itself, which collides with WoW's built-in `/targetmarker`
+  shorthand. Any macro using `/tm` to mark a target silently calls ThreatMaster
+  instead once the addon is installed. Traced this by reading through
+  ThreatMaster's full Lua source (confirmed it sets no keybindings anywhere)
+  and working through in-game diagnostics with the user.
+- Fixed every macro in data.py that used the `/tm` shorthand (the two Universal
+  mark-mouseover/target macros and Mage's Polymorph + Diamond mark) to use the
+  full `/targetmarker` command instead, so they no longer collide with
+  ThreatMaster. Updated CLAUDE.md with a standing rule to prefer full command
+  names over shorthands that a popular addon might claim.
+- Rewrote the ThreatMaster addons.html warning to describe the actual slash-
+  command conflict and its fix, replacing the earlier (incorrect) theory that
+  it silently claimed the Alt+1/Alt+2 keybinds directly.
+
 ## 2026-09-29 (evening)
 
 - Flagged a known issue on ThreatMaster's addon card: it silently claims Alt+1

@@ -79,9 +79,9 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cleartarget [dead]
 ```
 
-**Skull mark mouseover / target** — 8 = skull, 7 = cross, 5 = moon, 6 = square.
+**Skull mark mouseover / target** — 8 = skull, 7 = cross, 5 = moon, 6 = square. Uses the full /targetmarker name, not the /tm shorthand — the ThreatMaster addon claims /tm for itself, which silently breaks this macro if you use the short form.
 ```
-/tm [@mouseover, exists][] 8
+/targetmarker [@mouseover, exists][] 8
 ```
 
 ### Focus
@@ -135,14 +135,14 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /console UnitNamePlayerPVPTitle 0
 ```
 
-**Mark mouseover/target with skull** — Marks your mouseover target with a skull, or your current target if no mouseover.
+**Mark mouseover/target with skull** — Marks your mouseover target with a skull, or your current target if no mouseover. Uses the full /targetmarker name — the ThreatMaster addon claims the /tm shorthand for itself, which silently breaks this macro if you use it.
 ```
-/tm [@mouseover,exists] 8; 8
+/targetmarker [@mouseover,exists] 8; 8
 ```
 
 **Mark mouseover/target with cross** — Same as skull mark, using the cross icon instead.
 ```
-/tm [@mouseover,exists] 7; 7
+/targetmarker [@mouseover,exists] 7; 7
 ```
 
 **Weapon swap: 1H+offhand ↔ 2H** — Swap the item names for your own gear. Toggles between 1H+offhand and 2H each press — slot 16 = main hand, 17 = off hand/shield.
@@ -879,10 +879,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Polymorph
 ```
 
-**Polymorph + Diamond mark** — Marks the sheep target with a diamond so the group knows not to break it.
+**Polymorph + Diamond mark** — Marks the sheep target with a diamond so the group knows not to break it. Uses the full /targetmarker name, not /tm — the ThreatMaster addon claims /tm for itself, which silently breaks this macro if you use the short form.
 ```
 #showtooltip Polymorph
-/tm [harm] 3
+/targetmarker [harm] 3
 /cast [harm] Polymorph
 ```
 

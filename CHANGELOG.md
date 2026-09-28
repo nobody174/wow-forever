@@ -4,6 +4,14 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-29 (evening)
+
+- Flagged a known issue on ThreatMaster's addon card: it silently claims Alt+1
+  and Alt+2, breaking any other keybinds on those combos, with no setting for
+  it anywhere in-game or in the addon's own options. Confirmed by disabling
+  the addon (the bindings came right back). Added a `--warn` color variable to
+  addons.html for this kind of inline caveat.
+
 ## 2026-09-29 (later)
 
 - Clarified that MythicSim's DPS tier list is a level-60 endgame simulation

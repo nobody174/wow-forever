@@ -10,7 +10,7 @@
 <style>
 :root{
   --bg:#0E1428; --panel:#161E38; --edge:#3A4468; --gold:#FFD100;
-  --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100;
+  --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100; --warn:#E8A33D;
   --serif:"Marcellus","Palatino Linotype",Georgia,serif;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
@@ -66,6 +66,7 @@ h2:first-of-type{margin-top:0}
 }
 .card .addon-btn:active{transform:translateY(0);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
 .card .note{color:var(--muted);font-size:14px;margin-top:10px}
+.card .note strong.warn{color:var(--warn)}
 @media (prefers-reduced-motion:reduce){.card .addon-btn{transition:none}}
 .card .unlinked{color:var(--muted);font-size:13px;font-style:italic}
 </style>
@@ -108,7 +109,7 @@ h2:first-of-type{margin-top:0}
   </div>
   <div class="card">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/threatmaster" target="_blank" rel="noopener">ThreatMaster</a>
-    <div class="note">A threat meter styled after the game's built-in Damage Meter. Shows threat standing against the current target and warns both DPS and tanks when aggro is about to switch.</div>
+    <div class="note">A threat meter styled after the game's built-in Damage Meter. Shows threat standing against the current target and warns both DPS and tanks when aggro is about to switch. <strong class="warn">Known issue:</strong> silently claims Alt+1 and Alt+2, breaking any other keybinds already on those combos — no setting for it found in-game or in the addon's own options, confirmed by disabling the addon (bindings came right back). Check your own Alt+1/Alt+2 after installing.</div>
   </div>
   <div class="card">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/tomtom" target="_blank" rel="noopener">TomTom</a>

@@ -1680,6 +1680,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [combat] Aspect of the Hawk; Aspect of the Cheetah
 ```
 
+**Aspect toggle: Cheetah ↔ Hawk** — Each press swaps to the other aspect; the icon shows the next one. Resets after combat, so the first press after a fight is always Cheetah. Cheetah dazes you when hit, so press again before pulling.
+```
+#showtooltip
+/castsequence reset=combat Aspect of the Cheetah, Aspect of the Hawk
+```
+
 **Aspect of the Hawk**
 ```
 #showtooltip Aspect of the Hawk

@@ -655,6 +655,11 @@ CLASSES = [
             G(BUFF, [
                 M("Aspect: Hawk in combat, Cheetah out",
                   "#showtooltip Aspect of the Hawk\n/cast [combat] Aspect of the Hawk; Aspect of the Cheetah"),
+                M("Aspect toggle: Cheetah ↔ Hawk",
+                  "#showtooltip\n/castsequence reset=combat Aspect of the Cheetah, Aspect of the Hawk",
+                  "Each press swaps to the other aspect; the icon shows the next one. "
+                  "Resets after combat, so the first press after a fight is always Cheetah. "
+                  "Cheetah dazes you when hit, so press again before pulling."),
                 M("Aspect of the Hawk", plain("Aspect of the Hawk")),
                 M("Aspect of the Monkey", plain("Aspect of the Monkey")),
                 M("Aspect of the Pack", plain("Aspect of the Pack")),

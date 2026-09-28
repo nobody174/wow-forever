@@ -4,6 +4,12 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-29
+
+- Hunter: added "Aspect toggle: Cheetah ↔ Hawk" (`/castsequence reset=combat Aspect of
+  the Cheetah, Aspect of the Hawk`) next to the existing combat-based aspect macro.
+  Each press swaps aspects; resets to Cheetah after combat.
+
 ## 2026-09-28 (evening)
 
 - Moved the Buyable quests button from bottom-right to top-right, just under the

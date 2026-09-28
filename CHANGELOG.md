@@ -6,6 +6,8 @@ user-facing release notes.
 
 ## 2026-09-28 (evening)
 
+- Moved the Buyable quests button from bottom-right to top-right, just under the
+  sticky top bar (follows the bar's height on mobile). Sidebar unchanged.
 - Launch Plan: added a "Buyable quests" sidebar (floating button bottom-right, TOC
   link, or `#buyable`). Lists quests that can be finished with Auction House/vendor
   items instead of farming, sorted along our route (phase 1/2/3 + off-route) or by

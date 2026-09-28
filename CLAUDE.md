@@ -69,7 +69,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   dungeon sections are static HTML. Mode comes from `?plan=mage|hunter|compare`,
   then localStorage `wf-launch-plan-mode`. Checkboxes persist per browser in
   localStorage (key `wf-launch-plan-v1`, keyed by item id — keep ids stable; shared
-  steps share one checkbox across both plans). A floating "Buyable quests" button (and a
+  steps share one checkbox across both plans). A floating "Buyable quests" button (top-right, just under the sticky top bar) (and a
   TOC link, or `#buyable` in the URL) opens a right-hand sidebar listing quests whose
   objectives are tradeable AH/vendor items, switchable between "Along our route"
   (grouped p1/p2/p3/off) and "By zone". Its data is the `QUESTS` array in the second

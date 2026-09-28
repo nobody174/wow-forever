@@ -4,6 +4,14 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-28
+
+- Hunter: added three pet attack macros next to "Pet attack TT / target" —
+  "Pet attack mouseover", "Pet attack mouseover / TT" and "Pet attack / Shift =
+  follow" (Shift+press calls the pet back). No #showtooltip on purpose: /petattack
+  isn't a spell, so #showtooltip would only show a red "?"; each note tells the
+  player to pick the pet bar's Attack icon (Ability_GhoulFrenzy) in the macro window.
+
 ## 2026-09-29 (night)
 
 - Found the real cause of the earlier "ThreatMaster steals Alt+1/Alt+2" report:

@@ -1743,6 +1743,22 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /petattack [@targettarget, harm, exists][harm]
 ```
 
+**Pet attack mouseover** — Attacks the enemy under your mouse, else your target. No #showtooltip: /petattack is not a spell, so it would show a red ?. Pick the icon yourself in the macro window: the claw icon from the pet bar's Attack button (Ability_GhoulFrenzy).
+```
+/petattack [@mouseover, harm, exists][harm]
+```
+
+**Pet attack mouseover / TT** — Mouseover first, then your target's target, then your target. No #showtooltip: /petattack is not a spell, so it would show a red ?. Pick the icon yourself in the macro window: the claw icon from the pet bar's Attack button (Ability_GhoulFrenzy).
+```
+/petattack [@mouseover, harm, exists][@targettarget, harm, exists][harm]
+```
+
+**Pet attack / Shift = follow** — Press to send the pet (mouseover first); Shift+press calls it back. No #showtooltip: /petattack is not a spell, so it would show a red ?. Pick the icon yourself in the macro window: the claw icon from the pet bar's Attack button (Ability_GhoulFrenzy).
+```
+/petfollow [mod:shift]
+/petattack [nomod:shift, @mouseover, harm, exists][nomod:shift, harm]
+```
+
 **Pet follow**
 ```
 /petfollow

@@ -73,6 +73,15 @@ WAND = (
 )
 MELEE = "/startattack [@targettarget, harm, exists][harm]"
 PETATK = "/petattack [@targettarget, harm, exists][harm]"
+PETATK_MO = "/petattack [@mouseover, harm, exists][harm]"
+PETATK_MO_TT = "/petattack [@mouseover, harm, exists][@targettarget, harm, exists][harm]"
+PETATK_SHIFT = (
+    "/petfollow [mod:shift]\n"
+    "/petattack [nomod:shift, @mouseover, harm, exists][nomod:shift, harm]"
+)
+PET_ICON_NOTE = ("No #showtooltip: /petattack is not a spell, so it would show a red ?. "
+                 "Pick the icon yourself in the macro window: the claw icon from the pet "
+                 "bar's Attack button (Ability_GhoulFrenzy).")
 
 
 # --- 2. Builder helpers + macro type labels ---------------------------------
@@ -660,6 +669,12 @@ CLASSES = [
             ]),
             G(QOL, [
                 M("Pet attack TT / target", PETATK),
+                M("Pet attack mouseover", PETATK_MO,
+                  "Attacks the enemy under your mouse, else your target. " + PET_ICON_NOTE),
+                M("Pet attack mouseover / TT", PETATK_MO_TT,
+                  "Mouseover first, then your target's target, then your target. " + PET_ICON_NOTE),
+                M("Pet attack / Shift = follow", PETATK_SHIFT,
+                  "Press to send the pet (mouseover first); Shift+press calls it back. " + PET_ICON_NOTE),
                 M("Pet follow", "/petfollow"),
                 M("Pet passive", "/petpassive"),
                 M("Call / Revive / Mend (one button)",

@@ -4,6 +4,18 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-29 (later)
+
+- Clarified that MythicSim's DPS tier list is a level-60 endgame simulation
+  (confirmed: "one raid-boss target, level 63... Most specs use talents from a
+  published level 60 guide build"), not a beta/leveling-relevant ranking —
+  relabeled it "DPS Sim Tier List (Lvl 60, predicted)".
+- Added Wowhead's level-20-scoped DPS PvE tier list ("DPS Tier List (Beta, Lvl
+  20)") as the beta-relevant counterpart. Its actual tier content couldn't be
+  independently verified (page is JS-rendered, unreadable via automated fetch),
+  so it's linked as a real/maintained/correctly-scoped source, not a
+  confirmed-accurate one.
+
 ## 2026-09-29
 
 - Restyled the class-roster buttons on macros.html and builds.html to match the

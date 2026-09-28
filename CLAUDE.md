@@ -38,9 +38,19 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   only — no per-link description. New tool/resource links go in whichever column
   fits; keep favicons via `google.com/s2/favicons?domain=...` and verify with curl
   before adding. Hand-edit directly.
-- `builds.html` — hand-written page with one talent-build card per class (icons +
-  hover tooltips, arrows between picks — see `builds_page_pattern` project memory
-  for the exact pattern). Hand-edit directly.
+- `builds.html` — hand-written, JS-rendered page. A class-icon roster (same pattern
+  as `macros.html`) picks one class at a time; classes with more than one build
+  (Mage: Arcane/Frost Ice Lance/Frost Piercing Ice/Fire; Paladin: Retribution/
+  Protection; Warrior: Tank/Fury) get a second spec-picker row. All build+talent+
+  rotation content lives in the `DATA` object in the page's script — edit builds
+  there, not as hand-written HTML. Each build has a talent row (icons + hover
+  tooltips, arrows between picks) and a Rotation section (single-target/AoE ability
+  lists, same icon+arrow style, a repeat icon on loop-based rotations, plus a
+  confidence badge: "high" = matches a build-specific level-20 guide, "medium" =
+  reasoned from mechanics/ability-level-gating with no exact build-matched source
+  found — flagged for the user to double-check in beta). See `builds_page_pattern`
+  project memory for the full pattern and icon-verification rules. Hand-edit
+  directly.
 - `addons.html` — hand-written page listing the addons Venom & Trollmann actually run
   (ForeverPlus, Platynator, Leatrix Maps, Forever Bag Mover — all CurseForge links,
   verified working) plus a link to wow4ever.quest's addon compatibility tracker.

@@ -45,12 +45,30 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 @media (prefers-reduced-motion:reduce){.topbar nav a{transition:none}}
 .wrap{max-width:1100px;margin:0 auto;padding:60px 20px 80px;text-align:center}
 h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 12px;letter-spacing:.01em}
-p.lede{color:var(--muted);max-width:52ch;margin:0 auto}
+p.lede{color:var(--muted);max-width:56ch;margin:0 auto}
+
+.roster{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:32px 0 8px}
+.roster button{
+  display:flex;align-items:center;gap:8px;font:400 17px var(--serif);
+  background:var(--panel);border:1px solid var(--edge);color:var(--text);
+  padding:8px 16px 8px 10px;border-radius:6px;cursor:pointer;
+  transition:border-color .1s ease, transform .1s ease;
+}
+.roster button:hover{border-color:var(--gold);transform:translateY(-1px)}
+.roster button[aria-pressed="true"]{background:var(--c);color:#0E1428;border-color:var(--c)}
+.roster button .class-icon{flex:none;width:26px;height:26px;border-radius:5px;border:1px solid rgba(0,0,0,.3);object-fit:cover}
+.specs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0 0 8px}
+.specs button{font:500 14px var(--sans);background:var(--panel);border:1px solid var(--edge);color:var(--muted);padding:6px 14px;border-radius:999px;cursor:pointer}
+.specs button[aria-pressed="true"]{color:var(--text);border-color:var(--accent)}
+.empty-hint{color:var(--muted);font-size:14px;margin:36px 0}
+
 .builds-grid{
   display:flex;
   flex-wrap:wrap;
+  justify-content:center;
+  align-items:stretch;
   gap:24px;
-  margin-top:48px;
+  margin-top:36px;
   text-align:left;
 }
 .build-section{
@@ -59,12 +77,17 @@ p.lede{color:var(--muted);max-width:52ch;margin:0 auto}
   border-left:3px solid var(--accent);
   border-radius:6px;
   padding:20px 22px;
-  flex:none;
+  flex:1 1 420px;
+  max-width:480px;
+  display:flex;
+  flex-direction:column;
 }
+.rotation .r-note{max-width:60ch}
 h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spacing:.01em}
 .build-meta{color:var(--muted);font-size:14px;margin:0 0 18px}
-.talent-row{display:flex;align-items:center;gap:8px}
+.talent-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .talent-row .arrow{color:var(--gold);font-size:22px;font-weight:700;flex:none}
+.talent-row .loop{color:var(--gold);font-size:20px;font-weight:700;flex:none;line-height:1}
 .talent{
   position:relative;
   flex:none;
@@ -107,6 +130,16 @@ h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spac
 @media (max-width:480px){
   .talent{width:44px;height:44px}
 }
+
+.rotation{margin-top:22px;padding-top:18px;border-top:1px solid var(--edge)}
+.rotation h3{font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 4px}
+.rotation .r-note{color:var(--muted);font-size:12.5px;margin:0 0 10px;line-height:1.4}
+.rotation .r-block{margin-bottom:16px}
+.rotation .r-block:last-child{margin-bottom:0}
+.rotation .r-label{font:600 12px/1 var(--sans);color:var(--accent);text-transform:uppercase;letter-spacing:.04em;margin:0 0 8px}
+.rotation .confidence{display:inline-block;font:600 10px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;padding:3px 7px;border-radius:3px;margin-left:8px;vertical-align:2px}
+.confidence.high{color:#6FCF7F;border:1px solid rgba(111,207,127,.5)}
+.confidence.medium{color:#E8A33D;border:1px solid rgba(232,163,61,.5)}
 </style>
 </head>
 <body>
@@ -122,449 +155,443 @@ h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spac
 </div>
 <div class="wrap">
   <h1>Builds</h1>
-  <p class="lede">Talent builds and gearing notes for WoW Forever, added as Venom &amp; Trollmann level up. More classes coming soon.</p>
+  <p class="lede">Talent builds and level-20 rotations for WoW Forever, added as Venom &amp; Trollmann level up. Pick a class to see its build(s).</p>
 
-  <div class="builds-grid">
-  <div class="build-section">
-    <h2>Priest — Level 20</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    <div class="talent-row">
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/inv_wand_01.jpg" alt="Wand Specialization">
-        <span class="rank">2/2</span>
-        <div class="tooltip">
-          <p class="t-name">Wand Specialization</p>
-          <p class="t-rank">Rank 2/2</p>
-          <p class="t-desc">Increases the damage done by your wand — a solid early-level pick since wanding is such a big part of a leveling Priest's damage.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_shadow_requiem.jpg" alt="Spirit Tap">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Spirit Tap</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Killing a target that yields experience or honor gives you a burst of Spirit for a short time, speeding up mana regen between pulls.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_shadow_shadowwordpain.jpg" alt="Improved Shadow Word: Pain">
-        <span class="rank">2/2</span>
-        <div class="tooltip">
-          <p class="t-name">Improved Shadow Word: Pain</p>
-          <p class="t-rank">Rank 2/2</p>
-          <p class="t-desc">Increases the damage done by your Shadow Word: Pain, making your main DoT hit noticeably harder over its duration.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_holy_sealofvengeance.jpg" alt="Twin Disciplines">
-        <span class="rank">2/5</span>
-        <div class="tooltip">
-          <p class="t-name">Twin Disciplines</p>
-          <p class="t-rank">Rank 2/5</p>
-          <p class="t-desc">Increases the damage/healing done by your Holy and Shadow spells — a flat boost that benefits nearly everything you cast.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="build-section">
-    <h2>Warlock — Level 20</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    <div class="talent-row">
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_shadow_abominationexplosion.jpg" alt="Improved Corruption">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Improved Corruption</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Reduces the cast time of Corruption, letting you land your main DoT and move on to the next spell that much faster.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_shadow_unsummonbuilding.jpg" alt="Suppression">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Suppression</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Increases the chance for your Affliction spells to land, cutting down on frustrating resists.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_shadow_unstableaffliction_2.jpg" alt="Pandemic">
-        <span class="rank">1/3</span>
-        <div class="tooltip">
-          <p class="t-name">Pandemic</p>
-          <p class="t-rank">Rank 1/3</p>
-          <p class="t-desc">Increases the critical strike damage bonus of your damage-over-time effects — a strong payoff for a DoT-heavy build.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="build-section">
-    <h2>Mage — Level 20</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    <div class="talent-row">
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_ice_magicdamage.jpg" alt="Elemental Precision">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Elemental Precision</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Increases your chance to hit with Frost and Fire spells, cutting down on frustrating resists on your main damage spells.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_frost_frostarmor.jpg" alt="Frostbite">
-        <span class="rank">3/3</span>
-        <div class="tooltip">
-          <p class="t-name">Frostbite</p>
-          <p class="t-rank">Rank 3/3</p>
-          <p class="t-desc">Gives your Frost spells a chance to freeze the target in place — a strong extra control tool while leveling or kiting.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_frost_iceshard.jpg" alt="Ice Shards">
-        <span class="rank">2/5</span>
-        <div class="tooltip">
-          <p class="t-name">Ice Shards</p>
-          <p class="t-rank">Rank 2/5</p>
-          <p class="t-desc">Increases the critical strike damage bonus of your Frost spells, making crits from Frostbolt and friends hit noticeably harder.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_frost_frostblast.jpg" alt="Ice Lance">
-        <span class="rank">1/1</span>
-        <div class="tooltip">
-          <p class="t-name">Ice Lance</p>
-          <p class="t-rank">Rank 1/1</p>
-          <p class="t-desc">A fast Frost bolt that deals bonus damage against frozen targets — a strong finisher after landing Frostbite or Frost Nova.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="build-section">
-    <h2>Rogue — Level 20</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    <div class="talent-row">
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_shadow_ritualofsacrifice.jpg" alt="Improved Sinister Strike">
-        <span class="rank">2/2</span>
-        <div class="tooltip">
-          <p class="t-name">Improved Sinister Strike</p>
-          <p class="t-rank">Rank 2/2</p>
-          <p class="t-desc">Reduces the Energy cost of Sinister Strike, letting you land more of them between combo-point dumps.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_rogue_eviscerate.jpg" alt="Improved Eviscerate">
-        <span class="rank">3/3</span>
-        <div class="tooltip">
-          <p class="t-name">Improved Eviscerate</p>
-          <p class="t-rank">Rank 3/3</p>
-          <p class="t-desc">Increases the damage done by your Eviscerate, making your main finisher hit noticeably harder.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_marksmanship.jpg" alt="Precision">
-        <span class="rank">3/3</span>
-        <div class="tooltip">
-          <p class="t-name">Precision</p>
-          <p class="t-rank">Rank 3/3</p>
-          <p class="t-desc">Improves your chance to hit with weapons and poisons, cutting down on frustrating misses.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_racial_bloodrage.jpg" alt="Malice">
-        <span class="rank">3/5</span>
-        <div class="tooltip">
-          <p class="t-name">Malice</p>
-          <p class="t-rank">Rank 3/5</p>
-          <p class="t-desc">Increases your critical strike chance with all attacks and poisons — a flat DPS gain either way you're specced.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="build-section">
-    <h2>Shaman — Level 20</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    <div class="talent-row">
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_thunderbolt.jpg" alt="Thundering Strikes">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Thundering Strikes</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Increases your critical strike chance with spells and melee attacks — a flat DPS gain no matter which way you're playing.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_nature_mentalquickness.jpg" alt="Mental Dexterity">
-        <span class="rank">3/3</span>
-        <div class="tooltip">
-          <p class="t-name">Mental Dexterity</p>
-          <p class="t-rank">Rank 3/3</p>
-          <p class="t-desc">Converts a portion of your Intellect into bonus Attack Power, a nice melee/hybrid boost for a caster-leaning stat.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_nature_spiritwolf.jpg" alt="Improved Ghost Wolf">
-        <span class="rank">2/2</span>
-        <div class="tooltip">
-          <p class="t-name">Improved Ghost Wolf</p>
-          <p class="t-rank">Rank 2/2</p>
-          <p class="t-desc">Shortens the cast time on Ghost Wolf and lets you use it indoors, making your travel form much faster to get moving.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_nature_elementalabsorption.jpg" alt="Shamanistic Focus">
-        <span class="rank">1/1</span>
-        <div class="tooltip">
-          <p class="t-name">Shamanistic Focus</p>
-          <p class="t-rank">Rank 1/1</p>
-          <p class="t-desc">Cuts the mana cost of your Shock spells and Lightning Shield significantly, a big help sustaining mana while leveling.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="build-section">
-    <h2>Hunter — Level 20 Beast Mastery</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    <div class="talent-row">
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_nature_ravenform.jpg" alt="Deadly Aspects">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Deadly Aspects</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Gives Aspect of the Hawk a chance to also grant a melee attack-speed proc from your auto-attacks, on top of its ranged attack-speed bonus.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/inv_weapon_crossbow_10.jpg" alt="Focused Fire">
-        <span class="rank">2/2</span>
-        <div class="tooltip">
-          <p class="t-name">Focused Fire</p>
-          <p class="t-rank">Rank 2/2</p>
-          <p class="t-desc">Increases all damage you deal while your pet is active. The strongest raw DPS talent available at this point in the tree.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_mount_jungletiger.jpg" alt="Pathfinding">
-        <span class="rank">2/2</span>
-        <div class="tooltip">
-          <p class="t-name">Pathfinding</p>
-          <p class="t-rank">Rank 2/2</p>
-          <p class="t-desc">Increases your movement speed while Aspect of the Cheetah or Aspect of the Pack is active.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_hunter_beastsoothe.jpg" alt="Improved Revive Pet">
-        <span class="rank">1/2</span>
-        <div class="tooltip">
-          <p class="t-name">Improved Revive Pet</p>
-          <p class="t-rank">Rank 1/2</p>
-          <p class="t-desc">Reduces the cast time of Revive Pet, getting your companion back into the fight faster.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_druid_dash.jpg" alt="Bestial Swiftness">
-        <span class="rank">1/1</span>
-        <div class="tooltip">
-          <p class="t-name">Bestial Swiftness</p>
-          <p class="t-rank">Rank 1/1</p>
-          <p class="t-desc">Increases your pet's movement speed, letting it close the gap between targets far faster — great for leveling and PvP.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="build-section">
-    <h2>Paladin — Level 20 Retribution (PvE)</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    <div class="talent-row">
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_frost_windwalkon.jpg" alt="Benediction">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Benediction</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Reduces the mana cost of your Judgements and Seals, letting you keep seals up and judge far more often before running dry.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_holy_retributionaura.jpg" alt="Conviction">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Conviction</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Increases your critical strike chance with all spells and melee attacks — flat DPS gain either way you're swinging.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_warrior_innerrage.jpg" alt="Seal of Command">
-        <span class="rank">1/1</span>
-        <div class="tooltip">
-          <p class="t-name">Seal of Command</p>
-          <p class="t-rank">Rank 1/1</p>
-          <p class="t-desc">Gives your melee swings a chance to deal a big burst of extra Holy damage — the capstone payoff of a pure Retribution build.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="build-section">
-    <h2>Paladin — Level 20 Protection (Tank)</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    <div class="talent-row">
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_defend.jpg" alt="Redoubt">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Redoubt</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Melee hits against you have a chance to sharply boost your block chance for a short time — strong burst mitigation while tanking.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_rogue_ambush.jpg" alt="Precision">
-        <span class="rank">3/3</span>
-        <div class="tooltip">
-          <p class="t-name">Precision</p>
-          <p class="t-rank">Rank 3/3</p>
-          <p class="t-desc">Improves your chance to hit, cutting down on missed threat-building attacks and Judgements.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_magic_lesserinvisibilty.jpg" alt="Anticipation">
-        <span class="rank">2/5</span>
-        <div class="tooltip">
-          <p class="t-name">Anticipation</p>
-          <p class="t-rank">Rank 2/5</p>
-          <p class="t-desc">Increases your Defense skill, lowering your chance to be hit or critically hit.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/inv_shield_06.jpg" alt="Shield Specialization">
-        <span class="rank">1/3</span>
-        <div class="tooltip">
-          <p class="t-name">Shield Specialization</p>
-          <p class="t-rank">Rank 1/3</p>
-          <p class="t-desc">Increases the amount your shield blocks, and blocking has a chance to return mana — helps you keep casting while tanking.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="build-section">
-    <h2>Warrior — Level 20 Tank</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    <div class="talent-row">
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_gouge.jpg" alt="Improved Rend">
-        <span class="rank">3/3</span>
-        <div class="tooltip">
-          <p class="t-name">Improved Rend</p>
-          <p class="t-rank">Rank 3/3</p>
-          <p class="t-desc">Increases the damage done by your Rend, keeping a solid bleed ticking on your target while you focus on threat and mitigation.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_parry.jpg" alt="Deflection">
-        <span class="rank">2/5</span>
-        <div class="tooltip">
-          <p class="t-name">Deflection</p>
-          <p class="t-rank">Rank 2/5</p>
-          <p class="t-desc">Increases your chance to parry incoming melee attacks — direct survivability for tanking.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_nature_enchantarmor.jpg" alt="Improved Tactical Mastery">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Improved Tactical Mastery</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Raises how much rage you retain when switching stances, letting you swap into Defensive without losing your rage bar.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_holy_blessingofstamina.jpg" alt="Anger Management">
-        <span class="rank">1/1</span>
-        <div class="tooltip">
-          <p class="t-name">Anger Management</p>
-          <p class="t-rank">Rank 1/1</p>
-          <p class="t-desc">Generates a trickle of extra rage over time, smoothing out rage starvation during long tanking fights.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="build-section">
-    <h2>Warrior — Level 20 Fury (DPS)</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    <div class="talent-row">
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/ability_rogue_eviscerate.jpg" alt="Cruelty">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Cruelty</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Increases your critical strike chance with melee weapons — straightforward, consistent DPS gain from a single point-efficient talent.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_nature_stoneclawtotem.jpg" alt="Unbridled Wrath">
-        <span class="rank">5/5</span>
-        <div class="tooltip">
-          <p class="t-name">Unbridled Wrath</p>
-          <p class="t-rank">Rank 5/5</p>
-          <p class="t-desc">Gives your melee attacks a chance to generate an extra point of rage, keeping your rage bar fed for more frequent special attacks.</p>
-        </div>
-      </div>
-      <span class="arrow">&rarr;</span>
-      <div class="talent" tabindex="0">
-        <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_shadow_deathscream.jpg" alt="Piercing Howl">
-        <span class="rank">1/1</span>
-        <div class="tooltip">
-          <p class="t-name">Piercing Howl</p>
-          <p class="t-rank">Rank 1/1</p>
-          <p class="t-desc">A PBAoE snare — slows every nearby enemy, useful for peeling adds or kiting while leveling.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  </div>
+  <nav class="roster" id="roster" aria-label="Class"></nav>
+  <nav class="specs" id="specs" aria-label="Spec"></nav>
+  <p class="empty-hint" id="empty-hint" hidden>Pick a class above to see its build.</p>
+  <main class="builds-grid" id="out"></main>
 </div>
+<script>
+const CLASS_ICONS = {
+  Priest: "https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg",
+  Warlock: "https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg",
+  Mage: "https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg",
+  Rogue: "https://wow.zamimg.com/images/wow/icons/large/classicon_rogue.jpg",
+  Shaman: "https://wow.zamimg.com/images/wow/icons/large/classicon_shaman.jpg",
+  Hunter: "https://wow.zamimg.com/images/wow/icons/large/classicon_hunter.jpg",
+  Paladin: "https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg",
+  Warrior: "https://wow.zamimg.com/images/wow/icons/large/classicon_warrior.jpg",
+};
+// Armor-type order, matching macros.html's roster: Cloth -> Leather -> Mail -> Plate.
+const ROSTER = ["Priest","Warlock","Mage","Rogue","Shaman","Hunter","Paladin","Warrior"];
+const CLASS_COLOR = {
+  Priest:"#E6E2D6", Warlock:"#9482C9", Mage:"#69CCF0", Rogue:"#FFF569",
+  Shaman:"#2459FF", Hunter:"#ABD473", Paladin:"#F58CBA", Warrior:"#C79C6E",
+};
+
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+const ICON = "https://wow.zamimg.com/images/wow/icons/medium/";
+
+function talentHTML(t){
+  return `<div class="talent" tabindex="0">
+    <img src="${ICON}${t.icon}.jpg" alt="${esc(t.name)}">
+    <span class="rank">${t.rank}</span>
+    <div class="tooltip">
+      <p class="t-name">${esc(t.name)}</p>
+      <p class="t-rank">Rank ${t.rank}</p>
+      <p class="t-desc">${esc(t.desc)}</p>
+    </div>
+  </div>`;
+}
+function talentRowHTML(talents){
+  return `<div class="talent-row">` + talents.map((t,i)=>
+    (i>0 ? `<span class="arrow">&rarr;</span>` : "") + talentHTML(t)
+  ).join("") + `</div>`;
+}
+function abilityHTML(a){
+  return `<div class="talent" tabindex="0">
+    <img src="${ICON}${a.icon}.jpg" alt="${esc(a.name)}">
+    <div class="tooltip">
+      <p class="t-name">${esc(a.name)}</p>
+      <p class="t-desc">${esc(a.note||"")}</p>
+    </div>
+  </div>`;
+}
+function abilityRowHTML(abilities, loop){
+  let html = `<div class="talent-row">` + abilities.map((a,i)=>
+    (i>0 ? `<span class="arrow">&rarr;</span>` : "") + abilityHTML(a)
+  ).join("");
+  if(loop) html += `<span class="loop" title="Repeat">&#8635;</span>`;
+  return html + `</div>`;
+}
+function rotationHTML(r){
+  if(!r) return "";
+  let html = `<div class="rotation"><h3>Rotation<span class="confidence ${r.confidence}">${r.confidence}</span></h3>`;
+  if(r.note) html += `<p class="r-note">${esc(r.note)}</p>`;
+  if(r.single){
+    html += `<div class="r-block"><p class="r-label">${r.singleLabel||"Single target"}</p>${abilityRowHTML(r.single, r.singleLoop)}</div>`;
+  }
+  if(r.aoe){
+    html += `<div class="r-block"><p class="r-label">AoE</p>${abilityRowHTML(r.aoe, r.aoeLoop)}</div>`;
+  }
+  if(r.aoeNote) html += `<p class="r-note">${esc(r.aoeNote)}</p>`;
+  return html + `</div>`;
+}
+function buildHTML(b){
+  return `<div class="build-section">
+    <h2>${esc(b.title)}</h2>
+    <p class="build-meta">Hover an icon for details.</p>
+    ${talentRowHTML(b.talents)}
+    ${rotationHTML(b.rotation)}
+  </div>`;
+}
+
+// =============================================================================
+// Build + rotation data. Icons verified against wow.zamimg.com's icon CDN.
+// Rotation confidence: "high" = matches a build-specific level-20 guide closely;
+// "medium" = reasoned from general mechanics/ability-level-gating, no exact
+// build-matched source found — double-check these in beta before relying on them.
+// =============================================================================
+const DATA = {
+  Priest: [{
+    title: "Priest — Level 20",
+    talents: [
+      {name:"Wand Specialization", icon:"inv_wand_01", rank:"2/2", desc:"Increases the damage done by your wand — a solid early-level pick since wanding is such a big part of a leveling Priest's damage."},
+      {name:"Spirit Tap", icon:"spell_shadow_requiem", rank:"5/5", desc:"Killing a target that yields experience or honor gives you a burst of Spirit for a short time, speeding up mana regen between pulls."},
+      {name:"Improved Shadow Word: Pain", icon:"spell_shadow_shadowwordpain", rank:"2/2", desc:"Increases the damage done by your Shadow Word: Pain, making your main DoT hit noticeably harder over its duration."},
+      {name:"Twin Disciplines", icon:"spell_holy_sealofvengeance", rank:"2/5", desc:"Increases the damage/healing done by your Holy and Shadow spells — a flat boost that benefits nearly everything you cast."},
+    ],
+    rotation: {
+      confidence: "high",
+      single: [
+        {name:"Power Word: Shield", icon:"spell_holy_powerwordshield", note:"Pre-shield before you pull, since it doesn't cost you a global once the fight starts."},
+        {name:"Shadow Word: Pain", icon:"spell_shadow_shadowwordpain", note:"Your main DoT, hits harder from Improved Shadow Word: Pain — apply it first so it ticks the whole fight."},
+        {name:"Wand", icon:"inv_wand_01", note:"Your primary damage source at this level thanks to Wand Specialization — mana-free filler while SW:Pain ticks."},
+      ],
+      singleLabel: "Single target (pull order)",
+      note: "Chain pulls quickly — Spirit Tap's mana-regen burst after a kill is most of your sustain at this level.",
+      aoeNote: "No AoE yet — use Psychic Scream to peel extra adds off you instead of fighting them.",
+    },
+  }],
+
+  Warlock: [{
+    title: "Warlock — Level 20",
+    talents: [
+      {name:"Improved Corruption", icon:"spell_shadow_abominationexplosion", rank:"5/5", desc:"Reduces the cast time of Corruption, letting you land your main DoT and move on to the next spell that much faster."},
+      {name:"Suppression", icon:"spell_shadow_unsummonbuilding", rank:"5/5", desc:"Increases the chance for your Affliction spells to land, cutting down on frustrating resists."},
+      {name:"Pandemic", icon:"spell_shadow_unstableaffliction_2", rank:"1/3", desc:"Increases the critical strike damage bonus of your damage-over-time effects — a strong payoff for a DoT-heavy build."},
+    ],
+    rotation: {
+      confidence: "high",
+      single: [
+        {name:"Summon Voidwalker", icon:"spell_shadow_summonvoidwalker", note:"Your tank pet — let it hold aggro while you cast from range."},
+        {name:"Corruption", icon:"spell_shadow_abominationexplosion", note:"Near-instant thanks to Improved Corruption — your main DoT, apply first."},
+        {name:"Curse of Agony", icon:"spell_shadow_curseofsargeras", note:"Reliable to land thanks to Suppression — a second DoT stacking with Corruption."},
+        {name:"Drain Life / Drain Soul", icon:"spell_shadow_lifedrain02", note:"Finish the target while both DoTs tick — Drain Life also tops up your health."},
+      ],
+      note: "Life Tap between pulls to refill mana off your own health — your Voidwalker's threat covers you while you're low.",
+      aoeNote: "No true AoE — light multi-dotting is possible by tagging several mobs with instant Corruption.",
+    },
+  }],
+
+  Mage: [
+    {
+      spec: "Arcane",
+      title: "Mage — Level 20 Arcane",
+      talents: [
+        {name:"Wand Specialization", icon:"inv_wand_01", rank:"2/2", desc:"Increases your damage with wands — important since wand-weaving fills the mana gaps in this rotation."},
+        {name:"Arcane Focus", icon:"spell_holy_devotion", rank:"4/5", desc:"Improves your chance to hit with Arcane spells, cutting down on frustrating resists."},
+        {name:"Arcane Subtlety", icon:"spell_holy_dispelmagic", rank:"2/2", desc:"Reduces your target's resistance to your spells and cuts the threat from your Arcane spells — safer pulling."},
+        {name:"Arcane Concentration", icon:"spell_shadow_manaburn", rank:"2/5", desc:"A chance for any damage spell to grant Clearcasting, making your next damage spell free — extra mana sustain."},
+        {name:"Arcane Blast", icon:"spell_arcane_blast", rank:"1/1", desc:"A direct Arcane hit that also stacks a damage buff for your other spells, at the cost of its own mana rising fast — a burst opener, not a spam button."},
+      ],
+      rotation: {
+        confidence: "medium",
+        single: [
+          {name:"Arcane Blast", icon:"spell_arcane_blast", note:"Cast 1-2x to stack the damage buff — its own mana cost rises fast, so don't spam it past 2 stacks."},
+          {name:"Frostbolt / Fireball", icon:"spell_frost_frostbolt02", note:"Cast while the Arcane Blast buff is up (8 sec window) — this is where the buffed damage actually lands."},
+          {name:"Wand", icon:"inv_wand_01", note:"Weave in on mana-tight pulls — load-bearing at this level, not optional, thanks to Wand Specialization."},
+        ],
+        singleLoop: true,
+        note: "The talent spread here leans more hybrid than a dedicated build guide would use — double-check this loop in beta before relying on it heavily.",
+        aoe: [
+          {name:"Arcane Explosion", icon:"spell_nature_wispsplode", note:"Your AoE damage — repeat on cooldown/mana permitting."},
+        ],
+        aoeLoop: true,
+        aoeNote: "Frost Nova is NOT part of the damage loop — it's an emergency root only, for when something reaches melee range.",
+      },
+    },
+    {
+      spec: "Frost (Ice Lance)",
+      title: "Mage — Level 20 Frost (Ice Lance)",
+      talents: [
+        {name:"Elemental Precision", icon:"spell_ice_magicdamage", rank:"5/5", desc:"Increases your chance to hit with Frost and Fire spells, cutting down on frustrating resists on your main damage spells."},
+        {name:"Frostbite", icon:"spell_frost_frostarmor", rank:"3/3", desc:"Gives your Frost spells a chance to freeze the target in place — a strong extra control tool while leveling or kiting."},
+        {name:"Ice Shards", icon:"spell_frost_iceshard", rank:"2/5", desc:"Increases the critical strike damage bonus of your Frost spells, making crits from Frostbolt and friends hit noticeably harder."},
+        {name:"Ice Lance", icon:"spell_frost_frostblast", rank:"1/1", desc:"A fast Frost bolt that deals bonus damage against frozen targets — a strong finisher after landing Frostbite or Frost Nova."},
+      ],
+      rotation: {
+        confidence: "high",
+        single: [
+          {name:"Frostbolt", icon:"spell_frost_frostbolt02", note:"Cast from max range — the slow lets the mob walk in while you keep casting."},
+          {name:"Ice Lance", icon:"spell_frost_frostblast", note:"Fire the instant Frostbite (or Frost Nova) freezes the target — huge bonus damage against frozen targets."},
+        ],
+        singleLoop: true,
+        note: "Frostbite converts every freeze proc into a big instant Ice Lance hit — this is the build's whole identity.",
+        aoeNote: "No dedicated AoE at this level — Frost Nova + Cone of Cold can clear a small pack in a pinch.",
+      },
+    },
+    {
+      spec: "Frost (Piercing Ice)",
+      title: "Mage — Level 20 Frost (Piercing Ice)",
+      talents: [
+        {name:"Improved Frostbolt", icon:"spell_frost_frostbolt02", rank:"5/5", desc:"Reduces the cast time of Frostbolt, letting you fire it off faster and squeeze in more casts per fight."},
+        {name:"Ice Shards", icon:"spell_frost_iceshard", rank:"5/5", desc:"Increases the critical strike damage bonus of your Frost spells, making crits from Frostbolt hit noticeably harder."},
+        {name:"Piercing Ice", icon:"spell_frost_frostbolt", rank:"1/3", desc:"Increases the damage done by all your Frost spells — a flat damage boost on top of the faster casts and bigger crits."},
+      ],
+      rotation: {
+        confidence: "medium",
+        single: [
+          {name:"Frostbolt", icon:"spell_frost_frostbolt02", note:"Your only real damage spell in this build — spam it, boosted by the faster cast time and bigger crits."},
+        ],
+        singleLoop: true,
+        note: "Simpler and more consistent than the Ice Lance variant, but without a freeze-triggered finisher — no build-matched level-20 guide was found for the exact 1/3 Piercing Ice spend, so double-check this in beta.",
+        aoeNote: "No dedicated AoE at this level — Frost Nova + Cone of Cold can clear a small pack in a pinch.",
+      },
+    },
+    {
+      spec: "Fire",
+      title: "Mage — Level 20 Fire",
+      talents: [
+        {name:"Improved Fireball", icon:"spell_fire_flamebolt", rank:"5/5", desc:"Reduces the cast time of Fireball, letting you land more casts per fight."},
+        {name:"Ignite", icon:"spell_fire_incinerate", rank:"3/5", desc:"Your Fire critical strikes cause the target to burn for extra damage over a few seconds — a DoT tacked onto your crits."},
+        {name:"Wake of Fire", icon:"spell_fire_lavaspawn", rank:"2/2", desc:"Reduces Fire Blast's cooldown, and killing a target grants a big crit-chance buff to your next Fire Blast."},
+        {name:"Pyroblast", icon:"spell_fire_fireball02", rank:"1/1", desc:"A slow, hard-hitting fireball with a burn DoT attached — the capstone payoff of a pure Fire build."},
+      ],
+      rotation: {
+        confidence: "medium",
+        single: [
+          {name:"Pyroblast", icon:"spell_fire_fireball02", note:"Open with this — slow cast, but hits hard and leaves a DoT, and a kill sets up a free-crit Fire Blast via Wake of Fire."},
+          {name:"Fireball", icon:"spell_fire_flamebolt", note:"Your repeatable filler, faster to cast thanks to Improved Fireball."},
+          {name:"Fire Blast", icon:"spell_fire_fireball", note:"Fire this once its cooldown is up, especially right after a kill for the Wake of Fire crit buff on the next one."},
+        ],
+        singleLoop: true,
+        note: "Reasoned from the talents' own tooltips (Wake of Fire's post-kill crit window) rather than a build-specific level-20 guide — double-check this loop in beta.",
+        aoeNote: "Blast Wave and Flamestrike are the build's usual AoE tools, but aren't confirmed available yet at level 20 — verify in beta before relying on them.",
+      },
+    },
+  ],
+
+  Rogue: [{
+    title: "Rogue — Level 20",
+    talents: [
+      {name:"Improved Sinister Strike", icon:"spell_shadow_ritualofsacrifice", rank:"2/2", desc:"Reduces the Energy cost of Sinister Strike, letting you land more of them between combo-point dumps."},
+      {name:"Improved Eviscerate", icon:"ability_rogue_eviscerate", rank:"3/3", desc:"Increases the damage done by your Eviscerate, making your main finisher hit noticeably harder."},
+      {name:"Precision", icon:"ability_marksmanship", rank:"3/3", desc:"Improves your chance to hit with weapons and poisons, cutting down on frustrating misses."},
+      {name:"Malice", icon:"ability_racial_bloodrage", rank:"3/5", desc:"Increases your critical strike chance with all attacks and poisons — a flat DPS gain either way you're specced."},
+    ],
+    rotation: {
+      confidence: "high",
+      single: [
+        {name:"Stealth", icon:"ability_stealth", note:"Open every fight from stealth when possible — free burst damage and a guaranteed opener hit."},
+        {name:"Cheap Shot / Ambush", icon:"ability_cheapshot", note:"Cheap Shot stuns for a safe follow-up; Ambush hits much harder if you don't need the stun."},
+        {name:"Sinister Strike", icon:"spell_shadow_ritualofsacrifice", note:"Repeat 3-5x to build combo points — cheap thanks to Improved Sinister Strike."},
+        {name:"Eviscerate", icon:"ability_rogue_eviscerate", note:"Finisher at 3-5 combo points — the payoff talent from Improved Eviscerate."},
+      ],
+      singleLoop: true,
+      note: "Slice and Dice is worth refreshing on longer fights, but Eviscerate is still the finisher this build is built around.",
+      aoeNote: "No AoE — use Gouge to disable a second attacker while you focus one target down.",
+    },
+  }],
+
+  Shaman: [{
+    title: "Shaman — Level 20",
+    talents: [
+      {name:"Thundering Strikes", icon:"ability_thunderbolt", rank:"5/5", desc:"Increases your critical strike chance with spells and melee attacks — a flat DPS gain no matter which way you're playing."},
+      {name:"Mental Dexterity", icon:"spell_nature_mentalquickness", rank:"3/3", desc:"Converts a portion of your Intellect into bonus Attack Power, a nice melee/hybrid boost for a caster-leaning stat."},
+      {name:"Improved Ghost Wolf", icon:"spell_nature_spiritwolf", rank:"2/2", desc:"Shortens the cast time on Ghost Wolf and lets you use it indoors, making your travel form much faster to get moving."},
+      {name:"Shamanistic Focus", icon:"spell_nature_elementalabsorption", rank:"1/1", desc:"Cuts the mana cost of your Shock spells and Lightning Shield significantly, a big help sustaining mana while leveling."},
+    ],
+    rotation: {
+      confidence: "high",
+      note: "A reactive priority list rather than a strict loop — react to cooldowns and positioning instead of following one fixed order.",
+      single: [
+        {name:"Rockbiter Weapon + Lightning Shield", icon:"spell_nature_rockbiter", note:"Pre-buff before pulling."},
+        {name:"Lightning Bolt", icon:"spell_nature_lightning", note:"Ranged opener only — don't caster-kite melee mobs, just get the pull started."},
+        {name:"Melee auto-attack", icon:"inv_sword_04", note:"Your main damage once the mob is on you, boosted by Mental Dexterity's Attack Power."},
+        {name:"Earth Shock", icon:"spell_nature_earthshock", note:"On cooldown — cheap thanks to Shamanistic Focus."},
+      ],
+      aoe: [
+        {name:"Searing Totem", icon:"spell_fire_searingtotem", note:"Drop this first — a standing fire totem that hits nearby enemies on its own."},
+        {name:"Fire Nova Totem", icon:"spell_fire_sealoffire", note:"Detonates a burst of fire out from your already-placed Searing Totem — use it while Searing Totem is up, not instead of it."},
+      ],
+    },
+  }],
+
+  Hunter: [{
+    title: "Hunter — Level 20 Beast Mastery",
+    talents: [
+      {name:"Deadly Aspects", icon:"spell_nature_ravenform", rank:"5/5", desc:"Gives Aspect of the Hawk a chance to also grant a melee attack-speed proc from your auto-attacks, on top of its ranged attack-speed bonus."},
+      {name:"Focused Fire", icon:"inv_weapon_crossbow_10", rank:"2/2", desc:"Increases all damage you deal while your pet is active. The strongest raw DPS talent available at this point in the tree."},
+      {name:"Pathfinding", icon:"ability_mount_jungletiger", rank:"2/2", desc:"Increases your movement speed while Aspect of the Cheetah or Aspect of the Pack is active."},
+      {name:"Improved Revive Pet", icon:"ability_hunter_beastsoothe", rank:"1/2", desc:"Reduces the cast time of Revive Pet, getting your companion back into the fight faster."},
+      {name:"Bestial Swiftness", icon:"ability_druid_dash", rank:"1/1", desc:"Increases your pet's movement speed, letting it close the gap between targets far faster — great for leveling and PvP."},
+    ],
+    rotation: {
+      confidence: "high",
+      note: "A reactive priority list — keep your pet alive and attacking, since Focused Fire rewards its uptime as much as your own shots.",
+      single: [
+        {name:"Aspect of the Hawk", icon:"spell_nature_ravenform", note:"Keep this up at all times — boosted further by Deadly Aspects."},
+        {name:"Pet engages first", icon:"ability_hunter_beasttraining", note:"Let your pet build aggro before you open up, since Focused Fire rewards keeping it out and attacking."},
+        {name:"Serpent Sting", icon:"ability_hunter_quickshot", note:"A DoT, apply early in the fight."},
+        {name:"Arcane Shot", icon:"ability_impalingbolt", note:"On cooldown — your hardest-hitting instant."},
+        {name:"Auto Shot", icon:"ability_whirlwind", note:"Fills every gap between casts — never let it go idle."},
+      ],
+      aoe: [
+        {name:"Multi-Shot", icon:"ability_upgrademoonglaive", note:"Hits multiple targets in a cone — your one real AoE tool, learned at level 18."},
+      ],
+    },
+  }],
+
+  Paladin: [
+    {
+      spec: "Retribution",
+      title: "Paladin — Level 20 Retribution (PvE)",
+      talents: [
+        {name:"Benediction", icon:"spell_frost_windwalkon", rank:"5/5", desc:"Reduces the mana cost of your Judgements and Seals, letting you keep seals up and judge far more often before running dry."},
+        {name:"Conviction", icon:"spell_holy_retributionaura", rank:"5/5", desc:"Increases your critical strike chance with all spells and melee attacks — flat DPS gain either way you're swinging."},
+        {name:"Seal of Command", icon:"ability_warrior_innerrage", rank:"1/1", desc:"Gives your melee swings a chance to deal a big burst of extra Holy damage — the capstone payoff of a pure Retribution build."},
+      ],
+      rotation: {
+        confidence: "high",
+        single: [
+          {name:"Seal of Command", icon:"ability_warrior_innerrage", note:"Apply and keep refreshed — your main damage seal."},
+          {name:"Judgement", icon:"spell_holy_righteousfury", note:"On cooldown — doesn't consume the seal, cheap thanks to Benediction."},
+          {name:"Auto-attack", icon:"inv_sword_04", note:"Fills the gaps between Judgements — Seal of Command procs off these swings."},
+        ],
+        note: "Exorcism is a strong extra hit vs. Undead/Demons. Holy Light between pulls is mana-efficient self-healing thanks to Benediction.",
+        aoeNote: "No AoE at this level.",
+      },
+    },
+    {
+      spec: "Protection",
+      title: "Paladin — Level 20 Protection (Tank)",
+      talents: [
+        {name:"Redoubt", icon:"ability_defend", rank:"5/5", desc:"Melee hits against you have a chance to sharply boost your block chance for a short time — strong burst mitigation while tanking."},
+        {name:"Precision", icon:"ability_rogue_ambush", rank:"3/3", desc:"Improves your chance to hit, cutting down on missed threat-building attacks and Judgements."},
+        {name:"Anticipation", icon:"spell_magic_lesserinvisibilty", rank:"2/5", desc:"Increases your Defense skill, lowering your chance to be hit or critically hit."},
+        {name:"Shield Specialization", icon:"inv_shield_06", rank:"1/3", desc:"Increases the amount your shield blocks, and blocking has a chance to return mana — helps you keep casting while tanking."},
+      ],
+      rotation: {
+        confidence: "medium",
+        note: "A reactive priority list, reasoned from ability-level-gating since no build-matched guide was found — Consecration and Holy Shield are NOT available yet at level 20, so this is a pre-Consecration threat kit. Double-check against the live beta client.",
+        single: [
+          {name:"Righteous Fury", icon:"spell_holy_sealoffury", note:"Always on — boosts the threat from your Holy damage."},
+          {name:"Seal of Righteousness", icon:"spell_holy_righteousnessaura", note:"Your threat seal at this level."},
+          {name:"Judgement", icon:"spell_holy_righteousfury", note:"On cooldown for burst threat."},
+          {name:"Auto-attack + blocks", icon:"inv_shield_06", note:"Block procs from Redoubt/Shield Specialization carry a lot of your remaining threat."},
+        ],
+        aoeNote: "No meaningful AoE threat tool yet at this level.",
+      },
+    },
+  ],
+
+  Warrior: [
+    {
+      spec: "Tank",
+      title: "Warrior — Level 20 Tank",
+      talents: [
+        {name:"Improved Rend", icon:"ability_gouge", rank:"3/3", desc:"Increases the damage done by your Rend, keeping a solid bleed ticking on your target while you focus on threat and mitigation."},
+        {name:"Deflection", icon:"ability_parry", rank:"2/5", desc:"Increases your chance to parry incoming melee attacks — direct survivability for tanking."},
+        {name:"Improved Tactical Mastery", icon:"spell_nature_enchantarmor", rank:"5/5", desc:"Raises how much rage you retain when switching stances, letting you swap into Defensive without losing your rage bar."},
+        {name:"Anger Management", icon:"spell_holy_blessingofstamina", rank:"1/1", desc:"Generates a trickle of extra rage over time, smoothing out rage starvation during long tanking fights."},
+      ],
+      rotation: {
+        confidence: "medium",
+        note: "A reactive priority list, reasoned from ability-level-gating since no build-matched guide was found — Shield Slam is NOT available yet at level 20, so this is a pre-Shield-Slam, Rend-centric kit. Double-check against the live beta client.",
+        single: [
+          {name:"Charge", icon:"ability_warrior_charge", note:"Opener — free rage and closes the gap."},
+          {name:"Rend", icon:"ability_gouge", note:"Apply first, boosted by Improved Rend — keeps ticking while you build threat elsewhere."},
+          {name:"Sunder Armor", icon:"ability_warrior_sunder", note:"Stack to 5 for both threat and reduced incoming damage."},
+          {name:"Revenge", icon:"ability_warrior_revenge", note:"Use whenever it's available — strong threat when it procs."},
+          {name:"Heroic Strike", icon:"ability_rogue_ambush", note:"Rage dump — Anger Management keeps rage flowing to spend on it."},
+        ],
+        aoe: [
+          {name:"Demoralizing Shout", icon:"ability_warrior_warcry", note:"Opens AoE threat on a pack."},
+          {name:"Sunder Armor (cycle)", icon:"ability_warrior_sunder", note:"Cycle through the pack after the shout."},
+        ],
+        aoeNote: "Thunder Clap adds a slow + more AoE threat once you have rage to spare.",
+      },
+    },
+    {
+      spec: "Fury",
+      title: "Warrior — Level 20 Fury (DPS)",
+      talents: [
+        {name:"Cruelty", icon:"ability_rogue_eviscerate", rank:"5/5", desc:"Increases your critical strike chance with melee weapons — straightforward, consistent DPS gain from a single point-efficient talent."},
+        {name:"Unbridled Wrath", icon:"spell_nature_stoneclawtotem", rank:"5/5", desc:"Gives your melee attacks a chance to generate an extra point of rage, keeping your rage bar fed for more frequent special attacks."},
+        {name:"Piercing Howl", icon:"spell_shadow_deathscream", rank:"1/1", desc:"A PBAoE snare — slows every nearby enemy, useful for peeling adds or kiting while leveling."},
+      ],
+      rotation: {
+        confidence: "high",
+        note: "Bloodthirst and Whirlwind are NOT available yet at level 20 — despite the Fury branding, this isn't a Bloodthirst rotation yet.",
+        single: [
+          {name:"Charge", icon:"ability_warrior_charge", note:"Opener — free rage and closes the gap."},
+          {name:"Rend", icon:"ability_gouge", note:"Worth applying on longer fights for the extra bleed damage."},
+          {name:"Overpower", icon:"ability_meleedamage", note:"Use whenever the target dodges you — a free, high-value swing."},
+          {name:"Heroic Strike", icon:"ability_rogue_ambush", note:"Your main rage dump, boosted by Cruelty's crit and fed by Unbridled Wrath's extra rage procs."},
+        ],
+        aoe: [
+          {name:"Demoralizing Shout", icon:"ability_warrior_warcry", note:"Opens a pack fight."},
+          {name:"Cleave", icon:"ability_warrior_cleave", note:"Hits your target plus its nearest ally — your actual AoE damage tool. Piercing Howl is a slow, not a damage ability, so it isn't part of this loop."},
+        ],
+      },
+    },
+  ],
+};
+
+const roster = document.getElementById("roster");
+const specs = document.getElementById("specs");
+const out = document.getElementById("out");
+const emptyHint = document.getElementById("empty-hint");
+let cls = null;
+let spec = "All";
+
+function renderRoster(){
+  roster.innerHTML = ROSTER.map(name=>{
+    const icon = CLASS_ICONS[name];
+    return `<button style="--c:${CLASS_COLOR[name]}" aria-pressed="${name===cls}" data-c="${name}"><img class="class-icon" src="${icon}" alt="" loading="lazy">${esc(name)}</button>`;
+  }).join("");
+}
+function renderSpecs(builds){
+  if(!builds || builds.length < 2){ specs.innerHTML = ""; return; }
+  const opts = ["All", ...builds.map(b=>b.spec)];
+  specs.innerHTML = opts.map(s=>`<button aria-pressed="${s===spec}" data-s="${s}">${esc(s)}</button>`).join("");
+}
+function render(){
+  renderRoster();
+  if(!cls){
+    out.innerHTML = "";
+    specs.innerHTML = "";
+    emptyHint.hidden = false;
+    return;
+  }
+  emptyHint.hidden = true;
+  const builds = DATA[cls]||[];
+  renderSpecs(builds);
+  const shown = spec==="All" ? builds : builds.filter(b=>b.spec===spec);
+  out.innerHTML = shown.map(buildHTML).join("");
+}
+roster.addEventListener("click", e=>{
+  const b = e.target.closest("button");
+  if(!b) return;
+  cls = b.dataset.c === cls ? null : b.dataset.c;
+  spec = "All";
+  render();
+});
+specs.addEventListener("click", e=>{
+  const b = e.target.closest("button");
+  if(!b) return;
+  spec = b.dataset.s;
+  render();
+});
+
+// Restore last-picked class from the URL (?class=) or default to none selected.
+try{
+  const q = new URL(location.href).searchParams.get("class");
+  if(q && ROSTER.includes(q)) cls = q;
+}catch(e){ /* ignore */ }
+render();
+</script>
 </body>
 </html>

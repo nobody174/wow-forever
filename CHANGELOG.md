@@ -4,6 +4,30 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-28 (night)
+
+- Rebuilt builds.html as a JS-rendered class/spec picker (was static HTML per
+  class before): pick a class from the icon roster, and — for classes with more
+  than one build — pick a spec (Mage: Arcane / Frost (Ice Lance) / Frost
+  (Piercing Ice) / Fire; Paladin: Retribution / Protection; Warrior: Tank /
+  Fury). Added a Rotation section to every build (single-target and AoE ability
+  lists, icons + arrows matching the talent-card style, a repeat glyph on
+  loop-based rotations, and a confidence badge: "high" for build-matched guides,
+  "medium" where reasoned from mechanics with no exact source found).
+- Added 3 new Mage builds: Frost (Piercing Ice) and Fire, alongside the existing
+  Frost (Ice Lance) build now relabeled, plus the previously-discussed Arcane
+  spread as its own build.
+- Fixed several wrong icons found during this pass (real icon filenames can be
+  very unintuitive vs spell names): Rogue's Sinister Strike (was showing an
+  unrelated TBC-era talent's icon), 3 Mage Arcane talent icons, Shaman's AoE
+  (added Fire Nova Totem detonating off an already-placed Searing Totem — kept
+  both, they're complementary not either/or), Hunter's AoE (added Multi-Shot,
+  learnable at level 18), Warrior Fury's AoE (swapped Piercing Howl, a slow, for
+  Cleave, an actual AoE damage tool).
+- Made the builds-grid give same-size, side-by-side cards for multi-build
+  classes (Paladin, Warrior) instead of one card growing taller from longer
+  rotation text — capped card width and rotation-note line length.
+
 ## 2026-09-28 (evening)
 
 - Added "DPS Sim Tier List" (mythicsim.com) to the landing page's Tools column —

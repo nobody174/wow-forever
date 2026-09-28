@@ -52,8 +52,11 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   project memory for the full pattern and icon-verification rules. Hand-edit
   directly.
 - `addons.html` — hand-written page listing the addons Venom & Trollmann actually run
-  (ForeverPlus, Platynator, Leatrix Maps, Forever Bag Mover — all CurseForge links,
-  verified working) plus a link to wow4ever.quest's addon compatibility tracker.
+  (Forever Bag Mover, ForeverLayers, ForeverPlus, Leatrix Maps, Leatrix Plus,
+  ThreatMaster, TomTom, WeakAuras Forever — all CurseForge links, sorted
+  alphabetically) plus a link to wow4ever.quest's addon compatibility tracker.
+  Each card is a single framed nav-style button (`.addon-btn`) with the addon
+  name linking to CurseForge, description below — not a separate name+link pair.
   Hand-edit directly.
 - `launch-plan.html` — hand-written launch plan for the Alliance Skyborne duo
   (+ possible druid) with a Dual Mage / Dual Hunter / Compare switch. Checklists

@@ -4,6 +4,18 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-29
+
+- Restyled the class-roster buttons on macros.html and builds.html to match the
+  top-bar nav's framed gradient-button look (uppercase, bordered panel, hover
+  glow, bright gradient when selected) instead of the plain flat/outline buttons
+  they used before. builds.html's spec-picker pills got the same treatment.
+- Addons: removed Platynator (replaced in-game by a working Plater setup) and
+  added ForeverLayers, WeakAuras Forever, ThreatMaster, and TomTom. Redesigned
+  every addon card to a single framed nav-style button linking to CurseForge
+  (name only, no separate "CurseForge" pill) with the description below, and
+  sorted the "What we use" list alphabetically.
+
 ## 2026-09-28 (night)
 
 - Rebuilt builds.html as a JS-rendered class/spec picker (was static HTML per

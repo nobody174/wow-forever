@@ -50,13 +50,23 @@ h2{font:400 22px/1.2 var(--serif);color:var(--accent);margin:34px 0 4px;padding-
 h2:first-of-type{margin-top:0}
 .section-note{color:var(--muted);font-size:14px;margin:4px 0 16px}
 .card{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--accent);border-radius:5px;padding:14px 16px;margin-bottom:10px}
-.card .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.card .name{font-weight:600;font-size:16px}
-.card .name a{color:var(--text);text-decoration:none}
-.card .name a:hover{color:var(--gold);text-decoration:underline}
-.card .note{color:var(--muted);font-size:14px;margin-top:4px}
-.card .visit{flex:none;font:500 13px var(--sans);background:transparent;border:1px solid var(--edge);color:var(--gold);padding:4px 12px;border-radius:4px;text-decoration:none;white-space:nowrap}
-.card .visit:hover{border-color:var(--accent);background:rgba(255,209,0,.08)}
+.card .addon-btn{
+  display:inline-flex;align-items:center;font:600 14px/1 var(--sans);
+  text-transform:uppercase;letter-spacing:.03em;color:var(--gold);text-decoration:none;
+  background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);
+  border:1px solid var(--edge);border-top-color:#4A5688;border-radius:6px;
+  padding:10px 16px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.35);
+  transition:transform .08s ease, box-shadow .08s ease, border-color .08s ease;
+}
+.card .addon-btn:hover{
+  border-color:var(--gold);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 0 10px rgba(255,209,0,.35), 0 2px 4px rgba(0,0,0,.35);
+  transform:translateY(-1px);
+}
+.card .addon-btn:active{transform:translateY(0);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
+.card .note{color:var(--muted);font-size:14px;margin-top:10px}
+@media (prefers-reduced-motion:reduce){.card .addon-btn{transition:none}}
 .card .unlinked{color:var(--muted);font-size:13px;font-style:italic}
 </style>
 </head>
@@ -77,48 +87,42 @@ h2:first-of-type{margin-top:0}
 
   <h2>What we use</h2>
   <div class="card">
-    <div class="top">
-      <div class="name"><a href="https://www.curseforge.com/wow/addons/foreverplus" target="_blank" rel="noopener">ForeverPlus</a></div>
-      <a class="visit" href="https://www.curseforge.com/wow/addons/foreverplus" target="_blank" rel="noopener">CurseForge</a>
-    </div>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/forever-bag-mover" target="_blank" rel="noopener">Forever Bag Mover</a>
+    <div class="note">Unlock your backpack, drag it wherever you want, lock it back in place. Remembers the position per character and locks movement during combat. Works on the standard backpack and the combined-bag window.</div>
+  </div>
+  <div class="card">
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/foreverlayers" target="_blank" rel="noopener">ForeverLayers</a>
+    <div class="note">Find other players in your current zone and switch layers to group up with them. Both sides need the addon installed, and it works through simple invite requests.</div>
+  </div>
+  <div class="card">
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/foreverplus" target="_blank" rel="noopener">ForeverPlus</a>
     <div class="note">Modular quality-of-life addon — quest automation, auto-sell/repair at merchants, buff tracking, an info bar, and a customizable tooltip system. Everything toggles individually and profiles can be shared between characters.</div>
   </div>
   <div class="card">
-    <div class="top">
-      <div class="name"><a href="https://www.curseforge.com/wow/addons/platynator" target="_blank" rel="noopener">Platynator</a></div>
-      <a class="visit" href="https://www.curseforge.com/wow/addons/platynator" target="_blank" rel="noopener">CurseForge</a>
-    </div>
-    <div class="note">Nameplate addon with a visual designer — threat coloring, elite/interruptible-cast indicators, built-in textures, and importable community themes.</div>
-  </div>
-  <div class="card">
-    <div class="top">
-      <div class="name"><a href="https://www.curseforge.com/wow/addons/leatrix-maps/files/8959146" target="_blank" rel="noopener">Leatrix Maps</a></div>
-      <a class="visit" href="https://www.curseforge.com/wow/addons/leatrix-maps/files/8959146" target="_blank" rel="noopener">CurseForge</a>
-    </div>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-maps/files/8959146" target="_blank" rel="noopener">Leatrix Maps</a>
     <div class="note">World map quality-of-life — reveals the map, shows dungeon icons and coordinates, lets you scale/reposition the map, removes the border, and stops zoom from resetting. Configurable via <code>/ltm</code>.</div>
   </div>
   <div class="card">
-    <div class="top">
-      <div class="name"><a href="https://www.curseforge.com/wow/addons/leatrix-plus" target="_blank" rel="noopener">Leatrix Plus</a></div>
-      <a class="visit" href="https://www.curseforge.com/wow/addons/leatrix-plus" target="_blank" rel="noopener">CurseForge</a>
-    </div>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-plus" target="_blank" rel="noopener">Leatrix Plus</a>
     <div class="note">Modular UI quality-of-life addon — quest/repair automation, social and chat tweaks, minimap and tooltip improvements, frame management, and a few system optimizations. Enable only the pieces you want.</div>
   </div>
   <div class="card">
-    <div class="top">
-      <div class="name"><a href="https://www.curseforge.com/wow/addons/forever-bag-mover" target="_blank" rel="noopener">Forever Bag Mover</a></div>
-      <a class="visit" href="https://www.curseforge.com/wow/addons/forever-bag-mover" target="_blank" rel="noopener">CurseForge</a>
-    </div>
-    <div class="note">Unlock your backpack, drag it wherever you want, lock it back in place. Remembers the position per character and locks movement during combat. Works on the standard backpack and the combined-bag window.</div>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/threatmaster" target="_blank" rel="noopener">ThreatMaster</a>
+    <div class="note">A threat meter styled after the game's built-in Damage Meter. Shows threat standing against the current target and warns both DPS and tanks when aggro is about to switch.</div>
+  </div>
+  <div class="card">
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/tomtom" target="_blank" rel="noopener">TomTom</a>
+    <div class="note">Set waypoints by command or by clicking the map, then follow a floating arrow to get there. Shows your coordinates and can bulk-import waypoint lists for questing.</div>
+  </div>
+  <div class="card">
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/weakauras-forever" target="_blank" rel="noopener">WeakAuras Forever</a>
+    <div class="note">The WeakAuras you know, ported for WoW Forever's client (1.60.1). Same saved auras and slash commands — imported auras from other games may need small adjustments.</div>
   </div>
 
   <h2>Checking what's supported</h2>
   <p class="section-note">Forever's addon API is still filling in during beta — worth checking before assuming something Classic-familiar will just work.</p>
   <div class="card">
-    <div class="top">
-      <div class="name"><a href="https://wow4ever.quest/en/addons" target="_blank" rel="noopener">wow4ever.quest — Addon Compatibility</a></div>
-      <a class="visit" href="https://wow4ever.quest/en/addons" target="_blank" rel="noopener">Visit</a>
-    </div>
+    <a class="addon-btn" href="https://wow4ever.quest/en/addons" target="_blank" rel="noopener">wow4ever.quest — Addon Compatibility</a>
     <div class="note">Tracks which addons have been ported to Forever, what's built into the game now (no addon needed), and which popular Classic addons aren't available yet and why — including the Midnight-era rule that addons can no longer make combat decisions for you.</div>
   </div>
 </div>

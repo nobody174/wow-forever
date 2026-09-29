@@ -35,7 +35,9 @@ data.py marks macros that still need confirming in beta.
 - Builds page, Paladin: Ret gets Holy Strike + Consecration (AoE); Prot swaps Seal of
   Righteousness for Seal of Fury (level 10, Judgement taunts), adds Holy Strike and
   Consecration (class spell at 20 in Forever, per wowforevertools.com trainer list).
-  Holy Strike / Seal of Fury icons are placeholders.
+  Icons checked against Wowhead's Forever tooltip data: Holy Strike really uses
+  `classicon_paladin` in game (file 626003); Seal of Fury uses `spell_holy_sealoffury`,
+  the same icon as Righteous Fury.
 
 ## 2026-09-29
 

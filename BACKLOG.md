@@ -28,9 +28,7 @@ stale checkmark.
   in beta talent trees), Seal swap (Twist of Light), Voice of Truth (talent or baseline?),
   Rogue Venom name (replaced Envenom?), Survival melee button (does Raptor
   Strike still queue off the GCD?).
-- **Builds page icons for Holy Strike / Seal of Fury are placeholders**
-  (`classicon_paladin`, `spell_holy_retributionaura`); swap once Wowhead has the
-  real Forever icons.
+
 
 ## Ideas not yet built
 

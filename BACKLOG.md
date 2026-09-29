@@ -29,7 +29,6 @@ stale checkmark.
   Rogue Venom name (replaced Envenom?), Survival melee button (does Raptor
   Strike still queue off the GCD?).
 
-
 ## Ideas not yet built
 
 - Addons page: expand beyond the current 4-addon list as Venom & Trollmann adopt

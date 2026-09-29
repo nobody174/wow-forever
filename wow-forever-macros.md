@@ -351,9 +351,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@targettarget, harm, exists][harm] Vampiric Embrace
 ```
 
-**Silence**
+**Silence (interrupt)** — Clears your current cast first so the interrupt fires instantly.
 ```
 #showtooltip Silence
+/stopcasting
 /cast [@targettarget, harm, exists][harm] Silence
 ```
 
@@ -373,9 +374,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Focus
 
-**Silence focus**
+**Silence focus** — Clears your current cast first so the interrupt fires instantly.
 ```
 #showtooltip Silence
+/stopcasting
 /cast [@focus, harm, exists][harm] Silence
 ```
 
@@ -396,6 +398,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast Holy Nova
 ```
 
+**Prayer of Mending** — New in Forever. Heals, then jumps to another group member when they take damage.
+```
+#showtooltip Prayer of Mending
+/cast [@mouseover, help, exists][help] Prayer of Mending
+```
+
 **Lightwell**
 ```
 #showtooltip Lightwell
@@ -410,6 +418,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Power Infusion
 /cast [@mouseover, help, exists][help] Power Infusion
+```
+
+**Penance (friend or foe)** — New in Forever. Heals a friendly mouseover/target, damages an enemy one.
+```
+#showtooltip Penance
+/cast [@mouseover, exists][exists] Penance
 ```
 
 **Inner Focus + Greater Heal**
@@ -714,6 +728,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@focus, harm, exists][harm] Enslave Demon
 ```
 
+**Bane of Havoc focus** — New in Forever. Put it on a second mob (focus), then nuke your target: part of your damage is copied onto the focus.
+```
+#showtooltip Bane of Havoc
+/cast [@focus, harm, exists][harm] Bane of Havoc
+```
+
 ### Warlock — Affliction
 
 #### Damage / offensive
@@ -728,6 +748,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Curse of Exhaustion
 /cast [harm] Curse of Exhaustion
+```
+
+**Wrack (spam-safe)** — New in Forever. Channeled drain that makes the target take more Shadow DoT damage.
+```
+#showtooltip Wrack
+/cast [@targettarget, harm, exists, nochanneling][harm, nochanneling] Wrack
 ```
 
 **Amplify Curse + Agony**
@@ -745,7 +771,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Panic / defensive
 
-**Dark Pact**
+**Dark Pact** — Test in beta: not seen in the Forever beta talent tree, may be removed.
 ```
 #showtooltip Dark Pact
 /cast Dark Pact
@@ -795,6 +821,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Shadowburn
 /cast [harm] Shadowburn
+```
+
+**Incinerate** — New in Forever. Hits harder when Immolate is on the target.
+```
+#showtooltip Incinerate
+/cast [harm] Incinerate
 ```
 
 **Immolate > Conflagrate**
@@ -934,9 +966,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Panic / defensive
 
-**Ice Block**
+**Ice Block (press again to cancel)** — First press casts Ice Block, second press cancels it early.
 ```
 #showtooltip Ice Block
+/cancelaura Ice Block
 /cast Ice Block
 ```
 
@@ -1009,6 +1042,19 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 #showtooltip Frostbolt
 /cast Presence of Mind
 /cast [harm] Frostbolt
+```
+
+**Presence of Mind + Pyroblast** — The classic burst combo for Arcane/Fire hybrids: instant Pyroblast.
+```
+#showtooltip Pyroblast
+/cast Presence of Mind
+/cast [harm] Pyroblast
+```
+
+**Arcane Blast** — New in Forever. Each cast in a row costs more and powers up your next other spell.
+```
+#showtooltip Arcane Blast
+/cast [harm] Arcane Blast
 ```
 
 ### Mage — Fire
@@ -1187,6 +1233,13 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Pick Pocket
 ```
 
+**Pick Pocket + Sap** — Pick Pocket has no global cooldown, so one press robs and saps.
+```
+#showtooltip Sap
+/cast [harm] Pick Pocket
+/cast [harm] Sap
+```
+
 **Apply poison to main hand** — Swap the item name to the poison you carry.
 ```
 /use Instant Poison
@@ -1236,10 +1289,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
-**Envenom**
+**Venom** — Forever's finisher (replaces Envenom): boosts poison damage and proc chance. Longer duration per combo point.
 ```
-#showtooltip Envenom
-/cast [harm] Envenom
+#showtooltip Venom
+/cast [harm] Venom
 ```
 
 **Mutilate**
@@ -1313,9 +1366,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Chain Lightning
 ```
 
-**Earth Shock**
+**Earth Shock (interrupt)** — Clears your current cast first so the interrupt fires instantly.
 ```
 #showtooltip Earth Shock
+/stopcasting
 /cast [harm] Earth Shock
 ```
 
@@ -1363,6 +1417,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@mouseover, help, exists][help] Ancestral Spirit
 ```
 
+**Riptide** — New in Forever. Instant heal + HoT that boosts your next Chain Heal.
+```
+#showtooltip Riptide
+/cast [@mouseover, help, exists][help] Riptide
+```
+
 #### Cleanse / dispel
 
 **Cure Poison**
@@ -1390,6 +1450,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Lightning Shield
 /cast Lightning Shield
+```
+
+**Water Shield** — New in Forever. Mana back when you're hit or crit-heal. Replaces Lightning Shield for healers.
+```
+#showtooltip Water Shield
+/cast Water Shield
 ```
 
 **Rockbiter Weapon**
@@ -1506,9 +1572,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Focus
 
-**Earth Shock interrupt on focus**
+**Earth Shock interrupt on focus** — Clears your current cast first so the interrupt fires instantly.
 ```
 #showtooltip Earth Shock
+/stopcasting
 /cast [@focus, harm, exists][harm] Earth Shock
 ```
 
@@ -1522,14 +1589,26 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
-**Elemental Mastery + Chain Lightning**
+**Lava Burst** — New in Forever. Hits 20% harder with your Flame Shock on the target.
+```
+#showtooltip Lava Burst
+/cast [harm] Lava Burst
+```
+
+**Flame Shock > Lava Burst** — Opener: Flame Shock, then the boosted Lava Burst.
+```
+#showtooltip Flame Shock
+/castsequence [harm] reset=target/12 Flame Shock, Lava Burst
+```
+
+**Elemental Mastery + Chain Lightning** — Test in beta: Elemental Mastery was not seen in the Forever beta talent tree.
 ```
 #showtooltip Chain Lightning
 /cast Elemental Mastery
 /cast [harm] Chain Lightning
 ```
 
-**Elemental Mastery + Lightning Bolt**
+**Elemental Mastery + Lightning Bolt** — Test in beta: Elemental Mastery was not seen in the Forever beta talent tree.
 ```
 #showtooltip Lightning Bolt
 /cast Elemental Mastery
@@ -1540,7 +1619,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
-**Stormstrike** — Also starts auto-attack.
+**Stormstrike** — Also starts auto-attack. In Forever it boosts only your NEXT Lightning Bolt, Chain Lightning or Earth Shock, so follow up with one.
 ```
 #showtooltip Stormstrike
 /cast [harm] Stormstrike
@@ -1572,6 +1651,13 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Hunter's Mark
 ```
 
+**Hunter's Mark + send pet (opener)** — One press marks the target and sends the pet in.
+```
+#showtooltip Hunter's Mark
+/petattack [harm]
+/cast [harm] Hunter's Mark
+```
+
 **Serpent Sting**
 ```
 #showtooltip Serpent Sting
@@ -1584,10 +1670,16 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Arcane Shot
 ```
 
-**Multi-Shot**
+**Multi-Shot** — Forever: 0.5 sec cast, 6 sec cooldown. Stand still for it.
 ```
 #showtooltip Multi-Shot
 /cast [harm] Multi-Shot
+```
+
+**Volley at cursor** — Forever removed Volley's cooldown, so it's a real AoE button now. Drops at your mouse cursor, no targeting circle.
+```
+#showtooltip Volley
+/cast [@cursor] Volley
 ```
 
 **Concussive Shot**
@@ -1704,9 +1796,11 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Panic / defensive
 
-**Feign Death**
+**Feign Death (clean)** — Calls the pet back and stops attacking first, so the pet doesn't keep mobs on you.
 ```
 #showtooltip Feign Death
+/petfollow
+/stopattack
 /cast Feign Death
 ```
 
@@ -1823,9 +1917,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast Rapid Fire
 ```
 
-**Intimidation** — Pet's next hit stuns its target.
+**Intimidation + pet attack** — Intimidation only fires on the pet's next hit, so this sends the pet in too.
 ```
 #showtooltip Intimidation
+/petattack [harm]
 /cast Intimidation
 ```
 
@@ -1871,12 +1966,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Counterattack
 ```
 
-**Wyvern Sting**
-```
-#showtooltip Wyvern Sting
-/cast [harm] Wyvern Sting
-```
-
 #### Panic / defensive
 
 **Deterrence**
@@ -1885,21 +1974,20 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast Deterrence
 ```
 
-#### Focus
-
-**Wyvern Sting focus**
-```
-#showtooltip Wyvern Sting
-/cast [@focus, harm, exists][harm] Wyvern Sting
-```
-
 ## Paladin
 
 ### Paladin — Shared (all specs)
 
 #### Damage / offensive
 
-**Judgement**
+**Holy Strike + auto-attack** — New baseline strike in Forever (level 6, 12 sec cooldown).
+```
+#showtooltip Holy Strike
+/startattack [harm]
+/cast [harm] Holy Strike
+```
+
+**Judgement** — Forever: Judgement no longer uses up your seal, so no reseal needed.
 ```
 #showtooltip Judgement
 /cast [harm] Judgement
@@ -2050,11 +2138,18 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast Concentration Aura
 ```
 
+**Blessing of Kings** — Class spell at level 20 in Forever (was a Protection talent).
+```
+#showtooltip Blessing of Kings
+/cast [@mouseover, help, exists][help][@player] Blessing of Kings
+```
+
 #### Panic / defensive
 
-**Divine Shield**
+**Divine Shield (press again to cancel)** — First press bubbles, second press cancels it early.
 ```
 #showtooltip Divine Shield
+/cancelaura Divine Shield
 /cast Divine Shield
 ```
 
@@ -2070,10 +2165,17 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@player] Lay on Hands
 ```
 
-**Blessing of Protection self**
+**Blessing of Protection self (press again to cancel)** — BoP stops you from attacking, so the second press removes it.
 ```
 #showtooltip Blessing of Protection
+/cancelaura Blessing of Protection
 /cast [@player] Blessing of Protection
+```
+
+**Voice of Truth** — New in Forever: 6 sec immunity to silence and interrupts. Use before a big heal/cast.
+```
+#showtooltip Voice of Truth
+/cast Voice of Truth
 ```
 
 #### Class QoL
@@ -2106,18 +2208,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Seal of Justice
 /cast Seal of Justice
-```
-
-**Judge + reseal Righteousness loop** — Press: seal, judge, seal, judge...
-```
-#showtooltip Seal of Righteousness
-/castsequence [@targettarget, harm, exists][harm] reset=combat Seal of Righteousness, Judgement
-```
-
-**Crusader opener, then Righteousness**
-```
-#showtooltip Seal of the Crusader
-/castsequence [@targettarget, harm, exists][harm] reset=target Seal of the Crusader, Judgement, Seal of Righteousness
 ```
 
 **Divine Intervention**
@@ -2166,16 +2256,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Class QoL
 
-**Crusader opener, then Command**
+**Seal swap: Command <> Righteousness** — Test in beta: with the Twist of Light talent, switching seals lets your next swing also apply the old seal. Swap between swings.
 ```
-#showtooltip Seal of the Crusader
-/castsequence [@targettarget, harm, exists][harm] reset=target Seal of the Crusader, Judgement, Seal of Command
-```
-
-**Judge + reseal Command loop**
-```
-#showtooltip Seal of Command
-/castsequence [@targettarget, harm, exists][harm] reset=combat Seal of Command, Judgement
+#showtooltip
+/castsequence Seal of Command, Seal of Righteousness
 ```
 
 #### Focus
@@ -2186,28 +2270,44 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@focus, harm, exists][harm] Repentance
 ```
 
+### Paladin — Holy
+
+#### Mouseover healing / utility
+
+**Holy Shock (friend or foe)** — Heals a friendly mouseover/target, damages an enemy one.
+```
+#showtooltip Holy Shock
+/cast [@mouseover, exists][exists] Holy Shock
+```
+
 ### Paladin — Protection
 
 #### Damage / offensive
 
-**Holy Shield**
+**Holy Shield** — Forever: a 4-charge block buff. Keep it up while tanking.
 ```
 #showtooltip Holy Shield
 /cast Holy Shield
 ```
 
+**Judgement taunt (mouseover)** — With Seal of Fury active, Judgement taunts (10 yd). Hover a loose mob to pull it off the healer without changing target.
+```
+#showtooltip Judgement
+/cast [@mouseover, harm, nodead][harm] Judgement
+```
+
 #### Buffs
+
+**Seal of Fury** — New tank seal: Holy damage per hit + absorb shield with a shield equipped. Makes Judgement a taunt.
+```
+#showtooltip Seal of Fury
+/cast Seal of Fury
+```
 
 **Righteous Fury**
 ```
 #showtooltip Righteous Fury
 /cast Righteous Fury
-```
-
-**Blessing of Kings**
-```
-#showtooltip Blessing of Kings
-/cast [@mouseover, help, exists][help][@player] Blessing of Kings
 ```
 
 **Blessing of Sanctuary**
@@ -2216,12 +2316,20 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@mouseover, help, exists][help][@player] Blessing of Sanctuary
 ```
 
-#### Class QoL
+#### Panic / defensive
 
-**Judge + reseal Wisdom loop** — Mana-sustain tanking.
+**Templar's Bulwark** — Talent. Absorb shield equal to your max health for 8 sec (5 min cooldown).
 ```
-#showtooltip Seal of Wisdom
-/castsequence [@targettarget, harm, exists][harm] reset=combat Seal of Wisdom, Judgement
+#showtooltip Templar's Bulwark
+/cast Templar's Bulwark
+```
+
+#### Focus
+
+**Judgement taunt on focus** — With Seal of Fury: taunt your focus (e.g. the add you're watching).
+```
+#showtooltip Judgement
+/cast [@focus, harm, exists][harm] Judgement
 ```
 
 ## Warrior
@@ -2475,6 +2583,13 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Shield Slam
 /cast [harm] Shield Slam
+```
+
+**Sunder + Heroic Strike** — Heroic Strike has no global cooldown (it queues on your next swing), so it rides along with Sunder. Watch your rage.
+```
+#showtooltip Sunder Armor
+/cast [harm] Heroic Strike
+/cast [harm] Sunder Armor
 ```
 
 **Revenge**

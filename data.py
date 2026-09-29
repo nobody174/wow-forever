@@ -86,6 +86,9 @@ PET_ICON_NOTE = ("No #showtooltip: /petattack is not a spell, so it would show a
 
 # --- 2. Builder helpers + macro type labels ---------------------------------
 
+# Prefix for notes on macros that still need checking in the Forever beta.
+BETA = "Test in beta: "
+
 def M(name, code, note=""):
     """One macro entry: display name, macro code, optional short description."""
     return {"name": name, "code": code, "note": note}
@@ -227,7 +230,8 @@ CLASSES = [
             G(DPS, [
                 M("Mind Flay (spam-safe)", chan("Mind Flay"), "Won't clip an active channel."),
                 M("Vampiric Embrace", dps("Vampiric Embrace")),
-                M("Silence", dps("Silence")),
+                M("Silence (interrupt)", "#showtooltip Silence\n/stopcasting\n/cast [@targettarget, harm, exists][harm] Silence",
+                  "Clears your current cast first so the interrupt fires instantly."),
                 M("Devouring Plague", dps("Devouring Plague"), "Racial priest spell."),
             ]),
             G(BUFF, [
@@ -236,7 +240,8 @@ CLASSES = [
                   "Won't drop you out of form if pressed again."),
             ]),
             G(FOCUS, [
-                M("Silence focus", foc("Silence")),
+                M("Silence focus", "#showtooltip Silence\n/stopcasting\n/cast [@focus, harm, exists][harm] Silence",
+                  "Clears your current cast first so the interrupt fires instantly."),
             ]),
         ]},
 
@@ -245,6 +250,8 @@ CLASSES = [
                 M("Inner Focus + Greater Heal",
                   "#showtooltip Greater Heal\n/cast Inner Focus\n/cast [@mouseover, help, exists][help] Greater Heal"),
                 M("Holy Nova", plain("Holy Nova")),
+                M("Prayer of Mending", heal("Prayer of Mending"),
+                  "New in Forever. Heals, then jumps to another group member when they take damage."),
                 M("Lightwell", plain("Lightwell")),
             ]),
         ]},
@@ -252,6 +259,8 @@ CLASSES = [
         {"spec": "Discipline", "groups": [
             G(HEAL, [
                 M("Power Infusion", heal("Power Infusion")),
+                M("Penance (friend or foe)", util("Penance"),
+                  "New in Forever. Heals a friendly mouseover/target, damages an enemy one."),
                 M("Inner Focus + Greater Heal",
                   "#showtooltip Greater Heal\n/cast Inner Focus\n/cast [@mouseover, help, exists][help] Greater Heal"),
             ]),
@@ -336,6 +345,9 @@ CLASSES = [
                 M("Seduction focus", foc("Seduction")),
                 M("Spell Lock focus", foc("Spell Lock")),
                 M("Enslave Demon focus", foc("Enslave Demon")),
+                M("Bane of Havoc focus", foc("Bane of Havoc"),
+                  "New in Forever. Put it on a second mob (focus), then nuke your target: "
+                  "part of your damage is copied onto the focus."),
             ]),
         ]},
 
@@ -343,6 +355,8 @@ CLASSES = [
             G(DPS, [
                 M("Siphon Life", dpsHarm("Siphon Life")),
                 M("Curse of Exhaustion", dpsHarm("Curse of Exhaustion")),
+                M("Wrack (spam-safe)", chan("Wrack"),
+                  "New in Forever. Channeled drain that makes the target take more Shadow DoT damage."),
                 M("Amplify Curse + Agony",
                   "#showtooltip Curse of Agony\n/cast Amplify Curse\n/cast [harm] Curse of Agony"),
                 M("DoT sequence (press to roll dots)",
@@ -350,7 +364,8 @@ CLASSES = [
                   "/castsequence [harm] reset=target Corruption, Curse of Agony, Siphon Life, Immolate"),
             ]),
             G(PANIC, [
-                M("Dark Pact", plain("Dark Pact")),
+                M("Dark Pact", plain("Dark Pact"),
+                  BETA + "not seen in the Forever beta talent tree, may be removed."),
             ]),
         ]},
 
@@ -369,6 +384,8 @@ CLASSES = [
             G(DPS, [
                 M("Conflagrate", dpsHarm("Conflagrate")),
                 M("Shadowburn", dpsHarm("Shadowburn")),
+                M("Incinerate", dpsHarm("Incinerate"),
+                  "New in Forever. Hits harder when Immolate is on the target."),
                 M("Immolate > Conflagrate",
                   "#showtooltip Immolate\n"
                   "/castsequence [harm] reset=target/10 Immolate, Conflagrate"),
@@ -413,7 +430,9 @@ CLASSES = [
                 M("Amplify Magic", buff("Amplify Magic")),
             ]),
             G(PANIC, [
-                M("Ice Block", plain("Ice Block")),
+                M("Ice Block (press again to cancel)",
+                  "#showtooltip Ice Block\n/cancelaura Ice Block\n/cast Ice Block",
+                  "First press casts Ice Block, second press cancels it early."),
                 M("Blink", plain("Blink")),
                 M("Evocation", plain("Evocation")),
             ]),
@@ -437,6 +456,10 @@ CLASSES = [
             G(DPS, [
                 M("Arcane Power + Arcane Missiles", "#showtooltip Arcane Missiles\n/cast Arcane Power\n/cast [harm] Arcane Missiles"),
                 M("Presence of Mind + Frostbolt", "#showtooltip Frostbolt\n/cast Presence of Mind\n/cast [harm] Frostbolt", "Instant-cast next spell."),
+                M("Presence of Mind + Pyroblast", "#showtooltip Pyroblast\n/cast Presence of Mind\n/cast [harm] Pyroblast",
+                  "The classic burst combo for Arcane/Fire hybrids: instant Pyroblast."),
+                M("Arcane Blast", dpsHarm("Arcane Blast"),
+                  "New in Forever. Each cast in a row costs more and powers up your next other spell."),
             ]),
         ]},
 
@@ -492,6 +515,9 @@ CLASSES = [
                 M("Stealth (no cancel)", "#showtooltip Stealth\n/cast [nostealth] Stealth", "Won't drop you out of stealth if pressed again."),
                 M("Pick Lock", plain("Pick Lock")),
                 M("Pick Pocket", dpsHarm("Pick Pocket")),
+                M("Pick Pocket + Sap",
+                  "#showtooltip Sap\n/cast [harm] Pick Pocket\n/cast [harm] Sap",
+                  "Pick Pocket has no global cooldown, so one press robs and saps."),
                 M("Apply poison to main hand", "/use Instant Poison\n/use Main Hand Weapon", "Swap the item name to the poison you carry."),
                 M("Apply poison to off hand", "/use Deadly Poison\n/use Off Hand Weapon", "Swap the item name to the poison you carry."),
                 M("Distract", dpsHarm("Distract")),
@@ -510,7 +536,9 @@ CLASSES = [
 
         {"spec": "Assassination", "groups": [
             G(DPS, [
-                M("Envenom", dpsHarm("Envenom")),
+                M("Venom", dpsHarm("Venom"),
+                  "Forever's finisher (replaces Envenom): boosts poison damage and proc chance. "
+                  "Longer duration per combo point."),
                 M("Mutilate", dpsHarm("Mutilate")),
                 M("Cold Blood + Ambush", "#showtooltip Ambush\n/cast Cold Blood\n/cast [harm] Ambush", "Requires stealth."),
             ]),
@@ -543,7 +571,8 @@ CLASSES = [
             G(DPS, [
                 M("Lightning Bolt", dpsHarm("Lightning Bolt")),
                 M("Chain Lightning", dpsHarm("Chain Lightning")),
-                M("Earth Shock", dpsHarm("Earth Shock")),
+                M("Earth Shock (interrupt)", "#showtooltip Earth Shock\n/stopcasting\n/cast [harm] Earth Shock",
+                  "Clears your current cast first so the interrupt fires instantly."),
                 M("Flame Shock", dpsHarm("Flame Shock")),
                 M("Frost Shock", dpsHarm("Frost Shock")),
                 M("Purge (offensive dispel)", dpsHarm("Purge")),
@@ -556,6 +585,8 @@ CLASSES = [
                 M("Lesser Healing Wave", heal("Lesser Healing Wave")),
                 M("Chain Heal", heal("Chain Heal")),
                 M("Ancestral Spirit", heal("Ancestral Spirit")),
+                M("Riptide", heal("Riptide"),
+                  "New in Forever. Instant heal + HoT that boosts your next Chain Heal."),
             ]),
             G(CLEAN, [
                 M("Cure Poison", heal("Cure Poison")),
@@ -563,6 +594,8 @@ CLASSES = [
             ]),
             G(BUFF, [
                 M("Lightning Shield", plain("Lightning Shield")),
+                M("Water Shield", plain("Water Shield"),
+                  "New in Forever. Mana back when you're hit or crit-heal. Replaces Lightning Shield for healers."),
                 M("Rockbiter Weapon", plain("Rockbiter Weapon")),
                 M("Flametongue Weapon", plain("Flametongue Weapon")),
                 M("Frostbrand Weapon", plain("Frostbrand Weapon")),
@@ -592,23 +625,33 @@ CLASSES = [
                 M("Healing Stream Totem", plain("Healing Stream Totem")),
             ]),
             G(FOCUS, [
-                M("Earth Shock interrupt on focus", foc("Earth Shock")),
+                M("Earth Shock interrupt on focus", "#showtooltip Earth Shock\n/stopcasting\n/cast [@focus, harm, exists][harm] Earth Shock",
+                  "Clears your current cast first so the interrupt fires instantly."),
                 M("Purge focus", foc("Purge")),
             ]),
         ]},
 
         {"spec": "Elemental", "groups": [
             G(DPS, [
+                M("Lava Burst", dpsHarm("Lava Burst"),
+                  "New in Forever. Hits 20% harder with your Flame Shock on the target."),
+                M("Flame Shock > Lava Burst",
+                  "#showtooltip Flame Shock\n/castsequence [harm] reset=target/12 Flame Shock, Lava Burst",
+                  "Opener: Flame Shock, then the boosted Lava Burst."),
                 M("Elemental Mastery + Chain Lightning",
-                  "#showtooltip Chain Lightning\n/cast Elemental Mastery\n/cast [harm] Chain Lightning"),
+                  "#showtooltip Chain Lightning\n/cast Elemental Mastery\n/cast [harm] Chain Lightning",
+                  BETA + "Elemental Mastery was not seen in the Forever beta talent tree."),
                 M("Elemental Mastery + Lightning Bolt",
-                  "#showtooltip Lightning Bolt\n/cast Elemental Mastery\n/cast [harm] Lightning Bolt"),
+                  "#showtooltip Lightning Bolt\n/cast Elemental Mastery\n/cast [harm] Lightning Bolt",
+                  BETA + "Elemental Mastery was not seen in the Forever beta talent tree."),
             ]),
         ]},
 
         {"spec": "Enhancement", "groups": [
             G(DPS, [
-                M("Stormstrike", dpsHarm("Stormstrike"), "Also starts auto-attack."),
+                M("Stormstrike", dpsHarm("Stormstrike"),
+                  "Also starts auto-attack. In Forever it boosts only your NEXT Lightning Bolt, "
+                  "Chain Lightning or Earth Shock, so follow up with one."),
             ]),
             G(BUFF, [
                 M("Windfury Weapon", plain("Windfury Weapon")),
@@ -627,9 +670,16 @@ CLASSES = [
         {"spec": "Shared", "groups": [
             G(DPS, [
                 M("Hunter's Mark", dpsHarm("Hunter's Mark")),
+                M("Hunter's Mark + send pet (opener)",
+                  "#showtooltip Hunter's Mark\n/petattack [harm]\n/cast [harm] Hunter's Mark",
+                  "One press marks the target and sends the pet in."),
                 M("Serpent Sting", dpsHarm("Serpent Sting")),
                 M("Arcane Shot", dpsHarm("Arcane Shot")),
-                M("Multi-Shot", dpsHarm("Multi-Shot")),
+                M("Multi-Shot", dpsHarm("Multi-Shot"),
+                  "Forever: 0.5 sec cast, 6 sec cooldown. Stand still for it."),
+                M("Volley at cursor", "#showtooltip Volley\n/cast [@cursor] Volley",
+                  "Forever removed Volley's cooldown, so it's a real AoE button now. "
+                  "Drops at your mouse cursor, no targeting circle."),
                 M("Concussive Shot", dpsHarm("Concussive Shot")),
                 M("Viper Sting", dpsHarm("Viper Sting")),
                 M("Scorpid Sting", dpsHarm("Scorpid Sting")),
@@ -665,7 +715,9 @@ CLASSES = [
                 M("Aspect of the Wild", plain("Aspect of the Wild")),
             ]),
             G(PANIC, [
-                M("Feign Death", plain("Feign Death")),
+                M("Feign Death (clean)",
+                  "#showtooltip Feign Death\n/petfollow\n/stopattack\n/cast Feign Death",
+                  "Calls the pet back and stops attacking first, so the pet doesn't keep mobs on you."),
                 M("Disengage", dpsHarm("Disengage")),
                 M("Freezing Trap", plain("Freezing Trap")),
                 M("Frost Trap", plain("Frost Trap")),
@@ -704,7 +756,9 @@ CLASSES = [
             G(DPS, [
                 M("Bestial Wrath + Rapid Fire burst",
                   "#showtooltip Bestial Wrath\n/cast Bestial Wrath\n/cast Rapid Fire"),
-                M("Intimidation", plain("Intimidation"), "Pet's next hit stuns its target."),
+                M("Intimidation + pet attack",
+                  "#showtooltip Intimidation\n/petattack [harm]\n/cast Intimidation",
+                  "Intimidation only fires on the pet's next hit, so this sends the pet in too."),
             ]),
         ]},
 
@@ -724,13 +778,9 @@ CLASSES = [
         {"spec": "Survival", "groups": [
             G(DPS, [
                 M("Counterattack", dpsHarm("Counterattack")),
-                M("Wyvern Sting", dpsHarm("Wyvern Sting")),
             ]),
             G(PANIC, [
                 M("Deterrence", plain("Deterrence")),
-            ]),
-            G(FOCUS, [
-                M("Wyvern Sting focus", foc("Wyvern Sting")),
             ]),
         ]},
     ]},
@@ -742,7 +792,11 @@ CLASSES = [
 
         {"spec": "Shared", "groups": [
             G(DPS, [
-                M("Judgement", dpsHarm("Judgement")),
+                M("Holy Strike + auto-attack",
+                  "#showtooltip Holy Strike\n/startattack [harm]\n/cast [harm] Holy Strike",
+                  "New baseline strike in Forever (level 6, 12 sec cooldown)."),
+                M("Judgement", dpsHarm("Judgement"),
+                  "Forever: Judgement no longer uses up your seal, so no reseal needed."),
                 M("Hammer of Wrath", dpsHarm("Hammer of Wrath")),
                 M("Exorcism", dpsHarm("Exorcism")),
                 M("Hammer of Justice", dpsHarm("Hammer of Justice")),
@@ -774,12 +828,20 @@ CLASSES = [
                 M("Devotion Aura", plain("Devotion Aura")),
                 M("Retribution Aura", plain("Retribution Aura")),
                 M("Concentration Aura", plain("Concentration Aura")),
+                M("Blessing of Kings", buff("Blessing of Kings"),
+                  "Class spell at level 20 in Forever (was a Protection talent)."),
             ]),
             G(PANIC, [
-                M("Divine Shield", plain("Divine Shield")),
+                M("Divine Shield (press again to cancel)",
+                  "#showtooltip Divine Shield\n/cancelaura Divine Shield\n/cast Divine Shield",
+                  "First press bubbles, second press cancels it early."),
                 M("Divine Protection", plain("Divine Protection")),
                 M("Lay on Hands self", me("Lay on Hands")),
-                M("Blessing of Protection self", me("Blessing of Protection")),
+                M("Blessing of Protection self (press again to cancel)",
+                  "#showtooltip Blessing of Protection\n/cancelaura Blessing of Protection\n/cast [@player] Blessing of Protection",
+                  "BoP stops you from attacking, so the second press removes it."),
+                M("Voice of Truth", plain("Voice of Truth"),
+                  "New in Forever: 6 sec immunity to silence and interrupts. Use before a big heal/cast."),
             ]),
             G(QOL, [
                 M("Seal of Righteousness", plain("Seal of Righteousness")),
@@ -787,13 +849,6 @@ CLASSES = [
                 M("Seal of Wisdom", plain("Seal of Wisdom")),
                 M("Seal of Light", plain("Seal of Light")),
                 M("Seal of Justice", plain("Seal of Justice")),
-                M("Judge + reseal Righteousness loop",
-                  "#showtooltip Seal of Righteousness\n"
-                  "/castsequence [@targettarget, harm, exists][harm] reset=combat Seal of Righteousness, Judgement",
-                  "Press: seal, judge, seal, judge..."),
-                M("Crusader opener, then Righteousness",
-                  "#showtooltip Seal of the Crusader\n"
-                  "/castsequence [@targettarget, harm, exists][harm] reset=target Seal of the Crusader, Judgement, Seal of Righteousness"),
                 M("Divine Intervention", heal("Divine Intervention")),
             ]),
             G(FOCUS, [
@@ -811,32 +866,46 @@ CLASSES = [
                 M("Seal of Command", plain("Seal of Command")),
             ]),
             G(QOL, [
-                M("Crusader opener, then Command",
-                  "#showtooltip Seal of the Crusader\n"
-                  "/castsequence [@targettarget, harm, exists][harm] reset=target Seal of the Crusader, Judgement, Seal of Command"),
-                M("Judge + reseal Command loop",
-                  "#showtooltip Seal of Command\n"
-                  "/castsequence [@targettarget, harm, exists][harm] reset=combat Seal of Command, Judgement"),
+                M("Seal swap: Command <> Righteousness",
+                  "#showtooltip\n/castsequence Seal of Command, Seal of Righteousness",
+                  BETA + "with the Twist of Light talent, switching seals lets your next swing "
+                  "also apply the old seal. Swap between swings."),
             ]),
             G(FOCUS, [
                 M("Repentance focus", foc("Repentance")),
             ]),
         ]},
 
+        {"spec": "Holy", "groups": [
+            G(HEAL, [
+                M("Holy Shock (friend or foe)", util("Holy Shock"),
+                  "Heals a friendly mouseover/target, damages an enemy one."),
+            ]),
+        ]},
+
         {"spec": "Protection", "groups": [
             G(DPS, [
-                M("Holy Shield", plain("Holy Shield")),
+                M("Holy Shield", plain("Holy Shield"),
+                  "Forever: a 4-charge block buff. Keep it up while tanking."),
+                M("Judgement taunt (mouseover)",
+                  "#showtooltip Judgement\n/cast [@mouseover, harm, nodead][harm] Judgement",
+                  "With Seal of Fury active, Judgement taunts (10 yd). Hover a loose mob to "
+                  "pull it off the healer without changing target."),
             ]),
             G(BUFF, [
+                M("Seal of Fury", plain("Seal of Fury"),
+                  "New tank seal: Holy damage per hit + absorb shield with a shield equipped. "
+                  "Makes Judgement a taunt."),
                 M("Righteous Fury", plain("Righteous Fury")),
-                M("Blessing of Kings", buff("Blessing of Kings")),
                 M("Blessing of Sanctuary", buff("Blessing of Sanctuary")),
             ]),
-            G(QOL, [
-                M("Judge + reseal Wisdom loop",
-                  "#showtooltip Seal of Wisdom\n"
-                  "/castsequence [@targettarget, harm, exists][harm] reset=combat Seal of Wisdom, Judgement",
-                  "Mana-sustain tanking."),
+            G(PANIC, [
+                M("Templar's Bulwark", plain("Templar's Bulwark"),
+                  "Talent. Absorb shield equal to your max health for 8 sec (5 min cooldown)."),
+            ]),
+            G(FOCUS, [
+                M("Judgement taunt on focus", foc("Judgement"),
+                  "With Seal of Fury: taunt your focus (e.g. the add you're watching)."),
             ]),
         ]},
     ]},
@@ -924,6 +993,10 @@ CLASSES = [
         {"spec": "Protection", "groups": [
             G(DPS, [
                 M("Shield Slam", dpsHarm("Shield Slam")),
+                M("Sunder + Heroic Strike",
+                  "#showtooltip Sunder Armor\n/cast [harm] Heroic Strike\n/cast [harm] Sunder Armor",
+                  "Heroic Strike has no global cooldown (it queues on your next swing), "
+                  "so it rides along with Sunder. Watch your rage."),
                 M("Revenge", dpsHarm("Revenge")),
                 M("Shield Bash", dpsHarm("Shield Bash")),
                 M("Concussion Blow", dpsHarm("Concussion Blow")),

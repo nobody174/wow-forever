@@ -4,6 +4,31 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-30
+
+Forever class-change pass (research: Warcraft Tavern, Mobalytics, Output Lag,
+forever-hunter wiki, Zockify, classicwowforever.com). New `BETA` note prefix in
+data.py marks macros that still need confirming in beta.
+
+- Paladin: removed all "Judge + reseal" and "Crusader opener" castsequences
+  (Judgement no longer consumes seals in Forever). Added Holy Strike + auto-attack,
+  Divine Shield / BoP self with press-again cancel, Voice of Truth, Seal swap
+  (Twist of Light, beta), new Holy section (Holy Shock friend or foe). Protection:
+  Seal of Fury, Judgement taunt (mouseover + focus), Templar's Bulwark. Blessing of
+  Kings moved Protection → Shared.
+- Hunter: removed Wyvern Sting + focus (removed in Forever). Added Hunter's Mark +
+  send pet, Volley at cursor (no cooldown now), Feign Death (clean), Intimidation +
+  pet attack (replaced plain Intimidation). Multi-Shot note about its new cast time.
+- Priest: Silence gets /stopcasting; added Prayer of Mending (Holy), Penance (Disc).
+- Warlock: Wrack (Affliction), Incinerate (Destruction), Bane of Havoc focus; Dark
+  Pact flagged for beta.
+- Mage: Ice Block press-again cancel, Presence of Mind + Pyroblast, Arcane Blast.
+- Rogue: Envenom → Venom, Pick Pocket + Sap.
+- Shaman: Earth Shock (+ focus) get /stopcasting; Riptide, Water Shield, Lava Burst,
+  Flame Shock > Lava Burst; Elemental Mastery macros flagged for beta; Stormstrike
+  note updated.
+- Warrior (Protection): Sunder + Heroic Strike.
+
 ## 2026-09-29
 
 - Universal › Misc / UI: removed "Mark mouseover/target with skull" and "…with cross".

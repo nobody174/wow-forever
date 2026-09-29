@@ -22,6 +22,17 @@ stale checkmark.
   in combat wasn't confirmed either way. Low priority: none of the current
   `/console` macros (zoom, hide guild/PvP names) are combat-relevant actions.
 
+## Open findings (from the 2026-09-30 Forever macro research)
+
+- **Survival Hunter melee names unconfirmed.** Forever adds a bleed strike (listed as
+  Lacerate) and an 8 sec melee strike (Strider Kick per classicwowforever, Runner's
+  Strike per wow.gg). Add macros once the in-game names are confirmed in beta.
+- **Builds page Paladin rotations predate Forever's changes.** No Holy Strike, and
+  seal/Judgement steps assume Judgement consumes the seal. Update Ret/Prot rotations.
+- **"Test in beta" macros to confirm:** Dark Pact, Elemental Mastery (both not seen
+  in beta talent trees), Seal swap (Twist of Light), Voice of Truth (talent or baseline?),
+  Rogue Venom name (replaced Envenom?).
+
 ## Ideas not yet built
 
 - Addons page: expand beyond the current 4-addon list as Venom & Trollmann adopt

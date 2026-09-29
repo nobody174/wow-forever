@@ -135,16 +135,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /console UnitNamePlayerPVPTitle 0
 ```
 
-**Mark mouseover/target with skull** — Marks your mouseover target with a skull, or your current target if no mouseover. Uses the full /targetmarker name — the ThreatMaster addon claims the /tm shorthand for itself, which silently breaks this macro if you use it.
-```
-/targetmarker [@mouseover,exists] 8; 8
-```
-
-**Mark mouseover/target with cross** — Same as skull mark, using the cross icon instead.
-```
-/targetmarker [@mouseover,exists] 7; 7
-```
-
 **Weapon swap: 1H+offhand ↔ 2H** — Swap the item names for your own gear. Toggles between 1H+offhand and 2H each press — slot 16 = main hand, 17 = off hand/shield.
 ```
 /equipslot 16 Durgen's Crescent Axe
@@ -443,9 +433,11 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
-**Shadow Bolt**
+**Shadow Bolt + Imp Firebolt** — Sends your pet in and, when the Imp is out, fires its Firebolt on the same press. Handy if you keep Firebolt autocast off to stop the Imp pulling or burning mana. With any other demon the Firebolt line is skipped.
 ```
 #showtooltip Shadow Bolt
+/petattack [harm]
+/cast [pet:Imp, harm] Firebolt
 /cast [harm] Shadow Bolt
 ```
 

@@ -91,6 +91,9 @@ details.section > summary .toggle{
 details.section > summary .toggle::before{content:"+"}
 details.section[open] > summary .toggle::before{content:"\2212"}
 details.section .section-body{padding-top:8px}
+details.patterns-wrap{margin:34px 0 4px}
+details.patterns-wrap > summary{font:400 26px/1.2 var(--serif);color:var(--accent);padding-bottom:6px;border-bottom:1px solid var(--edge)}
+details.patterns-wrap > summary .toggle{border-color:var(--accent);color:var(--accent)}
 .macro{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--accent);border-radius:5px;padding:10px 12px;margin-bottom:8px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .name{font-weight:600}
@@ -223,7 +226,7 @@ function render(){
   document.documentElement.style.setProperty("--accent", c.color);
   renderRoster(); renderSpecs(c);
   if(c.name==="Universal"){
-    html += `<h2>Style patterns</h2><div class="patterns">`+D.patterns.map(p=>macroHTML({name:p.name,code:p.code,note:""})).join("")+`</div>`;
+    html += `<details class="section patterns-wrap"><summary><span class="toggle" aria-hidden="true"></span>Style patterns</summary><div class="section-body patterns">`+D.patterns.map(p=>macroHTML({name:p.name,code:p.code,note:""})).join("")+`</div></details>`;
   }
   let gi = 0;
   tabGroups = [];

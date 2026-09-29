@@ -6,6 +6,13 @@ user-facing release notes.
 
 ## 2026-09-29
 
+- Universal › Misc / UI: removed "Mark mouseover/target with skull" and "…with cross".
+  Duplicates of "Skull mark mouseover / target" under Targeting helpers, which already
+  explains the marker numbers and the /tm vs ThreatMaster gotcha.
+- Macros page: "Style patterns" on the Universal tab is now a collapsible section,
+  collapsed by default (`details.patterns-wrap` in template.html).
+- Warlock: "Shadow Bolt" became "Shadow Bolt + Imp Firebolt" (`/petattack [harm]`,
+  `/cast [pet:Imp, harm] Firebolt`, `/cast [harm] Shadow Bolt`).
 - Hunter: added "Aspect toggle: Cheetah ↔ Hawk" (`/castsequence reset=combat Aspect of
   the Cheetah, Aspect of the Hawk`) next to the existing combat-based aspect macro.
   Each press swaps aspects; resets to Cheetah after combat.

@@ -156,14 +156,6 @@ UNIVERSAL = [
         M("Hide PvP titles",
           "/console UnitNamePlayerPVPTitle 0",
           "Removes PvP rank titles from nameplates and unit frames."),
-        M("Mark mouseover/target with skull",
-          "/targetmarker [@mouseover,exists] 8; 8",
-          "Marks your mouseover target with a skull, or your current target if no mouseover. "
-          "Uses the full /targetmarker name — the ThreatMaster addon claims the /tm "
-          "shorthand for itself, which silently breaks this macro if you use it."),
-        M("Mark mouseover/target with cross",
-          "/targetmarker [@mouseover,exists] 7; 7",
-          "Same as skull mark, using the cross icon instead."),
         M("Weapon swap: 1H+offhand ↔ 2H",
           "/equipslot 16 Durgen's Crescent Axe\n"
           "/equipslot 17 Veteran Shield\n"
@@ -276,7 +268,14 @@ CLASSES = [
 
         {"spec": "Shared", "groups": [
             G(DPS, [
-                M("Shadow Bolt", dpsHarm("Shadow Bolt")),
+                M("Shadow Bolt + Imp Firebolt",
+                  "#showtooltip Shadow Bolt\n"
+                  "/petattack [harm]\n"
+                  "/cast [pet:Imp, harm] Firebolt\n"
+                  "/cast [harm] Shadow Bolt",
+                  "Sends your pet in and, when the Imp is out, fires its Firebolt on the "
+                  "same press. Handy if you keep Firebolt autocast off to stop the Imp "
+                  "pulling or burning mana. With any other demon the Firebolt line is skipped."),
                 M("Corruption", dpsHarm("Corruption")),
                 M("Curse of Agony", dpsHarm("Curse of Agony")),
                 M("Immolate", dpsHarm("Immolate")),

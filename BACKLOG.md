@@ -24,15 +24,13 @@ stale checkmark.
 
 ## Open findings (from the 2026-09-30 Forever macro research)
 
-- **Survival Hunter melee names unconfirmed.** Forever adds a bleed strike (listed as
-  Lacerate) and an 8 sec melee strike (Strider Kick per classicwowforever, Runner's
-  Strike per wow.gg). Add macros once the in-game names are confirmed in beta.
-- **Builds page Paladin rotations predate Forever's changes.** No Holy Strike or
-  Seal of Fury yet; recheck seal/Judgement wording against Forever's "Judgement no
-  longer consumes the seal" change. Update Ret/Prot rotations.
 - **"Test in beta" macros to confirm:** Dark Pact, Elemental Mastery (both not seen
   in beta talent trees), Seal swap (Twist of Light), Voice of Truth (talent or baseline?),
-  Rogue Venom name (replaced Envenom?).
+  Rogue Venom name (replaced Envenom?), Survival melee button (does Raptor
+  Strike still queue off the GCD?).
+- **Builds page icons for Holy Strike / Seal of Fury are placeholders**
+  (`classicon_paladin`, `spell_holy_retributionaura`); swap once Wowhead has the
+  real Forever icons.
 
 ## Ideas not yet built
 

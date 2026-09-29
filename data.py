@@ -778,6 +778,13 @@ CLASSES = [
         {"spec": "Survival", "groups": [
             G(DPS, [
                 M("Counterattack", dpsHarm("Counterattack")),
+                M("Strider Kick", dpsHarm("Strider Kick"),
+                  "New Survival talent in Forever: instant 100% weapon damage kick, 8 sec cooldown."),
+                M("Survival melee button (Raptor + Mongoose + Strider Kick)",
+                  "#showtooltip Raptor Strike\n/startattack [harm]\n/cast [harm] Raptor Strike\n"
+                  "/cast [harm] Mongoose Bite\n/cast [harm] Strider Kick",
+                  BETA + "Raptor Strike queues on your next swing (no global cooldown), then "
+                  "Mongoose Bite if it's lit up, else Strider Kick. Spam it in melee."),
             ]),
             G(PANIC, [
                 M("Deterrence", plain("Deterrence")),

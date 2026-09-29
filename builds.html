@@ -482,10 +482,13 @@ const DATA = {
         single: [
           {name:"Seal of Command", icon:"ability_warrior_innerrage", note:"Apply and keep refreshed — your main damage seal."},
           {name:"Judgement", icon:"spell_holy_righteousfury", note:"On cooldown — doesn't consume the seal, cheap thanks to Benediction."},
-          {name:"Auto-attack", icon:"inv_sword_04", note:"Fills the gaps between Judgements — Seal of Command procs off these swings."},
+          {name:"Holy Strike", icon:"classicon_paladin", note:"On cooldown (12 sec) — Forever's new instant strike, learned at level 6."},
+          {name:"Auto-attack", icon:"inv_sword_04", note:"Fills the gaps — Seal of Command procs off these swings."},
         ],
         note: "Exorcism is a strong extra hit vs. Undead/Demons. Holy Light between pulls is mana-efficient self-healing thanks to Benediction.",
-        aoeNote: "No AoE at this level.",
+        aoe: [
+          {name:"Consecration", icon:"spell_holy_innerfire", note:"A class spell at level 20 in Forever (was a talent). Mana-hungry — save it for packs of 3+."},
+        ],
       },
     },
     {
@@ -499,14 +502,17 @@ const DATA = {
       ],
       rotation: {
         confidence: "medium",
-        note: "A reactive priority list, reasoned from ability-level-gating since no build-matched guide was found — Consecration and Holy Shield are NOT available yet at level 20, so this is a pre-Consecration threat kit. Double-check against the live beta client.",
+        note: "A reactive priority list, reasoned from Forever's trainer levels since no build-matched guide was found. Seal of Fury (10), Righteous Fury (16) and Consecration (20) are all trained by 20; Holy Shield is still a deeper talent. Double-check against the live beta client.",
         single: [
           {name:"Righteous Fury", icon:"spell_holy_sealoffury", note:"Always on — boosts the threat from your Holy damage."},
-          {name:"Seal of Righteousness", icon:"spell_holy_righteousnessaura", note:"Your threat seal at this level."},
-          {name:"Judgement", icon:"spell_holy_righteousfury", note:"On cooldown for burst threat."},
+          {name:"Seal of Fury", icon:"spell_holy_retributionaura", note:"Forever's tank seal (level 10): Holy damage per hit, plus an absorb shield with a shield equipped. Judgement doesn't use it up."},
+          {name:"Judgement", icon:"spell_holy_righteousfury", note:"With Seal of Fury active it's your taunt (10 yd). Use on cooldown for threat, or hold it to grab a loose mob."},
+          {name:"Holy Strike", icon:"classicon_paladin", note:"On cooldown (12 sec) for extra Holy threat."},
           {name:"Auto-attack + blocks", icon:"inv_shield_06", note:"Block procs from Redoubt/Shield Specialization carry a lot of your remaining threat."},
         ],
-        aoeNote: "No meaningful AoE threat tool yet at this level.",
+        aoe: [
+          {name:"Consecration", icon:"spell_holy_innerfire", note:"Class spell at level 20 in Forever — your first real AoE threat tool."},
+        ],
       },
     },
   ],

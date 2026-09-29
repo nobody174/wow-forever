@@ -1966,6 +1966,21 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Counterattack
 ```
 
+**Strider Kick** — New Survival talent in Forever: instant 100% weapon damage kick, 8 sec cooldown.
+```
+#showtooltip Strider Kick
+/cast [harm] Strider Kick
+```
+
+**Survival melee button (Raptor + Mongoose + Strider Kick)** — Test in beta: Raptor Strike queues on your next swing (no global cooldown), then Mongoose Bite if it's lit up, else Strider Kick. Spam it in melee.
+```
+#showtooltip Raptor Strike
+/startattack [harm]
+/cast [harm] Raptor Strike
+/cast [harm] Mongoose Bite
+/cast [harm] Strider Kick
+```
+
 #### Panic / defensive
 
 **Deterrence**

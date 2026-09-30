@@ -4,6 +4,20 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-30 (evening)
+
+- Site renamed "Road to Forever" (was "Venom & Trollmann's Road to Forever") in the
+  top bar on all five pages, the index `<title>` and hero `<h1>`; launch-plan lede
+  now says "How we get ahead…". ROADMAP's locked site-title decision updated.
+- Launch Plan: dropped Dual Mage, Dual Hunter and Triple Hunter. New Skyborne plans
+  **2 Hunters · Warrior · Druid** (`hwd`: Warrior tanks, Druid heals) and
+  **3 Hunters · Druid** (`h3d`: Druid flexes tank/heal), alongside Paladin · Hunter ·
+  Shaman. Hunter texts folded into a shared `hunter` base profile (data key only);
+  `base` now resolves up a chain. New steps: Druid Bear Form and Warrior Defensive
+  Stance at 10 (Classic quests, flagged), plus beta checks. Ghost Wolf confirmed at
+  20 (unverified tag removed). Compare defaults to hwd vs trio; stale saved modes
+  (mage/hunter) fall back to hwd. Mage Legacy card removed.
+
 ## 2026-09-30 (afternoon)
 
 - Launch Plan: two new plans next to Dual Mage / Dual Hunter. **Triple Hunter**

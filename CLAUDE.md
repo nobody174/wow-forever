@@ -3,8 +3,7 @@
 Macro cheatsheet for World of Warcraft: Forever (Classic+ on the Classic client, vanilla spell names, level cap 60).
 Live site: GitHub Pages from `main` / root → https://nobody174.github.io/wow-forever-macros/
 
-Small multi-page site: `index.html` is the countdown/landing page ("Venom & Trollmann's
-Road to Forever"), `macros.html` is the macro cheatsheet, `builds.html` lists talent
+Small multi-page site: `index.html` is the countdown/landing page ("Road to Forever"), `macros.html` is the macro cheatsheet, `builds.html` lists talent
 builds per class, `addons.html` lists addons, `launch-plan.html` is the launch-week
 leveling plan. All five share a top bar (site title, Macros / Builds / Addons /
 Launch Plan / Talent Calc links, current page highlighted).
@@ -58,12 +57,13 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Each card is a single framed nav-style button (`.addon-btn`) with the addon
   name linking to CurseForge, description below — not a separate name+link pair.
   Hand-edit directly.
-- `launch-plan.html` — hand-written launch plan with four group plans plus Compare:
-  Dual Mage (`mage`), Dual Hunter (`hunter`), Triple Hunter (`hunter3`) and
-  Paladin · Hunter · Shaman (`trio`, Dwarves starting in Coldridge Valley, since
-  Alliance Skyborne can't be Paladin or Shaman). Plans are defined in the `PLANS`
-  object (label, chips, color class, and `base` = plan whose overrides it inherits;
-  hunter3 and trio inherit from hunter). Checklists
+- `launch-plan.html` — hand-written launch plan with three group plans plus Compare:
+  2 Hunters · Warrior · Druid (`hwd`), 3 Hunters · Druid (`h3d`) — both Skyborne,
+  Zephras Isle start — and Paladin · Hunter · Shaman (`trio`, Dwarves starting in
+  Coldridge Valley, since Alliance Skyborne can't be Paladin or Shaman). Plans are
+  defined in the `PLANS` object (label, chips, color class, and `base` = the key
+  whose overrides it inherits; all three inherit the shared `hunter` profile, which
+  is a data key only, not a selectable plan). Checklists
   (before-launch / launch-night / 12→20 / 20→30 / 30→60 / test-in-beta) and the
   group-play cards are rendered by JS from the `PHASES` and `DUO` objects at the
   bottom of the file — edit steps there, not in the HTML. An item is shared by every
@@ -72,7 +72,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   any two plans side by side (two selects; rows whose resolved text matches render
   full-width "Same for both"), and the "Key differences" table is rendered from the
   `DIFFS` array. Legacy path cards are static HTML with `data-plans`. Mode comes from
-  `?plan=mage|hunter|hunter3|trio|compare` (+ `&a=&b=` for compare), then localStorage
+  `?plan=hwd|h3d|trio|compare` (+ `&a=&b=` for compare), then localStorage
   `wf-launch-plan-mode` / `wf-launch-plan-cmp`. Checkboxes persist per browser in
   localStorage (key `wf-launch-plan-v1`, keyed by item id — keep ids stable; shared
   steps share one checkbox across every plan). A floating "Buyable quests" button (top-right, just under the sticky top bar) (and a

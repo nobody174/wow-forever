@@ -18,7 +18,7 @@ being worked on next.
 
 - **Countdown target:** `2026-11-04T23:00:00Z`, fixed — confirmed correct as UTC,
   not a bug when it displays as Nov 5 in timezones ahead of UTC.
-- **Site title:** "Venom & Trollmann's Road to Forever."
+- **Site title:** "Road to Forever" (renamed from "Venom & Trollmann's Road to Forever" on 2026-09-30).
 - **Macro style rules** (targeting conventions, `#showtooltip` placement,
   255-char limit) are locked in `CLAUDE.md` — treat any deviation as a bug, not
   a style choice, unless explicitly revisited.

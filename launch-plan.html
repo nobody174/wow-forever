@@ -11,7 +11,7 @@
 :root{
   --bg:#0E1428; --panel:#161E38; --edge:#3A4468; --gold:#FFD100;
   --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100;
-  --ok:#6FCF7F; --warn:#E8A33D; --frost:#69CCF0; --hunt:#ABD473; --pal:#F58CBA; --sham:#4C8BFF;
+  --ok:#6FCF7F; --warn:#E8A33D; --frost:#69CCF0; --hunt:#ABD473; --pal:#F58CBA; --sham:#4C8BFF; --war:#C79C6E; --dru:#FF7D0A;
   --serif:"Marcellus","Palatino Linotype",Georgia,serif;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
@@ -54,6 +54,8 @@ h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6
 .chip.frost{border-color:var(--frost);color:var(--frost)}
 .chip.hunt{border-color:var(--hunt);color:var(--hunt)}
 .chip.pal{border-color:var(--pal);color:var(--pal)}
+.chip.war{border-color:var(--war);color:var(--war)}
+.chip.dru{border-color:var(--dru);color:var(--dru)}
 .chip.gold{border-color:var(--gold);color:var(--gold)}
 .draft{background:rgba(232,163,61,.08);border:1px solid rgba(232,163,61,.45);border-radius:6px;padding:12px 14px;color:var(--text);font-size:14px;margin:0 0 22px}
 .draft strong{color:var(--warn)}
@@ -67,12 +69,11 @@ h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6
 .mode-switch button .dot{width:9px;height:9px;border-radius:50%;background:currentColor}
 .mode-switch button[data-mode="mage"] .dot{background:var(--frost)}
 .mode-switch button[data-mode="hunter"] .dot{background:var(--hunt)}
-.mode-switch button[data-mode="hunter3"] .dot{background:var(--hunt);box-shadow:5px 0 0 var(--hunt),-5px 0 0 var(--hunt);margin:0 5px}
 .mode-switch button[data-mode="trio"] .dot{background:linear-gradient(90deg,var(--pal) 33%,var(--hunt) 33% 66%,var(--sham) 66%)}
 .mode-switch button[data-mode="compare"] .dot{background:linear-gradient(90deg,var(--frost) 50%,var(--hunt) 50%)}
 .mode-switch button[aria-pressed="true"]{background:var(--panel);color:var(--text);border-color:var(--edge);box-shadow:0 1px 3px rgba(0,0,0,.4)}
 .mode-switch button[data-mode="mage"][aria-pressed="true"]{border-color:var(--frost)}
-.mode-switch button[data-mode="hunter"][aria-pressed="true"],.mode-switch button[data-mode="hunter3"][aria-pressed="true"]{border-color:var(--hunt)}
+.mode-switch button[data-mode="hunter"][aria-pressed="true"]{border-color:var(--hunt)}
 .mode-switch button[data-mode="trio"][aria-pressed="true"]{border-color:var(--pal)}
 .mode-switch button[data-mode="compare"][aria-pressed="true"]{border-color:var(--gold)}
 .diff-toggle{display:none;align-items:center;gap:8px;font-size:14px;color:var(--muted);cursor:pointer}
@@ -95,7 +96,7 @@ body.mode-compare .only-compare{display:block}
 .progress{display:flex;align-items:center;gap:10px;margin:8px 0 14px;font-size:13px;color:var(--muted)}
 .bar{flex:1;height:6px;border-radius:3px;background:#0A0F20;border:1px solid var(--edge);overflow:hidden}
 .bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--frost),var(--gold));transition:width .2s ease}
-body.mode-hunter .bar span,body.mode-hunter3 .bar span{background:linear-gradient(90deg,var(--hunt),var(--gold))}
+body.mode-hunter .bar span{background:linear-gradient(90deg,var(--hunt),var(--gold))}
 body.mode-trio .bar span{background:linear-gradient(90deg,var(--pal),var(--hunt),var(--sham))}
 ul.check{list-style:none;margin:0;padding:0}
 ul.check li{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--edge);border-radius:5px;margin-bottom:8px}
@@ -106,7 +107,7 @@ ul.check li.done{border-left-color:var(--ok);opacity:.72}
 ul.check label{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;cursor:pointer}
 ul.check input{flex:none;width:18px;height:18px;margin:3px 0 0;accent-color:var(--gold);cursor:pointer}
 .lvl{flex:none;min-width:58px;font:600 13px/1.6 var(--sans);color:var(--frost)}
-body.mode-hunter .lvl,body.mode-hunter3 .lvl{color:var(--hunt)}
+body.mode-hunter .lvl{color:var(--hunt)}
 body.mode-trio .lvl{color:var(--pal)}
 .body{flex:1;min-width:0}
 .t{font-weight:600}
@@ -222,11 +223,28 @@ body.buy-open .buy-drawer{transform:none}
 .buy-legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted);margin-top:10px}
 .buy-legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;background:var(--c)}
 @media (max-width:560px){.buy-fab{right:12px;top:calc(var(--topbar-h,64px) + 10px);padding:10px 13px}}
+/* Per-plan accent colors (hwd = 2 Hunters + Warrior + Druid, h3d = 3 Hunters + Druid) */
+.mode-switch button[data-mode="hwd"] .dot{background:linear-gradient(90deg,var(--hunt) 50%,var(--war) 50% 75%,var(--dru) 75%)}
+.mode-switch button[data-mode="h3d"] .dot{background:linear-gradient(90deg,var(--hunt) 66%,var(--dru) 66%)}
+.mode-switch button[data-mode="hwd"][aria-pressed="true"]{border-color:var(--war)}
+.mode-switch button[data-mode="h3d"][aria-pressed="true"]{border-color:var(--dru)}
+body.mode-hwd .bar span{background:linear-gradient(90deg,var(--hunt),var(--war),var(--dru))}
+body.mode-h3d .bar span{background:linear-gradient(90deg,var(--hunt),var(--dru))}
+body.mode-hwd .lvl{color:var(--war)} body.mode-h3d .lvl{color:var(--dru)}
+ul.check li.cls-hwd{border-left-color:var(--war)} ul.check li.cls-h3d{border-left-color:var(--dru)}
+.tag.cls-hwd{color:var(--war);border:1px solid rgba(199,156,110,.6)}
+.tag.cls-h3d{color:var(--dru);border:1px solid rgba(255,125,10,.6)}
+.cmp-head .h-hwd{color:var(--war);border-bottom:2px solid var(--war)}
+.cmp-head .h-h3d{color:var(--dru);border-bottom:2px solid var(--dru)}
+.cmp-cell.hwd{border-left:3px solid var(--war)} .cmp-cell.hwd .lvl,.cmp-cell.hwd .who{color:var(--war)}
+.cmp-cell.h3d{border-left:3px solid var(--dru)} .cmp-cell.h3d .lvl,.cmp-cell.h3d .who{color:var(--dru)}
+.card.cls-hwd{border-left-color:var(--war)} .card.cls-h3d{border-left-color:var(--dru)}
+th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
 </style>
 </head>
-<body class="mode-mage">
+<body class="mode-hwd">
 <div class="topbar">
-  <a class="site-title" href="index.html">Venom &amp; Trollmann's Road to Forever</a>
+  <a class="site-title" href="index.html">Road to Forever</a>
   <nav aria-label="Site">
     <a href="macros.html">Macros</a>
     <a href="builds.html">Builds</a>
@@ -237,21 +255,20 @@ body.buy-open .buy-drawer{transform:none}
 </div>
 <div class="wrap">
   <h1>Launch Plan</h1>
-  <p class="lede">How Venom &amp; Trollmann get ahead of the launch crowd: questing together off the busy human route, and clearing every new dungeon once for its first-clear quest XP. Pick a group: the mage duo, the hunter duo, three hunters, or a Paladin, Hunter and Shaman with their own tank and healer. Or compare any two side by side.</p>
+  <p class="lede">How we get ahead of the launch crowd: questing together off the busy human route, and clearing every new dungeon once for its first-clear quest XP. Pick a group: two Hunters with a Warrior tank and Druid healer, three Hunters with a Druid, or a Paladin, Hunter and Shaman. Or compare any two side by side.</p>
   <div class="meta">
     <span class="chip gold">Alliance</span>
     <span class="chip" id="race-chip">Skyborne (High Order)</span>
-    <span class="chip frost" id="class-chip">2× Mage</span>
-    <span class="chip" id="extra-chip">+ maybe a Druid</span>
+    <span class="chip war" id="class-chip">2× Hunter + Warrior + Druid</span>
+    <span class="chip" id="extra-chip">Warrior tanks, Druid heals</span>
     <span class="chip" id="launch-chip">Launch: Nov 4, 3:00 PM PST</span>
   </div>
 
   <div class="switch-wrap">
     <span class="switch-label" id="switch-label">Plan</span>
     <div class="mode-switch" role="group" aria-labelledby="switch-label">
-      <button type="button" data-mode="mage" aria-pressed="true"><span class="dot" aria-hidden="true"></span>Dual Mage</button>
-      <button type="button" data-mode="hunter" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Dual Hunter</button>
-      <button type="button" data-mode="hunter3" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Triple Hunter</button>
+      <button type="button" data-mode="hwd" aria-pressed="true"><span class="dot" aria-hidden="true"></span>2 Hunters · Warrior · Druid</button>
+      <button type="button" data-mode="h3d" aria-pressed="false"><span class="dot" aria-hidden="true"></span>3 Hunters · Druid</button>
       <button type="button" data-mode="trio" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Paladin · Hunter · Shaman</button>
       <button type="button" data-mode="compare" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Compare</button>
     </div>
@@ -308,7 +325,7 @@ body.buy-open .buy-drawer{transform:none}
   <div class="phase" data-phase="p1"></div>
 
   <h2 id="p2">Phase 2 — 20 → 30</h2>
-  <p class="section-note">Boats do the long legs. Mages teleport; everyone else plans their hearthstone.</p>
+  <p class="section-note">Boats do the long legs. Nobody teleports, so plan the hearthstone.</p>
   <div class="phase" data-phase="p2"></div>
 
   <h2 id="p3">Phase 3 — 30 → 60 <span class="tag unv">unverified</span></h2>
@@ -316,7 +333,7 @@ body.buy-open .buy-drawer{transform:none}
   <div class="phase" data-phase="p3"></div>
 
   <h2 id="dungeons">New dungeons at a glance</h2>
-  <p class="section-note">One clear each, with every quest collected first. The tenth clear pays almost nothing. The hunter groups need both a tank and a healer for these; the Paladin · Hunter · Shaman group brings its own.</p>
+  <p class="section-note">One clear each, with every quest collected first. The tenth clear pays almost nothing. The Warrior + Druid and Paladin + Shaman groups bring their own tank and healer; with three Hunters the Druid covers one role and we find the other.</p>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Dungeon</th><th>Levels</th><th>Where</th><th>Our plan</th></tr></thead>
@@ -374,12 +391,7 @@ body.buy-open .buy-drawer{transform:none}
   </div>
   <p class="section-note">Positions follow <a href="https://www.wowhead.com/forever/legacy-calculator" target="_blank" rel="noopener">Wowhead's Legacy Calculator</a> (beta build). Ranks in brackets.</p>
   <div class="cards two">
-    <div class="card cls-mage legacy-path" data-plans="mage"><h4>Mage path <span class="tag cls-mage">mage</span></h4><ul>
-      <li>Points 1–5: <strong>Thrill of Adventure 5/5</strong> while leveling.</li>
-      <li>Then Resourcefulness: Gourmand, The Quick and the Dead, then column 2, until 10 are spent there.</li>
-      <li>Point 16: <strong>Reagent Economy</strong>. Thrill 5 + Resourcefulness 11 is exactly the 16 cap.</li>
-    </ul></div>
-    <div class="card cls-hunter legacy-path" data-plans="hunter hunter3"><h4>Hunter path <span class="tag cls-hunter">hunter</span></h4><ul>
+    <div class="card cls-hunter legacy-path" data-plans="hwd h3d"><h4>Skyborne group path <span class="tag cls-hunter">everyone</span></h4><ul>
       <li>Points 1–5: <strong>Thrill of Adventure 5/5</strong>. It also saves food and water we'd otherwise buy.</li>
       <li>Then stay in Adventure: Field Guide first (Frequent Flier's connector), then High Alert or Field Medicine.</li>
       <li>Point 11: <strong>Frequent Flier</strong> (50% cheaper flights, 20% faster). The last 5 go to Resourcefulness column 1: Gourmand 3/3 plus The Quick and the Dead 2/2.</li>
@@ -405,7 +417,7 @@ body.buy-open .buy-drawer{transform:none}
     <li><a href="https://skycoach.gg/blog/wow-forever/articles/all-new-zones-guide" target="_blank" rel="noopener">Skycoach — New zones</a></li>
     <li><a href="https://www.icy-veins.com/wow-forever/camping" target="_blank" rel="noopener">Icy Veins — Camping</a></li>
     <li><a href="https://kingboost.net/blogs/wow-forever/wow-forever-camping-guide/" target="_blank" rel="noopener">KingBoost — Camping &amp; Legacy perks</a></li>
-    <li><a href="https://lfcarry.com/guides/wow-forever-mage" target="_blank" rel="noopener">LFCarry — Mage &amp; Skyborne racials</a></li>
+    <li><a href="https://lfcarry.com/guides/wow-forever-mage" target="_blank" rel="noopener">LFCarry — Skyborne racials</a></li>
     <li><a href="https://mobalytics.gg/wow-forever/guides/wow-forever-race-class-combinations" target="_blank" rel="noopener">Mobalytics — Race and class combinations</a></li>
     <li><a href="https://wowforevertools.com/abilities/paladin" target="_blank" rel="noopener">WoW Forever Tools — Paladin trainer levels</a></li>
   </ul>
@@ -433,85 +445,83 @@ body.buy-open .buy-drawer{transform:none}
   "use strict";
 
   // ---------------------------------------------------------------------------
-  // Plans. `base` = inherit that plan's per-item overrides unless the item has
+  // Plans. `base` = inherit that key's per-item overrides unless the item has
   // its own key for this plan. `css` picks the accent color class.
   // ---------------------------------------------------------------------------
   var PLANS = {
-    mage:    { label: "Dual Mage", short: "2× Mage", tag: "mage", css: "mage", base: null,
-               race: "Skyborne (High Order)", extra: "+ maybe a Druid" },
-    hunter:  { label: "Dual Hunter", short: "2× Hunter", tag: "hunter", css: "hunter", base: null,
-               race: "Skyborne (High Order)", extra: "+ maybe a Druid" },
-    hunter3: { label: "Triple Hunter", short: "3× Hunter", tag: "hunter", css: "hunter", base: "hunter",
-               race: "Skyborne (High Order)", extra: "+ a tank & healer for dungeons" },
-    trio:    { label: "Paladin · Hunter · Shaman", short: "Paladin + Hunter + Shaman", tag: "trio", css: "trio", base: "hunter",
+    hwd:     { label: "2 Hunters · Warrior · Druid", short: "2× Hunter + Warrior + Druid", tag: "this group", css: "hwd", base: "hunter",
+               race: "Skyborne (High Order)", extra: "Warrior tanks, Druid heals" },
+    h3d:     { label: "3 Hunters · Druid", short: "3× Hunter + Druid", tag: "this group", css: "h3d", base: "hunter",
+               race: "Skyborne (High Order)", extra: "Druid tanks or heals" },
+    trio:    { label: "Paladin · Hunter · Shaman", short: "Paladin + Hunter + Shaman", tag: "this group", css: "trio", base: "hunter",
                race: "Dwarf", extra: "Own tank + healer" }
   };
-  var PLAN_IDS = ["mage", "hunter", "hunter3", "trio"];
+  var PLAN_IDS = ["hwd", "h3d", "trio"];
 
   // ---------------------------------------------------------------------------
-  // Plan data. Each item is shared by every plan unless it has a key for a plan
-  // (or for that plan's `base`): an object overrides fields for that plan,
-  // `false` hides the item for it. Item ids double as checkbox storage keys, so
-  // keep ids stable (ids from the original mage-only page are unchanged).
+  // Plan data. An item's own fields apply to every plan unless it has a key for
+  // that plan, or for a plan up its `base` chain (e.g. h3d → hunter). The
+  // `hunter` key is a shared base profile for every group with hunters, not a
+  // selectable plan. Object = override fields, `false` = hidden for that plan.
+  // Item ids double as checkbox storage keys, so keep ids stable.
   // Tags: [kind, text] where kind is dng | unv | opt.
   // ---------------------------------------------------------------------------
   var PHASES = {
     before: [
       { id: "b-names", lvl: "Oct 27", t: "Reserve names (Oct 27 – Nov 3)",
-        n: "Both characters, plus the druid if they're in. Up to 3 characters per account in that window.",
-        hunter3: { n: "All three characters, plus the druid if they're in. Up to 3 characters per account in that window." },
+        n: "Every character in the group. Up to 3 characters per account in that window.",
         trio: { n: "All three characters. Paladin and Shaman must be <strong>Dwarves</strong> (Alliance Skyborne can't be either), so the Hunter goes Dwarf too and we all start together in Coldridge Valley." } },
       { id: "b-ui", lvl: "Beta", t: "Lock in UI, keybinds and macros",
         n: 'Save the bar layout and copy the macros from the <a href="macros.html">Macros</a> page so we play from minute one.' },
       { id: "b-addons", lvl: "Beta", t: "Test every addon on the beta client",
         n: 'Quest helpers especially. Nothing gets installed for the first time on launch night. See <a href="addons.html">Addons</a>.' },
       { id: "b-legacy", lvl: "Plan", t: "Legacy points: we start at 0",
-        mage: { n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan: Thrill of Adventure while leveling; Reagent Economy is a later goal because it sits behind 10 points in Resourcefulness. See <a href="#legacy">Legacy points</a>.' },
-        hunter: { n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan: Thrill of Adventure first, then stay in Adventure toward Frequent Flier. Reagent Economy (“class abilities no longer require reagents purchasable from vendors”) almost certainly excludes ammo, a weapon consumable. See <a href="#legacy">Legacy points</a>.', tags: [["unv", "confirm ammo excluded"]] },
-        trio: { n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan for all three: Thrill of Adventure first (it returns mana too, so the Paladin and Shaman drink less), then stay in Adventure toward Frequent Flier. See <a href="#legacy">Legacy points</a>.' } },
+        n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan for everyone: Thrill of Adventure first (health and mana back on kills), then stay in Adventure toward Frequent Flier — nobody in the group teleports. Reagent Economy almost certainly excludes ammo, a weapon consumable. See <a href="#legacy">Legacy points</a>.',
+        tags: [["unv", "confirm ammo excluded"]] },
       { id: "b-voice", lvl: "Plan", t: "Discord voice ready",
         n: "Push-to-talk. Calling pulls and quest splits out loud saves more time than any route trick." },
-      { id: "b-druid", lvl: "Plan", t: "Settle the third player",
-        mage: { n: "A druid (bear tank in dungeons, healer when needed) fits two mages better than a third mage." },
-        hunter: { n: "Even more important for hunters: two hunters have no tank, no healer and no AoE. A druid covers one role; we still need one more player for dungeons." },
-        hunter3: { t: "Settle the fourth and fifth player", n: "Three hunters still have no tank, no healer and no AoE. A druid covers one role; a priest or shaman healer the other." },
-        trio: { t: "Settle roles and specs", n: "Paladin tanks (Protection), Shaman heals, Hunter is the damage. Protection quests fine with Holy Strike and Seal of Fury; the Paladin can respec Retribution later if the group finds another tank. See <a href=\"builds.html?class=Paladin\">Builds</a>." } },
+      { id: "b-druid", lvl: "Plan", t: "Settle roles and specs",
+        hwd: { n: "Warrior tanks (Protection talents, sword and board), Druid heals (Restoration), the two Hunters do the damage. Both support roles can still quest well: Warrior in Defensive Stance, Druid in cat or bear form between heals." },
+        h3d: { n: "The Druid flexes: heals while questing (a tank pet holds mobs), bear-tanks in dungeons. Pick Feral or Restoration talents based on which role you'll need most, and find a healer or tank for the 5th spot." },
+        trio: { n: "Paladin tanks (Protection), Shaman heals, Hunter is the damage. Protection quests fine with Holy Strike and Seal of Fury; the Paladin can respec Retribution later if the group finds another tank. See <a href=\"builds.html?class=Paladin\">Builds</a>." } },
       { id: "b-group", lvl: "Plan", t: "Line up a Hall of Thanes group",
-        mage: { n: "Group size isn't announced yet. If it's 5, we need 1–2 more — find them in advance (guild or Discord)." },
-        hunter: { n: "Group size isn't announced yet. We need a real tank and healer — druid plus one more. Find them in advance (guild or Discord)." },
+        hwd: { n: "Group size isn't announced yet. We have tank, healer and two DPS, so a 5-man needs just one more DPS — any class. Line them up in advance (guild or Discord)." },
+        h3d: { n: "Group size isn't announced yet. With four, a 5-man needs one more: a healer if the Druid tanks, or a tank if the Druid heals. Line them up in advance (guild or Discord)." },
         trio: { n: "Group size isn't announced yet. If it's 5, we only need 2 DPS — the easiest spots to fill. Line them up in advance anyway (guild or Discord)." } },
-      { id: "h-loot", lvl: "Plan", t: "Agree on loot rules between us", mage: false,
-        hunter: { n: "We both want the same bows, guns, agility and mail. Take turns, or roll only between the two of us — decide before the first dungeon." },
-        hunter3: { n: "All three of us want the same bows, guns, agility and mail. Rotate who gets the next upgrade, or roll only between us — decide before the first dungeon." },
+      { id: "h-loot", lvl: "Plan", t: "Agree on loot rules",
+        hwd: { n: "The two Hunters want the same bows, guns, agility and mail — take turns. Strength and shields go to the Warrior, intellect and healing to the Druid." },
+        hunter: { n: "All the Hunters want the same bows, guns, agility and mail. Rotate who gets the next upgrade, or roll only between us — decide before the first dungeon." },
+        h3d: { n: "The three Hunters share bows, guns, agility and mail — rotate. The Druid takes leather with intellect (healing) or agility/strength (bear), depending on the role." },
         trio: { n: "Almost no clashes: agility and ranged weapons to the Hunter, intellect and healing to the Shaman, strength and shields to the Paladin. Only leather/mail with mixed stats needs a quick call." } },
-      { id: "h-petroles", lvl: "Plan", t: "Plan pet roles", mage: false,
-        hunter: { n: "One of us runs a sturdy tank pet (bear or boar type), the other a damage pet (cat). Check what's tameable on Zephras and in Darkshore." },
-        hunter3: { n: "One tank pet (bear or boar type), two damage pets (cats). Three pets can hold an elite while we shoot. Check what's tameable on Zephras and in Darkshore." },
+      { id: "h-petroles", lvl: "Plan", t: "Plan pet roles",
+        hwd: { n: "The Warrior tanks, so both Hunters run damage pets (cats). Pets on Defensive in dungeons so they don't pull threat off the Warrior." },
+        hunter: { n: "One tank pet (bear or boar type), the rest damage pets (cats). The tank pet holds elites while we shoot. Check what's tameable on Zephras and in Darkshore." },
         trio: { t: "Pick the Hunter's pet", n: "The Paladin tanks, so the Hunter runs a damage pet (cat) that can off-tank an add when needed." } }
     ],
     night: [
       { id: "n-zephras", lvl: "1–12", t: "Zephras Isle together, share every quest",
-        n: "Both factions share the island, so it's busy. Finish the main chain and leave; you don't have to wait for 12.",
-        hunter3: { n: "Both factions share the island, so it's busy. Three instant ranged tags make crowded camps easy. Finish the main chain and leave; you don't have to wait for 12." },
+        n: "Both factions share the island, so it's busy. Instant ranged tags make crowded camps easier. Finish the main chain and leave; you don't have to wait for 12.",
         trio: false },
-      { id: "tr-coldridge", lvl: "1–6", t: "Coldridge Valley together, share every quest", mage: false, hunter: false,
+      { id: "tr-coldridge", lvl: "1–6", t: "Coldridge Valley together, share every quest", hunter: false,
         trio: { n: "Expect it packed: Dwarf Shaman is Forever's most hyped new combo. Group up from the first minute so kill credit is shared. Paladin gets Holy Strike at 6." } },
-      { id: "tr-dunmorogh", lvl: "6–12", t: "Dun Morogh from Kharanos", mage: false, hunter: false,
+      { id: "tr-dunmorogh", lvl: "6–12", t: "Dun Morogh from Kharanos", hunter: false,
         trio: { n: "Paladin trains Seal of Fury at 10 (tank seal, makes Judgement a taunt). Shaman does the Earth totem quest (~4) and Fire totem quest (~10).", tags: [["unv", "check totem quests"]] } },
-      { id: "h-pet", lvl: "10", t: "Hunter pet quest — tame your first pet", mage: false,
-        hunter: { n: "Lands in the middle of Zephras. How the Skyborne pet quest works and where it happens is still unknown — test in beta.", tags: [["unv", "unverified"]] },
-        trio: { n: "In Classic, Dwarf hunters get it from the hunter trainer in Kharanos. Check it works the same in Forever.", tags: [["unv", "unverified"]] } },
+      { id: "h-pet", lvl: "10", t: "Hunter pet quest — tame your first pet",
+        n: "Lands in the middle of Zephras. How the Skyborne pet quest works and where it happens is still unknown — test in beta.", tags: [["unv", "unverified"]],
+        trio: { n: "In Classic, Dwarf hunters get it from the hunter trainer in Kharanos. Check it works the same in Forever." } },
+      { id: "wd-bear", lvl: "10", t: "Druid: Bear Form", hunter: false, hwd: {},
+        h3d: { n: "Your dungeon tank form. In Classic it's a class quest at 10; check the Skyborne version on Zephras." },
+        n: "Off-tank form for when a pull goes wrong. In Classic it's a class quest at 10; check the Skyborne version on Zephras.",
+        tags: [["unv", "check quest"]] },
+      { id: "wd-def", lvl: "10", t: "Warrior: Defensive Stance + Taunt", hunter: false, hwd: {},
+        n: "In Classic Defensive Stance comes from a class quest at 10. The Warrior tanks from here on.",
+        tags: [["unv", "check quest"]] },
       { id: "n-camp", lvl: "~5", t: "The Great Outdoors → train Cooking → Basic Campfire",
-        mage: { n: "Cooking unlocks your own campfire (1-hour camp buffs) and XP food. At least one of us takes it." },
-        hunter: { n: "Cooking unlocks your own campfire (1-hour camp buffs), XP food and pet food. Worth even more for hunters — at least one of us takes it." },
-        trio: { n: "Cooking unlocks your own campfire (1-hour camp buffs), XP food and the Hunter's pet food. At least one of us takes it." } },
+        n: "Cooking unlocks your own campfire (1-hour camp buffs), XP food and pet food. At least one of us takes it." },
       { id: "n-skin", lvl: "Early", t: "Train Skinning",
-        mage: { n: "The only other profession for now. Whoever didn't loot the mob skins it." },
-        hunter: { n: "Our main gold source — hunters kill a lot of beasts. Whoever didn't loot the mob skins it." },
-        trio: { n: "Our main gold source. Whoever didn't loot the mob skins it." } },
-      { id: "h-ammo", lvl: "12", t: "Stock ammo and pet food before the skycutter", mage: false,
-        hunter: { n: "Buy enough for Hall of Thanes and the Darkshore trip. Ammo and food are the biggest gold drain." },
-        hunter3: { n: "Buy enough for Hall of Thanes and the Darkshore trip. Three hunters burn through ammo and food fast — it's our biggest gold drain." },
+        n: "Our main gold source — hunters kill a lot of beasts. Whoever didn't loot the mob skins it." },
+      { id: "h-ammo", lvl: "12", t: "Stock ammo and pet food before the skycutter",
+        n: "Buy enough for Hall of Thanes and the Darkshore trip. Ammo and food are the biggest gold drain.",
         trio: { t: "Stock ammo and pet food in Ironforge", n: "Enough for Hall of Thanes and the Darkshore trip. The Hunter's ammo is the group's biggest cost, so the others chip in." } },
       { id: "n-dalaran", lvl: "12", t: "Skycutter to Dalaran → Skyborne portal to Stormwind",
         n: "Turn in <em>The Magical City of Dalaran</em> in the Sky Enclave, pick up <em>Welcome to Azeroth</em>, take the portal.",
@@ -526,18 +536,17 @@ body.buy-open .buy-drawer{transform:none}
       { id: "p1-filler", lvl: "12–14", t: "Short filler in Dun Morogh / Loch Modan", tags: [["opt", "only if needed"]],
         n: "Just enough to be ready for Hall of Thanes. Expect crowds there too (Dwarf Shaman hype).",
         trio: { t: "Short filler in Loch Modan", n: "Dun Morogh is done, so a little Thelsamar until everyone is 13–14." } },
-      { id: "tr-rf", lvl: "16", t: "Paladin: train Righteous Fury", mage: false, hunter: false,
+      { id: "tr-rf", lvl: "16", t: "Paladin: train Righteous Fury", hunter: false,
         trio: { n: "Trained at 16 in Forever. On for every dungeon pull; off while questing if the Shaman is short on mana." } },
       { id: "p1-hot", lvl: "13–15", t: "Hall of Thanes — one clear", tags: [["dng", "13–18"]],
-        mage: { n: "Under Ironforge. Every quest in the log before entering." },
-        hunter: { n: "Under Ironforge. Every quest in the log before entering. Two hunters need a tank and a healer — bring the druid plus one more." },
-        hunter3: { n: "Under Ironforge. Every quest in the log before entering. Three hunters need a tank and a healer — bring the druid plus one more." },
+        hwd: { n: "Under Ironforge. Every quest in the log before entering. Warrior tanks, Druid heals; pets on Defensive so they don't rip threat." },
+        h3d: { n: "Under Ironforge. Every quest in the log before entering. Druid bear-tanks with a 5th player healing — or Druid heals and the tank pet holds trash (bosses are riskier)." },
         trio: { n: "Under Ironforge. Every quest in the log before entering. We bring our own tank and healer: Paladin tanks with Seal of Fury, Shaman heals, Hunter and pet do damage." } },
       { id: "p1-boat", lvl: "14", t: "Tram to Stormwind → boat to Auberdine, set hearth",
         n: "New Stormwind Harbor → Auberdine route." },
       { id: "p1-darkshore", lvl: "14–19", t: "Darkshore — quest against the flow",
-        mage: { n: "Night Elves arrive at the same time and fan out from Auberdine. Do the far ends first (north toward Cliffspring, south toward the Grove of the Ancients) and the Auberdine quests last. Walk on Air for cliff shortcuts." },
-        hunter: { n: "Same route, far ends first and Auberdine last. Expect extra Night Elf hunters competing here. Instant ranged tags win contested camps, and the many beasts mean plenty of skinning." },
+        n: "Night Elves arrive at the same time and fan out from Auberdine. Far ends first (north toward Cliffspring, south toward the Grove of the Ancients), Auberdine last. Instant ranged tags win contested camps; the many beasts mean plenty of skinning.",
+        hwd: { n: "Far ends first (north toward Cliffspring, south toward the Grove of the Ancients), Auberdine last. With a real tank and healer we can pull bigger packs and take the elite quests smaller groups skip." },
         trio: { n: "Far ends first (north toward Cliffspring, south toward the Grove of the Ancients), Auberdine last. With a tank and a healer we can pull bigger packs and take the elite quests the duos skip." } },
       { id: "p1-bfdq", lvl: "14–19", t: "Collect Blackfathom Deeps quests if offered",
         n: "Hold them for the BFD clear in phase 2." },
@@ -546,16 +555,17 @@ body.buy-open .buy-drawer{transform:none}
     ],
     p2: [
       { id: "p2-ashen", lvl: "20–22", t: "Finish Ashenvale" },
-      { id: "h-cheetah", lvl: "20", t: "Train Aspect of the Cheetah", mage: false,
-        hunter: { n: "Confirmed level 20 in Forever. Makes the long runs between hubs much faster — our replacement for teleports." },
-        trio: { t: "Travel speed at 20: Cheetah + Ghost Wolf", n: "Hunter trains Aspect of the Cheetah (confirmed 20 in Forever); Shaman gets Ghost Wolf. The Paladin runs on foot until the level-40 mount, so the other two wait at the next hub.", tags: [["unv", "check Ghost Wolf level"]] } },
-      { id: "tr-cons", lvl: "20", t: "Paladin: train Consecration", mage: false, hunter: false,
+      { id: "h-cheetah", lvl: "20", t: "Train Aspect of the Cheetah",
+        n: "Confirmed level 20 in Forever. Makes the long runs between hubs much faster — our replacement for teleports.",
+        hwd: { n: "Confirmed level 20 in Forever. The Druid gets Cat Form at 20 (a bit faster only with talents) and Travel Form at 30; the Warrior walks until the mount, so the Hunters wait at the next hub." },
+        h3d: { n: "Confirmed level 20 in Forever. The Druid gets Travel Form at 30; until then the Hunters wait at the next hub." },
+        trio: { t: "Travel speed at 20: Cheetah + Ghost Wolf", n: "Hunter trains Aspect of the Cheetah and the Shaman gets Ghost Wolf — both confirmed at 20 in Forever. The Paladin runs on foot until the level-40 mount, so the other two wait at the next hub." } },
+      { id: "tr-cons", lvl: "20", t: "Paladin: train Consecration", hunter: false,
         trio: { n: "A class spell at 20 in Forever (was a talent). Our first AoE threat tool — Excavation Site and dense camps get much easier." } },
-      { id: "tr-water", lvl: "20", t: "Shaman: Water totem quest", mage: false, hunter: false,
+      { id: "tr-water", lvl: "20", t: "Shaman: Water totem quest", hunter: false,
         trio: { n: "Healing Stream Totem between pulls cuts the Shaman's drinking. Quest location in Forever still unknown.", tags: [["unv", "unverified"]] } },
       { id: "p2-dm", lvl: "20–21", t: "Deadmines detour", tags: [["opt", "optional"]],
-        mage: { n: "By day 3–4 the wave has left Westfall. Teleport to Stormwind, do only the Defias chain + one Deadmines clear. Check in beta that the quests aren't gray by then." },
-        hunter: { n: "No teleport, so the trip from Ashenvale to Stormwind and back costs real time. Only worth it combined with a training trip — otherwise skip it." } },
+        n: "No teleport, so the trip from Ashenvale to Stormwind and back costs real time. Only worth it combined with a training trip — otherwise skip it." },
       { id: "p2-bfd", lvl: "22–24", t: "Blackfathom Deeps — one clear", tags: [["unv", "check range"]],
         n: "Only if its Forever level range fits." },
       { id: "p2-wet", lvl: "22–26", t: "Boat Auberdine → Menethil, quest the Wetlands",
@@ -597,12 +607,15 @@ body.buy-open .buy-drawer{transform:none}
     ],
     beta: [
       { id: "t-exit", lvl: "Zephras", t: "What level we actually leave Zephras at, and which quests to skip", trio: false },
-      { id: "tr-t-crowd", lvl: "Coldridge", t: "How crowded the Dwarf start is at launch-like load", mage: false, hunter: false, trio: {} },
-      { id: "tr-t-totems", lvl: "Shaman", t: "Where the Dwarf Shaman totem quests are (Earth ~4, Fire ~10, Water ~20)", mage: false, hunter: false, trio: {} },
-      { id: "tr-t-fury", lvl: "Paladin", t: "Seal of Fury taunt in practice: does it hold packs at 13–18 without Consecration?", mage: false, hunter: false, trio: {} },
-      { id: "h-t-pet", lvl: "Zephras", t: "How the Skyborne hunter pet quest works at 10", mage: false, hunter: {},
+      { id: "tr-t-crowd", lvl: "Coldridge", t: "How crowded the Dwarf start is at launch-like load", hunter: false, trio: {} },
+      { id: "tr-t-totems", lvl: "Shaman", t: "Where the Dwarf Shaman totem quests are (Earth ~4, Fire ~10, Water ~20)", hunter: false, trio: {} },
+      { id: "tr-t-fury", lvl: "Paladin", t: "Seal of Fury taunt in practice: does it hold packs at 13–18 without Consecration?", hunter: false, trio: {} },
+      { id: "wd-t-forms", lvl: "Druid", t: "Skyborne Druid: where the Bear Form quest is and whether the Skyborne forms change anything", hunter: false, hwd: {}, h3d: {} },
+      { id: "wd-t-def", lvl: "Warrior", t: "Skyborne Warrior: where the Defensive Stance quest is, and does Taunt come with it?", hunter: false, hwd: {} },
+      { id: "wd-t-pets", lvl: "Dungeons", t: "Can a tank pet hold Hall of Thanes trash with a Druid healing?", hunter: false, h3d: {} },
+      { id: "h-t-pet", lvl: "Zephras", t: "How the Skyborne hunter pet quest works at 10",
         trio: { lvl: "Dun Morogh", t: "How the Dwarf hunter pet quest works at 10 in Forever" } },
-      { id: "h-t-tame", lvl: "Pets", t: "Which pets are tameable on Zephras and in Darkshore", mage: false, hunter: {},
+      { id: "h-t-tame", lvl: "Pets", t: "Which pets are tameable on Zephras and in Darkshore",
         trio: { t: "Which pets are tameable in Dun Morogh and Darkshore" } },
       { id: "t-hot", lvl: "Ironforge", t: "Where the Hall of Thanes quests start + any level or prerequisite requirements" },
       { id: "t-size", lvl: "Dungeons", t: "Group size for the new dungeons" },
@@ -610,9 +623,8 @@ body.buy-open .buy-drawer{transform:none}
       { id: "t-gray", lvl: "Darkshore", t: "When Darkshore quests go gray (~19–20?)" },
       { id: "t-bfd", lvl: "BFD", t: "Blackfathom Deeps' level range in Forever" },
       { id: "t-defias", lvl: "Westfall", t: "Is the Defias chain + Deadmines still green at 20–21?" },
-      { id: "t-tele", lvl: "Mage", t: "Level we learn Teleport: Stormwind / Ironforge", hunter: false, mage: {} },
-      { id: "h-t-reagent", lvl: "Legacy", t: "Confirm Reagent Economy doesn't refund ammo purchases", mage: false, hunter: {} },
-      { id: "h-t-ammo", lvl: "Gold", t: "How much ammo and pet food cost per session", mage: false, hunter: {} },
+      { id: "h-t-reagent", lvl: "Legacy", t: "Confirm Reagent Economy doesn't refund ammo purchases" },
+      { id: "h-t-ammo", lvl: "Gold", t: "How much ammo and pet food cost per session" },
       { id: "t-spelunker", lvl: "Legacy", t: "Which dungeons count for Novice Spelunker (a free point if they're on our route)" },
       { id: "t-respec", lvl: "Legacy", t: "Can spent Legacy points be reset, and does it cost anything?" },
       { id: "t-skin", lvl: "Camping", t: "Does Skinning get a campsite object at skill 20?" },
@@ -620,96 +632,72 @@ body.buy-open .buy-drawer{transform:none}
     ]
   };
 
-  // Key differences table (compare view). `all` = same text for every plan.
+  // Key differences table (compare view): one value per plan.
+  var ZEPHRAS_ROUTE = "Zephras → Dalaran → Ironforge → Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon";
   var DIFFS = [
-    { topic: "Race & start", mage: "Skyborne, Zephras Isle", hunter: "Skyborne, Zephras Isle", hunter3: "Skyborne, Zephras Isle",
+    { topic: "Race & start", hwd: "Skyborne, Zephras Isle", h3d: "Skyborne, Zephras Isle",
       trio: "Dwarf, Coldridge Valley (Alliance Skyborne can't be Paladin or Shaman)" },
-    { topic: "Route", mage: "Zephras → Dalaran → Ironforge → Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon",
-      hunter: "Zephras → Dalaran → Ironforge → Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon",
-      hunter3: "Zephras → Dalaran → Ironforge → Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon",
+    { topic: "Route", hwd: ZEPHRAS_ROUTE, h3d: ZEPHRAS_ROUTE,
       trio: "Coldridge → Dun Morogh → Ironforge, then the same: Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon" },
-    { topic: "Money", mage: "Cheap. Conjured food and water are free", hunter: "Expensive. Ammo, pet food, own food and water, later a quiver",
-      hunter3: "Most expensive: three sets of ammo and pet food", trio: "Middle. One hunter's ammo, plus food and water for three" },
-    { topic: "Travel", mage: "Teleports to Stormwind/Ironforge", hunter: "Hearthstone and flight paths; Aspect of the Cheetah later",
-      hunter3: "Hearthstone and flight paths; Aspect of the Cheetah later", trio: "Hearthstone and flight paths; Cheetah and Ghost Wolf at 20, the Paladin walks until 40" },
-    { topic: "Contested camps", mage: "Fire Blast tags, otherwise cast times", hunter: "Instant ranged tags. Best class for crowded areas",
-      hunter3: "Three instant tags. Split up on kill quests so we don't strip one camp", trio: "Hunter tags at range; Judgement and shocks are instant too" },
-    { topic: "Killing", mage: "AoE clears of dense camps", hunter: "Single target, pets tank, kiting; elite quests doable as a duo",
-      hunter3: "Three pets hold elites; group quests are easy", trio: "Real tank and healer: bigger pulls, elite quests, Consecration AoE from 20" },
-    { topic: "Level 10", mage: "Nothing special", hunter: "Pet quest in the middle of Zephras", hunter3: "Pet quest in the middle of Zephras",
+    { topic: "Roles", hwd: "Warrior tank, Druid healer, 2 Hunters DPS", h3d: "Druid tanks or heals, 3 Hunters DPS",
+      trio: "Paladin tank, Shaman healer, Hunter DPS" },
+    { topic: "Money", hwd: "Two sets of ammo and pet food, plus Warrior repairs", h3d: "Three sets of ammo and pet food",
+      trio: "Middle. One hunter's ammo, plus food and water for three" },
+    { topic: "Travel", hwd: "Hearthstone and flight paths; Cheetah at 20, Druid Travel Form at 30, Warrior walks until 40",
+      h3d: "Hearthstone and flight paths; Cheetah at 20, Druid Travel Form at 30",
+      trio: "Hearthstone and flight paths; Cheetah and Ghost Wolf at 20, the Paladin walks until 40" },
+    { topic: "Killing", hwd: "Real tank and healer: big pulls and elite quests; Hunters pick off adds",
+      h3d: "Tank pet + Druid heals: elites and group quests are easy",
+      trio: "Real tank and healer: bigger pulls, elite quests, Consecration AoE from 20" },
+    { topic: "Level 10", hwd: "Pet quests, Druid Bear Form, Warrior Defensive Stance", h3d: "Pet quests, Druid Bear Form",
       trio: "Pet quest (Kharanos), Seal of Fury, Shaman Fire totem quest" },
-    { topic: "Dungeons", mage: "Bring AoE and crowd control; easy to group", hunter: "No AoE. Need a real tank <em>and</em> healer",
-      hunter3: "No AoE. Need a real tank <em>and</em> healer", trio: "Own tank and healer; only DPS to find" },
-    { topic: "Legacy points", mage: "Thrill of Adventure while leveling. Reagent Economy (free teleports) needs 10 points in Resourcefulness first, so it's a later goal",
-      hunter: "Thrill of Adventure, then Adventure toward Frequent Flier (cheaper, faster flights). Reagent Economy almost certainly excludes ammo",
-      hunter3: "Thrill of Adventure, then Adventure toward Frequent Flier (cheaper, faster flights). Reagent Economy almost certainly excludes ammo",
-      trio: "Thrill of Adventure (mana back for Paladin and Shaman), then Adventure toward Frequent Flier" },
-    { topic: "Loot", mage: "Cloth and caster gear; few clashes with a druid", hunter: "Both want the same bows, guns, agility and mail. Agree on rules first",
-      hunter3: "All three want the same gear. Rotate or roll only between us", trio: "Almost no clashes: agility to the Hunter, intellect to the Shaman, strength to the Paladin" },
-    { topic: "Deadmines detour", mage: "Cheap with Teleport: Stormwind", hunter: "Costs real travel time; combine with training or skip",
-      hunter3: "Costs real travel time; combine with training or skip", trio: "Costs real travel time; combine with training or skip" }
+    { topic: "Dungeons", hwd: "Own tank and healer; one DPS to find", h3d: "Druid covers tank or healer; find the other",
+      trio: "Own tank and healer; only DPS to find" },
+    { topic: "Loot", hwd: "Hunters share ranged/agility; Warrior and Druid barely clash", h3d: "Three Hunters share everything ranged/agility — rotate",
+      trio: "Almost no clashes: agility to the Hunter, intellect to the Shaman, strength to the Paladin" }
   ];
 
   // Group-play cards: `plans` lists the plans a card belongs to ("all" = every plan).
   var DUO = [
-    { plans: ["mage"], h: "Mage duo tactics", ul: [
-      "Frost for leveling: Nova, then Frostbolt from range.",
-      "Alternate Frost Nova so one is always ready.",
-      "Decide up front who Polymorphs and who Counterspells.",
-      "One conjures food/water for both; the other keeps killing.",
-      "Keep Arcane Intellect on each other."] },
-    { plans: ["hunter"], h: "Hunter duo tactics", ul: [
-      "One tank pet, one damage pet; let the pets hold aggro.",
-      "Tag instantly with Arcane Shot / Serpent Sting in contested camps.",
-      "Two pets can off-tank elites — elite quests become doable as a duo.",
-      "Kite when a pull goes bad instead of eating a death.",
-      "Keep pets fed and happy; an unhappy pet deals less damage."] },
-    { plans: ["hunter3"], h: "Hunter trio tactics", ul: [
-      "One tank pet, two damage pets; the tank pet opens, the others follow.",
-      "Focus fire: one Hunter's Mark, everyone on that target.",
-      "Three pets can hold an elite — elite and group quests become easy.",
-      "Split jobs: one handles traps and crowd control, one calls targets, one watches adds.",
+    { plans: ["hwd"], h: "2 Hunters · Warrior · Druid tactics", ul: [
+      "Warrior charges in and builds threat (Sunder, Demoralizing Shout); Hunters wait a couple of seconds before opening.",
+      "Pets on Defensive in dungeons so they don't steal aggro; outdoors a pet can off-tank adds.",
+      "Druid heals from range and keeps Mark of the Wild and Thorns on the Warrior.",
+      "One Hunter's Mark on the kill target; the other Hunter traps or slows runners.",
+      "This is a real dungeon core — elite quests and first clears go fast."] },
+    { plans: ["h3d"], h: "3 Hunters · Druid tactics", ul: [
+      "Questing: tank pet holds the mob, Druid heals, three Hunters burn it down.",
+      "Dungeons: Druid bear-tanks with a 5th player healing, or heals while the tank pet holds trash.",
+      "Druid's Entangling Roots and the Hunters' traps keep adds off the healer.",
+      "Focus fire on one Hunter's Mark; split up on kill quests so we don't strip one camp.",
       "Keep pets fed and happy; an unhappy pet deals less damage."] },
     { plans: ["trio"], h: "Paladin · Hunter · Shaman tactics", ul: [
       "Paladin tanks with Seal of Fury; Judgement taunts a loose mob from 10 yards.",
       "Hunter marks the kill target; the pet picks up anything the Paladin misses.",
       "Shaman heals and drops totems for the Paladin (Stoneskin / Strength of Earth), Healing Stream between pulls from 20.",
       "Interrupts: Earth Shock from the Shaman; Concussive Shot or Wing Clip stops runners.",
-      "Pull bigger than any duo can — this group questing pace is limited by mana, not health."] },
-    { plans: ["mage"], h: "Skyborne racials", ul: [
-      "<strong>Read Ley Line</strong>: +100% health and mana regen. Stagger it so we're never both drinking.",
-      "<strong>Walk on Air</strong>: glide off cliffs for shortcuts.",
-      "<strong>Wind Blessed</strong>: +1% haste, passive."] },
-    { plans: ["hunter", "hunter3"], h: "Skyborne racials", ul: [
+      "Pull bigger than any duo can — this group's questing pace is limited by mana, not health."] },
+    { plans: ["hwd", "h3d"], h: "Skyborne racials", ul: [
       "<strong>Read Ley Line</strong>: +100% health and mana regen — cuts how much food and water we buy.",
       "<strong>Walk on Air</strong>: glide off cliffs for shortcuts.",
-      "<strong>Wind Blessed</strong>: +1% haste, which also speeds up Auto Shot."] },
+      "<strong>Wind Blessed</strong>: +1% haste, which also speeds up Auto Shot and melee swings.",
+      "Skyborne Druids get their own shapeshift forms."] },
     { plans: ["trio"], h: "Why Dwarves", ul: [
       "On the Alliance side only Dwarves can be both Paladin and Shaman, so the whole group starts together.",
       "<strong>Stoneform</strong> (Classic): removes poison, disease and bleed and adds armor — a free panic button for the tank.",
       "<strong>Gun Specialization</strong> (Classic): extra crit with guns for the Hunter.",
       "Racials are the Classic versions; check what Forever changed in beta."] },
-    { plans: ["mage"], h: "Crowded camps", ul: [
-      "Invite anyone fighting us for the same mobs — kill credit is shared in a group.",
-      "Fire Blast is our instant tag; open with it when a camp is contested.",
-      "Kill quests go fast as a duo; do collection quests where mobs are dense.",
-      "Always carry a backup quest nearby so a packed camp never means waiting."] },
-    { plans: ["hunter", "hunter3"], h: "Crowded camps", ul: [
+    { plans: ["hwd", "h3d"], h: "Crowded camps", ul: [
       "Our strength: instant ranged tags beat almost every other class to the mob.",
       "Invite anyone fighting us for the same mobs — kill credit is shared in a group.",
-      "No AoE, so avoid dense packs; pick off singles at the edges.",
+      "Little AoE, so avoid dense packs; pick off singles at the edges.",
       "Always carry a backup quest nearby so a packed camp never means waiting."] },
     { plans: ["trio"], h: "Crowded camps", ul: [
       "Coldridge and Dun Morogh will be the busiest Alliance start (Dwarf Shaman hype). Group-invite rivals — kill credit is shared.",
       "Hunter's Arcane Shot tags first; Judgement and shocks are instant backups.",
       "From 20, Consecration lets us take the dense camps other groups avoid.",
       "Always carry a backup quest nearby so a packed camp never means waiting."] },
-    { plans: ["mage"], h: "Professions & gold", ul: [
-      "Skinning for both; whoever didn't loot skins.",
-      "Cooking on at least one of us: campfire buffs + XP food.",
-      "Keep linen/wool to sell (or bandages later).",
-      "Spend in order: training → bags → mount fund."] },
-    { plans: ["hunter", "hunter3"], h: "Professions & gold", ul: [
+    { plans: ["hwd", "h3d"], h: "Professions & gold", ul: [
       "Skinning is our main income — skin everything.",
       "Cooking covers campfire buffs, XP food and pet food.",
       "Buy ammo in bulk at every major stop; never run dry mid-zone.",
@@ -724,9 +712,8 @@ body.buy-open .buy-drawer{transform:none}
       "Keep a food buff up; food is being tested with a kill-XP bonus.",
       "Log out in inns or cities for rested XP.",
       "Don't let quests go gray — drop escorts and low-drop-rate quests."] },
-    { plans: ["mage"], h: "The third player", p: "A <strong>druid</strong> is the best fit: bear tank for first clears while two mages AoE, healer on elite quests, cat or bear for questing. Skyborne druids also get their own forms." },
-    { plans: ["hunter"], h: "The third player", p: "A <strong>druid</strong> is close to essential: two hunters have no tank, healer or AoE. Druid tanks and we still find a healer for dungeons — or the druid heals and a pet off-tanks for elite quests." },
-    { plans: ["hunter3"], h: "Players four and five", p: "Three hunters still need a tank <strong>and</strong> a healer for dungeons. A druid tanks and a priest or shaman heals. At low levels a tank pet plus a healer can carry a first clear." },
+    { plans: ["hwd"], h: "The fifth player", p: "Tank and healer are covered, so any <strong>DPS</strong> fills the last dungeon spot. A mage adds AoE and free food and water; a rogue or warlock adds crowd control." },
+    { plans: ["h3d"], h: "The fifth player", p: "Whichever role the Druid isn't doing: a <strong>healer</strong> (priest or shaman) if the Druid bear-tanks, or a <strong>tank</strong> (warrior or paladin) if the Druid heals." },
     { plans: ["trio"], h: "The last two spots", p: "Tank and healer are covered, so if dungeons are 5-man we only need <strong>2 DPS</strong> — the easiest players to find. A mage adds AoE and free food and water; a warlock adds healthstones and curses." }
   ];
 
@@ -744,14 +731,14 @@ body.buy-open .buy-drawer{transform:none}
 
   var state = load(KEY, {}) || {};
   var cmp = load(CMP_KEY, null);
-  if (!cmp || PLAN_IDS.indexOf(cmp.a) === -1 || PLAN_IDS.indexOf(cmp.b) === -1) cmp = { a: "mage", b: "hunter" };
-  var mode = "mage";
+  if (!cmp || PLAN_IDS.indexOf(cmp.a) === -1 || PLAN_IDS.indexOf(cmp.b) === -1) cmp = { a: "hwd", b: "trio" };
+  var mode = "hwd";
 
-  // The override object for a plan: its own key first, then its base plan's.
+  // The override object for a plan: its own key first, then up its base chain.
   function override(item, plan) {
-    if (Object.prototype.hasOwnProperty.call(item, plan)) return item[plan];
-    var base = PLANS[plan].base;
-    if (base && Object.prototype.hasOwnProperty.call(item, base)) return item[base];
+    for (var p = plan; p; p = PLANS[p] ? PLANS[p].base : null) {
+      if (Object.prototype.hasOwnProperty.call(item, p)) return item[p];
+    }
     return undefined;
   }
   // Resolve an item for one plan: null if hidden, otherwise the merged fields.
@@ -854,7 +841,7 @@ body.buy-open .buy-drawer{transform:none}
     });
     var isCmp = mode === "compare";
     document.getElementById("toc-diff").style.display = isCmp ? "" : "none";
-    var chipCss = { mage: "frost", hunter: "hunt", trio: "pal" };
+    var chipCss = { hwd: "war", h3d: "dru", trio: "pal" };
     chip.className = "chip " + (isCmp ? "gold" : chipCss[PLANS[mode].css]);
     chip.textContent = isCmp ? PLANS[cmp.a].short + " vs " + PLANS[cmp.b].short : PLANS[mode].short;
     var races = isCmp ? [PLANS[cmp.a].race, PLANS[cmp.b].race] : [PLANS[mode].race];
@@ -879,7 +866,7 @@ body.buy-open .buy-drawer{transform:none}
   }
 
   function setMode(m, push) {
-    mode = MODES.indexOf(m) === -1 ? "mage" : m;
+    mode = MODES.indexOf(m) === -1 ? "hwd" : m;
     save(MODE_KEY, mode);
     if (push) {
       try {
@@ -954,7 +941,7 @@ body.buy-open .buy-drawer{transform:none}
   } catch (e) { /* keep the static fallback text */ }
 
   // Initial mode: ?plan= (and ?a= / ?b= for compare) in the URL wins (shareable
-  // links), then the last choice, then mage.
+  // links), then the last choice, then the first plan.
   var initial = null;
   try {
     var params = new URL(location.href).searchParams;
@@ -962,7 +949,7 @@ body.buy-open .buy-drawer{transform:none}
     if (PLAN_IDS.indexOf(params.get("a")) !== -1) cmp.a = params.get("a");
     if (PLAN_IDS.indexOf(params.get("b")) !== -1) cmp.b = params.get("b");
   } catch (e) { /* ignore */ }
-  setMode(MODES.indexOf(initial) !== -1 ? initial : load(MODE_KEY, "mage"), false);
+  setMode(MODES.indexOf(initial) !== -1 ? initial : load(MODE_KEY, "hwd"), false);
 })();
 </script>
 <script>

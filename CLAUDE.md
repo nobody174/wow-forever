@@ -50,7 +50,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   found — flagged for the user to double-check in beta). See `builds_page_pattern`
   project memory for the full pattern and icon-verification rules. Hand-edit
   directly.
-- `addons.html` — hand-written page listing the addons Venom & Trollmann actually run
+- `addons.html` — hand-written page listing the addons we actually run
   (Forever Bag Mover, ForeverLayers, ForeverPlus, Leatrix Maps, Leatrix Plus,
   ThreatMaster, TomTom, WeakAuras Forever — all CurseForge links, sorted
   alphabetically) plus a link to wow4ever.quest's addon compatibility tracker.

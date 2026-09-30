@@ -6,6 +6,10 @@ user-facing release notes.
 
 ## 2026-09-30 (evening)
 
+- Removed the remaining "Venom & Trollmann" mentions from page text (Addons and Builds
+  ledes) and docs; the site now says "we" throughout. Hero image still shows the old
+  dwarf/gnome group with nameplates — replacement (4 Skyborne: Warrior, Druid healer,
+  2 Hunters, no names) tracked in BACKLOG.
 - Site renamed "Road to Forever" (was "Venom & Trollmann's Road to Forever") in the
   top bar on all five pages, the index `<title>` and hero `<h1>`; launch-plan lede
   now says "How we get ahead…". ROADMAP's locked site-title decision updated.

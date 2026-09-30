@@ -11,7 +11,7 @@ being worked on next.
   (WoW Addon Architect, UI/Frame Designer, Event Flow Analyst, Taint & Secure
   Execution Auditor) that are currently out of scope for this macro-only project.
 - Arena/PvP-specific macro set (arena1-3 tokens, stopcasting) if that ever becomes
-  something Venom & Trollmann actually want covered. See BACKLOG for why this is
+  something we actually want covered. See BACKLOG for why this is
   currently deferred rather than in progress.
 
 ## Locked design decisions

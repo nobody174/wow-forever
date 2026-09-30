@@ -29,9 +29,17 @@ stale checkmark.
   Rogue Venom name (replaced Envenom?), Survival melee button (does Raptor
   Strike still queue off the GCD?).
 
+## Hero image replacement (in progress)
+
+- New `assets/hero.webp`: four Skyborne (mixed male/female) — one Warrior, one Druid
+  healer, two Hunters with pets — on Zephras Isle, no nameplates. Generated in the
+  user's local ComfyUI (can't run from the cloud session); then crop/resize to
+  2560×1080, export WebP < 500KB, keep the upper-middle clear for the title and the
+  right side calm for the beta ribbon. Update CLAUDE.md's hero description after.
+
 ## Ideas not yet built
 
-- Addons page: expand beyond the current 4-addon list as Venom & Trollmann adopt
+- Addons page: expand beyond the current 4-addon list as we adopt
   more addons for launch.
 - Builds page: still a coming-soon placeholder — needs actual talent build
   content once specs are locked in closer to November 4.

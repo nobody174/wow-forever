@@ -6,6 +6,13 @@ user-facing release notes.
 
 ## 2026-09-30 (evening)
 
+- New **Talent Calculator** page (`talents.html`), our own code, replacing the external
+  Zockify link in the top bar (now `talents.html` on all six pages; index.html's nav
+  gained the link it was missing). All 9 classes including Druid, live Wowhead Forever
+  data (Sep 24 beta trees: Strider Kick, Twist of Light, Templar's Bulwark present,
+  Wyvern Sting gone), prerequisite arrows, tier/prereq/removal rules, 51-point cap,
+  required level, per-tree reset, shareable `#class/digits` links, hover tooltips with
+  next rank, touch bottom sheet with −/+.
 - Removed the remaining "Venom & Trollmann" mentions from page text (Addons and Builds
   ledes) and docs; the site now says "we" throughout. Hero image still shows the old
   dwarf/gnome group with nameplates — replacement (4 Skyborne: Warrior, Druid healer,

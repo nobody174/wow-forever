@@ -5,8 +5,9 @@ Live site: GitHub Pages from `main` / root → https://nobody174.github.io/wow-f
 
 Small multi-page site: `index.html` is the countdown/landing page ("Road to Forever"), `macros.html` is the macro cheatsheet, `builds.html` lists talent
 builds per class, `addons.html` lists addons, `launch-plan.html` is the launch-week
-leveling plan. All five share a top bar (site title, Macros / Builds / Addons /
-Launch Plan / Talent Calc links, current page highlighted).
+leveling plan, `talents.html` is our own talent calculator. All six share a top bar
+(site title, Macros / Builds / Addons / Launch Plan / Talent Calc links, current page
+highlighted).
 
 Class roster order on both `macros.html` and `builds.html` follows armor type,
 Cloth → Leather → Mail → Plate: Priest, Warlock, Mage, Rogue, Shaman, Hunter,
@@ -84,6 +85,20 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Steps past level 30 are tagged `unverified` until beta/launch
   confirms them. Launch time uses the same `2026-11-04T23:00:00Z` target as index.html.
   Hand-edit directly.
+- `talents.html` — hand-written talent calculator (our own code). Talent data is NOT
+  stored in the repo: the page loads Wowhead's public Forever data script
+  (`https://nether.wowhead.com/forever/data/talents-classic`) with a `<script>` tag and a
+  tiny `WH.setPageData` shim, so it always shows Wowhead's latest beta trees. Data shape
+  per tree id: `{ talentId: { id, row, col, icon, name, ranks[], descriptions{1..n},
+  requires[{id,qty}], requiredPoints } }`. `CLASSES` maps each class to its 3 tree ids
+  in in-game tab order (ids from Wowhead: e.g. Hunter 361 BM / 363 MM / 362 Survival).
+  Rules: 51 points, 7×4 grid, `requiredPoints` per tier, prerequisites; removal is
+  blocked if it breaks a dependent talent or a deeper tier. Share links are
+  `talents.html#<class>/<tree1>-<tree2>-<tree3>`, one digit per talent in row/col order
+  (invalid codes reset to empty). Icons hotlinked from `wow.zamimg.com`. Desktop:
+  click +1, right-click −1, Shift = max, hover tooltip; touch: tap opens a bottom
+  sheet with −/+/Close. Test locally by routing the Wowhead URL to a fixture in the
+  same `WH.setPageData(...)` format (the cloud session can't reach Wowhead).
 - `assets/hero.webp` — landing page hero background (dwarf/gnome group in front of
   Frostforge Pass gate, nameplates "Venom" and "Trollmann" over the two dwarves).
   Generated via local ComfyUI (SDXL base + inpainting), finalized with Pillow
@@ -103,10 +118,10 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 1. Macro changes: edit `data.py` (or `template.html` for cheatsheet layout/top bar
    changes), then run `python build.py`.
    The top bar CSS (3-column grid: title left / nav centered / optional right-side
-   item like index.html's mute button) must stay identical across all 5 pages —
-   `index.html`, `builds.html`, `addons.html`, `launch-plan.html` are hand-written and
-   each carry their own copy, while `macros.html` gets its copy from `template.html`.
-   A hand-edit to one page's topbar CSS needs to be repeated in the other 4, or they
+   item like index.html's mute button) must stay identical across all 6 pages —
+   `index.html`, `builds.html`, `addons.html`, `launch-plan.html`, `talents.html` are
+   hand-written and each carry their own copy, while `macros.html` gets its copy from
+   `template.html`. A hand-edit to one page's topbar CSS needs to be repeated in the others, or they
    drift out of sync (this happened once already — see CHANGELOG 2026-09-27).
 2. Landing/builds page changes: hand-edit `index.html` / `builds.html` directly.
 3. Check every macro is <= 255 characters.

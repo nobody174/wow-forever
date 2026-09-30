@@ -6,6 +6,9 @@ user-facing release notes.
 
 ## 2026-09-30 (evening)
 
+- Talent calc tree tabs (Builds cards) made much more visible: framed nav-style
+  buttons, the open tree filled with the class color, trees with points in class color
+  with a filled point badge (`tc-has`), empty trees grey.
 - Builds page: every build card now has a live, preloaded talent calculator (compact
   mode: tree tabs, opens on the build's main tree, points editable, "Reset to build",
   "Copy link", "Open in Talent Calc"). Presets come from each build's talent names +

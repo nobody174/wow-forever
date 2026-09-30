@@ -236,6 +236,7 @@
       });
       el.querySelectorAll(".tc-arrow").forEach(function (a) { a.classList.toggle("tc-on", rank(byId[a.dataset.from]) >= +a.dataset.qty); });
       el.querySelectorAll("[data-pts]").forEach(function (s) { s.textContent = treePoints(+s.dataset.pts); });
+      el.querySelectorAll("[data-tab]").forEach(function (b) { b.classList.toggle("tc-has", treePoints(+b.dataset.tab) > 0); });
       var set = function (k, v) { var n = q('[data-tc="' + k + '"]'); if (n) n.textContent = v; };
       set("split", trees.map(function (t, ti) { return treePoints(ti); }).join(" / "));
       set("spent", spent);

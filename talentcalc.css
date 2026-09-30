@@ -48,11 +48,26 @@
 .tc-compact .tc-btn{padding:7px 10px;font-size:12px}
 .tc-compact .tc-trees{margin-top:12px}
 .tc-compact .tc-tree{border-top-width:1px}
-.tc-tabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-.tc-tabs button{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.03em;color:var(--muted);background:var(--panel);border:1px solid var(--edge);border-radius:999px;padding:7px 12px;cursor:pointer}
-.tc-tabs button:hover{color:var(--text)}
-.tc-tabs button[aria-selected="true"]{color:var(--c);border-color:var(--c)}
-.tc-tabs .tc-n{margin-left:6px;color:var(--text)}
+/* Tree tabs: framed buttons like the site nav. A tree with points gets the class
+   color + a filled point badge; the open tree is filled with the class color. */
+.tc-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.tc-tabs button{
+  display:inline-flex;align-items:center;gap:8px;
+  font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);
+  background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);
+  border:1px solid var(--edge);border-top-color:#4A5688;border-radius:6px;padding:8px 10px 8px 14px;cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.35);
+}
+.tc-tabs button:hover{color:var(--text);border-color:var(--c)}
+.tc-tabs .tc-n{min-width:24px;padding:4px 6px;border-radius:4px;font:700 13px/1 var(--sans);text-align:center;color:var(--muted);background:#0A0F1F;border:1px solid var(--edge)}
+.tc-tabs button.tc-has{color:var(--c);border-color:color-mix(in srgb, var(--c) 60%, var(--edge))}
+.tc-tabs button.tc-has .tc-n{color:#0E1428;background:var(--c);border-color:var(--c)}
+.tc-tabs button[aria-selected="true"]{
+  color:#0E1428;border-color:var(--c);
+  background:linear-gradient(180deg, color-mix(in srgb, var(--c) 70%, white) 0%, var(--c) 55%, color-mix(in srgb, var(--c) 70%, black) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px color-mix(in srgb, var(--c) 55%, transparent);
+}
+.tc-tabs button[aria-selected="true"] .tc-n{color:var(--c);background:#0E1428;border-color:#0E1428}
 
 /* Tooltip: hover card on desktop, bottom sheet with -/+ on touch */
 .tc-tip{position:fixed;z-index:60;width:300px;max-width:calc(100vw - 24px);text-align:left;background:#0A0F1F;border:1px solid var(--gold);border-radius:8px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.6);pointer-events:none;color:var(--text);font:16px/1.5 var(--sans);touch-action:manipulation}

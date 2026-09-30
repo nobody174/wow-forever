@@ -4,6 +4,17 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-09-30 (afternoon)
+
+- Launch Plan: two new plans next to Dual Mage / Dual Hunter. **Triple Hunter**
+  (`hunter3`, inherits the hunter plan, with its own loot/pet/tank-and-healer notes)
+  and **Paladin · Hunter · Shaman** (`trio`): Dwarves (Alliance Skyborne can't be
+  Paladin or Shaman), Coldridge → Dun Morogh → Ironforge, then the shared route.
+  Trio-only steps: Holy Strike/Seal of Fury/Righteous Fury/Consecration trainer
+  levels, Shaman totem quests, Ghost Wolf, plus beta checks. Compare now picks any
+  two plans; Key differences table is data-driven (`DIFFS`); "Duo play" renamed
+  "Group play" with per-plan cards; new trio Legacy path card.
+
 ## 2026-09-30
 
 Forever class-change pass (research: Warcraft Tavern, Mobalytics, Output Lag,

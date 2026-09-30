@@ -58,18 +58,24 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Each card is a single framed nav-style button (`.addon-btn`) with the addon
   name linking to CurseForge, description below — not a separate name+link pair.
   Hand-edit directly.
-- `launch-plan.html` — hand-written launch plan for the Alliance Skyborne duo
-  (+ possible druid) with a Dual Mage / Dual Hunter / Compare switch. Checklists
+- `launch-plan.html` — hand-written launch plan with four group plans plus Compare:
+  Dual Mage (`mage`), Dual Hunter (`hunter`), Triple Hunter (`hunter3`) and
+  Paladin · Hunter · Shaman (`trio`, Dwarves starting in Coldridge Valley, since
+  Alliance Skyborne can't be Paladin or Shaman). Plans are defined in the `PLANS`
+  object (label, chips, color class, and `base` = plan whose overrides it inherits;
+  hunter3 and trio inherit from hunter). Checklists
   (before-launch / launch-night / 12→20 / 20→30 / 30→60 / test-in-beta) and the
-  duo-play cards are rendered by JS from the `PHASES` and `DUO` objects at the
-  bottom of the file — edit steps there, not in the HTML. An item is shared by both
-  plans unless it has a `mage`/`hunter` key (object = override fields for that
-  class, `false` = hidden for that class); Compare renders shared items full-width
-  and class-specific ones side by side. The "Key differences" table and rules/
-  dungeon sections are static HTML. Mode comes from `?plan=mage|hunter|compare`,
-  then localStorage `wf-launch-plan-mode`. Checkboxes persist per browser in
+  group-play cards are rendered by JS from the `PHASES` and `DUO` objects at the
+  bottom of the file — edit steps there, not in the HTML. An item is shared by every
+  plan unless it has a key for that plan (or its base): object = override fields,
+  `false` = hidden. `DUO` cards list their `plans` ("all" = every plan). Compare shows
+  any two plans side by side (two selects; rows whose resolved text matches render
+  full-width "Same for both"), and the "Key differences" table is rendered from the
+  `DIFFS` array. Legacy path cards are static HTML with `data-plans`. Mode comes from
+  `?plan=mage|hunter|hunter3|trio|compare` (+ `&a=&b=` for compare), then localStorage
+  `wf-launch-plan-mode` / `wf-launch-plan-cmp`. Checkboxes persist per browser in
   localStorage (key `wf-launch-plan-v1`, keyed by item id — keep ids stable; shared
-  steps share one checkbox across both plans). A floating "Buyable quests" button (top-right, just under the sticky top bar) (and a
+  steps share one checkbox across every plan). A floating "Buyable quests" button (top-right, just under the sticky top bar) (and a
   TOC link, or `#buyable` in the URL) opens a right-hand sidebar listing quests whose
   objectives are tradeable AH/vendor items, switchable between "Along our route"
   (grouped p1/p2/p3/off) and "By zone". Its data is the `QUESTS` array in the second

@@ -11,7 +11,7 @@
 :root{
   --bg:#0E1428; --panel:#161E38; --edge:#3A4468; --gold:#FFD100;
   --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100;
-  --ok:#6FCF7F; --warn:#E8A33D; --frost:#69CCF0; --hunt:#ABD473;
+  --ok:#6FCF7F; --warn:#E8A33D; --frost:#69CCF0; --hunt:#ABD473; --pal:#F58CBA; --sham:#4C8BFF;
   --serif:"Marcellus","Palatino Linotype",Georgia,serif;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
@@ -53,27 +53,35 @@ h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6
 .chip{font:600 12px/1 var(--sans);letter-spacing:.03em;text-transform:uppercase;padding:7px 10px;border-radius:999px;border:1px solid var(--edge);background:var(--panel);color:var(--text)}
 .chip.frost{border-color:var(--frost);color:var(--frost)}
 .chip.hunt{border-color:var(--hunt);color:var(--hunt)}
+.chip.pal{border-color:var(--pal);color:var(--pal)}
 .chip.gold{border-color:var(--gold);color:var(--gold)}
 .draft{background:rgba(232,163,61,.08);border:1px solid rgba(232,163,61,.45);border-radius:6px;padding:12px 14px;color:var(--text);font-size:14px;margin:0 0 22px}
 .draft strong{color:var(--warn)}
 
-/* Plan switcher: Dual Mage / Dual Hunter / Compare */
+/* Plan switcher: one button per plan + Compare */
 .switch-wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:0 0 22px}
 .switch-label{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-.mode-switch{display:inline-flex;background:#0A0F20;border:1px solid var(--edge);border-radius:8px;padding:3px;gap:3px}
+.mode-switch{display:inline-flex;flex-wrap:wrap;background:#0A0F20;border:1px solid var(--edge);border-radius:8px;padding:3px;gap:3px}
 .mode-switch button{font:600 14px/1 var(--sans);color:var(--muted);background:transparent;border:1px solid transparent;border-radius:6px;padding:10px 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
 .mode-switch button:hover{color:var(--text)}
 .mode-switch button .dot{width:9px;height:9px;border-radius:50%;background:currentColor}
 .mode-switch button[data-mode="mage"] .dot{background:var(--frost)}
 .mode-switch button[data-mode="hunter"] .dot{background:var(--hunt)}
+.mode-switch button[data-mode="hunter3"] .dot{background:var(--hunt);box-shadow:5px 0 0 var(--hunt),-5px 0 0 var(--hunt);margin:0 5px}
+.mode-switch button[data-mode="trio"] .dot{background:linear-gradient(90deg,var(--pal) 33%,var(--hunt) 33% 66%,var(--sham) 66%)}
 .mode-switch button[data-mode="compare"] .dot{background:linear-gradient(90deg,var(--frost) 50%,var(--hunt) 50%)}
 .mode-switch button[aria-pressed="true"]{background:var(--panel);color:var(--text);border-color:var(--edge);box-shadow:0 1px 3px rgba(0,0,0,.4)}
 .mode-switch button[data-mode="mage"][aria-pressed="true"]{border-color:var(--frost)}
-.mode-switch button[data-mode="hunter"][aria-pressed="true"]{border-color:var(--hunt)}
+.mode-switch button[data-mode="hunter"][aria-pressed="true"],.mode-switch button[data-mode="hunter3"][aria-pressed="true"]{border-color:var(--hunt)}
+.mode-switch button[data-mode="trio"][aria-pressed="true"]{border-color:var(--pal)}
 .mode-switch button[data-mode="compare"][aria-pressed="true"]{border-color:var(--gold)}
 .diff-toggle{display:none;align-items:center;gap:8px;font-size:14px;color:var(--muted);cursor:pointer}
 .diff-toggle input{width:16px;height:16px;accent-color:var(--gold)}
 body.mode-compare .diff-toggle{display:inline-flex}
+.cmp-pick{display:none;align-items:center;gap:8px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+body.mode-compare .cmp-pick{display:inline-flex}
+.cmp-pick select{font:600 14px var(--sans);color:var(--text);background:var(--panel);border:1px solid var(--edge);border-radius:6px;padding:8px 10px;cursor:pointer}
+.cmp-pick select:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 body.mode-compare.diff-only .cmp-row.same{display:none}
 
 .toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;margin:0 0 10px}
@@ -87,16 +95,19 @@ body.mode-compare .only-compare{display:block}
 .progress{display:flex;align-items:center;gap:10px;margin:8px 0 14px;font-size:13px;color:var(--muted)}
 .bar{flex:1;height:6px;border-radius:3px;background:#0A0F20;border:1px solid var(--edge);overflow:hidden}
 .bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--frost),var(--gold));transition:width .2s ease}
-body.mode-hunter .bar span{background:linear-gradient(90deg,var(--hunt),var(--gold))}
+body.mode-hunter .bar span,body.mode-hunter3 .bar span{background:linear-gradient(90deg,var(--hunt),var(--gold))}
+body.mode-trio .bar span{background:linear-gradient(90deg,var(--pal),var(--hunt),var(--sham))}
 ul.check{list-style:none;margin:0;padding:0}
 ul.check li{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--edge);border-radius:5px;margin-bottom:8px}
 ul.check li.cls-mage{border-left-color:var(--frost)}
 ul.check li.cls-hunter{border-left-color:var(--hunt)}
+ul.check li.cls-trio{border-left-color:var(--pal)}
 ul.check li.done{border-left-color:var(--ok);opacity:.72}
 ul.check label{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;cursor:pointer}
 ul.check input{flex:none;width:18px;height:18px;margin:3px 0 0;accent-color:var(--gold);cursor:pointer}
 .lvl{flex:none;min-width:58px;font:600 13px/1.6 var(--sans);color:var(--frost)}
-body.mode-hunter .lvl{color:var(--hunt)}
+body.mode-hunter .lvl,body.mode-hunter3 .lvl{color:var(--hunt)}
+body.mode-trio .lvl{color:var(--pal)}
 .body{flex:1;min-width:0}
 .t{font-weight:600}
 ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--muted)}
@@ -107,6 +118,7 @@ ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--mut
 .tag.opt{color:var(--muted);border:1px solid var(--edge)}
 .tag.cls-mage{color:var(--frost);border:1px solid rgba(105,204,240,.55)}
 .tag.cls-hunter{color:var(--hunt);border:1px solid rgba(171,212,115,.6)}
+.tag.cls-trio{color:var(--pal);border:1px solid rgba(245,140,186,.6)}
 
 /* Compare view */
 .cmp{display:grid;gap:8px}
@@ -114,12 +126,16 @@ ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--mut
 .cmp-head div{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-radius:5px;background:var(--panel);border:1px solid var(--edge)}
 .cmp-head .h-mage{color:var(--frost);border-bottom:2px solid var(--frost)}
 .cmp-head .h-hunter{color:var(--hunt);border-bottom:2px solid var(--hunt)}
+.cmp-head .h-trio{color:var(--pal);border-bottom:2px solid var(--pal)}
 .cmp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .cmp-cell{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--edge);border-radius:5px;padding:10px 14px}
 .cmp-cell.both{grid-column:1 / -1;border-left:3px solid var(--edge)}
 .cmp-cell.mage{border-left:3px solid var(--frost)}
 .cmp-cell.hunter{border-left:3px solid var(--hunt)}
 .cmp-cell.hunter .lvl{color:var(--hunt)}
+.cmp-cell.trio{border-left:3px solid var(--pal)}
+.cmp-cell.trio .lvl{color:var(--pal)}
+.cmp-cell.mage .lvl{color:var(--frost)}
 .cmp-cell.both .lvl{color:var(--muted)}
 .cmp-cell.empty{background:transparent;border-style:dashed;color:var(--muted);font-size:14px;align-items:center;justify-content:center}
 .who{display:none;font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
@@ -131,6 +147,7 @@ ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--mut
   .who{display:block}
   .cmp-cell.mage .who{color:var(--frost)}
   .cmp-cell.hunter .who{color:var(--hunt)}
+  .cmp-cell.trio .who{color:var(--pal)}
 }
 
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
@@ -138,7 +155,8 @@ ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--mut
 .card{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--accent);border-radius:5px;padding:14px 16px}
 .card.cls-mage{border-left-color:var(--frost)}
 .card.cls-hunter{border-left-color:var(--hunt)}
-body.mode-mage .legacy-path.cls-hunter,body.mode-hunter .legacy-path.cls-mage{display:none}
+.card.cls-trio{border-left-color:var(--pal)}
+.card[hidden]{display:none}
 .card h4{margin:0 0 6px;font:400 17px/1.2 var(--serif);color:var(--gold)}
 .card h4 .tag{font-family:var(--sans)}
 .card p,.card ul{margin:0;color:var(--text);font-size:14px}
@@ -148,7 +166,7 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 4px}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--edge);vertical-align:top}
 th{font:600 12px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 td:first-child{font-weight:600}
-th.c-mage{color:var(--frost)} th.c-hunter{color:var(--hunt)}
+th.c-mage{color:var(--frost)} th.c-hunter{color:var(--hunt)} th.c-trio{color:var(--pal)}
 .table-wrap{overflow-x:auto}
 .toolbar{display:flex;justify-content:flex-end;gap:8px;margin-top:44px}
 button.reset{font:500 13px var(--sans);background:transparent;border:1px solid var(--edge);color:var(--muted);padding:6px 12px;border-radius:4px;cursor:pointer}
@@ -161,7 +179,7 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
   ul.check label{flex-wrap:wrap}
   .lvl{min-width:0}
   .mode-switch{display:flex;width:100%}
-  .mode-switch button{flex:1;padding:9px 6px;font-size:13px;gap:6px}
+  .mode-switch button{flex:1 1 30%;padding:9px 6px;font-size:13px;gap:6px}
 }
 
 /* Buyable-quests sidebar */
@@ -219,12 +237,12 @@ body.buy-open .buy-drawer{transform:none}
 </div>
 <div class="wrap">
   <h1>Launch Plan</h1>
-  <p class="lede">How Venom &amp; Trollmann get ahead of the launch crowd: two Alliance Skyborne questing together, skipping the busy human route, and clearing every new dungeon once for its first-clear quest XP. Switch between the mage duo and the hunter duo, or compare them side by side.</p>
+  <p class="lede">How Venom &amp; Trollmann get ahead of the launch crowd: questing together off the busy human route, and clearing every new dungeon once for its first-clear quest XP. Pick a group: the mage duo, the hunter duo, three hunters, or a Paladin, Hunter and Shaman with their own tank and healer. Or compare any two side by side.</p>
   <div class="meta">
     <span class="chip gold">Alliance</span>
-    <span class="chip">Skyborne (High Order)</span>
+    <span class="chip" id="race-chip">Skyborne (High Order)</span>
     <span class="chip frost" id="class-chip">2× Mage</span>
-    <span class="chip">+ maybe a Druid</span>
+    <span class="chip" id="extra-chip">+ maybe a Druid</span>
     <span class="chip" id="launch-chip">Launch: Nov 4, 3:00 PM PST</span>
   </div>
 
@@ -233,12 +251,15 @@ body.buy-open .buy-drawer{transform:none}
     <div class="mode-switch" role="group" aria-labelledby="switch-label">
       <button type="button" data-mode="mage" aria-pressed="true"><span class="dot" aria-hidden="true"></span>Dual Mage</button>
       <button type="button" data-mode="hunter" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Dual Hunter</button>
+      <button type="button" data-mode="hunter3" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Triple Hunter</button>
+      <button type="button" data-mode="trio" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Paladin · Hunter · Shaman</button>
       <button type="button" data-mode="compare" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Compare</button>
     </div>
+    <span class="cmp-pick"><select id="cmp-a" aria-label="First plan"></select> vs <select id="cmp-b" aria-label="Second plan"></select></span>
     <label class="diff-toggle"><input type="checkbox" id="diff-only"> Show only differences</label>
   </div>
 
-  <div class="draft"><strong>Draft.</strong> Levels 1–30 are checked against what the beta shows so far; anything marked <span class="tag unv">unverified</span> is based on published level ranges or Classic knowledge and will change as we test. Checkboxes save in this browser only — each of us ticks our own. Steps both plans share use the same checkbox, so switching class keeps that progress.</div>
+  <div class="draft"><strong>Draft.</strong> Levels 1–30 are checked against what the beta shows so far; anything marked <span class="tag unv">unverified</span> is based on published level ranges or Classic knowledge and will change as we test. Checkboxes save in this browser only — each of us ticks our own. Steps the plans share use the same checkbox, so switching plans keeps that progress.</div>
 
   <nav class="toc" aria-label="On this page">
     <a href="#differences" class="only-compare" style="display:none" id="toc-diff">Key differences</a>
@@ -249,7 +270,7 @@ body.buy-open .buy-drawer{transform:none}
     <a href="#p2">20 → 30</a>
     <a href="#p3">30 → 60</a>
     <a href="#dungeons">Dungeons</a>
-    <a href="#duo">Duo play</a>
+    <a href="#duo">Group play</a>
     <a href="#legacy">Legacy points</a>
     <a href="#buyable" data-open-buy>Buyable quests</a>
     <a href="#beta">Test in beta</a>
@@ -257,22 +278,11 @@ body.buy-open .buy-drawer{transform:none}
 
   <div class="only-compare">
     <h2 id="differences">Key differences at a glance</h2>
-    <p class="section-note">The zones and dungeons are the same for both. What changes is money, travel and how the duo plays.</p>
+    <p class="section-note">From Ironforge on, the zones and dungeons are the same for every plan. What changes is the start, money, travel and how the group plays.</p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Topic</th><th class="c-mage">Dual Mage</th><th class="c-hunter">Dual Hunter</th></tr></thead>
-        <tbody>
-          <tr><td>Route</td><td colspan="2">Identical: Zephras → Dalaran → Ironforge → Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon</td></tr>
-          <tr><td>Money</td><td>Cheap. Conjured food and water are free</td><td>Expensive. Ammo, pet food, own food and water, later a quiver</td></tr>
-          <tr><td>Travel</td><td>Teleports to Stormwind/Ironforge</td><td>Hearthstone and flight paths; Aspect of the Cheetah later</td></tr>
-          <tr><td>Contested camps</td><td>Fire Blast tags, otherwise cast times</td><td>Instant ranged tags. Best class for crowded areas</td></tr>
-          <tr><td>Killing</td><td>AoE clears of dense camps</td><td>Single target, pets tank, kiting; elite quests doable as a duo</td></tr>
-          <tr><td>Level 10</td><td>Nothing special</td><td>Pet quest in the middle of Zephras</td></tr>
-          <tr><td>Dungeons</td><td>Bring AoE and crowd control; easy to group</td><td>No AoE. Need a real tank <em>and</em> healer</td></tr>
-          <tr><td>Legacy points</td><td>Thrill of Adventure while leveling. Reagent Economy (free teleports) needs 10 points in Resourcefulness first, so it's a later goal</td><td>Thrill of Adventure, then Adventure toward Frequent Flier (cheaper, faster flights). Reagent Economy almost certainly excludes ammo</td></tr>
-          <tr><td>Loot</td><td>Cloth and caster gear; few clashes with a druid</td><td>Both want the same bows, guns, agility and mail. Agree on rules first</td></tr>
-          <tr><td>Deadmines detour</td><td>Cheap with Teleport: Stormwind</td><td>Costs real travel time; combine with training or skip</td></tr>
-        </tbody>
+        <thead id="diff-head"></thead>
+        <tbody id="diff-body"></tbody>
       </table>
     </div>
   </div>
@@ -298,15 +308,15 @@ body.buy-open .buy-drawer{transform:none}
   <div class="phase" data-phase="p1"></div>
 
   <h2 id="p2">Phase 2 — 20 → 30</h2>
-  <p class="section-note">Boats do the long legs. Mages teleport; hunters plan their hearthstone.</p>
+  <p class="section-note">Boats do the long legs. Mages teleport; everyone else plans their hearthstone.</p>
   <div class="phase" data-phase="p2"></div>
 
   <h2 id="p3">Phase 3 — 30 → 60 <span class="tag unv">unverified</span></h2>
-  <p class="section-note">Beta caps at 30, so this is built from published level ranges only. The zones are the same for both classes.</p>
+  <p class="section-note">Beta caps at 30, so this is built from published level ranges only. The zones are the same for every plan.</p>
   <div class="phase" data-phase="p3"></div>
 
   <h2 id="dungeons">New dungeons at a glance</h2>
-  <p class="section-note">One clear each, with every quest collected first. The tenth clear pays almost nothing. A hunter duo needs both a tank and a healer for these.</p>
+  <p class="section-note">One clear each, with every quest collected first. The tenth clear pays almost nothing. The hunter groups need both a tank and a healer for these; the Paladin · Hunter · Shaman group brings its own.</p>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Dungeon</th><th>Levels</th><th>Where</th><th>Our plan</th></tr></thead>
@@ -324,7 +334,7 @@ body.buy-open .buy-drawer{transform:none}
     </table>
   </div>
 
-  <h2 id="duo">Duo play</h2>
+  <h2 id="duo">Group play</h2>
   <div class="cards" id="duo-cards"></div>
 
   <h2 id="legacy">Legacy points</h2>
@@ -364,15 +374,20 @@ body.buy-open .buy-drawer{transform:none}
   </div>
   <p class="section-note">Positions follow <a href="https://www.wowhead.com/forever/legacy-calculator" target="_blank" rel="noopener">Wowhead's Legacy Calculator</a> (beta build). Ranks in brackets.</p>
   <div class="cards two">
-    <div class="card cls-mage legacy-path"><h4>Mage path <span class="tag cls-mage">mage</span></h4><ul>
+    <div class="card cls-mage legacy-path" data-plans="mage"><h4>Mage path <span class="tag cls-mage">mage</span></h4><ul>
       <li>Points 1–5: <strong>Thrill of Adventure 5/5</strong> while leveling.</li>
       <li>Then Resourcefulness: Gourmand, The Quick and the Dead, then column 2, until 10 are spent there.</li>
       <li>Point 16: <strong>Reagent Economy</strong>. Thrill 5 + Resourcefulness 11 is exactly the 16 cap.</li>
     </ul></div>
-    <div class="card cls-hunter legacy-path"><h4>Hunter path <span class="tag cls-hunter">hunter</span></h4><ul>
+    <div class="card cls-hunter legacy-path" data-plans="hunter hunter3"><h4>Hunter path <span class="tag cls-hunter">hunter</span></h4><ul>
       <li>Points 1–5: <strong>Thrill of Adventure 5/5</strong>. It also saves food and water we'd otherwise buy.</li>
       <li>Then stay in Adventure: Field Guide first (Frequent Flier's connector), then High Alert or Field Medicine.</li>
       <li>Point 11: <strong>Frequent Flier</strong> (50% cheaper flights, 20% faster). The last 5 go to Resourcefulness column 1: Gourmand 3/3 plus The Quick and the Dead 2/2.</li>
+    </ul></div>
+    <div class="card cls-trio legacy-path" data-plans="trio"><h4>Paladin · Hunter · Shaman path <span class="tag cls-trio">trio</span></h4><ul>
+      <li>Same order for all three. Points 1–5: <strong>Thrill of Adventure 5/5</strong>. Its mana return matters most for the Paladin and Shaman.</li>
+      <li>Then stay in Adventure: Field Guide first (Frequent Flier's connector), then High Alert or Field Medicine.</li>
+      <li>Point 11: <strong>Frequent Flier</strong>. Nobody in this group teleports, so cheaper, faster flights help everyone.</li>
     </ul></div>
   </div>
 
@@ -391,6 +406,8 @@ body.buy-open .buy-drawer{transform:none}
     <li><a href="https://www.icy-veins.com/wow-forever/camping" target="_blank" rel="noopener">Icy Veins — Camping</a></li>
     <li><a href="https://kingboost.net/blogs/wow-forever/wow-forever-camping-guide/" target="_blank" rel="noopener">KingBoost — Camping &amp; Legacy perks</a></li>
     <li><a href="https://lfcarry.com/guides/wow-forever-mage" target="_blank" rel="noopener">LFCarry — Mage &amp; Skyborne racials</a></li>
+    <li><a href="https://mobalytics.gg/wow-forever/guides/wow-forever-race-class-combinations" target="_blank" rel="noopener">Mobalytics — Race and class combinations</a></li>
+    <li><a href="https://wowforevertools.com/abilities/paladin" target="_blank" rel="noopener">WoW Forever Tools — Paladin trainer levels</a></li>
   </ul>
 </div>
 <button class="buy-fab" type="button" data-open-buy aria-haspopup="dialog" aria-controls="buy-drawer">Buyable quests <span class="count" id="buy-count"></span></button>
@@ -416,67 +433,112 @@ body.buy-open .buy-drawer{transform:none}
   "use strict";
 
   // ---------------------------------------------------------------------------
-  // Plan data. Each item is shared by both plans unless it has a `mage` or
-  // `hunter` key: an object overrides fields for that class, `false` hides the
-  // item for that class. Item ids double as checkbox storage keys, so keep ids
-  // stable (ids from the original mage-only page are unchanged).
+  // Plans. `base` = inherit that plan's per-item overrides unless the item has
+  // its own key for this plan. `css` picks the accent color class.
+  // ---------------------------------------------------------------------------
+  var PLANS = {
+    mage:    { label: "Dual Mage", short: "2× Mage", tag: "mage", css: "mage", base: null,
+               race: "Skyborne (High Order)", extra: "+ maybe a Druid" },
+    hunter:  { label: "Dual Hunter", short: "2× Hunter", tag: "hunter", css: "hunter", base: null,
+               race: "Skyborne (High Order)", extra: "+ maybe a Druid" },
+    hunter3: { label: "Triple Hunter", short: "3× Hunter", tag: "hunter", css: "hunter", base: "hunter",
+               race: "Skyborne (High Order)", extra: "+ a tank & healer for dungeons" },
+    trio:    { label: "Paladin · Hunter · Shaman", short: "Paladin + Hunter + Shaman", tag: "trio", css: "trio", base: "hunter",
+               race: "Dwarf", extra: "Own tank + healer" }
+  };
+  var PLAN_IDS = ["mage", "hunter", "hunter3", "trio"];
+
+  // ---------------------------------------------------------------------------
+  // Plan data. Each item is shared by every plan unless it has a key for a plan
+  // (or for that plan's `base`): an object overrides fields for that plan,
+  // `false` hides the item for it. Item ids double as checkbox storage keys, so
+  // keep ids stable (ids from the original mage-only page are unchanged).
   // Tags: [kind, text] where kind is dng | unv | opt.
   // ---------------------------------------------------------------------------
   var PHASES = {
     before: [
       { id: "b-names", lvl: "Oct 27", t: "Reserve names (Oct 27 – Nov 3)",
-        n: "Both characters, plus the druid if they're in. Up to 3 characters per account in that window." },
+        n: "Both characters, plus the druid if they're in. Up to 3 characters per account in that window.",
+        hunter3: { n: "All three characters, plus the druid if they're in. Up to 3 characters per account in that window." },
+        trio: { n: "All three characters. Paladin and Shaman must be <strong>Dwarves</strong> (Alliance Skyborne can't be either), so the Hunter goes Dwarf too and we all start together in Coldridge Valley." } },
       { id: "b-ui", lvl: "Beta", t: "Lock in UI, keybinds and macros",
         n: 'Save the bar layout and copy the macros from the <a href="macros.html">Macros</a> page so we play from minute one.' },
       { id: "b-addons", lvl: "Beta", t: "Test every addon on the beta client",
         n: 'Quest helpers especially. Nothing gets installed for the first time on launch night. See <a href="addons.html">Addons</a>.' },
       { id: "b-legacy", lvl: "Plan", t: "Legacy points: we start at 0",
         mage: { n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan: Thrill of Adventure while leveling; Reagent Economy is a later goal because it sits behind 10 points in Resourcefulness. See <a href="#legacy">Legacy points</a>.' },
-        hunter: { n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan: Thrill of Adventure first, then stay in Adventure toward Frequent Flier. Reagent Economy (“class abilities no longer require reagents purchasable from vendors”) almost certainly excludes ammo, a weapon consumable. See <a href="#legacy">Legacy points</a>.', tags: [["unv", "confirm ammo excluded"]] } },
+        hunter: { n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan: Thrill of Adventure first, then stay in Adventure toward Frequent Flier. Reagent Economy (“class abilities no longer require reagents purchasable from vendors”) almost certainly excludes ammo, a weapon consumable. See <a href="#legacy">Legacy points</a>.', tags: [["unv", "confirm ammo excluded"]] },
+        trio: { n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan for all three: Thrill of Adventure first (it returns mana too, so the Paladin and Shaman drink less), then stay in Adventure toward Frequent Flier. See <a href="#legacy">Legacy points</a>.' } },
       { id: "b-voice", lvl: "Plan", t: "Discord voice ready",
         n: "Push-to-talk. Calling pulls and quest splits out loud saves more time than any route trick." },
       { id: "b-druid", lvl: "Plan", t: "Settle the third player",
         mage: { n: "A druid (bear tank in dungeons, healer when needed) fits two mages better than a third mage." },
-        hunter: { n: "Even more important for hunters: two hunters have no tank, no healer and no AoE. A druid covers one role; we still need one more player for dungeons." } },
+        hunter: { n: "Even more important for hunters: two hunters have no tank, no healer and no AoE. A druid covers one role; we still need one more player for dungeons." },
+        hunter3: { t: "Settle the fourth and fifth player", n: "Three hunters still have no tank, no healer and no AoE. A druid covers one role; a priest or shaman healer the other." },
+        trio: { t: "Settle roles and specs", n: "Paladin tanks (Protection), Shaman heals, Hunter is the damage. Protection quests fine with Holy Strike and Seal of Fury; the Paladin can respec Retribution later if the group finds another tank. See <a href=\"builds.html?class=Paladin\">Builds</a>." } },
       { id: "b-group", lvl: "Plan", t: "Line up a Hall of Thanes group",
         mage: { n: "Group size isn't announced yet. If it's 5, we need 1–2 more — find them in advance (guild or Discord)." },
-        hunter: { n: "Group size isn't announced yet. We need a real tank and healer — druid plus one more. Find them in advance (guild or Discord)." } },
+        hunter: { n: "Group size isn't announced yet. We need a real tank and healer — druid plus one more. Find them in advance (guild or Discord)." },
+        trio: { n: "Group size isn't announced yet. If it's 5, we only need 2 DPS — the easiest spots to fill. Line them up in advance anyway (guild or Discord)." } },
       { id: "h-loot", lvl: "Plan", t: "Agree on loot rules between us", mage: false,
-        hunter: { n: "We both want the same bows, guns, agility and mail. Take turns, or roll only between the two of us — decide before the first dungeon." } },
+        hunter: { n: "We both want the same bows, guns, agility and mail. Take turns, or roll only between the two of us — decide before the first dungeon." },
+        hunter3: { n: "All three of us want the same bows, guns, agility and mail. Rotate who gets the next upgrade, or roll only between us — decide before the first dungeon." },
+        trio: { n: "Almost no clashes: agility and ranged weapons to the Hunter, intellect and healing to the Shaman, strength and shields to the Paladin. Only leather/mail with mixed stats needs a quick call." } },
       { id: "h-petroles", lvl: "Plan", t: "Plan pet roles", mage: false,
-        hunter: { n: "One of us runs a sturdy tank pet (bear or boar type), the other a damage pet (cat). Check what's tameable on Zephras and in Darkshore." } }
+        hunter: { n: "One of us runs a sturdy tank pet (bear or boar type), the other a damage pet (cat). Check what's tameable on Zephras and in Darkshore." },
+        hunter3: { n: "One tank pet (bear or boar type), two damage pets (cats). Three pets can hold an elite while we shoot. Check what's tameable on Zephras and in Darkshore." },
+        trio: { t: "Pick the Hunter's pet", n: "The Paladin tanks, so the Hunter runs a damage pet (cat) that can off-tank an add when needed." } }
     ],
     night: [
       { id: "n-zephras", lvl: "1–12", t: "Zephras Isle together, share every quest",
-        n: "Both factions share the island, so it's busy. Finish the main chain and leave; you don't have to wait for 12." },
+        n: "Both factions share the island, so it's busy. Finish the main chain and leave; you don't have to wait for 12.",
+        hunter3: { n: "Both factions share the island, so it's busy. Three instant ranged tags make crowded camps easy. Finish the main chain and leave; you don't have to wait for 12." },
+        trio: false },
+      { id: "tr-coldridge", lvl: "1–6", t: "Coldridge Valley together, share every quest", mage: false, hunter: false,
+        trio: { n: "Expect it packed: Dwarf Shaman is Forever's most hyped new combo. Group up from the first minute so kill credit is shared. Paladin gets Holy Strike at 6." } },
+      { id: "tr-dunmorogh", lvl: "6–12", t: "Dun Morogh from Kharanos", mage: false, hunter: false,
+        trio: { n: "Paladin trains Seal of Fury at 10 (tank seal, makes Judgement a taunt). Shaman does the Earth totem quest (~4) and Fire totem quest (~10).", tags: [["unv", "check totem quests"]] } },
       { id: "h-pet", lvl: "10", t: "Hunter pet quest — tame your first pet", mage: false,
-        hunter: { n: "Lands in the middle of Zephras. How the Skyborne pet quest works and where it happens is still unknown — test in beta.", tags: [["unv", "unverified"]] } },
+        hunter: { n: "Lands in the middle of Zephras. How the Skyborne pet quest works and where it happens is still unknown — test in beta.", tags: [["unv", "unverified"]] },
+        trio: { n: "In Classic, Dwarf hunters get it from the hunter trainer in Kharanos. Check it works the same in Forever.", tags: [["unv", "unverified"]] } },
       { id: "n-camp", lvl: "~5", t: "The Great Outdoors → train Cooking → Basic Campfire",
         mage: { n: "Cooking unlocks your own campfire (1-hour camp buffs) and XP food. At least one of us takes it." },
-        hunter: { n: "Cooking unlocks your own campfire (1-hour camp buffs), XP food and pet food. Worth even more for hunters — at least one of us takes it." } },
+        hunter: { n: "Cooking unlocks your own campfire (1-hour camp buffs), XP food and pet food. Worth even more for hunters — at least one of us takes it." },
+        trio: { n: "Cooking unlocks your own campfire (1-hour camp buffs), XP food and the Hunter's pet food. At least one of us takes it." } },
       { id: "n-skin", lvl: "Early", t: "Train Skinning",
         mage: { n: "The only other profession for now. Whoever didn't loot the mob skins it." },
-        hunter: { n: "Our main gold source — hunters kill a lot of beasts. Whoever didn't loot the mob skins it." } },
+        hunter: { n: "Our main gold source — hunters kill a lot of beasts. Whoever didn't loot the mob skins it." },
+        trio: { n: "Our main gold source. Whoever didn't loot the mob skins it." } },
       { id: "h-ammo", lvl: "12", t: "Stock ammo and pet food before the skycutter", mage: false,
-        hunter: { n: "Buy enough for Hall of Thanes and the Darkshore trip. Ammo and food are the biggest gold drain." } },
+        hunter: { n: "Buy enough for Hall of Thanes and the Darkshore trip. Ammo and food are the biggest gold drain." },
+        hunter3: { n: "Buy enough for Hall of Thanes and the Darkshore trip. Three hunters burn through ammo and food fast — it's our biggest gold drain." },
+        trio: { t: "Stock ammo and pet food in Ironforge", n: "Enough for Hall of Thanes and the Darkshore trip. The Hunter's ammo is the group's biggest cost, so the others chip in." } },
       { id: "n-dalaran", lvl: "12", t: "Skycutter to Dalaran → Skyborne portal to Stormwind",
-        n: "Turn in <em>The Magical City of Dalaran</em> in the Sky Enclave, pick up <em>Welcome to Azeroth</em>, take the portal." },
+        n: "Turn in <em>The Magical City of Dalaran</em> in the Sky Enclave, pick up <em>Welcome to Azeroth</em>, take the portal.",
+        trio: false },
       { id: "n-if", lvl: "12", t: "Tram to Ironforge, collect all Hall of Thanes quests",
-        n: "Grab both flight paths on the way." },
+        n: "Grab both flight paths on the way.",
+        trio: { t: "Into Ironforge, collect all Hall of Thanes quests", n: "It's right next door. Train, grab the flight path, and take the tram to Stormwind later for the boat." } },
       { id: "n-day", lvl: "Thu–Fri", t: "Keep playing through the day",
         n: "Launch is a weekday. Most players are at work or school; that's our biggest head start." }
     ],
     p1: [
       { id: "p1-filler", lvl: "12–14", t: "Short filler in Dun Morogh / Loch Modan", tags: [["opt", "only if needed"]],
-        n: "Just enough to be ready for Hall of Thanes. Expect crowds there too (Dwarf Shaman hype)." },
+        n: "Just enough to be ready for Hall of Thanes. Expect crowds there too (Dwarf Shaman hype).",
+        trio: { t: "Short filler in Loch Modan", n: "Dun Morogh is done, so a little Thelsamar until everyone is 13–14." } },
+      { id: "tr-rf", lvl: "16", t: "Paladin: train Righteous Fury", mage: false, hunter: false,
+        trio: { n: "Trained at 16 in Forever. On for every dungeon pull; off while questing if the Shaman is short on mana." } },
       { id: "p1-hot", lvl: "13–15", t: "Hall of Thanes — one clear", tags: [["dng", "13–18"]],
         mage: { n: "Under Ironforge. Every quest in the log before entering." },
-        hunter: { n: "Under Ironforge. Every quest in the log before entering. Two hunters need a tank and a healer — bring the druid plus one more." } },
+        hunter: { n: "Under Ironforge. Every quest in the log before entering. Two hunters need a tank and a healer — bring the druid plus one more." },
+        hunter3: { n: "Under Ironforge. Every quest in the log before entering. Three hunters need a tank and a healer — bring the druid plus one more." },
+        trio: { n: "Under Ironforge. Every quest in the log before entering. We bring our own tank and healer: Paladin tanks with Seal of Fury, Shaman heals, Hunter and pet do damage." } },
       { id: "p1-boat", lvl: "14", t: "Tram to Stormwind → boat to Auberdine, set hearth",
         n: "New Stormwind Harbor → Auberdine route." },
       { id: "p1-darkshore", lvl: "14–19", t: "Darkshore — quest against the flow",
         mage: { n: "Night Elves arrive at the same time and fan out from Auberdine. Do the far ends first (north toward Cliffspring, south toward the Grove of the Ancients) and the Auberdine quests last. Walk on Air for cliff shortcuts." },
-        hunter: { n: "Same route, far ends first and Auberdine last. Expect extra Night Elf hunters competing here. Instant ranged tags win contested camps, and the many beasts mean plenty of skinning." } },
+        hunter: { n: "Same route, far ends first and Auberdine last. Expect extra Night Elf hunters competing here. Instant ranged tags win contested camps, and the many beasts mean plenty of skinning." },
+        trio: { n: "Far ends first (north toward Cliffspring, south toward the Grove of the Ancients), Auberdine last. With a tank and a healer we can pull bigger packs and take the elite quests the duos skip." } },
       { id: "p1-bfdq", lvl: "14–19", t: "Collect Blackfathom Deeps quests if offered",
         n: "Hold them for the BFD clear in phase 2." },
       { id: "p1-ashen", lvl: "19–20", t: "Ashenvale (Astranaar)",
@@ -485,7 +547,12 @@ body.buy-open .buy-drawer{transform:none}
     p2: [
       { id: "p2-ashen", lvl: "20–22", t: "Finish Ashenvale" },
       { id: "h-cheetah", lvl: "20", t: "Train Aspect of the Cheetah", mage: false,
-        hunter: { n: "Confirmed level 20 in Forever. Makes the long runs between hubs much faster — our replacement for teleports." } },
+        hunter: { n: "Confirmed level 20 in Forever. Makes the long runs between hubs much faster — our replacement for teleports." },
+        trio: { t: "Travel speed at 20: Cheetah + Ghost Wolf", n: "Hunter trains Aspect of the Cheetah (confirmed 20 in Forever); Shaman gets Ghost Wolf. The Paladin runs on foot until the level-40 mount, so the other two wait at the next hub.", tags: [["unv", "check Ghost Wolf level"]] } },
+      { id: "tr-cons", lvl: "20", t: "Paladin: train Consecration", mage: false, hunter: false,
+        trio: { n: "A class spell at 20 in Forever (was a talent). Our first AoE threat tool — Excavation Site and dense camps get much easier." } },
+      { id: "tr-water", lvl: "20", t: "Shaman: Water totem quest", mage: false, hunter: false,
+        trio: { n: "Healing Stream Totem between pulls cuts the Shaman's drinking. Quest location in Forever still unknown.", tags: [["unv", "unverified"]] } },
       { id: "p2-dm", lvl: "20–21", t: "Deadmines detour", tags: [["opt", "optional"]],
         mage: { n: "By day 3–4 the wave has left Westfall. Teleport to Stormwind, do only the Defias chain + one Deadmines clear. Check in beta that the quests aren't gray by then." },
         hunter: { n: "No teleport, so the trip from Ashenvale to Stormwind and back costs real time. Only worth it combined with a training trip — otherwise skip it." } },
@@ -529,9 +596,14 @@ body.buy-open .buy-drawer{transform:none}
       { id: "p3-60", lvl: "60", t: "Level 60 before the raids open on Dec 9" }
     ],
     beta: [
-      { id: "t-exit", lvl: "Zephras", t: "What level we actually leave Zephras at, and which quests to skip" },
-      { id: "h-t-pet", lvl: "Zephras", t: "How the Skyborne hunter pet quest works at 10", mage: false, hunter: {} },
-      { id: "h-t-tame", lvl: "Pets", t: "Which pets are tameable on Zephras and in Darkshore", mage: false, hunter: {} },
+      { id: "t-exit", lvl: "Zephras", t: "What level we actually leave Zephras at, and which quests to skip", trio: false },
+      { id: "tr-t-crowd", lvl: "Coldridge", t: "How crowded the Dwarf start is at launch-like load", mage: false, hunter: false, trio: {} },
+      { id: "tr-t-totems", lvl: "Shaman", t: "Where the Dwarf Shaman totem quests are (Earth ~4, Fire ~10, Water ~20)", mage: false, hunter: false, trio: {} },
+      { id: "tr-t-fury", lvl: "Paladin", t: "Seal of Fury taunt in practice: does it hold packs at 13–18 without Consecration?", mage: false, hunter: false, trio: {} },
+      { id: "h-t-pet", lvl: "Zephras", t: "How the Skyborne hunter pet quest works at 10", mage: false, hunter: {},
+        trio: { lvl: "Dun Morogh", t: "How the Dwarf hunter pet quest works at 10 in Forever" } },
+      { id: "h-t-tame", lvl: "Pets", t: "Which pets are tameable on Zephras and in Darkshore", mage: false, hunter: {},
+        trio: { t: "Which pets are tameable in Dun Morogh and Darkshore" } },
       { id: "t-hot", lvl: "Ironforge", t: "Where the Hall of Thanes quests start + any level or prerequisite requirements" },
       { id: "t-size", lvl: "Dungeons", t: "Group size for the new dungeons" },
       { id: "t-boat", lvl: "Travel", t: "Stormwind → Auberdine boat: how often it sails" },
@@ -548,60 +620,120 @@ body.buy-open .buy-drawer{transform:none}
     ]
   };
 
-  // Duo-play cards: `cls` is "both", "mage" or "hunter".
+  // Key differences table (compare view). `all` = same text for every plan.
+  var DIFFS = [
+    { topic: "Race & start", mage: "Skyborne, Zephras Isle", hunter: "Skyborne, Zephras Isle", hunter3: "Skyborne, Zephras Isle",
+      trio: "Dwarf, Coldridge Valley (Alliance Skyborne can't be Paladin or Shaman)" },
+    { topic: "Route", mage: "Zephras → Dalaran → Ironforge → Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon",
+      hunter: "Zephras → Dalaran → Ironforge → Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon",
+      hunter3: "Zephras → Dalaran → Ironforge → Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon",
+      trio: "Coldridge → Dun Morogh → Ironforge, then the same: Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon" },
+    { topic: "Money", mage: "Cheap. Conjured food and water are free", hunter: "Expensive. Ammo, pet food, own food and water, later a quiver",
+      hunter3: "Most expensive: three sets of ammo and pet food", trio: "Middle. One hunter's ammo, plus food and water for three" },
+    { topic: "Travel", mage: "Teleports to Stormwind/Ironforge", hunter: "Hearthstone and flight paths; Aspect of the Cheetah later",
+      hunter3: "Hearthstone and flight paths; Aspect of the Cheetah later", trio: "Hearthstone and flight paths; Cheetah and Ghost Wolf at 20, the Paladin walks until 40" },
+    { topic: "Contested camps", mage: "Fire Blast tags, otherwise cast times", hunter: "Instant ranged tags. Best class for crowded areas",
+      hunter3: "Three instant tags. Split up on kill quests so we don't strip one camp", trio: "Hunter tags at range; Judgement and shocks are instant too" },
+    { topic: "Killing", mage: "AoE clears of dense camps", hunter: "Single target, pets tank, kiting; elite quests doable as a duo",
+      hunter3: "Three pets hold elites; group quests are easy", trio: "Real tank and healer: bigger pulls, elite quests, Consecration AoE from 20" },
+    { topic: "Level 10", mage: "Nothing special", hunter: "Pet quest in the middle of Zephras", hunter3: "Pet quest in the middle of Zephras",
+      trio: "Pet quest (Kharanos), Seal of Fury, Shaman Fire totem quest" },
+    { topic: "Dungeons", mage: "Bring AoE and crowd control; easy to group", hunter: "No AoE. Need a real tank <em>and</em> healer",
+      hunter3: "No AoE. Need a real tank <em>and</em> healer", trio: "Own tank and healer; only DPS to find" },
+    { topic: "Legacy points", mage: "Thrill of Adventure while leveling. Reagent Economy (free teleports) needs 10 points in Resourcefulness first, so it's a later goal",
+      hunter: "Thrill of Adventure, then Adventure toward Frequent Flier (cheaper, faster flights). Reagent Economy almost certainly excludes ammo",
+      hunter3: "Thrill of Adventure, then Adventure toward Frequent Flier (cheaper, faster flights). Reagent Economy almost certainly excludes ammo",
+      trio: "Thrill of Adventure (mana back for Paladin and Shaman), then Adventure toward Frequent Flier" },
+    { topic: "Loot", mage: "Cloth and caster gear; few clashes with a druid", hunter: "Both want the same bows, guns, agility and mail. Agree on rules first",
+      hunter3: "All three want the same gear. Rotate or roll only between us", trio: "Almost no clashes: agility to the Hunter, intellect to the Shaman, strength to the Paladin" },
+    { topic: "Deadmines detour", mage: "Cheap with Teleport: Stormwind", hunter: "Costs real travel time; combine with training or skip",
+      hunter3: "Costs real travel time; combine with training or skip", trio: "Costs real travel time; combine with training or skip" }
+  ];
+
+  // Group-play cards: `plans` lists the plans a card belongs to ("all" = every plan).
   var DUO = [
-    { cls: "mage", h: "Mage duo tactics", ul: [
+    { plans: ["mage"], h: "Mage duo tactics", ul: [
       "Frost for leveling: Nova, then Frostbolt from range.",
       "Alternate Frost Nova so one is always ready.",
       "Decide up front who Polymorphs and who Counterspells.",
       "One conjures food/water for both; the other keeps killing.",
       "Keep Arcane Intellect on each other."] },
-    { cls: "hunter", h: "Hunter duo tactics", ul: [
+    { plans: ["hunter"], h: "Hunter duo tactics", ul: [
       "One tank pet, one damage pet; let the pets hold aggro.",
       "Tag instantly with Arcane Shot / Serpent Sting in contested camps.",
       "Two pets can off-tank elites — elite quests become doable as a duo.",
       "Kite when a pull goes bad instead of eating a death.",
       "Keep pets fed and happy; an unhappy pet deals less damage."] },
-    { cls: "mage", h: "Skyborne racials", ul: [
+    { plans: ["hunter3"], h: "Hunter trio tactics", ul: [
+      "One tank pet, two damage pets; the tank pet opens, the others follow.",
+      "Focus fire: one Hunter's Mark, everyone on that target.",
+      "Three pets can hold an elite — elite and group quests become easy.",
+      "Split jobs: one handles traps and crowd control, one calls targets, one watches adds.",
+      "Keep pets fed and happy; an unhappy pet deals less damage."] },
+    { plans: ["trio"], h: "Paladin · Hunter · Shaman tactics", ul: [
+      "Paladin tanks with Seal of Fury; Judgement taunts a loose mob from 10 yards.",
+      "Hunter marks the kill target; the pet picks up anything the Paladin misses.",
+      "Shaman heals and drops totems for the Paladin (Stoneskin / Strength of Earth), Healing Stream between pulls from 20.",
+      "Interrupts: Earth Shock from the Shaman; Concussive Shot or Wing Clip stops runners.",
+      "Pull bigger than any duo can — this group questing pace is limited by mana, not health."] },
+    { plans: ["mage"], h: "Skyborne racials", ul: [
       "<strong>Read Ley Line</strong>: +100% health and mana regen. Stagger it so we're never both drinking.",
       "<strong>Walk on Air</strong>: glide off cliffs for shortcuts.",
       "<strong>Wind Blessed</strong>: +1% haste, passive."] },
-    { cls: "hunter", h: "Skyborne racials", ul: [
+    { plans: ["hunter", "hunter3"], h: "Skyborne racials", ul: [
       "<strong>Read Ley Line</strong>: +100% health and mana regen — cuts how much food and water we buy.",
       "<strong>Walk on Air</strong>: glide off cliffs for shortcuts.",
       "<strong>Wind Blessed</strong>: +1% haste, which also speeds up Auto Shot."] },
-    { cls: "mage", h: "Crowded camps", ul: [
+    { plans: ["trio"], h: "Why Dwarves", ul: [
+      "On the Alliance side only Dwarves can be both Paladin and Shaman, so the whole group starts together.",
+      "<strong>Stoneform</strong> (Classic): removes poison, disease and bleed and adds armor — a free panic button for the tank.",
+      "<strong>Gun Specialization</strong> (Classic): extra crit with guns for the Hunter.",
+      "Racials are the Classic versions; check what Forever changed in beta."] },
+    { plans: ["mage"], h: "Crowded camps", ul: [
       "Invite anyone fighting us for the same mobs — kill credit is shared in a group.",
       "Fire Blast is our instant tag; open with it when a camp is contested.",
       "Kill quests go fast as a duo; do collection quests where mobs are dense.",
       "Always carry a backup quest nearby so a packed camp never means waiting."] },
-    { cls: "hunter", h: "Crowded camps", ul: [
+    { plans: ["hunter", "hunter3"], h: "Crowded camps", ul: [
       "Our strength: instant ranged tags beat almost every other class to the mob.",
       "Invite anyone fighting us for the same mobs — kill credit is shared in a group.",
       "No AoE, so avoid dense packs; pick off singles at the edges.",
       "Always carry a backup quest nearby so a packed camp never means waiting."] },
-    { cls: "mage", h: "Professions & gold", ul: [
+    { plans: ["trio"], h: "Crowded camps", ul: [
+      "Coldridge and Dun Morogh will be the busiest Alliance start (Dwarf Shaman hype). Group-invite rivals — kill credit is shared.",
+      "Hunter's Arcane Shot tags first; Judgement and shocks are instant backups.",
+      "From 20, Consecration lets us take the dense camps other groups avoid.",
+      "Always carry a backup quest nearby so a packed camp never means waiting."] },
+    { plans: ["mage"], h: "Professions & gold", ul: [
       "Skinning for both; whoever didn't loot skins.",
       "Cooking on at least one of us: campfire buffs + XP food.",
       "Keep linen/wool to sell (or bandages later).",
       "Spend in order: training → bags → mount fund."] },
-    { cls: "hunter", h: "Professions & gold", ul: [
+    { plans: ["hunter", "hunter3"], h: "Professions & gold", ul: [
       "Skinning is our main income — skin everything.",
       "Cooking covers campfire buffs, XP food and pet food.",
       "Buy ammo in bulk at every major stop; never run dry mid-zone.",
       "Spend in order: training → ammo/food → bags → mount fund."] },
-    { cls: "both", h: "XP extras", ul: [
+    { plans: ["trio"], h: "Professions & gold", ul: [
+      "Skinning is our main income; whoever didn't loot skins.",
+      "Cooking covers campfire buffs, XP food and pet food.",
+      "Ammo is the group's biggest cost — share it.",
+      "Spend in order: training → ammo/food → bags → mount fund."] },
+    { plans: ["all"], h: "XP extras", ul: [
       "Start every session at a campfire (sit ~1 min, 1-hour buffs).",
       "Keep a food buff up; food is being tested with a kill-XP bonus.",
       "Log out in inns or cities for rested XP.",
       "Don't let quests go gray — drop escorts and low-drop-rate quests."] },
-    { cls: "mage", h: "The third player", p: "A <strong>druid</strong> is the best fit: bear tank for first clears while two mages AoE, healer on elite quests, cat or bear for questing. Skyborne druids also get their own forms." },
-    { cls: "hunter", h: "The third player", p: "A <strong>druid</strong> is close to essential: two hunters have no tank, healer or AoE. Druid tanks and we still find a healer for dungeons — or the druid heals and a pet off-tanks for elite quests." }
+    { plans: ["mage"], h: "The third player", p: "A <strong>druid</strong> is the best fit: bear tank for first clears while two mages AoE, healer on elite quests, cat or bear for questing. Skyborne druids also get their own forms." },
+    { plans: ["hunter"], h: "The third player", p: "A <strong>druid</strong> is close to essential: two hunters have no tank, healer or AoE. Druid tanks and we still find a healer for dungeons — or the druid heals and a pet off-tanks for elite quests." },
+    { plans: ["hunter3"], h: "Players four and five", p: "Three hunters still need a tank <strong>and</strong> a healer for dungeons. A druid tanks and a priest or shaman heals. At low levels a tank pet plus a healer can carry a first clear." },
+    { plans: ["trio"], h: "The last two spots", p: "Tank and healer are covered, so if dungeons are 5-man we only need <strong>2 DPS</strong> — the easiest players to find. A mage adds AoE and free food and water; a warlock adds healthstones and curses." }
   ];
 
   var KEY = "wf-launch-plan-v1";
   var MODE_KEY = "wf-launch-plan-mode";
-  var MODES = ["mage", "hunter", "compare"];
+  var CMP_KEY = "wf-launch-plan-cmp";
+  var MODES = PLAN_IDS.concat("compare");
 
   function load(key, fallback) {
     try { var v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); } catch (e) { return fallback; }
@@ -611,71 +743,96 @@ body.buy-open .buy-drawer{transform:none}
   }
 
   var state = load(KEY, {}) || {};
+  var cmp = load(CMP_KEY, null);
+  if (!cmp || PLAN_IDS.indexOf(cmp.a) === -1 || PLAN_IDS.indexOf(cmp.b) === -1) cmp = { a: "mage", b: "hunter" };
+  var mode = "mage";
 
-  // Resolve an item for one class: null if hidden, otherwise the merged fields.
-  function resolve(item, cls) {
-    var o = item[cls];
+  // The override object for a plan: its own key first, then its base plan's.
+  function override(item, plan) {
+    if (Object.prototype.hasOwnProperty.call(item, plan)) return item[plan];
+    var base = PLANS[plan].base;
+    if (base && Object.prototype.hasOwnProperty.call(item, base)) return item[base];
+    return undefined;
+  }
+  // Resolve an item for one plan: null if hidden, otherwise the merged fields.
+  function resolve(item, plan) {
+    var o = override(item, plan);
     if (o === false) return null;
-    var out = { id: item.id, lvl: item.lvl, t: item.t, n: item.n, tags: item.tags || [], only: null };
+    var out = { id: item.id, lvl: item.lvl, t: item.t, n: item.n, tags: item.tags || [], only: false };
     if (o) Object.keys(o).forEach(function (k) { out[k] = o[k]; });
     out.tags = out.tags || [];
-    var other = cls === "mage" ? "hunter" : "mage";
-    if (item[other] === false) out.only = cls;
+    out.only = PLAN_IDS.some(function (p) { return p !== plan && override(item, p) === false; });
     return out;
   }
-  function isShared(item) {
-    return item.mage === undefined && item.hunter === undefined;
+  function sameText(a, b) {
+    return a.lvl === b.lvl && a.t === b.t && (a.n || "") === (b.n || "") && JSON.stringify(a.tags) === JSON.stringify(b.tags);
   }
 
-  function tagsHTML(r, withClassTag) {
+  function tagsHTML(r, plan) {
     var html = r.tags.map(function (t) { return '<span class="tag ' + t[0] + '">' + t[1] + "</span>"; }).join("");
-    if (withClassTag && r.only) html += '<span class="tag cls-' + r.only + '">' + r.only + " only</span>";
+    if (plan && r.only) html += '<span class="tag cls-' + PLANS[plan].css + '">' + PLANS[plan].tag + "</span>";
     return html;
   }
-  function textHTML(r, withClassTag) {
-    return '<span class="t">' + r.t + tagsHTML(r, withClassTag) + "</span>" + (r.n ? '<span class="n">' + r.n + "</span>" : "");
+  function textHTML(r, plan) {
+    return '<span class="t">' + r.t + tagsHTML(r, plan) + "</span>" + (r.n ? '<span class="n">' + r.n + "</span>" : "");
   }
 
-  function renderChecklist(el, items, cls) {
-    var rows = items.map(function (item) { return resolve(item, cls); }).filter(Boolean);
+  function renderChecklist(el, items, plan) {
+    var rows = items.map(function (item) { return resolve(item, plan); }).filter(Boolean);
     var html = '<div class="progress"><div class="bar"><span></span></div><span class="count"></span></div><ul class="check">';
     rows.forEach(function (r) {
       var done = !!state[r.id];
-      var clsName = (r.only ? "cls-" + r.only : "") + (done ? " done" : "");
+      var clsName = (r.only ? "cls-" + PLANS[plan].css : "") + (done ? " done" : "");
       html += '<li class="' + clsName.trim() + '"><label><input type="checkbox" data-id="' + r.id + '"' + (done ? " checked" : "") + '>' +
-        '<span class="lvl">' + r.lvl + '</span><span class="body">' + textHTML(r, true) + "</span></label></li>";
+        '<span class="lvl">' + r.lvl + '</span><span class="body">' + textHTML(r, plan) + "</span></label></li>";
     });
     el.innerHTML = html + "</ul>";
     updateProgress(el);
   }
 
-  function cellHTML(r, cls) {
+  function cellHTML(r, plan) {
     if (!r) return '<div class="cmp-cell empty">Not needed</div>';
-    var label = cls === "mage" ? "Dual Mage" : "Dual Hunter";
-    return '<div class="cmp-cell ' + cls + '"><span class="lvl">' + r.lvl + '</span><span class="body"><span class="who">' + label + "</span>" + textHTML(r, false) + "</span></div>";
+    return '<div class="cmp-cell ' + PLANS[plan].css + '"><span class="lvl">' + r.lvl + '</span><span class="body"><span class="who">' + PLANS[plan].label + "</span>" + textHTML(r, null) + "</span></div>";
   }
 
   function renderCompare(el, items) {
-    var html = '<div class="cmp-head" aria-hidden="true"><div class="h-mage">Dual Mage</div><div class="h-hunter">Dual Hunter</div></div><div class="cmp">';
+    var a = cmp.a, b = cmp.b;
+    var html = '<div class="cmp-head" aria-hidden="true"><div class="h-' + PLANS[a].css + '">' + PLANS[a].label + '</div><div class="h-' + PLANS[b].css + '">' + PLANS[b].label + '</div></div><div class="cmp">';
     items.forEach(function (item) {
-      if (isShared(item)) {
-        var r = resolve(item, "mage");
-        html += '<div class="cmp-row same"><div class="cmp-cell both"><span class="lvl">' + r.lvl + '</span><span class="body"><span class="t">' + r.t +
-          tagsHTML(r, false) + '<span class="same-label">Same for both</span></span>' + (r.n ? '<span class="n">' + r.n + "</span>" : "") + "</span></div></div>";
+      var ra = resolve(item, a), rb = resolve(item, b);
+      if (!ra && !rb) return;
+      if (ra && rb && sameText(ra, rb)) {
+        html += '<div class="cmp-row same"><div class="cmp-cell both"><span class="lvl">' + ra.lvl + '</span><span class="body"><span class="t">' + ra.t +
+          tagsHTML(ra, null) + '<span class="same-label">Same for both</span></span>' + (ra.n ? '<span class="n">' + ra.n + "</span>" : "") + "</span></div></div>";
       } else {
-        html += '<div class="cmp-row diff">' + cellHTML(resolve(item, "mage"), "mage") + cellHTML(resolve(item, "hunter"), "hunter") + "</div>";
+        html += '<div class="cmp-row diff">' + cellHTML(ra, a) + cellHTML(rb, b) + "</div>";
       }
     });
     el.innerHTML = html + "</div>";
   }
 
-  function renderDuo(mode) {
+  function renderDiffs() {
+    var a = cmp.a, b = cmp.b;
+    document.getElementById("diff-head").innerHTML = '<tr><th>Topic</th><th class="c-' + PLANS[a].css + '">' + PLANS[a].label +
+      '</th><th class="c-' + PLANS[b].css + '">' + PLANS[b].label + "</th></tr>";
+    document.getElementById("diff-body").innerHTML = DIFFS.map(function (d) {
+      return d[a] === d[b] ? "<tr><td>" + d.topic + '</td><td colspan="2">' + d[a] + "</td></tr>"
+        : "<tr><td>" + d.topic + "</td><td>" + d[a] + "</td><td>" + d[b] + "</td></tr>";
+    }).join("");
+  }
+
+  function renderDuo() {
     var el = document.getElementById("duo-cards");
-    var cards = DUO.filter(function (c) { return mode === "compare" || c.cls === "both" || c.cls === mode; });
+    var shown = mode === "compare" ? [cmp.a, cmp.b] : [mode];
+    var cards = DUO.filter(function (c) {
+      return c.plans[0] === "all" || shown.some(function (p) { return c.plans.indexOf(p) !== -1; });
+    });
     el.innerHTML = cards.map(function (c) {
-      var badge = mode === "compare" && c.cls !== "both" ? ' <span class="tag cls-' + c.cls + '">' + c.cls + "</span>" : "";
+      var all = c.plans[0] === "all";
+      var hits = all ? [] : shown.filter(function (p) { return c.plans.indexOf(p) !== -1; });
+      var badge = mode === "compare" && hits.length === 1 ? ' <span class="tag cls-' + PLANS[hits[0]].css + '">' + PLANS[hits[0]].label + "</span>" : "";
       var body = c.ul ? "<ul>" + c.ul.map(function (li) { return "<li>" + li + "</li>"; }).join("") + "</ul>" : "<p>" + c.p + "</p>";
-      return '<div class="card cls-' + c.cls + '"><h4>' + c.h + badge + "</h4>" + body + "</div>";
+      return '<div class="card' + (all ? "" : " cls-" + PLANS[c.plans[0]].css) + '"><h4>' + c.h + badge + "</h4>" + body + "</div>";
     }).join("");
   }
 
@@ -689,39 +846,67 @@ body.buy-open .buy-drawer{transform:none}
   }
 
   var chip = document.getElementById("class-chip");
-  function render(mode) {
-    document.body.classList.remove("mode-mage", "mode-hunter", "mode-compare");
+  function render() {
+    MODES.forEach(function (m) { document.body.classList.remove("mode-" + m); });
     document.body.classList.add("mode-" + mode);
     document.querySelectorAll(".mode-switch button").forEach(function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
     });
-    document.getElementById("toc-diff").style.display = mode === "compare" ? "" : "none";
-    chip.className = "chip " + (mode === "hunter" ? "hunt" : mode === "mage" ? "frost" : "gold");
-    chip.textContent = mode === "mage" ? "2× Mage" : mode === "hunter" ? "2× Hunter" : "Mage vs Hunter";
+    var isCmp = mode === "compare";
+    document.getElementById("toc-diff").style.display = isCmp ? "" : "none";
+    var chipCss = { mage: "frost", hunter: "hunt", trio: "pal" };
+    chip.className = "chip " + (isCmp ? "gold" : chipCss[PLANS[mode].css]);
+    chip.textContent = isCmp ? PLANS[cmp.a].short + " vs " + PLANS[cmp.b].short : PLANS[mode].short;
+    var races = isCmp ? [PLANS[cmp.a].race, PLANS[cmp.b].race] : [PLANS[mode].race];
+    document.getElementById("race-chip").textContent = races[0] === races[races.length - 1] ? races[0] : races.join(" / ");
+    var extra = document.getElementById("extra-chip");
+    extra.hidden = isCmp;
+    if (!isCmp) extra.textContent = PLANS[mode].extra;
+    document.getElementById("cmp-a").value = cmp.a;
+    document.getElementById("cmp-b").value = cmp.b;
     document.querySelectorAll(".phase").forEach(function (el) {
       var items = PHASES[el.dataset.phase];
-      if (mode === "compare") renderCompare(el, items); else renderChecklist(el, items, mode);
+      if (isCmp) renderCompare(el, items); else renderChecklist(el, items, mode);
     });
-    renderDuo(mode);
-    document.getElementById("reset").style.display = mode === "compare" ? "none" : "";
+    if (isCmp) renderDiffs();
+    renderDuo();
+    var shown = isCmp ? [cmp.a, cmp.b] : [mode];
+    document.querySelectorAll(".legacy-path").forEach(function (card) {
+      var plans = card.dataset.plans.split(" ");
+      card.hidden = !shown.some(function (p) { return plans.indexOf(p) !== -1; });
+    });
+    document.getElementById("reset").style.display = isCmp ? "none" : "";
   }
 
-  function setMode(mode, push) {
-    if (MODES.indexOf(mode) === -1) mode = "mage";
+  function setMode(m, push) {
+    mode = MODES.indexOf(m) === -1 ? "mage" : m;
     save(MODE_KEY, mode);
     if (push) {
       try {
         var url = new URL(location.href);
         url.searchParams.set("plan", mode);
+        if (mode === "compare") { url.searchParams.set("a", cmp.a); url.searchParams.set("b", cmp.b); }
+        else { url.searchParams.delete("a"); url.searchParams.delete("b"); }
         history.replaceState(null, "", url);
       } catch (e) { /* URL API unavailable: mode still applies */ }
     }
-    render(mode);
+    render();
   }
 
   document.querySelector(".mode-switch").addEventListener("click", function (e) {
     var b = e.target.closest("button[data-mode]");
     if (b) setMode(b.dataset.mode, true);
+  });
+
+  // Compare picker: which two plans sit side by side.
+  ["cmp-a", "cmp-b"].forEach(function (id) {
+    var sel = document.getElementById(id);
+    sel.innerHTML = PLAN_IDS.map(function (p) { return '<option value="' + p + '">' + PLANS[p].label + "</option>"; }).join("");
+    sel.addEventListener("change", function () {
+      cmp[id === "cmp-a" ? "a" : "b"] = sel.value;
+      save(CMP_KEY, cmp);
+      setMode("compare", true);
+    });
   });
 
   document.getElementById("diff-only").addEventListener("change", function (e) {
@@ -744,10 +929,10 @@ body.buy-open .buy-drawer{transform:none}
   }, true);
 
   document.getElementById("reset").addEventListener("click", function () {
-    if (!confirm("Clear all your checkboxes on this page (both plans)?")) return;
+    if (!confirm("Clear all your checkboxes on this page (every plan)?")) return;
     state = {};
     save(KEY, state);
-    render(document.body.classList.contains("mode-hunter") ? "hunter" : "mage");
+    render();
   });
 
   // Keep the sticky compare header just below the sticky top bar.
@@ -768,9 +953,15 @@ body.buy-open .buy-drawer{transform:none}
     document.getElementById("launch-chip").textContent = "Launch: " + local;
   } catch (e) { /* keep the static fallback text */ }
 
-  // Initial mode: ?plan= in the URL wins (shareable links), then the last choice, then mage.
+  // Initial mode: ?plan= (and ?a= / ?b= for compare) in the URL wins (shareable
+  // links), then the last choice, then mage.
   var initial = null;
-  try { initial = new URL(location.href).searchParams.get("plan"); } catch (e) { /* ignore */ }
+  try {
+    var params = new URL(location.href).searchParams;
+    initial = params.get("plan");
+    if (PLAN_IDS.indexOf(params.get("a")) !== -1) cmp.a = params.get("a");
+    if (PLAN_IDS.indexOf(params.get("b")) !== -1) cmp.b = params.get("b");
+  } catch (e) { /* ignore */ }
   setMode(MODES.indexOf(initial) !== -1 ? initial : load(MODE_KEY, "mage"), false);
 })();
 </script>

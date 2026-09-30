@@ -107,6 +107,8 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
 .arrow.head.on{border-top-color:var(--gold)}
 .arrow.head.right{border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid #4A506A;border-right:0}
 .arrow.head.right.on{border-left-color:var(--gold)}
+.arrow.head.left{border-top:6px solid transparent;border-bottom:6px solid transparent;border-right:8px solid #4A506A;border-left:0}
+.arrow.head.left.on{border-right-color:var(--gold)}
 
 /* Tooltip (hover on desktop, bottom sheet with +/- on touch) */
 .tip{position:fixed;z-index:50;width:300px;max-width:calc(100vw - 24px);text-align:left;background:#0A0F1F;border:1px solid var(--gold);border-radius:8px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.6);pointer-events:none}
@@ -338,10 +340,17 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
         var p = byId[q.id];
         if (!p) return;
         var a = cellBox(p.row, p.col), b = cellBox(x.row, x.col), w = 4, key = ' data-from="' + p.id + '" data-qty="' + q.qty + '"';
-        if (p.row === x.row) {           // same row: horizontal, pointing right
-          var x1 = a.x + a.s, x2 = b.x;
-          html += '<span class="arrow"' + key + ' style="left:' + x1 + "px;top:" + (a.y + a.s / 2 - w / 2) + "px;width:" + (x2 - x1 - 6) + "px;height:" + w + 'px"></span>';
-          html += '<span class="arrow head right"' + key + ' style="left:' + (x2 - 8) + "px;top:" + (a.y + a.s / 2 - 6) + 'px"></span>';
+        if (p.row === x.row) {           // same row: horizontal, pointing at the dependent talent
+          var midY = a.y + a.s / 2;
+          if (p.col < x.col) {
+            var x1 = a.x + a.s, x2 = b.x;
+            html += '<span class="arrow"' + key + ' style="left:' + x1 + "px;top:" + (midY - w / 2) + "px;width:" + (x2 - x1 - 6) + "px;height:" + w + 'px"></span>';
+            html += '<span class="arrow head right"' + key + ' style="left:' + (x2 - 8) + "px;top:" + (midY - 6) + 'px"></span>';
+          } else {
+            var l1 = b.x + b.s, l2 = a.x;
+            html += '<span class="arrow"' + key + ' style="left:' + (l1 + 6) + "px;top:" + (midY - w / 2) + "px;width:" + (l2 - l1 - 6) + "px;height:" + w + 'px"></span>';
+            html += '<span class="arrow head left"' + key + ' style="left:' + l1 + "px;top:" + (midY - 6) + 'px"></span>';
+          }
         } else {
           var cx = b.x + b.s / 2 - w / 2, top = a.y + a.s;
           if (p.col !== x.col) {         // horizontal leg at the prerequisite's row, then down

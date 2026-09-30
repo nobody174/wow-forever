@@ -6,6 +6,14 @@ user-facing release notes.
 
 ## 2026-09-30 (evening)
 
+- Builds page: every build card now has a live, preloaded talent calculator (compact
+  mode: tree tabs, opens on the build's main tree, points editable, "Reset to build",
+  "Copy link", "Open in Talent Calc"). Presets come from each build's talent names +
+  ranks, matched against Wowhead's Forever data (all 13 builds verified valid). The old
+  icon row stays as the fallback if the data can't load. Calculator engine moved to
+  shared `talentcalc.js` + `talentcalc.css` (tc- prefixed), used by talents.html and
+  builds.html. Also fixed builds.html being wider than a phone screen (hidden rotation
+  tooltips).
 - New **Talent Calculator** page (`talents.html`), our own code, replacing the external
   Zockify link in the top bar (now `talents.html` on all six pages; index.html's nav
   gained the link it was missing). All 9 classes including Druid, live Wowhead Forever

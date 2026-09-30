@@ -164,7 +164,11 @@ h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spac
 .rotation .confidence{display:inline-block;font:600 10px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;padding:3px 7px;border-radius:3px;margin-left:8px;vertical-align:2px}
 .confidence.high{color:#6FCF7F;border:1px solid rgba(111,207,127,.5)}
 .confidence.medium{color:#E8A33D;border:1px solid rgba(232,163,61,.5)}
+.wrap{overflow-x:clip}  /* hidden rotation tooltips must not widen the page on phones */
+.build-calc{margin-top:4px}
+.build-calc .tc-trees{justify-content:center}
 </style>
+<link rel="stylesheet" href="talentcalc.css">
 </head>
 <body>
 <div class="topbar">
@@ -186,6 +190,7 @@ h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spac
   <p class="empty-hint" id="empty-hint" hidden>Pick a class above to see its build.</p>
   <main class="builds-grid" id="out"></main>
 </div>
+<script src="talentcalc.js"></script>
 <script>
 const CLASS_ICONS = {
   Priest: "https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg",
@@ -252,13 +257,32 @@ function rotationHTML(r){
   if(r.aoeNote) html += `<p class="r-note">${esc(r.aoeNote)}</p>`;
   return html + `</div>`;
 }
-function buildHTML(b){
+function buildHTML(b, i){
+  // The talent-row is the fallback; mountCalcs() swaps in a live calculator
+  // preloaded with this build once Wowhead's talent data has loaded.
   return `<div class="build-section">
     <h2>${esc(b.title)}</h2>
-    <p class="build-meta">Hover an icon for details.</p>
-    ${talentRowHTML(b.talents)}
+    <p class="build-meta">Hover a talent for details. Change points to try your own version.</p>
+    <div class="build-calc" data-build="${i}">${talentRowHTML(b.talents)}</div>
     ${rotationHTML(b.rotation)}
   </div>`;
+}
+let mountToken = 0;
+function mountCalcs(shown){
+  const TC = window.TalentCalc;
+  if(!TC) return;
+  const clsNow = cls, token = ++mountToken;
+  TC.load().then(raw=>{
+    if(token!==mountToken) return;      // class/spec changed while loading
+    out.querySelectorAll(".build-calc").forEach(el=>{
+      const b = shown[+el.dataset.build];
+      if(!b) return;
+      TC.mountSync(el, raw, {
+        cls: clsNow.toLowerCase(), compact: true,
+        preset: b.talents.map(t=>[t.name, parseInt(t.rank,10)]),
+      });
+    });
+  }).catch(()=>{ /* keep the static talent row */ });
 }
 
 // =============================================================================
@@ -601,6 +625,7 @@ function render(){
   renderSpecs(builds);
   const shown = spec==="All" ? builds : builds.filter(b=>b.spec===spec);
   out.innerHTML = shown.map(buildHTML).join("");
+  mountCalcs(shown);
 }
 roster.addEventListener("click", e=>{
   const b = e.target.closest("button");

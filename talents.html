@@ -13,7 +13,6 @@
   --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100; --ok:#6FCF7F; --warn:#E8A33D;
   --serif:"Marcellus","Palatino Linotype",Georgia,serif;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --cell:46px; --gap:14px;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
@@ -71,67 +70,13 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
 .roster button .class-icon{flex:none;width:26px;height:26px;border-radius:5px;border:1px solid rgba(0,0,0,.3);object-fit:cover}
 @media (prefers-reduced-motion:reduce){.roster button{transition:none}}
 
-/* Summary bar */
-.summary{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 18px;margin:22px auto 6px;padding:12px 16px;background:var(--panel);border:1px solid var(--edge);border-radius:8px;max-width:820px}
-.summary .stat{font-size:14px;color:var(--muted)}
-.summary .stat b{color:var(--text);font-size:16px}
-.summary .split b{color:var(--c)}
-.summary .left b{color:var(--gold)}
-.btn{font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--gold);background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);border:1px solid var(--edge);border-top-color:#4A5688;border-radius:6px;padding:9px 14px;cursor:pointer}
-.btn:hover{border-color:var(--gold)}
-.btn.danger:hover{border-color:var(--warn);color:var(--warn)}
-.hint{color:var(--muted);font-size:13px;margin:8px auto 0;max-width:70ch}
-
-/* Trees */
-.trees{display:flex;flex-wrap:wrap;justify-content:center;gap:18px;margin-top:22px}
-.tree{background:var(--panel);border:1px solid var(--edge);border-top:3px solid var(--c);border-radius:8px;padding:12px 16px 18px;width:calc(4 * var(--cell) + 3 * var(--gap) + 34px)}
-.tree-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px}
-.tree-head h2{font:400 20px/1.2 var(--serif);color:var(--c);margin:0}
-.tree-head .pts{font:600 14px var(--sans);color:var(--text)}
-.tree-head .reset-tree{font:600 16px/1 var(--sans);background:transparent;border:1px solid var(--edge);color:var(--muted);width:28px;height:28px;border-radius:5px;cursor:pointer}
-.tree-head .reset-tree:hover{border-color:var(--warn);color:var(--warn)}
-.grid{position:relative;display:grid;grid-template-columns:repeat(4,var(--cell));grid-template-rows:repeat(7,var(--cell));gap:var(--gap);justify-content:center}
-.cell{position:relative;z-index:2;width:var(--cell);height:var(--cell);padding:0;border-radius:7px;border:2px solid #4A506A;background:#0A0F1F;cursor:pointer;touch-action:manipulation}
-.cell img{width:100%;height:100%;display:block;border-radius:5px;filter:grayscale(1) brightness(.55)}
-.cell.avail{border-color:var(--ok)}
-.cell.avail img,.cell.some img,.cell.max img{filter:none}
-.cell.some{border-color:var(--ok)}
-.cell.max{border-color:var(--gold);box-shadow:0 0 8px rgba(255,209,0,.45)}
-.cell:focus-visible{outline:2px solid #fff;outline-offset:2px}
-.cell .rk{position:absolute;right:-7px;bottom:-7px;min-width:26px;font:700 11px/1 var(--sans);padding:3px 4px;border-radius:4px;background:#0A0F1F;border:1px solid #4A506A;color:var(--muted)}
-.cell.avail .rk,.cell.some .rk{color:var(--ok);border-color:var(--ok)}
-.cell.max .rk{color:var(--gold);border-color:var(--gold)}
-.arrow{position:absolute;z-index:1;background:#4A506A;pointer-events:none}
-.arrow.on{background:var(--gold)}
-.arrow.head{background:transparent;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #4A506A}
-.arrow.head.on{border-top-color:var(--gold)}
-.arrow.head.right{border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid #4A506A;border-right:0}
-.arrow.head.right.on{border-left-color:var(--gold)}
-.arrow.head.left{border-top:6px solid transparent;border-bottom:6px solid transparent;border-right:8px solid #4A506A;border-left:0}
-.arrow.head.left.on{border-right-color:var(--gold)}
-
-/* Tooltip (hover on desktop, bottom sheet with +/- on touch) */
-.tip{position:fixed;z-index:50;width:300px;max-width:calc(100vw - 24px);text-align:left;background:#0A0F1F;border:1px solid var(--gold);border-radius:8px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.6);pointer-events:none}
-.tip[hidden]{display:none}
-.tip .tn{color:var(--gold);font-weight:600;margin:0}
-.tip .tr{color:var(--muted);font-size:12px;margin:0 0 6px}
-.tip .td{font-size:13.5px;line-height:1.45;margin:0}
-.tip .tl{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:10px 0 4px}
-.tip .req{color:#FF6B5E;font-size:12.5px;margin:6px 0 0}
-.tip .how{color:var(--muted);font-size:11.5px;margin:10px 0 0}
-.tip .ctl{display:none;gap:8px;margin-top:12px}
-.tip.touch{left:12px!important;right:12px;bottom:12px;top:auto!important;width:auto;max-width:none;pointer-events:auto}
-.tip.touch .ctl{display:flex}
-.tip.touch .how{display:none}
-.tip .ctl button{touch-action:manipulation;flex:1;font:700 18px/1 var(--sans);padding:10px;border-radius:6px;border:1px solid var(--edge);background:var(--panel);color:var(--text);cursor:pointer}
-.tip .ctl button.close{flex:0 0 auto;font-size:14px;padding:10px 14px}
-
+#calc{margin-top:22px}
 .status{color:var(--muted);margin:40px 0}
 .status.err{color:var(--warn)}
 .credit{color:var(--muted);font-size:12.5px;margin-top:36px}
 .credit a{color:var(--muted)}
-@media (max-width:520px){:root{--cell:42px;--gap:12px}}
 </style>
+<link rel="stylesheet" href="talentcalc.css">
 </head>
 <body>
 <div class="topbar">
@@ -150,362 +95,59 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
 
   <nav class="roster" id="roster" aria-label="Class"></nav>
 
-  <div id="calc" hidden>
-    <div class="summary" id="summary">
-      <span class="stat split">Build <b id="split">0 / 0 / 0</b></span>
-      <span class="stat">Spent <b id="spent">0</b> / 51</span>
-      <span class="stat left">Left <b id="left">51</b></span>
-      <span class="stat">Level <b id="level">—</b></span>
-      <button class="btn" type="button" id="copy">Copy link</button>
-      <button class="btn danger" type="button" id="reset">Reset</button>
-    </div>
-    <p class="hint" id="hint">Click to add a point, right-click to remove, Shift-click to max. On a phone, tap a talent for + and − buttons.</p>
-    <div class="trees" id="trees"></div>
-  </div>
+  <div id="calc" hidden></div>
   <p class="status" id="status">Loading the Forever talent data…</p>
 
   <p class="credit">Talent data: <a href="https://www.wowhead.com/forever/talent-calc" target="_blank" rel="noopener">Wowhead's Forever talent calculator</a>, loaded live, so it updates when they do. Icons © Blizzard Entertainment.</p>
 </div>
-<div class="tip" id="tip" hidden role="dialog" aria-live="polite"></div>
 
+<script src="talentcalc.js"></script>
 <script>
 (function () {
   "use strict";
-
-  // ---------------------------------------------------------------------------
-  // Wowhead publishes its Forever talent data as a script that calls
-  // WH.setPageData("wow.talentCalcClassic.classicplus.data", {...}). A plain
-  // <script> tag is not blocked by CORS, so we provide a tiny WH shim and let the
-  // script hand us the data. Format per tree id: { talentId: { id, row, col,
-  // icon, name, ranks[], descriptions{1..n}, requires[{id,qty}], requiredPoints } }.
-  // ---------------------------------------------------------------------------
-  var DATA_URL = "https://nether.wowhead.com/forever/data/talents-classic";
-  var ICON = "https://wow.zamimg.com/images/wow/icons/large/";
-  var MAX_POINTS = 51;
-
-  // Armor-type order like the rest of the site (Cloth -> Leather -> Mail -> Plate).
-  // Tree ids and in-game tab order per class.
-  var CLASSES = [
-    { id: "priest",  name: "Priest",  color: "#E6E2D6", trees: [[201, "Discipline"], [202, "Holy"], [203, "Shadow"]] },
-    { id: "warlock", name: "Warlock", color: "#9482C9", trees: [[302, "Affliction"], [303, "Demonology"], [301, "Destruction"]] },
-    { id: "mage",    name: "Mage",    color: "#69CCF0", trees: [[81, "Arcane"], [41, "Fire"], [61, "Frost"]] },
-    { id: "rogue",   name: "Rogue",   color: "#FFF569", trees: [[182, "Assassination"], [181, "Combat"], [183, "Subtlety"]] },
-    { id: "druid",   name: "Druid",   color: "#FF7D0A", trees: [[283, "Balance"], [281, "Feral Combat"], [282, "Restoration"]] },
-    { id: "shaman",  name: "Shaman",  color: "#4C8BFF", trees: [[261, "Elemental"], [263, "Enhancement"], [262, "Restoration"]] },
-    { id: "hunter",  name: "Hunter",  color: "#ABD473", trees: [[361, "Beast Mastery"], [363, "Marksmanship"], [362, "Survival"]] },
-    { id: "paladin", name: "Paladin", color: "#F58CBA", trees: [[382, "Holy"], [383, "Protection"], [381, "Retribution"]] },
-    { id: "warrior", name: "Warrior", color: "#C79C6E", trees: [[161, "Arms"], [164, "Fury"], [163, "Protection"]] }
-  ];
-
+  var TC = window.TalentCalc;
   var $ = function (id) { return document.getElementById(id); };
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  var raw = null, calc = null;
 
-  var raw = null;       // Wowhead talents object, keyed by tree id
-  var cls = null;       // current class entry
-  var trees = [];       // [{ id, name, talents: [...] }] for the current class
-  var byId = {};        // talent id -> talent
-  var ranks = {};       // talent id -> points spent
-
-  // --- Data loading ---------------------------------------------------------
-  function loadData() {
-    window.WH = window.WH || {};
-    var prev = window.WH.setPageData;
-    window.WH.setPageData = function (key, value) {
-      if (/talentCalcClassic/.test(key) && value && value.talents) raw = value.talents;
-      if (typeof prev === "function") try { prev.apply(this, arguments); } catch (e) { /* ignore */ }
-    };
-    var s = document.createElement("script");
-    s.src = DATA_URL;
-    s.async = true;
-    var done = false;
-    var fail = function () {
-      if (done) return; done = true;
-      $("status").className = "status err";
-      $("status").innerHTML = 'Couldn\'t load the talent data from Wowhead right now. Try again in a minute, or use <a href="https://www.wowhead.com/forever/talent-calc" target="_blank" rel="noopener">Wowhead\'s calculator</a>.';
-    };
-    s.onload = function () { if (raw) { done = true; start(); } else fail(); };
-    s.onerror = fail;
-    setTimeout(function () { if (!raw) fail(); }, 15000);
-    document.head.appendChild(s);
-  }
-
-  // --- Build model for one class -------------------------------------------
-  function setClass(id, encoded) {
-    cls = CLASSES.filter(function (c) { return c.id === id; })[0] || CLASSES[0];
-    document.documentElement.style.setProperty("--c", cls.color);
-    trees = cls.trees.map(function (tr) {
-      var list = Object.keys(raw[tr[0]] || {}).map(function (k) { return raw[tr[0]][k]; });
-      list.sort(function (a, b) { return a.row - b.row || a.col - b.col; });
-      return { id: tr[0], name: tr[1], talents: list };
-    });
-    byId = {}; ranks = {};
-    trees.forEach(function (t, ti) { t.talents.forEach(function (x) { x._tree = ti; byId[x.id] = x; }); });
-    if (encoded) decode(encoded);
-    renderRoster();
-    renderTrees();
-    update(false);
-  }
-
-  // --- Rules ----------------------------------------------------------------
-  function rank(x) { return ranks[x.id] || 0; }
-  function treePoints(ti) { return trees[ti].talents.reduce(function (a, x) { return a + rank(x); }, 0); }
-  function total() { var n = 0; for (var i = 0; i < trees.length; i++) n += treePoints(i); return n; }
-  function pointsBelow(ti, row) {
-    return trees[ti].talents.reduce(function (a, x) { return a + (x.row < row ? rank(x) : 0); }, 0);
-  }
-  function prereqsMet(x) {
-    return (x.requires || []).every(function (q) { var p = byId[q.id]; return p && rank(p) >= q.qty; });
-  }
-  function tierMet(x) { return pointsBelow(x._tree, x.row) >= (x.requiredPoints || x.row * 5); }
-  function canAdd(x) { return total() < MAX_POINTS && rank(x) < x.ranks.length && tierMet(x) && prereqsMet(x); }
-  function canRemove(x) {
-    var r = rank(x);
-    if (!r) return false;
-    // Nothing that depends on this talent may lose its prerequisite.
-    var t = trees[x._tree].talents;
-    for (var i = 0; i < t.length; i++) {
-      var u = t[i];
-      if (!rank(u)) continue;
-      var needs = (u.requires || []).filter(function (q) { return q.id === x.id; })[0];
-      if (needs && r - 1 < needs.qty) return false;
-    }
-    // Every deeper talent with points must still have enough points spent above it.
-    for (var j = 0; j < t.length; j++) {
-      var v = t[j];
-      if (v.row > x.row && rank(v) && pointsBelow(x._tree, v.row) - 1 < (v.requiredPoints || v.row * 5)) return false;
-    }
-    return true;
-  }
-  function add(x, max) {
-    var changed = false;
-    while (canAdd(x)) { ranks[x.id] = rank(x) + 1; changed = true; if (!max) break; }
-    if (changed) update(true);
-  }
-  function remove(x, all) {
-    var changed = false;
-    while (canRemove(x)) { ranks[x.id] = rank(x) - 1; if (!ranks[x.id]) delete ranks[x.id]; changed = true; if (!all) break; }
-    if (changed) update(true);
-  }
-
-  // --- Share code: class/tree1-tree2-tree3, one digit per talent in row/col order.
-  function encode() {
-    return cls.id + "/" + trees.map(function (t) {
-      return t.talents.map(function (x) { return rank(x); }).join("").replace(/0+$/, "");
-    }).join("-").replace(/-+$/, "");
-  }
-  function decode(code) {
-    var parts = code.split("-");
-    trees.forEach(function (t, ti) {
-      var s = parts[ti] || "";
-      t.talents.forEach(function (x, i) { var n = parseInt(s.charAt(i), 10) || 0; if (n) ranks[x.id] = n; });
-    });
-    // Drop anything invalid (e.g. a link made before Wowhead changed a tree).
-    var ok = true;
-    trees.forEach(function (t) { t.talents.forEach(function (x) {
-      if (rank(x) > x.ranks.length || (rank(x) && (!tierMet(x) || !prereqsMet(x)))) ok = false;
-    }); });
-    if (!ok || total() > MAX_POINTS) ranks = {};
-  }
-
-  // --- Rendering ------------------------------------------------------------
-  function renderRoster() {
-    $("roster").innerHTML = CLASSES.map(function (c) {
-      return '<button type="button" style="--c:' + c.color + '" aria-pressed="' + (c === cls) + '" data-c="' + c.id + '">' +
-        '<img class="class-icon" src="' + ICON + "classicon_" + c.id + '.jpg" alt="" loading="lazy">' + c.name + "</button>";
+  function renderRoster(active) {
+    $("roster").innerHTML = TC.CLASSES.map(function (c) {
+      return '<button type="button" style="--c:' + c.color + '" aria-pressed="' + (c.id === active) + '" data-c="' + c.id + '">' +
+        '<img class="class-icon" src="' + TC.ICON + "classicon_" + c.id + '.jpg" alt="" loading="lazy">' + c.name + "</button>";
     }).join("");
   }
-
-  function renderTrees() {
-    $("trees").innerHTML = trees.map(function (t, ti) {
-      var cells = t.talents.map(function (x) {
-        return '<button type="button" class="cell" data-id="' + x.id + '" style="grid-row:' + (x.row + 1) + ";grid-column:" + (x.col + 1) +
-          '" aria-label="' + esc(x.name) + '"><img src="' + ICON + x.icon + '.jpg" alt="" loading="lazy"><span class="rk"></span></button>';
-      }).join("");
-      return '<section class="tree" data-tree="' + ti + '"><div class="tree-head"><h2>' + esc(t.name) + '</h2><span class="pts" data-pts="' + ti +
-        '">0</span><button type="button" class="reset-tree" data-reset="' + ti + '" aria-label="Reset ' + esc(t.name) + '" title="Reset this tree">×</button></div>' +
-        '<div class="grid">' + arrowsHTML(t) + cells + "</div></section>";
-    }).join("");
-  }
-
-  // Prerequisite arrows, positioned in grid pixel space.
-  function cellBox(row, col) {
-    var size = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--cell")) || 46;
-    var gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--gap")) || 14;
-    return { x: col * (size + gap), y: row * (size + gap), s: size, g: gap };
-  }
-  function arrowsHTML(t) {
-    var html = "";
-    t.talents.forEach(function (x) {
-      (x.requires || []).forEach(function (q) {
-        var p = byId[q.id];
-        if (!p) return;
-        var a = cellBox(p.row, p.col), b = cellBox(x.row, x.col), w = 4, key = ' data-from="' + p.id + '" data-qty="' + q.qty + '"';
-        if (p.row === x.row) {           // same row: horizontal, pointing at the dependent talent
-          var midY = a.y + a.s / 2;
-          if (p.col < x.col) {
-            var x1 = a.x + a.s, x2 = b.x;
-            html += '<span class="arrow"' + key + ' style="left:' + x1 + "px;top:" + (midY - w / 2) + "px;width:" + (x2 - x1 - 6) + "px;height:" + w + 'px"></span>';
-            html += '<span class="arrow head right"' + key + ' style="left:' + (x2 - 8) + "px;top:" + (midY - 6) + 'px"></span>';
-          } else {
-            var l1 = b.x + b.s, l2 = a.x;
-            html += '<span class="arrow"' + key + ' style="left:' + (l1 + 6) + "px;top:" + (midY - w / 2) + "px;width:" + (l2 - l1 - 6) + "px;height:" + w + 'px"></span>';
-            html += '<span class="arrow head left"' + key + ' style="left:' + l1 + "px;top:" + (midY - 6) + 'px"></span>';
-          }
-        } else {
-          var cx = b.x + b.s / 2 - w / 2, top = a.y + a.s;
-          if (p.col !== x.col) {         // horizontal leg at the prerequisite's row, then down
-            var fromX = p.col < x.col ? a.x + a.s : a.x, toX = cx + (p.col < x.col ? w : 0);
-            html += '<span class="arrow"' + key + ' style="left:' + Math.min(fromX, toX) + "px;top:" + (a.y + a.s / 2 - w / 2) + "px;width:" + Math.abs(toX - fromX) + "px;height:" + w + 'px"></span>';
-            top = a.y + a.s / 2 - w / 2;
-          }
-          html += '<span class="arrow"' + key + ' style="left:' + cx + "px;top:" + top + "px;width:" + w + "px;height:" + (b.y - top - 6) + 'px"></span>';
-          html += '<span class="arrow head"' + key + ' style="left:' + (b.x + b.s / 2 - 6) + "px;top:" + (b.y - 8) + 'px"></span>';
-        }
-      });
+  function show(clsId, code) {
+    renderRoster(clsId);
+    calc = TC.mountSync($("calc"), raw, {
+      cls: clsId, code: code,
+      onChange: function (inst) { try { history.replaceState(null, "", "#" + inst.encode()); } catch (e) { location.hash = inst.encode(); } }
     });
-    return html;
   }
-
-  function update(push) {
-    var spent = total();
-    document.querySelectorAll(".cell").forEach(function (el) {
-      var x = byId[el.dataset.id], r = rank(x), m = x.ranks.length;
-      el.className = "cell" + (r >= m ? " max" : r ? " some" : canAdd(x) ? " avail" : "");
-      el.querySelector(".rk").textContent = r + "/" + m;
-    });
-    document.querySelectorAll(".arrow").forEach(function (el) {
-      el.classList.toggle("on", rank(byId[el.dataset.from]) >= +el.dataset.qty);
-    });
-    trees.forEach(function (t, ti) { document.querySelector('[data-pts="' + ti + '"]').textContent = treePoints(ti); });
-    $("split").textContent = trees.map(function (t, ti) { return treePoints(ti); }).join(" / ");
-    $("spent").textContent = spent;
-    $("left").textContent = MAX_POINTS - spent;
-    $("level").textContent = spent ? String(spent + 9) : "—";
-    if (push) {
-      try { history.replaceState(null, "", "#" + encode()); } catch (e) { location.hash = encode(); }
-    }
-    if (tipFor) showTip(tipFor, tipAnchor, tipTouch);
+  // Hash: #<class>/<tree1>-<tree2>-<tree3>
+  function fromHash() {
+    var h = decodeURIComponent(location.hash.slice(1)), slash = h.indexOf("/");
+    var id = slash === -1 ? h : h.slice(0, slash), code = slash === -1 ? "" : h.slice(slash + 1);
+    if (!TC.classById(id)) { id = calc ? calc.cls.id : "hunter"; code = ""; }
+    show(id, code);
   }
-
-  // --- Tooltip ----------------------------------------------------------------
-  var tip = $("tip"), tipFor = null, tipAnchor = null, tipTouch = false;
-  function descHTML(s) { return esc(s).replace(/\n/g, "<br>"); }
-  function showTip(x, anchor, touch) {
-    tipFor = x; tipAnchor = anchor; tipTouch = touch;
-    var r = rank(x), m = x.ranks.length, d = x.descriptions || {};
-    var html = '<p class="tn">' + esc(x.name) + '</p><p class="tr">Rank ' + r + "/" + m + "</p>";
-    html += '<p class="td">' + descHTML(d[Math.max(r, 1)] || "") + "</p>";
-    if (r && r < m && d[r + 1]) html += '<p class="tl">Next rank</p><p class="td">' + descHTML(d[r + 1]) + "</p>";
-    var need = (x.requiredPoints || x.row * 5);
-    if (!tierMet(x)) html += '<p class="req">Requires ' + need + " points in " + esc(trees[x._tree].name) + "</p>";
-    (x.requires || []).forEach(function (q) {
-      var p = byId[q.id];
-      if (p && rank(p) < q.qty) html += '<p class="req">Requires ' + q.qty + " point" + (q.qty > 1 ? "s" : "") + " in " + esc(p.name) + "</p>";
-    });
-    html += '<p class="how">Click: +1 · Right-click: −1 · Shift-click: max</p>';
-    html += '<div class="ctl"><button type="button" data-act="minus" aria-label="Remove a point">−</button><button type="button" data-act="plus" aria-label="Add a point">+</button><button type="button" class="close" data-act="close">Close</button></div>';
-    tip.innerHTML = html;
-    tip.className = "tip" + (touch ? " touch" : "");
-    tip.hidden = false;
-    if (!touch) {
-      var b = anchor.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
-      var left = Math.min(Math.max(8, b.right + 12), window.innerWidth - w - 8);
-      if (b.right + 12 + w > window.innerWidth) left = Math.max(8, b.left - w - 12);
-      var top = Math.min(Math.max(8, b.top), window.innerHeight - h - 8);
-      tip.style.left = left + "px"; tip.style.top = top + "px";
-    }
-  }
-  function hideTip() { tip.hidden = true; tipFor = null; tipAnchor = null; tipTouch = false; }
-
-  // --- Events -------------------------------------------------------------------
-  var lastPointer = "mouse";
-  document.addEventListener("pointerdown", function (e) { lastPointer = e.pointerType || "mouse"; }, true);
-
-  $("trees").addEventListener("click", function (e) {
-    var reset = e.target.closest("[data-reset]");
-    if (reset) {
-      var ti = +reset.dataset.reset;
-      // Clear deepest rows first so removal rules never block.
-      trees[ti].talents.forEach(function (x) { delete ranks[x.id]; });
-      update(true); return;
-    }
-    var el = e.target.closest(".cell");
-    if (!el) return;
-    var x = byId[el.dataset.id];
-    if (lastPointer === "touch" || lastPointer === "pen") { showTip(x, el, true); return; }
-    add(x, e.shiftKey);
-  });
-  $("trees").addEventListener("contextmenu", function (e) {
-    var el = e.target.closest(".cell");
-    if (!el) return;
-    e.preventDefault();
-    remove(byId[el.dataset.id], e.shiftKey);
-  });
-  $("trees").addEventListener("keydown", function (e) {
-    var el = e.target.closest(".cell");
-    if (!el) return;
-    var x = byId[el.dataset.id];
-    if (e.key === "-" || e.key === "Backspace" || e.key === "Delete") { e.preventDefault(); remove(x, e.shiftKey); }
-    else if (e.key === "+" || e.key === "=") { e.preventDefault(); add(x, e.shiftKey); }
-  });
-  $("trees").addEventListener("mouseover", function (e) {
-    var el = e.target.closest(".cell");
-    if (el && lastPointer === "mouse") showTip(byId[el.dataset.id], el, false);
-  });
-  $("trees").addEventListener("mouseout", function (e) {
-    if (!tipTouch && e.target.closest(".cell") && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(".cell"))) hideTip();
-  });
-  $("trees").addEventListener("focusin", function (e) {
-    var el = e.target.closest(".cell");
-    if (el && lastPointer !== "touch") showTip(byId[el.dataset.id], el, false);
-  });
-  $("trees").addEventListener("focusout", function () { if (!tipTouch) hideTip(); });
-  tip.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-act]");
-    if (!b || !tipFor) return;
-    if (b.dataset.act === "plus") add(tipFor, false);
-    else if (b.dataset.act === "minus") remove(tipFor, false);
-    else hideTip();
-  });
-  document.addEventListener("click", function (e) {
-    // composedPath: the tooltip re-renders on +/-, so e.target may already be detached.
-    var path = e.composedPath ? e.composedPath() : [];
-    if (tipTouch && path.indexOf(tip) === -1 && !e.target.closest(".cell")) hideTip();
-  });
-  window.addEventListener("scroll", function () { if (!tipTouch) hideTip(); }, { passive: true });
 
   $("roster").addEventListener("click", function (e) {
     var b = e.target.closest("button[data-c]");
     if (!b || !raw) return;
-    hideTip();
-    setClass(b.dataset.c, null);
-    try { history.replaceState(null, "", "#" + cls.id); } catch (err) { location.hash = cls.id; }
-  });
-  $("reset").addEventListener("click", function () { ranks = {}; update(true); });
-  $("copy").addEventListener("click", function () {
-    var url = location.href.split("#")[0] + "#" + encode(), btn = $("copy");
-    var done = function () { btn.textContent = "Copied!"; setTimeout(function () { btn.textContent = "Copy link"; }, 1500); };
-    if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () { prompt("Copy this link:", url); });
-    else prompt("Copy this link:", url);
+    show(b.dataset.c, "");
+    try { history.replaceState(null, "", "#" + b.dataset.c); } catch (err) { location.hash = b.dataset.c; }
   });
   window.addEventListener("hashchange", function () { if (raw) fromHash(); });
 
-  function fromHash() {
-    var h = decodeURIComponent(location.hash.slice(1));
-    var slash = h.indexOf("/");
-    var id = slash === -1 ? h : h.slice(0, slash);
-    var code = slash === -1 ? "" : h.slice(slash + 1);
-    var known = CLASSES.some(function (c) { return c.id === id; });
-    setClass(known ? id : (cls ? cls.id : "hunter"), known ? code : null);
-  }
-
-  function start() {
+  renderRoster(null);
+  TC.load().then(function (data) {
+    raw = data;
     $("status").hidden = true;
     $("calc").hidden = false;
     fromHash();
-  }
-
-  loadData();
+  }, function () {
+    $("status").className = "status err";
+    $("status").innerHTML = 'Couldn\'t load the talent data from Wowhead right now. Try again in a minute, or use <a href="https://www.wowhead.com/forever/talent-calc" target="_blank" rel="noopener">Wowhead\'s calculator</a>.';
+  });
 })();
 </script>
 </body>

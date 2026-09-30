@@ -85,7 +85,14 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Steps past level 30 are tagged `unverified` until beta/launch
   confirms them. Launch time uses the same `2026-11-04T23:00:00Z` target as index.html.
   Hand-edit directly.
-- `talents.html` — hand-written talent calculator (our own code). Talent data is NOT
+- `talentcalc.js` + `talentcalc.css` — shared calculator engine used by `talents.html`
+  (full mode: all three trees) and `builds.html` (compact mode, one per build card:
+  tree tabs, "Reset to build", "Copy link", "Open in Talent Calc"). API:
+  `TalentCalc.load()`, `TalentCalc.mountSync(el, raw, {cls, code | preset, compact,
+  onChange})`. Builds preload from their `talents` list (`preset: [[name, rank]]`,
+  matched by talent name) — keep build talent names identical to Wowhead's Forever
+  names or the preset is dropped. All CSS classes are `tc-` prefixed.
+- `talents.html` — hand-written talent calculator page (roster + full-mode mount). Talent data is NOT
   stored in the repo: the page loads Wowhead's public Forever data script
   (`https://nether.wowhead.com/forever/data/talents-classic`) with a `<script>` tag and a
   tiny `WH.setPageData` shim, so it always shows Wowhead's latest beta trees. Data shape

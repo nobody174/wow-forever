@@ -1,129 +1,595 @@
 # Addon plan: Road to Forever Macros
 
-Status: **planned, not started** (scoped 2026-10-01). Build before the Nov 4 launch.
-Working name: **Road to Forever Macros** (folder `RoadToForeverMacros`, slash
-command `/r2f`).
+Status: **planned, not started** (scoped 2026-10-01, revised the same evening).
+Target: usable before the Nov 4 launch.
 
-## Goal
+| | |
+|---|---|
+| Addon name | Road to Forever Macros |
+| Folder | `addon/RoadToForeverMacros/` (in this repo) |
+| Slash command | `/r2f` |
+| Global table | `R2F` (the only global the addon creates) |
+| SavedVariables | `R2FMacrosDB` (account), `R2FMacrosCharDB` (per character) |
 
-Get macros from this site into the game without copy-pasting them one by one,
-and without touching files on disk. An in-game addon browses every macro from
-`data.py`, creates the ones you tick, and lets you drag them straight onto your
-action bars.
+This file is the spec. Claude Code: read all of it before building any part,
+and keep the design rules in sections 4 and 5. If something here turns out to
+be wrong in the game, fix this file in the same commit as the code.
 
-Why an addon and not a script that edits `WTF\...\macros-cache.txt`:
+---
 
-- Classic syncs macros with the server; the local cache file is rewritten at
-  logout and can be replaced at login, so file edits get lost. (Confirm in beta.)
-- The character folder doesn't say which class the character is. The addon just
-  asks the game (`UnitClass("player")`).
-- Install paths, account and realm names differ per player. The addon doesn't care.
-
-## What the player sees
-
-`/r2f` (and later a minimap button) opens one window:
+## 1. How it works (the whole flow)
 
 ```
-+--------------------------------------------------------------+
-| [Universal][Priest][Warlock][Mage][Rogue][Druid][Shaman]...  |  class icons
-| [General] [Tank] [DPS] [Healer]          (only roles that exist)
-|--------------------------------------------------------------|
-| [x] Select all (this role)                  Slots: 12/18 char |
-|  Damage / offensive                         [x] group          |
-|   [x] (icon) Victory Rush          [drag]                      |
-|   [ ] (icon) HS / Cleave           [drag]                      |
-|  Panic / defensive                                             |
-|   ...                                                          |
-|--------------------------------------------------------------|
-| [Install selected]  [Install all for my class]  [Import string]|
-+--------------------------------------------------------------+
+ Road to Forever site (macros.html)            In-game addon (/r2f)
+ ----------------------------------            -------------------------------
+ Tick macros (single / group / role / class)
+ [Copy import string]  --- clipboard --->  Import window: paste, preview, Import
+                                                    |
+                                           Macro library (saved, NO slot limit)
+                                                    |
+                                           Macro Book window (spellbook style)
+                                                    |
+                                           Drag an icon onto an action bar
+                                           -> real macro created at that moment
 ```
 
-1. **Class icons** across the top (built-in class icon texture, no downloads).
-   Opens on your own class. Other classes can be browsed but not installed (their
-   spells would show a red "?"); Universal can always be installed.
-2. **Role tabs** per class: General / Tank / DPS / Healer, only the ones that class
-   has (e.g. Mage: General + DPS; Paladin: all four; Druid: all four).
-3. **Checkboxes**: one per macro, one per group ("Damage / offensive"), "Select all"
-   per role, plus **Install all for my class**.
-4. **Hover** a macro to see its full code and note (the same note as on the site).
-5. **Drag and drop**: drag the macro's icon onto an action bar. If the macro doesn't
-   exist yet the addon creates it first, then puts it on your cursor
-   (`CreateMacro` + `PickupMacro`). Out of combat only.
-6. **Import string** button: paste a string copied from the website (see below).
+- **Picking happens on the website** (export). The addon only **imports**,
+  shows what you imported, and lets you drag macros onto your bars.
+- The import string carries the macros themselves, so new or changed macros on
+  the site reach the game without an addon update.
 
-## Website side (`macros.html`)
+## 2. The macro slot limit (and how we live with it)
 
-- A checkbox on each macro, "Select all" per group/role, and a **Copy import
-  string** button. The string holds the selected macros (name, short name, icon,
-  body) so new or changed macros reach the game without an addon update.
-- A **Download addon** link (zip from GitHub Releases), later CurseForge.
+WoW has 120 account-wide + 18 per-character macro slots. That limit is in the
+game itself, not just in the `/macro` window:
 
-## Data changes needed first (in `data.py`)
+- Blizzard's action bars (and bar addons like Bartender/Dominos/ElvUI, which use
+  the same action slots) can only hold **spells, items and real macros**. Anything
+  an addon puts on a normal action bar has to be a real macro, so it uses a slot.
+- An addon *could* go past the limit only by drawing its **own** buttons/bars
+  (secure action buttons with macro text). That's a separate bar addon, not this
+  plan. Parked as an idea in section 10.
 
-1. **Role sections for every class**, like Warrior/Paladin already have: General /
-   Tank / DPS / Healer. Spec-only extras stay as notes or move into the role that
-   uses them (e.g. Priest Shadow -> DPS, Holy + Discipline -> Healer).
-2. **Add Druid.** It's missing from the macro site entirely, and the group has a
-   Druid healer. Needs General / Tank / DPS / Healer.
-3. **Short in-game names.** WoW macro names max out at 16 characters; 155 of our
-   374 names are longer today. Add an optional `short` field to `M()` (build.py
-   falls back to the full name if it already fits, and fails the build if a name is
-   still too long).
-4. **Icon field** for macros without `#showtooltip` (pet attack, /console, marks),
-   e.g. `icon="Ability_GhoulFrenzy"`. Macros with `#showtooltip` use the question-mark
-   icon and let the spell decide.
+How this addon makes the limit a non-issue:
 
-## How the addon is built
+1. **The library has no limit.** Imported macros are stored in the addon's own
+   saved data, not in macro slots.
+2. **Lazy creation.** A real macro is only created when you drag it onto a bar.
+   You only spend slots on macros you actually use.
+3. **Tidy up** button: deletes macros this addon created that are no longer on
+   any action bar, giving the slots back.
+4. **Slot counter** always visible: `Character 7 / 18`, `Account 31 / 120`.
+   New macros go into character slots by default and fall back to account slots
+   when those are full (setting: Character first / Account first).
 
-- `build.py` gains a third output: `addon/RoadToForeverMacros/MacroData.lua`
-  generated from `data.py`, the same single source of truth as the site. Never
-  hand-edit it.
-- Files: `RoadToForeverMacros.toc`, `MacroData.lua` (generated), `Core.lua`
-  (install/update/remove logic), `UI.lua` (window, tabs, checkboxes, drag),
-  `Import.lua` (string decode).
-- **Own-macro tracking** in SavedVariables: which macros this addon created and
-  a hash of their body, so it can:
-  - **update** a macro when the site version changes (same name, new body),
-  - **skip** ones you edited yourself (hash differs) unless you say overwrite,
-  - offer **Remove all Road to Forever macros**.
-- **Slots**: Classic has a limited number of macro slots, believed to be 120
-  account-wide + 18 per character (confirm in beta). Class macros default to
-  per-character slots; the window shows free slots and blocks an install that
-  won't fit, offering account slots instead. "Install all" for Warrior (52 macros)
-  will NOT fit in 18 character slots, so the UI should say so up front.
-- **Combat lockdown**: all create/edit/pickup actions are disabled in combat; the
-  buttons grey out and re-enable on `PLAYER_REGEN_ENABLED`.
-- **Import string format**: versioned prefix (`R2F1:`) + encoded list of macros.
-  Start with a plain base64 of a simple serialized table (no libraries); switch to
-  LibSerialize + LibDeflate (the WeakAuras approach) only if strings get too long.
+## 3. Data changes on the site side (`data.py` + `build.py`)
 
-## Repo / distribution
+### 3.1 Sections (decided)
 
-- Recommended: keep the addon in **this repo** under `addon/`, so `build.py`
-  writes the site and the addon from the same `data.py` in one step.
-  (Alternative: the separate `wow` repo's "forever addons" folder, with a copy
-  step. More moving parts.)
-- GitHub Actions zips `addon/RoadToForeverMacros/` into a Release on each tag;
-  the site's Download link points at the latest release.
-- Later: CurseForge project so it auto-updates through the CurseForge app.
+- **Warrior:** General / Tank / DPS (Arms and Fury stay merged in DPS). Done.
+- **Paladin:** General / Tank / DPS / Healer. Done.
+- **Every other class keeps its current sections** (Shared + specs). No Druid.
+- The addon shows whatever sections a class has; it must not assume roles.
 
-## Things to confirm in beta
+### 3.2 Short in-game names (`short`)
 
-- [ ] TOC `## Interface:` number for the Forever client.
-- [ ] Exact macro slot limits (account / character).
-- [ ] Whether the server overwrites local macro changes (affects nothing in this
-      plan, but closes the file-editing question for good).
-- [ ] Macros created by an addon keep their icon and body after a relog.
-- [ ] `PickupMacro` straight after `CreateMacro` works in the same frame (or needs
-      a short delay).
+WoW macro names max out at 16 characters, and the name is printed on the action
+button, where only about 8 to 10 characters show. So every macro gets a short
+name. Add `short` to `M()`:
 
-## Build order
+```python
+def M(name, code, note="", short=None, icon=None):
+```
 
-1. Data: role sections for all classes, add Druid, `short` names, `icon` field.
-2. Addon MVP: generated `MacroData.lua`, `/r2f` window for **your own class**,
-   checkboxes, Install selected / Install all, slot counter, combat lock.
-3. Drag and drop onto action bars.
-4. Browse all classes with class icons (install locked to own class + Universal).
-5. Website checkboxes + Copy import string; addon Import window.
-6. Release zip + Download link on the site; CurseForge later.
+**Naming rules**
+
+1. Max 16 characters (hard limit). Aim for 10 or fewer.
+2. Unique within one class + Universal (two classes may reuse a name: Paladin
+   "Judge" never meets a Warrior macro).
+3. Use the abbreviation players already use when there is one (HS, VR, MS, BT,
+   WW, OP, LoH, BoP, HoJ, FoL).
+4. When two spells would get the same letters, spell out the part that differs
+   instead of inventing numbers: Shield Block = `SBlock`, Shield Bash = `SBash`.
+5. Fixed suffixes and joiners, the same for every class:
+
+| Pattern | Meaning | Example |
+|---|---|---|
+| `X F` | cast on focus | `Pummel F` |
+| `X@` | mouseover version (when a plain version also exists) | `Taunt@` |
+| `X>Y` | priority: X if usable, else Y | `VR>Sunder` |
+| `X/Y` | modifier: X normally, Y with Shift | `HS/Cleave` |
+| `X me` | self-cast version | `LoH me` |
+| `X+` | combined opener or combo | `Charge+Rend` |
+
+6. Stance swaps get no tag (the icon already shows the spell).
+
+**Build checks** (`build.py` must fail the build with a clear message when):
+- a `short` is longer than 16 characters,
+- two macros in the same class + Universal share a `short`,
+- a macro has a body but no `short` and its `name` is longer than 16.
+
+**Warrior names**
+
+| Macro | short |
+|---|---|
+| Victory Rush | `VR` |
+| Heroic Strike | `HS` |
+| Heroic Strike / Cleave (Shift) | `HS/Cleave` |
+| Cleave | `Cleave` |
+| Rend | `Rend` |
+| Hamstring | `Ham` |
+| Sunder Armor | `Sunder` |
+| Slam | `Slam` |
+| Execute | `Exe` |
+| Overpower (to Battle) | `OP` |
+| Thunder Clap | `TC` |
+| Demoralizing Shout | `Demo` |
+| Auto-attack (spam-safe) | `Attack` |
+| Battle Shout | `BShout` |
+| Bloodrage | `BloodRage` |
+| Berserker Rage | `BzRage` |
+| Shield Wall | `SWall` |
+| Retaliation | `Retal` |
+| Intimidating Shout | `IShout` |
+| Disarm | `Disarm` |
+| Battle / Defensive / Berserker Stance | `Battle` / `Def` / `Berserk` |
+| Charge / Intercept (one button) | `Charge` |
+| Charge + Rend (opener) | `Charge+Rend` |
+| Taunt (to Defensive) | `Taunt` |
+| Mocking Blow | `Mock` |
+| Challenging Shout | `CShout` |
+| Stance dance | `Stances` |
+| Pummel / Shield Bash / Taunt focus | `Pummel F` / `SBash F` / `Taunt F` |
+| Victory Rush > Sunder Armor | `VR>Sunder` |
+| Revenge | `Rev` |
+| Sunder + Heroic Strike | `Sunder+HS` |
+| Shield Bash | `SBash` |
+| Concussion Blow | `Concuss` |
+| Shield Slam | `SSlam` |
+| Shield Block | `SBlock` |
+| Last Stand | `LStand` |
+| Charge (Vanguard) | `VCharge` |
+| Taunt (mouseover) | `Taunt@` |
+| Victory Rush > Heroic Strike | `VR>HS` |
+| Sweeping Strikes | `Sweep` |
+| Mortal Strike | `MS` |
+| Bloodthirst | `BT` |
+| Whirlwind | `WW` |
+| Pummel (to Berserker) | `Pummel` |
+| Piercing Howl | `Howl` |
+| Death Wish | `DW` |
+| Recklessness | `Reck` |
+
+**Paladin names**
+
+| Macro | short |
+|---|---|
+| Holy Strike + auto-attack | `HStrike` |
+| Judgement | `Judge` |
+| Hammer of Wrath / Hammer of Justice | `HoW` / `HoJ` |
+| Exorcism | `Exo` |
+| Consecration / Holy Wrath | `Consec` / `HWrath` |
+| Holy Light / Flash of Light | `HL` / `FoL` |
+| Lay on Hands / self | `LoH` / `LoH me` |
+| Blessing of Protection / self | `BoP` / `BoP me` |
+| Blessing of Freedom | `BoF` |
+| Redemption | `Rez` |
+| Cleanse / Purify | `Cleanse` / `Purify` |
+| Blessing of Might / Wisdom / Kings / Light | `BoM` / `BoW` / `BoK` / `BoL` |
+| Blessing of Salvation / Sanctuary | `Salv` / `Sanc` |
+| Greater Blessing of Might / Wisdom | `GBoM` / `GBoW` |
+| Devotion / Retribution / Concentration / Sanctity Aura | `Devo` / `RetAura` / `Conc` / `SancAura` |
+| Auras on one button | `Auras` |
+| Divine Shield / Divine Protection | `Bubble` / `DivProt` |
+| Voice of Truth | `VoT` |
+| Seal of Righteousness / Crusader / Wisdom / Light / Justice / Command / Fury | `SoR` / `SoCru` / `SoW` / `SoL` / `SoJ` / `SoCmd` / `SoF` |
+| Seal swap Command <> Righteousness | `Twist` |
+| Divine Intervention | `DI` |
+| Hammer of Justice / Turn Undead / Repentance / Judgement focus | `HoJ F` / `TU F` / `Repent F` / `Judge F` |
+| Repentance | `Repent` |
+| Holy Shock | `HShock` |
+| Holy Shield | `HShield` |
+| Judgement taunt (mouseover) | `Judge@` |
+| Righteous Fury | `RFury` |
+| Templar's Bulwark | `Bulwark` |
+
+The other six classes get names by the same rules (Claude Code proposes them,
+the build checks enforce them).
+
+### 3.3 Icons (`icon`)
+
+- Macros with `#showtooltip` need no icon: the game shows the spell. The
+  addon creates them with the question-mark icon (`INV_MISC_QUESTIONMARK`),
+  which WoW replaces with the live spell icon.
+- Macros without `#showtooltip` (`/petattack`, `/console`, `/targetmarker`,
+  `/use 13`) need `icon="..."` (texture name without path), e.g.
+  `Ability_GhoulFrenzy` for pet attack. `build.py` warns if one is missing.
+
+### 3.4 Stable ids
+
+Each macro gets an id `<class>/<short>`, e.g. `WARRIOR/VR`, `ANY/Zoom`
+(class = English class token as returned by `UnitClass`; Universal = `ANY`).
+The id is how the addon recognizes an updated macro. Renaming a `short`
+makes it a new macro (the old one stays until removed): avoid renames after
+launch.
+
+### 3.5 Outputs
+
+`build.py` adds the ids, short names and icons to the JSON embedded in
+`macros.html` (for the export) and to `wow-forever-macros.md` (show the short
+name next to each macro).
+
+---
+
+## 4. Website export design (`macros.html` / `template.html`)
+
+**Role: web UI designer.** Keep the site's existing identity. No new palette,
+no new fonts.
+
+Tokens already in use (reuse exactly):
+
+| Token | Value | Use in the export UI |
+|---|---|---|
+| `--bg` | `#0E1428` | page |
+| `--panel` | `#161E38` | export tray background |
+| `--edge` | `#3A4468` | checkbox border, tray border |
+| `--gold` | `#FFD100` | checked state, primary button |
+| `--text` / `--muted` | `#E6E2D6` / `#9AA0B8` | labels / helper text |
+| Fonts | Marcellus (headings), IBM Plex Sans (UI), IBM Plex Mono (code) | |
+
+### 4.1 Export mode
+
+The cheatsheet stays clean by default. A toggle button, **Pick macros for the
+game**, sits at the right end of the spec row (same style as the spec pills,
+with WoW's question-mark macro icon in front of the text). Turning it on:
+
+- shows a checkbox inside the left edge of every macro pill,
+- shows a group checkbox next to each group heading ("Damage / offensive"),
+- shows a section checkbox next to each section heading ("Warrior — Tank"),
+- slides up the export tray at the bottom.
+
+Turning it off hides the checkboxes but **keeps the selection**.
+
+### 4.2 Checkboxes
+
+- Real `<input type="checkbox">`, visually replaced (keyboard and screen readers
+  still work).
+- 16 px square, 1 px `--edge` border, inner fill `#10152C`, 3 px radius.
+- Checked: gold check mark (inline SVG, 2 px stroke) with a soft gold glow
+  (`box-shadow: 0 0 6px rgba(255,209,0,.45)`), echoing WoW's own checkbox.
+- Group and section checkboxes are tri-state: empty / gold bar (some) / check (all).
+- Clicking a pill's checkbox selects it **without** switching the code panel
+  (stop propagation); clicking the pill text still switches the panel as today.
+- A selected pill gets a gold border at 60% opacity, so the selection is visible
+  even with the checkbox small.
+- Focus: 2 px gold outline, 2 px offset.
+- Checkboxes also appear on search results, so you can search "taunt" and tick
+  across classes.
+
+### 4.3 Export tray
+
+Sticky to the bottom of the viewport, full content width, `--panel` background,
+1 px `--edge` top border, 12 px vertical padding.
+
+```
++---------------------------------------------------------------------------+
+| 14 macros selected   Warrior 11  Universal 3       [Clear]  [Copy import string] |
+| How to import (3 steps)                                                    |
++---------------------------------------------------------------------------+
+```
+
+- Count in Marcellus 18 px; class chips in the class color (same chip style as
+  the roster) with the count per class.
+- **Clear**: ghost button (transparent, `--edge` border).
+- **Copy import string**: primary, same gold gradient as the current-page nav
+  button. After copying, its label becomes `Copied` for 2 seconds and a line
+  below reads: `Now type /r2f in the game and click Import.`
+- **Select all for Warrior** (current class) and **Select everything** live in a
+  small menu on the left of the tray.
+- If any selected macro is for a class other than the one you'll log in with,
+  that's fine: the addon keeps them for that class's characters.
+- "How to import" expands to 3 numbered steps (a real sequence):
+  1. Install the addon (Download link, zip from GitHub Releases).
+  2. Pick macros here and click Copy import string.
+  3. In the game, type `/r2f`, click Import, paste with Ctrl+V, click Import.
+- Mobile (< 640 px): tray stacks in two rows, buttons full width.
+- Empty state (export mode on, nothing ticked): `Tick the macros you want in the
+  game, or select a whole group with its checkbox.`
+
+### 4.4 Selection storage
+
+`localStorage` key `wf-export-v1` = array of macro ids. Survives class switches
+and reloads. Ids that no longer exist after a site update are dropped silently.
+
+---
+
+## 5. In-game design: the Macro Book
+
+**Role: in-game UI/frame designer.** It must look like part of the WoW UI, not
+like a web page in the game. Rule: **Blizzard templates, fonts and textures
+only**, no custom art files in v1. Then it automatically matches the client,
+including any Forever reskin.
+
+The model is the **Spellbook**: players already know you drag spells out of it.
+
+```
+ +--[class icon portrait]-- Road to Forever Macros -------------------[X]-+
+ |                                                                    |Uni|
+ |  [icon] VR               [icon] HS                                 |---|
+ |         Damage                  Damage                             |Gen|
+ |  [icon] HS/Cleave        [icon] Sunder                             |---|
+ |         Damage                  Damage                             |Tnk|
+ |  ... 2 columns x 6 rows = 12 per page ...                          |---|
+ |                                                                    |DPS|
+ |  Character 7 / 18    Account 31 / 120          Page 1 of 3  [<][>] |
+ |  [Import]  [Tidy up]                                    [Settings] |
+ +--------------------------------------------------------------------+
+```
+
+### 5.1 Frame
+
+- `PortraitFrameTemplate` (or `ButtonFrameTemplate` if that's what the Forever
+  client has; check with `/fstack` in beta). Portrait = player's class icon
+  (`Interface\TargetingFrame\UI-Classes-Circles` + `CLASS_ICON_TCOORDS`).
+- Title: `Road to Forever Macros` in `GameFontNormal` (gold).
+- Size about 540 x 500, movable by the title bar, position saved, closes with Esc
+  (add to `UISpecialFrames`).
+- Open/close sounds: `SOUNDKIT.IG_SPELLBOOK_OPEN` / `IG_SPELLBOOK_CLOSE`; page
+  turn: `SOUNDKIT.IG_ABILITY_PAGE_TURN`.
+
+### 5.2 Side tabs (right edge, like spellbook skill-line tabs)
+
+One tab per section that has imported macros, in this order: Universal, then
+the class's sections (General, Tank, DPS, Healer, or the spec names for the
+other classes). Icons:
+
+| Tab | Icon |
+|---|---|
+| Universal | `INV_Misc_Book_09` |
+| General / Shared | the class icon |
+| Tank | `INV_Shield_06` |
+| DPS | `Ability_DualWield` (melee) or `Spell_Fire_FlameBolt` (casters) |
+| Healer | `Spell_Holy_HolyBolt` |
+| Spec names (other classes) | that spec's usual icon |
+
+Tooltip on a tab: section name + "12 macros".
+
+### 5.3 Macro slots (the grid)
+
+- Each entry looks like a spellbook entry: 36 px icon in the standard
+  `Interface\Buttons\UI-Quickslot2` border, name to the right in `GameFontNormal`
+  (gold) using the **short** name, subtext below in `GameFontHighlightSmall`
+  grey = the macro's group ("Damage", "Panic", "Focus", ...).
+- Icon: for `#showtooltip` macros, look up the spell icon
+  (`GetSpellTexture(name)`), else the macro's `icon`, else the question mark.
+  A spell the character doesn't know yet (low level) shows desaturated with
+  subtext `Learn later`.
+- **On your bars** marker: a small gold check in the icon's top-right corner
+  when a real macro with this id is on an action bar.
+- **Changed** marker: if the import updated a macro that's already on your bars,
+  a small green up-arrow until you hover it.
+- Left-click or drag: picks the macro up (creating it if needed), exactly like a
+  spellbook spell. Shift-click: puts the macro body in chat for sharing.
+- Right-click: small menu: `Remove from library`, `Copy text`.
+
+### 5.4 Tooltip (GameTooltip)
+
+```
+Victory Rush                       (white, the full site name)
+VR                                 (gold, the in-game name)
+#showtooltip Victory Rush          (grey, the macro body, one line per line)
+/startattack [harm]
+/cast [harm] Victory Rush
+New in Forever (level 20). ...     (light blue, the site note, wrapped)
+Drag to an action bar.             (green, like Blizzard's usage hints)
+```
+
+### 5.5 Bottom bar
+
+- Slot counter, two values: `Character 7 / 18` and `Account 31 / 120`. Turns
+  red when full.
+- Page text `Page 1 of 3` + spellbook prev/next page buttons.
+- Buttons (`UIPanelButtonTemplate`): **Import**, **Tidy up**, **Settings**.
+
+### 5.6 Import window
+
+Opens over the Macro Book.
+
+- Multi-line edit box (`InputScrollFrameTemplate`), placeholder text:
+  `Paste the import string from the Macros page (Ctrl+V).`
+- As soon as text is pasted, a preview appears:
+  `14 macros: 10 new, 3 updated, 1 unchanged. 3 are for another class and will be kept for those characters.`
+- Buttons: **Import** (enabled when valid), **Cancel**.
+- Bad string: `That isn't a Road to Forever import string. Copy it again from the Macros page.`
+- After import: the window closes, the Macro Book jumps to the first tab with
+  new macros, and chat prints `Road to Forever: imported 14 macros.`
+
+### 5.7 Other-class macros
+
+The library keeps every class you imported. On a Warrior you only see Universal
++ Warrior tabs. A line at the bottom of the Universal tab:
+`You also have macros for Paladin (53). Log in on that character to use them.`
+
+### 5.8 Settings (small panel)
+
+- New macros go to: Character slots first / Account slots first.
+- Show minimap button (v2, LibDBIcon).
+- `Remove all Road to Forever macros` (confirm popup; deletes only macros this
+  addon created and you haven't edited).
+
+### 5.9 Text and messages
+
+All player-facing strings live in one `Locale.lua` table (English only for now).
+Errors say what happened and what to do:
+
+| Situation | Message (red, `UIErrorsFrame`) |
+|---|---|
+| Drag in combat | `You can't create macros in combat.` |
+| No free slot anywhere | `No free macro slots. Click Tidy up or delete a macro in /macro.` |
+| Name taken by your own macro | popup: `You already have a macro called "VR". Replace it?` [Replace] [Keep mine] |
+
+---
+
+## 6. Addon architecture
+
+**Role: WoW addon architect.**
+
+### 6.1 Files
+
+```
+addon/RoadToForeverMacros/
+  RoadToForeverMacros.toc
+  Locale.lua        strings
+  Base64.lua        decode only (~40 lines, no library)
+  Import.lua        parse + validate + diff against the library
+  Library.lua       SavedVariables access, ids, hashes
+  Macros.lua        create / update / pick up / tidy (all real-macro calls live here)
+  UI\MacroBook.lua  frame, tabs, grid, paging, tooltip
+  UI\ImportFrame.lua
+  UI\Settings.lua
+  Bindings.xml      "Toggle Road to Forever Macros"
+  Core.lua          events, slash command, init
+```
+
+No libraries in v1 (LibDBIcon only when the minimap button is added).
+
+### 6.2 TOC
+
+```
+## Interface: <Forever client number, check in beta with /dump select(4, GetBuildInfo())>
+## Title: |cffffd100Road to Forever|r Macros
+## Notes: Import macros from the Road to Forever site and drag them onto your bars.
+## Author: nobody174
+## Version: @project-version@
+## SavedVariables: R2FMacrosDB
+## SavedVariablesPerCharacter: R2FMacrosCharDB
+```
+
+### 6.3 Saved data
+
+```lua
+R2FMacrosDB = {
+  version = 1,
+  library = {            -- every imported macro, any class, no limit
+    ["WARRIOR/VR"] = { class="WARRIOR", section="General", group="Damage / offensive",
+                       name="Victory Rush", short="VR", icon=nil,
+                       body="#showtooltip Victory Rush\n/startattack [harm]\n/cast [harm] Victory Rush",
+                       note="...", hash="a1b2c3", imported=1759350000 },
+  },
+  settings = { slotsFirst = "character", bookPos = {...} },
+}
+R2FMacrosCharDB = {
+  created = {            -- real macros this addon created on this character
+    ["WARRIOR/VR"] = { name="VR", hash="a1b2c3", account=false },
+  },
+}
+```
+
+Account-slot macros are also recorded in `R2FMacrosDB.createdAccount`.
+
+### 6.4 Real-macro rules (`Macros.lua`)
+
+- Find a macro by **name** (`GetMacroIndexByName`), never by stored index
+  (indices shift when macros are added or deleted).
+- **Ensure** (on drag/click): if a macro named `short` exists and is ours
+  (in `created`, hash matches) -> pick it up. If it doesn't exist ->
+  `CreateMacro(short, icon or "INV_MISC_QUESTIONMARK", body, perCharacter)`, record
+  it, then `PickupMacro`. If it exists but isn't ours -> the Replace / Keep mine
+  popup.
+- **Update** (after import): for each changed id with a real macro that is ours
+  and unedited (current body hash == stored hash) -> `EditMacro`. If the player
+  edited it -> leave it, mark it `Changed` and say so in the import summary.
+- **Tidy up**: read action slots 1-120 (`GetActionInfo`) -> set of macro names on
+  bars -> delete our unedited macros not in that set. Confirm popup lists them.
+  Note in the popup: bar addons that don't use the standard action slots aren't
+  seen (rare).
+- Every write checks `InCombatLockdown()` first. Writes requested in combat
+  (e.g. updates after an import) are queued and run on `PLAYER_REGEN_ENABLED`.
+
+### 6.5 Events (role: event flow)
+
+| Event | What the addon does |
+|---|---|
+| `ADDON_LOADED` (own name) | init/migrate saved data |
+| `PLAYER_LOGIN` | read class (`UnitClass`), build tabs |
+| `PLAYER_REGEN_DISABLED` | grey out Import/Tidy/drag, show `In combat` on the bottom bar |
+| `PLAYER_REGEN_ENABLED` | re-enable, run queued writes |
+| `UPDATE_MACROS` | refresh slot counter and markers (only if the book is open) |
+| `ACTIONBAR_SLOT_CHANGED` | refresh On-your-bars markers (throttled, only if open) |
+| `LEARNED_SPELL_IN_TAB` | refresh icons / Learn later state |
+
+### 6.6 Taint and secure code (role: taint auditor)
+
+- No secure templates, no hooks on Blizzard frames, no changes to Blizzard
+  tables. Don't load or touch `Blizzard_MacroUI`.
+- Only one global (`R2F`); everything else `local` or on `R2F`.
+- Macro creation/editing/pickup only out of combat. Nothing runs from
+  `OnUpdate` except a throttled refresh while the window is open.
+
+---
+
+## 7. Import string format
+
+```
+R2F1:<base64 of the payload>
+```
+
+Payload (UTF-8 text):
+
+```
+v=1
+<record>\30<record>\30...
+```
+
+Each record = fields joined by `\31` (unit separator), in this order:
+`id, class, section, group, name, short, icon, body, note`.
+Body keeps its real newlines. Empty icon = `""`.
+
+- Version prefix `R2F1:` lets a future `R2F2:` change the format; the addon
+  rejects unknown versions with: `This import string is from a newer site
+  version. Update the addon.`
+- The site builds it with `btoa(unescape(encodeURIComponent(text)))` (UTF-8 safe);
+  the addon decodes with `Base64.lua`.
+- Size check: 50 macros is about 10 KB of text. Test that pasting 20 KB into the
+  edit box is fine; if it's slow, switch to LibDeflate compression (`R2F2:`).
+- Validation: every field present, `short` <= 16, body <= 255, class is a known
+  token or `ANY`. Invalid records are skipped and counted in the preview.
+
+---
+
+## 8. Release
+
+- GitHub Actions: on a `addon-v*` tag, zip `addon/RoadToForeverMacros/` into a
+  Release (`RoadToForeverMacros-<version>.zip`, folder inside the zip).
+- Site: Download link in the export tray's How to import steps -> latest release.
+- Later: CurseForge project (auto-updates through the CurseForge app).
+
+## 9. Build order (each step shippable)
+
+1. **Data**: `short` + `icon` + ids in `data.py`, build checks, short names shown
+   in the markdown. Warrior and Paladin first (tables above), then the rest.
+2. **Site export**: export mode, checkboxes, tray, Copy import string.
+3. **Addon MVP**: import window, library, Macro Book for own class + Universal,
+   click/drag creates the macro, slot counter, combat lock.
+4. **Updates**: re-import updates unedited macros; Changed markers.
+5. **Tidy up**, Settings, Remove all, keybinding.
+6. **Release** zip + Download link. CurseForge later.
+
+## 10. Later / ideas
+
+- Own action bar mode (secure buttons with macro text) for players who want
+  more than 138 macros on bars. Big job; only if really needed.
+- Minimap button (LibDBIcon).
+- Export from the game back to the site (share your edited macros).
+
+## 11. Things to confirm in the beta
+
+- [ ] TOC `## Interface:` number (`/dump select(4, GetBuildInfo())`).
+- [ ] Slot limits really are 120 account + 18 character.
+- [ ] `PortraitFrameTemplate`, `InputScrollFrameTemplate`, spellbook tab and page
+      button templates exist in the Forever client (`/fstack` on the spellbook).
+- [ ] `CreateMacro` then `PickupMacro` in the same click works (else a 0-second
+      `C_Timer.After`).
+- [ ] Question-mark icon + `#showtooltip` shows the spell icon on the bar.
+- [ ] Macros created by the addon survive a relog (server sync).
+- [ ] Pasting a 20 KB string into the edit box is fast enough.

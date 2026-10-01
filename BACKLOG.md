@@ -7,13 +7,29 @@ stale checkmark.
 
 ## Next up: in-game macro addon (planned 2026-10-01)
 
-- **Road to Forever Macros addon** — full plan in [ADDON_PLAN.md](ADDON_PLAN.md).
-  In-game window (`/r2f`) with class icons, General/Tank/DPS/Healer tabs,
-  checkboxes + Select all / Install all, drag-and-drop onto action bars, and an
-  import string copied from `macros.html`. Replaces the idea of a local script
-  editing `macros-cache.txt` (server sync overwrites that file, and the folder
-  doesn't tell you the class). Data prerequisites first: role sections for every
-  class, add Druid, 16-char `short` names, `icon` field.
+Full spec: [ADDON_PLAN.md](ADDON_PLAN.md). Read it before starting any step.
+Pick macros on the site (export), paste one string in-game (import), drag them
+onto your bars from a spellbook-style Macro Book. Real macros are only created
+when dragged, so the 18/120 slot limit only counts macros you actually use.
+
+- [ ] **1. Data:** `short` (max 16, unique per class + Universal), `icon`, ids
+      `<CLASS>/<short>` in `data.py`; `build.py` fails on bad names; short names
+      in the markdown. Warrior + Paladin names are already decided in the plan.
+- [ ] **2. Site export:** "Pick macros for the game" mode on `macros.html`:
+      checkboxes per macro, tri-state per group and section, sticky export tray,
+      Copy import string (`R2F1:` format), selection in `wf-export-v1`.
+- [ ] **3. Addon MVP:** `addon/RoadToForeverMacros/`, `/r2f`, import window with
+      preview, library in SavedVariables, Macro Book (own class + Universal),
+      click/drag creates + picks up the macro, slot counter, combat lock.
+- [ ] **4. Updates:** re-import updates unedited macros, Changed markers.
+- [ ] **5. Tidy up, Settings, Remove all, keybinding.**
+- [ ] **6. Release:** GitHub Actions zip on `addon-v*` tags, Download link on the site.
+- [ ] **Beta checks** (plan section 11): Interface number, slot limits,
+      templates, CreateMacro+PickupMacro, relog survival, paste speed.
+
+Decided: no Druid; only Warrior (General/Tank/DPS) and Paladin
+(General/Tank/DPS/Healer) use role sections, other classes keep their spec
+sections; Warrior Arms + Fury stay merged in DPS.
 
 ## Waiting on Wowhead (2026-10-01)
 

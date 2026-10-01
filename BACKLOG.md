@@ -34,6 +34,15 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
       summary, conflict/mismatch warnings. Nothing learned.
 - [ ] **10. Talent learning:** Learn talents + confirm popup, one point at a
       time, stops on combat/errors; guided glow mode if `LearnTalent` is blocked.
+- [ ] **Quick settings (Home tab):** three checkboxes that change game settings
+      directly with `SetCVar`, so no macro or macro slot is used. Max camera
+      zoom = `cameraDistanceMaxZoomFactor 4` (unticked = game default via
+      `GetCVarDefault`). Hide guild names = `UnitNamePlayerGuild 0` (unticked =
+      1). Hide PvP titles = `UnitNamePlayerPVPTitle 0` (unticked = 1).
+      Checkboxes read the current value with `GetCVar` when the tab opens. Out
+      of combat only. The three macros stay on the website, but the addon
+      hides them from the Macro Book. Add it to `ADDON_PLAN.md` section 12.4
+      when it gets built.
 - [ ] **Beta checks** (plan section 11): Interface number, slot limits,
       templates, CreateMacro+PickupMacro, relog survival, paste speed,
       LibDBIcon, menu API, LearnTalent from a click, talent order vs our links.

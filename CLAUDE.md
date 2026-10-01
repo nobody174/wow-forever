@@ -145,8 +145,9 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Class roster icons (Priest/Shaman/Paladin/Warlock/Hunter/Warrior/Rogue/Mage) are
   NOT local assets — they're hotlinked from Wowhead's icon CDN (`wow.zamimg.com`)
   directly in `template.html`'s `CLASS_ICONS` map.
-- `ADDON_PLAN.md` — plan for the in-game macro addon (not built yet). Read it
-  before touching anything addon-related or the `short`/`icon` macro fields.
+- `ADDON_PLAN.md` — plan for the "Road to Forever" in-game addon (macro import,
+  talent import/export, minimap button; not built yet). Read it before touching
+  anything addon-related, the `short`/`icon` macro fields, or the talent link format.
 - `assets/drafts/` — gitignored scratch folder for image-generation drafts/
   intermediates (hero and icon art both land here). Not part of the deployed site.
 

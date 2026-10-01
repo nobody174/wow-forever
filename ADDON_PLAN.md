@@ -1,15 +1,16 @@
-# Addon plan: Road to Forever Macros
+# Addon plan: Road to Forever (macros + talents)
 
 Status: **planned, not started** (scoped 2026-10-01, revised the same evening).
 Target: usable before the Nov 4 launch.
 
 | | |
 |---|---|
-| Addon name | Road to Forever Macros |
-| Folder | `addon/RoadToForeverMacros/` (in this repo) |
-| Slash command | `/r2f` |
+| Addon name | Road to Forever |
+| Folder | `addon/RoadToForever/` (in this repo) |
+| Slash commands | `/r2f` (main window), `/r2ft` (Talents), `/r2f macros`, `/r2f minimap` (show the minimap button again) |
+| Minimap button | yes, draggable around the minimap (section 12) |
 | Global table | `R2F` (the only global the addon creates) |
-| SavedVariables | `R2FMacrosDB` (account), `R2FMacrosCharDB` (per character) |
+| SavedVariables | `R2FDB` (account), `R2FCharDB` (per character) |
 
 This file is the spec. Claude Code: read all of it before building any part,
 and keep the design rules in sections 4 and 5. If something here turns out to
@@ -307,13 +308,13 @@ and reloads. Ids that no longer exist after a site update are dropped silently.
 
 **Role: in-game UI/frame designer.** It must look like part of the WoW UI, not
 like a web page in the game. Rule: **Blizzard templates, fonts and textures
-only**, no custom art files in v1. Then it automatically matches the client,
-including any Forever reskin.
+only**. Then it automatically matches the client, including any Forever reskin.
+The one exception is our logo (minimap button + main window portrait, section 12.1).
 
 The model is the **Spellbook**: players already know you drag spells out of it.
 
 ```
- +--[class icon portrait]-- Road to Forever Macros -------------------[X]-+
+ +--[class icon portrait]-- Road to Forever: Macros -----------------[X]-+
  |                                                                    |Uni|
  |  [icon] VR               [icon] HS                                 |---|
  |         Damage                  Damage                             |Gen|
@@ -331,7 +332,8 @@ The model is the **Spellbook**: players already know you drag spells out of it.
 - `PortraitFrameTemplate` (or `ButtonFrameTemplate` if that's what the Forever
   client has; check with `/fstack` in beta). Portrait = player's class icon
   (`Interface\TargetingFrame\UI-Classes-Circles` + `CLASS_ICON_TCOORDS`).
-- Title: `Road to Forever Macros` in `GameFontNormal` (gold).
+- Title: `Road to Forever` in `GameFontNormal` (gold). The Macro Book is the
+  **Macros** tab of the main window (section 12.4).
 - Size about 540 x 500, movable by the title bar, position saved, closes with Esc
   (add to `UISpecialFrames`).
 - Open/close sounds: `SOUNDKIT.IG_SPELLBOOK_OPEN` / `IG_SPELLBOOK_CLOSE`; page
@@ -413,7 +415,7 @@ The library keeps every class you imported. On a Warrior you only see Universal
 ### 5.8 Settings (small panel)
 
 - New macros go to: Character slots first / Account slots first.
-- Show minimap button (v2, LibDBIcon).
+- Show minimap button / Lock minimap button (section 12.2).
 - `Remove all Road to Forever macros` (confirm popup; deletes only macros this
   addon created and you haven't edited).
 
@@ -437,8 +439,8 @@ Errors say what happened and what to do:
 ### 6.1 Files
 
 ```
-addon/RoadToForeverMacros/
-  RoadToForeverMacros.toc
+addon/RoadToForever/
+  RoadToForever.toc
   Locale.lua        strings
   Base64.lua        decode only (~40 lines, no library)
   Import.lua        parse + validate + diff against the library
@@ -447,8 +449,17 @@ addon/RoadToForeverMacros/
   UI\MacroBook.lua  frame, tabs, grid, paging, tooltip
   UI\ImportFrame.lua
   UI\Settings.lua
-  Bindings.xml      "Toggle Road to Forever Macros"
-  Core.lua          events, slash command, init
+  UI\MainWindow.lua shared window, bottom tabs Home / Macros / Talents
+  UI\Home.lua       Home tab
+  UI\TalentPanel.lua talent link box, preview trees, Learn button
+  Talents.lua       parse link, map to the game's trees, plan, learn, export
+  Minimap.lua       LibDataBroker launcher + LibDBIcon button + right-click menu
+  Bindings.xml      "Toggle Road to Forever", "Open Macros", "Open Talents"
+  Core.lua          events, slash commands, init
+  libs\            LibStub, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0
+  media\logo64.tga  minimap icon (64x64, 32-bit with alpha)
+  media\logo128.tga main window portrait
+addon/art/logo.svg  logo source (not shipped); build script exports the .tga files
 ```
 
 No libraries in v1 (LibDBIcon only when the minimap button is added).
@@ -457,18 +468,18 @@ No libraries in v1 (LibDBIcon only when the minimap button is added).
 
 ```
 ## Interface: <Forever client number, check in beta with /dump select(4, GetBuildInfo())>
-## Title: |cffffd100Road to Forever|r Macros
-## Notes: Import macros from the Road to Forever site and drag them onto your bars.
+## Title: |cffffd100Road to Forever|r
+## Notes: Import macros and talent builds from the Road to Forever site.
 ## Author: nobody174
 ## Version: @project-version@
-## SavedVariables: R2FMacrosDB
-## SavedVariablesPerCharacter: R2FMacrosCharDB
+## SavedVariables: R2FDB
+## SavedVariablesPerCharacter: R2FCharDB
 ```
 
 ### 6.3 Saved data
 
 ```lua
-R2FMacrosDB = {
+R2FDB = {
   version = 1,
   library = {            -- every imported macro, any class, no limit
     ["WARRIOR/VR"] = { class="WARRIOR", section="General", group="Damage / offensive",
@@ -476,16 +487,18 @@ R2FMacrosDB = {
                        body="#showtooltip Victory Rush\n/startattack [harm]\n/cast [harm] Victory Rush",
                        note="...", hash="a1b2c3", imported=1759350000 },
   },
-  settings = { slotsFirst = "character", bookPos = {...} },
+  settings = { slotsFirst = "character", windowPos = {...}, lastTab = "home" },
+  minimap = { hide = false, minimapPos = 220, lock = false },  -- LibDBIcon format
 }
-R2FMacrosCharDB = {
+R2FCharDB = {
   created = {            -- real macros this addon created on this character
     ["WARRIOR/VR"] = { name="VR", hash="a1b2c3", account=false },
   },
+  lastTalentLink = "warrior/--50203123300101~k7f2",
 }
 ```
 
-Account-slot macros are also recorded in `R2FMacrosDB.createdAccount`.
+Account-slot macros are also recorded in `R2FDB.createdAccount`.
 
 ### 6.4 Real-macro rules (`Macros.lua`)
 
@@ -517,6 +530,8 @@ Account-slot macros are also recorded in `R2FMacrosDB.createdAccount`.
 | `UPDATE_MACROS` | refresh slot counter and markers (only if the book is open) |
 | `ACTIONBAR_SLOT_CHANGED` | refresh On-your-bars markers (throttled, only if open) |
 | `LEARNED_SPELL_IN_TAB` | refresh icons / Learn later state |
+| `CHARACTER_POINTS_CHANGED` | talent learning: confirm the last point landed, then spend the next |
+| `PLAYER_LEVEL_UP` | refresh free talent points on Home and Talents |
 
 ### 6.6 Taint and secure code (role: taint auditor)
 
@@ -559,8 +574,8 @@ Body keeps its real newlines. Empty icon = `""`.
 
 ## 8. Release
 
-- GitHub Actions: on a `addon-v*` tag, zip `addon/RoadToForeverMacros/` into a
-  Release (`RoadToForeverMacros-<version>.zip`, folder inside the zip).
+- GitHub Actions: on a `addon-v*` tag, zip `addon/RoadToForever/` into a
+  Release (`RoadToForever-<version>.zip`, folder inside the zip).
 - Site: Download link in the export tray's How to import steps -> latest release.
 - Later: CurseForge project (auto-updates through the CurseForge app).
 
@@ -572,14 +587,22 @@ Body keeps its real newlines. Empty icon = `""`.
 3. **Addon MVP**: import window, library, Macro Book for own class + Universal,
    click/drag creates the macro, slot counter, combat lock.
 4. **Updates**: re-import updates unedited macros; Changed markers.
-5. **Tidy up**, Settings, Remove all, keybinding.
-6. **Release** zip + Download link. CurseForge later.
+5. **Tidy up**, Settings, Remove all, keybindings.
+6. **Main window + minimap**: Home / Macros / Talents tabs, logo, LibDBIcon
+   button with right-click menu, `/r2f`, `/r2ft`, `/r2f minimap`.
+7. **Release** zip + Download link. CurseForge later.
+8. **Talent export** (read-only, no risk): Copy my build as a link. Site links get
+   the `~hash` check (section 13.3).
+9. **Talent import preview**: paste link, mini trees, summary, warnings. Nothing learned.
+10. **Talent learning**: Learn talents + confirm popup, point-by-point learning
+    (or the guided fallback if `LearnTalent` is blocked).
 
 ## 10. Later / ideas
 
 - Own action bar mode (secure buttons with macro text) for players who want
   more than 138 macros on bars. Big job; only if really needed.
-- Minimap button (LibDBIcon).
+- Talent leveling order on the site (which talent first), so a partial build
+  learns your priorities instead of top-down.
 - Export from the game back to the site (share your edited macros).
 
 ## 11. Things to confirm in the beta
@@ -593,3 +616,210 @@ Body keeps its real newlines. Empty icon = `""`.
 - [ ] Question-mark icon + `#showtooltip` shows the spell icon on the bar.
 - [ ] Macros created by the addon survive a relog (server sync).
 - [ ] Pasting a 20 KB string into the edit box is fast enough.
+- [ ] LibDBIcon button drags around the round minimap and saves its spot.
+- [ ] Right-click menu API: `UIDropDownMenu`/`EasyMenu` or the newer `MenuUtil`.
+- [ ] `LearnTalent(tab, index)` works from our button click (else guided mode).
+- [ ] Classic has no talent preview/commit (or, if Forever adds one, use it).
+- [ ] Sorting `GetTalentInfo` by tier then column gives the same order as our
+      share links (test with the level-30 builds).
+- [ ] `GetTalentTabInfo` tab order matches `talentcalc.js` `CLASSES` order.
+
+---
+
+## 12. Main window, minimap button and logo
+
+**Roles: in-game UI/frame designer + graphic designer.**
+
+### 12.1 Logo
+
+- **Idea:** "Road to Forever" as one shape: a road that starts at the bottom of
+  the circle, narrows into the distance and curls into an infinity sign (∞).
+  It ties into the site's hero art (a path climbing toward the sky isles).
+- **Colors:** the site's own: gold road `#FFD100` with a darker gold edge
+  `#C79C00` and a thin pale highlight `#FFE566` along the top; background disc a
+  radial navy from `#2A335A` (center) to `#0E1428` (edge).
+- **Small-size rule:** it must read at 18 to 20 px on the minimap. So: no text,
+  no letters, only the road + ∞, thick strokes (at least 8 px on the 64 px
+  version), strong contrast against the navy.
+- **Files:** draw it as vector `addon/art/logo.svg` (hand-made SVG so it stays
+  crisp; ComfyUI is fine for exploring ideas, not for the final). A small script
+  exports `media/logo64.tga` and `media/logo128.tga` (32-bit, transparent
+  outside the circle, power-of-two sizes as WoW needs). Check it in-game at the
+  real size before calling it done.
+- Later the same logo can be the site favicon, so site and addon feel like one thing.
+
+### 12.2 Minimap button
+
+- Built with **LibDataBroker-1.1 + LibDBIcon-1.0** (embedded in `libs\`). That
+  gives the standard round minimap-button border so it looks native,
+  **dragging around the minimap edge** (position saved), square-minimap support,
+  and it works with minimap-button collector addons.
+- **Left-click:** open/close the main window (on the tab you used last).
+- **Right-click:** menu:
+
+```
+ Road to Forever          (gold title, not clickable)
+ Open Road to Forever
+ Macros
+ Talents
+ ------------------
+ Lock button position     (check item)
+ Hide minimap button
+```
+
+- **Drag:** move it around the minimap (disabled when locked).
+- **Tooltip:**
+
+```
+Road to Forever                         (gold)
+38 macros in your library               (white)
+5 free talent points                    (white, only when > 0)
+Left-click to open.                     (green)
+Right-click for options.                (green)
+Drag to move.                           (green)
+```
+
+- **Hide minimap button:** hides it and prints in chat:
+  `Road to Forever: minimap button hidden. Type /r2f minimap to show it again.`
+  Also a checkbox in Settings.
+
+### 12.3 Slash commands
+
+| Command | Opens |
+|---|---|
+| `/r2f` | main window, last used tab |
+| `/r2f macros` | Macros tab |
+| `/r2ft` or `/r2f talents` | Talents tab |
+| `/r2f minimap` | shows the minimap button again (toggles) |
+| `/r2f help` | prints the list above |
+
+### 12.4 Main window
+
+One window (`PortraitFrameTemplate`, portrait = `logo128`), three bottom tabs
+in Blizzard's character-frame tab style (`PanelTabButtonTemplate`, or the
+Classic `CharacterFrameTabButtonTemplate`):
+
+| Tab | Content |
+|---|---|
+| **Home** | two large entries in spellbook-slot style: **Macro Book** (`38 macros in your library, 12 on your bars`) and **Talents** (`5 free talent points`, or `No free talent points`). Clicking one switches tab. Below: Import macros button. |
+| **Macros** | the Macro Book (section 5) |
+| **Talents** | section 13.4 |
+
+Window position, size and last tab are saved. Esc closes it. Same sounds as the
+Spellbook.
+
+---
+
+## 13. Talent import / export
+
+### 13.1 Flow
+
+```
+ Site talent calc / Builds page          In-game Talents tab
+ ------------------------------          ------------------------------------
+ [Copy link]  --- clipboard --->  paste link -> Preview (nothing learned)
+                                         -> Learn talents -> confirm popup
+                                         -> points learned one by one
+ talents.html#warrior/...  <--- clipboard ---  [Copy my build]
+```
+
+The link from **Copy link** is the import format. No separate string.
+
+### 13.2 Reading the link
+
+- Accept any of: full URL, `talents.html#warrior/3232...`, `#warrior/3232...`,
+  `warrior/3232...`. Lua pattern: `(%a+)/([%d%-]*)(~?%w*)`.
+- Class must match the character (`select(2, UnitClass("player")):lower()`).
+  Wrong class: `This is a Paladin build. You're playing a Warrior.`
+- Mapping to the game: for each talent tab (`GetNumTalentTabs`), list every
+  talent with `GetTalentInfo(tab, i)` -> name, icon, tier, column, rank, maxRank.
+  **Sort by tier, then column.** Digit k of that tree's part of the link = planned
+  rank of the k-th talent in this sorted list (that's how the site encodes it:
+  Wowhead's row/column order). Missing trailing digits = 0.
+
+### 13.3 Mismatch protection (the `~hash`)
+
+The link only stores numbers, not talent names, so if the site's data and the
+game differ (like the missing Crusade talent) points could land on the wrong
+talent. Fix:
+
+- The site appends a short check to every copied link:
+  `talents.html#warrior/3232020303201~k7f2`. The check is a hash of that class's
+  talent names in link order, all three trees (djb2, base36, 4 characters).
+  Same function in `talentcalc.js` and `Talents.lua`.
+- `talentcalc.js` ignores everything from `~` when reading a link, so old and
+  new links both still open. Bump the `?v=` on both pages when changing it.
+- The addon computes the same hash from the game's names:
+  - match -> safe;
+  - different -> stop: `This link was made with different talent trees than
+    your game has. Nothing was learned. Make a new link on the site or wait for
+    the site to update.`;
+  - no hash (old link) -> allowed, with a yellow line `Older link: can't check it
+    against your talent trees.`
+- Extra sanity checks always: no planned rank above a talent's max rank, no
+  points in a tree position that doesn't exist.
+
+### 13.4 Talents tab design
+
+```
+ +-- Road to Forever: Talents ---------------------------------------------+
+ | Talent link [ talents.html#warrior/--50203123300101~k7f2     ] [Preview]  |
+ |                                                       [Copy my build]    |
+ |  Arms  0 -> 0        Fury  0 -> 0         Protection  0 -> 21             |
+ |  [mini tree]         [mini tree]          [mini tree]                     |
+ |                                                                          |
+ |  This build uses 21 points. You have 21 free. All 21 will be learned.     |
+ |                                         [Cancel]  [Learn talents]         |
+ +--------------------------------------------------------------------------+
+```
+
+- **Mini trees:** three trees side by side, each a 4 x 7 grid of 26 px talent
+  icons in the talent-frame slot border, tree name + `current -> planned` above.
+  - already learned: normal icon, rank in the corner (white);
+  - will be learned now: gold border glow + `+2` in gold;
+  - in the build but no points left yet: dim, dashed-looking gold outline, `later`;
+  - not in the build: desaturated;
+  - conflict (you have points the build doesn't): red border.
+- Hover = the game's own talent tooltip (`GameTooltip:SetTalent(tab, i)`) plus a
+  line `Build: 3 / 3`.
+- **Summary line** (one of):
+  - `This build uses 21 points. You have 21 free. All 21 will be learned.`
+  - `This build uses 21 points. You have 16 free: 16 will be learned now, 5 later.`
+  - `You already have 2 points in Improved Rend, which this build doesn't use. Reset your talents at a trainer first.` (red, Learn disabled)
+  - `No free talent points.` (Learn disabled)
+- **Learn talents** (`UIPanelButtonTemplate`, disabled in combat and while
+  anything is red) -> confirm popup (`StaticPopup`):
+  `Learn 21 talent points? Only a trainer reset can undo this.` [Learn] [Cancel]
+- While learning: button reads `Learning 7 / 21`, everything else locked.
+- Done: `Learned 21 talent points.` in chat + the trees refresh.
+- **Copy my build:** reads your current ranks, builds the link exactly like the
+  site (per tree: digits in sorted order, trailing zeros removed; trees joined
+  with `-`, trailing `-` removed; then `~hash`), prefixes
+  `https://nobody174.github.io/wow-forever-macros/talents.html#`, and shows it in
+  a small popup with the text selected: `Press Ctrl+C, then paste it in your
+  browser or Discord.`
+
+### 13.5 Learning engine (`Talents.lua`)
+
+- **Plan:** points to add = planned rank - current rank, per talent. Any negative
+  = conflict (stop before anything).
+- **Order:** tier 1 of all trees, then tier 2, and so on; within a tier, tree
+  order then column. This always satisfies the tier requirement (5 points per
+  tier in that tree) and prerequisites (they're higher up), and with fewer free
+  points it fills from the top. Before each point, double-check the tier
+  requirement and `GetTalentPrereqs`.
+- **One point at a time:** `LearnTalent(tab, i)`, wait for
+  `CHARACTER_POINTS_CHANGED` (or 0.5 s timeout), re-read the rank. If it didn't go
+  up: stop and show `Stopped at Improved Thunder Clap: the game didn't accept the
+  point. 14 of 21 learned.`
+- Stop at once on `PLAYER_REGEN_DISABLED` (combat) with `Stopped: you entered
+  combat. 9 of 21 learned. Click Learn talents to continue.`
+- Classic learns a talent the moment it's clicked (no preview/commit like Wrath).
+  Our Preview + confirm popup is the "accept" step. If the Forever client turns
+  out to have Blizzard's preview API, use that instead and let Blizzard's own
+  Learn button confirm.
+- **Fallback if `LearnTalent` is blocked for addons:** guided mode. Open the
+  Blizzard talent window and put a pulsing gold glow (our own texture, parented
+  to `UIParent`, anchored over the talent button; never modify Blizzard's
+  frames) on the next talent to click, with `Click Improved Bloodrage (2 of 21)`.
+  Advance on `CHARACTER_POINTS_CHANGED`.

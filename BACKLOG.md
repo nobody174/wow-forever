@@ -5,11 +5,13 @@ everything not shipped yet lives here, whether started or not. The moment
 something ships, it moves to [CHANGELOG.md](CHANGELOG.md), not left here as a
 stale checkmark.
 
-## Next up: in-game macro addon (planned 2026-10-01)
+## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 
 Full spec: [ADDON_PLAN.md](ADDON_PLAN.md). Read it before starting any step.
-Pick macros on the site (export), paste one string in-game (import), drag them
-onto your bars from a spellbook-style Macro Book. Real macros are only created
+One addon, "Road to Forever" (`/r2f`, minimap button). Macros: pick on the site
+(export), paste one string in-game (import), drag them onto your bars from a
+spellbook-style Macro Book. Talents: paste a talent-calc link, preview, confirm,
+and the addon learns the build. Real macros are only created
 when dragged, so the 18/120 slot limit only counts macros you actually use.
 
 - [ ] **1. Data:** `short` (max 16, unique per class + Universal), `icon`, ids
@@ -18,14 +20,25 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
 - [ ] **2. Site export:** "Pick macros for the game" mode on `macros.html`:
       checkboxes per macro, tri-state per group and section, sticky export tray,
       Copy import string (`R2F1:` format), selection in `wf-export-v1`.
-- [ ] **3. Addon MVP:** `addon/RoadToForeverMacros/`, `/r2f`, import window with
+- [ ] **3. Addon MVP:** `addon/RoadToForever/`, `/r2f`, import window with
       preview, library in SavedVariables, Macro Book (own class + Universal),
       click/drag creates + picks up the macro, slot counter, combat lock.
 - [ ] **4. Updates:** re-import updates unedited macros, Changed markers.
-- [ ] **5. Tidy up, Settings, Remove all, keybinding.**
-- [ ] **6. Release:** GitHub Actions zip on `addon-v*` tags, Download link on the site.
+- [ ] **5. Tidy up, Settings, Remove all, keybindings.**
+- [ ] **6. Main window + minimap:** Home / Macros / Talents tabs, logo
+      (road curling into ∞, gold on navy, readable at 20 px; SVG source ->
+      .tga), LibDBIcon button draggable around the minimap, right-click menu
+      (Open / Macros / Talents / Lock / Hide), `/r2f`, `/r2ft`, `/r2f minimap`.
+- [ ] **7. Release:** GitHub Actions zip on `addon-v*` tags, Download link on the site.
+- [ ] **8. Talent export:** Copy my build as a site link. Site links get the
+      `~hash` check; `talentcalc.js` ignores `~...` when reading (bump `?v=`).
+- [ ] **9. Talent import preview:** paste a Copy link URL, three mini trees,
+      summary, conflict/mismatch warnings. Nothing learned.
+- [ ] **10. Talent learning:** Learn talents + confirm popup, one point at a
+      time, stops on combat/errors; guided glow mode if `LearnTalent` is blocked.
 - [ ] **Beta checks** (plan section 11): Interface number, slot limits,
-      templates, CreateMacro+PickupMacro, relog survival, paste speed.
+      templates, CreateMacro+PickupMacro, relog survival, paste speed,
+      LibDBIcon, menu API, LearnTalent from a click, talent order vs our links.
 
 Decided: no Druid; only Warrior (General/Tank/DPS) and Paladin
 (General/Tank/DPS/Healer) use role sections, other classes keep their spec

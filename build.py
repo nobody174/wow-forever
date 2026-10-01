@@ -67,7 +67,7 @@ for group in UNIVERSAL:
 for cls in CLASSES:
     md.append(f"## {cls['name']}\n")
     for section in cls["sections"]:
-        title = "Shared (all specs)" if section["spec"] == "Shared" else section["spec"]
+        title = section["spec"] + " (all specs)" if section["spec"] in ("Shared", "General") else section["spec"]
         md.append(f"### {cls['name']} — {title}\n")
         for group in sort_groups(section["groups"]):
             md.append(f"#### {group['type']}\n")

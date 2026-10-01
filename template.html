@@ -206,7 +206,7 @@ function renderRoster(){
 function renderSpecs(c){
   if(c.name==="Universal"){specs.innerHTML="";return;}
   const opts=["All",...c.sections.map(s=>s.spec)];
-  specs.innerHTML = opts.map(s=>`<button aria-pressed="${s===spec}" data-s="${s}">${s==="Shared"?"Shared (all specs)":s==="All"?"Everything":s}</button>`).join("");
+  specs.innerHTML = opts.map(s=>`<button aria-pressed="${s===spec}" data-s="${s}">${s==="Shared"||s==="General"?s+" (all specs)":s==="All"?"Everything":s}</button>`).join("");
 }
 function render(){
   const q = document.getElementById("q").value.trim().toLowerCase();
@@ -232,7 +232,7 @@ function render(){
   tabGroups = [];
   for(const s of c.sections){
     if(spec!=="All" && s.spec!==spec) continue;
-    html += `<h2>${esc(c.name==="Universal"?"All classes":s.spec==="Shared"?c.name+" — shared by every spec":c.name+" — "+s.spec)}</h2>`;
+    html += `<h2>${esc(c.name==="Universal"?"All classes":s.spec==="Shared"||s.spec==="General"?c.name+" — "+(s.spec==="General"?"General (every spec)":"shared by every spec"):c.name+" — "+s.spec)}</h2>`;
     for(const g of byOrder(s.groups)){ html += tabGroupHTML(g, gi); tabGroups[gi] = g.macros.filter(m=>m.code); gi++; }
   }
   out.innerHTML = html;

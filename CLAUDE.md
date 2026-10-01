@@ -187,7 +187,12 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - All code and comments in English.
 
 ## Structure in data.py
-Each class has a "Shared" section (all specs) plus spec sections. Macro types:
+Each class has a "Shared" section (all specs) plus spec sections. Exception:
+Warrior and Paladin use role sections instead: "General" (all specs; rendered
+like Shared), "Tank", "DPS" (Arms+Fury / Retribution), plus Paladin "Healer".
+Melee strikes use the melee() helper (`/startattack [harm]` + `/cast [harm]`);
+stance(..., attack=True) adds the same /startattack line. Never add /startattack
+to fears or other breakable CC (Intimidating Shout, Repentance). Macro types:
 Damage / offensive, Mouseover healing / utility, Cleanse / dispel, Wand / auto-attack,
 Buffs, Panic / defensive, Targeting helpers, Class QoL, Focus, Misc / UI.
 Misc / UI lives only in the UNIVERSAL block (camera/UI console commands, target
@@ -195,7 +200,7 @@ marking, gear-swap macros — not spell-specific, so not part of any class secti
 Classes: Priest, Shaman, Paladin, Warlock, Hunter, Warrior, Rogue, Mage.
 Use helpers: dps() (Priest only — target-of-target-aware), dpsHarm() (every other
 class — plain [harm] targeting, no TT), heal(), util(), buff(), chan(), foc(),
-plain(), me(), stance(). Every helper prepends #showtooltip; hand-written
+plain(), me(), stance(), melee(). Every helper prepends #showtooltip; hand-written
 multi-line /cast or /castsequence macros must add #showtooltip as their own
 first line. Pure utility commands (/console, /targetmarker, /target, /focus,
 /petattack, /use item) do not get #showtooltip.

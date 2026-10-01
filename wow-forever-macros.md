@@ -1991,7 +1991,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 ## Paladin
 
-### Paladin — Shared (all specs)
+### Paladin — General (all specs)
 
 #### Damage / offensive
 
@@ -2231,6 +2231,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@mouseover, help, exists][help] Divine Intervention
 ```
 
+**Auras on one button** — Plain click: Devotion. Shift: Concentration. Ctrl: Retribution.
+```
+#showtooltip [mod:shift] Concentration Aura; [mod:ctrl] Retribution Aura; Devotion Aura
+/cast [mod:shift] Concentration Aura; [mod:ctrl] Retribution Aura; Devotion Aura
+```
+
 #### Focus
 
 **Hammer of Justice focus**
@@ -2245,57 +2251,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@focus, harm, exists][harm] Turn Undead
 ```
 
-### Paladin — Retribution
-
-#### Damage / offensive
-
-**Repentance**
-```
-#showtooltip Repentance
-/cast [harm] Repentance
-```
-
-#### Buffs
-
-**Sanctity Aura**
-```
-#showtooltip Sanctity Aura
-/cast Sanctity Aura
-```
-
-**Seal of Command**
-```
-#showtooltip Seal of Command
-/cast Seal of Command
-```
-
-#### Class QoL
-
-**Seal swap: Command <> Righteousness** — Test in beta: with the Twist of Light talent, switching seals lets your next swing also apply the old seal. Swap between swings.
-```
-#showtooltip
-/castsequence Seal of Command, Seal of Righteousness
-```
-
-#### Focus
-
-**Repentance focus**
-```
-#showtooltip Repentance
-/cast [@focus, harm, exists][harm] Repentance
-```
-
-### Paladin — Holy
-
-#### Mouseover healing / utility
-
-**Holy Shock (friend or foe)** — Heals a friendly mouseover/target, damages an enemy one.
-```
-#showtooltip Holy Shock
-/cast [@mouseover, exists][exists] Holy Shock
-```
-
-### Paladin — Protection
+### Paladin — Tank
 
 #### Damage / offensive
 
@@ -2347,64 +2303,142 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@focus, harm, exists][harm] Judgement
 ```
 
-## Warrior
-
-### Warrior — Shared (all specs)
+### Paladin — DPS
 
 #### Damage / offensive
+
+**Repentance**
+```
+#showtooltip Repentance
+/cast [harm] Repentance
+```
+
+#### Buffs
+
+**Sanctity Aura**
+```
+#showtooltip Sanctity Aura
+/cast Sanctity Aura
+```
+
+**Seal of Command**
+```
+#showtooltip Seal of Command
+/cast Seal of Command
+```
+
+#### Class QoL
+
+**Seal swap: Command <> Righteousness** — Test in beta: with the Twist of Light talent, switching seals lets your next swing also apply the old seal. Swap between swings.
+```
+#showtooltip
+/castsequence Seal of Command, Seal of Righteousness
+```
+
+#### Focus
+
+**Repentance focus**
+```
+#showtooltip Repentance
+/cast [@focus, harm, exists][harm] Repentance
+```
+
+### Paladin — Healer
+
+#### Mouseover healing / utility
+
+**Holy Shock (friend or foe)** — Heals a friendly mouseover/target, damages an enemy one.
+```
+#showtooltip Holy Shock
+/cast [@mouseover, exists][exists] Holy Shock
+```
+
+## Warrior
+
+### Warrior — General (all specs)
+
+#### Damage / offensive
+
+**Victory Rush** — New in Forever (level 20). Free, any stance, heals 10% of your max health. Only usable for 20 sec after a kill that gives XP; 30 sec cooldown. Smash it after every kill.
+```
+#showtooltip Victory Rush
+/startattack [harm]
+/cast [harm] Victory Rush
+```
 
 **Heroic Strike**
 ```
 #showtooltip Heroic Strike
+/startattack [harm]
 /cast [harm] Heroic Strike
+```
+
+**Heroic Strike / Cleave (Shift)** — Click: Heroic Strike. Shift-click: Cleave (level 20).
+```
+#showtooltip [mod:shift] Cleave; Heroic Strike
+/startattack [harm]
+/cast [mod:shift, harm] Cleave; [harm] Heroic Strike
 ```
 
 **Cleave**
 ```
 #showtooltip Cleave
+/startattack [harm]
 /cast [harm] Cleave
 ```
 
 **Rend**
 ```
 #showtooltip Rend
+/startattack [harm]
 /cast [harm] Rend
 ```
 
 **Hamstring**
 ```
 #showtooltip Hamstring
+/startattack [harm]
 /cast [harm] Hamstring
 ```
 
 **Sunder Armor**
 ```
 #showtooltip Sunder Armor
+/startattack [harm]
 /cast [harm] Sunder Armor
 ```
 
-**Execute**
+**Slam** — Level 20 in Forever.
+```
+#showtooltip Slam
+/startattack [harm]
+/cast [harm] Slam
+```
+
+**Execute** — Level 24. Target under 20% health; Battle or Berserker Stance.
 ```
 #showtooltip Execute
+/startattack [harm]
 /cast [harm] Execute
 ```
 
 **Overpower (to Battle)**
 ```
 #showtooltip Overpower
+/startattack [harm]
 /cast [nostance:1] Battle Stance; [@targettarget, harm, exists][harm] Overpower
+```
+
+**Thunder Clap** — Forever: works in Battle AND Defensive Stance (6 sec cooldown). Only swaps from Berserker.
+```
+#showtooltip Thunder Clap
+/cast [stance:3] Battle Stance; Thunder Clap
 ```
 
 **Demoralizing Shout**
 ```
 #showtooltip Demoralizing Shout
 /cast Demoralizing Shout
-```
-
-**Thunder Clap (to Battle)**
-```
-#showtooltip Thunder Clap
-/cast [nostance:1] Battle Stance; Thunder Clap
 ```
 
 #### Cleanse / dispel
@@ -2432,7 +2466,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast Bloodrage
 ```
 
-**Berserker Rage (to Berserker)**
+**Berserker Rage (to Berserker)** — Level 32.
 ```
 #showtooltip Berserker Rage
 /cast [nostance:3] Berserker Stance; Berserker Rage
@@ -2440,7 +2474,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Panic / defensive
 
-**Shield Wall (to Defensive)**
+**Shield Wall (to Defensive)** — Forever: 15 min cooldown, 60% less damage taken.
 ```
 #showtooltip Shield Wall
 /cast [nostance:2] Defensive Stance; Shield Wall
@@ -2452,7 +2486,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [nostance:1] Battle Stance; Retaliation
 ```
 
-**Intimidating Shout**
+**Intimidating Shout** — No auto-attack on purpose: hitting a feared mob breaks the fear.
 ```
 #showtooltip Intimidating Shout
 /cast [harm] Intimidating Shout
@@ -2478,16 +2512,25 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast Defensive Stance
 ```
 
-**Berserker Stance**
+**Berserker Stance** — Level 30.
 ```
 #showtooltip Berserker Stance
 /cast Berserker Stance
 ```
 
-**Charge / Intercept (one button)** — Out of combat: Charge. In combat: Intercept. Stance swaps cost rage above your Tactical Mastery cap.
+**Charge / Intercept (one button)** — Out of combat: Charge. In combat: Intercept (level 30). Tactical Mastery (now trained) keeps up to 10 rage on a stance swap.
 ```
 #showtooltip Charge
 /cast [nocombat, nostance:1] Battle Stance; [nocombat, @targettarget, harm, exists][nocombat, harm] Charge; [nostance:3] Berserker Stance; [@targettarget, harm, exists][harm] Intercept
+```
+
+**Charge + Rend (opener)** — Charges in (out of combat only) then immediately opens with Rend.
+```
+#showtooltip Charge
+/startattack [harm]
+/cast [nocombat, nostance:1] Battle Stance
+/cast [nocombat, harm] Charge
+/cast [harm] Rend
 ```
 
 **Taunt (to Defensive)** — Target the friend being hit: TT is the mob.
@@ -2499,6 +2542,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Mocking Blow (to Battle)**
 ```
 #showtooltip Mocking Blow
+/startattack [harm]
 /cast [nostance:1] Battle Stance; [@targettarget, harm, exists][harm] Mocking Blow
 ```
 
@@ -2506,14 +2550,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Challenging Shout
 /cast Challenging Shout
-```
-
-**Charge + Rend (opener)** — Charges in (out of combat only) then immediately opens with Rend.
-```
-#showtooltip Charge
-/cast [nocombat, nostance:1] Battle Stance
-/cast [nocombat, harm] Charge
-/cast [harm] Rend
 ```
 
 **Stance dance (Battle -> Defensive -> Berserker)** — One button cycles Battle -> Defensive -> Berserker -> Battle.
@@ -2542,35 +2578,129 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@focus, harm, exists][harm] Taunt
 ```
 
-### Warrior — Fury
+### Warrior — Tank
 
 #### Damage / offensive
 
-**Bloodthirst**
+**Victory Rush > Sunder Armor** — Test in beta: one spam button. Victory Rush fires when it's up after a kill, otherwise you Sunder.
+```
+#showtooltip
+/startattack [harm]
+/cast [harm] Victory Rush
+/cast [harm] Sunder Armor
+```
+
+**Revenge** — Forever: much more damage, no stun.
+```
+#showtooltip Revenge
+/startattack [harm]
+/cast [harm] Revenge
+```
+
+**Sunder + Heroic Strike** — Heroic Strike has no global cooldown (it queues on your next swing), so it rides along with Sunder. Watch your rage.
+```
+#showtooltip Sunder Armor
+/startattack [harm]
+/cast [harm] Heroic Strike
+/cast [harm] Sunder Armor
+```
+
+**Shield Bash**
+```
+#showtooltip Shield Bash
+/startattack [harm]
+/cast [harm] Shield Bash
+```
+
+**Concussion Blow** — Talent (in our level-30 tank build).
+```
+#showtooltip Concussion Blow
+/startattack [harm]
+/cast [harm] Concussion Blow
+```
+
+**Shield Slam** — Talent, level 40. Forever: about double the damage.
+```
+#showtooltip Shield Slam
+/startattack [harm]
+/cast [harm] Shield Slam
+```
+
+#### Panic / defensive
+
+**Shield Block** — Forever: 7 sec, blocks up to 2 attacks.
+```
+#showtooltip Shield Block
+/cast Shield Block
+```
+
+**Last Stand**
+```
+#showtooltip Last Stand
+/cast Last Stand
+```
+
+#### Class QoL
+
+**Charge (Vanguard, any stance)** — With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, so no stance swap.
+```
+#showtooltip Charge
+/startattack [harm]
+/cast [harm] Charge
+```
+
+**Taunt (mouseover)** — Defensive Stance. Hover a loose mob to taunt it without changing target.
+```
+#showtooltip Taunt
+/cast [@mouseover, harm, nodead][harm] Taunt
+```
+
+### Warrior — DPS
+
+#### Damage / offensive
+
+**Victory Rush > Heroic Strike** — Test in beta: Victory Rush when it's up after a kill; Heroic Strike (no global cooldown) queues on your next swing either way. Watch your rage.
+```
+#showtooltip
+/startattack [harm]
+/cast [harm] Victory Rush
+/cast [harm] Heroic Strike
+```
+
+**Sweeping Strikes (to Battle)** — Arms talent (in our level-30 Arms build). Pair with Cleave.
+```
+#showtooltip Sweeping Strikes
+/cast [nostance:1] Battle Stance; Sweeping Strikes
+```
+
+**Mortal Strike** — Arms talent, level 40.
+```
+#showtooltip Mortal Strike
+/startattack [harm]
+/cast [harm] Mortal Strike
+```
+
+**Bloodthirst** — Fury talent, level 40.
 ```
 #showtooltip Bloodthirst
+/startattack [harm]
 /cast [harm] Bloodthirst
 ```
 
-**Whirlwind (to Berserker)**
+**Whirlwind (to Berserker)** — Level 36.
 ```
 #showtooltip Whirlwind
 /cast [nostance:3] Berserker Stance; Whirlwind
 ```
 
-**Pummel (to Berserker)**
+**Pummel (to Berserker)** — Level 38.
 ```
 #showtooltip Pummel
+/startattack [harm]
 /cast [nostance:3] Berserker Stance; [@targettarget, harm, exists][harm] Pummel
 ```
 
-**Slam**
-```
-#showtooltip Slam
-/cast [harm] Slam
-```
-
-**Piercing Howl**
+**Piercing Howl** — Fury talent.
 ```
 #showtooltip Piercing Howl
 /cast Piercing Howl
@@ -2588,53 +2718,4 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Recklessness
 /cast [nostance:3] Berserker Stance; Recklessness
-```
-
-### Warrior — Protection
-
-#### Damage / offensive
-
-**Shield Slam**
-```
-#showtooltip Shield Slam
-/cast [harm] Shield Slam
-```
-
-**Sunder + Heroic Strike** — Heroic Strike has no global cooldown (it queues on your next swing), so it rides along with Sunder. Watch your rage.
-```
-#showtooltip Sunder Armor
-/cast [harm] Heroic Strike
-/cast [harm] Sunder Armor
-```
-
-**Revenge**
-```
-#showtooltip Revenge
-/cast [harm] Revenge
-```
-
-**Shield Bash**
-```
-#showtooltip Shield Bash
-/cast [harm] Shield Bash
-```
-
-**Concussion Blow**
-```
-#showtooltip Concussion Blow
-/cast [harm] Concussion Blow
-```
-
-#### Panic / defensive
-
-**Shield Block**
-```
-#showtooltip Shield Block
-/cast Shield Block
-```
-
-**Last Stand**
-```
-#showtooltip Last Stand
-/cast Last Stand
 ```

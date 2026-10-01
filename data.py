@@ -22,6 +22,7 @@
 #   util     -> friend-or-foe:       /cast [@mouseover, exists][exists] SPELL
 #   buff     -> buff w/ self fallback: /cast [@mouseover, help, exists][help][@player] SPELL
 #   chan     -> spam-safe channel:   /cast [...,nochanneling][...,nochanneling] SPELL
+#   melee    -> /startattack + [harm] cast (melee strikes)
 #   foc      -> cast on focus:       /cast [@focus, harm, exists][harm] SPELL
 #   plain    -> bare cast, no targeting logic
 #   me       -> cast on self:        /cast [@player] SPELL
@@ -48,6 +49,10 @@ def buff(spell):
 def chan(spell):
     return f"#showtooltip {spell}\n/cast [@targettarget, harm, exists, nochanneling][harm, nochanneling] {spell}"
 
+def melee(spell):
+    """Melee strike that also turns on auto-attack (spam-safe /startattack)."""
+    return f"#showtooltip {spell}\n/startattack [harm]\n/cast [harm] {spell}"
+
 def foc(spell):
     return f"#showtooltip {spell}\n/cast [@focus, harm, exists][harm] {spell}"
 
@@ -57,12 +62,14 @@ def plain(spell):
 def me(spell):
     return f"#showtooltip {spell}\n/cast [@player] {spell}"
 
-def stance(required_stance_id, stance_name, spell, tt=True):
+def stance(required_stance_id, stance_name, spell, tt=True, attack=False):
     """Swap into `stance_name` if not already in it, then cast `spell`.
     tt=True adds targettarget-aware DPS targeting; tt=False casts with no
-    target logic (e.g. self-buffs, AoE like Thunder Clap/Whirlwind)."""
+    target logic (e.g. self-buffs, AoE like Thunder Clap/Whirlwind).
+    attack=True adds a /startattack [harm] line (melee strikes)."""
     target = "[@targettarget, harm, exists][harm] " if tt else ""
-    return f"#showtooltip {spell}\n/cast [nostance:{required_stance_id}] {stance_name}; {target}{spell}"
+    start = "/startattack [harm]\n" if attack else ""
+    return f"#showtooltip {spell}\n{start}/cast [nostance:{required_stance_id}] {stance_name}; {target}{spell}"
 
 
 # Multi-line macros that don't fit the single-spell helpers above.
@@ -797,7 +804,7 @@ CLASSES = [
     # -------------------------------------------------------------------- #
     {"name": "Paladin", "color": "#F58CBA", "sections": [
 
-        {"spec": "Shared", "groups": [
+        {"spec": "General", "groups": [
             G(DPS, [
                 M("Holy Strike + auto-attack",
                   "#showtooltip Holy Strike\n/startattack [harm]\n/cast [harm] Holy Strike",
@@ -857,6 +864,10 @@ CLASSES = [
                 M("Seal of Light", plain("Seal of Light")),
                 M("Seal of Justice", plain("Seal of Justice")),
                 M("Divine Intervention", heal("Divine Intervention")),
+                M("Auras on one button",
+                  "#showtooltip [mod:shift] Concentration Aura; [mod:ctrl] Retribution Aura; Devotion Aura\n"
+                  "/cast [mod:shift] Concentration Aura; [mod:ctrl] Retribution Aura; Devotion Aura",
+                  "Plain click: Devotion. Shift: Concentration. Ctrl: Retribution."),
             ]),
             G(FOCUS, [
                 M("Hammer of Justice focus", foc("Hammer of Justice")),
@@ -864,33 +875,7 @@ CLASSES = [
             ]),
         ]},
 
-        {"spec": "Retribution", "groups": [
-            G(DPS, [
-                M("Repentance", dpsHarm("Repentance")),
-            ]),
-            G(BUFF, [
-                M("Sanctity Aura", plain("Sanctity Aura")),
-                M("Seal of Command", plain("Seal of Command")),
-            ]),
-            G(QOL, [
-                M("Seal swap: Command <> Righteousness",
-                  "#showtooltip\n/castsequence Seal of Command, Seal of Righteousness",
-                  BETA + "with the Twist of Light talent, switching seals lets your next swing "
-                  "also apply the old seal. Swap between swings."),
-            ]),
-            G(FOCUS, [
-                M("Repentance focus", foc("Repentance")),
-            ]),
-        ]},
-
-        {"spec": "Holy", "groups": [
-            G(HEAL, [
-                M("Holy Shock (friend or foe)", util("Holy Shock"),
-                  "Heals a friendly mouseover/target, damages an enemy one."),
-            ]),
-        ]},
-
-        {"spec": "Protection", "groups": [
+        {"spec": "Tank", "groups": [
             G(DPS, [
                 M("Holy Shield", plain("Holy Shield"),
                   "Forever: a 4-charge block buff. Keep it up while tanking."),
@@ -915,6 +900,32 @@ CLASSES = [
                   "With Seal of Fury: taunt your focus (e.g. the add you're watching)."),
             ]),
         ]},
+
+        {"spec": "DPS", "groups": [
+            G(DPS, [
+                M("Repentance", dpsHarm("Repentance")),
+            ]),
+            G(BUFF, [
+                M("Sanctity Aura", plain("Sanctity Aura")),
+                M("Seal of Command", plain("Seal of Command")),
+            ]),
+            G(QOL, [
+                M("Seal swap: Command <> Righteousness",
+                  "#showtooltip\n/castsequence Seal of Command, Seal of Righteousness",
+                  BETA + "with the Twist of Light talent, switching seals lets your next swing "
+                  "also apply the old seal. Swap between swings."),
+            ]),
+            G(FOCUS, [
+                M("Repentance focus", foc("Repentance")),
+            ]),
+        ]},
+
+        {"spec": "Healer", "groups": [
+            G(HEAL, [
+                M("Holy Shock (friend or foe)", util("Holy Shock"),
+                  "Heals a friendly mouseover/target, damages an enemy one."),
+            ]),
+        ]},
     ]},
 
     # -------------------------------------------------------------------- #
@@ -922,17 +933,29 @@ CLASSES = [
     # -------------------------------------------------------------------- #
     {"name": "Warrior", "color": "#C79C6E", "sections": [
 
-        {"spec": "Shared", "groups": [
+        {"spec": "General", "groups": [
             G(DPS, [
-                M("Heroic Strike", dpsHarm("Heroic Strike")),
-                M("Cleave", dpsHarm("Cleave")),
-                M("Rend", dpsHarm("Rend")),
-                M("Hamstring", dpsHarm("Hamstring")),
-                M("Sunder Armor", dpsHarm("Sunder Armor")),
-                M("Execute", dpsHarm("Execute")),
-                M("Overpower (to Battle)", stance(1, "Battle Stance", "Overpower")),
+                M("Victory Rush", melee("Victory Rush"),
+                  "New in Forever (level 20). Free, any stance, heals 10% of your max health. "
+                  "Only usable for 20 sec after a kill that gives XP; 30 sec cooldown. Smash it after every kill."),
+                M("Heroic Strike", melee("Heroic Strike")),
+                M("Heroic Strike / Cleave (Shift)",
+                  "#showtooltip [mod:shift] Cleave; Heroic Strike\n"
+                  "/startattack [harm]\n"
+                  "/cast [mod:shift, harm] Cleave; [harm] Heroic Strike",
+                  "Click: Heroic Strike. Shift-click: Cleave (level 20)."),
+                M("Cleave", melee("Cleave")),
+                M("Rend", melee("Rend")),
+                M("Hamstring", melee("Hamstring")),
+                M("Sunder Armor", melee("Sunder Armor")),
+                M("Slam", melee("Slam"), "Level 20 in Forever."),
+                M("Execute", melee("Execute"),
+                  "Level 24. Target under 20% health; Battle or Berserker Stance."),
+                M("Overpower (to Battle)", stance(1, "Battle Stance", "Overpower", attack=True)),
+                M("Thunder Clap",
+                  "#showtooltip Thunder Clap\n/cast [stance:3] Battle Stance; Thunder Clap",
+                  "Forever: works in Battle AND Defensive Stance (6 sec cooldown). Only swaps from Berserker."),
                 M("Demoralizing Shout", plain("Demoralizing Shout")),
-                M("Thunder Clap (to Battle)", stance(1, "Battle Stance", "Thunder Clap", tt=False)),
             ]),
             G(AUTO, [
                 M("Auto-attack (spam-safe)", MELEE),
@@ -940,34 +963,39 @@ CLASSES = [
             G(BUFF, [
                 M("Battle Shout", plain("Battle Shout")),
                 M("Bloodrage", plain("Bloodrage")),
-                M("Berserker Rage (to Berserker)", stance(3, "Berserker Stance", "Berserker Rage", tt=False)),
+                M("Berserker Rage (to Berserker)", stance(3, "Berserker Stance", "Berserker Rage", tt=False),
+                  "Level 32."),
             ]),
             G(PANIC, [
-                M("Shield Wall (to Defensive)", stance(2, "Defensive Stance", "Shield Wall", tt=False)),
+                M("Shield Wall (to Defensive)", stance(2, "Defensive Stance", "Shield Wall", tt=False),
+                  "Forever: 15 min cooldown, 60% less damage taken."),
                 M("Retaliation (to Battle)", stance(1, "Battle Stance", "Retaliation", tt=False)),
-                M("Intimidating Shout", dpsHarm("Intimidating Shout")),
+                M("Intimidating Shout", dpsHarm("Intimidating Shout"),
+                  "No auto-attack on purpose: hitting a feared mob breaks the fear."),
                 M("Disarm (to Defensive)", stance(2, "Defensive Stance", "Disarm")),
             ]),
             G(QOL, [
                 M("Battle Stance", plain("Battle Stance")),
                 M("Defensive Stance", plain("Defensive Stance")),
-                M("Berserker Stance", plain("Berserker Stance")),
+                M("Berserker Stance", plain("Berserker Stance"), "Level 30."),
                 M("Charge / Intercept (one button)",
                   "#showtooltip Charge\n"
                   "/cast [nocombat, nostance:1] Battle Stance; "
                   "[nocombat, @targettarget, harm, exists][nocombat, harm] Charge; "
                   "[nostance:3] Berserker Stance; "
                   "[@targettarget, harm, exists][harm] Intercept",
-                  "Out of combat: Charge. In combat: Intercept. Stance swaps cost rage above your Tactical Mastery cap."),
-                M("Taunt (to Defensive)", stance(2, "Defensive Stance", "Taunt"), "Target the friend being hit: TT is the mob."),
-                M("Mocking Blow (to Battle)", stance(1, "Battle Stance", "Mocking Blow")),
-                M("Challenging Shout", plain("Challenging Shout")),
+                  "Out of combat: Charge. In combat: Intercept (level 30). "
+                  "Tactical Mastery (now trained) keeps up to 10 rage on a stance swap."),
                 M("Charge + Rend (opener)",
                   "#showtooltip Charge\n"
+                  "/startattack [harm]\n"
                   "/cast [nocombat, nostance:1] Battle Stance\n"
                   "/cast [nocombat, harm] Charge\n"
                   "/cast [harm] Rend",
                   "Charges in (out of combat only) then immediately opens with Rend."),
+                M("Taunt (to Defensive)", stance(2, "Defensive Stance", "Taunt"), "Target the friend being hit: TT is the mob."),
+                M("Mocking Blow (to Battle)", stance(1, "Battle Stance", "Mocking Blow", attack=True)),
+                M("Challenging Shout", plain("Challenging Shout")),
                 M("Stance dance (Battle -> Defensive -> Berserker)",
                   "#showtooltip Battle Stance\n"
                   "/cast [stance:1] Defensive Stance; [stance:2] Berserker Stance; [stance:3] Battle Stance",
@@ -983,34 +1011,55 @@ CLASSES = [
             ]),
         ]},
 
-        {"spec": "Fury", "groups": [
+        {"spec": "Tank", "groups": [
             G(DPS, [
-                M("Bloodthirst", dpsHarm("Bloodthirst")),
-                M("Whirlwind (to Berserker)", stance(3, "Berserker Stance", "Whirlwind", tt=False)),
-                M("Pummel (to Berserker)", stance(3, "Berserker Stance", "Pummel")),
-                M("Slam", dpsHarm("Slam")),
-                M("Piercing Howl", plain("Piercing Howl")),
+                M("Victory Rush > Sunder Armor",
+                  "#showtooltip\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Sunder Armor",
+                  BETA + "one spam button. Victory Rush fires when it's up after a kill, "
+                  "otherwise you Sunder."),
+                M("Revenge", melee("Revenge"), "Forever: much more damage, no stun."),
+                M("Sunder + Heroic Strike",
+                  "#showtooltip Sunder Armor\n/startattack [harm]\n/cast [harm] Heroic Strike\n/cast [harm] Sunder Armor",
+                  "Heroic Strike has no global cooldown (it queues on your next swing), "
+                  "so it rides along with Sunder. Watch your rage."),
+                M("Shield Bash", melee("Shield Bash")),
+                M("Concussion Blow", melee("Concussion Blow"), "Talent (in our level-30 tank build)."),
+                M("Shield Slam", melee("Shield Slam"), "Talent, level 40. Forever: about double the damage."),
+            ]),
+            G(PANIC, [
+                M("Shield Block", plain("Shield Block"), "Forever: 7 sec, blocks up to 2 attacks."),
+                M("Last Stand", plain("Last Stand")),
+            ]),
+            G(QOL, [
+                M("Charge (Vanguard, any stance)",
+                  "#showtooltip Charge\n/startattack [harm]\n/cast [harm] Charge",
+                  "With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, "
+                  "so no stance swap."),
+                M("Taunt (mouseover)",
+                  "#showtooltip Taunt\n/cast [@mouseover, harm, nodead][harm] Taunt",
+                  "Defensive Stance. Hover a loose mob to taunt it without changing target."),
+            ]),
+        ]},
+
+        {"spec": "DPS", "groups": [
+            G(DPS, [
+                M("Victory Rush > Heroic Strike",
+                  "#showtooltip\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Heroic Strike",
+                  BETA + "Victory Rush when it's up after a kill; Heroic Strike (no global "
+                  "cooldown) queues on your next swing either way. Watch your rage."),
+                M("Sweeping Strikes (to Battle)", stance(1, "Battle Stance", "Sweeping Strikes", tt=False),
+                  "Arms talent (in our level-30 Arms build). Pair with Cleave."),
+                M("Mortal Strike", melee("Mortal Strike"), "Arms talent, level 40."),
+                M("Bloodthirst", melee("Bloodthirst"), "Fury talent, level 40."),
+                M("Whirlwind (to Berserker)", stance(3, "Berserker Stance", "Whirlwind", tt=False),
+                  "Level 36."),
+                M("Pummel (to Berserker)", stance(3, "Berserker Stance", "Pummel", attack=True),
+                  "Level 38."),
+                M("Piercing Howl", plain("Piercing Howl"), "Fury talent."),
             ]),
             G(BUFF, [
                 M("Death Wish", plain("Death Wish")),
                 M("Recklessness (to Berserker)", stance(3, "Berserker Stance", "Recklessness", tt=False)),
-            ]),
-        ]},
-
-        {"spec": "Protection", "groups": [
-            G(DPS, [
-                M("Shield Slam", dpsHarm("Shield Slam")),
-                M("Sunder + Heroic Strike",
-                  "#showtooltip Sunder Armor\n/cast [harm] Heroic Strike\n/cast [harm] Sunder Armor",
-                  "Heroic Strike has no global cooldown (it queues on your next swing), "
-                  "so it rides along with Sunder. Watch your rage."),
-                M("Revenge", dpsHarm("Revenge")),
-                M("Shield Bash", dpsHarm("Shield Bash")),
-                M("Concussion Blow", dpsHarm("Concussion Blow")),
-            ]),
-            G(PANIC, [
-                M("Shield Block", plain("Shield Block")),
-                M("Last Stand", plain("Last Stand")),
             ]),
         ]},
     ]},

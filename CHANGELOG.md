@@ -4,6 +4,27 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-01 (Warrior + Paladin macro pass)
+
+- Warrior and Paladin macros regrouped into role sections: **General** (all specs),
+  **Tank**, **DPS** (+ Paladin **Healer**). `template.html`/`build.py` render
+  "General" like "Shared". New `melee()` helper and `stance(..., attack=True)`.
+- Warrior: every melee strike now has `/startattack [harm]` (Heroic Strike,
+  Cleave, Rend, Hamstring, Sunder, Slam, Execute, Overpower, Revenge, Shield Bash,
+  Concussion Blow, Shield Slam, Mortal Strike, Bloodthirst, Pummel, Mocking Blow,
+  Charge + Rend opener). Intimidating Shout deliberately left without it.
+- Warrior new: Victory Rush (Forever, level 20, any stance, verified on Wowhead's
+  Forever spell page), Victory Rush > Sunder (tank) and Victory Rush > Heroic
+  Strike (DPS) one-button priority macros (beta-test flagged), Heroic Strike /
+  Cleave on Shift, Charge for Vanguard tanks (no stance swap), mouseover Taunt,
+  Sweeping Strikes. Slam moved to General (level 20 in Forever).
+- Warrior fixes for Forever: Thunder Clap no longer forces Battle Stance (now
+  usable in Defensive too), level notes on Berserker-stance abilities (30+),
+  Shield Wall/Shield Block/Revenge notes updated to Forever values.
+- Paladin: added "Auras on one button" (Shift/Ctrl modifiers).
+- Sources: foreverchanges.pro (Warrior spellbook + changes), Wowhead Forever
+  (Victory Rush), classicwowforever.com and kami-labs.fr macro lists.
+
 ## 2026-10-01 (level-30 Paladin + Warrior)
 
 - Added level-30 builds to `DATA30` in `builds.html`: Paladin Retribution and

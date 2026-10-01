@@ -4,6 +4,20 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-01 (level-30 builds)
+
+- `builds.html` got a "Level 20 / Level 30" toggle row under the class roster
+  (`?level=30` in the URL works too). Level-20 builds are unchanged in `DATA`; the
+  new level-30 builds live in `DATA30` (Priest Shadow, Warlock Affliction, Mage
+  Arcane/Frost/Frost AoE/Fire, Rogue Combat, Shaman Enhancement, Hunter BM), each
+  stored as a talents.html share `code` that the calculator loads directly
+  (`mountSync` gets `code` instead of `preset` when a build has one). Their `talents`
+  list (name/rank/icon, no desc) is only the static fallback row. No level-30
+  rotations yet. Paladin and Warrior show "No level-30 build yet".
+- Checked the "Crusade" Paladin talent question: neither Wowhead's Forever data nor
+  Mobalytics' Forever calculator has a talent called Crusade (both list the same 50
+  Paladin talents, 17 in Retribution), so our calculator isn't missing anything.
+
 ## 2026-10-01 (pink button)
 
 - Added a tiny round pink button next to Unmute in the landing page top bar

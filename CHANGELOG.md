@@ -4,6 +4,25 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-01 (Addon plan, step 1: macro data)
+
+- `M()` in `data.py` now takes `short` (in-game macro name, max 16 chars) and
+  `icon` (texture name, for macros with no `#showtooltip` spell to show its own
+  icon). Every macro across Universal and all 8 classes got a `short` name,
+  following `ADDON_PLAN.md` section 3.2's naming rules (abbreviations players
+  already use, ` F` = focus, `@` = mouseover, `X>Y` = priority, `X/Y` = Shift
+  modifier, `X+Y` = combo, ` me` = self-cast). Warrior and Paladin names came
+  straight from the plan's tables; the other six classes' names were proposed
+  by Claude Code and approved by the user before committing.
+- `build.py` assigns each macro a stable id (`<CLASS>/<short>`, `ANY/<short>`
+  for Universal) and fails the build with a clear message on a `short` over 16
+  characters, a duplicate `short` within a class + Universal, or a macro with a
+  body but no `short` whose `name` is over 16 characters. Ids and short names
+  now also flow into the JSON embedded in `macros.html` and into
+  `wow-forever-macros.md` (short name shown in backticks next to the full name).
+- Full spec: `ADDON_PLAN.md`. This is step 1 of 10; see `BACKLOG.md` for what's
+  next (site export mode, then the addon itself).
+
 ## 2026-10-01 (Warrior + Paladin macro pass)
 
 - Warrior and Paladin macros regrouped into role sections: **General** (all specs),

@@ -14,9 +14,7 @@ spellbook-style Macro Book. Talents: paste a talent-calc link, preview, confirm,
 and the addon learns the build. Real macros are only created
 when dragged, so the 18/120 slot limit only counts macros you actually use.
 
-- [ ] **1. Data:** `short` (max 16, unique per class + Universal), `icon`, ids
-      `<CLASS>/<short>` in `data.py`; `build.py` fails on bad names; short names
-      in the markdown. Warrior + Paladin names are already decided in the plan.
+- [x] **1. Data:** shipped 2026-10-01 — see CHANGELOG.md.
 - [ ] **2. Site export:** "Pick macros for the game" mode on `macros.html`:
       checkboxes per macro, tri-state per group and section, sticky export tray,
       Copy import string (`R2F1:` format), selection in `wf-export-v1`.

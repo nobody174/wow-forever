@@ -2,6 +2,7 @@
 Run after any change to data.py or template.html: `python build.py`
 """
 import json
+import sys
 from data import *
 
 # Group ordering used when rendering a spec's macro groups (both HTML and MD).
@@ -9,6 +10,63 @@ ORDER = [DPS, HEAL, CLEAN, AUTO, BUFF, PANIC, TARGET, QOL, FOCUS, MISC]
 
 def sort_groups(groups):
     return sorted(groups, key=lambda g: ORDER.index(g["type"]))
+
+
+# =============================================================================
+# Addon data checks: assign stable ids (<CLASS>/<short>, ANY for Universal)
+# and fail the build with a clear message on bad short names.
+# See ADDON_PLAN.md section 3.2.
+# =============================================================================
+
+def class_token(name):
+    """English class token as UnitClass would return it, e.g. 'Warrior' -> 'WARRIOR'."""
+    return name.upper().replace(" ", "")
+
+def assign_ids_and_validate():
+    errors = []
+    seen = {}  # (class_token, short) -> name, for per-class+universal uniqueness
+
+    def check(cls_token, m):
+        if not m["code"]:
+            return  # placeholder entries (e.g. "No dispel") carry no real macro
+        short = m.get("short")
+        if not short:
+            if len(m["name"]) > 16:
+                errors.append(
+                    f"{cls_token}: macro {m['name']!r} has a body but no `short`, "
+                    f"and its name is longer than 16 characters."
+                )
+            return
+        if len(short) > 16:
+            errors.append(f"{cls_token}: short name {short!r} is {len(short)} characters, max is 16.")
+        key = (cls_token, short)
+        if key in seen:
+            errors.append(
+                f"{cls_token}: short name {short!r} is used by both "
+                f"{seen[key]!r} and {m['name']!r}."
+            )
+        else:
+            seen[key] = m["name"]
+        m["id"] = f"{cls_token}/{short}"
+
+    for group in UNIVERSAL:
+        for m in group["macros"]:
+            check("ANY", m)
+
+    for cls in CLASSES:
+        token = class_token(cls["name"])
+        for section in cls["sections"]:
+            for group in section["groups"]:
+                for m in group["macros"]:
+                    check(token, m)
+
+    if errors:
+        print("build.py: macro short-name check failed:", file=sys.stderr)
+        for e in errors:
+            print(f"  - {e}", file=sys.stderr)
+        sys.exit(1)
+
+assign_ids_and_validate()
 
 # Example patterns shown at the top of the markdown cheatsheet, one per macro style.
 INTRO_RULES = [
@@ -31,6 +89,8 @@ def macro_markdown(m):
     if not m["code"]:
         return f"*{m['note']}*\n"
     heading = f"**{m['name']}**"
+    if m.get("short"):
+        heading += f" (`{m['short']}`)"
     if m["note"]:
         heading += f" — {m['note']}"
     return f"{heading}\n```\n{m['code']}\n```\n"

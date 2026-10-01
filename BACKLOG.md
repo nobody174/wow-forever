@@ -15,9 +15,7 @@ and the addon learns the build. Real macros are only created
 when dragged, so the 18/120 slot limit only counts macros you actually use.
 
 - [x] **1. Data:** shipped 2026-10-01 — see CHANGELOG.md.
-- [ ] **2. Site export:** "Pick macros for the game" mode on `macros.html`:
-      checkboxes per macro, tri-state per group and section, sticky export tray,
-      Copy import string (`R2F1:` format), selection in `wf-export-v1`.
+- [x] **2. Site export:** shipped 2026-10-01 — see CHANGELOG.md.
 - [ ] **3. Addon MVP:** `addon/RoadToForever/`, `/r2f`, import window with
       preview, library in SavedVariables, Macro Book (own class + Universal),
       click/drag creates + picks up the macro, slot counter, combat lock.

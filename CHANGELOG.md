@@ -4,6 +4,34 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-01 (Addon plan, step 2: site export mode)
+
+- `macros.html` (via `template.html`) has a **Pick macros for the game** toggle
+  at the right end of the spec row (question-mark macro icon, spec-pill style).
+  Turning it on shows a checkbox on every macro pill, a tri-state checkbox on
+  every group heading and section heading, and checkboxes on search results
+  (so you can search "taunt" and tick across classes). Ticking a pill's box
+  never switches the code panel; clicking the pill text still does. Selected
+  pills get a 60% gold border. Real `<input type="checkbox">`s, visually
+  replaced, keyboard and screen-reader accessible.
+- A sticky **export tray** slides up at the bottom: "N macros selected", class
+  chips with counts, Clear, **Copy import string** (shows "Copied" for 2 s plus
+  "Now type /r2f in the game and click Import."), a Select menu ("Select all for
+  <class>", "Select everything"), an empty-state hint, and an expandable "How to
+  import (3 steps)". Stacks into two rows with full-width buttons under 640 px.
+- Copy import string builds the `R2F1:` format from `ADDON_PLAN.md` section 7
+  (records in page order, `\x1F`/`\x1E` separators, UTF-8 safe base64), using
+  the ids/short names/icons build.py already embeds. Selection persists in
+  localStorage `wf-export-v1`; unknown ids are dropped on load.
+- Build-time judgment calls are written into `ADDON_PLAN.md` section 4.5
+  (Universal's section is sent as `Universal`, Download link goes to the
+  Releases page until step 7, "Select everything" is ~83 KB, etc.).
+- Tested in headless Chromium (Playwright): toggle, pill/group/section
+  cascades, keyboard toggling, reload persistence, search ticking, menu,
+  mobile layout, and a decode round trip of the copied string against the
+  source data; plus a byte-for-byte match against an independent Python
+  encoding of two Universal macros.
+
 ## 2026-10-01 (Addon plan, step 1: macro data)
 
 - `M()` in `data.py` now takes `short` (in-game macro name, max 16 chars) and

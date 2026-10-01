@@ -74,7 +74,8 @@ h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6
 }
 .roster button .class-icon{flex:none;width:24px;height:24px;border-radius:4px;border:1px solid rgba(0,0,0,.3);object-fit:cover}
 @media (prefers-reduced-motion:reduce){.roster button{transition:none}}
-.specs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:26px}
+.spec-row{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px;margin-bottom:26px}
+.specs{display:flex;flex-wrap:wrap;gap:6px}
 .specs button{font:500 14px var(--sans);background:var(--panel);border:1px solid var(--edge);color:var(--muted);padding:5px 12px;border-radius:999px;cursor:pointer}
 .specs button[aria-pressed="true"]{color:var(--text);border-color:var(--accent)}
 h2{font:400 26px/1.2 var(--serif);color:var(--accent);margin:34px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--edge)}
@@ -124,6 +125,93 @@ pre{margin:8px 0 0;padding:8px 10px;background:#0A0F1F;border-radius:4px;overflo
 }
 .tabgroup .panel .note{color:var(--muted);font-size:14px;margin:0 0 8px}
 .tabgroup .panel pre{margin:0}
+/* ---- Export mode ("Pick macros for the game"), ADDON_PLAN.md section 4 ---- */
+.xtoggle{
+  margin-left:auto;display:inline-flex;align-items:center;gap:7px;
+  font:500 14px var(--sans);background:var(--panel);border:1px solid var(--edge);color:var(--muted);
+  padding:5px 12px 5px 6px;border-radius:999px;cursor:pointer;
+}
+.xtoggle img{width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.4)}
+.xtoggle:hover{color:var(--text)}
+.xtoggle[aria-pressed="true"]{color:var(--text);border-color:var(--gold)}
+.xcb{display:none;position:relative;flex:none;width:16px;height:16px;vertical-align:-2px;margin-right:10px}
+.export-on .xcb{display:inline-block}
+.xcb input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:1}
+.xcb .box{
+  position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;
+  background:#10152C;border:1px solid var(--edge);border-radius:3px;
+}
+.xcb svg{display:none;width:12px;height:12px}
+.xcb .bar{display:none;width:8px;height:2px;border-radius:1px;background:var(--gold)}
+.xcb input:checked + .box{box-shadow:0 0 6px rgba(255,209,0,.45)}
+.xcb input:checked + .box svg{display:block}
+.xcb input:indeterminate + .box svg{display:none}
+.xcb input:indeterminate + .box .bar{display:block}
+.xcb input:focus-visible + .box{outline:2px solid var(--gold);outline-offset:2px}
+.picker .pill{position:relative;display:inline-flex}
+.export-on .picker .pill .xcb{position:absolute;left:10px;top:50%;margin:-8px 0 0;z-index:1}
+.export-on .picker .pill button{padding-left:34px}
+.export-on .picker .pill.sel button{border-color:rgba(255,209,0,.6)}
+.export-on .picker .pill.sel button[aria-pressed="true"]{border-color:#FFE566}
+.macro .nm{display:flex;align-items:flex-start}
+.macro .nm .xcb{margin-top:4px}
+.export-on .macro.sel{border-color:rgba(255,209,0,.6);border-left-color:var(--accent)}
+.export-on .wrap{padding-bottom:var(--tray-h,200px)}
+.xtray{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--panel);border-top:1px solid var(--edge);
+  box-shadow:0 -6px 18px rgba(0,0,0,.35);transform:translateY(105%);visibility:hidden;
+  transition:transform .2s ease, visibility 0s linear .2s;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.export-on .xtray{transform:none;visibility:visible;transition:transform .2s ease}
+.xtray-in{max-width:980px;margin:0 auto;padding:12px 20px}
+.xrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.xcount{font:400 18px/1.2 var(--serif);color:var(--text)}
+.xempty{color:var(--muted);font-size:14px}
+.xchips{display:flex;flex-wrap:wrap;gap:6px}
+.xchip{
+  font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.03em;color:var(--c);
+  background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);
+  border:1px solid var(--edge);border-top-color:#4A5688;border-radius:6px;padding:6px 9px;
+}
+.xchip b{color:var(--text);font-weight:600;margin-left:4px}
+.xbtns{margin-left:auto;display:flex;gap:8px}
+.xbtn{font:600 13px/1 var(--sans);border-radius:6px;padding:10px 16px;cursor:pointer}
+.xbtn:disabled{opacity:.45;cursor:not-allowed}
+.xclear{background:transparent;border:1px solid var(--edge);color:var(--text)}
+.xclear:hover:not(:disabled){border-color:var(--gold)}
+.xcopy{
+  color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);
+  border:1px solid #FFE566;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(255,209,0,.5);
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.xmenu{position:relative}
+.xmenu > summary{
+  list-style:none;cursor:pointer;font:500 13px var(--sans);color:var(--muted);
+  border:1px solid var(--edge);border-radius:6px;padding:6px 10px;user-select:none;
+}
+.xmenu > summary::-webkit-details-marker{display:none}
+.xmenu > summary:hover,.xmenu[open] > summary{color:var(--text);border-color:var(--gold)}
+.xmenu > summary:focus-visible,.xhow > summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.xmenu-list{
+  position:absolute;left:0;bottom:calc(100% + 6px);min-width:220px;display:flex;flex-direction:column;
+  background:var(--panel);border:1px solid var(--edge);border-radius:6px;padding:4px;box-shadow:0 6px 18px rgba(0,0,0,.45);
+}
+.xmenu-list button{text-align:left;font:500 14px var(--sans);color:var(--text);background:transparent;border:0;border-radius:4px;padding:8px 10px;cursor:pointer}
+.xmenu-list button:hover{background:#2A335A;color:var(--gold)}
+.xdone{margin:8px 0 0;color:var(--gold);font-size:14px}
+.xhow{margin-top:8px;font-size:14px}
+.xhow > summary{cursor:pointer;color:var(--muted);display:inline-block}
+.xhow > summary:hover{color:var(--text)}
+.xhow ol{margin:6px 0 0;padding-left:22px;color:var(--text)}
+.xhow li{margin:2px 0}
+.xhow a{color:var(--gold)}
+.xtray code{font:13px var(--mono);color:#CFE3FF}
+@media (max-width:639px){
+  .xtoggle{margin-left:0}
+  .xbtns{margin-left:0;width:100%;flex-direction:column}
+  .xbtn{width:100%}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -145,8 +233,40 @@ pre{margin:8px 0 0;padding:8px 10px;background:#0A0F1F;border-radius:4px;overflo
     <input class="search" id="q" type="search" placeholder="Search every class: spell, macro type or keyword" aria-label="Search macros">
   </div>
   <nav class="roster" id="roster" aria-label="Class"></nav>
-  <nav class="specs" id="specs" aria-label="Spec"></nav>
+  <div class="spec-row">
+    <nav class="specs" id="specs" aria-label="Spec"></nav>
+    <button type="button" class="xtoggle" id="xtoggle" aria-pressed="false" aria-controls="xtray"><img src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg" alt="">Pick macros for the game</button>
+  </div>
   <main id="out"></main>
+</div>
+<div class="xtray" id="xtray" role="region" aria-label="Export macros to the game">
+  <div class="xtray-in">
+    <div class="xrow">
+      <details class="xmenu" id="xmenu">
+        <summary>Select <span aria-hidden="true">&#9662;</span></summary>
+        <div class="xmenu-list">
+          <button type="button" data-act="class" id="xselcls">Select all for Warrior</button>
+          <button type="button" data-act="all">Select everything</button>
+        </div>
+      </details>
+      <span class="xcount" id="xcount" aria-live="polite"></span>
+      <span class="xempty" id="xempty">Tick the macros you want in the game, or select a whole group with its checkbox.</span>
+      <span class="xchips" id="xchips"></span>
+      <span class="xbtns">
+        <button type="button" class="xbtn xclear" id="xclear">Clear</button>
+        <button type="button" class="xbtn xcopy" id="xcopy">Copy import string</button>
+      </span>
+    </div>
+    <p class="xdone" id="xdone" hidden>Now type <code>/r2f</code> in the game and click Import.</p>
+    <details class="xhow">
+      <summary>How to import (3 steps)</summary>
+      <ol>
+        <li>Install the Road to Forever addon (<a href="https://github.com/nobody174/wow-forever-macros/releases" target="_blank" rel="noopener">Download</a>, zip from GitHub Releases).</li>
+        <li>Pick macros here and click <b>Copy import string</b>.</li>
+        <li>In the game, type <code>/r2f</code>, click <b>Import</b>, paste with Ctrl+V, click <b>Import</b>.</li>
+      </ol>
+    </details>
+  </div>
 </div>
 <script>
 const D = __DATA__;
@@ -157,14 +277,31 @@ let tabGroups = []; // per-render lookup: tabGroups[groupIndex] = that group's m
 function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 const byOrder = gs => [...gs].sort((a,b)=>D.order.indexOf(a.type)-D.order.indexOf(b.type));
 
+// ---- Export-mode checkboxes ------------------------------------------------
+// Ids (<CLASS>/<short>) come from build.py. Ids can contain spaces, "/", ">"
+// and "+", so instead of stuffing id lists into attributes each checkbox gets
+// an index into boxSets (rebuilt on every render) holding the ids it controls.
+let boxSets = [];
+const CHECK_SVG = `<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.3l2.6 2.6L10 3.4" fill="none" stroke="#FFD100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function cbHTML(ids, label){
+  if(!ids.length) return "";
+  boxSets.push(ids);
+  return `<label class="xcb"><input type="checkbox" data-k="${boxSets.length-1}" aria-label="${esc(label)}"><span class="box">${CHECK_SVG}<i class="bar"></i></span></label>`;
+}
+const idsOf = ms => ms.filter(m=>m.code && m.id).map(m=>m.id);
+
 function macroHTML(m){
   if(!m.code) return `<div class="macro"><div class="note">${esc(m.note)}</div></div>`;
-  return `<div class="macro"><div class="top"><div><div class="name">${esc(m.name)}</div>${m.note?`<div class="note">${esc(m.note)}</div>`:""}</div>
+  const box = m.id ? cbHTML([m.id], "Select "+m.name) : "";
+  return `<div class="macro"${m.id?` data-id="${esc(m.id)}"`:""}><div class="top"><div class="nm">${box}<div><div class="name">${esc(m.name)}</div>${m.note?`<div class="note">${esc(m.note)}</div>`:""}</div></div>
   <button class="copy" data-code="${esc(m.code)}">Copy</button></div><pre>${esc(m.code)}</pre></div>`;
 }
 
 function groupHTML(g){
-  return `<details class="section"><summary><span class="toggle" aria-hidden="true"></span>${esc(g.type)}</summary><div class="section-body">${g.macros.map(macroHTML).join("")}</div></details>`;
+  // Checkbox sits inside <summary>: an <input> is its own activation target,
+  // so ticking it does not also open/close the <details>.
+  const box = cbHTML(idsOf(g.macros), "Select all: "+g.type);
+  return `<details class="section"><summary><span class="toggle" aria-hidden="true"></span>${box}${esc(g.type)}</summary><div class="section-body">${g.macros.map(macroHTML).join("")}</div></details>`;
 }
 
 // Tabbed picker: one pill per macro in the group, click swaps the code panel below.
@@ -173,9 +310,12 @@ function tabGroupHTML(g, gi){
   const named = g.macros.filter(m=>m.code);
   if(!named.length) return groupHTML(g); // fall back for note-only groups
   const active = 0;
-  const pills = named.map((m,i)=>`<button aria-pressed="${i===active}" data-gi="${gi}" data-mi="${i}">${esc(m.name)}</button>`).join("");
+  // The checkbox is a sibling of the pill <button>, not a child: interactive
+  // content inside a <button> is invalid HTML and breaks keyboard/AT access.
+  // CSS positions it over the pill's left edge so it still reads as one pill.
+  const pills = named.map((m,i)=>`<span class="pill"${m.id?` data-id="${esc(m.id)}"`:""}>${m.id?cbHTML([m.id],"Select "+m.name):""}<button aria-pressed="${i===active}" data-gi="${gi}" data-mi="${i}">${esc(m.name)}</button></span>`).join("");
   return `<div class="tabgroup" data-gi="${gi}">
-    <div class="tabgroup-head">${esc(g.type)}</div>
+    <div class="tabgroup-head">${cbHTML(idsOf(named),"Select all: "+g.type)}${esc(g.type)}</div>
     <div class="picker">${pills}</div>
     <div class="panel">${tabPanelInner(named[active])}</div>
   </div>`;
@@ -211,6 +351,7 @@ function renderSpecs(c){
 function render(){
   const q = document.getElementById("q").value.trim().toLowerCase();
   let html = "";
+  boxSets = [];
   if(q){
     document.documentElement.style.setProperty("--accent","#FFD100");
     roster.style.opacity=.5; specs.innerHTML="";
@@ -219,6 +360,7 @@ function render(){
       if(hits.length) html += groupHTML({type: `${c.name} · ${s.spec} — ${g.type}`, macros: hits});
     }
     out.innerHTML = html || `<p class="empty">No macro matches “${esc(q)}”. Try a spell name like Flash Heal or a type like focus.</p>`;
+    syncBoxes();
     return;
   }
   roster.style.opacity=1;
@@ -232,15 +374,23 @@ function render(){
   tabGroups = [];
   for(const s of c.sections){
     if(spec!=="All" && s.spec!==spec) continue;
-    html += `<h2>${esc(c.name==="Universal"?"All classes":s.spec==="Shared"||s.spec==="General"?c.name+" — "+(s.spec==="General"?"General (every spec)":"shared by every spec"):c.name+" — "+s.spec)}</h2>`;
+    const title = c.name==="Universal"?"All classes":s.spec==="Shared"||s.spec==="General"?c.name+" — "+(s.spec==="General"?"General (every spec)":"shared by every spec"):c.name+" — "+s.spec;
+    html += `<h2>${cbHTML(s.groups.flatMap(g=>idsOf(g.macros)),"Select all: "+title)}${esc(title)}</h2>`;
     for(const g of byOrder(s.groups)){ html += tabGroupHTML(g, gi); tabGroups[gi] = g.macros.filter(m=>m.code); gi++; }
   }
   out.innerHTML = html;
+  syncBoxes();
+  renderTray();
 }
 roster.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;cls=b.dataset.c;spec="All";document.getElementById("q").value="";render();});
 specs.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;spec=b.dataset.s;render();});
 document.getElementById("q").addEventListener("input",render);
 out.addEventListener("click",async e=>{
+  // A click on an export checkbox must only toggle selection. The checkbox is
+  // drawn on top of the pill (and inside group <summary>s), so without this
+  // early exit the same click would fall through to the pill/copy handling
+  // below and switch the code panel - the spec's "stop propagation" rule.
+  if(e.target.closest(".xcb")) return;
   const pill=e.target.closest(".tabgroup .picker button");
   if(pill){
     const gi=+pill.dataset.gi, mi=+pill.dataset.mi;
@@ -250,10 +400,148 @@ out.addEventListener("click",async e=>{
     return;
   }
   const b=e.target.closest(".copy"); if(!b) return;
-  try{await navigator.clipboard.writeText(b.dataset.code);}
-  catch{const t=document.createElement("textarea");t.value=b.dataset.code;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();}
+  await copyText(b.dataset.code);
   b.textContent="Copied";b.classList.add("done");setTimeout(()=>{b.textContent="Copy";b.classList.remove("done")},1200);
 });
+async function copyText(text){
+  try{await navigator.clipboard.writeText(text);}
+  catch{const t=document.createElement("textarea");t.value=text;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();}
+}
+
+// =============================================================================
+// Export mode: pick macros on the site, copy one string, import it in-game
+// with the Road to Forever addon. Spec: ADDON_PLAN.md sections 4 and 7.
+// =============================================================================
+const EXPORT_KEY = "wf-export-v1";
+const xtray = document.getElementById("xtray");
+const xtoggle = document.getElementById("xtoggle");
+
+// Flat index of every exportable macro, in the same order the page renders
+// them (class roster order, then section, then group order). The import
+// string follows this order so the same selection always gives the same
+// string, whatever order the boxes were ticked in.
+const XINDEX = [];
+for(const c of ALL) for(const s of c.sections) for(const g of byOrder(s.groups)) for(const m of g.macros){
+  if(!m.code || !m.id) continue; // placeholders like "No dispel" are not macros
+  XINDEX.push({m, cls:c.name, color:c.color,
+    // Universal's only section is called "All classes" on the page; in the
+    // game it is the "Universal" tab (ADDON_PLAN.md 5.2), so send that name.
+    section: c.name==="Universal" ? "Universal" : s.spec, group: g.type});
+}
+const XBYID = new Map(XINDEX.map(e=>[e.m.id, e]));
+
+function loadSel(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(EXPORT_KEY) || "[]");
+    // Ids that no longer exist after a site update are dropped silently (4.4).
+    return new Set(Array.isArray(raw) ? raw.filter(id=>XBYID.has(id)) : []);
+  }catch{ return new Set(); }
+}
+let sel = loadSel();
+function saveSel(){
+  try{ localStorage.setItem(EXPORT_KEY, JSON.stringify([...sel])); }catch{}
+}
+function selChanged(){
+  saveSel(); syncBoxes(); renderTray();
+  // A string copied before this change no longer matches the ticks.
+  document.getElementById("xdone").hidden = true;
+}
+
+// Re-derive every checkbox and highlight from `sel`, so group and section
+// boxes are always the truth (tri-state) rather than separately tracked.
+function syncBoxes(){
+  out.querySelectorAll(".xcb input").forEach(inp=>{
+    const ids = boxSets[+inp.dataset.k] || [];
+    const n = ids.reduce((a,id)=>a+(sel.has(id)?1:0), 0);
+    inp.checked = n>0 && n===ids.length;
+    inp.indeterminate = n>0 && n<ids.length;
+  });
+  out.querySelectorAll("[data-id]").forEach(el=>el.classList.toggle("sel", sel.has(el.dataset.id)));
+}
+
+out.addEventListener("change",e=>{
+  const inp = e.target.closest(".xcb input"); if(!inp) return;
+  const ids = boxSets[+inp.dataset.k] || [];
+  // Clicking a partial (indeterminate) group box makes it checked, so a
+  // partial group becomes "all selected"; a second click clears it.
+  for(const id of ids) inp.checked ? sel.add(id) : sel.delete(id);
+  selChanged();
+});
+
+function renderTray(){
+  if(!document.body.classList.contains("export-on")) return;
+  const n = sel.size;
+  document.getElementById("xcount").textContent = n ? `${n} macro${n===1?"":"s"} selected` : "";
+  document.getElementById("xcount").hidden = !n;
+  document.getElementById("xempty").hidden = !!n;
+  const per = new Map();
+  for(const e of XINDEX) if(sel.has(e.m.id)) per.set(e.cls, (per.get(e.cls)||0)+1);
+  document.getElementById("xchips").innerHTML = ALL.filter(c=>per.has(c.name))
+    .map(c=>`<span class="xchip" style="--c:${c.color}">${esc(c.name)}<b>${per.get(c.name)}</b></span>`).join("");
+  document.getElementById("xclear").disabled = !n;
+  document.getElementById("xcopy").disabled = !n;
+  document.getElementById("xselcls").textContent = `Select all for ${cls}`;
+}
+// The tray is fixed over the page, so pad the page by its live height (it
+// grows when chips wrap or "How to import" opens) to keep the last macros
+// reachable above it.
+new ResizeObserver(()=>document.documentElement.style.setProperty("--tray-h", (xtray.offsetHeight + 40) + "px")).observe(xtray);
+
+function setExportMode(on){
+  document.body.classList.toggle("export-on", on);
+  xtoggle.setAttribute("aria-pressed", on);
+  if(on) renderTray();
+}
+xtoggle.addEventListener("click",()=>setExportMode(!document.body.classList.contains("export-on")));
+
+xtray.addEventListener("click",async e=>{
+  const act = e.target.closest("[data-act]");
+  if(act){
+    for(const x of XINDEX) if(act.dataset.act==="all" || x.cls===cls) sel.add(x.m.id);
+    document.getElementById("xmenu").open = false;
+    selChanged(); return;
+  }
+  if(e.target.closest("#xclear")){ sel.clear(); selChanged(); return; }
+  const copy = e.target.closest("#xcopy");
+  if(copy && sel.size){
+    await copyText(importString());
+    copy.textContent = "Copied";
+    document.getElementById("xdone").hidden = false;
+    renderTray();
+    clearTimeout(copy._t);
+    copy._t = setTimeout(()=>{ copy.textContent = "Copy import string"; }, 2000);
+  }
+});
+document.addEventListener("click",e=>{
+  const menu = document.getElementById("xmenu");
+  if(menu.open && !menu.contains(e.target)) menu.open = false;
+});
+
+// Import string, ADDON_PLAN.md section 7. Consumed by the addon's Import.lua,
+// so any change here needs a new version prefix (R2F2:) and a matching addon.
+//   R2F1:<base64("v=1\n" + records joined by \x1E)>
+//   record = id, class, section, group, name, short, icon, body, note joined by \x1F
+// \x1E/\x1F are the ASCII record/unit separators: they never occur in macro
+// text, so bodies can keep real newlines and notes can hold any punctuation
+// without an escaping scheme the Lua side would have to mirror.
+function importString(){
+  const strip = v => String(v ?? "").replace(/[\x1E\x1F]/g, ""); // belt and braces
+  const recs = [];
+  for(const e of XINDEX){
+    if(!sel.has(e.m.id)) continue;
+    const m = e.m;
+    // Class token = the part of the id before the first "/" (build.py made it
+    // from the class name; shorts like "HS/Cleave" may contain "/" themselves).
+    const token = m.id.slice(0, m.id.indexOf("/"));
+    recs.push([m.id, token, e.section, e.group, m.name, m.short, m.icon || "", m.code, m.note || ""]
+      .map(strip).join("\x1F"));
+  }
+  const text = "v=1\n" + recs.join("\x1E");
+  // btoa only takes Latin-1; encodeURIComponent + unescape turns the text into
+  // its UTF-8 bytes first, so names like "1H+offhand ↔ 2H" survive intact.
+  return "R2F1:" + btoa(unescape(encodeURIComponent(text)));
+}
+
 renderRoster(); render();
 </script>
 </body>

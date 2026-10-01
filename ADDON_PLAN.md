@@ -1,6 +1,7 @@
 # Addon plan: Road to Forever (macros + talents)
 
-Status: **planned, not started** (scoped 2026-10-01, revised the same evening).
+Status: **in progress** (scoped 2026-10-01). Steps 1 (data) and 2 (site export)
+shipped; see `CHANGELOG.md`.
 Target: usable before the Nov 4 launch.
 
 | | |
@@ -301,6 +302,42 @@ Sticky to the bottom of the viewport, full content width, `--panel` background,
 
 `localStorage` key `wf-export-v1` = array of macro ids. Survives class switches
 and reloads. Ids that no longer exist after a site update are dropped silently.
+
+### 4.5 Decisions made while building it (step 2, 2026-10-01)
+
+- **Toggle placement:** the spec pills and the toggle share a `.spec-row`; the
+  toggle is outside `#specs` so it stays visible on Universal (no spec pills)
+  and during search (spec pills are cleared), where cross-class picking happens.
+- **Checkbox is a sibling of the pill `<button>`, not inside it.** Interactive
+  content inside a `<button>` is invalid HTML and breaks keyboard/screen-reader
+  access. A `.pill` wrapper holds both; CSS places the checkbox over the pill's
+  left edge so it still reads as one pill.
+- **"Stop propagation"** is implemented as an early return in the page's one
+  delegated click handler (`if(e.target.closest(".xcb")) return;`), which has
+  the same effect: ticking never switches the code panel.
+- **Selected-pill gold border and checkboxes only show in export mode**, so the
+  cheatsheet stays clean when the mode is off (selection is still kept).
+- **Export mode itself is not remembered** across reloads (page opens clean, as
+  4.1 asks); only the selection is.
+- **Search view:** each result group gets a group checkbox (in its `<summary>`;
+  an `<input>` is its own activation target, so ticking does not open/close the
+  group) and each result macro its own checkbox. There are no section headings
+  in search, so no section checkboxes there.
+- **Clicking a partial (gold bar) group/section box selects all of it**; a
+  second click clears it (native checkbox behaviour from indeterminate).
+- **Record order** in the import string = page order (class roster order, then
+  section, then group order), not tick order, so the same selection always
+  gives the same string.
+- **`section` field for Universal macros = `Universal`** (the page calls the
+  section "All classes"; in the game it's the Universal tab, 5.2).
+- **`class` field** = the part of the id before the first `/` (build.py's token);
+  the site does not re-derive class tokens.
+- **Download link** points to the repo's Releases page
+  (`github.com/nobody174/wow-forever-macros/releases`). Nothing is released until
+  step 7; step 7 should re-check this link once the first `addon-v*` zip exists.
+- **Size:** "Select everything" (389 macros) makes an ~83 KB string, well past
+  the 20 KB test in section 7. A whole class + Universal is 10 to 16 KB
+  (measured: Rogue 9.9 KB to Warrior 15.6 KB). The beta paste-speed check should also try the full 83 KB string.
 
 ---
 
@@ -615,7 +652,8 @@ Body keeps its real newlines. Empty icon = `""`.
       `C_Timer.After`).
 - [ ] Question-mark icon + `#showtooltip` shows the spell icon on the bar.
 - [ ] Macros created by the addon survive a relog (server sync).
-- [ ] Pasting a 20 KB string into the edit box is fast enough.
+- [ ] Pasting a 20 KB string into the edit box is fast enough (also try the
+      ~83 KB "Select everything" string, section 4.5).
 - [ ] LibDBIcon button drags around the round minimap and saves its spot.
 - [ ] Right-click menu API: `UIDropDownMenu`/`EasyMenu` or the newer `MenuUtil`.
 - [ ] `LearnTalent(tab, index)` works from our button click (else guided mode).

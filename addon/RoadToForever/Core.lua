@@ -1,4 +1,4 @@
--- Core.lua: events, slash command, init (ADDON_PLAN.md 6.5, 12.3).
+-- Core.lua: events, slash command, key bindings, init (ADDON_PLAN.md 6.5, 12.3).
 --
 -- Event order on login: ADDON_LOADED (our SavedVariables are readable from
 -- here on) -> PLAYER_LOGIN (UnitClass is reliable from here on). The UI is
@@ -31,6 +31,7 @@ handlers.PLAYER_REGEN_DISABLED = function()
   R2F.inCombat = true
   R2F.MacroBook.SetCombat()
   R2F.ImportFrame.SetCombat(true)
+  R2F.Settings.SetCombat()
 end
 
 -- PLAYER_REGEN_ENABLED fires after the lockdown has lifted, so queued macro
@@ -40,6 +41,7 @@ handlers.PLAYER_REGEN_ENABLED = function()
   R2F.Macros.RunQueue()
   R2F.MacroBook.SetCombat()
   R2F.ImportFrame.SetCombat(false)
+  R2F.Settings.SetCombat()
 end
 
 -- Slot counter + markers; Refresh is a no-op while the book is closed.
@@ -57,6 +59,24 @@ for event in pairs(handlers) do
   -- renamed in some clients) must not stop the rest from registering.
   pcall(events.RegisterEvent, events, event)
 end
+
+-- Key bindings (Bindings.xml calls these; labels are in Locale.lua).
+-- Bindings.xml runs its Lua as plain (insecure) code on key press, which is
+-- fine here: opening our own non-secure frames is allowed in combat, and
+-- nothing in these calls writes a macro.
+-- Until step 6 builds the main window (Home / Macros / Talents, 12.4):
+-- * Toggle Road to Forever and Open Macros both toggle the Macro Book, which
+--   is what /r2f does today. Open Macros toggles too (not show-only), like
+--   Blizzard's own Spellbook key, so the same key closes it again. Step 6:
+--   Toggle = main window on its last tab, Open Macros = main window on the
+--   Macros tab (or close it if that tab is already showing).
+-- * Open Talents has nothing to open yet: it prints one chat line. Step 6
+--   points it at the Talents tab (filled by step 9).
+R2F.Bindings = {
+  Toggle = function() R2F.MacroBook.Toggle() end,
+  OpenMacros = function() R2F.MacroBook.Toggle() end,
+  OpenTalents = function() R2F.Print(L.TALENTS_LATER) end,
+}
 
 -- /r2f opens the Macro Book. The full command set (12.3: /r2f macros,
 -- /r2ft, /r2f minimap, /r2f help) comes with the main window in step 6.

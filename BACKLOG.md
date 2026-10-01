@@ -21,11 +21,16 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
       `addon/RoadToForever/TESTING.md` pass in the beta.
 - [x] **4. Updates:** shipped 2026-10-02 as v0.2.0 (tag `r2f-v0.2.0`) — see
       CHANGELOG.md. Not yet run in the game: `TESTING.md` section 8.
-- [ ] **5. Tidy up, Settings, Remove all, keybindings.**
+- [x] **5. Tidy up, Settings, Remove all, keybindings:** shipped 2026-10-02 as
+      v0.3.0 (tag `r2f-v0.3.0`) — see CHANGELOG.md. Not yet run in the game:
+      `TESTING.md` sections 7, 9, 10.
 - [ ] **6. Main window + minimap:** Home / Macros / Talents tabs, logo
       (road curling into ∞, gold on navy, readable at 20 px; SVG source ->
       .tga), LibDBIcon button draggable around the minimap, right-click menu
       (Open / Macros / Talents / Lock / Hide), `/r2f`, `/r2ft`, `/r2f minimap`.
+      Step 5 left hooks for this (ADDON_PLAN 6.9): Settings already stores
+      `R2FDB.minimap` and calls `R2F.Minimap.Apply()` if it exists; point the
+      three `R2F.Bindings` functions at the main window's tabs.
 - [ ] **7. Release:** GitHub Actions zip on `addon-v*` tags, Download link on the site.
 - [ ] **8. Talent export:** Copy my build as a site link. Site links get the
       `~hash` check; `talentcalc.js` ignores `~...` when reading (bump `?v=`).

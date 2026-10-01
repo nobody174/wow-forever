@@ -2,13 +2,16 @@
 ## Title: |cffffd100Road to Forever|r
 ## Notes: Import macros and talent builds from the Road to Forever site.
 ## Author: nobody174
-## Version: 0.2.0
+## Version: 0.3.0
 ## SavedVariables: R2FDB
 ## SavedVariablesPerCharacter: R2FCharDB
 
 # Interface number above is a PLACEHOLDER (Classic Era 1.15.7 = 11507).
 # Confirm it in the Forever beta with /dump select(4, GetBuildInfo())
 # (ADDON_PLAN.md section 11, TESTING.md item 1) and replace it.
+#
+# Bindings.xml is deliberately NOT listed: the client loads it from the addon
+# folder on its own (ADDON_PLAN.md 6.9).
 
 Locale.lua
 Base64.lua
@@ -17,5 +20,6 @@ Import.lua
 Macros.lua
 UI\Widgets.lua
 UI\ImportFrame.lua
+UI\Settings.lua
 UI\MacroBook.lua
 Core.lua

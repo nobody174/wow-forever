@@ -1,8 +1,9 @@
 # Addon plan: Road to Forever (macros + talents)
 
 Status: **in progress** (scoped 2026-10-01). Steps 1 (data), 2 (site export),
-3 (addon MVP, v0.1.0) and 4 (updates, v0.2.0) shipped, neither addon version
-tested in the game yet; see `CHANGELOG.md`.
+3 (addon MVP, v0.1.0), 4 (updates, v0.2.0) and 5 (Tidy up, Settings, Remove all,
+key bindings, v0.3.0) shipped, no addon version tested in the game yet; see
+`CHANGELOG.md`.
 Target: usable before the Nov 4 launch.
 
 | | |
@@ -456,6 +457,7 @@ The library keeps every class you imported. On a Warrior you only see Universal
 - Show minimap button / Lock minimap button (section 12.2).
 - `Remove all Road to Forever macros` (confirm popup; deletes only macros this
   addon created and you haven't edited).
+- Built in step 5 (v0.3.0); decisions in 6.9.
 
 ### 5.9 Text and messages
 
@@ -496,6 +498,7 @@ addon/RoadToForever/
   Talents.lua       parse link, map to the game's trees, plan, learn, export
   Minimap.lua       LibDataBroker launcher + LibDBIcon button + right-click menu
   Bindings.xml      "Toggle Road to Forever", "Open Macros", "Open Talents"
+                    (step 5; NOT listed in the TOC, the client loads it itself, 6.9)
   Core.lua          events, slash commands, init
   libs\            LibStub, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0
   media\logo64.tga  minimap icon (64x64, 32-bit with alpha)
@@ -776,6 +779,106 @@ Account-slot macros are also recorded in `R2FDB.createdAccount`.
 - Import window is 340 px tall (was 320) so a two-line preview that wraps can't run
   into the buttons.
 
+### 6.9 Decisions made while building it (step 5, v0.3.0, 2026-10-02)
+
+**Tidy up (6.4)**
+- **Already shipped in step 3** (6.7); step 5 kept it and tightened one thing:
+  `Macros.Tidy` now re-checks "not on a bar" (not only "unedited") at the moment it
+  deletes. A Tidy up confirmed in combat runs later from the queue, and the player
+  may have put one of the listed macros on a bar by then.
+- **Action slots read = 1-120** (6.4). The "18" in "120 + 18" is the per-character
+  *macro* slots, not action slots; a Classic client has 120 action slots (bars and
+  the stance/stealth bonus bars included). Tests cover slots 1, 73 and 120.
+- **Combat pattern (unchanged, now the rule for every destructive button):** the
+  button is greyed out in combat (Tidy up in the book, Remove all in Settings); a
+  confirm popup opened before combat and accepted during it is **queued** via
+  `RunOrQueue`, not refused, and the job re-reads everything when it runs. Drag stays
+  the one refused action (6.7: nothing should land on the cursor later).
+- **Long name lists** in the Tidy up / Remove all popups are cut after 20 names
+  (`and 12 more`, `UI.NameList`), so the dialog can't grow off the screen.
+
+**Remove all (5.8)**
+- **Spec vs. the step-5 brief.** The brief for this step described Remove all as
+  deleting every macro we made "regardless of edited status". 5.8 itself says it
+  "deletes only macros this addon created and you haven't edited". **5.8 wins** (this
+  file is the spec): a player's edited macro is their work, and no button in this
+  addon deletes it. If the owner wants the unconditional wipe, it's a one-line change
+  in `Macros.RemoveAllPlan` (put every live macro in `delete`) plus the popup text.
+- **Difference from Tidy up:** Remove all ignores the action bars. It deletes every
+  unedited macro we made, **including ones on your bars** (those buttons go empty);
+  the popup says so. Tidy up is the routine slot-saver; Remove all is "take
+  Road to Forever's macros out of my game".
+- **Tracking is cleared completely** (`R2FCharDB.created` and `R2FDB.createdAccount`
+  end up empty, Changed flags too). Edited macros that were kept become plain
+  player macros: the addon never touches them again, and dragging the same entry
+  from the book later asks Replace / Keep mine (it's "not ours" now).
+- **`R2FDB.library` is not touched**: the imported macros stay in the book and can be
+  dragged out again.
+- **Scope = this character + account slots.** The game only exposes the logged-in
+  character's character-slot macros, so other characters' records stay in their own
+  `R2FCharDB` until Remove all is used on that character.
+- Only edited macros left (nothing to delete): the popup says so with an OK button,
+  and OK just stops tracking them. Nothing tracked at all: a chat line, no popup.
+
+**Settings panel (5.8)**
+- **Own small dialog** (`R2FSettings`, dialog backdrop like the Import window, Esc
+  closes it), opened/closed by the book's Settings button. Step 6 can move it into
+  the main window.
+- **New macros go to** (radio pair) writes `R2FDB.settings.slotsFirst` =
+  `"character"` / `"account"`. Step 3 already wired it into `Macros.ChooseSlot`, which
+  every `CreateMacro` asks, so the panel was the missing piece. **It doesn't move
+  existing macros:** WoW has no "move to the other macro tab" call, so it would take
+  delete + create, which empties every action button holding the macro. The panel
+  says "Only for macros made from now on."
+- **Minimap settings are stored now, used in step 6.** "Show minimap button" =
+  `not R2FDB.minimap.hide`, "Lock minimap button" = `R2FDB.minimap.lock`; the table
+  is exactly LibDBIcon's format from 6.3 (`{ hide = bool, lock = bool, minimapPos =
+  number }`, each field filled by `Library.Init` if missing), so **step 6 passes
+  `R2FDB.minimap` to `LibDBIcon:Register` as-is.** After every change the panel calls
+  `R2F.Minimap.Apply()` if it exists: **step 6 must provide `R2F.Minimap.Apply`**
+  (show/hide + lock/unlock from `R2FDB.minimap`, e.g. `LibDBIcon:Show/Hide/Lock/Unlock`).
+  Until then the boxes only store the value and a grey line says the button comes in
+  a later version (hidden automatically once `R2F.Minimap.Apply` exists).
+- **Combat:** only Remove all greys out. The other settings write SavedVariables
+  only, which is fine in combat, so the Settings button stays enabled.
+- **Check boxes / radios** come from `UICheckButtonTemplate` / `UIRadioButtonTemplate`
+  (fallback: radio -> check box -> plain CheckButton with `UI-CheckBox-*` textures).
+  Labels are our own font strings (the templates' text regions differ per client).
+  After a click the boxes are redrawn from the saved value, not from `GetChecked`,
+  so the radio pair can never show both or neither.
+
+**Key bindings (6.1)**
+- **`Bindings.xml` is not in the TOC.** The client loads a file named exactly
+  `Bindings.xml` from the addon folder on its own; listing it would also parse it as
+  a UI XML file, where `<Bindings>` isn't valid.
+- **Labels** are the globals Blizzard's menu looks up: `BINDING_HEADER_ROADTOFOREVER`,
+  `BINDING_NAME_R2F_TOGGLE`, `BINDING_NAME_R2F_MACROS`, `BINDING_NAME_R2F_TALENTS`, set in
+  `Locale.lua`. These four are the only new globals; their names are fixed by the
+  client, so they can't be R2F-prefixed (6.7's global rule, extended; the tests allow
+  exactly these). `category="ADDONS"` files them under AddOns in the newer key-binding
+  menu (unverified in Forever, 11).
+- **Actions** (`R2F.Bindings` in Core.lua), until step 6's main window exists:
+  **Toggle Road to Forever** and **Open Macros** both toggle the Macro Book (what
+  `/r2f` does). Open Macros toggles rather than only opening, like Blizzard's
+  Spellbook key, so one key opens and closes it. **Open Talents** prints
+  `the Talents window comes in a later version.` **Step 6:** Toggle = main window on
+  its last tab; Open Macros = main window on the Macros tab (close if already there);
+  Open Talents = the Talents tab (content arrives in step 9). Change only the three
+  functions in `R2F.Bindings`; `Bindings.xml` stays as it is.
+- Binding code is plain (insecure) Lua on key press; it only opens our own
+  non-secure frames, which is allowed in combat, and never writes a macro.
+
+**Testing**
+- `run_tests.py` adds step-5 tests: Tidy up across slots 1/73/120 + run-time
+  re-check + combat queue; `slotsFirst` steering `CreateMacro` (directly and through
+  the Settings radios); Remove all (both scopes, on-bar macros, edited kept, stale
+  records, tracking + Changed flags cleared, library untouched, combat refusal and
+  queue, the popup text); minimap check boxes + the `R2F.Minimap.Apply` hook; the key
+  bindings; `Bindings.xml` parsed as XML (labels exist, each binding calls a real
+  `R2F.Bindings` function, file not in the TOC). The UI tests run on both the template
+  and the fallback paths. Rendering, the key-binding menu and the popups in the real
+  client are TESTING.md 9 and 10.
+
 ---
 
 ## 7. Import string format
@@ -857,6 +960,9 @@ Body keeps its real newlines. Empty icon = `""`.
       ~83 KB "Select everything" string, section 4.5).
 - [ ] Macros are readable at `PLAYER_LOGIN` and `EditMacro` works from there
       (login sync, 6.8); the green Changed arrow texture looks right (6.8).
+- [ ] `Bindings.xml` is picked up without a TOC entry, the three bindings show under
+      a "Road to Forever" header (AddOns section, `category="ADDONS"`) and work;
+      `UIRadioButtonTemplate` / `UICheckButtonTemplate` exist (Settings) (6.9).
 - [ ] LibDBIcon button drags around the round minimap and saves its spot.
 - [ ] Right-click menu API: `UIDropDownMenu`/`EasyMenu` or the newer `MenuUtil`.
 - [ ] `LearnTalent(tab, index)` works from our button click (else guided mode).

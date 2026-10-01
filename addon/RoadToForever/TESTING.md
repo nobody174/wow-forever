@@ -1,4 +1,4 @@
-# Road to Forever: in-game test checklist (v0.2.0, addon steps 3 and 4)
+# Road to Forever: in-game test checklist (v0.3.0, addon steps 3 to 5)
 
 Nothing in this addon has run in the real WoW client yet. Out of the game it was
 tested under real Lua 5.1 against a fake client (`addon/tests/`), which checks
@@ -125,6 +125,15 @@ you got:
 - [ ] Create 3 macros from the book, put 1 on a bar, edit 1 in `/macro`. Tidy up.
       **Pass:** the popup lists only the one that's unedited and not on a bar
       (plus the note about bar addons); Delete removes it, your other macros stay.
+- [ ] Put one of our macros on a stance / stealth bar page (Warrior stance bar,
+      Rogue stealth bar: action slots 73-120), not on the main bar. Tidy up.
+      **Pass:** it is NOT offered (those slots are read too).
+- [ ] **Bar addons (known limit).** With Bartender / Dominos / ElvUI, macros on their
+      bars are normally seen (they use the same action slots). A bar addon that draws
+      its own buttons outside slots 1-120 (rare) isn't seen, so Tidy up would offer
+      those macros; the popup warns about it. Note any bar addon where this happens.
+- [ ] Open Tidy up's popup, drag one of the listed macros onto a bar from `/macro`,
+      then click Delete. **Pass:** that one is kept (re-checked at delete time).
 
 ## 8. Updates and Changed markers (v0.2.0, step 4)
 
@@ -178,9 +187,75 @@ string only changes after a site update, so fake an "older version" first:
       entries blaming RoadToForever (the login sync calls `EditMacro` from an event
       handler, not a click).
 
-## Known gaps in v0.2.0 (by design, later steps)
+## 9. Settings and Remove all (v0.3.0, step 5)
 
-- Settings button is disabled (step 5). New macros go to character slots first.
+Out of the game, `run_tests.py` covers the logic (the setting steering
+`CreateMacro`, Remove all's delete/keep split, tracking cleared, library kept,
+combat refusal + queue) on both the template and fallback UI paths. What only the
+game can show:
+
+- [ ] Click **Settings** at the bottom right of the book. **Pass:** a small panel
+      "Settings" opens with: `New macros go to:` and two round radio buttons
+      (Character slots first selected), a grey note under them, two square check
+      boxes (Show minimap button ticked, Lock minimap button unticked), a grey line
+      `The minimap button comes in a later version.`, and a wide
+      `Remove all Road to Forever macros` button. No green squares; nothing overlaps.
+      If the radios look like square check boxes, `UIRadioButtonTemplate` is missing
+      in this client (the fallback was used): note it in ADDON_PLAN 11.
+- [ ] Clicking a radio's or check box's **label text** also toggles it.
+- [ ] Choose **Account slots first**, drag a new macro from the book. **Pass:** `/macro`
+      shows it in the General (account) tab, and the book's `Account` count went up.
+      Switch back to Character first: the next new macro goes to the character tab,
+      and the first one stays where it was.
+- [ ] Tick/untick the minimap boxes, `/reload`, reopen Settings. **Pass:** the boxes
+      remember (`/dump R2FDB.minimap` shows `hide` / `lock`). Nothing else happens yet:
+      the minimap button is step 6.
+- [ ] Esc closes the Settings panel; the X button closes it; the Settings button
+      opens and closes it.
+- [ ] **Remove all.** Make 4 macros from the book: 2 on bars, 1 not, 1 edited in
+      `/macro`; also have a macro of your own. Click Remove all. **Pass:** popup
+      `Delete 3 Road to Forever macros from the game, including any on your action
+      bars?`, the 3 names, `Kept: <edited one>. You edited them...`, and
+      `Your macro library stays...`. Click Remove. **Pass:** the 3 are gone from
+      `/macro` (their bar buttons are empty), the edited one and your own macro stay,
+      chat `removed 3 Road to Forever macros. Your macro library is unchanged. Kept 1
+      you edited as your own.` The book still lists every macro; dragging one creates
+      it again. Dragging the kept edited one asks Replace / Keep mine.
+- [ ] The popup grows with its text and stays on screen with many macros (lists cut
+      after 20 names: `... and 12 more`).
+- [ ] **Combat.** With Settings open, enter combat. **Pass:** Remove all greys out
+      (the radios and boxes still work). Open the Remove all popup before combat,
+      accept it in combat. **Pass:** chat says it finishes after combat; after combat
+      the macros are deleted; no Lua error, no "action blocked".
+- [ ] `/console taintLog 1`, use Settings and Remove all, `/reload`, check
+      `Logs\taint.log`. **Pass:** no entries blaming RoadToForever.
+
+## 10. Key bindings (v0.3.0, step 5)
+
+Not testable outside the game at all: the tests only check that `Bindings.xml` is
+valid XML, each binding calls a real function and the label globals exist.
+
+- [ ] **Bindings.xml loads without a TOC entry** (it's deliberately not listed).
+      Esc > Options > Key Bindings (or the Key Bindings menu in this client).
+      **Pass:** a `Road to Forever` header with `Toggle Road to Forever`,
+      `Open Macros`, `Open Talents`. Note where it shows: under an AddOns section
+      (`category="ADDONS"` worked) or elsewhere (e.g. at the bottom / "Other"). If the
+      header is missing entirely, check for an XML error on login and note it.
+- [ ] Bind a key to each. **Pass:** Toggle opens and closes the Macro Book;
+      Open Macros does the same; Open Talents prints
+      `Road to Forever: the Talents window comes in a later version.` (step 6/9).
+- [ ] Press Toggle in combat. **Pass:** the book opens (In combat shown), no
+      "action blocked", no Lua error.
+- [ ] Bindings survive a `/reload` and a relog.
+
+## Known gaps in v0.3.0 (by design, later steps)
+
+- Show / Lock minimap button settings are stored but do nothing visible yet: the
+  minimap button is step 6 (it reads `R2FDB.minimap`, ADDON_PLAN 6.9).
+- Key bindings: Toggle and Open Macros both toggle the Macro Book; Open Talents only
+  prints a line. Step 6 points them at the main window's tabs, step 9 fills Talents.
+- Remove all only reaches this character's character-slot macros (plus account
+  ones); use it on each character to clear theirs.
 - An icon-only change to a macro made with v0.1.0 isn't pushed until its body
   changes too (v0.1.0 didn't store the icon; ADDON_PLAN 6.8).
 - No main window, minimap button or full slash-command set (step 6). `/r2f` opens

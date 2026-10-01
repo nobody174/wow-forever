@@ -169,7 +169,7 @@ function UI.MultiLineEdit(parent, name, width, height)
 end
 
 -- ---------------------------------------------------------------------------
--- Confirm dialog (5.9 Replace/Keep mine, Tidy up)
+-- Confirm dialog (5.9 Replace/Keep mine, Tidy up, Settings > Remove all)
 -- ---------------------------------------------------------------------------
 
 local confirm
@@ -221,6 +221,51 @@ function UI.Confirm(text, acceptLabel, cancelLabel, onAccept)
   confirm:SetHeight(math.max(140, confirm.text:GetStringHeight() + 80))
   confirm:Show()
   UI.PlaySound("IG_MAINMENU_OPEN")
+end
+
+-- "VR, HS, Rend" for a popup. More than `max` names -> "VR, HS and 12 more",
+-- so a big Remove all / Tidy up can't grow the dialog off the screen.
+function UI.NameList(names, max)
+  max = max or 20
+  if #names <= max then return table.concat(names, ", ") end
+  local head = {}
+  for i = 1, max do head[i] = names[i] end
+  return R2F.L.LIST_MORE:format(table.concat(head, ", "), #names - max)
+end
+
+-- ---------------------------------------------------------------------------
+-- Check box / radio button (Settings, 5.8)
+-- ---------------------------------------------------------------------------
+
+-- Blizzard's UIRadioButtonTemplate / UICheckButtonTemplate when the client
+-- has them, else a plain CheckButton with Blizzard's check-box textures.
+-- The label is always our own font string to the right: the templates' text
+-- region differs between clients (.text, .Text or only a global $parentText),
+-- and the radio template's is not guaranteed to exist at all.
+-- Callers set the checked state themselves from the saved setting after every
+-- click, rather than trusting the button's own toggle, so a radio pair can't
+-- end up with both or neither checked.
+function UI.CheckButton(parent, label, radio)
+  local isButton = function(b) return b.SetChecked ~= nil end
+  local b = UI.TryTemplate("CheckButton", nil, parent, radio and "UIRadioButtonTemplate" or "UICheckButtonTemplate", isButton)
+  if not b and radio then
+    b = UI.TryTemplate("CheckButton", nil, parent, "UICheckButtonTemplate", isButton)
+  end
+  if not b then
+    b = CreateFrame("CheckButton", nil, parent)
+    b:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up")
+    b:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down")
+    b:SetHighlightTexture("Interface\\Buttons\\UI-CheckBox-Highlight", "ADD")
+    b:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check")
+  end
+  b:SetSize(radio and 16 or 24, radio and 16 or 24)
+  local text = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  text:SetPoint("LEFT", b, "RIGHT", 4, 0)
+  text:SetText(label)
+  -- Clicking the label toggles too, like Blizzard's own option check boxes.
+  b:SetHitRectInsets(0, -(text:GetStringWidth() + 4), 0, 0)
+  b.r2fLabel = text
+  return b
 end
 
 -- ---------------------------------------------------------------------------

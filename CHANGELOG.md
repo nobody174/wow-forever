@@ -4,6 +4,28 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon plan, step 5: Road to Forever addon v0.3.0, Settings, Remove all, key bindings)
+
+- The Macro Book's **Settings** button opens a new panel (`UI/Settings.lua`):
+  Character / Account slots first (`R2FDB.settings.slotsFirst`, steers every new
+  `CreateMacro`, never moves existing macros), Show / Lock minimap button (stored in
+  `R2FDB.minimap` in LibDBIcon's format for step 6, which must add
+  `R2F.Minimap.Apply`), and **Remove all Road to Forever macros** (tag `r2f-v0.3.0`).
+- **Remove all** deletes every unedited macro the addon made, on bars or not, in
+  character and account slots, clears all created-macro tracking, keeps edited
+  macros as the player's own (ADDON_PLAN 5.8; the step brief said "regardless of
+  edited", the spec won, see 6.9) and leaves the library alone. Same combat rule as
+  Tidy up: greyed out in combat, queued if accepted in combat.
+- **Key bindings** via `Bindings.xml` (loaded by the client, deliberately not in the
+  TOC): Toggle Road to Forever / Open Macros (both toggle the Macro Book for now),
+  Open Talents (placeholder until steps 6/9).
+- Tidy up re-checks "not on a bar" at delete time (a queued Tidy could otherwise
+  delete a macro put on a bar meanwhile).
+- Tests: `addon/tests/run_tests.py` now 5346 checks (was 5202), new Tidy-up slot,
+  slotsFirst, Remove all, Settings UI, combat and Bindings.xml cases on both
+  template and fallback paths; luacheck 0 warnings. Decisions in `ADDON_PLAN.md`
+  6.9; in-game checks in `addon/RoadToForever/TESTING.md` 7, 9, 10.
+
 ## 2026-10-02 (Addon plan, step 4: Road to Forever addon v0.2.0, updates)
 
 - Re-importing now updates real macros the addon already made, if the player

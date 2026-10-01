@@ -62,7 +62,8 @@ def new_runtime(templates=True):
     lua.execute('assert(loadfile("%s"))()' % stubs)
     if not templates:
         lua.execute("TEST.templates.PortraitFrameTemplate = nil; TEST.templates.ButtonFrameTemplate = nil;"
-                    "TEST.templates.InputScrollFrameTemplate = nil")
+                    "TEST.templates.InputScrollFrameTemplate = nil; TEST.templates.UICheckButtonTemplate = nil;"
+                    "TEST.templates.UIRadioButtonTemplate = nil")
     # Globals present before the addon loads, for the one-global audit.
     lua.execute("BEFORE = {} for k in pairs(_G) do BEFORE[k] = true end BEFORE.BEFORE = true")
     lua.execute("NS = {}")
@@ -751,12 +752,277 @@ def test_ui_smoke(templates, fx):
       local out = {}
       for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
-    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1"}
+    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1"} | BINDING_GLOBALS
     test_vars = {"EDIT", "PREVIEW", "IMPORTBTN", "BADTEXT", "TABS", "SLOTS", "PAGETEXT", "TIDY", "BOOKIMPORT",
                  "COMBATTEXT", "OTHER", "NS"}
     bad = [g for g in new_globals if g and g not in allowed_exact and g not in test_vars and not g.startswith("R2F")]
-    check(not bad, "%s: no globals besides R2F, saved vars, SLASH_R2F1 and R2F* frame names: %s" % (tag, bad))
+    check(not bad, "%s: no globals besides R2F, saved vars, SLASH_R2F1, binding labels and R2F* frame names: %s" % (tag, bad))
     print("  %s: new globals = %s" % (tag, [g for g in new_globals if g not in test_vars]))
+
+
+BINDING_GLOBALS = {"BINDING_HEADER_ROADTOFOREVER", "BINDING_NAME_R2F_TOGGLE", "BINDING_NAME_R2F_MACROS",
+                   "BINDING_NAME_R2F_TALENTS"}
+
+
+def names_of(lua_list):
+    return [lua_list[i].name for i in range(1, len(lua_list) + 1)]
+
+
+def test_step5_logic(lua, fx):
+    """Step 5: Tidy up rules across action slots, combat queueing, slotsFirst, Remove all."""
+    lua.execute("TEST.reset() R2FDB = nil R2FCharDB = nil R2F.Library.Init() R2F.playerClass = 'WARRIOR'")
+    lua.execute("CONFIRMS = {} R2F.UI.Confirm = function(text, a, b, fn) table.insert(CONFIRMS, {text=text, fn=fn}) end")
+    parse = lua.eval("function(s) local a, b = R2F.Import.Parse(s) return a, b end")
+    res, _ = parse(fx["warriorUniversal"]["string"])
+    lua.eval("R2F.Library.Apply")(res.records, 1)
+    M, T = lua.eval("R2F.Macros"), lua.eval("TEST")
+    lib_count = lua.eval("R2F.Library.Count()")
+
+    # --- Tidy up across a simulated set of action slots -------------------
+    ids = ["WARRIOR/VR", "WARRIOR/HS", "WARRIOR/Rend", "WARRIOR/Slam", "WARRIOR/Sunder", "WARRIOR/Exe"]
+    for i in ids:
+        M.Ensure(i)
+    # VR on slot 1, Rend on the last standard slot (120), Sunder on a
+    # stance/bonus-bar slot (73); HS edited by the player; Slam + Exe unused.
+    lua.execute('TEST.actions[1] = "VR" TEST.actions[120] = "Rend" TEST.actions[73] = "Sunder" TEST.setBody("HS", "/say mine")')
+    T.addMacro("Mine", "/dance", True)
+    T.actions[2] = "Mine"
+    cands = M.TidyCandidates()
+    check(names_of(cands) == ["Exe", "Slam"],
+          "tidy: only unedited AND unused macros of ours (slots 1, 73, 120 seen as in use): %s" % names_of(cands))
+    # Run-time re-check: the player puts Slam on a bar after the popup was built.
+    T.actions[40] = "Slam"
+    check(M.Tidy(cands) == 1 and T.bodyOf("Slam") is not None and T.bodyOf("Exe") is None,
+          "tidy re-checks the bars when it runs: Slam (now on a bar) kept, Exe deleted")
+    check(T.bodyOf("HS") == "/say mine" and T.bodyOf("Mine") == "/dance" and T.bodyOf("VR") and T.bodyOf("Rend"),
+          "tidy leaves edited, in-use and the player's own macros alone")
+    T.actions[40] = None
+
+    # Tidy up confirmed in combat -> queued (6.7 pattern), runs after combat.
+    lua.execute('TEST.actions[73] = nil')  # Sunder now unused
+    T.combat = True
+    T.calls = lua.table()
+    lua.execute("R2F.Macros.RunOrQueue(function() TIDIED = R2F.Macros.Tidy(R2F.Macros.TidyCandidates()) end)")
+    check(M.QueueSize() == 1 and len(T.calls) == 0 and T.bodyOf("Sunder") is not None,
+          "tidy accepted in combat is queued, nothing deleted in combat")
+    T.combat = False
+    M.RunQueue()
+    check(lua.eval("TIDIED") == 2 and T.bodyOf("Sunder") is None and T.bodyOf("Slam") is None
+          and T.bodyOf("VR") and T.bodyOf("Rend") and M.QueueSize() == 0,
+          "queued tidy runs after combat and deletes the now-unused macros (Sunder, Slam) only")
+    T.errors = lua.table()
+    T.combat = True
+    check(M.Tidy(lua.eval('{ { id = "WARRIOR/Rend", name = "Rend" } }')) == 0 and T.bodyOf("Rend") is not None
+          and lua.eval("TEST.errors[1]") == lua.eval("R2F.L.ERR_COMBAT"), "Tidy called directly in combat refuses (no write)")
+    T.combat = False
+
+    # --- slotsFirst decides CreateMacro's perCharacter ----------------------
+    lua.execute("TEST.reset() R2FCharDB.created = {} R2FDB.createdAccount = {} R2FDB.settings.slotsFirst = 'account'")
+    M.Ensure("WARRIOR/VR")
+    check(lua.eval("#TEST.macros.acc") == 1 and lua.eval("#TEST.macros.char") == 0
+          and lua.eval('R2FDB.createdAccount["WARRIOR/VR"] ~= nil'), "slotsFirst=account: CreateMacro goes to account slots")
+    lua.execute("R2FDB.settings.slotsFirst = 'character'")
+    M.Ensure("WARRIOR/HS")
+    check(lua.eval("#TEST.macros.char") == 1 and lua.eval('R2FCharDB.created["WARRIOR/HS"] ~= nil'),
+          "slotsFirst=character: the next CreateMacro goes to character slots")
+    check(lua.eval('GetMacroIndexByName("VR") <= 120'), "changing the setting does not move an existing macro")
+    lua.execute("for i = 1, 120 do TEST.addMacro('a' .. i, 'x', false) end R2FDB.settings.slotsFirst = 'account'")
+    M.Ensure("WARRIOR/Rend")
+    check(lua.eval('GetMacroIndexByName("Rend") > 120'), "slotsFirst=account falls back to character slots when account is full")
+
+    # --- Remove all ------------------------------------------------------------
+    lua.execute("TEST.reset() R2FCharDB.created = {} R2FDB.createdAccount = {} R2FDB.settings.slotsFirst = 'character'")
+    for i in ("WARRIOR/VR", "WARRIOR/HS", "WARRIOR/Rend"):
+        M.Ensure(i)                      # character slots
+    lua.execute("R2FDB.settings.slotsFirst = 'account'")
+    for i in ("WARRIOR/Slam", "WARRIOR/Exe"):
+        M.Ensure(i)                      # account slots
+    lua.execute("R2FDB.settings.slotsFirst = 'character'")
+    lua.execute('TEST.actions[1] = "VR" TEST.actions[2] = "Exe" TEST.setBody("HS", "/say my HS")')
+    T.addMacro("Mine", "/dance", False)
+    lua.execute('R2FCharDB.created["WARRIOR/Gone"] = { name = "Gone", hash = "0" }')  # macro deleted by hand
+    lua.execute('R2F.Library.SetChanged("WARRIOR/VR", "updated")')
+    check(lua.eval("#TEST.macros.char") == 3 and lua.eval("#TEST.macros.acc") == 3, "setup: 3 character + 2 account + 1 own macro")
+    plan = M.RemoveAllPlan()
+    check(names_of(plan.delete) == ["Exe", "Rend", "Slam", "VR"] and names_of(plan.keep) == ["HS"],
+          "remove-all plan: every unedited one (on bars too, both scopes), edited kept: %s / %s"
+          % (names_of(plan.delete), names_of(plan.keep)))
+    check(len(T.calls) == 5 and all(c.startswith("create:") for c in lua_table_to_list(T.calls)),
+          "remove-all plan writes nothing")
+
+    # In combat: refused directly, queued through the confirm path.
+    T.combat = True
+    T.calls = lua.table()
+    T.errors = lua.table()
+    deleted, kept = M.RemoveAll()
+    check((deleted, kept) == (0, 0) and len(T.calls) == 0 and lua.eval("TEST.errors[1]") == lua.eval("R2F.L.ERR_COMBAT"),
+          "RemoveAll in combat refuses, no DeleteMacro (the fake client would raise)")
+    check(lua.eval('R2FCharDB.created["WARRIOR/VR"] ~= nil and R2FDB.createdAccount["WARRIOR/Slam"] ~= nil'),
+          "RemoveAll in combat keeps the tracking")
+    lua.execute("R2F.Macros.RunOrQueue(function() RA_DEL, RA_KEPT = R2F.Macros.RemoveAll() end)")
+    check(M.QueueSize() == 1 and len(T.calls) == 0, "remove all accepted in combat is queued")
+    T.combat = False
+    M.RunQueue()
+    check((lua.eval("RA_DEL"), lua.eval("RA_KEPT")) == (4, 1), "queued remove all ran after combat: 4 deleted, 1 kept")
+    check(all(T.bodyOf(n) is None for n in ("VR", "Rend", "Slam", "Exe")),
+          "remove all deleted the unedited macros, including ones on bars and in account slots")
+    check(T.bodyOf("HS") == "/say my HS" and T.bodyOf("Mine") == "/dance", "remove all kept the edited macro and the player's own")
+    check(lua.eval("next(R2FCharDB.created) == nil and next(R2FDB.createdAccount) == nil"),
+          "remove all cleared character AND account tracking (incl. the edited and stale records)")
+    check(lua.eval("next(R2FCharDB.changed) == nil"), "remove all cleared the Changed flags")
+    check(lua.eval("R2F.Library.Count()") == lib_count and lua.eval('R2F.Library.db.library["WARRIOR/VR"] ~= nil'),
+          "remove all leaves R2FDB.library untouched")
+    check(M.Ensure("WARRIOR/VR") is True and T.cursor == "VR", "after remove all the macro can be dragged out again")
+    # HS is no longer ours: dragging it from the book asks first (it's the player's macro now).
+    n_confirms = lua.eval("#CONFIRMS")
+    check(M.Ensure("WARRIOR/HS") is False and lua.eval("#CONFIRMS") == n_confirms + 1,
+          "the kept edited macro is the player's now: Ensure asks Replace/Keep mine")
+
+    # Name lists in popups are capped.
+    nl = lua.eval("R2F.UI.NameList")
+    check(nl(lua.eval("{'a','b','c'}")) == "a, b, c", "NameList joins names")
+    check(nl(lua.eval("(function() local t = {} for i = 1, 25 do t[i] = 'm' .. i end return t end)()"), 3) == "m1, m2, m3 and 22 more",
+          "NameList caps long lists")
+
+    # Init fills a partial minimap table without touching set values.
+    lua.execute("R2FDB.minimap = { hide = true } R2F.Library.Init()")
+    check(lua.eval("R2FDB.minimap.hide == true and R2FDB.minimap.lock == false and R2FDB.minimap.minimapPos == 220"),
+          "Init fills missing minimap fields (LibDBIcon format) and keeps hide")
+
+
+def test_step5_ui(templates, fx):
+    """Step 5 through the UI: Settings panel, Remove all popup, combat state, key bindings."""
+    lua = new_runtime(templates)
+    tag = "templates" if templates else "fallbacks"
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    parse = lua.eval("function(s) local a, b = R2F.Import.Parse(s) return a, b end")
+    res, _ = parse(fx["warriorUniversal"]["string"])
+    lua.eval("R2F.Library.Apply")(res.records, 1)
+    lib_count = lua.eval("R2F.Library.Count()")
+
+    # Key bindings: Toggle / Open Macros toggle the book, Open Talents is a stub.
+    lua.execute("R2F.Bindings.Toggle()")
+    check(lua.eval("R2F.MacroBook.IsShown()") is True, "%s: binding Toggle opens the Macro Book" % tag)
+    lua.execute("R2F.Bindings.Toggle()")
+    check(lua.eval("R2F.MacroBook.IsShown()") is False, "binding Toggle closes it again")
+    lua.execute("R2F.Bindings.OpenMacros()")
+    check(lua.eval("R2F.MacroBook.IsShown()") is True, "binding Open Macros opens the Macro Book")
+    T.chat = lua.table()
+    lua.execute("R2F.Bindings.OpenTalents()")
+    check(any(lua.eval("R2F.L.TALENTS_LATER") in c for c in chat_lines(lua)), "binding Open Talents says it comes later")
+    for g in BINDING_GLOBALS:
+        check(isinstance(lua.eval(g), str) and lua.eval(g) != "", "binding label global %s is set" % g)
+
+    # Settings button opens the panel (no longer disabled).
+    lua.execute("""
+      for _, f in ipairs(TEST.allFrames) do
+        if f.__kind == 'Button' and f.__text == R2F.L.BTN_SETTINGS then SETBTN = f end
+      end""")
+    check(lua.eval("SETBTN.__enabled") is True, "%s: Settings button is enabled" % tag)
+    lua.execute("SETBTN:Click()")
+    check(lua.eval("R2FSettings and R2FSettings:IsShown()") is True, "%s: Settings button opens the Settings panel" % tag)
+    lua.execute("""
+      CHECKS = {}
+      for _, f in ipairs(TEST.allFrames) do
+        if f.__kind == 'CheckButton' and f.r2fLabel then CHECKS[f.r2fLabel.__text] = f end
+        if f.__kind == 'Button' and f.__text == R2F.L.BTN_REMOVE_ALL then REMOVEALL = f end
+      end
+      L = R2F.L""")
+    rb = lambda key: "CHECKS[L.%s]" % key
+    check(lua.eval(rb("SETTINGS_SLOTS_CHAR") + ":GetChecked()") is True and lua.eval(rb("SETTINGS_SLOTS_ACC") + ":GetChecked()") is False,
+          "Settings: Character slots first is selected by default")
+
+    # Account first through the panel -> the next CreateMacro goes to account slots.
+    lua.execute(rb("SETTINGS_SLOTS_ACC") + ":Click()")
+    check(lua.eval("R2FDB.settings.slotsFirst") == "account", "Settings radio writes R2FDB.settings.slotsFirst")
+    check(lua.eval(rb("SETTINGS_SLOTS_ACC") + ":GetChecked()") is True and lua.eval(rb("SETTINGS_SLOTS_CHAR") + ":GetChecked()") is False,
+          "Settings: radio pair has exactly one selected")
+    lua.execute('R2F.Macros.Ensure("WARRIOR/VR")')
+    check(lua.eval("#TEST.macros.acc") == 1 and lua.eval("#TEST.macros.char") == 0,
+          "%s: after choosing Account first in Settings, a dragged macro is created in an account slot" % tag)
+    lua.execute(rb("SETTINGS_SLOTS_CHAR") + ":Click()")
+    lua.execute('R2F.Macros.Ensure("WARRIOR/HS")')
+    check(lua.eval("#TEST.macros.char") == 1 and lua.eval('GetMacroIndexByName("VR") <= 120'),
+          "back to Character first: next macro in a character slot, VR stays in its account slot")
+
+    # Minimap checkboxes: stored in R2FDB.minimap (step 6 reads them).
+    check(lua.eval(rb("SETTINGS_MINIMAP_SHOW") + ":GetChecked()") is True and lua.eval(rb("SETTINGS_MINIMAP_LOCK") + ":GetChecked()") is False,
+          "Settings: minimap shown + unlocked by default")
+    lua.execute("APPLIED = 0 R2F.Minimap = { Apply = function() APPLIED = APPLIED + 1 end }")
+    lua.execute(rb("SETTINGS_MINIMAP_SHOW") + ":Click() " + rb("SETTINGS_MINIMAP_LOCK") + ":Click()")
+    check(lua.eval("R2FDB.minimap.hide") is True and lua.eval("R2FDB.minimap.lock") is True
+          and lua.eval(rb("SETTINGS_MINIMAP_SHOW") + ":GetChecked()") is False and lua.eval(rb("SETTINGS_MINIMAP_LOCK") + ":GetChecked()") is True,
+          "Settings: minimap checkboxes write R2FDB.minimap.hide / .lock")
+    check(lua.eval("APPLIED") == 2, "Settings calls the step-6 hook R2F.Minimap.Apply after each minimap change")
+    lua.execute(rb("SETTINGS_MINIMAP_SHOW") + ":Click() R2F.Minimap = nil")
+    check(lua.eval("R2FDB.minimap.hide") is False, "Show minimap button toggles back")
+
+    # Combat: Remove all greyed out, Settings button still usable.
+    T.fire("PLAYER_REGEN_DISABLED")
+    T.combat = True
+    check(lua.eval("REMOVEALL.__enabled") is False and lua.eval("SETBTN.__enabled") is True,
+          "combat greys out Remove all (Settings button stays usable)")
+    T.combat = False
+    T.fire("PLAYER_REGEN_ENABLED")
+    check(lua.eval("REMOVEALL.__enabled") is True, "combat end re-enables Remove all")
+
+    # Remove all through the real confirm dialog; accepted in combat -> queued.
+    lua.execute('TEST.actions[1] = "VR"')
+    lua.execute("REMOVEALL:Click()")
+    check(lua.eval("R2FConfirm:IsShown()") is True, "Remove all asks first")
+    text = lua.eval("R2FConfirm.text.__text")
+    check(text.startswith("Delete 2 Road to Forever macros") and "HS, VR" in text and "library stays" in text,
+          "Remove all popup lists the macros and says the library stays: %r" % text)
+    T.combat = True
+    lua.execute("""
+      for _, f in ipairs(TEST.allFrames) do
+        if f.__kind == 'Button' and f.__parent == R2FConfirm and f.__text == R2F.L.BTN_REMOVE then f:Click() end
+      end""")
+    check(T.bodyOf("VR") is not None and lua.eval("R2F.Macros.QueueSize()") == 1, "%s: Remove all accepted in combat waits" % tag)
+    T.combat = False
+    T.chat = lua.table()
+    T.fire("PLAYER_REGEN_ENABLED")
+    check(T.bodyOf("VR") is None and T.bodyOf("HS") is None, "%s: Remove all ran after combat" % tag)
+    check(any("removed 2 Road to Forever macros." in c for c in chat_lines(lua)), "Remove all chat line")
+    check(lua.eval("R2F.Library.Count()") == lib_count, "Remove all kept the library")
+    T.chat = lua.table()
+    lua.execute("REMOVEALL:Click()")
+    check(any(lua.eval("R2F.L.REMOVE_ALL_NONE") in c for c in chat_lines(lua)), "Remove all with nothing to remove just says so")
+
+    # Esc closes the panel; one-global audit with Settings built.
+    check("R2FSettings" in lua_table_to_list(lua.eval("UISpecialFrames")), "Settings panel closes with Esc")
+    new_globals = lua.eval("""(function()
+      local out = {}
+      for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
+      table.sort(out) return table.concat(out, ",") end)()""").split(",")
+    test_vars = {"SETBTN", "CHECKS", "REMOVEALL", "L", "APPLIED", "NS"}
+    bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
+           and g not in ("SLASH_R2F1",) and not g.startswith("R2F")]
+    check(not bad, "%s: step 5 adds no globals besides R2F* frames and the binding labels: %s" % (tag, bad))
+
+
+def test_bindings_xml(lua):
+    """Bindings.xml: valid XML, not in the TOC, every binding has a label and calls a real function."""
+    import xml.etree.ElementTree as ET
+    path = os.path.join(ADDON, "Bindings.xml")
+    root = ET.parse(path).getroot()
+    check(root.tag == "Bindings", "Bindings.xml root is <Bindings>")
+    check("Bindings.xml" not in toc_files(), "Bindings.xml is not listed in the TOC (the client loads it by itself)")
+    names = []
+    for b in root.findall("Binding"):
+        name = b.get("name")
+        names.append(name)
+        check(isinstance(lua.eval("BINDING_NAME_" + name), str), "label BINDING_NAME_%s exists" % name)
+        body = (b.text or "").strip()
+        m = re.fullmatch(r"R2F\.Bindings\.(\w+)\(\)", body)
+        check(m is not None and lua.eval("type(R2F.Bindings.%s)" % m.group(1)) == "function",
+              "binding %s calls an existing R2F.Bindings function (%r)" % (name, body))
+        if b.get("header"):
+            check(isinstance(lua.eval("BINDING_HEADER_" + b.get("header")), str), "header label BINDING_HEADER_%s exists" % b.get("header"))
+    check(names == ["R2F_TOGGLE", "R2F_MACROS", "R2F_TALENTS"], "the three bindings of ADDON_PLAN 6.1: %s" % names)
+    check(root.find("Binding").get("header") == "ROADTOFOREVER", "first binding carries the header")
 
 
 def main():
@@ -771,6 +1037,10 @@ def main():
     test_ui_updates(fx)
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
+    test_step5_logic(new_runtime(), fx)
+    test_step5_ui(True, fx)
+    test_step5_ui(False, fx)
+    test_bindings_xml(new_runtime())
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
 

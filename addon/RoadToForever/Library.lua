@@ -93,7 +93,15 @@ function Library.Init()
   if type(db.settings) ~= "table" then db.settings = {} end
   if type(db.createdAccount) ~= "table" then db.createdAccount = {} end
   if type(db.sectionSeen) ~= "table" then db.sectionSeen = {} end
-  if type(db.minimap) ~= "table" then db.minimap = { hide = false, minimapPos = 220, lock = false } end
+  -- LibDBIcon's own format (6.3): step 6 hands this table to
+  -- LibDBIcon:Register as-is. The Settings panel (step 5) already writes
+  -- hide/lock, so fill each field separately rather than only when the
+  -- whole table is missing.
+  if type(db.minimap) ~= "table" then db.minimap = {} end
+  local mm = db.minimap
+  if type(mm.hide) ~= "boolean" then mm.hide = false end
+  if type(mm.lock) ~= "boolean" then mm.lock = false end
+  if type(mm.minimapPos) ~= "number" then mm.minimapPos = 220 end
   local s = db.settings
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
   _G.R2FDB = db

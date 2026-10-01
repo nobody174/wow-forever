@@ -11,6 +11,9 @@ globals = {
   "SLASH_R2F1",             -- slash command registration
   "SlashCmdList",           -- .R2F field
   "UISpecialFrames",        -- Esc-to-close (append only)
+  -- Key Bindings menu labels for Bindings.xml (names fixed by Blizzard, 6.9)
+  "BINDING_HEADER_ROADTOFOREVER", "BINDING_NAME_R2F_TOGGLE", "BINDING_NAME_R2F_MACROS",
+  "BINDING_NAME_R2F_TALENTS",
 }
 
 read_globals = {

@@ -3,6 +3,27 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.3.0 (2026-10-02): Settings, Remove all, key bindings (ADDON_PLAN.md step 5)
+
+Not tested in the game yet; see `TESTING.md` sections 7, 9 and 10.
+
+- **Settings** button in the Macro Book now works. It opens a small panel:
+  - **New macros go to:** Character slots first / Account slots first. Only for
+    macros made from then on; macros you already have stay where they are.
+  - **Show minimap button / Lock minimap button**: saved now, used once the
+    minimap button arrives (next version).
+  - **Remove all Road to Forever macros**: after a confirm listing them, deletes
+    every macro the addon made that you haven't edited, also ones on your action
+    bars, in character and account slots. Macros you edited are kept as your own.
+    Your macro library is not touched, so you can drag them out again. Greyed out
+    in combat; if you accept it in combat, it runs when combat ends.
+- **Key bindings** (Key Bindings menu, "Road to Forever"): Toggle Road to Forever
+  and Open Macros open/close the Macro Book; Open Talents is a placeholder until
+  the Talents window exists.
+- **Tidy up** checks again, right when it deletes, that each macro is still not on
+  a bar (matters when you accepted it in combat and it ran afterwards). Long name
+  lists in popups are shortened (`... and 12 more`).
+
 ## 0.2.0 (2026-10-02): updates and Changed markers (ADDON_PLAN.md step 4)
 
 Not tested in the game yet; see `TESTING.md` section 8.

@@ -21,7 +21,6 @@ R2F.L = {
   BTN_IMPORT = "Import",
   BTN_TIDY = "Tidy up",
   BTN_SETTINGS = "Settings",
-  SETTINGS_LATER = "Settings come in a later version.",
   EMPTY_LIBRARY = "Your macro library is empty.\n\nClick Import and paste the import string from the Macros page.",
   EMPTY_CLASS = "No macros for your class or Universal yet.\n\nPick some on the Macros page and import them.",
   OTHER_CLASSES = "You also have macros for %s. Log in on that character to use them.",
@@ -87,7 +86,46 @@ R2F.L = {
   BTN_DELETE = "Delete",
   TIDY_DONE = "deleted %d unused macros.",
   QUEUED = "you're in combat; finishing this when combat ends.",
+  -- Long name lists in popups are cut short (the dialog grows with its text).
+  LIST_MORE = "%s and %d more",
+
+  -- Settings panel (5.8, step 5)
+  SETTINGS_TITLE = "Settings",
+  SETTINGS_SLOTS = "New macros go to:",
+  SETTINGS_SLOTS_CHAR = "Character slots first",
+  SETTINGS_SLOTS_ACC = "Account slots first",
+  SETTINGS_SLOTS_NOTE = "Only for macros made from now on. Macros you already have stay where they are.",
+  SETTINGS_MINIMAP_SHOW = "Show minimap button",
+  SETTINGS_MINIMAP_LOCK = "Lock minimap button",
+  SETTINGS_MINIMAP_LATER = "The minimap button comes in a later version.",
+  BTN_REMOVE_ALL = "Remove all Road to Forever macros",
+  BTN_REMOVE = "Remove",
+  BTN_OK = "OK",
+  REMOVE_ALL_NONE = "there are no Road to Forever macros in the game to remove.",
+  REMOVE_ALL_TEXT = "Delete %d Road to Forever macros from the game, including any on your action bars?\n\n%s",
+  REMOVE_ALL_TEXT_ONE = "Delete 1 Road to Forever macro from the game, even if it's on your action bars?\n\n%s",
+  REMOVE_ALL_KEEP = "\n\nKept: %s. You edited them, so they stay as your own macros.",
+  REMOVE_ALL_KEEP_ONE = "\n\nKept: %s. You edited it, so it stays as your own macro.",
+  REMOVE_ALL_ONLY_KEEP = "Nothing to delete: you edited every Road to Forever macro in the game (%s). "
+    .. "They stay as your own macros, and Road to Forever stops tracking them.",
+  REMOVE_ALL_LIBRARY = "\n\nYour macro library stays, so you can drag them out again later.",
+  REMOVE_ALL_DONE = "removed %d Road to Forever macros. Your macro library is unchanged.",
+  REMOVE_ALL_DONE_ONE = "removed 1 Road to Forever macro. Your macro library is unchanged.",
+  REMOVE_ALL_DONE_KEPT = " Kept %d you edited as your own.",
+
+  -- Key bindings (Bindings.xml; step 6 gives Open Talents a window)
+  TALENTS_LATER = "the Talents window comes in a later version.",
 
   -- Slash command
   HELP = "type /r2f to open the Macro Book.",
 }
+
+-- Key Bindings menu labels (Bindings.xml). The client looks these up as
+-- globals named BINDING_HEADER_<header> and BINDING_NAME_<binding name>; that
+-- naming is fixed by Blizzard, so they can't be R2F-prefixed or live on R2F.
+-- They must exist before the Key Bindings window first opens; setting them
+-- while the addon loads is the standard way.
+_G.BINDING_HEADER_ROADTOFOREVER = "Road to Forever"
+_G.BINDING_NAME_R2F_TOGGLE = "Toggle Road to Forever"
+_G.BINDING_NAME_R2F_MACROS = "Open Macros"
+_G.BINDING_NAME_R2F_TALENTS = "Open Talents"

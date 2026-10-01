@@ -293,7 +293,11 @@ local function onTidy()
   local names = {}
   for i, c in ipairs(cands) do names[i] = c.name end
   local text = #cands == 1 and L.TIDY_TEXT_ONE:format(names[1])
-    or L.TIDY_TEXT:format(#cands, table.concat(names, ", "))
+    or L.TIDY_TEXT:format(#cands, UI.NameList(names))
+  -- Tidy up button is greyed out in combat (refreshBottom); a popup opened
+  -- before the pull and accepted in combat is queued, not refused, because
+  -- the player already said yes and nothing lands on the cursor later.
+  -- Macros.Tidy re-checks "unedited and not on a bar" when it runs.
   UI.Confirm(text, L.BTN_DELETE, L.BTN_CANCEL, function()
     Macros.RunOrQueue(function()
       local n = Macros.Tidy(cands)
@@ -366,17 +370,11 @@ local function build()
   ui.tidy = button(L.BTN_TIDY, 100)
   ui.tidy:SetPoint("LEFT", ui.import, "RIGHT", 8, 0)
   ui.tidy:SetScript("OnClick", onTidy)
-  -- Settings is step 5 (ADDON_PLAN 9); the button is in place but disabled.
+  -- Settings panel (5.8, step 5). Stays enabled in combat: the panel greys
+  -- out its own Remove all button, and its other settings are safe anytime.
   ui.settings = button(L.BTN_SETTINGS, 100)
   ui.settings:SetPoint("BOTTOMRIGHT", -20, 16)
-  ui.settings:Disable()
-  if ui.settings.SetMotionScriptsWhileDisabled then ui.settings:SetMotionScriptsWhileDisabled(true) end
-  ui.settings:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    GameTooltip:AddLine(L.SETTINGS_LATER, 1, 1, 1)
-    GameTooltip:Show()
-  end)
-  ui.settings:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  ui.settings:SetScript("OnClick", function() R2F.Settings.Toggle() end)
 
   f:SetScript("OnShow", function()
     UI.PlaySound("IG_SPELLBOOK_OPEN")

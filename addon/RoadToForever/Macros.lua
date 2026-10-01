@@ -11,7 +11,7 @@
 --   edited or deleted by the addon; a macro the player changed is theirs.
 -- * Every write checks InCombatLockdown() first. CreateMacro/EditMacro/
 --   DeleteMacro are blocked in combat; calling them anyway would error.
---   Writes that can wait (Tidy up, step-4 updates) are queued and run on
+--   Writes that can wait (Tidy up, Remove all, step-4 updates) are queued and run on
 --   PLAYER_REGEN_ENABLED; a drag in combat is refused instead, because
 --   putting a macro on the cursor seconds later would surprise the player.
 
@@ -209,6 +209,10 @@ function Macros.QueueSize() return #queue end
 
 -- Which slots a new macro goes to (2, setting slotsFirst). Returns
 -- perCharacter (true/false) or nil when both are full.
+-- Read at every CreateMacro, so changing the setting (Settings panel, step 5)
+-- only steers macros made from then on. Existing macros are NOT moved: WoW
+-- has no "move macro to the other tab" call, so moving would mean delete +
+-- create, which empties every action button holding the old macro.
 function Macros.ChooseSlot()
   local acc, maxAcc, char, maxChar = Macros.Counts()
   local charFree, accFree = char < maxChar, acc < maxAcc
@@ -435,6 +439,10 @@ end
 -- Ours, unedited, not on any bar. Also forgets records whose macro the
 -- player deleted, so they stop counting as ours.
 -- Returns { {id=, name=}, ... } sorted by name.
+-- Why only unedited AND unused: Tidy up is the routine "give me my slots
+-- back" button, pressed without much thought. A macro on a bar is in use
+-- (deleting it would empty the button), and an edited one is the player's
+-- work, which a cleanup button must never throw away.
 function Macros.TidyCandidates()
   local onBars = Macros.NamesOnBars()
   local out = {}
@@ -452,19 +460,76 @@ end
 
 -- Delete the given candidates. Each one is looked up by name again right
 -- before deleting, because every DeleteMacro shifts the indices of the rest.
+-- Both Tidy rules are checked again here, not only when the popup was built:
+-- a Tidy up confirmed in combat runs later from the queue, and by then the
+-- player may have edited a macro or put it on a bar.
 function Macros.Tidy(candidates)
   if InCombatLockdown() then R2F.Error(L.ERR_COMBAT); return 0 end
+  local onBars = Macros.NamesOnBars()
   local n = 0
   for _, c in ipairs(candidates) do
     local rec = Library.Created(c.id)
     local idx, body = live(c.name)
-    if rec and idx > 0 and Library.Hash(body) == rec.hash then
+    if rec and idx > 0 and Library.Hash(body) == rec.hash and not onBars[c.name] then
       DeleteMacro(idx)
       Library.SetCreated(c.id, nil)
       n = n + 1
     end
   end
   return n
+end
+
+-- ---------------------------------------------------------------------------
+-- Remove all (Settings, 5.8; decisions in ADDON_PLAN 6.9)
+-- ---------------------------------------------------------------------------
+
+-- What "Remove all Road to Forever macros" would do right now, read-only.
+-- Returns { delete = {{id=, name=}}, keep = {{id=, name=}} }, each sorted by
+-- name. `delete` = every real macro we made that is still unedited, ON A BAR
+-- OR NOT (that's the difference from Tidy up: this is the deliberate "take
+-- all of it out of my game" button). `keep` = ours but edited by the player:
+-- 5.8 says Remove all deletes only macros "you haven't edited", so those
+-- stay, as the player's own macros (we stop tracking them).
+-- Records whose macro is already gone are in neither list.
+function Macros.RemoveAllPlan()
+  local plan = { delete = {}, keep = {} }
+  for id, rec in pairs(Library.AllCreated()) do
+    local idx, body = live(rec.name)
+    if idx > 0 then
+      local list = Library.Hash(body) == rec.hash and plan.delete or plan.keep
+      list[#list + 1] = { id = id, name = rec.name }
+    end
+  end
+  local byName = function(a, b) return a.name < b.name end
+  table.sort(plan.delete, byName)
+  table.sort(plan.keep, byName)
+  return plan
+end
+
+-- Delete every unedited real macro this addon made (character slots of THIS
+-- character + account slots) and forget all tracking: R2FCharDB.created and
+-- R2FDB.createdAccount end up empty, so edited macros become plain player
+-- macros the addon never touches again. R2FDB.library is NOT touched: the
+-- imported macros stay in the book and can be dragged out again.
+-- Re-reads everything at run time (it may run from the combat queue).
+-- Returns deleted, kept (counts).
+-- Other characters' character-slot macros can't be reached from here (the
+-- game only exposes the logged-in character's), so their records stay in
+-- their own R2FCharDB until Remove all is used on that character.
+function Macros.RemoveAll()
+  if InCombatLockdown() then R2F.Error(L.ERR_COMBAT); return 0, 0 end
+  local plan = Macros.RemoveAllPlan()
+  local deleted = 0
+  for _, c in ipairs(plan.delete) do
+    -- By name each time: every DeleteMacro shifts the other indices.
+    local idx = GetMacroIndexByName(c.name) or 0
+    if idx > 0 then
+      DeleteMacro(idx)
+      deleted = deleted + 1
+    end
+  end
+  for id in pairs(Library.AllCreated()) do Library.SetCreated(id, nil) end
+  return deleted, #plan.keep
 end
 
 -- Is the real macro for `id` ours and on an action bar? (5.3 marker)

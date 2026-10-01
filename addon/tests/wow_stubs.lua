@@ -19,7 +19,8 @@ T.knownSpells = { ["Victory Rush"] = "Interface\\Icons\\Ability_Warrior_Devastat
 T.templates = { PortraitFrameTemplate = true, InputScrollFrameTemplate = true,
                 UIPanelButtonTemplate = true, UIPanelCloseButton = true,
                 UIPanelScrollFrameTemplate = true, BackdropTemplate = true,
-                ButtonFrameTemplate = true }
+                ButtonFrameTemplate = true, UICheckButtonTemplate = true,
+                UIRadioButtonTemplate = true }
 T.calls = {}          -- log of macro API writes
 
 -- ---------------------------------------------------------------------------
@@ -159,7 +160,7 @@ for _, name in ipairs({
   "SetPushedTexture", "SetDisabledTexture", "SetCheckedTexture", "RegisterForClicks",
   "SetMultiLine", "SetAutoFocus", "SetFontObject", "SetMaxLetters", "SetMaxBytes",
   "SetScrollChild", "SetFocus", "ClearFocus", "HighlightText",
-  "SetMotionScriptsWhileDisabled",
+  "SetMotionScriptsWhileDisabled", "SetHitRectInsets",
 }) do methods[name] = noop end
 local MT = { __index = methods }
 
@@ -204,6 +205,7 @@ function methods:GetChecked() return self.__checked end
 function methods:CreateTexture() return newObject("Texture") end
 function methods:CreateFontString() return newObject("FontString") end
 function methods:GetStringHeight() return 14 end
+function methods:GetStringWidth() return 7 * #(self.__text or "") end
 function methods:GetEffectiveScale() return 1 end
 function methods:IsMouseOver() return false end
 function methods:GetPoint() return "CENTER", nil, "CENTER", 10, 20 end

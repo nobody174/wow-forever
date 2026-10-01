@@ -5,6 +5,16 @@ everything not shipped yet lives here, whether started or not. The moment
 something ships, it moves to [CHANGELOG.md](CHANGELOG.md), not left here as a
 stale checkmark.
 
+## Next up: in-game macro addon (planned 2026-10-01)
+
+- **Road to Forever Macros addon** — full plan in [ADDON_PLAN.md](ADDON_PLAN.md).
+  In-game window (`/r2f`) with class icons, General/Tank/DPS/Healer tabs,
+  checkboxes + Select all / Install all, drag-and-drop onto action bars, and an
+  import string copied from `macros.html`. Replaces the idea of a local script
+  editing `macros-cache.txt` (server sync overwrites that file, and the folder
+  doesn't tell you the class). Data prerequisites first: role sections for every
+  class, add Druid, 16-char `short` names, `icon` field.
+
 ## Waiting on Wowhead (2026-10-01)
 
 - **Paladin "Crusade" talent (Retribution, row 4, far right, 2 ranks).** Shown in

@@ -145,6 +145,8 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Class roster icons (Priest/Shaman/Paladin/Warlock/Hunter/Warrior/Rogue/Mage) are
   NOT local assets — they're hotlinked from Wowhead's icon CDN (`wow.zamimg.com`)
   directly in `template.html`'s `CLASS_ICONS` map.
+- `ADDON_PLAN.md` — plan for the in-game macro addon (not built yet). Read it
+  before touching anything addon-related or the `short`/`icon` macro fields.
 - `assets/drafts/` — gitignored scratch folder for image-generation drafts/
   intermediates (hero and icon art both land here). Not part of the deployed site.
 

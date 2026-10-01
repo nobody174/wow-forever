@@ -6,10 +6,6 @@ being worked on next.
 
 ## Someday ideas
 
-- A companion WoW addon (Lua) instead of just a macro/text site — e.g. a settings
-  panel to browse macros in-game. Would pull in the addon-development WoW roles
-  (WoW Addon Architect, UI/Frame Designer, Event Flow Analyst, Taint & Secure
-  Execution Auditor) that are currently out of scope for this macro-only project.
 - Arena/PvP-specific macro set (arena1-3 tokens, stopcasting) if that ever becomes
   something we actually want covered. See BACKLOG for why this is
   currently deferred rather than in progress.

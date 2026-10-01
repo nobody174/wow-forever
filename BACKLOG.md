@@ -5,6 +5,16 @@ everything not shipped yet lives here, whether started or not. The moment
 something ships, it moves to [CHANGELOG.md](CHANGELOG.md), not left here as a
 stale checkmark.
 
+## Waiting on Wowhead (2026-10-01)
+
+- **Paladin "Crusade" talent (Retribution, row 4, far right, 2 ranks).** Shown in
+  Mobalytics' Paladin leveling guide but missing from Wowhead's Forever data (and
+  from Mobalytics' own calculator). Decision: we keep following Wowhead and don't
+  patch it in by hand. The calculator loads Wowhead's data live, so it appears on
+  its own once Wowhead adds it. When it does: old Paladin share links with points
+  deep in Retribution will shift by one talent, and it's a good moment to add the
+  Paladin (and Warrior) level-30 builds.
+
 ## Open findings (from the 2026-09-24 WoW role pass)
 
 - **Weapon-swap macro doesn't mention the combat restriction.** WoW blocks weapon

@@ -17,6 +17,9 @@ user-facing release notes.
   builds for the 2 Hunters · Warrior · Druid plan; "Copy as group pick" turns any
   saved build into a ready-to-paste entry. No backend: GitHub Pages is static, so
   shared lists live in the repo, not in a database.
+- Shared calculator files are now loaded with a `?v=` cache-busting query on both
+  pages: the first live check served a cached old `talentcalc.js` next to the new
+  sidebar script and Group picks failed to render.
 
 ## 2026-09-30 (evening)
 

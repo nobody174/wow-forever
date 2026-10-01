@@ -108,6 +108,9 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   group pick" on a saved build produces a ready-to-paste entry. There is no server:
   personal saves never leave the browser; sharing is by link or by adding a group pick.
   `#saved` in the URL opens the drawer.
+  Pages load `talentcalc.js`, `talentcalc.css` and `talentsaved.js` with a `?v=YYYYMMDD`
+  query string; bump it on both pages whenever any of the three changes, or browsers
+  can mix a cached old engine with a new sidebar (happened on 2026-10-01).
 - `talents.html` — hand-written talent calculator page (roster + full-mode mount + saved-builds sidebar). Talent data is NOT
   stored in the repo: the page loads Wowhead's public Forever data script
   (`https://nether.wowhead.com/forever/data/talents-classic`) with a `<script>` tag and a

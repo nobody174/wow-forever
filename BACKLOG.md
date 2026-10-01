@@ -16,9 +16,9 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
 
 - [x] **1. Data:** shipped 2026-10-01 — see CHANGELOG.md.
 - [x] **2. Site export:** shipped 2026-10-01 — see CHANGELOG.md.
-- [ ] **3. Addon MVP:** `addon/RoadToForever/`, `/r2f`, import window with
-      preview, library in SavedVariables, Macro Book (own class + Universal),
-      click/drag creates + picks up the macro, slot counter, combat lock.
+- [x] **3. Addon MVP:** shipped 2026-10-02 as v0.1.0 (tag `r2f-v0.1.0`) — see
+      CHANGELOG.md. Not yet run in the game: needs the
+      `addon/RoadToForever/TESTING.md` pass in the beta.
 - [ ] **4. Updates:** re-import updates unedited macros, Changed markers.
 - [ ] **5. Tidy up, Settings, Remove all, keybindings.**
 - [ ] **6. Main window + minimap:** Home / Macros / Talents tabs, logo
@@ -44,6 +44,7 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
 - [ ] **Beta checks** (plan section 11): Interface number, slot limits,
       templates, CreateMacro+PickupMacro, relog survival, paste speed,
       LibDBIcon, menu API, LearnTalent from a click, talent order vs our links.
+      Step-by-step list for the addon so far: `addon/RoadToForever/TESTING.md`.
 
 Decided: no Druid; only Warrior (General/Tank/DPS) and Paladin
 (General/Tank/DPS/Healer) use role sections, other classes keep their spec

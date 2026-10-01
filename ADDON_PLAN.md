@@ -1,7 +1,7 @@
 # Addon plan: Road to Forever (macros + talents)
 
-Status: **in progress** (scoped 2026-10-01). Steps 1 (data) and 2 (site export)
-shipped; see `CHANGELOG.md`.
+Status: **in progress** (scoped 2026-10-01). Steps 1 (data), 2 (site export)
+and 3 (addon MVP, v0.1.0, not yet tested in the game) shipped; see `CHANGELOG.md`.
 Target: usable before the Nov 4 launch.
 
 | | |
@@ -483,8 +483,11 @@ addon/RoadToForever/
   Import.lua        parse + validate + diff against the library
   Library.lua       SavedVariables access, ids, hashes
   Macros.lua        create / update / pick up / tidy (all real-macro calls live here)
+  UI\Widgets.lua    shared: window shell + template fallbacks, confirm dialog,
+                    multi-line edit box, copy box (added in step 3, 6.7)
   UI\MacroBook.lua  frame, tabs, grid, paging, tooltip
   UI\ImportFrame.lua
+  TESTING.md        in-game beta checklist; CHANGELOG.md addon version history
   UI\Settings.lua
   UI\MainWindow.lua shared window, bottom tabs Home / Macros / Talents
   UI\Home.lua       Home tab
@@ -497,6 +500,8 @@ addon/RoadToForever/
   media\logo64.tga  minimap icon (64x64, 32-bit with alpha)
   media\logo128.tga main window portrait
 addon/art/logo.svg  logo source (not shipped); build script exports the .tga files
+addon/tests/        out-of-game tests (not shipped): run_tests.py, run_luacheck.py
+addon/.luacheckrc   allowed globals / WoW API list for luacheck
 ```
 
 No libraries in v1 (LibDBIcon only when the minimap button is added).
@@ -578,6 +583,110 @@ Account-slot macros are also recorded in `R2FDB.createdAccount`.
 - Macro creation/editing/pickup only out of combat. Nothing runs from
   `OnUpdate` except a throttled refresh while the window is open.
 
+### 6.7 Decisions made while building it (step 3, v0.1.0, 2026-10-02)
+
+**Globals and Blizzard tables**
+- **"Only one global" means one Lua namespace.** The WoW API forces a few more
+  names into `_G`, all R2F-prefixed: the SavedVariables `R2FDB` / `R2FCharDB`,
+  `SLASH_R2F1` (+ the `R2F` field in `SlashCmdList`), and the frame names
+  `R2FMacroBook`, `R2FImport`, `R2FConfirm`, `R2FCopy`, `R2FImportScroll`,
+  `R2FCopyScroll` (a `...Plain` / `...B` suffix on fallbacks). The windows need
+  names because `UISpecialFrames` (Esc to close, 5.1) works by name, and the scroll
+  templates name their scroll bar `$parentScrollBar`. The test suite fails if any
+  other global appears. Appending to `UISpecialFrames` and adding `SlashCmdList.R2F`
+  are the only writes into Blizzard tables.
+- **Own confirm dialog, not `StaticPopupDialogs`.** Writing into that shared table
+  is a known taint path for protected popups; our dialog is a plain frame with
+  Blizzard's dialog textures and `UIPanelButtonTemplate` buttons. Same look.
+- **Own right-click menu, not `UIDropDownMenu`/`EasyMenu`/`MenuUtil`.** Avoids the
+  dropdown taint problems and the open "which menu API does Forever have"
+  question (11) for a two-item menu. It closes when the mouse leaves it. Step 6's
+  minimap menu still has to answer that question.
+- **Side tabs are built from the spellbook's textures**
+  (`SpellBook-SkillLineTab`, `ButtonHilight-Square`, `CheckButtonHilight`), not
+  `SpellBookSkillLineTabTemplate`: that template's scripts call Blizzard's
+  spellbook functions. Page buttons use the `UI-SpellbookIcon-*Page-*` textures.
+
+**Templates that may not exist (11)**
+- Each template is checked with `C_XMLUtil.GetTemplateInfo` when the client has
+  it, then created inside `pcall` and accepted only if the child keys we use exist
+  (`CloseButton`, `EditBox`). Fallback chains:
+  `PortraitFrameTemplate` -> `ButtonFrameTemplate` -> dialog-border frame with
+  `UIPanelCloseButton` (no portrait); `InputScrollFrameTemplate` ->
+  `UIPanelScrollFrameTemplate` + our own multi-line `EditBox`. Both paths are run
+  by the tests. Which one the client used is visible by frame name (TESTING.md 2).
+- On the template's edit box we use `HookScript("OnTextChanged")` (our own frame),
+  so the template's own scroll-to-cursor handler keeps working.
+
+**Order and labels**
+- **Tab order:** the import string carries section names but not their order, so
+  `Library.SECTION_ORDER` mirrors data.py's sections per class (and
+  `Library.GROUP_ORDER` mirrors `ORDER`). `addon/tests/run_tests.py` fails if they
+  drift from data.py. Sections the addon doesn't know yet go after the known ones
+  in first-imported order (`R2FDB.sectionSeen`).
+- **Entry order in a tab:** group order, then the record's position in the most
+  recent import that contained it. The site writes page order and remembers the
+  selection, so re-imports are normally supersets and keep this consistent.
+- **Subtext under a name** = the group's text before ` / ` (`Damage / offensive`
+  -> `Damage`, `Panic / defensive` -> `Panic`), or `Learn later`.
+- **`Learn later`** only for macros whose `#showtooltip` spell isn't known and that
+  `/cast` something; an item not in the client's cache just shows its fallback icon.
+- **Shift-click** puts the body in chat with lines joined by ` ; ` (chat is one line).
+
+**Real macros (6.4)**
+- **Hash** = djb2 of the body, 8 hex digits (`Library.Hash`), taken from the body
+  read *back* from the game after `CreateMacro`/`EditMacro`, in case the client
+  normalises text on save (otherwise every macro would look edited).
+- **Same name, identical body** (e.g. saved data lost, or typed in by hand): adopted
+  as ours silently, no popup.
+- **Keep mine** = nothing happens: your macro stays and nothing goes on the cursor.
+  Replace = `EditMacro` in its current slot, then pick it up.
+- **Our macro, edited by the player** counts as "isn't ours" for Ensure (popup).
+- **Drag/click in combat is refused** with the 5.9 message, not queued: putting a
+  macro on the cursor seconds later would surprise the player. Only writes that can
+  wait are queued (Tidy up confirmed in combat; step 4's updates via `Macros.Update`).
+- **UI combat state uses a flag from the events**, because `InCombatLockdown()` is
+  still false while `PLAYER_REGEN_DISABLED` is handled. Macro writes still check
+  `InCombatLockdown()` itself, which is what the game enforces.
+- **Import is greyed out in combat** although it only writes SavedVariables, so
+  every book button behaves the same in combat (6.5).
+- **On your bars** = `GetActionInfo(slot) == "macro"`, name from `GetActionText`
+  with `GetMacroInfo` as fallback, slots 1-120.
+- **Remove from library** leaves a real macro made from it; it stays recorded, so
+  Tidy up can still delete it later.
+- **`Macros.Update` ships now but isn't called yet**; step 4 wires it into the import.
+
+**Import validation (7), additions**
+- Whitespace anywhere in the pasted string is ignored. The id must equal
+  `<class>/<short>` exactly; duplicate ids keep the first. `short` and `body` limits
+  count UTF-8 characters, like build.py's `len()`. Invalid records are counted as
+  skipped in the preview (`N could not be read and will be skipped.`).
+
+**Scope for v0.1.0**
+- **Tidy up ships in step 3** (with its confirm popup), since the Macros.lua rules
+  include it; Settings / Remove all / keybindings stay in step 5. The Settings
+  button is in place but disabled with a "later version" tooltip.
+- **No main window yet:** `/r2f` toggles the Macro Book as its own window and
+  `/r2f import` opens the Import window. Step 6 moves both into the main window's
+  Macros tab (12.4) and adds the full slash-command set (12.3).
+- **Other classes** have no tabs; the Universal tab shows the 5.7 line.
+
+**Versioning**
+- The TOC says `## Version: 0.1.0` directly (not `@project-version@`, 6.2) because
+  nothing packages the addon yet; step 7's release workflow can switch to the
+  token. Addon versions are tagged `r2f-v<version>` (first: `r2f-v0.1.0`). Section 8
+  plans the release workflow on `addon-v*` tags: step 7 should pick one prefix
+  (simplest: build releases from `r2f-v*`) and note it here.
+- `## Interface: 11507` (Classic Era 1.15.7) is a placeholder until the beta check (11).
+
+**Testing outside the game**
+- `python addon/tests/run_tests.py` runs the addon under real PUC Lua 5.1 (via the
+  `lupa` Python package) against a fake client (`addon/tests/wow_stubs.lua`; its
+  macro calls raise if made in combat). Import strings come from
+  `addon/tests/make_fixtures.js`, which runs the site's own `importString()` code
+  from macros.html in Node. `python addon/tests/run_luacheck.py <luacheck src> <argparse dir>`
+  runs luacheck's library API under the same Lua 5.1 with `addon/.luacheckrc`.
+
 ---
 
 ## 7. Import string format
@@ -626,8 +735,11 @@ Body keeps its real newlines. Empty icon = `""`.
 4. **Updates**: re-import updates unedited macros; Changed markers.
 5. **Tidy up**, Settings, Remove all, keybindings.
 6. **Main window + minimap**: Home / Macros / Talents tabs, logo, LibDBIcon
-   button with right-click menu, `/r2f`, `/r2ft`, `/r2f minimap`.
-7. **Release** zip + Download link. CurseForge later.
+   button with right-click menu, `/r2f`, `/r2ft`, `/r2f minimap`. Moves the
+   step-3 Macro Book (`R2F.MacroBook`) and Import window into the main window
+   (6.7).
+7. **Release** zip + Download link. CurseForge later. Settle the tag prefix
+   (`r2f-v*` vs `addon-v*`, 6.7).
 8. **Talent export** (read-only, no risk): Copy my build as a link. Site links get
    the `~hash` check (section 13.3).
 9. **Talent import preview**: paste link, mini trees, summary, warnings. Nothing learned.

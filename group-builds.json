@@ -1,14 +1,6 @@
 {
   "picks": [
     {
-      "id": "g-hunter-bm-20",
-      "name": "Hunter — Beast Mastery (level 20)",
-      "by": "Builds page",
-      "note": "Leveling start for all our Hunters (2 Hunters · Warrior · Druid and 3 Hunters · Druid plans).",
-      "code": "hunter/5020211",
-      "ts": 1759312800000
-    },
-    {
       "id": "g-warrior-tank-20",
       "name": "Warrior — Tank (level 20)",
       "by": "Builds page",

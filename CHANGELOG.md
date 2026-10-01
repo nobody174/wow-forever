@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-01 (pink button)
+
+- Added a tiny round pink button next to Unmute in the landing page top bar
+  (`.sound-btns` wraps both). Each press plays the full "Ha! Gayyyy!" YouTube clip
+  (`yOQqBMz70iM`) once through the same hidden player; no loop. While it plays the
+  main button shows "Mute" and can stop it; the ENDED handler resets it after.
+
 ## 2026-10-01 (music clip)
 
 - Landing page Unmute button now plays only the 1:05-1:12 chorus hook of the

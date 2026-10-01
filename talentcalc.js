@@ -17,7 +17,11 @@
        opts.preset     [[talentName, rank], ...] (used when no code is given)
        opts.compact    true = tree tabs + one tree at a time (builds page)
        opts.onChange   function(instance) after every point change
+       opts.saveName   default name offered by the "Save build" button
      instance.encode() "<class>/<code>"   instance.reset()   instance.setCode(code)
+     instance.split() [pts, pts, pts]      instance.mainTree()   instance.total()
+     TalentCalc.presetCode(raw, cls, preset) -> "<class>/<code>" or ""
+   A "Save build" button is added to the bar when talentsaved.js is on the page.
    ============================================================================= */
 (function () {
   "use strict";
@@ -202,17 +206,18 @@
       el.classList.add("tc");
       el.classList.toggle("tc-compact", compact);
       el.style.setProperty("--c", cls.color);
+      var saveBtn = window.TalentSaved ? '<button type="button" class="tc-btn tc-save" data-tc-act="save">Save build</button>' : "";
       var bar = compact
         ? '<div class="tc-bar"><span class="tc-stat">Points <b data-tc="spent">0</b> / 51</span><span class="tc-stat">Level <b data-tc="level">—</b></span>' +
           '<button type="button" class="tc-btn tc-danger" data-tc-act="reset">Reset to build</button>' +
-          '<button type="button" class="tc-btn" data-tc-act="copy">Copy link</button>' +
+          '<button type="button" class="tc-btn" data-tc-act="copy">Copy link</button>' + saveBtn +
           '<a class="tc-btn" data-tc="open" href="talents.html">Open in Talent Calc</a></div>' +
           '<div class="tc-tabs" role="tablist">' + trees.map(function (t, ti) {
             return '<button type="button" role="tab" data-tab="' + ti + '" aria-selected="' + (ti === active) + '">' + esc(t.name) + '<span class="tc-n" data-pts="' + ti + '">0</span></button>';
           }).join("") + "</div>"
         : '<div class="tc-bar"><span class="tc-stat tc-split">Build <b data-tc="split">0 / 0 / 0</b></span><span class="tc-stat">Spent <b data-tc="spent">0</b> / 51</span>' +
           '<span class="tc-stat tc-left">Left <b data-tc="left">51</b></span><span class="tc-stat">Level <b data-tc="level">—</b></span>' +
-          '<button type="button" class="tc-btn" data-tc-act="copy">Copy link</button><button type="button" class="tc-btn tc-danger" data-tc-act="reset">Reset</button></div>' +
+          '<button type="button" class="tc-btn" data-tc-act="copy">Copy link</button>' + saveBtn + '<button type="button" class="tc-btn tc-danger" data-tc-act="reset">Reset</button></div>' +
           '<p class="tc-hint">Click to add a point, right-click to remove, Shift-click to max. On a phone, tap a talent for + and − buttons.</p>';
       var html = trees.map(function (t, ti) {
         var cells = t.talents.map(function (x) {
@@ -287,7 +292,8 @@
     el.addEventListener("click", function (e) {
       var act = e.target.closest("[data-tc-act]");
       if (act) {
-        if (act.dataset.tcAct === "reset") { ranks = compact ? JSON.parse(initial) : {}; update(true); }
+        if (act.dataset.tcAct === "save") { if (window.TalentSaved) window.TalentSaved.openSave(self, opts.saveName); }
+        else if (act.dataset.tcAct === "reset") { ranks = compact ? JSON.parse(initial) : {}; update(true); }
         else if (act.dataset.tcAct === "copy") {
           var url = new URL("talents.html#" + self.encode(), location.href).href;
           var done = function () { act.textContent = "Copied!"; setTimeout(function () { act.textContent = "Copy link"; }, 1500); };
@@ -342,6 +348,10 @@
     // Public API
     this.cls = cls;
     this.encode = function () { var c = code(); return cls.id + (c ? "/" + c : ""); };
+    // Points per tree, e.g. [31, 20, 0], and the tree with the most points.
+    this.split = function () { return trees.map(function (t, ti) { return treePoints(ti); }); };
+    this.mainTree = function () { var sp = self.split(), m = 0; sp.forEach(function (n, i) { if (n > sp[m]) m = i; }); return sp[m] ? trees[m].name : ""; };
+    this.total = total;
     this.reset = function () { ranks = {}; captureInitial(); update(true); };
     this.setCode = function (c) { applyCode(c); update(false); };
     this._add = add;
@@ -357,6 +367,12 @@
     classById: classById,
     load: load,
     mount: function (el, opts) { return load().then(function (raw) { return new Calc(el, raw, opts || {}); }); },
-    mountSync: function (el, raw, opts) { return new Calc(el, raw, opts || {}); }
+    mountSync: function (el, raw, opts) { return new Calc(el, raw, opts || {}); },
+    // Resolve a [[talentName, rank]] preset to a share code without showing it
+    // (used for Group picks written by talent name). Returns "" if invalid.
+    presetCode: function (raw, clsId, preset) {
+      var inst = new Calc(document.createElement("div"), raw, { cls: clsId, preset: preset });
+      return inst.total() ? inst.encode() : "";
+    }
   };
 })();

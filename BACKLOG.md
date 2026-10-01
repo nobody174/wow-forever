@@ -39,6 +39,14 @@ stale checkmark.
 
 ## Ideas not yet built
 
+- Group picks: add real 60 / end-game builds for our group (Druid healer/tank,
+  Warrior, Hunters) once specs are agreed — save in the calc, "Copy as group pick",
+  paste into `GROUP_PICKS` in `talentsaved.js`. No Druid group pick yet (no Druid
+  build on the Builds page either).
+- Saved builds are per browser. If we want one shared list everyone can add to
+  without editing the repo, it needs a backend (e.g. a Google Sheet or a small
+  serverless store) — not worth it unless link-sharing turns out to be too clunky.
+
 - Addons page: expand beyond the current 4-addon list as we adopt
   more addons for launch.
 - Builds page: still a coming-soon placeholder — needs actual talent build

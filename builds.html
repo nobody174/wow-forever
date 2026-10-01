@@ -191,6 +191,7 @@ h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spac
   <main class="builds-grid" id="out"></main>
 </div>
 <script src="talentcalc.js"></script>
+<script src="talentsaved.js"></script>
 <script>
 const CLASS_ICONS = {
   Priest: "https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg",
@@ -278,7 +279,7 @@ function mountCalcs(shown){
       const b = shown[+el.dataset.build];
       if(!b) return;
       TC.mountSync(el, raw, {
-        cls: clsNow.toLowerCase(), compact: true,
+        cls: clsNow.toLowerCase(), compact: true, saveName: b.title,
         preset: b.talents.map(t=>[t.name, parseInt(t.rank,10)]),
       });
     });

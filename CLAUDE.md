@@ -92,7 +92,23 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   onChange})`. Builds preload from their `talents` list (`preset: [[name, rank]]`,
   matched by talent name) — keep build talent names identical to Wowhead's Forever
   names or the preset is dropped. All CSS classes are `tc-` prefixed.
-- `talents.html` — hand-written talent calculator page (roster + full-mode mount). Talent data is NOT
+  Extra API: `inst.split()`, `inst.mainTree()`, `inst.total()`,
+  `TalentCalc.presetCode(raw, cls, preset)`; `opts.saveName` = default name for the
+  "Save build" button, which every calculator bar shows when `talentsaved.js` is loaded.
+- `talentsaved.js` — "Saved builds" sidebar on `talents.html` and `builds.html` (load
+  after `talentcalc.js`; styles are the `ts-` block at the end of `talentcalc.css`).
+  Floating gold button under the top bar (bottom-right on narrow screens) opens a
+  right-hand drawer, same look as launch-plan's Buyable quests. Two tabs:
+  **My builds** (per browser, localStorage `wf-talent-builds-v1`: `{id, code, name,
+  note, ts}`; save from any calculator's "Save build", update the build you last
+  opened, import a pasted talents.html link, edit/delete, copy one or all links) and
+  **Group picks** — the `GROUP_PICKS` array at the top of the file, shipped with the
+  site so everyone sees the same list. Each pick is `{cls, name, by, note, code}` or
+  `{..., preset: [[talentName, rank]]}` (resolved via Wowhead data). "Edit → Copy as
+  group pick" on a saved build produces a ready-to-paste entry. There is no server:
+  personal saves never leave the browser; sharing is by link or by adding a group pick.
+  `#saved` in the URL opens the drawer.
+- `talents.html` — hand-written talent calculator page (roster + full-mode mount + saved-builds sidebar). Talent data is NOT
   stored in the repo: the page loads Wowhead's public Forever data script
   (`https://nether.wowhead.com/forever/data/talents-classic`) with a `<script>` tag and a
   tiny `WH.setPageData` shim, so it always shows Wowhead's latest beta trees. Data shape

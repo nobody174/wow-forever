@@ -4,6 +4,20 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-01
+
+- **Saved builds sidebar** on the Talent Calc and Builds pages (`talentsaved.js`),
+  so we can keep builds and look them up together instead of passing links around.
+  Every calculator gets a gold "Save build" button; a floating "Saved builds" button
+  opens a right-hand drawer styled like the Buyable quests one. **My builds** is
+  stored per browser (name, note, class/tree/points summary; open, copy link, edit,
+  delete, import a pasted link, copy all as links for the group chat; saving after
+  opening a build offers "Update" or "Save as new"). **Group picks** is a curated list
+  in the repo (`GROUP_PICKS`) seeded with the level-20 BM Hunter and Warrior Tank
+  builds for the 2 Hunters · Warrior · Druid plan; "Copy as group pick" turns any
+  saved build into a ready-to-paste entry. No backend: GitHub Pages is static, so
+  shared lists live in the repo, not in a database.
+
 ## 2026-09-30 (evening)
 
 - Talent calc tree tabs (Builds cards) made much more visible: framed nav-style

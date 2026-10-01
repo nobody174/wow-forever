@@ -1,12 +1,3 @@
 {
-  "picks": [
-    {
-      "id": "g-warrior-tank-20",
-      "name": "Warrior — Tank (level 20)",
-      "by": "Builds page",
-      "note": "Tank start for the 2 Hunters · Warrior · Druid plan. Pre-Shield Slam, Rend-centric.",
-      "code": "warrior/0230501",
-      "ts": 1759312800000
-    }
-  ]
+  "picks": []
 }

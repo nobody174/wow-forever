@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-01 (music clip)
+
+- Landing page Unmute button now plays only the 1:05-1:12 chorus hook of the
+  YouTube track (`loadVideoById` with `startSeconds`/`endSeconds`) once per click,
+  instead of autoplaying the full song muted on a loop. When the clip ends the
+  button resets to "Unmute" so it can be replayed; clicking "Mute" mid-clip pauses.
+
 ## 2026-10-01 (later)
 
 - Replaced the landing page hero image (`assets/hero.webp`) with a new one: four

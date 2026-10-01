@@ -4,6 +4,22 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-01 (later)
+
+- Replaced the landing page hero image (`assets/hero.webp`) with a new one: four
+  Skyborne adventurers (Warrior tank, Druid healer, two Hunters with a panther and
+  a wolf) standing on a cliff path above a sea of clouds at sunset, a floating sky
+  isle with ruins/waterfalls in the distance. Generated via Gemini (full scene in
+  one pass, after SDXL-only attempts — background generation, character inpainting,
+  and compositing separately — kept hitting style/lighting mismatches or garbled
+  faces); any leftover baked-in title text was removed with a local SDXL inpaint
+  pass (small-resolution, not the 4x-upscaled version — doing it at full upscale
+  size maxed out the GPU's 12GB VRAM and produced nothing). Final image was a plain
+  LANCZOS resize to 2560×1080, not an AI upscaler — both 4x-UltraSharp and
+  4x-AnimeSharp distorted the painterly faces into a waxy/photoreal look when
+  tried. See the Personal Dev Support Folder's `local-tools-inventory.md` for the
+  working ComfyUI ⁄ inpainting ⁄ ESRGAN setup notes from this session.
+
 ## 2026-10-01
 
 - **Owner login for Group picks.** Group picks moved from a hard-coded array to

@@ -137,3 +137,16 @@ body.ts-open .ts-drawer{transform:none;visibility:visible;transition:transform .
 .ts-import input{margin:0;flex:1;min-width:0;font-size:14px}
 .ts-empty{color:var(--muted);margin:18px 0}
 .ts-foot{color:var(--muted);font-size:12.5px;margin-top:22px}
+.ts-btn[disabled]{opacity:.5;cursor:wait}
+.ts-btn.ts-owner{color:var(--ok,#6FCF7F);border-color:color-mix(in srgb,var(--ok,#6FCF7F) 45%,var(--edge))}
+.ts-btn.ts-owner:hover{border-color:var(--ok,#6FCF7F)}
+.ts-link{font:inherit;color:var(--gold);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
+.ts-notice{margin:14px 0 4px;padding:9px 12px;border-radius:5px;font-size:13.5px;border:1px solid var(--edge);background:var(--panel)}
+.ts-notice.ts-ok{border-color:var(--ok,#6FCF7F);color:var(--ok,#6FCF7F)}
+.ts-notice.ts-err{border-color:var(--warn,#E8A33D);color:var(--warn,#E8A33D)}
+.ts-login{background:var(--panel);border:1px solid var(--edge);border-radius:6px;padding:12px;margin-top:22px}
+.ts-login .ts-meta a{color:var(--gold)}
+.ts-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-top:10px}
+.ts-check input{accent-color:var(--gold);width:16px;height:16px}
+.ts-ownerbar{margin-top:22px;padding:9px 12px;border:1px solid color-mix(in srgb,var(--ok,#6FCF7F) 45%,var(--edge));border-radius:5px;font-size:13px;color:var(--muted)}
+.ts-ownerbar b{color:var(--ok,#6FCF7F)}

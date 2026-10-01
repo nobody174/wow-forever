@@ -102,15 +102,23 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   **My builds** (per browser, localStorage `wf-talent-builds-v1`: `{id, code, name,
   note, ts}`; save from any calculator's "Save build", update the build you last
   opened, import a pasted talents.html link, edit/delete, copy one or all links) and
-  **Group picks** — the `GROUP_PICKS` array at the top of the file, shipped with the
-  site so everyone sees the same list. Each pick is `{cls, name, by, note, code}` or
-  `{..., preset: [[talentName, rank]]}` (resolved via Wowhead data). "Edit → Copy as
-  group pick" on a saved build produces a ready-to-paste entry. There is no server:
-  personal saves never leave the browser; sharing is by link or by adding a group pick.
-  `#saved` in the URL opens the drawer.
-  Pages load `talentcalc.js`, `talentcalc.css` and `talentsaved.js` with a `?v=YYYYMMDD`
-  query string; bump it on both pages whenever any of the three changes, or browsers
+  **Group picks**, read from `group-builds.json` in the repo root
+  (`{picks: [{id, name, by, note, code, ts}]}`, code = `"<class>/<digits>"`).
+  Only the owner changes Group picks, from the site: "Owner login" (bottom of the
+  Group picks tab) takes a GitHub fine-grained token (this repo only, Contents read
+  and write), checks it via `GET /user` + repo permissions, and stores it in
+  sessionStorage, or localStorage with "Remember on this device" (key `wf-owner-gh`).
+  Signed in, "Publish to group" on a saved build and Edit/Remove on picks read the
+  latest file + sha and `PUT` it through the GitHub contents API (one retry on a sha
+  conflict), so each change is a normal commit on `main` and Pages redeploys it for
+  everyone in ~1 minute. Never put a token in the repo. The token sits in the same
+  page as Wowhead's data script, which is why it must stay scoped to this one repo.
+  Editing `group-builds.json` by hand still works. `#saved` in the URL opens the drawer.
+  Pages load `talentcalc.js`, `talentcalc.css` and `talentsaved.js` with a `?v=` query
+  string; bump it on both pages whenever any of the three changes, or browsers
   can mix a cached old engine with a new sidebar (happened on 2026-10-01).
+- `group-builds.json` — Group picks data (see `talentsaved.js`). Written by the site's
+  owner login; hand edits are fine, keep it valid JSON.
 - `talents.html` — hand-written talent calculator page (roster + full-mode mount + saved-builds sidebar). Talent data is NOT
   stored in the repo: the page loads Wowhead's public Forever data script
   (`https://nether.wowhead.com/forever/data/talents-classic`) with a `<script>` tag and a

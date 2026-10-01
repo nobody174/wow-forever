@@ -39,13 +39,11 @@ stale checkmark.
 
 ## Ideas not yet built
 
-- Group picks: add real 60 / end-game builds for our group (Druid healer/tank,
-  Warrior, Hunters) once specs are agreed — save in the calc, "Copy as group pick",
-  paste into `GROUP_PICKS` in `talentsaved.js`. No Druid group pick yet (no Druid
-  build on the Builds page either).
-- Saved builds are per browser. If we want one shared list everyone can add to
-  without editing the repo, it needs a backend (e.g. a Google Sheet or a small
-  serverless store) — not worth it unless link-sharing turns out to be too clunky.
+- Group picks: publish real 60 / end-game builds for our group (Druid healer/tank,
+  Warrior, Hunters) once specs are agreed — owner login → Publish to group. No Druid
+  pick yet. First real owner login still to be done (create the token, sign in once).
+- Saved builds (My builds) are per browser. Friends share by link; only the owner
+  publishes to Group picks. A shared list everyone can write to would need a backend.
 
 - Addons page: expand beyond the current 4-addon list as we adopt
   more addons for launch.

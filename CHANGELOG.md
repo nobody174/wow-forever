@@ -6,6 +6,13 @@ user-facing release notes.
 
 ## 2026-10-01
 
+- **Owner login for Group picks.** Group picks moved from a hard-coded array to
+  `group-builds.json` in the repo. The site owner signs in on the Group picks tab with
+  a GitHub fine-grained token (this repo only, Contents read/write; kept in the
+  browser, checked with GitHub) and can then publish a saved build to the group, or
+  edit/remove picks, straight from the site; each change is a commit that Pages
+  redeploys in about a minute. Nobody else needs repo access, and visitors only read.
+  Replaces the "Copy as group pick, paste into the file" workflow.
 - **Saved builds sidebar** on the Talent Calc and Builds pages (`talentsaved.js`),
   so we can keep builds and look them up together instead of passing links around.
   Every calculator gets a gold "Save build" button; a floating "Saved builds" button

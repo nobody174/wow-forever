@@ -1,7 +1,8 @@
 # Addon plan: Road to Forever (macros + talents)
 
-Status: **in progress** (scoped 2026-10-01). Steps 1 (data), 2 (site export)
-and 3 (addon MVP, v0.1.0, not yet tested in the game) shipped; see `CHANGELOG.md`.
+Status: **in progress** (scoped 2026-10-01). Steps 1 (data), 2 (site export),
+3 (addon MVP, v0.1.0) and 4 (updates, v0.2.0) shipped, neither addon version
+tested in the game yet; see `CHANGELOG.md`.
 Target: usable before the Nov 4 launch.
 
 | | |
@@ -534,7 +535,11 @@ R2FDB = {
 }
 R2FCharDB = {
   created = {            -- real macros this addon created on this character
-    ["WARRIOR/VR"] = { name="VR", hash="a1b2c3", account=false },
+    ["WARRIOR/VR"] = { name="VR", hash="a1b2c3", account=false,
+                       icon="INV_MISC_QUESTIONMARK" },  -- icon we wrote (step 4)
+  },
+  changed = {            -- Changed markers (5.3, step 4), cleared on first hover
+    ["WARRIOR/VR"] = "updated",   -- or "edited" (site changed, your edit kept)
   },
   lastTalentLink = "warrior/--50203123300101~k7f2",
 }
@@ -654,7 +659,8 @@ Account-slot macros are also recorded in `R2FDB.createdAccount`.
   with `GetMacroInfo` as fallback, slots 1-120.
 - **Remove from library** leaves a real macro made from it; it stays recorded, so
   Tidy up can still delete it later.
-- **`Macros.Update` ships now but isn't called yet**; step 4 wires it into the import.
+- **`Macros.Update` ships now but isn't called yet**; step 4 wires it into the import
+  (done in v0.2.0, see 6.8).
 
 **Import validation (7), additions**
 - Whitespace anywhere in the pasted string is ignored. The id must equal
@@ -686,6 +692,89 @@ Account-slot macros are also recorded in `R2FDB.createdAccount`.
   `addon/tests/make_fixtures.js`, which runs the site's own `importString()` code
   from macros.html in Node. `python addon/tests/run_luacheck.py <luacheck src> <argparse dir>`
   runs luacheck's library API under the same Lua 5.1 with `addon/.luacheckrc`.
+
+### 6.8 Decisions made while building it (step 4, v0.2.0, 2026-10-02)
+
+**When a real macro is updated**
+- **One check, `classify` in Macros.lua**, read-only and safe in combat, compares a
+  real macro with a library entry or an incoming import record: `none` (no real
+  macro of ours), `unchanged` (already that body and icon), `edited` (live body hash
+  != stored hash: the player's, never touched), `needed` (ours, unedited, different).
+  The preview, the import, Ensure, the login sync and `Macros.Update` all use it.
+- **"Updated" in the preview counts library records; the update itself only cares
+  about the body and icon.** A record whose note or group changed is "updated" in
+  the 5.6 counts but causes no `EditMacro` and no Changed marker.
+- **Icon changes count**, for macros without `#showtooltip` (those always get the
+  question mark). The game reports a macro's icon back as a file id, not the name we
+  passed, so the created record now stores the icon name we wrote (`icon`) and we
+  compare against that. v0.1.0 records have no `icon`: treated as up to date, so an
+  icon-only site change to one of those waits for its next body change.
+- **The hash covers the body only.** A player who changed only the icon of one of
+  our macros still counts as unedited, and an update resets the icon. Accepted:
+  it's rare and the body is what matters.
+- **A body the player edited into exactly the new site text** counts as `unchanged`
+  (nothing to write). Ensure's existing "identical body = adopt" rule then re-records
+  it as ours on the next drag.
+- **One write path.** `write()` in Macros.lua is the only `EditMacro` call (Replace,
+  Update, Ensure). Every caller checks `InCombatLockdown()` first or goes through the
+  existing `RunOrQueue` queue.
+
+**Import (5.6) and combat**
+- **The plan is taken before the library is written** (`Import.Diff` ->
+  `Macros.PlanUpdates`), so the preview can say what will happen to the real macros.
+  The writes then read the new library entries (`Import.Commit`). "Kept edited" only
+  lists macros whose site text changed in this import, so an edited macro isn't
+  reported again on every re-import of the same string.
+- **Preview wording:** the 5.6 counts line stays exactly as specced. A second line
+  is added only when it applies: `2 macros you already made in the game will be
+  updated too. 1 you edited yourself will be left as it is.`
+- **After import, chat:** `imported 14 macros.`, then `updated 2 of your macros to the
+  new version.` and `kept your edits to HS. To get the new version, drag it from the
+  book and choose Replace.` (names listed, so the player knows which).
+- **Edited macros are left exactly as they are** but the library still takes the
+  new version: the library always mirrors the latest import, and Replace in the book
+  is the one way to take the site's text over your own (a choice only the player
+  can make).
+- **Combat:** Import stays greyed out in combat (6.7), so normally this never runs
+  in combat. If it does (and for the login sync after a `/reload` in combat), the
+  updates are queued as ONE job for `PLAYER_REGEN_ENABLED` with one chat line,
+  instead of one queued job and line per macro. The job re-checks every macro when
+  it runs, so one the player edited meanwhile is still left alone. The library write
+  is SavedVariables only and happens right away.
+
+**Changed marker (5.3)**
+- **Set for** updated macros (including queued ones, marked at once) and kept-edited
+  macros, **only if the real macro is on an action bar** at that moment (5.3: "a
+  macro that's already on your bars"), and only for Universal / the player's own
+  class (the only tabs, 5.7). Kinds: `updated` (tooltip, green: `Updated by your
+  last import.`) and `edited` (orange: the site has a new version, yours was kept,
+  Replace to take it). 6.4's "mark it Changed" for edited macros is this `edited` kind.
+- **Stored per character** (`R2FCharDB.changed`): bars are per character, so an
+  account-wide flag would show on alts without the macro on a bar, and hovering on
+  one character would clear it for another that never saw it.
+- **Cleared on the first tooltip**, not at import: clearing at import means nobody
+  ever sees it, and clearing on any later action would leave arrows nobody knows
+  how to remove. Also cleared when the library entry is removed, the real macro is
+  forgotten/deleted (Tidy up), Replace installs the new version, or at login when it
+  can no longer be shown. So no flag can get stuck.
+- **Look:** a 16 px arrow at the icon's top-left (the On-your-bars check is
+  top-right; both can show). Blizzard texture only:
+  `Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up` cropped to the arrow and tinted
+  green with `SetVertexColor`. Unverified in the client (TESTING.md 8).
+
+**Other characters (beyond 6.4's text)**
+- **Login sync.** The library is account-wide but character-slot macros and their
+  records are per character, so an import on one character can't update another's
+  macros. On `PLAYER_LOGIN`, `Macros.SyncOnLogin` updates this character's unedited
+  macros (and account macros) that are behind the library, same rules, and prints
+  one chat line. If the game hasn't loaded the macros yet at `PLAYER_LOGIN`, every
+  lookup misses and nothing is written (TESTING.md 8 checks this).
+- **Ensure updates a stale macro before picking it up**, so the book never hands out
+  an older version than the library (also the safety net if the login sync missed).
+
+**Layout**
+- Import window is 340 px tall (was 320) so a two-line preview that wraps can't run
+  into the buttons.
 
 ---
 
@@ -766,6 +855,8 @@ Body keeps its real newlines. Empty icon = `""`.
 - [ ] Macros created by the addon survive a relog (server sync).
 - [ ] Pasting a 20 KB string into the edit box is fast enough (also try the
       ~83 KB "Select everything" string, section 4.5).
+- [ ] Macros are readable at `PLAYER_LOGIN` and `EditMacro` works from there
+      (login sync, 6.8); the green Changed arrow texture looks right (6.8).
 - [ ] LibDBIcon button drags around the round minimap and saves its spot.
 - [ ] Right-click menu API: `UIDropDownMenu`/`EasyMenu` or the newer `MenuUtil`.
 - [ ] `LearnTalent(tab, index)` works from our button click (else guided mode).

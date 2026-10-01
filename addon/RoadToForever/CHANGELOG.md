@@ -3,6 +3,31 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.2.0 (2026-10-02): updates and Changed markers (ADDON_PLAN.md step 4)
+
+Not tested in the game yet; see `TESTING.md` section 8.
+
+- **Re-importing updates your macros.** When an import changes a macro you
+  already made in the game, and you haven't edited it, the real macro gets the
+  new text (and icon) right away. The preview says so before you click Import
+  (`2 macros you already made in the game will be updated too.`), and chat
+  confirms it afterwards.
+- **Your edits are kept.** If you changed one of these macros yourself, it's left
+  exactly as it is; the preview and chat say which ones (`kept your edits to HS`),
+  and the library still has the new version: drag it from the book and choose
+  Replace if you want it.
+- **Changed marker:** a small green up-arrow on the macro's icon in the Macro Book
+  when an import changed a macro that's on your action bars. Hover it to see what
+  changed; the arrow goes away once you've seen it. Kept-edited macros on your bars
+  get the arrow too, with a tooltip explaining your version was kept.
+- **Other characters catch up on login.** The library is shared by all your
+  characters, so macros you made on another character are brought up to date the
+  next time you log in on it (only unedited ones). Dragging an older macro from the
+  book also updates it first.
+- In combat, these updates wait until combat ends (one chat line says so), and are
+  checked again then, so anything you edited meanwhile is still left alone.
+- The Import window is a little taller so the longer preview fits.
+
 ## 0.1.0 (2026-10-02): first version, Macro Book MVP (ADDON_PLAN.md step 3)
 
 Not tested in the game yet; see `TESTING.md` for the beta checklist.

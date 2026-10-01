@@ -2,7 +2,7 @@
 ## Title: |cffffd100Road to Forever|r
 ## Notes: Import macros and talent builds from the Road to Forever site.
 ## Author: nobody174
-## Version: 0.1.0
+## Version: 0.2.0
 ## SavedVariables: R2FDB
 ## SavedVariablesPerCharacter: R2FCharDB
 

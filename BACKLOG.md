@@ -19,7 +19,8 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
 - [x] **3. Addon MVP:** shipped 2026-10-02 as v0.1.0 (tag `r2f-v0.1.0`) — see
       CHANGELOG.md. Not yet run in the game: needs the
       `addon/RoadToForever/TESTING.md` pass in the beta.
-- [ ] **4. Updates:** re-import updates unedited macros, Changed markers.
+- [x] **4. Updates:** shipped 2026-10-02 as v0.2.0 (tag `r2f-v0.2.0`) — see
+      CHANGELOG.md. Not yet run in the game: `TESTING.md` section 8.
 - [ ] **5. Tidy up, Settings, Remove all, keybindings.**
 - [ ] **6. Main window + minimap:** Home / Macros / Talents tabs, logo
       (road curling into ∞, gold on navy, readable at 20 px; SVG source ->

@@ -4,7 +4,8 @@
 -- class, keyed by its stable id "<CLASS>/<short>" (3.4). No slot limit here;
 -- real macros are only made when one is dragged out (Macros.lua).
 -- R2FCharDB (per character) records the real macros this addon created in
--- character slots; account-slot ones are in R2FDB.createdAccount.
+-- character slots; account-slot ones are in R2FDB.createdAccount. It also
+-- holds the per-character "Changed" markers (R2FCharDB.changed, step 4).
 
 local _, R2F = ...
 
@@ -100,6 +101,7 @@ function Library.Init()
   local cdb = _G.R2FCharDB
   if type(cdb) ~= "table" then cdb = {} end
   if type(cdb.created) ~= "table" then cdb.created = {} end
+  if type(cdb.changed) ~= "table" then cdb.changed = {} end
   _G.R2FCharDB = cdb
 
   Library.db, Library.cdb = db, cdb
@@ -113,6 +115,24 @@ end
 -- have it on a bar); Tidy up can delete it later because it's still recorded.
 function Library.Remove(id)
   Library.db.library[id] = nil
+  Library.SetChanged(id, nil) -- no slot left to hover, so it could never clear
+end
+
+-- "Changed" markers (5.3, step 4): id -> "updated" (an import rewrote the
+-- real macro on your bars) or "edited" (the site changed it, your edited
+-- macro was kept). Per character (R2FCharDB), not account-wide, because the
+-- marker is about YOUR action bars, which are per character: an account-wide
+-- flag would show on alts that don't have the macro on a bar, and hovering it
+-- on one character would hide it on another that never saw the change.
+-- A flag is cleared the first time its tooltip is shown (seen = done), when
+-- the real macro or the library entry goes away, and on login if it can no
+-- longer be shown (Macros.SyncOnLogin), so none can get stuck.
+function Library.Changed(id)
+  return Library.cdb.changed[id]
+end
+
+function Library.SetChanged(id, kind)
+  Library.cdb.changed[id] = kind
 end
 
 -- Record a section name the first time it's seen for a class, so sections the
@@ -214,6 +234,7 @@ function Library.SetCreated(id, rec)
   else
     Library.cdb.created[id] = nil
     Library.db.createdAccount[id] = nil
+    Library.SetChanged(id, nil) -- no real macro, nothing on a bar to mark
   end
 end
 

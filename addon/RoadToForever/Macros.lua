@@ -126,10 +126,48 @@ end
 -- Record what we wrote. The hash is taken from the body read BACK from the
 -- game, not the one we sent, in case the client normalises it on save;
 -- otherwise every macro would look "edited" right away.
-local function record(id, name, idx)
+-- `icon` = the icon name we passed (step 4). The game reports a macro's icon
+-- back as a file id, not the name we gave it, so we can't compare against
+-- the live icon; we compare against what we last wrote instead.
+local function record(id, name, idx, icon)
   local _, body = live(name)
   local maxAcc = Macros.Limits()
-  Library.SetCreated(id, { name = name, hash = Library.Hash(body or ""), account = idx <= maxAcc })
+  Library.SetCreated(id, { name = name, hash = Library.Hash(body or ""), account = idx <= maxAcc, icon = icon })
+end
+
+-- Read-only check of the real macro for `id` against `want` (a library entry
+-- or an import record: needs body, icon). Safe in combat (no writes).
+-- Returns one of:
+--   "none"      no real macro of ours (no record, or the macro is gone)
+--   "unchanged" the real macro already has this body (and icon)
+--   "edited"    the player changed it since we wrote it: never touched
+--   "needed"    ours, unedited, and different: an EditMacro would update it
+-- A live body equal to `want` counts as unchanged even if the player edited
+-- it into exactly that text: there is nothing to write either way.
+-- Records from v0.1.0 have no icon; they're treated as up to date on the icon
+-- (worst case an icon-only change on the site waits for the next body change).
+local function classify(id, want)
+  local rec = Library.Created(id)
+  if not rec or not want then return "none" end
+  local idx, body = live(rec.name)
+  if idx == 0 then return "none" end
+  local iconStale = rec.icon ~= nil and rec.icon ~= createIcon(want)
+  if body == want.body and not iconStale then return "unchanged" end
+  if Library.Hash(body) ~= rec.hash then return "edited" end
+  return "needed"
+end
+Macros.Classify = classify
+
+-- The one place that rewrites an existing macro (Replace, Update, Ensure).
+-- EditMacro keeps the macro in its current (account or character) slot; the
+-- index is looked up again afterwards because the list re-sorts by name.
+-- Callers check InCombatLockdown() first. Returns the new index (0 = lost).
+local function write(id, idx, name, e)
+  local icon = createIcon(e)
+  EditMacro(idx, name, icon, e.body)
+  local newIdx = GetMacroIndexByName(name) or 0
+  if newIdx > 0 then record(id, name, newIdx, icon) end
+  return newIdx
 end
 
 -- ---------------------------------------------------------------------------
@@ -139,10 +177,11 @@ end
 local queue = {}
 
 -- Run fn now, or after combat if we're in combat. Returns true if it ran now.
-function Macros.RunOrQueue(fn)
+-- `msg` = the chat line saying it was put off (default: the generic one).
+function Macros.RunOrQueue(fn, msg)
   if InCombatLockdown() then
     queue[#queue + 1] = fn
-    R2F.Print(L.QUEUED)
+    R2F.Print(msg or L.QUEUED)
     return false
   end
   fn()
@@ -189,10 +228,11 @@ function Macros.Create(id)
   local perCharacter = Macros.ChooseSlot()
   if perCharacter == nil then R2F.Error(L.ERR_NO_SLOTS); return false end
 
-  local ok = pcall(CreateMacro, e.short, createIcon(e), e.body, perCharacter)
+  local icon = createIcon(e)
+  local ok = pcall(CreateMacro, e.short, icon, e.body, perCharacter)
   local idx = ok and GetMacroIndexByName(e.short) or 0
   if idx > 0 then
-    record(id, e.short, idx)
+    record(id, e.short, idx, icon)
     PickupMacro(idx)
     return true
   end
@@ -204,7 +244,7 @@ function Macros.Create(id)
       if InCombatLockdown() then return end
       local i = GetMacroIndexByName(e.short) or 0
       if i > 0 then
-        record(id, e.short, i)
+        record(id, e.short, i, icon)
         PickupMacro(i)
       else
         R2F.Error(L.ERR_CREATE_FAILED)
@@ -224,11 +264,10 @@ function Macros.Replace(id)
   if not e then R2F.Error(L.ERR_MISSING); return false end
   local idx = GetMacroIndexByName(e.short) or 0
   if idx == 0 then return Macros.Create(id) end
-  -- EditMacro keeps the macro in its current (account or character) slot.
-  EditMacro(idx, e.short, createIcon(e), e.body)
-  idx = GetMacroIndexByName(e.short) or 0 -- re-sorted after the edit
+  idx = write(id, idx, e.short, e)
   if idx == 0 then R2F.Error(L.ERR_CREATE_FAILED); return false end
-  record(id, e.short, idx)
+  -- The player chose the site version: any "Changed" note is answered.
+  Library.SetChanged(id, nil)
   PickupMacro(idx)
   return true
 end
@@ -243,13 +282,20 @@ function Macros.Ensure(id)
   if idx == 0 then return Macros.Create(id) end
 
   if Macros.IsOursUnedited(id, idx, body) then
+    -- Ours but older than the library (an import on another character, or a
+    -- login sync that couldn't read the macros yet): bring it up to date
+    -- before handing it over, so the book never gives out a stale version.
+    if classify(id, e) == "needed" then
+      idx = write(id, idx, e.short, e)
+      if idx == 0 then R2F.Error(L.ERR_CREATE_FAILED); return false end
+    end
     PickupMacro(idx)
     return true
   end
   -- Same name and exactly our text (e.g. saved data lost after a reinstall,
   -- or the player typed it in by hand): nothing to ask, adopt it as ours.
   if body == e.body then
-    record(id, e.short, idx)
+    record(id, e.short, idx, createIcon(e))
     PickupMacro(idx)
     return true
   end
@@ -263,23 +309,107 @@ end
 -- Bring an existing real macro up to the library version (6.4 Update). Only
 -- if it's ours and unedited. Returns "updated", "unchanged", "edited",
 -- "none" (no real macro) or "queued" (in combat; runs after combat).
--- Step 4 (re-import updates) wires this into the import; step 3 only ships it.
+-- Everything is re-checked at write time, so a queued update still leaves
+-- a macro alone if the player edited it before combat ended.
 function Macros.Update(id)
   local e = Library.Get(id)
-  local rec = Library.Created(id)
-  if not e or not rec then return "none" end
-  local idx, body = live(rec.name)
-  if idx == 0 then return "none" end
-  if not Macros.IsOursUnedited(id, idx, body) then return "edited" end
-  if body == e.body then return "unchanged" end
+  local status = classify(id, e)
+  if status ~= "needed" then return status end
   if InCombatLockdown() then
     Macros.RunOrQueue(function() Macros.Update(id) end)
     return "queued"
   end
-  EditMacro(idx, rec.name, createIcon(e), e.body)
-  local newIdx = GetMacroIndexByName(rec.name) or 0
-  if newIdx > 0 then record(id, rec.name, newIdx) end
+  local rec = Library.Created(id)
+  write(id, (live(rec.name)), rec.name, e)
   return "updated"
+end
+
+-- ---------------------------------------------------------------------------
+-- Updates after an import, and on login (step 4, ADDON_PLAN 6.4 / 6.8)
+-- ---------------------------------------------------------------------------
+
+-- Which real macros an import of `records` would update, and which ones the
+-- player edited (and so will be left alone). Read-only, called for the
+-- preview BEFORE the library is written, so it compares the real macros
+-- against the incoming records, and `oldLibrary` tells which records really
+-- changed on the site.
+-- Returns { update = {ids}, edited = {ids} }.
+-- "edited" only lists macros whose site text changed in this import: an
+-- edited macro whose site version didn't move is nothing to report, and
+-- reporting it on every re-import would be noise.
+function Macros.PlanUpdates(records, oldLibrary)
+  local plan = { update = {}, edited = {} }
+  for _, r in ipairs(records) do
+    local status = classify(r.id, r)
+    if status == "needed" then
+      plan.update[#plan.update + 1] = r.id
+    elseif status == "edited" then
+      local old = oldLibrary[r.id]
+      if old and (old.body ~= r.body or old.icon ~= r.icon) then
+        plan.edited[#plan.edited + 1] = r.id
+      end
+    end
+  end
+  return plan
+end
+
+-- Run Update for every id, as ONE batch: out of combat it writes now; in
+-- combat it queues a single job for PLAYER_REGEN_ENABLED (one "after combat"
+-- chat line, not one per macro). `done(n)` is called with the number of
+-- macros actually rewritten, whenever that happens. `queuedMsg` = chat line
+-- if it has to wait for combat to end.
+-- Returns "now" or "queued".
+function Macros.UpdateMany(ids, done, queuedMsg)
+  local function run()
+    local n = 0
+    for _, id in ipairs(ids) do
+      if Macros.Update(id) == "updated" then n = n + 1 end
+    end
+    if done then done(n) end
+  end
+  if #ids == 0 then return "now" end
+  return Macros.RunOrQueue(run, queuedMsg) and "now" or "queued"
+end
+
+-- Can this character ever see `id` in its Macro Book? Only Universal and the
+-- player's own class have tabs (5.7), so a Changed flag on anything else
+-- could never be hovered and would never clear.
+local function visible(id)
+  local e = Library.Get(id)
+  return e ~= nil and (e.class == "ANY" or e.class == R2F.playerClass)
+end
+
+-- Set the Changed marker (5.3) for each id whose real macro is on a bar.
+-- `kind` = "updated" (we rewrote it) or "edited" (site changed, player's
+-- edit kept). Macros not on a bar get no marker: nothing visible changed.
+function Macros.MarkChanged(ids, kind)
+  local onBars = Macros.NamesOnBars()
+  for _, id in ipairs(ids) do
+    if visible(id) and Macros.OnBars(id, onBars) then Library.SetChanged(id, kind) end
+  end
+end
+
+-- PLAYER_LOGIN. The library is account-wide but character-slot macros (and
+-- their records) are per character, so an import on one character can't
+-- reach another character's macros. On login, bring this character's
+-- unedited macros up to the library. Also drops Changed flags that could
+-- never clear (macro gone from the library, or another class).
+-- If the game hasn't loaded the macros yet at this point, every lookup misses
+-- and nothing is written (safe); Ensure still updates on the next drag.
+function Macros.SyncOnLogin()
+  for id in pairs(Library.cdb.changed) do
+    if not visible(id) or not Library.Created(id) then Library.SetChanged(id, nil) end
+  end
+  local ids = {}
+  for id in pairs(Library.AllCreated()) do
+    if classify(id, Library.Get(id)) == "needed" then ids[#ids + 1] = id end
+  end
+  table.sort(ids)
+  Macros.MarkChanged(ids, "updated")
+  Macros.UpdateMany(ids, function(n)
+    if n > 0 then R2F.Print(n == 1 and L.SYNC_DONE_ONE or L.SYNC_DONE:format(n)) end
+  end)
+  return #ids
 end
 
 -- ---------------------------------------------------------------------------

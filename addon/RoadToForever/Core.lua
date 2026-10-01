@@ -18,6 +18,10 @@ end
 
 handlers.PLAYER_LOGIN = function()
   R2F.playerClass = select(2, UnitClass("player"))
+  -- An import on another character updated the shared library but not this
+  -- character's macros; catch up now (combat-safe: queued if in combat,
+  -- e.g. after a /reload mid-fight).
+  R2F.Macros.SyncOnLogin()
 end
 
 -- Combat: grey out Import / Tidy up, show "In combat" (drags are refused

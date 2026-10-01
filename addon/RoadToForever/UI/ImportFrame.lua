@@ -1,8 +1,9 @@
 -- UI/ImportFrame.lua: paste box + preview + Import/Cancel (ADDON_PLAN.md 5.6).
 --
--- Importing only writes the addon's own saved library (no real macros are
--- touched here), but the button is still greyed out in combat, as 6.5 asks,
--- so combat behaviour is the same for every button in the book.
+-- Importing writes the addon's own saved library and (step 4) updates real
+-- macros that are ours and unedited, through Macros.lua's combat-checked
+-- write path. The button is greyed out in combat, as 6.5 asks; if an import
+-- still ran in combat, those macro writes would be queued, not skipped.
 
 local _, R2F = ...
 local L = R2F.L
@@ -42,10 +43,9 @@ end
 
 local function doImport()
   if not parsed or R2F.InCombat() then return end
-  local diff = R2F.Import.Diff(parsed, R2F.Library.db.library, playerClass())
-  local n = R2F.Library.Apply(parsed.records, time())
+  -- Library write + real-macro updates + chat summary (Import.Commit).
+  local diff = R2F.Import.Commit(parsed, playerClass(), time())
   frame:Hide()
-  R2F.Print(n == 1 and L.IMPORT_DONE_ONE or L.IMPORT_DONE:format(n))
   -- Jump to the first tab that got a new macro (5.6), if it's one we show.
   local first = diff.firstNew
   R2F.MacroBook.ShowSection(first and first.class, first and first.section)
@@ -53,7 +53,9 @@ end
 
 local function build()
   local f = UI.DialogFrame("R2FImport", UIParent)
-  f:SetSize(460, 320)
+  -- 340 tall (was 320 in v0.1.0): the preview can now be two lines that
+  -- each wrap (step 4's "will be updated / left as they are" line).
+  f:SetSize(460, 340)
   f:SetPoint("CENTER", 0, 40)
   f:SetFrameStrata("DIALOG")
   f:SetToplevel(true)

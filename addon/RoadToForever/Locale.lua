@@ -52,6 +52,23 @@ R2F.L = {
   IMPORT_DONE_ONE = "imported 1 macro.",
   BTN_CANCEL = "Cancel",
 
+  -- Updates of real macros after an import (step 4, ADDON_PLAN 6.8)
+  IMPORT_WILL_UPDATE = "%d macros you already made in the game will be updated too.",
+  IMPORT_WILL_UPDATE_ONE = "1 macro you already made in the game will be updated too.",
+  IMPORT_WILL_KEEP = "%d you edited yourself will be left as they are.",
+  IMPORT_WILL_KEEP_ONE = "1 you edited yourself will be left as it is.",
+  UPDATED_DONE = "updated %d of your macros to the new version.",
+  UPDATED_DONE_ONE = "updated 1 of your macros to the new version.",
+  UPDATED_QUEUED = "you're in combat; %d of your macros will be updated when combat ends.",
+  UPDATED_QUEUED_ONE = "you're in combat; 1 of your macros will be updated when combat ends.",
+  KEPT_EDITED = "kept your edits to %d macros (%s). To get the new version, drag one from the book and choose Replace.",
+  KEPT_EDITED_ONE = "kept your edits to %s. To get the new version, drag it from the book and choose Replace.",
+  SYNC_DONE = "updated %d of your macros to the version in your library.",
+  SYNC_DONE_ONE = "updated 1 of your macros to the version in your library.",
+  TIP_CHANGED = "Updated by your last import.",
+  TIP_CHANGED_EDITED = "The site has a new version. You edited this macro, so yours was kept. "
+    .. "Drag it and choose Replace to use the new one.",
+
   -- Errors (5.9), shown red in UIErrorsFrame
   ERR_COMBAT = "You can't create macros in combat.",
   ERR_NO_SLOTS = "No free macro slots. Click Tidy up or delete a macro in /macro.",

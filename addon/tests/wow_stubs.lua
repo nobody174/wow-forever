@@ -212,6 +212,7 @@ function methods:GetNormalTexture() return self.__normal end
 function methods:SetTexture(t) self.__tex = t end
 function methods:SetDesaturated(v) self.__desat = v end
 function methods:SetTextColor(r, g, b) self.__color = { r, g, b } end
+function methods:SetVertexColor(r, g, b) self.__vertex = { r, g, b } end
 function methods:RegisterEvent(e) self.__events = self.__events or {}; self.__events[e] = true end
 function methods:UnregisterEvent(e) if self.__events then self.__events[e] = nil end end
 -- Test helpers on frames

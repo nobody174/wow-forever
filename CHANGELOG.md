@@ -4,6 +4,23 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon plan, step 4: Road to Forever addon v0.2.0, updates)
+
+- Re-importing now updates real macros the addon already made, if the player
+  hasn't edited them (`EditMacro`, same combat-checked/queued write path as every
+  other macro write). Hand-edited macros are left alone, the library still takes
+  the new version, and the import preview + chat say which were updated and which
+  kept (tag `r2f-v0.2.0`).
+- **Changed marker** in the Macro Book: a green up-arrow on macros on your bars
+  that an import changed, cleared the first time you hover it (stored per
+  character in `R2FCharDB.changed`).
+- On login, a character's own unedited macros catch up with the shared library
+  (an import on another character can't reach them). Dragging an older macro
+  from the book updates it first.
+- Tests: `addon/tests/run_tests.py` now 5202 checks (was 5131), new update /
+  kept-edit / Changed-flag / combat-queue / login-sync cases; luacheck 0 warnings.
+  Decisions in `ADDON_PLAN.md` 6.8; in-game checks in `addon/RoadToForever/TESTING.md` 8.
+
 ## 2026-10-02 (Addon plan, step 3: Road to Forever addon v0.1.0)
 
 - New `addon/RoadToForever/`: the in-game addon's first version (tag

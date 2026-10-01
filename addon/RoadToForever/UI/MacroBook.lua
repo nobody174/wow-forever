@@ -79,6 +79,20 @@ local function showTooltip(btn)
   end
   if e.note then GameTooltip:AddLine(escape(e.note), 0.5, 0.75, 1, true) end
   if btn.onBars then GameTooltip:AddLine(L.TIP_ON_BARS, 1, 0.82, 0) end
+  -- Changed marker (5.3): say what changed, then clear it. Hovering is the
+  -- moment the player has seen it; clearing at import time instead would
+  -- mean the arrow is never seen at all, and keeping it until some other
+  -- action would leave arrows nobody knows how to get rid of.
+  local changed = Library.Changed(e.id)
+  if changed == "edited" then
+    GameTooltip:AddLine(L.TIP_CHANGED_EDITED, 1, 0.5, 0.25, true)
+  elseif changed then
+    GameTooltip:AddLine(L.TIP_CHANGED, 0.1, 1, 0.1)
+  end
+  if changed then
+    Library.SetChanged(e.id, nil)
+    btn.arrow:Hide()
+  end
   GameTooltip:AddLine(L.TIP_DRAG, 0.1, 1, 0.1)
   GameTooltip:Show()
 end
@@ -175,6 +189,19 @@ local function buildSlot(parent, i)
   b.check:SetSize(18, 18)
   b.check:SetPoint("TOPRIGHT", 7, 7)
   b.check:Hide()
+
+  -- "Changed" marker (5.3): small green up-arrow, top-left of the icon (the
+  -- check owns top-right, and both can show at once). Blizzard textures only
+  -- (5): the scroll bar's up-arrow exists in every client; its arrow sits in
+  -- the middle of a round button, so it's cropped to the arrow and tinted
+  -- green. Exact crop/tint is unverified in the client: TESTING.md 8.
+  b.arrow = b:CreateTexture(nil, "OVERLAY", nil, 2)
+  b.arrow:SetTexture("Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up")
+  b.arrow:SetTexCoord(0.2, 0.8, 0.2, 0.8)
+  b.arrow:SetVertexColor(0.2, 1, 0.2)
+  b.arrow:SetSize(16, 16)
+  b.arrow:SetPoint("TOPLEFT", -5, 5)
+  b.arrow:Hide()
 
   b.name = b:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   b.name:SetPoint("LEFT", b, "RIGHT", 8, 7)
@@ -437,9 +464,11 @@ function MacroBook.Refresh()
       b.sub:SetText(learnLater and L.LEARN_LATER or groupLabel(e.group))
       b.onBars = Macros.OnBars(e.id, onBars)
       b.check:SetShown(b.onBars)
+      b.arrow:SetShown(Library.Changed(e.id) ~= nil)
       b:Show()
     else
       b.onBars = false
+      b.arrow:Hide()
       b:Hide()
     end
   end

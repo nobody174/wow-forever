@@ -1,4 +1,4 @@
-# Road to Forever: in-game test checklist (v0.1.0, addon step 3)
+# Road to Forever: in-game test checklist (v0.2.0, addon steps 3 and 4)
 
 Nothing in this addon has run in the real WoW client yet. Out of the game it was
 tested under real Lua 5.1 against a fake client (`addon/tests/`), which checks
@@ -126,10 +126,63 @@ you got:
       **Pass:** the popup lists only the one that's unedited and not on a bar
       (plus the note about bar addons); Delete removes it, your other macros stay.
 
-## Known gaps in v0.1.0 (by design, later steps)
+## 8. Updates and Changed markers (v0.2.0, step 4)
+
+Out of the game, `addon/tests/run_tests.py` covers the logic (which macros get
+`EditMacro`, edited ones left alone, the flag set and cleared, the combat queue,
+the login sync) against the fake client. What only the game can show:
+
+Setup (a Warrior; use any three of your macros on another class). The site's
+string only changes after a site update, so fake an "older version" first:
+1. Import your class + Universal from the site. Don't drag anything yet.
+2. Make three library entries older than the site, e.g.
+   `/run for _, k in ipairs({"VR","HS","Rend"}) do local e = R2FDB.library["WARRIOR/"..k] e.body = e.body .. "\n/say old" end`
+3. `/r2f`, drag `VR`, `HS` and `Rend` out (they're created with the `/say old` line).
+   Put `VR` and `HS` on action bars; leave `Rend` off the bars.
+4. In `/macro`, edit `HS`'s body (anything).
+5. Copy the same import string from the site again. Compared with step 2 it is
+   an update for those three.
+
+- [ ] Paste it. **Pass:** under the counts line (`... 3 updated ...`), a second line
+      `2 macros you already made in the game will be updated too. 1 you edited yourself
+      will be left as it is.` The text fits above the buttons (window is 340 px tall).
+- [ ] Click Import. **Pass:** chat `updated 2 of your macros to the new version.` and
+      `kept your edits to HS. ...`; `/macro` shows `VR` and `Rend` without the
+      `/say old` line, your edit on `HS` unchanged; the bar buttons still work (no
+      "action blocked").
+- [ ] **Arrow texture (unverified).** In the book, `VR` and `HS` (on bars) have a small
+      green up-arrow at the top-left of the icon; `Rend` (not on a bar) doesn't.
+      **Pass:** it reads as a small green up-arrow, not a green square (missing
+      texture) and not a whole round button. The texture is
+      `Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up`, cropped with
+      `SetTexCoord(0.2, 0.8, 0.2, 0.8)` and tinted with `SetVertexColor`; adjust the
+      crop in `UI/MacroBook.lua` `buildSlot` if it looks off, and note it in ADDON_PLAN 6.8.
+- [ ] Hover `VR`. **Pass:** tooltip line `Updated by your last import.` (green); the arrow
+      disappears. Hover `HS`: orange line about your edit being kept. Close and reopen
+      the book, `/reload`: arrows stay gone.
+- [ ] Arrows survive a `/reload` before you hover them (stored in `R2FCharDB.changed`).
+- [ ] **Combat.** Out of combat this can't be reached through the UI (Import is greyed
+      out in combat). If you can, `/reload` while in combat on a character whose
+      macros are behind the library (next item). **Pass:** chat says the update waits
+      for combat; after combat the macro is updated; no Lua error, no blocked action.
+- [ ] **Login sync (unverified: are macros readable at `PLAYER_LOGIN`?).** On
+      character A, do setup steps 2 and 3 for one macro (character slot), log out.
+      On character B, re-import the site string (puts the library back to the site
+      version), log back in on A. **Pass:** chat
+      `updated 1 of your macros to the version in your library.` and `/macro` shows the
+      new body. If nothing happens, the game hadn't loaded macros yet at
+      `PLAYER_LOGIN`: note it; dragging the macro from the book still updates it
+      first (Ensure), and the fix is to run the sync on `UPDATE_MACROS` /
+      `PLAYER_ENTERING_WORLD` instead.
+- [ ] `/console taintLog 1` during the above, then check `Logs\taint.log`. **Pass:** no
+      entries blaming RoadToForever (the login sync calls `EditMacro` from an event
+      handler, not a click).
+
+## Known gaps in v0.2.0 (by design, later steps)
 
 - Settings button is disabled (step 5). New macros go to character slots first.
-- Re-import does not yet update real macros already created (step 4, Changed markers).
+- An icon-only change to a macro made with v0.1.0 isn't pushed until its body
+  changes too (v0.1.0 didn't store the icon; ADDON_PLAN 6.8).
 - No main window, minimap button or full slash-command set (step 6). `/r2f` opens
   the Macro Book directly, `/r2f import` opens the Import window.
 - Other classes' macros have no tabs; they're kept and listed on the Universal tab.

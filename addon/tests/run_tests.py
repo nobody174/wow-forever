@@ -377,6 +377,231 @@ def test_macros(lua, fx):
     check(tex == "Interface\\Icons\\Ability_GhoulFrenzy" and later is False, "icon macro -> its icon")
 
 
+FIELDS = ("id", "class", "section", "group", "name", "short", "icon", "body", "note")
+
+
+def import_string(records):
+    """Same format as the site's importString() (ADDON_PLAN 7)."""
+    text = "v=1\n" + "\x1e".join("\x1f".join(r[k] for k in FIELDS) for r in records)
+    return "R2F1:" + base64.b64encode(text.encode("utf-8")).decode()
+
+
+def modified(records, changes):
+    """Copy of the fixture records with {id: {field: value}} applied."""
+    out = []
+    for r in records:
+        r = dict(r)
+        r.update(changes.get(r["id"], {}))
+        out.append(r)
+    return out
+
+
+def chat_lines(lua):
+    c = lua.eval("TEST.chat")
+    return [c[i] for i in range(1, len(c) + 1)]
+
+
+def test_updates(lua, fx):
+    """Step 4: re-import updates unedited macros, keeps edited ones, Changed flags, combat queue."""
+    lua.execute("TEST.reset() R2FDB = nil R2FCharDB = nil R2F.Library.Init() R2F.playerClass = 'WARRIOR'")
+    lua.execute("CONFIRMS = {} R2F.UI.Confirm = function(text, a, b, fn) table.insert(CONFIRMS, {text=text, fn=fn}) end")
+    parse = lua.eval("function(s) local a, b = R2F.Import.Parse(s) return a, b end")
+    commit = lua.eval("R2F.Import.Commit")
+    preview = lua.eval("R2F.Import.PreviewText")
+    diff = lua.eval("R2F.Import.Diff")
+    M, T, Lib = lua.eval("R2F.Macros"), lua.eval("TEST"), lua.eval("R2F.Library")
+    Ltxt = lua.eval("R2F.L")
+    recs = fx["warriorUniversal"]["records"]
+
+    res, _ = parse(import_string(recs))
+    d = commit(res, "WARRIOR", 1)
+    check(d.imported == len(recs) and len(d.plan.update) == 0 and len(d.plan.edited) == 0,
+          "first import: nothing to update (no real macros yet)")
+    for i in ("WARRIOR/VR", "WARRIOR/HS", "WARRIOR/Rend", "WARRIOR/Slam"):
+        M.Ensure(i)
+    lua.execute('TEST.actions[1] = "VR" TEST.actions[2] = "HS" TEST.actions[3] = "Slam"')
+    T.setBody("HS", "/say my own HS")
+
+    lib_body = lambda i: lua.eval('R2F.Library.db.library[%r].body' % i)
+    new = {
+        "WARRIOR/VR": {"body": "#showtooltip Victory Rush\n/cast [harm] Victory Rush\n/say v2"},
+        "WARRIOR/HS": {"body": "#showtooltip Heroic Strike\n/cast [harm] Heroic Strike\n/say v2"},
+        "WARRIOR/Rend": {"body": "#showtooltip Rend\n/cast [harm] Rend\n/say v2"},
+        "WARRIOR/Slam": {"note": "Only the note changed."},
+    }
+    res, _ = parse(import_string(modified(recs, new)))
+    d = diff(res, Lib.db.library, "WARRIOR")
+    check(d.updated == 4, "diff: 4 updated records (got %s)" % d.updated)
+    check(lua_table_to_list(d.plan.update) == ["WARRIOR/VR", "WARRIOR/Rend"],
+          "plan: unedited real macros with a new body are updated, note-only change is not (%s)" % lua_table_to_list(d.plan.update))
+    check(lua_table_to_list(d.plan.edited) == ["WARRIOR/HS"], "plan: the hand-edited macro is reported as kept")
+    text = preview(d)
+    check(text.split("\n")[0] == "%d macros: 0 new, 4 updated, %d unchanged." % (len(recs), len(recs) - 4),
+          "preview first line keeps the 5.6 wording: " + text.split("\n")[0])
+    check(text.endswith("\n" + Ltxt.IMPORT_WILL_UPDATE.replace("%d", "2") + " " + Ltxt.IMPORT_WILL_KEEP_ONE),
+          "preview second line: will update 2, keep 1 edited: %r" % text)
+    check(T.bodyOf("VR") != new["WARRIOR/VR"]["body"], "preview/diff writes nothing")
+
+    T.calls = lua.table()
+    T.chat = lua.table()
+    d = commit(res, "WARRIOR", 2)
+    calls = lua_table_to_list(T.calls)
+    check(calls == ["edit:VR", "edit:Rend"], "re-import EditMacro'd exactly the unedited changed macros: %s" % calls)
+    check(T.bodyOf("VR") == new["WARRIOR/VR"]["body"] and T.bodyOf("Rend") == new["WARRIOR/Rend"]["body"],
+          "re-import pushed the new bodies to the real macros")
+    check(lua.eval('R2FCharDB.created["WARRIOR/VR"].hash == R2F.Library.Hash(TEST.bodyOf("VR"))'),
+          "stored hash follows the update (so the macro still counts as unedited)")
+    check(T.bodyOf("HS") == "/say my own HS", "hand-edited real macro left untouched")
+    check(lib_body("WARRIOR/HS") == new["WARRIOR/HS"]["body"], "library still takes the new version of the edited macro")
+    check(d.applied == "now", "updates ran right away out of combat")
+    chat = chat_lines(lua)
+    check(any("updated 2 of your macros to the new version." in c for c in chat), "chat: updated 2")
+    check(any("kept your edits to HS." in c for c in chat), "chat: kept the edited one, by name: %s" % chat)
+    check(lua.eval('R2FCharDB.changed["WARRIOR/VR"]') == "updated", "Changed flag set for an updated macro on a bar")
+    check(lua.eval('R2FCharDB.changed["WARRIOR/HS"]') == "edited", "Changed flag (edited kind) for the kept macro on a bar")
+    check(lua.eval('R2FCharDB.changed["WARRIOR/Rend"]') is None, "no Changed flag for an updated macro not on any bar")
+    check(lua.eval('R2FCharDB.changed["WARRIOR/Slam"]') is None, "no Changed flag for a note-only change")
+    check(lua.eval('R2FDB.changed') is None, "Changed flags are per character, not in R2FDB")
+
+    # Same string again: nothing written, the edited one isn't re-reported.
+    T.calls = lua.table()
+    T.chat = lua.table()
+    d = commit(res, "WARRIOR", 3)
+    check(len(T.calls) == 0 and len(d.plan.update) == 0 and len(d.plan.edited) == 0, "identical re-import writes nothing")
+    check(not any("kept your edits" in c for c in chat_lines(lua)), "identical re-import doesn't repeat the kept-edit note")
+
+    # Combat during an import: EditMacro is queued (one job), not skipped, not an error.
+    v3 = dict(new)
+    v3["WARRIOR/VR"] = {"body": "#showtooltip Victory Rush\n/cast [harm] Victory Rush\n/say v3"}
+    v3["WARRIOR/Rend"] = {"body": "#showtooltip Rend\n/cast [harm] Rend\n/say v3"}
+    res3, _ = parse(import_string(modified(recs, v3)))
+    lua.execute('R2FCharDB.changed = {}')
+    T.calls = lua.table()
+    T.chat = lua.table()
+    T.combat = True
+    d = commit(res3, "WARRIOR", 4)  # the fake client raises if EditMacro runs in combat
+    check(d.applied == "queued" and M.QueueSize() == 1, "import in combat queues ONE update job")
+    check(len(T.calls) == 0 and T.bodyOf("VR").endswith("v2"), "nothing written in combat")
+    check(lib_body("WARRIOR/VR").endswith("v3"), "library updated even in combat (SavedVariables only)")
+    check(any(Ltxt.UPDATED_QUEUED.replace("%d", "2") in c for c in chat_lines(lua)), "chat says it will update after combat")
+    check(lua.eval('R2FCharDB.changed["WARRIOR/VR"]') == "updated", "queued update shows its Changed marker right away")
+    # The player edits Rend before combat ends: the queued job must re-check and leave it.
+    T.setBody("Rend", "/say edited in combat")
+    T.combat = False
+    M.RunQueue()
+    check(T.bodyOf("VR").endswith("v3") and M.QueueSize() == 0, "queued EditMacro runs on PLAYER_REGEN_ENABLED")
+    check(T.bodyOf("Rend") == "/say edited in combat", "queued update re-checks: macro edited meanwhile is left alone")
+    check(any("updated 1 of your macros to the new version." in c for c in chat_lines(lua)), "after-combat chat counts what was written")
+
+    # Icon-only change on a macro without #showtooltip.
+    icon_rec = next(r for r in recs if r["icon"] and not r["body"].startswith("#showtooltip"))
+    M.Ensure(icon_rec["id"])
+    res4, _ = parse(import_string(modified(recs, dict(v3, **{icon_rec["id"]: {"icon": "INV_Misc_Bomb_01"}}))))
+    d = commit(res4, "WARRIOR", 5)
+    check(lua_table_to_list(d.plan.update) == [icon_rec["id"]], "icon-only change is an update")
+    check(lua.eval("(select(2, GetMacroInfo(GetMacroIndexByName(%r))))" % icon_rec["short"]) == "INV_Misc_Bomb_01",
+          "new icon pushed to the real macro")
+
+    # Ensure on a stale-but-unedited macro updates it before picking it up.
+    lua.execute('R2F.Library.db.library["WARRIOR/VR"].body = "#showtooltip Victory Rush\\n/cast Victory Rush"')
+    T.cursor = None
+    check(M.Ensure("WARRIOR/VR") is True and T.cursor == "VR" and T.bodyOf("VR") == "#showtooltip Victory Rush\n/cast Victory Rush"
+          and lua.eval("#CONFIRMS") == 0, "Ensure updates a stale unedited macro, then picks it up (no popup)")
+
+    # Login sync (library changed by an import on another character).
+    lua.execute('R2F.Library.db.library["WARRIOR/VR"].body = "#showtooltip Victory Rush\\n/cast [harm] Victory Rush\\n/say alt"')
+    lua.execute('R2FCharDB.changed = { ["PALADIN/HL"] = "updated", ["WARRIOR/Gone"] = "updated" }')
+    T.chat = lua.table()
+    check(M.SyncOnLogin() == 1 and T.bodyOf("VR").endswith("/say alt"), "login sync updates this character's stale unedited macro")
+    check(T.bodyOf("Rend") == "/say edited in combat", "login sync leaves edited macros alone")
+    check(any("to the version in your library" in c for c in chat_lines(lua)), "login sync says so in chat")
+    check(lua.eval('R2FCharDB.changed["PALADIN/HL"] == nil and R2FCharDB.changed["WARRIOR/Gone"] == nil'),
+          "login drops Changed flags that could never be hovered")
+    check(lua.eval('R2FCharDB.changed["WARRIOR/VR"]') == "updated", "login sync marks the updated macro on a bar")
+    T.combat = True
+    lua.execute('R2F.Library.db.library["WARRIOR/VR"].body = "#showtooltip Victory Rush\\n/say reload in combat"')
+    check(M.SyncOnLogin() == 1 and M.QueueSize() == 1 and not T.bodyOf("VR").endswith("combat"), "login sync in combat is queued")
+    T.combat = False
+    M.RunQueue()
+    check(T.bodyOf("VR").endswith("reload in combat"), "queued login sync runs after combat")
+
+    # Flags go away with the library entry or the real macro.
+    lua.execute('R2F.Library.SetChanged("WARRIOR/VR", "updated") R2F.Library.Remove("WARRIOR/VR")')
+    check(lua.eval('R2FCharDB.changed["WARRIOR/VR"]') is None, "Remove from library clears the Changed flag")
+    lua.execute('R2F.Library.SetChanged("WARRIOR/Slam", "updated") R2F.Library.SetCreated("WARRIOR/Slam", nil)')
+    check(lua.eval('R2FCharDB.changed["WARRIOR/Slam"]') is None, "forgetting the real macro clears the Changed flag")
+    # Replace answers an "edited" Changed note.
+    lua.execute('R2F.Library.SetChanged("WARRIOR/HS", "edited")')
+    M.Ensure("WARRIOR/HS")
+    lua.execute("CONFIRMS[#CONFIRMS].fn()")
+    check(T.bodyOf("HS") == lib_body("WARRIOR/HS") and lua.eval('R2FCharDB.changed["WARRIOR/HS"]') is None,
+          "Replace on an edited macro installs the new version and clears its flag")
+
+
+def test_ui_updates(fx):
+    """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
+    lua = new_runtime()
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    recs = fx["warriorUniversal"]["records"]
+    lua.execute('SlashCmdList.R2F("import")')
+    lua.execute("""
+      for _, f in ipairs(TEST.allFrames) do
+        if f.__kind == 'EditBox' and f.__parent == R2FImportScroll then EDIT = f end
+        if f.__kind == 'Button' and f.__text == 'Import' and f.__parent == R2FImport then IMPORTBTN = f end
+      end""")
+    lua.eval("EDIT.SetText")(lua.eval("EDIT"), import_string(recs))
+    T.runTimers()
+    lua.execute("IMPORTBTN:Click()")
+    general = [r for r in recs if r["section"] == "General"]
+    first = general[0]
+    lua.execute("""
+      TABS = {} SLOTS = {}
+      for _, f in ipairs(TEST.allFrames) do
+        if f.__kind == 'CheckButton' and f.sec and f.__shown then table.insert(TABS, f) end
+        if f.__kind == 'Button' and f.__scripts.OnDragStart then table.insert(SLOTS, f) end
+      end
+      TABS[2]:Click()""")
+    lua.execute("SLOTS[1]:Fire('OnDragStart')")
+    check(T.cursor == first["short"], "UI: macro created from the book")
+    T.actions[7] = first["short"]
+    check(lua.eval("SLOTS[1].arrow.__shown") is False, "UI: no arrow before any update")
+
+    new_body = first["body"] + "\n/say v2"
+    lua.execute('SlashCmdList.R2F("import")')
+    lua.eval("EDIT.SetText")(lua.eval("EDIT"), import_string(modified(recs, {first["id"]: {"body": new_body}})))
+    T.runTimers()
+    lua.execute("""
+      for _, f in ipairs(TEST.allFrames) do
+        if f.__kind == 'FontString' and type(f.__text) == 'string' and f.__text:find(' new, ') then PREVIEW = f end
+      end""")
+    check(lua.eval("PREVIEW.__text").endswith("\n" + lua.eval("R2F.L.IMPORT_WILL_UPDATE_ONE")),
+          "UI: preview says the macro in the game will be updated: %r" % lua.eval("PREVIEW.__text"))
+    lua.execute("IMPORTBTN:Click()")
+    check(T.bodyOf(first["short"]) == new_body, "UI: Import button updated the real macro")
+    lua.execute("TABS[2]:Click()")
+    check(lua.eval("SLOTS[1].entry.id") == first["id"] and lua.eval("SLOTS[1].arrow.__shown") is True,
+          "UI: green Changed arrow shows on the updated macro")
+    check(lua.eval("SLOTS[1].arrow.__vertex[2]") == 1 and lua.eval("SLOTS[2].arrow.__shown") is False,
+          "UI: arrow is green and only on the changed slot")
+    lua.execute("SLOTS[1]:Fire('OnEnter')")
+    lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(lua.eval("R2F.L.TIP_CHANGED") in lines, "UI: first tooltip explains the change")
+    check(lua.eval("SLOTS[1].arrow.__shown") is False and lua.eval("R2FCharDB.changed[%r]" % first["id"]) is None,
+          "UI: hovering clears the arrow and the stored flag")
+    lua.execute("SLOTS[1]:Fire('OnLeave') TABS[2]:Click() SLOTS[1]:Fire('OnEnter')")
+    lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(lua.eval("R2F.L.TIP_CHANGED") not in lines and lua.eval("SLOTS[1].arrow.__shown") is False,
+          "UI: stays cleared after a refresh and a second hover")
+
+    # PLAYER_LOGIN runs the sync (an import on another character changed the shared library).
+    alt_body = first["body"] + "\n/say from an alt"
+    lua.execute('R2F.Library.db.library[%r].body = %r' % (first["id"], alt_body))
+    T.fire("PLAYER_LOGIN")
+    check(T.bodyOf(first["short"]) == alt_body, "UI: PLAYER_LOGIN brings an unedited macro up to the library")
+
+
 def test_ui_smoke(templates, fx):
     """Load everything, fire the login events, drive the UI through a full import + drag."""
     lua = new_runtime(templates)
@@ -542,6 +767,8 @@ def main():
     test_diff_and_library(lua, fx)
     test_site_cross_check(lua, fx)
     test_macros(new_runtime(), fx)
+    test_updates(new_runtime(), fx)
+    test_ui_updates(fx)
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))

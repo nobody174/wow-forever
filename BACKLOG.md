@@ -12,8 +12,8 @@ stale checkmark.
   from Mobalytics' own calculator). Decision: we keep following Wowhead and don't
   patch it in by hand. The calculator loads Wowhead's data live, so it appears on
   its own once Wowhead adds it. When it does: old Paladin share links with points
-  deep in Retribution will shift by one talent, and it's a good moment to add the
-  Paladin (and Warrior) level-30 builds.
+  deep in Retribution will shift by one talent, so re-check the level-30 Ret build
+  then (its share code is stored in `builds.html`'s `DATA30`).
 
 ## Open findings (from the 2026-09-24 WoW role pass)
 

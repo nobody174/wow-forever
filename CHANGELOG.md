@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-01 (level-30 Paladin + Warrior)
+
+- Added level-30 builds to `DATA30` in `builds.html`: Paladin Retribution and
+  Protection (Tank), Warrior Protection (Tank) and Arms. Warrior Fury has no
+  level-30 build (Arms took its place at 30). Crusade still isn't in Wowhead's data,
+  so the Ret build doesn't use it.
+
 ## 2026-10-01 (level-30 builds)
 
 - `builds.html` got a "Level 20 / Level 30" toggle row under the class roster

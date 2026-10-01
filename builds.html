@@ -695,7 +695,49 @@ const DATA30 = {
       ["Intimidation","1/1","ability_devour"],
     ]),
   }],
-  // Paladin and Warrior: no level-30 builds yet.
+  Paladin: [
+    {
+      spec: "Retribution", title: "Paladin — Level 30 Retribution", code: "--05205031221", meta: L30_META,
+      talents: t30([
+        ["Benediction","5/5","spell_frost_windwalkon"], ["Improved Judgement","2/2","spell_holy_righteousfury"],
+        ["Conviction","5/5","spell_holy_retributionaura"], ["Sanctified Judgement","3/3","ability_paladin_judgementblue"],
+        ["Seal of Command","1/1","ability_warrior_innerrage"], ["Pursuit of Justice","2/2","spell_holy_persuitofjustice"],
+        ["Eye for an Eye","2/2","spell_holy_eyeforaneye"], ["Sacred Arbiter","1/1","inv_sword_08"],
+      ]),
+    },
+    {
+      spec: "Protection", title: "Paladin — Level 30 Protection (Tank)", code: "-0530211301311", meta: L30_META,
+      talents: t30([
+        ["Redoubt","5/5","ability_defend"], ["Precision","3/3","ability_rogue_ambush"],
+        ["Anticipation","2/5","spell_magic_lesserinvisibilty"], ["Improved Seal of Fury","1/1","spell_holy_righteousnessaura"],
+        ["Improved Righteous Fury","1/3","spell_holy_sealoffury"], ["Shield Specialization","3/3","inv_shield_06"],
+        ["Swift Judgement","1/1","ability_paladin_judgementred"], ["One-Handed Weapon Specialization","3/3","inv_sword_20"],
+        ["Improved Hammer of Justice","1/3","spell_holy_sealofmight"], ["Templar's Bulwark","1/1","ability_paladin_shieldofthetemplar"],
+      ]),
+    },
+  ],
+  Warrior: [
+    {
+      spec: "Tank", title: "Warrior — Level 30 Protection (Tank)", code: "--50203123300101", meta: L30_META,
+      talents: t30([
+        ["Shield Specialization","5/5","inv_shield_06"], ["Improved Bloodrage","2/2","ability_racial_bloodrage"],
+        ["Improved Thunder Clap","3/3","ability_thunderclap"], ["Last Stand","1/1","spell_holy_ashestoashes"],
+        ["Master of Defense","2/2","ability_warrior_shieldguard"], ["Improved Revenge","3/3","ability_warrior_revenge"],
+        ["Defiance","3/3","ability_warrior_innerrage"], ["Vanguard","1/1","ability_warrior_shieldcharge"],
+        ["Concussion Blow","1/1","ability_thunderbolt"],
+      ]),
+    },
+    {
+      spec: "Arms", title: "Warrior — Level 30 Arms", code: "3232020303201", meta: L30_META,
+      talents: t30([
+        ["Improved Heroic Strike","3/3","ability_rogue_ambush"], ["Deflection","2/5","ability_parry"],
+        ["Improved Rend","3/3","ability_gouge"], ["Improved Charge","2/2","ability_warrior_charge"],
+        ["Improved Overpower","2/2","inv_sword_05"], ["Deep Wounds","3/3","ability_backstab"],
+        ["Two-Handed Weapon Specialization","3/3","inv_axe_09"], ["Impale","2/2","ability_searingarrow"],
+        ["Sweeping Strikes","1/1","ability_rogue_slicedice"],
+      ]),
+    },
+  ],
 };
 const LEVELS = {"20": DATA, "30": DATA30};
 

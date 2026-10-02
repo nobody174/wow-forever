@@ -81,8 +81,10 @@ you got:
       `Drag to an action bar.` (green).
 - [ ] Spells you don't know yet show desaturated with `Learn later`. Learn one at a
       trainer with the book open. **Pass:** it turns to full colour.
-- [ ] Slot counter `Character x / 18` and `Account y / 120` match `/macro`. Turns red
-      when full. **Also confirm the limits really are 120 + 18 (section 11).**
+- [x] Slot counter `Character x / 30` and `Account y / 120` match `/macro`. Turns red
+      when full. **Limits confirmed 2026-10-02: 120 + 30, not Classic Era's 18
+      (section 11) — `MAX_CHARACTER_MACROS` is nil on this client; counted the
+      real `/macro` Character tab directly (5 rows of 6).**
 - [ ] Shift-click a macro with the chat box open: the body appears in one line.
 - [ ] Right-click: menu with `Remove from library` / `Copy text`. Copy text opens a
       box with the body highlighted; Ctrl+C works. (Remove from library asks first
@@ -110,7 +112,7 @@ you got:
       the cursor.
 - [ ] Make your own macro named like one of ours (e.g. `HS`) with a different body,
       then drag `HS` from the book. **Pass:** the same popup.
-- [ ] Fill all 18 character slots, drag a new one. **Pass:** it goes to an account
+- [ ] Fill all 30 character slots, drag a new one. **Pass:** it goes to an account
       slot. Fill both. **Pass:** red `No free macro slots. Click Tidy up or delete a macro in /macro.`
 - [ ] **Survives a relog (section 11).** Create 2 macros, put them on bars, log out
       fully and back in (and `/reload`). **Pass:** they're still in `/macro` and on
@@ -616,7 +618,7 @@ imported, then import another class's macros (e.g. Warrior) on the same characte
       `Shift-click to put it in chat.`; Shift-click works.
 - [ ] **Universal still works in the preview.** Universal tab while previewing
       Warrior: drag a Universal macro. **Pass:** it lands on the bar as usual.
-- [ ] **Counters and checks are yours.** In the preview, `Character x / 18` and
+- [ ] **Counters and checks are yours.** In the preview, `Character x / 30` and
       `Account y / 120` still match `/macro` on the Paladin; the note above them reads
       `Previewing Warrior macros: read-only on this character. The slot counts and
       gold checks below are for the character you're playing.` (it may wrap to two

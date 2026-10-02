@@ -4,6 +4,18 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon v0.10.1: fix the per-character macro slot limit — 18 to 30)
+
+Reported from real in-game testing: the Macro Book's Character counter should
+read out of 30, not 18. `Macros.Limits()`'s fallback (used because
+`MAX_CHARACTER_MACROS` isn't defined on WoW Forever's client, same quirk as
+other legacy globals found this week) was hardcoded to vanilla/Classic Era's
+18. User confirmed the real number by counting WoW Forever's `/macro`
+Character tab directly: 30 slots (5 rows of 6). Fixed the one constant;
+updated `ADDON_PLAN.md`, `BACKLOG.md`, `TESTING.md` and the Lua test stub/
+assertions to match. Full suite re-run: 8608 checks, 0 failed. Tag
+`r2f-v0.10.1`.
+
 ## 2026-10-02 (heal() and util() macros: add self-cast fallback)
 
 Reported from real gameplay: Holy Light (and every other `heal()` macro — Flash

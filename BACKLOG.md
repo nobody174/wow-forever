@@ -12,7 +12,7 @@ One addon, "Road to Forever" (`/r2f`, minimap button). Macros: pick on the site
 (export), paste one string in-game (import), drag them onto your bars from a
 spellbook-style Macro Book. Talents: paste a talent-calc link, preview, confirm,
 and the addon learns the build. Real macros are only created
-when dragged, so the 18/120 slot limit only counts macros you actually use.
+when dragged, so the 30/120 slot limit only counts macros you actually use.
 
 - [x] **1. Data:** shipped 2026-10-01 — see CHANGELOG.md.
 - [x] **2. Site export:** shipped 2026-10-01 — see CHANGELOG.md.

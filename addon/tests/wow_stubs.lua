@@ -30,10 +30,13 @@ T.templates = { PortraitFrameTemplate = true, InputScrollFrameTemplate = true,
 T.calls = {}          -- log of macro API writes
 
 -- ---------------------------------------------------------------------------
--- Macros: account slots 1..120, character 121..138, each set kept sorted by
+-- Macros: account slots 1..120, character 121..150, each set kept sorted by
 -- name like the real client (so indices shift on create/delete/rename).
+-- 30 character slots, not vanilla/Classic Era's 18 — confirmed on a real WoW
+-- Forever client 2026-10-02 (ADDON_PLAN.md section 2/11; MAX_CHARACTER_MACROS
+-- itself is nil on this client, same as several other legacy globals).
 -- ---------------------------------------------------------------------------
-local MAX_ACC, MAX_CHAR = 120, 18
+local MAX_ACC, MAX_CHAR = 120, 30
 local acc, char = {}, {}
 T.macros = { acc = acc, char = char }
 

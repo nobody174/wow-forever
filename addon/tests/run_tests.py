@@ -315,14 +315,14 @@ def test_macros(lua, fx):
     T.combat = False
 
     # Slots: fill character slots -> account; all full -> error.
-    lua.execute("for i = 1, 18 - #TEST.macros.char do TEST.addMacro('c' .. i, 'x', true) end")
+    lua.execute("for i = 1, 30 - #TEST.macros.char do TEST.addMacro('c' .. i, 'x', true) end")
     M.Ensure("WARRIOR/Rend")
     check(lua.eval('GetMacroIndexByName("Rend") <= 120 and GetMacroIndexByName("Rend") > 0'), "full character slots -> account slot")
     check(lua.eval('R2FDB.createdAccount["WARRIOR/Rend"].account == true'), "account macro recorded in createdAccount")
     lua.execute("for i = 1, 120 - #TEST.macros.acc do TEST.addMacro('a' .. i, 'x', false) end TEST.errors = {}")
     check(M.Ensure("WARRIOR/Slam") is False and lua.eval("TEST.errors[1]") == lua.eval("R2F.L.ERR_NO_SLOTS"), "no free slots error")
     counts = M.Counts()
-    check(tuple(counts) == (120, 120, 18, 18), "Counts() = acc, maxAcc, char, maxChar")
+    check(tuple(counts) == (120, 120, 30, 30), "Counts() = acc, maxAcc, char, maxChar")
 
     # slotsFirst = account
     lua.execute("TEST.reset() R2FCharDB.created = {} R2FDB.createdAccount = {} R2FDB.settings.slotsFirst = 'account'")
@@ -2618,7 +2618,7 @@ def test_talent_source_writes():
           "glow/host are unnamed frames on UIParent; Blizzard frames only looked up")
     toc = open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read()
     check("UI\\TalentPanel.lua" in toc and "UI\\TalentGuide.lua" in toc, "TalentPanel.lua and TalentGuide.lua in the TOC")
-    check(re.search(r"^## Version: 0\.10\.0$", toc, re.M) is not None, "TOC version 0.10.0")
+    check(re.search(r"^## Version: 0\.10\.1$", toc, re.M) is not None, "TOC version 0.10.1")
 
 
 def test_quick_settings(templates, fx):
@@ -3045,7 +3045,7 @@ def test_class_picker(templates, fx):
     check(font_text(lua, "You also have macros for") is None, "5.7's line is left out while previewing")
 
     # ---- Counters and gold checks = the character you're playing ----------------
-    check(font_text(lua, "^Character ") == "Character 1 / 18" and font_text(lua, "^Account ") == "Account 0 / 120",
+    check(font_text(lua, "^Character ") == "Character 1 / 30" and font_text(lua, "^Account ") == "Account 0 / 120",
           "slot counters count this character's real macros while previewing: %s / %s"
           % (font_text(lua, "^Character "), font_text(lua, "^Account ")))
     # An account-slot macro made from a Warrior entry on another character, and on

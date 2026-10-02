@@ -48,7 +48,11 @@ be wrong in the game, fix this file in the same commit as the code.
 
 ## 2. The macro slot limit (and how we live with it)
 
-WoW has 120 account-wide + 18 per-character macro slots. That limit is in the
+WoW has 120 account-wide + 30 per-character macro slots on WoW Forever
+(confirmed 2026-10-02 by counting the in-game `/macro` Character tab: 5 rows
+of 6, not vanilla/Classic Era's 18 — `MAX_CHARACTER_MACROS` isn't defined on
+this client, same quirk as other legacy globals, so the addon's fallback
+constant had to be corrected to match). That limit is in the
 game itself, not just in the `/macro` window:
 
 - Blizzard's action bars (and bar addons like Bartender/Dominos/ElvUI, which use
@@ -66,7 +70,7 @@ How this addon makes the limit a non-issue:
    You only spend slots on macros you actually use.
 3. **Tidy up** button: deletes macros this addon created that are no longer on
    any action bar, giving the slots back.
-4. **Slot counter** always visible: `Character 7 / 18`, `Account 31 / 120`.
+4. **Slot counter** always visible: `Character 7 / 30`, `Account 31 / 120`.
    New macros go into character slots by default and fall back to account slots
    when those are full (setting: Character first / Account first).
 
@@ -365,7 +369,7 @@ The model is the **Spellbook**: players already know you drag spells out of it.
  |         Damage                  Damage                             |Tnk|
  |  ... 2 columns x 6 rows = 12 per page ...                          |---|
  |                                                                    |DPS|
- |  Character 7 / 18    Account 31 / 120          Page 1 of 3  [<][>] |
+ |  Character 7 / 30    Account 31 / 120          Page 1 of 3  [<][>] |
  |  [Import]  [Tidy up]                                    [Settings] |
  +--------------------------------------------------------------------+
 ```
@@ -435,7 +439,7 @@ Drag to an action bar.             (green, like Blizzard's usage hints)
 
 ### 5.5 Bottom bar
 
-- Slot counter, two values: `Character 7 / 18` and `Account 31 / 120`. Turns
+- Slot counter, two values: `Character 7 / 30` and `Account 31 / 120`. Turns
   red when full.
 - Page text `Page 1 of 3` + spellbook prev/next page buttons.
 - Buttons (`UIPanelButtonTemplate`): **Import**, **Tidy up**, **Settings**.
@@ -524,7 +528,7 @@ from library** and a **tooltip on Tidy up**, also asked for after that session.
   own** (the simpler, safer of the two options in the brief). Read-only = no drag, no
   click-to-pick-up, no Replace popup: a Warrior can't cast a Paladin's spells, so a
   macro made from one would fail on the bar ("Unknown spell") and still cost one of the
-  18 + 120 slots, and Replace would even overwrite one of the player's own macros with
+  30 + 120 slots, and Replace would even overwrite one of the player's own macros with
   it. Allowed while previewing: tooltips, Shift-click to chat (5.3), and the
   right-click menu (Copy text; Remove from library, below).
 - **Per macro, not per view:** the test is `Macros.UsableHere(e)` = Universal or your
@@ -548,7 +552,7 @@ from library** and a **tooltip on Tidy up**, also asked for after that session.
   `visible` now reuses `UsableHere`).
 
 **Counters and on-your-bars checks while previewing**
-- **They always describe the character you're playing.** `Character x / 18` /
+- **They always describe the character you're playing.** `Character x / 30` /
   `Account y / 120` come from `GetNumMacros()` and the gold check from this character's
   action slots: live game state, true whatever class is browsed. Blanking them would
   hide real information (an account-slot macro made from a Warrior entry on another
@@ -982,9 +986,10 @@ Account-slot macros are also recorded in `R2FDB.createdAccount`.
   `Macros.Tidy` now re-checks "not on a bar" (not only "unedited") at the moment it
   deletes. A Tidy up confirmed in combat runs later from the queue, and the player
   may have put one of the listed macros on a bar by then.
-- **Action slots read = 1-120** (6.4). The "18" in "120 + 18" is the per-character
-  *macro* slots, not action slots; a Classic client has 120 action slots (bars and
-  the stance/stealth bonus bars included). Tests cover slots 1, 73 and 120.
+- **Action slots read = 1-120** (6.4). The "30" in "120 + 30" (section 2) is the
+  per-character *macro* slots, not action slots; a Classic-style client has 120
+  action slots (bars and the stance/stealth bonus bars included). Tests cover
+  slots 1, 73 and 120.
 - **Combat pattern (unchanged, now the rule for every destructive button):** the
   button is greyed out in combat (Tidy up in the book, Remove all in Settings); a
   confirm popup opened before combat and accepted during it is **queued** via
@@ -1356,7 +1361,11 @@ shows under the repo's Actions tab.
       `version, build, date, tocversion` — 4 values — so the call should have
       worked; the empty result is unexplained and worth a second look, but a
       plain full dump always works as the fallback).
-- [ ] Slot limits really are 120 account + 18 character.
+- [x] Slot limits — confirmed 2026-10-02: account is still 120 (unverified
+      directly but unchanged from Classic conventions), character is **30**, not
+      vanilla/Classic Era's 18 (`/dump MAX_CHARACTER_MACROS` came back nil, same
+      as the Interface-number quirk; confirmed by counting the real `/macro`
+      Character tab: 5 rows of 6). Fixed in `Macros.lua`'s fallback constant.
 - [ ] `PortraitFrameTemplate`, `InputScrollFrameTemplate`, spellbook tab and page
       button templates exist in the Forever client (`/fstack` on the spellbook).
 - [ ] `CreateMacro` then `PickupMacro` in the same click works (else a 0-second

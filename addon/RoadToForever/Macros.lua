@@ -28,9 +28,15 @@ local ICON_PATH = "Interface\\Icons\\"
 local NUM_ACTION_SLOTS = 120
 
 -- Slot limits. Blizzard defines MAX_ACCOUNT_MACROS / MAX_CHARACTER_MACROS in
--- Blizzard_MacroUI, which we must not load (6.6), so they're usually nil here.
+-- Blizzard_MacroUI, which we must not load (6.6), so they're usually nil here
+-- and we fall back to a hardcoded default. On a real WoW Forever client
+-- /dump MAX_CHARACTER_MACROS also came back nil (same client quirk as
+-- GetBuildInfo()'s 4th return value, ADDON_PLAN.md 6.2/11), so the fallback
+-- is load-bearing, not just a last resort — confirmed 2026-10-02 by counting
+-- the in-game /macro Character tab directly: 30 slots (5 rows x 6), not the
+-- vanilla/Classic Era 18 (3 rows x 6) this addon originally assumed.
 function Macros.Limits()
-  return MAX_ACCOUNT_MACROS or 120, MAX_CHARACTER_MACROS or 18
+  return MAX_ACCOUNT_MACROS or 120, MAX_CHARACTER_MACROS or 30
 end
 
 -- Character 7 / 18, Account 31 / 120 (5.5).

@@ -3,6 +3,23 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.10.1 (2026-10-02): fix — character macro slot limit was wrong
+
+Reported from real in-game testing: the Macro Book's Character counter should
+read out of 30, not 18.
+
+- **Fix:** `Macros.Limits()`'s fallback (used when the game doesn't define
+  `MAX_CHARACTER_MACROS`, which WoW Forever's client doesn't) was hardcoded to
+  the vanilla/Classic Era value, 18. The user counted WoW Forever's real
+  `/macro` Character tab directly: **30** slots (5 rows of 6). Fixed the
+  constant; no other logic changed, since everything already correctly reads
+  through `Macros.Limits()` rather than hardcoding 18 anywhere else.
+- Updated the Lua test stub (`wow_stubs.lua`) and every test assertion that
+  checked the old 18/138 numbers to match. Full suite re-run: 8608 checks,
+  0 failed.
+- Account-wide limit (120) is unchanged and still unverified directly — only
+  the per-character number was actually in question.
+
 ## 0.10.0 (2026-10-02): class picker, Remove from library asks first, Tidy up tooltip
 
 **Requested from first real in-game testing, 2026-10-02** — not part of the original

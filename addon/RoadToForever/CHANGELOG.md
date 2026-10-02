@@ -3,6 +3,29 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.10.5 (2026-10-03): fix — Paladin talents unreadable (position jitter)
+
+Follow-up to 0.10.4's C_Traits reader, found by live testing: a dump of all 50
+real nodes of a Paladin's talent tree showed Protection's first column at both
+posX 5020 and 5030. That's a few units of jitter in Blizzard's own layout data
+(real columns are 590-600 apart), but 0.10.4 counted it as a fifth Protection
+column, refused the tree, and Preview / Copy my build said "couldn't read your
+talents yet." Full analysis: `ADDON_PLAN.md` 13.11.
+
+- **Fix:** positions that are much closer together than a grid step (under 20% of
+  the median gap) count as one row/column before rows and columns are numbered.
+  The step is measured from the data itself, so it works at any scale. It applies
+  to columns and to rows. Real columns that are just a little closer together than
+  usual stay separate.
+- Nothing changes when there's no jitter (Holy, and every earlier test, read
+  exactly as before).
+- Tests: the real 13 posX values in a 50-node Paladin tree read as 4/4/4 columns
+  (was 4/5/4 -> nil), link + hash equal to the site's `talentcalc.js`; plus
+  synthetic row jitter, several jitter pairs, other grid scales, a too-aggressive
+  tolerance caught, and a jitter-majority tree refused. Suite: 9389 checks, 0
+  failed (9259 before); luacheck 0 warnings.
+- Still to confirm in game (TESTING.md 19): 0.10.5 on the Paladin, other classes.
+
 ## 0.10.4 (2026-10-03): fix — read talents through C_Traits (corrects 0.10.3)
 
 0.10.3's fix was wrong: it force-loaded `Blizzard_TalentUI`, but on WoW Forever

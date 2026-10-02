@@ -693,8 +693,15 @@ that addon is `MISSING` on WoW Forever. v0.10.4 reads talents through `C_Traits`
       the site: same talents and ranks as Blizzard's window. Then the hash check of
       section 13 (the 4 characters after `~` equal the site's Copy link for the same
       build). Equal hashes prove names, order and pane order all match for that class.
+- [ ] **Paladin after v0.10.5 (ADDON_PLAN 13.11).** The live 50-node dump found 10
+      units of jitter in Protection's first column (5020 / 5030), which made v0.10.4
+      refuse the tree. On the same Paladin: Preview your own link and Copy my build.
+      **Pass:** no "couldn't read"; Protection's mini tree has its talents in 4
+      columns, same cells as Blizzard's window; the hash equals the site's.
 - [ ] **Every class you can log in with.** Repeat the two checks above per class:
-      the pane split (by X gaps between columns) is only proven on Paladin.
+      the pane split (by X gaps between columns) is only proven on Paladin. If one
+      still says "couldn't read", dump its node positions (posX / posY of every node)
+      the same way: more jitter than 13.11 handles is the first thing to look for.
 - [ ] **Learning is guided on Forever (13.10).** With a learnable preview, Learn
       talents. **Pass:** chat says which talent to click (`Click X (1 of N)`); no
       gold glow on Blizzard's window (expected: the addon can't confirm its buttons);

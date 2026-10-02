@@ -57,8 +57,10 @@ when dragged, so the 30/120 slot limit only counts macros you actually use.
       LibDBIcon, menu API, LearnTalent from a click, talent order vs our links.
       Step-by-step list for the addon so far: `addon/RoadToForever/TESTING.md`.
 - [ ] **Confirm the C_Traits talent reader in game (v0.10.4, ADDON_PLAN 13.10):**
-      `TESTING.md` section 19 on every class available — only Paladin's Holy pane
-      positions are verified; the pane split for other classes is a hypothesis.
+      `TESTING.md` section 19 on every class available — Paladin's posX for all three
+      panes is now dumped (v0.10.5 fixed the jitter it showed, ADDON_PLAN 13.11), but
+      v0.10.5 itself hasn't been run in game yet, Prot/Ret posY weren't dumped, and the
+      pane split for other classes is a hypothesis.
 - [ ] **Auto-learning on WoW Forever:** `LearnTalent` doesn't fit the trait system,
       so Learn talents is guided-only there since v0.10.4. Real auto-learning would be
       `C_Traits.PurchaseRank(configID, nodeID)` per point + Blizzard's Apply Changes

@@ -79,21 +79,90 @@ local function ranks(nodes, key)
 end
 Talents.GridRanks = ranks   -- test hook (run_tests.py's real-data check, 13.10)
 
+-- Jitter tolerance (ADDON_PLAN 13.11). Blizzard's own layout data is not
+-- exactly on the grid: the full live dump of Paladin's tree 1100 (all 50
+-- nodes) has 13 distinct posX values, and Protection's first column comes as
+-- BOTH 5020 and 5030 -- 10 units apart, where every real column step in the
+-- data is 590-600. Ranking raw values counted that as a fifth Protection
+-- column, the "more than 4 columns" check refused the tree, and the player
+-- got "couldn't read your talents". So before ranking, values that are much
+-- closer together than a real grid step are snapped onto one grid line.
+--
+-- Why relative and not a fixed number of units: 13.10 chose ranks precisely
+-- because nothing promises the same scale for every class and tree (a
+-- threshold of, say, 100 would swallow whole columns on a grid with a step of
+-- 60, and miss jitter of 300 on a step of 6000). The step is estimated from
+-- the values themselves: the median of the gaps between consecutive distinct
+-- values. Real steps are the large majority of gaps; jitter (too small) and
+-- pane gutters (too big) are the outliers on either side, and a median
+-- ignores outliers on both sides as long as they are fewer than half (the
+-- UPPER median, so exactly half jitter gaps still finds the step). Then a gap
+-- under SNAP_FRACTION of that step joins the current cluster. 0.2 leaves wide
+-- margins both ways: the real jitter is 10 / 600 = 1.7% of a step, and a
+-- real neighbouring column, even one a third of a step away, is kept apart.
+-- If jitter were ever the majority of gaps, the median would be a jitter gap,
+-- nothing would merge, and the column / tier count checks refuse: "can't
+-- read", never a wrong mapping.
+-- Proven on real data: X jitter (5020 / 5030). Y is snapped the same way as a
+-- precaution; Y jitter has not been seen (the 8 dumped Holy posY are exact,
+-- the other panes' posY weren't in the report).
+-- Failing to snap is the safe direction: jitter is far below a step, so an
+-- unsnapped value still sorts between the same neighbours (one talent per
+-- cell), and the count checks refuse. Snapping two REAL lines together is the
+-- dangerous one (two talents in one cell, order left to the index tiebreak),
+-- which is why the fraction is small.
+Talents.SNAP_FRACTION = 0.2
+
+-- Distinct values of `key` over `nodes` -> snapped value (the cluster's
+-- smallest value; only the order of the snapped values is used afterwards).
+local function snapGrid(nodes, key)
+  local seen, list = {}, {}
+  for _, n in ipairs(nodes) do
+    local v = n[key]
+    if not seen[v] then seen[v] = true; list[#list + 1] = v end
+  end
+  table.sort(list)
+  local gaps = {}
+  for i = 2, #list do gaps[#gaps + 1] = list[i] - list[i - 1] end
+  table.sort(gaps)
+  local step = gaps[math.floor(#gaps / 2) + 1]
+  local tol = step and step * Talents.SNAP_FRACTION or 0
+  local out, anchor = {}, nil
+  for _, v in ipairs(list) do
+    -- Measured from the cluster's first value, not the previous one, so a
+    -- run of small gaps can't chain distinct grid lines into one cluster.
+    if anchor == nil or v - anchor >= tol then anchor = v end
+    out[v] = anchor
+  end
+  return out
+end
+Talents.GridSnap = snapGrid  -- test hook (13.11)
+
+-- Sets n[to] = the snapped value of n[from] on every node.
+local function snapNodes(nodes, from, to)
+  local snap = snapGrid(nodes, from)
+  for _, n in ipairs(nodes) do n[to] = snap[n[from]] end
+end
+
 -- The three Classic panes (e.g. Holy / Protection / Retribution) inside ONE
 -- trait tree. Paladin's config has a single treeID (1100) with 50 nodes, i.e.
 -- all three panes in one tree (13.10); in the real Talents window they are
 -- three side-by-side column groups sharing the same rows. So the panes are
--- found by X: the two widest gaps between consecutive distinct posX values
+-- found by X: the two widest gaps between consecutive distinct X values
 -- are the gutters between panes. Inside a pane neighbouring columns are one
 -- grid step apart, so a gutter only loses to an inner gap if a pane had two
 -- empty columns side by side. When the split isn't clear-cut (fewer than 3
 -- distinct X values, or a tie between the 2nd and 3rd widest gap) this
 -- returns nil: "can't read" is safe, a wrong split would map link digits onto
 -- the wrong talents (the ~hash would catch it, but nil says it earlier).
+-- Reads the snapped gridX (13.11), so the panes are cut on exactly the values
+-- their columns are counted on. Jitter gaps are the smallest gaps of all, so
+-- they could never be taken for a gutter either way (real data: gutters 2200
+-- and 2260, columns 590-600, jitter 10).
 local function splitPanes(nodes)
   local xs, seen = {}, {}
   for _, n in ipairs(nodes) do
-    if not seen[n.posX] then seen[n.posX] = true; xs[#xs + 1] = n.posX end
+    if not seen[n.gridX] then seen[n.gridX] = true; xs[#xs + 1] = n.gridX end
   end
   if #xs < 3 then return nil end
   table.sort(xs)
@@ -108,7 +177,7 @@ local function splitPanes(nodes)
   local panes = { {}, {}, {} }
   for _, n in ipairs(nodes) do
     local p = 1
-    if n.posX >= xs[cut2] then p = 3 elseif n.posX >= xs[cut1] then p = 2 end
+    if n.gridX >= xs[cut2] then p = 3 elseif n.gridX >= xs[cut1] then p = 2 end
     table.insert(panes[p], n)
   end
   return panes
@@ -153,6 +222,8 @@ end
 --            (rows are shared by all three panes; posY grows downwards:
 --            tier 1 has the smallest posY, verified on the 8 real nodes).
 --   column = rank of its posX among its own pane's distinct posX.
+--            (Both after snapping near-equal values onto one grid line,
+--            13.11: Blizzard's data has a few units of jitter.)
 --   index  = its position in its pane, in C_Traits.GetTreeNodes order (the
 --            trait API's own order, standing in for Classic's talent index).
 -- Same shape as before 13.10, so encoding, hash, preview and learning order
@@ -177,6 +248,8 @@ function Talents.ReadTrees()
       if x then nodes[#nodes + 1] = x end
     end
     if #nodes == 0 then return nil end
+    -- Snap X over the whole tree before the split (13.11).
+    snapNodes(nodes, "posX", "gridX")
     panes = splitPanes(nodes)
   elseif #config.treeIDs == 3 then
     -- Never seen, but the other natural layout: one trait tree per pane, in
@@ -188,6 +261,8 @@ function Talents.ReadTrees()
         local x = readNode(configID, nodeID, #panes[p] + 1)
         if x then table.insert(panes[p], x) end
       end
+      -- Each tree is its own X space here, so snap per pane (13.11).
+      snapNodes(panes[p], "posX", "gridX")
     end
   end
   if not panes then return nil end
@@ -200,20 +275,23 @@ function Talents.ReadTrees()
     for _, x in ipairs(pane) do all[#all + 1] = x end
   end
   if #all == 0 then return nil end
-  local tierOf, numTiers = ranks(all, "posY")
+  -- Ranks are taken on the snapped values (13.11), so jitter of a few units
+  -- can't pose as an extra tier or column.
+  snapNodes(all, "posY", "gridY")
+  local tierOf, numTiers = ranks(all, "gridY")
   -- Classic grid: 7 tiers x 4 columns. More distinct values than that means
   -- the coordinates aren't the grid we verified: refuse rather than guess.
   if numTiers > 7 then return nil end
 
   local trees = {}
   for p, pane in ipairs(panes) do
-    local colOf, numCols = ranks(pane, "posX")
+    local colOf, numCols = ranks(pane, "gridX")
     if numCols > 4 then return nil end
     -- index = order within this pane, in GetTreeNodes order.
     table.sort(pane, function(a, b) return a.order < b.order end)
     local list = {}
     for i, x in ipairs(pane) do
-      list[i] = { name = x.name, icon = x.icon, tier = tierOf[x.posY], column = colOf[x.posX],
+      list[i] = { name = x.name, icon = x.icon, tier = tierOf[x.gridY], column = colOf[x.gridX],
                   rank = x.rank, maxRank = x.maxRank, index = i, nodeID = x.nodeID,
                   entryID = x.entryID, spellID = x.spellID, configID = x.configID }
     end

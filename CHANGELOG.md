@@ -4,6 +4,21 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-03 (Addon v0.10.5: tolerate position jitter in talent nodes)
+
+Follow-up to v0.10.4, found with live data: a dump of all 50 nodes of a Paladin's
+trait tree has 13 distinct posX values, with Protection's first column at both 5020
+and 5030 (10 units of jitter in Blizzard's data; real column steps are 590-600).
+v0.10.4 ranked every distinct value as its own column, saw 5 Protection columns and
+refused the tree ("couldn't read your talents yet"). `Talents.lua` now snaps values
+closer than 20% of the median gap onto one grid line (X before the pane split, and
+Y) before ranking. The tolerance is relative, so it doesn't depend on the scale, and
+it changes nothing when there's no jitter. Real fixture reads 4/4/4 columns with link +
+hash equal to `talentcalc.js`; synthetic Y jitter, multi-pair jitter, other scales,
+a too-close-but-real column and a jitter-majority refusal are tested. See
+`ADDON_PLAN.md` 13.11. Suite: 9389 checks, 0 failed (9259 before); luacheck 0
+warnings. Tag `r2f-v0.10.5`.
+
 ## 2026-10-03 (Addon v0.10.4: read talents through C_Traits, corrects v0.10.3)
 
 v0.10.3's premise was wrong: `LoadAddOn("Blizzard_TalentUI")` returns `false,

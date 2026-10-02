@@ -2384,7 +2384,8 @@ link + hash identical to `talentcalc.js`: 9/9.
   Paladin = one tree, 50 nodes = all three panes; Holy's posX/posY are Wowhead's
   col/row on a 600 grid, posY growing downwards; node ids and names = Wowhead's.
 - Not yet seen in game (TESTING.md 19): the posX of the Protection and Retribution
-  nodes (the gutter is read off the screenshot, not dumped); any class but Paladin
+  nodes (the gutter is read off the screenshot, not dumped; **now dumped, see 13.11:
+  it found jitter that broke Protection**); any class but Paladin
   (one tree per class? same layout?); `activeRank` vs pending, un-applied points;
   `SetSpellByID` tooltips; which event fires when the player applies talents (guided
   mode advances on either); whether `GetTalentTabInfo` exists (else `Tree 1..3`).
@@ -2393,3 +2394,100 @@ link + hash identical to `talentcalc.js`: 9/9.
   mapping digits wrongly. On **export** the site ignores the hash, so a wrong mapping
   would open the wrong build there: TESTING.md 13's hash comparison per class is the
   check for that.
+
+### 13.11 Fix: position jitter in Blizzard's layout data (v0.10.5, 2026-10-03)
+
+**Extends 13.10.** Its first open item ("the posX of the Protection and Retribution
+nodes ... never dumped") is now answered with real data, and the answer broke the
+reader.
+
+**The bug.** A throwaway diagnostic addon dumped `C_Traits.GetNodeInfo` for all 50
+nodes of a Paladin's tree 1100 (2026-10-03). Preview on that character still said
+"couldn't read your talents yet." The whole tree has 13 distinct posX values:
+
+```
+1020 1620 2220 2820 | 5020 5030 5620 6220 6820 | 9080 9680 10280 10880
+gaps: 600 600 600 | 2200 | 10 590 600 600 | 2260 | 600 600 600
+```
+
+The two widest gaps (2260, 2200) are the gutters, so `splitPanes` finds the right
+three panes. But Protection holds **five** distinct values: 5020 and 5030 are 10 units
+apart, where every real column step in the data is 590-600. They are one column with a
+few units of jitter in Blizzard's own layout data (not an addon error). `ranks()`
+treated every distinct raw value as its own column, so Protection had 5 columns,
+the "more than 4 columns" check (13.10's refuse-don't-guess rule) returned nil, and
+the player saw the same message as before. Holy (and Retribution) read fine.
+
+**The fix: snap near-equal values onto one grid line before ranking.**
+`snapGrid(nodes, key)` in `Talents.lua`:
+1. Sort the distinct values; take the gaps between neighbours.
+2. Estimate the grid step as the **upper median** of those gaps.
+3. Walk the sorted values; a value less than `SNAP_FRACTION` (0.2) x step above the
+   current cluster's **first** value joins that cluster, otherwise it starts a new one.
+   Each value maps to its cluster's first value.
+
+`ReadTrees` snaps X over the whole tree **before** `splitPanes` (one tree per pane:
+per pane), and Y over all panes, then ranks the snapped values exactly as before.
+
+Why each choice:
+- **Relative, not a fixed number of units.** 13.10 chose ranks because nothing promises
+  the same scale for every class/tree. A fixed 100-unit threshold would merge real
+  columns on a grid with a step of 60 and miss 300 units of jitter on a step of 6000;
+  both are tests.
+- **Median.** Real steps are most of the gaps; jitter (too small) and gutters (too
+  large) are outliers on opposite sides, which a median ignores while they are under
+  half. The **upper** median still finds the step when exactly half the gaps are
+  jitter (tested: 11 of 22, reads right; the lower median fails that test).
+- **0.2.** Real jitter is 10 / 600 = 1.7% of a step; 0.2 x 600 = 120. A real column
+  only a third (200) or a quarter (150) of a step from its neighbour stays separate
+  (tested). The two failure directions aren't equal: **not** snapping jitter only
+  shifts column/tier numbers (jitter is far below a step, so the sort order is
+  unchanged) or trips the count checks (nil). Snapping two **real** lines together
+  puts two talents in one cell and leaves their order to the index tiebreak, which
+  could map link digits wrongly. So the fraction is kept small.
+- **From the cluster's first value, not the previous one.** A run of small gaps can't
+  chain separate grid lines into one cluster (tested).
+- **When jitter is the majority** of gaps, the median is a jitter gap, nothing snaps,
+  and the column/tier checks refuse (nil) instead of guessing (tested).
+- **Gutters after snapping.** `splitPanes` reads the snapped X. On the real values the
+  two widest snapped gaps are still 2260 and 2200 after the 4th and 8th line, the next
+  is 600 (tested). Jitter gaps are the smallest gaps, so they could never be taken for
+  gutters: splitting on raw or snapped X gives the same panes (a hand mutation that
+  splits on raw X passes the suite, as expected). Snapping first just means panes are
+  cut on the same values their columns are counted on.
+- **No jitter = no-op.** Every value snaps to itself on the 8 real Holy nodes and on
+  13.10's test tree (tested), so every 13.10 check passes unchanged.
+
+**Testing.** New `test_talent_grid_jitter` (both UI modes), with a 50-node Paladin fixture:
+the **real 13 posX values**, Wowhead's Paladin cell layout (node id, row, col, max
+rank; placeholder names except the 8 real Holy ones, since Wowhead's data isn't stored
+in the repo), posY on the 13.10 grid. The report doesn't say which Protection
+column-0 node(s) sat at 5030, so all 6 placements (each one alone, each pair) are read.
+- Real data: gaps re-derived; only 5030 snaps (onto 5020); the raw ranking counts 5
+  Protection columns (the bug) and with the tolerance off `ReadTrees` is nil (the live
+  failure, reproduced); with it, all 6 placements read **17/16/17 talents, 4/4/4
+  columns** (raw: 4/5/4), every node at Wowhead's pane/row/col.
+- End to end: the link for an empty build and for one with 3 points in the jittered
+  node equals the real `talentcalc.js` on the same layout (Wowhead format, temp file),
+  also through `MyBuildLink`; the jittered node's points are Protection's 3rd digit.
+- Synthetic, to prove it generalises: Y jitter (+7 / -9: 9 raw tiers -> 7); five
+  jitter pairs in X and Y, both directions, all three panes; steps of 60, 6000 and 222
+  with offsets; 300 units of jitter on a step of 6000.
+- Too aggressive: a real column a third of a step from its neighbour (Retribution
+  columns at 9080 / 9680 / 9880 / 10480) reads as 4 columns in place; `SNAP_FRACTION`
+  0.4 on the same tree fails.
+- Fail-safe and chaining, as above.
+
+Suite: 9389 checks, 0 failed (9259 before; every earlier check kept, none changed
+except the TOC version). Hand mutations, each failing the suite: fraction 0 (= v0.10.4
+behaviour), fraction 0.5, a fixed 100-unit threshold, the lower median, chaining from
+the previous value, no Y snap. luacheck: 0 warnings.
+
+**Proven vs not yet.**
+- Proven on real data: Paladin's whole tree, all three panes' posX; the gutters; X
+  jitter of 10 units in one column; the fix reads it as 4/4/4.
+- Not verified: which node(s) carry the 5030 (all placements are tested, so it doesn't
+  change the result); Protection's and Retribution's **posY** (not in the report; on
+  the Holy grid in the fixture); **Y jitter** has never been seen (Y snapping is a
+  defensive generalisation); any class but Paladin. v0.10.5 itself still needs an
+  in-game Preview / Copy my build on the Paladin (TESTING.md 19).

@@ -15,6 +15,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 
 try:
     import lupa.lua51 as lua51
@@ -2891,6 +2892,244 @@ def test_talent_traits(templates):
     lua.execute("GetTalentInfo = REAL_GTI")
 
 
+# 13.11: the 13 distinct posX values of Paladin's WHOLE trait tree 1100 (all
+# 50 nodes), from the live /tdump of 2026-10-03. Real data. Protection's first
+# column comes as both 5020 and 5030 (Blizzard's own jitter; the gap list is
+# 600 600 600 | 2200 | 10 590 600 600 | 2260 | 600 600 600).
+REAL_PALADIN_X = [1020, 1620, 2220, 2820, 5020, 5030, 5620, 6220, 6820, 9080, 9680, 10280, 10880]
+PALADIN_PANE_X = [[1020, 1620, 2220, 2820], [5020, 5620, 6220, 6820], [9080, 9680, 10280, 10880]]
+PALADIN_JITTER_X = 5030
+# Paladin's cell layout per pane (Wowhead's Forever data, site tree order Holy
+# 382 / Protection 383 / Retribution 381): (node id, row, col, max rank). Only
+# the SHAPE is kept here (Wowhead's talent data isn't stored in the repo, 13.10);
+# names are placeholders except the 8 real Holy nodes already above. posY is
+# 2130 + row * 600, the grid verified on the real Holy nodes (Protection's and
+# Retribution's posY were not in the 13-value report: synthesized on that grid).
+PALADIN_LAYOUT = [
+    [(105639, 0, 1, 5), (105332, 0, 2, 5), (105333, 1, 0, 3), (105335, 1, 1, 2), (105334, 1, 2, 3),
+     (105331, 1, 3, 2), (105330, 2, 0, 1), (110871, 2, 1, 3), (105327, 2, 2, 2), (110873, 3, 0, 2),
+     (105329, 3, 1, 5), (105325, 3, 2, 1), (105324, 4, 0, 3), (105323, 4, 1, 1), (110872, 4, 2, 2),
+     (105321, 5, 2, 5), (105320, 6, 1, 1)],
+    [(105630, 0, 1, 5), (105626, 0, 2, 5), (105638, 1, 0, 3), (105637, 1, 1, 2), (105636, 1, 3, 5),
+     (110875, 2, 0, 1), (105634, 2, 1, 3), (110874, 2, 2, 3), (105632, 2, 3, 2), (110878, 3, 0, 1),
+     (105629, 3, 1, 3), (105633, 3, 2, 3), (105625, 4, 1, 1), (105627, 4, 2, 5), (110879, 5, 2, 5),
+     (105628, 6, 1, 1)],
+    [(105707, 0, 1, 5), (105706, 0, 2, 5), (105705, 1, 0, 2), (105704, 1, 1, 2), (105703, 1, 2, 5),
+     (105702, 2, 0, 3), (105701, 2, 1, 3), (105696, 2, 2, 1), (105699, 2, 3, 2), (105698, 3, 0, 2),
+     (105700, 3, 2, 1), (105697, 4, 0, 3), (105693, 4, 1, 3), (105694, 4, 2, 1), (110882, 5, 1, 3),
+     (110880, 5, 2, 2), (105692, 6, 1, 1)],
+]
+PALADIN_TREES = (382, 383, 381)
+PROT_COL0 = [i for i, r, c, m in PALADIN_LAYOUT[1] if c == 0]   # the 3 nodes that can carry 5030
+
+
+def paladin_name(pane, nid, row, col):
+    if nid in REAL_HOLY_NODES:
+        return REAL_HOLY_NODES[nid][2]
+    return "%s r%dc%d" % (("Holy", "Prot", "Ret")[pane], row, col)
+
+
+def paladin_tree(jitter_ids=(PROT_COL0[0],), ranks=None, nudge=None, pane_x=None, transform=lambda x, y: (x, y)):
+    """The 50-node Paladin tree 1100 on the REAL posX values. jitter_ids = the
+    Protection column-0 nodes at 5030 (the rest at 5020; the report doesn't
+    say which node had which, so tests try every choice). nudge = {id: (dx, dy)}
+    synthetic extra jitter; pane_x = synthetic column X values per pane."""
+    ranks, nudge, pane_x = ranks or {}, nudge or {}, pane_x or PALADIN_PANE_X
+    nodes = []
+    for p, layout in enumerate(PALADIN_LAYOUT):
+        for nid, row, col, mx in layout:
+            x = pane_x[p][col]
+            if p == 1 and col == 0 and nid in jitter_ids:
+                x = PALADIN_JITTER_X
+            y = 2130 + row * 600
+            dx, dy = nudge.get(nid, (0, 0))
+            x, y = transform(x + dx, y + dy)
+            name = paladin_name(p, nid, row, col)
+            nodes.append((nid, x, y, name, ranks.get(name, 0), mx))
+    # The client's order is not row/col order: interleave by id.
+    nodes.sort(key=lambda n: (n[0] * 7919) % 1000)
+    return trait_tree_lua([1100], {1100: nodes})
+
+
+def paladin_wowhead_fixture(scenarios):
+    """The same layout in Wowhead's format, for the real talentcalc.js."""
+    talents = {}
+    for p, layout in enumerate(PALADIN_LAYOUT):
+        tree = {}
+        for nid, row, col, mx in layout:
+            tree[str(nid)] = {"id": nid, "row": row, "col": col, "icon": "inv_misc_questionmark",
+                              "name": paladin_name(p, nid, row, col), "ranks": list(range(1, mx + 1))}
+        talents[str(PALADIN_TREES[p])] = tree
+    return {"talents": talents, "scenarios": scenarios}
+
+
+def test_talent_grid_jitter(templates):
+    """13.11: tolerance for Blizzard's few-unit jitter in node positions. The
+    real 13 posX values of Paladin's whole tree must read as 4 / 4 / 4 columns
+    (raw ranking saw 5 in Protection and refused), and the tolerance must be
+    relative (any grid step), work on Y too, and NOT merge real columns."""
+    tag = "templates" if templates else "fallbacks"
+    lua = new_runtime(templates)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    TL = lua.eval("R2F.Talents")
+    read = lua.eval("function() return R2F.Talents.ReadTrees() end")
+    snap_lua = lua.eval("function(vals) local n = {} for i = 1, #vals do n[i] = { v = vals[i] } end"
+                        " return R2F.Talents.GridSnap(n, 'v') end")
+
+    def snap(vals):
+        m = snap_lua(lua.table(*vals))
+        return {v: m[v] for v in vals}
+
+    def distinct_after(vals):
+        return len(set(snap(vals).values()))
+
+    def layout_of(trees):
+        """{node id: (pane, tier, column)} from ReadTrees output."""
+        out = {}
+        for t in range(1, len(trees) + 1):
+            for k in range(1, len(trees[t]) + 1):
+                e = trees[t][k]
+                out[e.nodeID] = (t, e.tier, e.column)
+        return out
+
+    want = {nid: (p + 1, row + 1, col + 1) for p, layout in enumerate(PALADIN_LAYOUT) for nid, row, col, _ in layout}
+
+    def cols_per_pane(trees):
+        return [len({trees[t][k].column for k in range(1, len(trees[t]) + 1)}) for t in (1, 2, 3)]
+
+    # ---- The real values, re-derived -----------------------------------------
+    gaps = [b - a for a, b in zip(REAL_PALADIN_X, REAL_PALADIN_X[1:])]
+    check(gaps == [600, 600, 600, 2200, 10, 590, 600, 600, 2260, 600, 600, 600],
+          "%s: real Paladin posX gaps re-derived: %s" % (tag, gaps))
+    s = snap(REAL_PALADIN_X)
+    check(s[5030] == 5020 and all(s[v] == v for v in REAL_PALADIN_X if v != 5030),
+          "%s: real 13 X values: only 5030 snaps (onto 5020), every other value is its own grid line" % tag)
+    xs = sorted(set(s.values()))
+    sg = sorted(((b - a, i) for i, (a, b) in enumerate(zip(xs, xs[1:]))), reverse=True)
+    check(len(xs) == 12 and [g for g, _ in sg[:3]] == [2260, 2200, 600]
+          and sorted(i for _, i in sg[:2]) == [3, 7],
+          "%s: gutters on the SNAPPED values: 2260 / 2200 after the 4th and 8th line, next gap 600 (clear split)" % tag)
+
+    # ---- The bug, reproduced on the raw values -------------------------------
+    lua.execute(paladin_tree())
+    raw_prot = lua.eval("(function() local n = {} for _, v in ipairs({5020, 5030, 5620, 6220, 6820}) do"
+                        " n[#n + 1] = { posX = v } end return select(2, R2F.Talents.GridRanks(n, 'posX')) end)()")
+    check(raw_prot == 5, "%s: raw ranking counts 5 Protection columns (the bug)" % tag)
+    FRACTION = TL.SNAP_FRACTION   # the shipped value; restored after each sanity flip
+    TL.SNAP_FRACTION = 0
+    check(read() is None, "%s: sanity: tolerance off -> the real tree reads nil (reproduces the live failure)" % tag)
+    TL.SNAP_FRACTION = FRACTION
+
+    # ---- The real tree, every possible placement of the jitter --------------
+    variants = [(i,) for i in PROT_COL0] + [tuple(PROT_COL0[:k] + PROT_COL0[k + 1:]) for k in range(3)]
+    for jit in variants:
+        lua.execute(paladin_tree(jitter_ids=jit))
+        trees = read()
+        ok = trees is not None and len(trees) == 3
+        check(ok, "%s: real Paladin tree, 5030 on %s: ReadTrees succeeds" % (tag, jit))
+        if not ok:
+            continue
+        check([len(trees[t]) for t in (1, 2, 3)] == [17, 16, 17] and cols_per_pane(trees) == [4, 4, 4],
+              "%s: 5030 on %s: 17/16/17 talents, 4/4/4 columns (got %s)" % (tag, jit, cols_per_pane(trees)))
+        check(layout_of(trees) == want, "%s: 5030 on %s: all 50 nodes at Wowhead's pane/row/col" % (tag, jit))
+
+    # ---- End to end: link + hash == the site's talentcalc.js ---------------
+    jit_name = paladin_name(1, PROT_COL0[0], 1, 0)       # Protection row 1 col 0, at 5030
+    scen = [{"name": "none", "cls": "paladin", "ranks": {}},
+            {"name": "jittered node", "cls": "paladin",
+             "ranks": {"Prot r0c1": 5, jit_name: 3, "Holy r0c2": 2, "Ret r0c1": 4}}]
+    tmp = os.path.join(tempfile.mkdtemp(), "paladin_fixture.json")
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(paladin_wowhead_fixture(scen), f)
+    js = talent_js(tmp)
+    lua.execute("TEST.classToken = 'PALADIN'")
+    for sc, out in zip(scen, js["scenarios"]):
+        lua.execute(paladin_tree(ranks=sc["ranks"]))
+        check(out["points"] == out["total"], "%s: sanity: talentcalc.js took every preset point (%s)" % (tag, sc["name"]))
+        link = TL.LinkBody(TL.ClassId(), read())
+        check(link == out["link"], "%s: real Paladin tree, %s: link %r == talentcalc.js %r" % (tag, sc["name"], link, out["link"]))
+        check(lua.eval("R2F.Talents.MyBuildLink()") == SITE_TALENTS + out["link"],
+              "%s: %s: Copy my build link == the site's" % (tag, sc["name"]))
+    check(js["scenarios"][1]["link"].startswith("paladin/02-503-4~"),
+          "%s: sanity: the jittered node's 3 points are Protection's digit 3 (row 1 col 0, after row 0's two)" % tag)
+    lua.execute("TEST.classToken = nil")
+
+    # ---- Holy unchanged: no jitter -> snapping is a no-op -------------------
+    lua.execute(paladin_like_tree())
+    lua.execute("NOJIT = {} for _, t in ipairs(TEST.traitTree.trees[1100]) do NOJIT[#NOJIT + 1] = t end")
+    check(lua.eval("(function() for _, key in ipairs({'posX', 'posY'}) do local m = R2F.Talents.GridSnap(NOJIT, key)"
+                   " for v, s in pairs(m) do if v ~= s then return false end end end return true end)()") is True,
+          "%s: no jitter (the 13.10 tree with the 8 real Holy nodes): every value snaps to itself (no-op)" % tag)
+    real8 = [v[0] for v in REAL_HOLY_NODES.values()] + [v[1] for v in REAL_HOLY_NODES.values()]
+    check(all(k == v for k, v in snap(real8).items()), "%s: the 8 real Holy nodes' X/Y: no-op" % tag)
+
+    # ---- Synthetic: jitter in Y (never seen; defensive) ----------------------
+    nudge_y = {105698: (0, 7), 105694: (0, -9)}            # Ret row 3 down 7, Ret row 4 up 9
+    lua.execute(paladin_tree(nudge=nudge_y))
+    trees = read()
+    check(trees is not None and layout_of(trees) == want,
+          "%s: synthetic Y jitter (+7 / -9 on two rows): still 7 tiers, every node in place" % tag)
+    TL.SNAP_FRACTION = 0
+    check(read() is None, "%s: sanity: that Y jitter without tolerance = 9 tiers -> nil" % tag)
+    TL.SNAP_FRACTION = FRACTION
+
+    # ---- Synthetic: several jitter pairs, both directions, both axes --------
+    nudge_multi = {105327: (-6, 0), 105699: (12, 0), 105705: (0, 4), 105625: (-3, -3)}
+    lua.execute(paladin_tree(jitter_ids=(PROT_COL0[1],), nudge=nudge_multi))
+    trees = read()
+    check(trees is not None and layout_of(trees) == want and cols_per_pane(trees) == [4, 4, 4],
+          "%s: synthetic: 5 jitter pairs (X and Y, + and -, all three panes): 4/4/4, every node in place" % tag)
+
+    # ---- Synthetic: other grid steps (the tolerance is relative) ------------
+    for k, desc in ((0.1, "step 60 (a fixed 100-unit threshold would merge real columns)"),
+                    (10, "step 6000, jitter 100 (a fixed small threshold would miss it)"),
+                    (0.37, "step 222, odd offset")):
+        lua.execute(paladin_tree(transform=lambda x, y, k=k: (x * k + 13, y * k - 5)))
+        trees = read()
+        check(trees is not None and layout_of(trees) == want, "%s: synthetic %s: every node in place" % (tag, desc))
+    check(snap([0, 300, 6000, 12000, 18000])[300] == 0, "%s: step 6000: jitter of 300 (5%%) snaps" % tag)
+    check(distinct_after([0, 60, 120, 180, 1]) == 4, "%s: step 60: jitter of 1 snaps, the 4 columns stay" % tag)
+
+    # ---- Not too aggressive: real columns closer than usual stay apart ------
+    # A pane whose columns 2 and 3 are only a third of a step apart (200 vs
+    # 600). Intentional layout, NOT jitter: it must read as 4 columns. This
+    # fails if the tolerance were raised to a third of a step or more.
+    tight = [PALADIN_PANE_X[0], PALADIN_PANE_X[1], [9080, 9680, 9880, 10480]]
+    lua.execute(paladin_tree(pane_x=tight))
+    trees = read()
+    check(trees is not None and layout_of(trees) == want and cols_per_pane(trees) == [4, 4, 4],
+          "%s: real columns 200 apart (1/3 step) are NOT merged: Retribution keeps 4 columns" % tag)
+    check(distinct_after([0, 600, 800, 1400, 2000]) == 5, "%s: GridSnap keeps a 1/3-step gap" % tag)
+    check(distinct_after([0, 600, 750, 1350, 1950]) == 5, "%s: GridSnap keeps a 1/4-step gap" % tag)
+    TL.SNAP_FRACTION = 0.4
+    t2 = read()
+    check(t2 is None or layout_of(t2) != want,
+          "%s: sanity: with a too-aggressive tolerance (0.4) the tight tree no longer reads right" % tag)
+    TL.SNAP_FRACTION = FRACTION
+
+    # ---- Fail-safe: jitter on most gaps -> nothing merges -> nil, not a guess
+    check(distinct_after([0, 10, 600, 610, 1200, 1210, 1800, 1810]) == 8,
+          "%s: jitter on every column (median gap = jitter): nothing snaps" % tag)
+    # Every column split in two (odd rows +10): exactly half the X gaps (11 of
+    # 22) are jitter. The UPPER median still lands on a real step: reads right.
+    half = {nid: (10, 0) for layout in PALADIN_LAYOUT for nid, r, _, _ in layout if r % 2 == 1}
+    lua.execute(paladin_tree(nudge=half))
+    t3 = read()
+    check(t3 is not None and layout_of(t3) == want, "%s: half the X gaps are jitter: upper median, still right" % tag)
+    # Every column split in three (+0 / +10 / +20 by row): jitter is the
+    # majority, the median is a jitter gap, nothing snaps -> more than 4
+    # columns -> refused.
+    most = {nid: (10 * (r % 3), 0) for layout in PALADIN_LAYOUT for nid, r, _, _ in layout}
+    lua.execute(paladin_tree(nudge=most))
+    check(read() is None, "%s: jitter on most X gaps: refused (nil), not guessed" % tag)
+    # Chaining: small gaps in a row don't pull separate lines into one cluster.
+    check(distinct_after([0, 600, 1200, 1800, 2400, 3000, 50, 100, 150]) == 7,
+          "%s: a run of 50-unit steps is measured from the cluster's first value (no chaining)" % tag)
+    lua.execute("TEST.traitTree = nil")
+
+
 def test_talent_source_writes():
     """Step 10's write discipline (ADDON_PLAN 13.8), on the source itself:
     LearnTalent is CALLED in exactly one place (learnPoint in Talents.lua, right
@@ -2937,7 +3176,7 @@ def test_talent_source_writes():
           "glow/host are unnamed frames on UIParent; Blizzard frames only looked up")
     toc = open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read()
     check("UI\\TalentPanel.lua" in toc and "UI\\TalentGuide.lua" in toc, "TalentPanel.lua and TalentGuide.lua in the TOC")
-    check(re.search(r"^## Version: 0\.10\.4$", toc, re.M) is not None, "TOC version 0.10.4")
+    check(re.search(r"^## Version: 0\.10\.5$", toc, re.M) is not None, "TOC version 0.10.5")
 
 
 def test_quick_settings(templates, fx):
@@ -3635,6 +3874,8 @@ def main():
     test_talent_learning(False)
     test_talent_traits(True)
     test_talent_traits(False)
+    test_talent_grid_jitter(True)
+    test_talent_grid_jitter(False)
     test_talent_source_writes()
     test_quick_settings(True, fx)
     test_quick_settings(False, fx)

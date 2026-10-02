@@ -4,6 +4,31 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon plan, step 10: talent learning, Road to Forever addon v0.8.0)
+
+- **Addon v0.8.0** (tag `r2f-v0.8.0`): Learn talents is live. Confirm popup (`Learn N
+  talent points? Only a trainer reset can undo this.`), then a resumable, event-driven
+  state machine at the end of `Talents.lua` learns step 9's `LearnOrder` one point at a
+  time: re-verify on the live game (preview/conflicts, tier rule, `GetTalentPrereqs`,
+  free points), `LearnTalent` (its only call site, combat-checked), wait for
+  `CHARACTER_POINTS_CHANGED` or the 0.5 s `C_Timer` timeout, re-read the rank; a point
+  that didn't land stops the run with 13.5's message. `PLAYER_REGEN_DISABLED` stops it
+  mid-run; Learn talents continues a stopped run (no second popup) and waits for a point
+  still in flight instead of re-sending it (no double rank). Popup accepted in combat
+  -> `Macros.RunOrQueue`. Tab: `Learning X / N`, rest locked, Cancel -> Stop, stop/done
+  line. Fallbacks: Blizzard's talent preview if present and switched on (fill only,
+  Blizzard's button commits); **guided mode** (new `UI/TalentGuide.lua`) when
+  `LearnTalent` is missing or blocked (`ADDON_ACTION_FORBIDDEN`/`BLOCKED`, or the first
+  point refused): our own glow frame on `UIParent` anchored over Blizzard's talent
+  button, `Click X (2 of 21)`, nothing of Blizzard's modified.
+- **Tests:** `run_tests.py` 8006 checks pass (was 6223): a fake server in
+  `wow_stubs.lua` (Classic's learn rules, async answers, combat raises), full/partial/
+  resumed runs, every stop path and message, combat interrupt + resume, no double send,
+  re-verification cases, guided mode, preview mode; a source test pins the single
+  `LearnTalent` call. 24 hand mutations each fail the suite. luacheck 0 warnings.
+  Decisions in `ADDON_PLAN.md` 13.8; in-game checks in `addon/RoadToForever/TESTING.md`
+  15 (**not run on a real client yet**; do them on a test character first).
+
 ## 2026-10-02 (Addon plan, step 9: talent import preview, Road to Forever addon v0.7.0)
 
 - **Addon v0.7.0** (tag `r2f-v0.7.0`): the Talents tab replaces its step-6 placeholder

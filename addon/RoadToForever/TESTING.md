@@ -1,4 +1,4 @@
-# Road to Forever: in-game test checklist (v0.7.0, addon steps 3 to 9)
+# Road to Forever: in-game test checklist (v0.8.0, addon steps 3 to 10)
 
 Since v0.4.0 the Macro Book is the **Macros tab** of the main window: wherever an
 older section below says "`/r2f` opens the Macro Book" or "open the book", use
@@ -436,13 +436,114 @@ What only the game can show:
 - [ ] **Remembered.** Preview a link, `/reload`, `/r2ft`. **Pass:** the link is back
       in the box and previewed. Cancel clears it (and it stays cleared after a reload).
 - [ ] **Combat.** In combat: Preview, Cancel and Copy my build still work (read-only),
-      no "action blocked". Learn talents stays greyed out (step 10).
-- [ ] Hover `Learn talents`: tooltip `Learning talents comes in a later version...`.
+      no "action blocked". Learn talents is greyed out in combat (since v0.8.0, 15).
 
-## Known gaps in v0.7.0 (by design, later steps)
+## 15. Talent learning (v0.8.0, step 10) -- READ ALL OF THIS FIRST
 
-- **Talents are previewed, not learned.** Learn talents is greyed out until step 10
-  (ADDON_PLAN 13.5). `/r2f copybuild` is also a button on the Talents tab now.
+**This is the one part of the addon that changes your character for good.** Every
+learned point is permanent until a paid trainer reset. Do these checks on a **throwaway
+or low-level test character** with only a few free points, never on a main, and do
+them in order: each one assumes the one before passed.
+
+**What's proven outside the game** (`run_tests.py`, fake client + fake server): the
+order of points (= the gold `+N` cells, tier by tier), one point at a time, the
+re-checks before every point (conflicts, tier, prerequisites, free points), the stop
+on a refused point / combat / Stop with the exact messages, nothing sent in combat or
+after a stop, resuming without sending a point twice, the popup only for a build with
+no red conflicts, guided mode's logic and that it never touches Blizzard's frames.
+**What only the game can show:** whether `LearnTalent` works for an addon at all, from
+an event (not only a click), how fast the server answers, `GetTalentPrereqs`' shape,
+the talent window's frame names, whether Forever has Blizzard's talent preview, and how
+everything looks. ADDON_PLAN 13.8 has the reasoning.
+
+**Before the first click, check the client (no points spent):**
+- [ ] `/dump type(LearnTalent), type(GetTalentPrereqs), type(ToggleTalentFrame)` ->
+      expect `function` x3. `LearnTalent` not a function = the addon uses guided mode.
+- [ ] `/dump GetCVarBool and GetCVarBool("previewTalents"), type(AddPreviewTalentPoints)`.
+      If the first is `true`, Forever has Blizzard's talent preview and Learn talents will
+      **fill Blizzard's preview** instead of learning (nothing is learned until you click
+      Blizzard's own Learn button). Note the result in ADDON_PLAN 11 either way.
+- [ ] `/dump R2F.Talents.LearnMode()` -> expect `direct` (or `preview` per the line above).
+- [ ] With a talent that has a prerequisite in view: `/dump GetTalentPrereqs(1, i)`
+      (i = that talent's index; `/dump GetTalentInfo(1, i)` to find it). **Pass:** tier,
+      column of the prerequisite, then `1` or `nil`.
+
+**One point (the most important test):**
+- [ ] Character with **1 free point**. Make a 1-point build on the site (a tier-1
+      talent), Copy link, paste, Preview. **Pass:** gold `+1` on that talent; `This build
+      uses 1 point. You have 1 free. It will be learned.`; Learn talents enabled; hover
+      it: `Learns the gold +N points ...`.
+- [ ] Click Learn talents. **Pass:** popup `Learn 1 talent point? Only a trainer reset
+      can undo this.` with `[Learn] [Cancel]`. Click **Cancel**: nothing changes (check
+      Blizzard's talent window).
+- [ ] Learn talents again, **Learn**. **Pass:** within a moment the point is in Blizzard's
+      talent window, chat `Learned 1 talent point.`, green line on the tab, the trees
+      redraw (rank 1), no Lua error, **no "Interface action failed because of an AddOn"**.
+      **If instead** you see `Stopped at X: the game didn't accept the point. 0 of 1
+      learned. Your game may not let addons learn talents...`: check the point really
+      isn't learned, then note it (ADDON_PLAN 11): `LearnTalent` is blocked for addons
+      and the addon will guide you instead (guided-mode checks below).
+- [ ] If the point **did** land but the message says `didn't accept` and a moment later
+      `The point in X arrived late after all`, the server is slower than 0.5 s: note your
+      ping; raise `Talents.LEARN_TIMEOUT` in `Talents.lua` (ADDON_PLAN 13.8).
+
+**Several points (follow-up points are sent from an event, not a click):**
+- [ ] 5+ free points, a build of 5 points across tier 1 **and tier 2** of one tree (so
+      the tier rule matters). Learn. **Pass:** the button counts `Learning 1 / 5`,
+      `Learning 2 / 5`, ...; link box, Preview and Copy my build are greyed out, Cancel
+      reads `Stop`; at the end `Learned 5 talent points.` and exactly the build is in
+      Blizzard's window. **If only the first point lands** and it stops at the second
+      with `didn't accept`: Forever only allows `LearnTalent` from a click. Report it
+      (ADDON_PLAN 13.8 "Not done / limits"); guided mode is then the way.
+- [ ] A build with a **prerequisite** (e.g. a talent with an arrow). **Pass:** learned
+      in order without a stop.
+- [ ] More build than free points. **Pass:** the popup counts only the gold points;
+      after the run the rest still shows `later`, summary `No free talent points.`
+
+**Stops (do each on a few points):**
+- [ ] **Combat mid-run:** start a 5-point run and attack a training dummy / pull a mob
+      at once (or have a friend duel you). **Pass:** chat `Stopped: you entered combat.
+      X of 5 learned. Click Learn talents to continue.`, **no "action blocked"**, no
+      Lua error, no point learned during combat (Blizzard's window), Learn talents grey
+      in combat. After combat: Learn talents continues **without a popup**, counting on
+      from `X+1`, and finishes with exactly the build (no talent one rank too high).
+- [ ] **Stop button:** start a run, click Stop at once. **Pass:** `Stopped. X of N
+      learned. ...`; click Learn talents straight away: it continues and the build ends
+      **exact** (no point learned twice).
+- [ ] **Spend a point elsewhere mid-run** (hard to time; try with a big build): in
+      Blizzard's window click a talent **not** in the build. **Pass:** `Stopped: your
+      talents changed while learning. ...`, the red conflict line, Learn disabled.
+- [ ] **Close the window mid-run** (Esc). **Pass:** the run still finishes (chat).
+- [ ] `/reload` after a stop: the link is back, Learn talents asks with a **new** popup
+      for what's left (runs aren't saved, ADDON_PLAN 13.8).
+
+**Guided mode** (only reachable for real if `LearnTalent` is blocked; to try it anyway:
+`/run LearnTalent = nil` on a test character, then `/reload` afterwards to undo):
+- [ ] Learn talents -> popup with the extra line `Your game doesn't let addons learn
+      talents, so Blizzard's talent window opens ...` -> Learn. **Pass:** Blizzard's
+      talent window opens; a **pulsing gold glow** sits exactly over the first talent;
+      the label above it and chat say `Click <name> (1 of N)`; the tab's note line too.
+      If the glow is off the button or missing: `/dump TalentFrame ~= nil,
+      PlayerTalentFrame ~= nil` and `/fstack` over a talent button; note the names
+      (ADDON_PLAN 13.8 / `UI/TalentGuide.lua` `FRAMES`).
+- [ ] Click the glowing talent. **Pass:** the glow moves on (`2 of N`); Blizzard's
+      button still takes the click normally (the glow doesn't swallow it).
+- [ ] A point in another tree: the glow sits on that tree's **tab** with `Open the
+      <Tree> tab, then click ...`; switch tab: it moves onto the talent within a moment.
+- [ ] Close Blizzard's window: the glow disappears; reopen (N): it's back.
+- [ ] Click a talent **not** in the build: guided mode stops (`your talents changed`).
+- [ ] At the end: `Learned N talent points.`, glow gone. No Lua error, no taint warning
+      when you later open/close the talent window in combat (`/console taintLog 1` and
+      check `Logs\taint.log` for `RoadToForever` after a session).
+
+## Known gaps in v0.8.0 (by design / later)
+
+- **Talent learning has never run on a real client.** Do section 15 on a test character
+  before trusting it with a real build.
+- The learning timeout is 0.5 s (ADDON_PLAN 13.5); on a slow connection a point can be
+  reported as refused and then `arrived late`. The run stops (safe) and continues on the
+  next click.
+- A run isn't saved over a `/reload`; the link is, and a new click asks again.
 - A non-English client can't verify links (the hash is over English names); it gets
   the yellow "can't check" line and the sanity checks only (ADDON_PLAN 13.7).
 - The window has a fixed size (ADDON_PLAN 6.10); only position and tab are saved.

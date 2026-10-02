@@ -497,6 +497,7 @@ addon/RoadToForever/
   UI\MainWindow.lua shared window, bottom tabs Home / Macros / Talents
   UI\Home.lua       Home tab
   UI\TalentPanel.lua talent link box, preview trees, Learn button
+  UI\TalentGuide.lua guided mode: glow over Blizzard's talent button (step 10, 13.8)
   Talents.lua       parse link, map to the game's trees, plan, learn, export
   Minimap.lua       own minimap button + right-click menu; uses LibDBIcon only if
                     another addon has loaded it (6.10)
@@ -588,6 +589,7 @@ Account-slot macros are also recorded in `R2FDB.createdAccount`.
 | `LEARNED_SPELL_IN_TAB` | refresh icons / Learn later state |
 | `CHARACTER_POINTS_CHANGED` | talent learning: confirm the last point landed, then spend the next |
 | `PLAYER_LEVEL_UP` | refresh free talent points on Home and Talents |
+| `ADDON_ACTION_FORBIDDEN` / `ADDON_ACTION_BLOCKED` | (step 10) ours + `LearnTalent`: switch to guided mode (13.8) |
 
 ### 6.6 Taint and secure code (role: taint auditor)
 
@@ -1139,7 +1141,8 @@ shows under the repo's Actions tab.
 9. **Talent import preview**: paste link, mini trees, summary, warnings. Nothing learned.
    Done in v0.7.0; decisions in 13.7.
 10. **Talent learning**: Learn talents + confirm popup, point-by-point learning
-    (or the guided fallback if `LearnTalent` is blocked).
+    (or the guided fallback if `LearnTalent` is blocked). Done in v0.8.0; decisions
+    in 13.8.
 
 ## 10. Later / ideas
 
@@ -1172,8 +1175,14 @@ shows under the repo's Actions tab.
       used; `UIDropDownMenu`/`EasyMenu` are deliberately never used, 6.10.)
 - [ ] Bottom tab template: `PanelTabButtonTemplate` or `CharacterFrameTabButtonTemplate`
       (main window, 6.10).
-- [ ] `LearnTalent(tab, index)` works from our button click (else guided mode).
-- [ ] Classic has no talent preview/commit (or, if Forever adds one, use it).
+- [ ] `LearnTalent(tab, index)` works from our button click (else guided mode), **and
+      from an event/timer callback** (every point after the first is sent from
+      `CHARACTER_POINTS_CHANGED`, 13.8). `GetTalentPrereqs` returns `tier, column,
+      isLearnable`. Points land within 0.5 s (else raise `Talents.LEARN_TIMEOUT`).
+- [ ] Classic has no talent preview/commit (or, if Forever adds one, use it): what does
+      `/dump GetCVarBool("previewTalents"), AddPreviewTalentPoints` say (13.8)?
+- [ ] Guided mode: Blizzard's talent window is `TalentFrame` or `PlayerTalentFrame`,
+      buttons `<frame>Talent<i>` = talent index i, `ToggleTalentFrame` exists (13.8).
 - [ ] Sorting `GetTalentInfo` by tier then column gives the same order as our
       share links (test with the level-30 builds). Since step 8 this has a direct
       test: `/r2f copybuild`'s `~hash` must equal the site's for your class
@@ -1616,3 +1625,182 @@ check, free-points rule, conflict order, hash slice, a stray `LearnTalent`, Lear
 enabled, tooltip index, own-trees view, link memory, Home line, the new event) each
 fail the suite. What only the client can show (tooltip, tab info shape, look at
 26 px) is TESTING.md 14.
+
+### 13.8 Decisions made while building it (step 10, v0.8.0, 2026-10-02)
+
+Step 10 = learning. The engine is the end of `Talents.lua` (13.5's file); the guided
+glow is the new `UI/TalentGuide.lua`; `UI/TalentPanel.lua` enables Learn talents and
+shows the run. **The only irreversible write in the addon:** nothing here has run
+against a real client yet (TESTING.md 15 before anyone learns a real build with it).
+
+**Which way to learn (detected per click, `Talents.LearnMode`)**
+- **`preview`** when `AddPreviewTalentPoints` and `LearnPreviewTalents` are functions
+  **and** `GetCVarBool("previewTalents")` is true (`pcall`-guarded). 13.5 says prefer
+  Blizzard's preview if Forever has it. The CVar test is there because a client can
+  carry the shared Wrath-era functions with the feature switched off; filling an
+  invisible preview would learn nothing. In this mode Learn talents fills Blizzard's
+  preview (`AddPreviewTalentPoints(tab, index, n)` per talent, in 13.5's order), opens
+  the talent window and says `added N talent points to the talent window's preview.
+  Click its Learn button to keep them.` **No popup of ours** (nothing is learned until
+  Blizzard's own button, which 13.5 makes the confirm step) and **we never call
+  `LearnPreviewTalents`** (the commit).
+- **`direct`** (expected on Classic/Forever): `LearnTalent(tab, index)`, one point at
+  a time, behind our confirm popup.
+- **`guided`** when `LearnTalent` isn't a function, or this session saw it **blocked**:
+  (a) the game fired `ADDON_ACTION_FORBIDDEN` / `ADDON_ACTION_BLOCKED` for our addon
+  and `LearnTalent` (the client's own "refused" signal; Core now registers both), or
+  (b) the very first point of the session was refused (rank didn't go up after the
+  timeout) while every pre-check had passed and no point had ever worked. (b) is a
+  guess, so it's undone the moment the point turns up late (`worked` = true). A
+  refusal after a point has worked is just a stop, not guided mode: addons clearly
+  can learn then.
+
+**The run (state machine, not a loop)**
+- Why: each point is a server round trip. A loop sending 21 `LearnTalent`s in one go
+  would send tier-2 points before the server confirmed the tier-1 points they depend
+  on, and couldn't notice a refused point or combat starting halfway. So the run is a
+  table (`points`, `pos`, `done`, `total`, `phase`, `token`) driven by events:
+  `queued` (accepted in combat) -> `learning` (a point sent, waiting) or `guided`
+  -> `stopped` / `done`.
+- **Points = `Talents.LearnPoints(plan)`**: step 9's `LearnOrder` (tier, tree, column),
+  expanded to one entry per point with its target rank, only the `now` points. So the
+  run learns exactly the gold `+N` cells of the preview, in that order, and never more
+  than the popup said, even if a level-up adds points mid-run (those need a new click).
+- **Before every point, `verify`** re-runs the whole preview on the live game (hash,
+  sanity checks, conflicts), finds the talent by client index **and name**, and checks:
+  already at the target -> skip and count (`have`, e.g. the player clicked it in
+  Blizzard's window); exactly one rank short; a free point; Classic's tier rule (5
+  points in that tree per tier above the first, on live ranks); prerequisites via
+  `GetTalentPrereqs(tab, index)` (Classic: `tier, column, isLearnable` per prereq; we
+  look the prereq up in the live tree and require it **maxed**, rather than trusting
+  `isLearnable`, whose exact meaning can't be confirmed here; no API / error = no
+  extra check, the server and the rank re-read still catch it). Why re-verify instead
+  of trusting the plan: the plan is from when the popup opened; the player can spend
+  points in Blizzard's window, combat can come and go, Forever's rules may differ.
+  A failed check stops **before** `LearnTalent`.
+- **One point:** `learnPoint` is the **only `LearnTalent` call in the addon** (a source
+  test enforces it): `R2F.InCombat()` first (the event flag + `InCombatLockdown()`,
+  6.7), then `pcall(LearnTalent, tab, index)`. Then wait: `CHARACTER_POINTS_CHANGED`
+  re-reads the rank; up -> next point; not up -> keep waiting (the event also fires
+  for level-ups). `C_Timer.After(0.5)` is the final word (13.5's timeout,
+  `Talents.LEARN_TIMEOUT`): not up -> stop, **never continue past it**. A token on the
+  run makes a stale timer or event for an older point do nothing.
+- **Without `C_Timer`** (not expected in any Classic Era client) the next
+  `CHARACTER_POINTS_CHANGED` is final instead, and the Stop button is the way out if
+  no event comes.
+- **Messages (13.5, word for word where given):** `Stopped at X: the game didn't
+  accept the point. 14 of 21 learned.` (+ when guided mode is now suspected: `Your
+  game may not let addons learn talents. Click Learn talents to be shown which
+  talents to click instead.`); `Stopped: you entered combat. 9 of 21 learned. Click
+  Learn talents to continue.`; done: `Learned 21 talent points.` (`1 talent point`).
+  Added: `Stopped. X of N learned. Click Learn talents to continue.` (Stop button),
+  `Stopped at X: its tier or prerequisite isn't met in your game. ...`, `Stopped: no
+  free talent points left. ...`, `Stopped: your talents changed while learning. ...
+  Check the preview, then click Learn talents again.`, and `The point in X arrived
+  late after all. ...`. They go to chat and to the tab's status line (stop red, done
+  green); they outrank the yellow caution line, since they're what just happened.
+
+**Combat (Event flow + Taint auditor)**
+- **Interrupt, not just a gate:** `PLAYER_REGEN_DISABLED` -> Core sets `R2F.inCombat`
+  **then** calls `Talents.OnCombat()`, which stops the run at once with 13.5's
+  message. No `LearnTalent` can go out after that: `learnPoint` checks the flag,
+  which is already true. Learn talents greys out in combat (6.9's rule for every
+  destructive button) with a tooltip saying why.
+- **The point already sent can't be called back.** It's kept as `late`; if it lands,
+  it's counted and the stop line updates (`... 6 of 17 learned ...`).
+- **No double send on resume.** If Learn talents is clicked again while that point
+  may still be on its way (Stop, then Learn at once), the run first **waits** for it
+  like for any sent point and only re-sends it after the timeout. Sending it at once
+  could land both: one rank more than the build, maybe past the talent's planned
+  maximum, which only a trainer reset undoes. Found in this step's own review; a test
+  with a 1-rank talent in flight covers it.
+- **Popup accepted in combat** (opened before combat): the start goes through
+  `Macros.RunOrQueue`, the queue every confirmed write uses (6.9), with `you're in
+  combat; learning starts when combat ends.`; the button reads `After combat` and Stop
+  can drop it. 6.9's pattern was reused rather than refusing, because the player did
+  confirm. A run that's already going is **stopped**, not queued (13.5 is explicit).
+
+**Resuming (13.5: "Click Learn talents to continue")**
+- Stops by combat, the Stop button or a refused point are resumable: the next Learn
+  talents click **continues the same run** (same `X of N`, no second popup: it's the
+  build the player already confirmed), if the link is unchanged and the live preview
+  is still learnable. Other stops (tier/prerequisite, no free points, trees changed)
+  need a new preview and start over with a new popup.
+- **Session only:** the run is a file-local, not SavedVariables. After a `/reload` the
+  remembered link previews what's left and a new click asks again: resuming from saved
+  data, maybe days later, would act on a confirmation given in another situation.
+- Previewing another link or Cancel drops a stopped run and its message.
+
+**The tab while learning (13.4)**
+- Learn talents reads `Learning X / N` (X = the point being learned now, 1-based) and
+  is disabled; the link box, Preview and Copy my build are locked (harmless reads, but
+  a new link mid-run would show another build than the one being learned). **Cancel
+  becomes Stop** (the one deliberate addition to "everything else locked": a way out of
+  a run waiting on the server or on the player's clicks). After the run the trees
+  redraw through step 9's `Refresh` (no second renderer). The run doesn't depend on the
+  tab: closing the window doesn't stop it.
+
+**Guided mode (`UI/TalentGuide.lua`)**
+- Opens Blizzard's talent window with `ToggleTalentFrame()` (what the N key calls; only
+  if the window isn't already open, since Toggle would close it; only out of combat).
+  Without it: `open your talent window (default key N) and click the talents named
+  here, one at a time.`
+- **Frame names** differ by client generation, so both are tried: vanilla's
+  `TalentFrame` / `TalentFrameTalent<i>` / `TalentFrameTab<n>` and TBC/Wrath-era
+  `PlayerTalentFrame` / `PlayerTalentFrameTalent<i>` / `...Tab<n>`; button i = talent
+  index i of the tab shown (`PanelTemplates_GetSelectedTab`, else `.selectedTab`).
+  Another tab showing -> the glow goes on that tree's tab button with `Open the Fury
+  tab, then click Cruelty (6 of 17)`. Nothing found -> text only.
+- **Taint:** the glow is **our** unnamed frame on `UIParent` (`DIALOG` strata, no
+  mouse, so clicks reach Blizzard's button), only **anchored** to Blizzard's button.
+  Nothing of Blizzard's is written: no scripts, hooks, points, parents or keys (a
+  source test and a runtime test check this). Because we may not hook Blizzard's
+  OnHide or tab clicks, an invisible host frame of ours runs a **0.2 s throttled
+  OnUpdate only while guiding** to follow the window opening/closing and tab changes
+  (6.6's "throttled refresh" rule, extended to this case).
+- Look: the gold action-button border glow (same texture as "learned now", 13.7) at
+  1.8x the button, pulsing via an `AnimationGroup` (Alpha 1 -> 0.3, 0.6 s, bounce;
+  steady glow if the API is missing), label `Click Cruelty (2 of 21)` above it. The
+  same line goes to chat once per point and to the tab's note line.
+- Advances on `CHARACTER_POINTS_CHANGED` through the same `verify`, so a click on a
+  talent outside the build stops guided mode (`... your talents changed ...`), a click
+  on a later build talent is simply counted when its turn comes, and combat stops it
+  like a direct run.
+
+**Not done / limits**
+- 13.5's timeout is 0.5 s. A slow server answer becomes a "didn't accept" stop that
+  turns into `arrived late after all` when the answer lands; harmless (the run is
+  stopped, not continued), but a high-ping player may see it. Raise
+  `Talents.LEARN_TIMEOUT` if the beta shows it (TESTING.md 15).
+- Every follow-up point is sent from an event/timer callback, not a click. If Forever
+  only allows `LearnTalent` from a hardware click, the first point works and the
+  second is refused (a plain stop, no guided switch, since one worked). TESTING.md 15
+  checks exactly this; the fix would be guided mode for the rest.
+
+**Testing.** `run_tests.py` adds `test_talent_learning` (template and fallback paths)
+and `test_talent_source_writes` (replacing step 9's read-only scan). The stubs got a
+fake server: `LearnTalent` only queues a request, `TEST.server()` answers with
+Classic's rules (free point, max rank, tier, prerequisite maxed; fixture prereqs from
+Wowhead's `requires`) and fires `CHARACTER_POINTS_CHANGED`; it raises if called in
+combat; a fake Blizzard talent window; `GetTalentPrereqs` in Classic's shape. Covered:
+the point order equals step 9's `LearnOrder` and an independent Python sort; the popup
+text and its Cancel; a full 17-point run point by point (label, locks, Stop, client
+index, ranks after, chat + green line, trees refreshed, stale timers harmless); partial
+runs and a level-up; Learn enabled only with zero conflicts (11 cases, also calling
+`Learn()` directly); refused point (exact message, nothing sent after, resume, error
+inside `LearnTalent`); combat mid-run (exact message, point in flight counted, nothing
+sent in combat, resume from 7 / 17), combat flag between answer and next send; popup
+accepted in combat (queued, starts after, Stop while queued); Stop + late answer;
+window closed mid-run; link changed under the popup / after a stop; re-verification
+(prerequisite missing, no `GetTalentPrereqs`, tier, a prerequisite changing mid-run,
+a point spent elsewhere, a build point spent elsewhere, free points gone); the
+timeout, a late answer, no `C_Timer`; the no-double-send rule; guided mode (popup
+line, window opened, glow on the client-index button, advance, tab hint, window
+closed/reopened, combat + resume, full run, no talent write, no Blizzard frame
+scripted, wrong click, Stop, `PlayerTalentFrame` names, no `ToggleTalentFrame`,
+detection by refusal and by `ADDON_ACTION_FORBIDDEN`, other addons' events ignored);
+preview mode on/off; globals. 24 hand mutations of the new code (each check above
+removed or flipped: combat at the write, timeout continuing, prereq/tier/conflict/
+have/free-point checks, combat interrupt, Learn enabling, targets, the in-flight wait,
+late answers, resumability, guided switch, tab hint, the combat queue, link check,
+CVar, event order, forbidden event, locks, glow hiding, label) each fail the suite.

@@ -3,6 +3,31 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.8.0 (2026-10-02): talent learning (ADDON_PLAN.md step 10)
+
+Not tested in the game yet. **This version can learn talents, which only a trainer
+reset undoes: do `TESTING.md` section 15 on a test character first.**
+
+- **Learn talents works.** After a Preview with no red problems, click **Learn
+  talents**: `Learn 21 talent points? Only a trainer reset can undo this.` [Learn]
+  [Cancel]. The addon then learns exactly the gold `+N` points of the preview, one at a
+  time, tier by tier, and checks each one against your game first (tier, prerequisite,
+  free points, nothing else changed). The button counts `Learning 7 / 21`; the rest of
+  the tab is locked and Cancel becomes **Stop**. Done: `Learned 21 talent points.` and
+  the trees redraw.
+- **It stops instead of guessing:** if the game doesn't take a point (`Stopped at
+  Improved Thunder Clap: the game didn't accept the point. 14 of 21 learned.`), if you
+  enter combat (`Stopped: you entered combat. 9 of 21 learned. Click Learn talents to
+  continue.`), or if your talents change meanwhile. After combat or Stop, Learn talents
+  continues where it stopped, without asking again.
+- **Not in combat:** Learn talents is greyed out in combat; a popup accepted just as
+  combat starts waits until combat ends.
+- **Guided mode:** if the game doesn't let addons learn talents, the addon opens
+  Blizzard's talent window instead and puts a pulsing gold glow on the next talent to
+  click (`Click Cruelty (2 of 21)`). It never changes Blizzard's window.
+- If the game turns out to have Blizzard's own talent preview, Learn talents fills that
+  preview and you confirm with Blizzard's Learn button.
+
 ## 0.7.0 (2026-10-02): talent import preview (ADDON_PLAN.md step 9)
 
 Not tested in the game yet; see `TESTING.md` section 14. **Nothing is learned yet:**

@@ -42,8 +42,10 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
 - [x] **9. Talent import preview:** shipped 2026-10-02 as v0.7.0 (tag `r2f-v0.7.0`)
       — see CHANGELOG.md. Learn talents button present but disabled until step 10
       (ADDON_PLAN 13.7). Not yet run in the game: `TESTING.md` section 14.
-- [ ] **10. Talent learning:** Learn talents + confirm popup, one point at a
-      time, stops on combat/errors; guided glow mode if `LearnTalent` is blocked.
+- [x] **10. Talent learning:** shipped 2026-10-02 as v0.8.0 (tag `r2f-v0.8.0`) — see
+      CHANGELOG.md. Decisions in ADDON_PLAN 13.8. **Never run on a real client:** do
+      `TESTING.md` section 15 on a test character before learning a real build with it
+      (`LearnTalent` from an addon/event, 0.5 s timeout vs ping, guided-mode frame names).
 - [ ] **Quick settings (Home tab):** three checkboxes that change game settings
       directly with `SetCVar`, so no macro or macro slot is used. Max camera
       zoom = `cameraDistanceMaxZoomFactor 4` (unticked = game default via

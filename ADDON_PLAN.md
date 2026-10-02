@@ -2,8 +2,9 @@
 
 Status: **in progress** (scoped 2026-10-01). Steps 1 (data), 2 (site export),
 3 (addon MVP, v0.1.0), 4 (updates, v0.2.0), 5 (Tidy up, Settings, Remove all,
-key bindings, v0.3.0) and 6 (main window, minimap button, logo, v0.4.0) shipped,
-no addon version tested in the game yet; see `CHANGELOG.md`.
+key bindings, v0.3.0), 6 (main window, minimap button, logo, v0.4.0) and 7
+(release zip on GitHub Releases, v0.5.0) shipped, no addon version tested in the
+game yet; see `CHANGELOG.md`.
 Target: usable before the Nov 4 launch.
 
 | | |
@@ -335,8 +336,8 @@ and reloads. Ids that no longer exist after a site update are dropped silently.
 - **`class` field** = the part of the id before the first `/` (build.py's token);
   the site does not re-derive class tokens.
 - **Download link** points to the repo's Releases page
-  (`github.com/nobody174/wow-forever-macros/releases`). Nothing is released until
-  step 7; step 7 should re-check this link once the first `addon-v*` zip exists.
+  (`github.com/nobody174/wow-forever-macros/releases`). Re-checked in step 7: it
+  stays on `/releases`, not `/releases/latest` (8.1).
 - **Size:** "Select everything" (389 macros) makes an ~83 KB string, well past
   the 20 KB test in section 7. A whole class + Universal is 10 to 16 KB
   (measured: Rogue 9.9 KB to Warrior 15.6 KB). The beta paste-speed check should also try the full 83 KB string.
@@ -508,6 +509,7 @@ addon/RoadToForever/
   media\logo128.tga main window portrait
 addon/art/logo.svg  logo source (not shipped); addon/art/export_logo.py exports the .tga files
 addon/tests/        out-of-game tests (not shipped): run_tests.py, run_luacheck.py
+.github/workflows/release.yml  builds the release zip on r2f-v* tags (section 8)
 addon/.luacheckrc   allowed globals / WoW API list for luacheck
 ```
 
@@ -686,9 +688,9 @@ Account-slot macros are also recorded in `R2FDB.createdAccount`.
 **Versioning**
 - The TOC says `## Version: 0.1.0` directly (not `@project-version@`, 6.2) because
   nothing packages the addon yet; step 7's release workflow can switch to the
-  token. Addon versions are tagged `r2f-v<version>` (first: `r2f-v0.1.0`). Section 8
-  plans the release workflow on `addon-v*` tags: step 7 should pick one prefix
-  (simplest: build releases from `r2f-v*`) and note it here.
+  token. Addon versions are tagged `r2f-v<version>` (first: `r2f-v0.1.0`).
+  **Settled in step 7 (8.1):** `r2f-v*` is the one tag prefix, the release workflow
+  builds from it, and the TOC keeps a literal version (no token).
 - `## Interface: 11507` (Classic Era 1.15.7) is a placeholder until the beta check (11).
 
 **Testing outside the game**
@@ -1050,10 +1052,65 @@ Body keeps its real newlines. Empty icon = `""`.
 
 ## 8. Release
 
-- GitHub Actions: on a `addon-v*` tag, zip `addon/RoadToForever/` into a
-  Release (`RoadToForever-<version>.zip`, folder inside the zip).
-- Site: Download link in the export tray's How to import steps -> latest release.
+- GitHub Actions (`.github/workflows/release.yml`): on a pushed `r2f-v*` tag, zip
+  `addon/RoadToForever/` into a Release (`RoadToForever-<version>.zip`, folder
+  inside the zip). Built in step 7, decisions in 8.1.
+- Site: Download link in the export tray's How to import steps -> Releases page.
 - Later: CurseForge project (auto-updates through the CurseForge app).
+
+**How to release a version:** bump `## Version:` in `RoadToForever.toc`, add the
+`## <version> (date): ...` section to `addon/RoadToForever/CHANGELOG.md`, commit,
+then `git tag r2f-v<version>` and `git push origin main r2f-v<version>`. The run
+shows under the repo's Actions tab.
+
+### 8.1 Decisions made while building it (step 7, v0.5.0, 2026-10-02)
+
+- **Tag prefix: `r2f-v*`, final.** The original text here said `addon-v*`, but
+  steps 3 to 6 had already pushed `r2f-v0.1.0` .. `r2f-v0.4.0` (6.7). Those tags
+  are public, so they are not renamed, and a second prefix would only mean two
+  ways to tag the same thing. The workflow triggers on `r2f-v*` only. The four
+  older tags don't get releases (the workflow didn't exist when they were
+  pushed); `r2f-v0.5.0` is the first release.
+- **Zip = `git archive --prefix=RoadToForever/ HEAD:addon/RoadToForever`.** Archiving
+  the folder's *tree* and re-rooting it gives `RoadToForever/RoadToForever.toc`
+  at the top of the zip, so it unpacks straight into `Interface/AddOns/` (WoW
+  loads an addon only when the folder name equals the `.toc` name). It packs
+  tracked files only (no stray local files), `addon/tests` and `addon/art` are
+  outside that tree, and the same command runs on a PC, which is how step 7
+  checked the zip without GitHub (TESTING.md 12). No `zip` step, no extra script.
+- **Everything in `addon/RoadToForever/` ships**, including `CHANGELOG.md` and
+  `TESTING.md` (small, harmless in an AddOns folder, and they tell a tester what
+  the version is meant to do). `Bindings.xml` and `media/` ship because the client
+  needs them. No libraries (6.10).
+- **TOC keeps a literal `## Version:` (no `@project-version@`, 6.2).** That token
+  is filled by the CurseForge/BigWigs packager, which we don't use; with plain
+  `git archive` it would ship as the literal text `@project-version@`. Instead the
+  workflow **fails if the tag's version differs from the TOC's** (or isn't plain
+  `x.y.z`), so a release can never carry a wrong in-game version. The version
+  reaches the shell steps through `env`, not pasted into the script. Revisit when the CurseForge project (later)
+  brings its packager.
+- **0.x = pre-release, 1.0.0+ = normal release**, decided by the version string
+  (`0.*`). Every 0.x version is untested in the real client (TESTING.md), so the
+  Releases page must not present it as finished.
+- **Download link stays on `/releases`, not `/releases/latest`.** GitHub's
+  "latest" skips pre-releases, so while every release is 0.x it has nothing to
+  point at. `/releases` lists the newest release (pre-release or not) first.
+  Switch the link to `/releases/latest` when 1.0.0 ships. The step only made the
+  link's text clearer (the zip's name, unzip into `Interface\AddOns\`).
+- **Release notes = that version's section of the addon `CHANGELOG.md`** (heading
+  `## <version> (`, up to the next `## `), plus an install line; a plain line if
+  the section is missing. Title `Road to Forever <version>`. Action:
+  `softprops/action-gh-release@v2` (the common one), `fail_on_unmatched_files`
+  so a missing zip fails the run instead of making an empty release.
+- **Step 7 bumped the addon to 0.5.0 although no Lua changed.** Every step from 3
+  on takes the next minor version and its tag always equals the TOC version (the
+  workflow now enforces that), so "step 7 = 0.5.0" keeps one version line for the
+  whole plan. The 0.5.0 zip is functionally 0.4.0; its CHANGELOG entry says so.
+- **What couldn't be tested here:** the workflow only runs on GitHub. Before the
+  push: YAML parsed, actionlint 1.7.12 clean (without shellcheck), every shell
+  step traced by hand, and the packaging, version-check (matching, mismatched
+  and malformed tags) and notes commands run locally on the same tree. The `r2f-v0.5.0`
+  push is the workflow's first real run (TESTING.md 12).
 
 ## 9. Build order (each step shippable)
 
@@ -1068,8 +1125,8 @@ Body keeps its real newlines. Empty icon = `""`.
    button (own, not LibDBIcon: 6.10) with right-click menu, `/r2f`, `/r2ft`, `/r2f minimap`. Moves the
    step-3 Macro Book (`R2F.MacroBook`) and Import window into the main window
    (6.7).
-7. **Release** zip + Download link. CurseForge later. Settle the tag prefix
-   (`r2f-v*` vs `addon-v*`, 6.7).
+7. **Release** zip + Download link. CurseForge later. Tag prefix settled:
+   `r2f-v*` (8.1).
 8. **Talent export** (read-only, no risk): Copy my build as a link. Site links get
    the `~hash` check (section 13.3).
 9. **Talent import preview**: paste link, mini trees, summary, warnings. Nothing learned.

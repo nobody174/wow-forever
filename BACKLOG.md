@@ -28,7 +28,9 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
       `r2f-v0.4.0`) — see CHANGELOG.md. Own minimap button instead of embedded
       LibDBIcon (LibDataBroker's license, ADDON_PLAN 6.10). Not yet run in the
       game: `TESTING.md` section 11.
-- [ ] **7. Release:** GitHub Actions zip on `addon-v*` tags, Download link on the site.
+- [x] **7. Release:** shipped 2026-10-02 as v0.5.0 (tag `r2f-v0.5.0`, first
+      GitHub Release, pre-release) — see CHANGELOG.md. Tag prefix settled as
+      `r2f-v*` (ADDON_PLAN 8.1). Check each release once: `TESTING.md` section 12.
 - [ ] **8. Talent export:** Copy my build as a site link. Site links get the
       `~hash` check; `talentcalc.js` ignores `~...` when reading (bump `?v=`).
 - [ ] **9. Talent import preview:** paste a Copy link URL, three mini trees,

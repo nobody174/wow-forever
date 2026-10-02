@@ -1,4 +1,4 @@
-# Road to Forever: in-game test checklist (v0.4.0, addon steps 3 to 6)
+# Road to Forever: in-game test checklist (v0.5.0, addon steps 3 to 7)
 
 Since v0.4.0 the Macro Book is the **Macros tab** of the main window: wherever an
 older section below says "`/r2f` opens the Macro Book" or "open the book", use
@@ -10,7 +10,9 @@ logic, not the client. This list covers what only the game can confirm
 (`ADDON_PLAN.md` section 11). Tick each item in the beta, and fix
 `ADDON_PLAN.md` + the code in the same commit if something turns out different.
 
-**Setup:** copy `addon/RoadToForever/` into `World of Warcraft\_classic_era_\Interface\AddOns\`
+**Setup:** from v0.5.0 on, download `RoadToForever-<version>.zip` from the repo's
+GitHub Releases and unzip it into the AddOns folder below (section 12 checks the
+zip itself). Or copy `addon/RoadToForever/` into `World of Warcraft\_classic_era_\Interface\AddOns\`
 (or the Forever client's AddOns folder), start the game, enable "Road to Forever"
 on the character screen. Turn Lua errors on: `/console scriptErrors 1`.
 
@@ -317,7 +319,29 @@ checkable here.
       combat: open/close the window, open the menu), `/reload`, check
       `Logs\taint.log`. **Pass:** no entries blaming RoadToForever.
 
-## Known gaps in v0.4.0 (by design, later steps)
+## 12. The release zip (v0.5.0, step 7)
+
+The release workflow (`.github/workflows/release.yml`) only runs on GitHub's
+servers, on a pushed `r2f-v*` tag; nothing on a PC can run it. Out of GitHub, the
+workflow's own `git archive` command was run locally and the zip checked (top
+folder `RoadToForever/`, TOC inside, no `addon/tests` or `addon/art`, every `.lua`
+parses under Lua 5.1), and the YAML parsed. Whether the workflow publishes
+correctly is only known from a real tag push (ADDON_PLAN.md 8.1). Check each new
+release once:
+
+- [ ] The tag's run (repo > Actions > "Release addon") is green.
+- [ ] The release is named `Road to Forever <version>`, is marked **Pre-release**
+      for 0.x (a normal release from 1.0.0), its notes are that version's section
+      of this folder's `CHANGELOG.md`, and it has exactly one asset,
+      `RoadToForever-<version>.zip`.
+- [ ] The Macros page's "How to import" Download link opens the Releases page with
+      that release on top.
+- [ ] Unzip it into `Interface\AddOns\`. **Pass:** you get
+      `Interface\AddOns\RoadToForever\RoadToForever.toc` (not a nested
+      `RoadToForever\RoadToForever\` or `addon\RoadToForever\`), and the AddOns list
+      on the character screen shows Road to Forever.
+
+## Known gaps in v0.5.0 (by design, later steps)
 
 - The Talents tab and the Home Talents entry are placeholders (steps 8 to 10).
 - The window has a fixed size (ADDON_PLAN 6.10); only position and tab are saved.

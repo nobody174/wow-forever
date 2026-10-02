@@ -1,0 +1,97 @@
+# Builds the Road to Forever addon zip and publishes it as a GitHub Release.
+# Spec: ADDON_PLAN.md section 8 (decisions in 8.1).
+name: Release addon
+
+on:
+  push:
+    # r2f-v* is the addon's one tag prefix (steps 3-6 shipped r2f-v0.1.0..0.4.0
+    # before this workflow existed; ADDON_PLAN.md 8.1). Pushing a tag is the
+    # release action: there is no branch/manual trigger, so a normal commit to
+    # main never publishes anything.
+    tags:
+      - "r2f-v*"
+
+permissions:
+  # Creating a release and uploading its asset needs write on repo contents.
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version from the tag and check the TOC
+        id: ver
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#r2f-v}"
+          # Plain x.y.z only: the version ends up in the zip name, the release
+          # title and later steps' shell, so nothing odd may get through.
+          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Tag $GITHUB_REF_NAME is not r2f-v<major>.<minor>.<patch>."
+            exit 1
+          fi
+          # The TOC's ## Version: is what players see in the AddOns list. A tag
+          # that doesn't match it would ship a zip whose in-game version lies
+          # about which release it came from, so refuse instead of guessing.
+          toc_version="$(sed -n 's/^## Version:[[:space:]]*//p' addon/RoadToForever/RoadToForever.toc | tr -d '[:space:]')"
+          if [ "$version" != "$toc_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME says $version but RoadToForever.toc says '$toc_version'. Bump the TOC (and addon CHANGELOG.md) before tagging."
+            exit 1
+          fi
+          # 0.x = not yet tested in the real game client, so it must not look
+          # like a finished release on the Releases page. From 1.0.0 on, normal
+          # releases (ADDON_PLAN.md 8.1).
+          case "$version" in
+            0.*) prerelease=true ;;
+            *)   prerelease=false ;;
+          esac
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+
+      - name: Build RoadToForever-<version>.zip
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          # git archive of the addon folder's TREE (HEAD:addon/RoadToForever),
+          # re-rooted under RoadToForever/. That way the zip holds
+          # RoadToForever/RoadToForever.toc, not addon/RoadToForever/..., and
+          # unpacks straight into Interface/AddOns/RoadToForever/ (WoW only loads
+          # an addon whose folder name equals its .toc name). Only tracked files
+          # are packed, and addon/tests + addon/art sit outside this tree, so
+          # they can never end up in the zip.
+          git archive --format=zip --prefix=RoadToForever/ \
+            -o "RoadToForever-$VERSION.zip" \
+            HEAD:addon/RoadToForever
+          unzip -l "RoadToForever-$VERSION.zip"
+
+      - name: Release notes from the addon CHANGELOG
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          # The section "## <version> (...)" of the addon's own CHANGELOG.md, up
+          # to the next "## " heading. Falls back to a plain line if missing.
+          awk -v v="$VERSION" '
+            /^## / { if (found) exit; if (index($0, "## " v " ") == 1) { found = 1; next } }
+            found { print }
+          ' addon/RoadToForever/CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then
+            echo "Road to Forever $VERSION." > notes.md
+          fi
+          {
+            echo
+            echo "**Install:** unzip into your \`Interface/AddOns/\` folder, so you get \`Interface/AddOns/RoadToForever/RoadToForever.toc\`."
+          } >> notes.md
+          cat notes.md
+
+      - name: Publish the GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Road to Forever ${{ steps.ver.outputs.version }}
+          body_path: notes.md
+          prerelease: ${{ steps.ver.outputs.prerelease == 'true' }}
+          files: RoadToForever-${{ steps.ver.outputs.version }}.zip
+          fail_on_unmatched_files: true

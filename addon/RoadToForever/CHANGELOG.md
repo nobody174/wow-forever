@@ -3,6 +3,18 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.5.0 (2026-10-02): first downloadable release (ADDON_PLAN.md step 7)
+
+No change to what the addon does in the game: same code as 0.4.0. This is the
+first version you can download as a zip instead of copying the folder from the
+repository. Not tested in the game yet; see `TESTING.md`.
+
+- **Download:** `RoadToForever-0.5.0.zip` on the GitHub Releases page (linked from
+  the Macros page's "How to import" steps). Unzip it into your game's
+  `Interface\AddOns\` folder; it contains one `RoadToForever` folder.
+- Marked as a **pre-release** on GitHub, like every 0.x version, because nothing
+  has been checked in the real game client yet.
+
 ## 0.4.0 (2026-10-02): main window, minimap button, logo (ADDON_PLAN.md step 6)
 
 Not tested in the game yet; see `TESTING.md` section 11.

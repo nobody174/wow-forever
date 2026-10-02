@@ -4,6 +4,31 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon plan, step 7: release pipeline, Road to Forever addon v0.5.0)
+
+- **Release workflow** `.github/workflows/release.yml`: pushing an `r2f-v*` tag
+  builds `RoadToForever-<version>.zip` with `git archive --prefix=RoadToForever/
+  HEAD:addon/RoadToForever` (top folder `RoadToForever/`, unzips straight into
+  `Interface/AddOns/`; `addon/tests` and `addon/art` can't get in) and publishes it
+  as a GitHub Release via `softprops/action-gh-release@v2`. 0.x tags are
+  pre-releases, 1.0.0+ normal releases. Release notes = that version's section of
+  `addon/RoadToForever/CHANGELOG.md`. The run fails if the tag's version differs
+  from the TOC's `## Version:`.
+- **Tag prefix settled:** `r2f-v*` is final (the plan's `addon-v*` was never used;
+  the four existing `r2f-v0.1.0`..`0.4.0` tags stay as they are, without releases).
+- Addon bumped to **0.5.0** (tag `r2f-v0.5.0`, the first real release) with no Lua
+  change, to keep "each plan step = next minor version, tag = TOC version".
+- **Macros page:** the export tray's "How to import" step 1 now names the zip and
+  says to unzip it into `Interface\AddOns\`. The Download link stays on the
+  Releases page (`/releases/latest` skips pre-releases, so it has nothing to show
+  until 1.0.0).
+- Verified locally: the workflow's `git archive` command on the commit's tree gives
+  the expected 19 files under `RoadToForever/`, every extracted `.lua` compiles
+  under Lua 5.1, luacheck 0 warnings, `run_tests.py` 5655 checks pass, YAML parses,
+  actionlint clean, the version/notes steps replayed for good, mismatched and
+  malformed tags. The workflow itself
+  can only run on GitHub (`TESTING.md` 12). Decisions in `ADDON_PLAN.md` 8.1.
+
 ## 2026-10-02 (Addon plan, step 6: Road to Forever addon v0.4.0, main window, minimap button, logo)
 
 - The addon now has **one main window** (`UI/MainWindow.lua`) with Home / Macros /

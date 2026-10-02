@@ -66,7 +66,9 @@ def new_runtime(templates=True):
                     "TEST.templates.UIRadioButtonTemplate = nil;"
                     # Step 6 fallbacks: no tab template, no PanelTemplates helpers, no MenuUtil.
                     "TEST.templates.CharacterFrameTabButtonTemplate = nil; PanelTemplates_SetTab = nil;"
-                    "PanelTemplates_SetNumTabs = nil; PanelTemplates_TabResize = nil; MenuUtil = nil")
+                    "PanelTemplates_SetNumTabs = nil; PanelTemplates_TabResize = nil; MenuUtil = nil;"
+                    # Step 9 fallbacks: plain link box, no GameTooltip:SetTalent.
+                    "TEST.templates.InputBoxTemplate = nil; GameTooltip.SetTalent = nil")
     # Globals present before the addon loads, for the one-global audit.
     lua.execute("BEFORE = {} for k in pairs(_G) do BEFORE[k] = true end BEFORE.BEFORE = true")
     lua.execute("NS = {}")
@@ -1221,8 +1223,9 @@ def test_step6_ui(templates, fx):
     check(lua.eval("R2FDB.settings.lastTab") == "macros", "switching tabs saves lastTab")
     lua.execute("MTABS[3]:Click()")
     check(MW.CurrentTab() == "talents" and lua.eval("R2F.MacroBook.IsShown()") is False, "Talents tab hides the book")
-    check(find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.TALENTS_TAB_LATER", "TT") == 1,
-          "Talents tab shows its placeholder")
+    # Step 9 replaced the placeholder with the real tab (tested in test_talent_preview).
+    check(find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.BTN_PREVIEW", "TT") == 1
+          and lua.eval("R2F.L.TALENTS_TAB_LATER") is None, "Talents tab has its Preview button, no placeholder")
     if templates:
         check(lua.eval("R2FMain.PortraitContainer.portrait.__tex") == "Interface\\AddOns\\RoadToForever\\media\\logo128",
               "portrait = media/logo128")
@@ -1246,7 +1249,19 @@ def test_step6_ui(templates, fx):
     check(lua.eval("#HOME") == 2, "Home has two big entries")
     check(lua.eval("HOME[1].sub.__text") == "%d macros in your library, 2 on your bars" % total,
           "Home Macro Book line: %r" % lua.eval("HOME[1].sub.__text"))
-    check(lua.eval("HOME[2].sub.__text") == "Coming in a later version", "Home Talents line is the placeholder")
+    # Step 9: 12.4's free-points line instead of the step-6 placeholder.
+    check(lua.eval("HOME[2].sub.__text") == "No free talent points", "Home Talents line with no free points")
+    T.talentPoints = 5
+    lua.execute("R2F.Home.Refresh()")
+    check(lua.eval("HOME[2].sub.__text") == "5 free talent points", "Home Talents line: 5 free talent points")
+    T.talentPoints = 1
+    T.fire("CHARACTER_POINTS_CHANGED")
+    T.runTimers()
+    check(lua.eval("HOME[2].sub.__text") == "1 free talent point", "Home Talents line follows CHARACTER_POINTS_CHANGED")
+    T.talentPoints = 0
+    T.fire("PLAYER_LEVEL_UP")
+    T.runTimers()
+    check(lua.eval("HOME[2].sub.__text") == "No free talent points", "Home Talents line follows PLAYER_LEVEL_UP")
     lua.execute('TEST.actions[80] = nil')
     T.fire("ACTIONBAR_SLOT_CHANGED")
     T.runTimers()
@@ -1557,6 +1572,404 @@ def test_talents(templates):
     check(any(h.startswith("/r2f copybuild") for h in help_lines), "%s: help lists /r2f copybuild" % tag)
 
 
+def lua_states(plan):
+    """{talent name: (state, planned, now, later)} from a Talents.Plan result."""
+    out = {}
+    for t in range(1, len(plan.trees) + 1):
+        tree = plan.trees[t]
+        for k in range(1, len(tree.talents) + 1):
+            e = tree.talents[k]
+            out[e.name] = (e.state, e.planned, e.now, e.later)
+    return out
+
+
+def test_talent_preview(templates):
+    """Step 9: link parsing (13.2), the ~hash check on import (13.3), sanity
+    checks, the plan/summary (13.4) and the Talents tab UI. Links come from the
+    REAL talentcalc.js (Node) on the step-8 fixture, so parsing is checked
+    against what the site actually hands out, and the hash compared is step 8's
+    unchanged Talents.Hash."""
+    tag = "templates" if templates else "fallbacks"
+    fxt = json.load(open(TALENT_FIXTURE, encoding="utf-8"))
+    raw = fxt["talents"]
+    js = talent_js()
+    lua = new_runtime(templates)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    TL = lua.eval("R2F.Talents")
+    L = lua.eval("R2F.L")
+    parse = lua.eval("function(s) return R2F.Talents.ParseLink(s) end")
+    prev = lua.eval("function(s) return R2F.Talents.Preview(s) end")
+    W = js["classes"]["warrior"]
+    wh = js["hashes"]["warrior"]
+    lua.execute("TEST.tabNames = { 'Arms', 'Fury', 'Protection' }")
+
+    def game(ranks, points, cls="warrior"):
+        lua.execute("TEST.classToken = %r" % cls.upper())
+        set_game_talents(lua, raw, js["classes"][cls], ranks)
+        T.talentPoints = points
+
+    # ---- 13.2: the four accepted forms (+ what a paste can add) -------------
+    def parsed(s):
+        r = parse(s)
+        if r is None:
+            return None
+        return (r["class"], r.code, r.hash, lua_table_to_list(r.codes))
+    forms = {
+        SITE_TALENTS + "warrior/05302~" + wh: ("warrior", "05302", wh, ["05302"]),
+        "talents.html#warrior/3-0502~" + wh: ("warrior", "3-0502", wh, ["3", "0502"]),
+        "#warrior/--53041": ("warrior", "--53041", None, ["", "", "53041"]),
+        "warrior/05302": ("warrior", "05302", None, ["05302"]),
+        "  <%sWarrior/05302~%s>  " % (SITE_TALENTS, wh.upper()): ("warrior", "05302", wh, ["05302"]),
+        "warrior/": ("warrior", "", None, [""]),
+        "warrior/~" + wh: ("warrior", "", wh, [""]),
+        "warrior/3-0502~": ("warrior", "3-0502", None, ["3", "0502"]),
+        "druid/5": ("druid", "5", None, ["5"]),
+    }
+    for s, want in forms.items():
+        check(parsed(s) == want, "%s: ParseLink(%r) = %s, want %s" % (tag, s, parsed(s), want))
+    for s in ("", "   ", "hello", "warrior", "foo/123", "warrior/32a", "warrior/32~ab~c", "warrior/3 2",
+              "https://nobody174.github.io/wow-forever-macros/talents.html", "https://github.io/x"):
+        check(parse(s) is None, "%s: ParseLink(%r) refused" % (tag, s))
+    check(parse(None) is None and lua.eval("R2F.Talents.ParseLink(42)") is None, "%s: non-string -> nil" % tag)
+    # Every link the real site makes, bare and as a full URL, parses back to it.
+    for jsc in js["scenarios"]:
+        cls, rest = jsc["link"].split("/", 1)
+        code, h = rest.split("~")
+        for s in (jsc["link"], SITE_TALENTS + jsc["link"], "talents.html#" + jsc["link"], "#" + jsc["link"]):
+            p = parsed(s)
+            check(p is not None and p[:3] == (cls, code, h), "%s: site link %r parses to (%s, %s, %s): %s"
+                  % (tag, s, cls, code, h, p))
+
+    # ---- Class must match (13.2) -------------------------------------------------
+    game({}, 10)
+    r = prev("paladin/5~abcd")
+    check(r.error == "This is a Paladin build. You're playing a Warrior." and r.plan is None,
+          "%s: wrong class -> 13.2's message exactly: %r" % (tag, r.error))
+    game({}, 10, cls="hunter")
+    r = prev(SITE_TALENTS + "warrior/05302~" + wh)
+    check(r.error == "This is a Warrior build. You're playing a Hunter.", "%s: wrong class (hunter): %r" % (tag, r.error))
+    r = prev("not a link")
+    check(r.error == L.TALENT_BAD_LINK and r.plan is None, "%s: junk -> bad-link message" % tag)
+
+    # ---- Decoding == the site's encoding: each real site link previews as its build
+    for sc, jsc in zip(fxt["scenarios"], js["scenarios"]):
+        game({}, 51, cls=sc["cls"])
+        r = prev(SITE_TALENTS + jsc["link"])
+        got = {n: v[1] for n, v in lua_states(r.plan).items() if v[1]} if r.plan else None
+        check(r.error is None and r.caution is None and got == sc["ranks"],
+              "%s: %s: site link previews as exactly its build: %s (error %s)" % (tag, sc["name"], got, r.error))
+        # The same character after learning it: nothing left to do.
+        game(sc["ranks"], 0, cls=sc["cls"])
+        r = prev(jsc["link"])
+        want = L.TALENT_SUMMARY_EMPTY if not sc["ranks"] else L.TALENT_SUMMARY_DONE
+        check(r.plan is not None and r.plan.summary == want and r.plan.learnable is False,
+              "%s: %s: own build -> %r: %r" % (tag, sc["name"], want, r.plan and r.plan.summary))
+    # Client index order doesn't matter (ReadTrees' sort is reused, not redone).
+    lua.execute("TEST.classToken = 'WARRIOR'")
+    set_game_talents(lua, raw, W, {}, order="reverse")
+    T.talentPoints = 51
+    r = prev("warrior/05302~" + wh)
+    check({n: v[1] for n, v in lua_states(r.plan).items() if v[1]} == fxt["scenarios"][1]["ranks"],
+          "%s: mapping independent of GetTalentInfo index order" % tag)
+
+    # ---- 13.3: the ~hash on import -----------------------------------------------
+    game({}, 10)
+    r = prev("warrior/05302~" + wh)
+    check(r.plan is not None and r.error is None and r.caution is None, "%s: matching hash -> preview, no warning" % tag)
+    r = prev("warrior/05302~zzzz")
+    want_mismatch = ("This link was made with different talent trees than your game has. Nothing was learned. "
+                     "Make a new link on the site or wait for the site to update.")
+    check(r.error == want_mismatch and r.plan is None, "%s: different hash -> stop, 13.3's text exactly" % tag)
+    # The real case: the game is missing a talent the site has (like Crusade).
+    r2 = json.loads(json.dumps(raw))
+    r2["163"].pop("33")
+    set_game_talents(lua, r2, W, {})
+    r = prev("warrior/05302~" + wh)
+    check(r.error == want_mismatch and r.plan is None, "%s: game missing a talent -> site's hash refused" % tag)
+    game({}, 10)
+    r = prev("warrior/05302")
+    check(r.error is None and r.plan is not None and r.caution == "Older link: can't check it against your talent trees.",
+          "%s: no hash -> allowed with 13.3's yellow line" % tag)
+    T.locale = "deDE"
+    r = prev("warrior/05302~zzzz")
+    check(r.error is None and r.plan is not None and r.caution == L.TALENT_HASH_LOCALE,
+          "%s: non-English client: mismatch -> 'can't check' caution, not a stop (13.6/13.7)" % tag)
+    r = prev("warrior/05302~" + wh)
+    check(r.caution is None, "%s: non-English client with a matching hash: no caution" % tag)
+    T.locale = "enGB"
+    check(prev("warrior/05302~zzzz").error == want_mismatch, "%s: enGB counts as English (strict)" % tag)
+    T.locale = None
+    lua.execute("local g = GetLocale GetLocale = nil R2F_T = R2F.Talents.Preview('warrior/05302~zzzz') GetLocale = g")
+    check(lua.eval("R2F_T.error") == want_mismatch, "%s: no GetLocale -> strict" % tag)
+    lua.execute("R2F_T = nil")
+
+    # ---- Sanity checks (always, even with a matching hash) ------------------------
+    r = prev("warrior/4~" + wh)
+    st = lua_states(r.plan)
+    check(r.plan.kind == "conflict" and st["Improved Heroic Strike"][0] == "overmax" and r.plan.learnable is False
+          and r.plan.summary == "The link puts 4 points in Improved Heroic Strike, which has only 3 ranks in your game. "
+          "Make a new link on the site or wait for the site to update.",
+          "%s: rank above max -> red conflict: %r" % (tag, r.plan.summary))
+    r = prev("warrior/-00001~" + wh)
+    check(r.plan.kind == "conflict" and r.plan.conflicts[1].kind == "nospot" and "your Fury tree" in r.plan.summary,
+          "%s: point past the tree's last talent -> conflict: %r" % (tag, r.plan.summary))
+    r = prev("warrior/-00000~" + wh)
+    check(r.plan.kind != "conflict" and len(r.plan.conflicts) == 0, "%s: zeros past the end are harmless" % tag)
+    r = prev("warrior/--5-1~" + wh)
+    check(r.plan.kind == "conflict" and r.plan.conflicts[1].kind == "notree", "%s: a 4th tree with points -> conflict" % tag)
+    r = prev("warrior/--5--0")
+    check(len(r.plan.conflicts) == 0, "%s: empty extra trees are harmless" % tag)
+
+    # ---- The summary line (13.4), every variant ----------------------------------
+    prot21 = "warrior/--55155~" + wh            # 5+5+1+5+5 = 21 in Protection
+    game({}, 21)
+    r = prev(prot21)
+    check(r.plan.summary == "This build uses 21 points. You have 21 free. All 21 will be learned."
+          and r.plan.kind == "all" and r.plan.learnable is True, "%s: summary 'all' = 13.4 exactly: %r" % (tag, r.plan.summary))
+    game({}, 16)
+    r = prev(prot21)
+    check(r.plan.summary == "This build uses 21 points. You have 16 free: 16 will be learned now, 5 later."
+          and r.plan.kind == "partial", "%s: summary 'partial' = 13.4 exactly: %r" % (tag, r.plan.summary))
+    game({"Improved Rend": 2}, 21)
+    r = prev(prot21)
+    check(r.plan.summary == "You already have 2 points in Improved Rend, which this build doesn't use. "
+          "Reset your talents at a trainer first." and r.plan.kind == "conflict" and r.plan.learnable is False,
+          "%s: summary 'conflict' = 13.4 exactly: %r" % (tag, r.plan.summary))
+    game({}, 0)
+    r = prev(prot21)
+    check(r.plan.summary == "No free talent points." and r.plan.learnable is False, "%s: summary 'no free points'" % tag)
+    game({"Shield Specialization": 5}, 0)
+    check(prev(prot21).plan.summary == "No free talent points.", "%s: no free points, part learned" % tag)
+    game({"Deflection": 5}, 2)
+    r = prev("warrior/03302~" + wh)
+    check(r.plan.summary == "You have 5 points in Deflection, but this build only uses 3. Reset your talents at a trainer first.",
+          "%s: conflict, fewer points than you have: %r" % (tag, r.plan.summary))
+    game({"Deflection": 5}, 5)
+    r = prev("warrior/05302~" + wh)
+    check(r.plan.summary == "This build uses 10 points, 5 of them already learned. You have 5 free. All 5 will be learned.",
+          "%s: part of the build already learned: %r" % (tag, r.plan.summary))
+    game({"Deflection": 5}, 3)
+    check(prev("warrior/05302~" + wh).plan.summary
+          == "This build uses 10 points, 5 of them already learned. You have 3 free: 3 will be learned now, 2 later.",
+          "%s: part learned + not enough points" % tag)
+    game({}, 4)
+    check(prev("warrior/1~" + wh).plan.summary == "This build uses 1 point. You have 4 free. It will be learned.",
+          "%s: singular wording" % tag)
+    check(prev("warrior/~" + wh).plan.summary == "This link has no talent points in it.", "%s: empty build" % tag)
+    # Several conflicts: a link problem is named before your own extra points.
+    game({"Deflection": 1}, 10)
+    r = prev("warrior/4000000002~" + wh)   # IHS 4 > max 3, a 10th Arms talent, Deflection unused
+    check(len(r.plan.conflicts) == 3 and r.plan.conflicts[1].kind == "overmax"
+          and r.plan.conflicts[3].kind == "unused", "%s: link problems listed first" % tag)
+
+    # ---- Per-talent states (the mini trees) -------------------------------------
+    # Game: Improved Heroic Strike 2 (not in build), Deflection 5 (= build),
+    # Improved Charge 1 (build 2). Build "05302" + Charge 2 + Fury Cruelty 5,
+    # 4 free points: learning order = tier 1 (Arms Rend 3, Fury Cruelty...).
+    game({"Improved Heroic Strike": 2, "Deflection": 5, "Improved Charge": 1}, 4)
+    r = prev("warrior/05322-05~" + wh)
+    st = lua_states(r.plan)
+    check(st["Improved Heroic Strike"][0] == "conflict", "%s: points the build doesn't use -> conflict" % tag)
+    check(st["Deflection"][0] == "learned", "%s: already learned -> learned" % tag)
+    # Tier 1 first: Rend (Arms, col 3) 3, then Cruelty (Fury, col 3) gets 1 of 5.
+    check(st["Improved Rend"][:4] == ("now", 3, 3, 0), "%s: Improved Rend all now: %s" % (tag, st["Improved Rend"]))
+    check(st["Cruelty"][:4] == ("now", 5, 1, 4), "%s: Cruelty part now, part later: %s" % (tag, st["Cruelty"]))
+    check(st["Improved Charge"][:4] == ("later", 2, 0, 1) and st["Tactical Mastery"][:4] == ("later", 2, 0, 2),
+          "%s: tier 2 waits (no points left): %s %s" % (tag, st["Improved Charge"], st["Tactical Mastery"]))
+    check(st["Booming Voice"][0] == "off" and st["Iron Will"][0] == "off", "%s: not in build -> off" % tag)
+    check((r.plan.trees[1].current, r.plan.trees[1].planned, r.plan.trees[2].planned) == (8, 12, 5),
+          "%s: tree current -> planned counts" % tag)
+    order = lua.eval("function(p) local o = {} for i, e in ipairs(R2F.Talents.LearnOrder(p)) do o[i] = e.name end return o end")
+    check(lua_table_to_list(order(r.plan)) == ["Improved Rend", "Cruelty", "Improved Charge", "Tactical Mastery"],
+          "%s: learning order tier, then tree, then column (13.5)" % tag)
+
+    # ---- Tree names (GetTalentTabInfo's shapes) -----------------------------------
+    names = lambda: [lua.eval("R2F.Talents.TreeName(%d)" % i) for i in (1, 2, 3)]
+    check(names() == ["Arms", "Fury", "Protection"], "%s: tree names, Classic shape" % tag)
+    T.tabInfoShape = "new"
+    check(names() == ["Arms", "Fury", "Protection"], "%s: tree names, id-first shape" % tag)
+    T.tabInfoShape = "error"
+    check(names() == ["Tree 1", "Tree 2", "Tree 3"], "%s: GetTalentTabInfo error -> Tree N" % tag)
+    T.tabInfoShape = None
+    lua.execute("R2F_G = GetTalentTabInfo GetTalentTabInfo = nil")
+    check(names() == ["Tree 1", "Tree 2", "Tree 3"], "%s: no GetTalentTabInfo -> Tree N" % tag)
+    lua.execute("GetTalentTabInfo = R2F_G R2F_G = nil")
+
+    # ---- The Talents tab ------------------------------------------------------------
+    T.calls = lua.table()
+    T.talentWrites = 0
+    game({"Improved Heroic Strike": 2, "Deflection": 5, "Improved Charge": 1}, 4)
+    lua.execute("R2F.MainWindow.Show('talents')")
+    P = lua.eval("R2F.TalentPanel")
+    edit = "R2FTalentLink" if templates else "R2FTalentLinkPlain"
+    check(lua.eval("%s ~= nil" % edit) is True, "%s: link box %s (template chain)" % (tag, edit))
+    find_frames(lua, "f.__kind == 'Button' and f.__text ~= nil and f.__text ~= ''", "TBTN")
+    btn = {}
+    for i in range(1, lua.eval("#TBTN") + 1):
+        btn[lua.eval("TBTN[%d].__text" % i)] = "TBTN[%d]" % i
+    for label in ("Preview", "Copy my build", "Learn talents", "Cancel"):
+        check(label in btn, "%s: Talents tab has %r" % (tag, label))
+    find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.TALENT_LINK_PLACEHOLDER:format('warrior')", "PH")
+    check(lua.eval("#PH") == 1 and lua.eval("PH[1].__shown") is True, "%s: placeholder talents.html#warrior/... shown" % tag)
+    check(lua.eval(btn["Learn talents"] + ".__enabled") is False and lua.eval(btn["Cancel"] + ".__enabled") is False,
+          "%s: no preview yet: Learn and Cancel disabled" % tag)
+    # Before a preview: the character's own trees, rank badges, no build.
+    c = lambda t, row, col: "R2F.TalentPanel.Cell(%d, %d, %d)" % (t, row, col)
+    check(lua.eval(c(1, 1, 2) + ".rank.__text") == "5" and lua.eval(c(1, 1, 2) + ".__shown") is True,
+          "%s: own trees drawn before any preview (Deflection rank 5)" % tag)
+    check(lua.eval(c(2, 3, 1) + ".__shown") is False, "%s: empty grid cells hidden" % tag)
+    # Paste + Preview.
+    lua.execute("%s:SetText(%r)" % (edit, "talents.html#warrior/05322-05~" + wh))
+    check(lua.eval("PH[1].__shown") is False, "%s: placeholder hides once there's text" % tag)
+    lua.execute(btn["Preview"] + ":Click()")
+    summary = find_frames(lua, "f.__kind == 'FontString' and type(f.__text) == 'string' and f.__text:find('^You already have 2 points')", "SUM")
+    check(summary == 1, "%s: Preview shows the summary line" % tag)
+    check(lua.eval("SUM[1].__color[1]") == 1 and lua.eval("SUM[1].__color[2]") < 0.2, "%s: conflict summary is red" % tag)
+    check(lua.eval("R2FCharDB.lastTalentLink") == "talents.html#warrior/05322-05~" + wh, "%s: link remembered per character" % tag)
+    # Cells: Arms row 1 = IHS (conflict), Deflection (learned), Rend (now +3);
+    # Fury row 1 col 3 = Cruelty (now +1); Arms row 2 col 1 = Charge (later).
+    check(lua.eval(c(1, 1, 1) + ".slot.__vertex[1]") == 1 and lua.eval(c(1, 1, 1) + ".slot.__vertex[2]") < 0.2
+          and lua.eval(c(1, 1, 1) + ".rank.__text") == "2", "%s: conflict cell: red ring, rank 2" % tag)
+    check(lua.eval(c(1, 1, 2) + ".rank.__text") == "5" and lua.eval(c(1, 1, 2) + ".glow.__shown") is False
+          and lua.eval(c(1, 1, 2) + ".icon.__desat") is False, "%s: learned cell: rank 5, normal icon" % tag)
+    check(lua.eval(c(1, 1, 3) + ".rank.__text") == "+3" and lua.eval(c(1, 1, 3) + ".glow.__shown") is True
+          and lua.eval(c(1, 1, 3) + ".rank.__color[3]") == 0, "%s: now cell: gold +3 and glow" % tag)
+    check(lua.eval(c(2, 1, 3) + ".rank.__text") == "+1", "%s: Cruelty now +1" % tag)
+    check(lua.eval(c(1, 2, 1) + ".later.__shown") is True and lua.eval(c(1, 2, 1) + ".rank.__text") == "1"
+          and lua.eval(c(1, 2, 1) + ".icon.__vertex[1]") < 1, "%s: later cell: 'later', dim, current rank 1" % tag)
+    check(lua.eval(c(3, 1, 1) + ".icon.__desat") is True and lua.eval(c(3, 1, 1) + ".badge.__shown") is False,
+          "%s: not-in-build cell desaturated, no badge" % tag)
+    find_frames(lua, "f.__kind == 'FontString' and f.__text == '8 -> 12'", "HEAD")
+    check(lua.eval("#HEAD") == 1, "%s: Arms header '8 -> 12'" % tag)
+    find_frames(lua, "f.__kind == 'FontString' and f.__text == 'Arms'", "HN")
+    check(lua.eval("#HN") >= 1, "%s: tree name header from GetTalentTabInfo" % tag)
+    check(lua.eval(btn["Learn talents"] + ".__enabled") is False and lua.eval(btn["Cancel"] + ".__enabled") is True,
+          "%s: conflict: Learn disabled, Cancel enabled" % tag)
+    # Hover: the game's tooltip (client index!) + "Build: x / y".
+    lua.execute(c(1, 1, 2) + ":Fire('OnEnter')")
+    lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    idx = lua.eval(c(1, 1, 2) + ".entry.index")
+    if templates:
+        args = lua_table_to_list(lua.eval("GameTooltip.talentArgs"))
+        check(args == [1, idx] and lines[0] == "Deflection", "%s: SetTalent(tab, client index %s): %s" % (tag, idx, args))
+    else:
+        check(lines[0] == "Deflection", "%s: no SetTalent -> name line" % tag)
+    check("Build: 5 / 5" in lines, "%s: tooltip 'Build: 5 / 5': %s" % (tag, lines))
+    lua.execute(c(1, 1, 3) + ":Fire('OnEnter')")
+    check("Learned now: +3" in lua_table_to_list(lua.eval("GameTooltip.lines")), "%s: tooltip says +3 now" % tag)
+    lua.execute("GameTooltip.SetTalent = function() error('other signature') end " + c(1, 1, 2) + ":Fire('OnEnter')")
+    check(lua_table_to_list(lua.eval("GameTooltip.lines"))[0] == "Deflection", "%s: SetTalent error -> name line" % tag)
+    lua.execute("GameTooltip.SetTalent = nil")
+    # A learnable build: Learn talents STILL disabled (step 10), with its note.
+    game({}, 21)
+    lua.execute("%s:SetText(%r) %s.__scripts.OnEnterPressed(%s)" % (edit, prot21, edit, edit))
+    res = P.Result()
+    check(res.plan.learnable is True and lua.eval(btn["Learn talents"] + ".__enabled") is False,
+          "%s: learnable build, Learn talents still disabled in step 9" % tag)
+    find_frames(lua, "f.__kind == 'FontString' and f.__text == 'This build uses 21 points. You have 21 free. All 21 will be learned.'", "S21")
+    check(lua.eval("#S21") == 1 and lua.eval("S21[1].__color[1]") == 1 and lua.eval("S21[1].__color[2]") == 1,
+          "%s: Enter previews too; non-conflict summary white" % tag)
+    lua.execute(btn["Learn talents"] + ".__scripts.OnEnter(%s)" % btn["Learn talents"])
+    check(lua_table_to_list(lua.eval("GameTooltip.lines")) == [L.TALENT_LEARN_LATER], "%s: Learn tooltip says later version" % tag)
+    # Points spent elsewhere: the preview follows CHARACTER_POINTS_CHANGED.
+    game({"Shield Specialization": 5}, 16)
+    T.fire("CHARACTER_POINTS_CHANGED")
+    T.runTimers()
+    check(P.Result().plan.summary == "This build uses 21 points, 5 of them already learned. You have 16 free. All 16 will be learned.",
+          "%s: preview re-read on CHARACTER_POINTS_CHANGED: %r" % (tag, P.Result().plan.summary))
+    # Caution line (old link) in yellow; stop messages in red with the own trees.
+    lua.execute("%s:SetText('warrior/--55155') %s:Click()" % (edit, btn["Preview"]))
+    find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.TALENT_NO_HASH", "CAU")
+    check(lua.eval("#CAU") == 1 and lua.eval("CAU[1].__color[2]") == 0.82, "%s: old link: yellow caution line" % tag)
+    lua.execute("%s:SetText('warrior/--55155~zzzz') %s:Click()" % (edit, btn["Preview"]))
+    find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.TALENT_HASH_MISMATCH", "ERR")
+    check(lua.eval("#ERR") == 1 and lua.eval("ERR[1].__color[2]") < 0.2 and P.Result().plan is None,
+          "%s: hash mismatch: red stop line, no plan" % tag)
+    check(lua.eval(c(3, 1, 1) + ".rank.__text") == "5" and lua.eval(c(3, 1, 1) + ".glow.__shown") is False,
+          "%s: behind a stop: own trees, no build" % tag)
+    check(lua.eval("S21[1].__text") == "", "%s: no summary behind a stop" % tag)
+    lua.execute("%s:SetText('paladin/5') %s:Click()" % (edit, btn["Preview"]))
+    find_frames(lua, "f.__kind == 'FontString' and f.__text == \"This is a Paladin build. You're playing a Warrior.\"", "WC")
+    check(lua.eval("#WC") == 1, "%s: wrong class shown on the tab" % tag)
+    check(lua.eval("R2FCharDB.lastTalentLink") == "paladin/5", "%s: parsable link remembered even if refused" % tag)
+    lua.execute("%s:SetText('garbage') %s:Click()" % (edit, btn["Preview"]))
+    check(lua.eval("R2FCharDB.lastTalentLink") == "paladin/5", "%s: junk isn't remembered" % tag)
+    # Cancel: back to the own trees, box and memory cleared.
+    lua.execute(btn["Cancel"] + ":Click()")
+    check(lua.eval(edit + ":GetText()") == "" and lua.eval("R2FCharDB.lastTalentLink") is None
+          and P.Result() is None and lua.eval(btn["Cancel"] + ".__enabled") is False, "%s: Cancel clears" % tag)
+    # Empty Preview = Cancel.
+    lua.execute("%s:SetText('   ') %s:Click()" % (edit, btn["Preview"]))
+    check(P.Result() is None, "%s: Preview with an empty box clears" % tag)
+    # Copy my build button (step 8's function).
+    lua.execute(btn["Copy my build"] + ":Click()")
+    check(lua.eval("R2FCopy:IsShown()") is True and lua.eval("R2FCopy.edit:GetText()").startswith(SITE_TALENTS + "warrior/--5~"),
+          "%s: Copy my build button opens the copy box with the link" % tag)
+    lua.execute("R2FCopy:Hide()")
+
+    # ---- Read-only, combat ---------------------------------------------------------
+    T.combat = True
+    T.fire("PLAYER_REGEN_DISABLED")
+    game({}, 21)
+    T.combat = True
+    lua.execute("%s:SetText(%r)" % (edit, prot21))
+    check(lua.eval(btn["Preview"] + ".__enabled") is True, "%s: Preview not greyed out in combat (read-only)" % tag)
+    lua.execute(btn["Preview"] + ":Click()")
+    check(P.Result() is not None and P.Result().plan is not None, "%s: Preview works in combat" % tag)
+    lua.execute(btn["Copy my build"] + ":Click() R2FCopy:Hide()")
+    T.combat = False
+    T.fire("PLAYER_REGEN_ENABLED")
+    check(lua.eval("TEST.talentWrites") == 0, "%s: no LearnTalent / preview-spend call during step 9" % tag)
+    check(len(lua_table_to_list(T.calls)) == 0, "%s: no macro API writes from the Talents tab" % tag)
+    # Tab switch lets go of the keyboard.
+    lua.execute("R2F.MainWindow.SelectTab('home')")
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "home", "%s: leaving the Talents tab works" % tag)
+
+    # ---- Globals ---------------------------------------------------------------------
+    new_globals = lua.eval("""(function()
+      local out = {}
+      for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
+      table.sort(out) return table.concat(out, ",") end)()""").split(",")
+    test_vars = {"NS", "TBTN", "PH", "SUM", "HEAD", "HN", "S21", "CAU", "ERR", "WC"}
+    bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
+    check(not bad, "%s: step 9 adds no globals besides R2F* frames: %s" % (tag, bad))
+
+    # ---- The last link comes back in a new session (6.3 lastTalentLink) ---------------
+    lua2 = new_runtime(templates)
+    lua2.execute("R2FCharDB = { lastTalentLink = %r }" % prot21)
+    T2 = lua2.eval("TEST")
+    T2.fire("ADDON_LOADED", "RoadToForever")
+    T2.fire("PLAYER_LOGIN")
+    lua2.execute("TEST.tabNames = { 'Arms', 'Fury', 'Protection' }")
+    set_game_talents(lua2, raw, W, {})
+    T2.talentPoints = 21
+    lua2.execute("R2F.MainWindow.Show('talents')")
+    check(lua2.eval(edit + ":GetText()") == prot21
+          and lua2.eval("R2F.TalentPanel.Result().plan.summary") == "This build uses 21 points. You have 21 free. All 21 will be learned.",
+          "%s: last link restored and previewed after a reload" % tag)
+    lua2.execute("R2FCharDB.lastTalentLink = 42 R2F.Library.Init()")
+    check(lua2.eval("R2FCharDB.lastTalentLink") is None, "%s: Init drops a non-string lastTalentLink" % tag)
+
+
+def test_talent_source_readonly():
+    """Step 9 ships no talent write: no LearnTalent (or preview-spend) call in
+    any addon .lua file outside comments. Step 10 is where that changes."""
+    hits = []
+    for dirpath, _, names in os.walk(ADDON):
+        for n in names:
+            if n.endswith(".lua"):
+                for i, line in enumerate(open(os.path.join(dirpath, n), encoding="utf-8"), 1):
+                    code = line.split("--", 1)[0]
+                    if re.search(r"\b(LearnTalent|LearnPreviewTalents|AddPreviewTalentPoints)\b", code):
+                        hits.append("%s:%d" % (n, i))
+    check(not hits, "no talent-learning API referenced in addon code (step 9 is read-only): %s" % hits)
+    check("UI\\TalentPanel.lua" in open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read(),
+          "TalentPanel.lua is in the TOC")
+
+
 def main():
     fx = fixtures()
     lua = new_runtime()
@@ -1579,6 +1992,9 @@ def main():
     test_media()
     test_talents(True)
     test_talents(False)
+    test_talent_preview(True)
+    test_talent_preview(False)
+    test_talent_source_readonly()
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
 

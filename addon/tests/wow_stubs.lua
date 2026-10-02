@@ -24,7 +24,9 @@ T.templates = { PortraitFrameTemplate = true, InputScrollFrameTemplate = true,
                 -- Step 6: only the Classic tab template, so the main window's
                 -- PanelTabButtonTemplate -> CharacterFrameTabButtonTemplate
                 -- chain is exercised (the first one is "missing").
-                CharacterFrameTabButtonTemplate = true }
+                CharacterFrameTabButtonTemplate = true,
+                -- Step 9: the Talents tab's link box.
+                InputBoxTemplate = true }
 T.calls = {}          -- log of macro API writes
 
 -- ---------------------------------------------------------------------------
@@ -131,8 +133,29 @@ function GetNumTalents(tab) local t = T.talentTabs[tab]; return t and #t or 0 en
 function GetTalentInfo(tab, i)
   local x = T.talentTabs[tab] and T.talentTabs[tab][i]
   if not x then return nil end
-  return x.name, "Interface\\Icons\\INV_Misc_QuestionMark", x.tier, x.column, x.rank or 0, x.maxRank, false, true
+  return x.name, x.icon or "Interface\\Icons\\INV_Misc_QuestionMark", x.tier, x.column, x.rank or 0, x.maxRank,
+    false, true
 end
+-- Step 9: tree names. Classic shape (name, icon, pointsSpent, fileName) by
+-- default; T.tabInfoShape = "new" gives the newer id-first shape, "error"
+-- makes it throw, and GetTalentTabInfo = nil tests a client without it.
+T.tabNames = {}
+function GetTalentTabInfo(tab)
+  local name = T.tabNames[tab]
+  if T.tabInfoShape == "error" then error("GetTalentTabInfo: bad argument") end
+  if T.tabInfoShape == "new" then return 100 + tab, name, "desc", "icon", 0, "bg", 0, true end
+  return name, "icon", 0, "file"
+end
+function GetLocale() return T.locale or "enUS" end
+-- Step 9 is preview only: anything that would learn (or preview-spend) a
+-- talent must never be called. These count and raise if it ever happens.
+T.talentWrites = 0
+local function talentWrite(what)
+  return function() T.talentWrites = T.talentWrites + 1; error(what .. " called during a read-only step", 2) end
+end
+LearnTalent = talentWrite("LearnTalent")
+LearnPreviewTalents = talentWrite("LearnPreviewTalents")
+AddPreviewTalentPoints = talentWrite("AddPreviewTalentPoints")
 
 function InCombatLockdown() return T.combat end
 function GetSpellTexture(name) return T.knownSpells[name] end
@@ -180,6 +203,7 @@ for _, name in ipairs({
   "SetMultiLine", "SetAutoFocus", "SetFontObject", "SetMaxLetters", "SetMaxBytes",
   "SetScrollChild", "SetFocus", "ClearFocus", "HighlightText",
   "SetMotionScriptsWhileDisabled", "SetHitRectInsets", "SetFrameLevel",
+  "SetBlendMode", "SetTextInsets",
 }) do methods[name] = noop end
 local MT = { __index = methods }
 
@@ -283,6 +307,14 @@ GameTooltip = newObject("GameTooltip", "GameTooltip")
 GameTooltip.lines = {}
 function GameTooltip:SetOwner() self.lines = {} end
 function GameTooltip:AddLine(t) table.insert(self.lines, t) end
+function GameTooltip:NumLines() return #self.lines end
+-- Step 9: the game's own talent tooltip. Records what it was asked for and
+-- adds the talent's name, like the real one's first line.
+function GameTooltip:SetTalent(tab, i)
+  self.talentArgs = { tab, i }
+  local name = GetTalentInfo(tab, i)
+  if name then table.insert(self.lines, name) end
+end
 UIErrorsFrame = newObject("Frame", "UIErrorsFrame")
 function UIErrorsFrame:AddMessage(m) table.insert(T.errors, m) end
 DEFAULT_CHAT_FRAME = newObject("Frame", "DEFAULT_CHAT_FRAME")

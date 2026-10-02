@@ -3,6 +3,33 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.7.0 (2026-10-02): talent import preview (ADDON_PLAN.md step 9)
+
+Not tested in the game yet; see `TESTING.md` section 14. **Nothing is learned yet:**
+this version only shows what a build would do. Learning comes in the next version.
+
+- **The Talents tab is real now** (`/r2ft`). Paste a link from the site's talent
+  calculator (Copy link; a full URL, `talents.html#...`, `#...` or just
+  `warrior/...` all work) and click **Preview**: three small talent trees show what
+  you already have, what would be learned now (gold glow, `+2`), what has to wait for
+  more points (`later`), what isn't in the build (grey), and any problem (red).
+  Hover a talent for the game's own tooltip plus `Build: 3 / 3`.
+- **A summary line** says how many points the build uses and how many you have free,
+  e.g. `This build uses 21 points. You have 16 free: 16 will be learned now, 5
+  later.`, or what's in the way (`You already have 2 points in Improved Rend, which
+  this build doesn't use. Reset your talents at a trainer first.`).
+- **Safety checks:** a link for another class is refused (`This is a Paladin build.
+  You're playing a Warrior.`); a link whose check (`~xxxx`) doesn't match your game's
+  talent trees is refused; an older link without a check gets a yellow warning; a
+  link asking for more ranks than a talent has, or points in a talent your tree
+  doesn't have, is shown as a problem. On a non-English game client links can't be
+  checked (talent names are translated), so you get the yellow warning instead.
+- **Copy my build** is a button on the Talents tab (`/r2f copybuild` still works).
+- **Learn talents** is there but greyed out until the next version.
+- The tab remembers the last link per character and updates live when you spend
+  points or level up. Home's Talents entry shows your free talent points.
+- Works in combat: previewing only reads your talents.
+
 ## 0.6.0 (2026-10-02): Copy my build (ADDON_PLAN.md step 8)
 
 Not tested in the game yet; see `TESTING.md` section 13.

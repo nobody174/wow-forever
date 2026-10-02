@@ -3,15 +3,16 @@
 Status: **in progress** (scoped 2026-10-01). Steps 1 (data), 2 (site export),
 3 (addon MVP, v0.1.0), 4 (updates, v0.2.0), 5 (Tidy up, Settings, Remove all,
 key bindings, v0.3.0), 6 (main window, minimap button, logo, v0.4.0), 7
-(release zip on GitHub Releases, v0.5.0) and 8 (talent export + the site's `~hash`,
-v0.6.0) shipped, no addon version tested in the game yet; see `CHANGELOG.md`.
+(release zip on GitHub Releases, v0.5.0), 8 (talent export + the site's `~hash`,
+v0.6.0) and 9 (talent import preview, v0.7.0) shipped, no addon version tested in
+the game yet; see `CHANGELOG.md`.
 Target: usable before the Nov 4 launch.
 
 | | |
 |---|---|
 | Addon name | Road to Forever |
 | Folder | `addon/RoadToForever/` (in this repo) |
-| Slash commands | `/r2f` (main window), `/r2ft` (Talents), `/r2f macros`, `/r2f minimap` (show the minimap button again), `/r2f help`, `/r2f import`, `/r2f copybuild` (step 8, 13.6) |
+| Slash commands | `/r2f` (main window), `/r2ft` (Talents), `/r2f macros`, `/r2f minimap` (show the minimap button again), `/r2f help`, `/r2f import`, `/r2f copybuild` (step 8, 13.6; kept as a shortcut in step 9, 13.7) |
 | Minimap button | yes, draggable around the minimap (section 12; our own button, no embedded libraries, 6.10) |
 | Global table | `R2F` (the only global the addon creates) |
 | SavedVariables | `R2FDB` (account), `R2FCharDB` (per character) |
@@ -981,6 +982,9 @@ locked (it can't be dragged then). Free talent points come from Classic's
   6.7) and a one-line how-to. Counts refresh on `UPDATE_MACROS` /
   `ACTIONBAR_SLOT_CHANGED`, throttled to 0.2 s like the book.
 - **Talents tab** is a placeholder text until steps 8 to 10 (`UI/TalentPanel.lua`).
+  **Step 9 (13.7)** replaced it with the link box, preview trees and Copy my build,
+  and Home's Talents line with the free points (12.4); the 540 x 500 size was
+  enough, so the window stays fixed.
 - **Settings and Import stay their own dialogs** over the window (6.9 allowed
   moving Settings in; not needed).
 
@@ -1133,6 +1137,7 @@ shows under the repo's Actions tab.
 8. **Talent export** (read-only, no risk): Copy my build as a link. Site links get
    the `~hash` check (section 13.3). Done in v0.6.0; decisions in 13.6.
 9. **Talent import preview**: paste link, mini trees, summary, warnings. Nothing learned.
+   Done in v0.7.0; decisions in 13.7.
 10. **Talent learning**: Learn talents + confirm popup, point-by-point learning
     (or the guided fallback if `LearnTalent` is blocked).
 
@@ -1179,6 +1184,10 @@ shows under the repo's Actions tab.
 - [ ] `GetNumTalentTabs` / `GetNumTalents` / `GetTalentInfo` exist and return
       `name, icon, tier, column, rank, maxRank` (Classic shape; 13.6). Talent names
       come back in English on an English client (the hash is over names, 13.6).
+- [ ] `GameTooltip:SetTalent(tab, index)` shows the talent tooltip from our mini
+      trees, and `GetTalentTabInfo(tab)` returns the tree name first or second
+      (13.7; else the headers read `Tree 1..3`). `InputBoxTemplate` exists (link box).
+- [ ] The mini trees read well at 26 px (13.7: talent-frame ring tints, glow, badge).
 
 ---
 
@@ -1250,7 +1259,7 @@ Drag to move.                           (green)
 | `/r2f macros` | Macros tab |
 | `/r2ft` or `/r2f talents` | Talents tab |
 | `/r2f minimap` | shows the minimap button again (toggles) |
-| `/r2f copybuild` | Copy my build popup (step 8, until the Talents tab has its button, 13.6) |
+| `/r2f copybuild` | Copy my build popup (step 8; since step 9 also a Talents tab button, the command stays as a shortcut, 13.7) |
 | `/r2f help` | prints the list above |
 
 ### 12.4 Main window
@@ -1454,7 +1463,8 @@ prefixes `https://nobody174.github.io/wow-forever-macros/talents.html#`.
   Wowhead). For export that's harmless (the site ignores the hash). **Step 9 must not
   block imports on a non-English client** because of it: treat a mismatch there like
   an old link (yellow "can't check" line) when `GetLocale()` isn't `enUS`/`enGB`, or
-  find a locale-free key. Recorded here so step 9 doesn't rediscover it.
+  find a locale-free key. Recorded here so step 9 doesn't rediscover it. **Step 9
+  took the first option (13.7).**
 - **Why no combat check (6.4/6.9 don't apply).** Copy my build only reads talent
   info and shows our own non-secure copy box; it never learns a talent, never writes
   a macro, never calls a protected function. Reading `GetTalentInfo` and showing an
@@ -1470,3 +1480,139 @@ prefixes `https://nobody174.github.io/wow-forever-macros/talents.html#`.
   Talents tab placeholder). 13.4's **Copy my build** button belongs on the Talents
   tab, built in steps 9/10: they add it (calling `R2F.Talents.CopyMyBuild()`) and
   may keep or drop the slash command.
+
+### 13.7 Decisions made while building it (step 9, v0.7.0, 2026-10-02)
+
+Step 9 is the preview only: `Talents.lua` gained `ParseLink`, `Preview`, `Plan`,
+`Summary`, `LearnOrder`, `TreeName`, `CurrentPlan`; the tab is `UI/TalentPanel.lua`
+(the file 6.1 already named). Nothing learns a talent yet.
+
+**Reading the link (13.2)**
+- **Everything up to the last `#` is dropped before 13.2's pattern runs.** On a
+  full URL the pattern alone matches `io/` in `github.io/` (class `io`, no digits),
+  so "accept a full URL" needs this. The pattern is then anchored
+  (`^(%a+)/([%d%-]*)(~?%w*)$`) so trailing junk is refused, not ignored, and the
+  class must be one of `talentcalc.js`'s 9 ids. Also: surrounding spaces, quotes and
+  Discord's `<...>` are trimmed, case is ignored, `warrior/32a` (letters straight
+  after the digits, which the pattern's optional `~` would allow) is refused, and a
+  bare trailing `~` means "no hash" (as the site reads it).
+- **Mapping reuses step 8's `Talents.ReadTrees()`** (the export's tier/column sort),
+  so import and export can't drift apart. It now also keeps the icon.
+- **Class names in messages are English** (`warrior` -> `Warrior`), not the client's
+  localized names: every message around them is English (5.9).
+
+**The hash on import (13.3)**
+- Match -> preview. No hash -> preview + 13.3's yellow line. Different on an
+  English client (`GetLocale()` `enUS`/`enGB`, or no `GetLocale`) -> 13.3's stop
+  message exactly, no preview, no plan; the tab shows your own trees behind it.
+- **Different on a non-English client -> treated like a link without a hash**
+  (13.6's hand-off, first option): preview + a yellow line `Your game isn't in
+  English, so this link can't be checked against your talent trees.` Why not stop:
+  the names are translated, so the hash can **never** match there, even with
+  identical trees; stopping would lock every non-English player out of imports for
+  good. That client is in exactly the position of an old link (13.3 already allows
+  those with a warning), the sanity checks below still run, and step 10 re-reads
+  every rank after each point (13.5). The English stop message is left word for word:
+  on an English client a language difference can't be the cause, so no
+  "might be your language" note was added to it.
+- The step-8 hash functions are reused unchanged (`Talents.Hash`); the step-8
+  cross-check tests pass as before.
+
+**Sanity checks (always, also with a matching hash)**
+- A rank above the talent's max rank (the hash covers names only, 13.6), points past
+  a tree's last talent, or points in a tree the class doesn't have are **conflicts,
+  not errors**: the preview still draws (the trees show where the problem is) and
+  Learn is blocked. Zeros in those places are harmless and ignored.
+- **Conflict order in the summary:** link problems first (over max rank, no such
+  talent, no such tree), then "you have points this build doesn't use": a trainer
+  reset can't fix a bad link. Only the first conflict is in the summary; all of them
+  are red in the trees.
+
+**Summary line (13.4)**
+- The four 13.4 sentences are produced word for word (tested) when none of the
+  build is learned yet. Additions where 13.4's text would be wrong or awkward:
+  - part of the build already learned (normal after leveling): `This build uses 21
+    points, 5 of them already learned. You have 16 free. All 16 will be learned.`
+    (and the `now / later` form). Without this, "All 21 will be learned" would be false.
+  - you have more points in a talent than the build uses (not zero): `You have 5
+    points in Deflection, but this build only uses 3. Reset your talents at a trainer
+    first.` (13.4's "which this build doesn't use" only fits zero).
+  - `You already have this whole build.`, `This link has no talent points in it.`,
+    and singular forms (`1 point`, `It will be learned.`).
+  - Over max rank: `The link puts 4 points in Improved Heroic Strike, which has only
+    3 ranks in your game. Make a new link on the site or wait for the site to
+    update.`; missing talent/tree: `The link has points in a talent your Fury tree
+    doesn't have. ...` / `... a talent tree your class doesn't have. ...`
+- Precedence: conflict > empty link > whole build already learned > no free points
+  > all now > part now.
+- **"Now" vs "later" uses 13.5's learning order** (tier across all trees, then tree,
+  then column; `Talents.LearnOrder`), handing out the free points in that order, so
+  the preview shows exactly what step 10 will learn first. Step 10 learns in the
+  same list.
+
+**The tab (13.4)**
+- **Mini trees:** 3 x (4 x 7) grids of 26 px icons, built from the talent frame's own
+  textures: the `UI-EmptySlot-White` ring behind each icon tinted per state (the
+  talent frame tints the same texture), `TalentFrame-RankBorder` for the rank badge,
+  the action-button border glow (gold) for "learned now". States: learned = grey
+  ring, white rank; now = gold ring + glow + gold `+N`; later = dim icon, dim gold
+  ring, `later` (a dashed outline isn't possible with plain textures, so "dim gold
+  + the word" stands in for it); not in build = desaturated, grey ring; conflict /
+  over max = red ring. Headers: tree name + `current -> planned`.
+- **Tree names** come from `GetTalentTabInfo` (13.6 avoided it because its shape
+  differs): first string among its first two returns (Classic = name first, newer =
+  id then name), `pcall`-guarded, fallback `Tree 1..3`. Only the header text depends
+  on it; the mapping never does.
+- **Tooltip:** `GameTooltip:SetTalent(tab, index)` with the client's own index (not
+  our sorted position), `pcall`-guarded; missing, failing or empty -> the talent name
+  as the first line. Then `Build: X / Y` (planned / max) and, when they apply, the
+  now / later / conflict lines.
+- **Link box:** `InputBoxTemplate` (named `R2FTalentLink`, fallback plain EditBox on a
+  tooltip backdrop `R2FTalentLinkPlain`), grey placeholder `talents.html#<your
+  class>/...`. Preview on the button or Enter.
+- **The link is remembered per character** (`R2FCharDB.lastTalentLink`, 6.3) when it
+  parses, and comes back (previewed again, live) on the next open. **Cancel** clears
+  the box and the memory and shows your own trees. Preview with an empty box = Cancel.
+- **Before a preview** (and behind a stop message) the trees show the character's own
+  talents with rank badges, no build.
+- **Live:** the preview is re-run on every refresh (tab shown,
+  `CHARACTER_POINTS_CHANGED`, `PLAYER_LEVEL_UP`, throttled 0.2 s like Home), so it
+  follows points spent in Blizzard's talent window and level-ups. Both events are
+  new in Core (6.5's table); step 10 will also use `CHARACTER_POINTS_CHANGED` to
+  confirm each learned point.
+- **Learn talents exists but is disabled in step 9**, with a tooltip and a grey note
+  `Learning talents comes in a later version. For now, learn them in the talent
+  window.` `plan.learnable` (no conflicts, points needed, points free) is already
+  computed for step 10, which enables the button from it (and greys it in combat).
+- **Copy my build** is now a button on the tab (13.4). **`/r2f copybuild` stays** as a
+  shortcut: it's one table entry, already in `/r2f help` and TESTING.md, and works
+  without opening the window.
+- **Home's Talents line** is 12.4's `5 free talent points` / `1 free talent point` /
+  `No free talent points` (same strings and `UnitCharacterPoints` guard as the
+  minimap tooltip; `Talents.FreePoints` wraps it).
+
+**Why Preview has no combat check (same reasoning as 13.6).** Preview parses a
+string, reads `GetTalentInfo` / `GetTalentTabInfo` / `UnitCharacterPoints` /
+`GetLocale` and redraws our own non-secure frames. None of that is protected, so the
+`InCombatLockdown()` / `RunOrQueue` pattern (for macro writes, 6.4/6.9) doesn't apply:
+Preview, Cancel and Copy my build stay enabled in combat. A test runs them in combat.
+
+**Testing.** `run_tests.py` adds `test_talent_preview` (template and fallback paths)
+and `test_talent_source_readonly`: every accepted link form and the refusals; every
+link the real `talentcalc.js` produces for the 7 fixture builds parses back and
+previews as exactly that build (decode == site encode); class mismatch text; hash
+match / mismatch (fake hash and a game missing a talent) / absent / non-English /
+`enGB` / no `GetLocale`; over max rank, no such talent, no such tree, harmless zeros;
+the 13.4 summary sentences word for word plus the additions; per-talent states,
+learning order and tree counts; tree-name shapes; the tab (buttons, placeholder,
+cells' ring/glow/badge/`later`/desaturation, headers, tooltip with client index and
+fallbacks, Learn disabled even when learnable, live refresh on
+`CHARACTER_POINTS_CHANGED`, yellow/red lines, Cancel, memory incl. a reload, Copy my
+build); combat; the global audit. The fake client's `LearnTalent` (and the preview-
+spend calls) raise and count, and the count stays 0; a source scan finds no
+talent-learning call in the addon at all. 18 hand mutations of the new code (digit
+offset, no `#` strip, hash rules flipped, learning order, each sanity check, class
+check, free-points rule, conflict order, hash slice, a stray `LearnTalent`, Learn
+enabled, tooltip index, own-trees view, link memory, Home line, the new event) each
+fail the suite. What only the client can show (tooltip, tab info shape, look at
+26 px) is TESTING.md 14.

@@ -123,19 +123,59 @@ R2F.L = {
   HOME_MACROS_COUNT = "%d macros in your library, %d on your bars",
   HOME_MACROS_COUNT_ONE = "1 macro in your library, %d on your bars",
   HOME_TALENTS = "Talents",
-  HOME_TALENTS_LATER = "Coming in a later version",
+  HOME_NO_TALENT_POINTS = "No free talent points",
   HOME_IMPORT = "Import macros",
   HOME_IMPORT_HINT = "Pick macros on the Macros page of the Road to Forever site, click Copy import string, "
     .. "then click Import macros and paste it.",
 
-  -- Talents tab: placeholder until the talent steps (ADDON_PLAN 9, steps 8 to 10)
-  TALENTS_TAB_LATER = "Talents are coming in a later version.\n\nYou'll paste a link from the site's talent "
-    .. "calculator here, see a preview, and learn the build with one click.\n\n"
-    .. "Already works: type /r2f copybuild to copy your current talents as a site link.",
-
   -- Talent export (13.4 Copy my build, step 8)
   TALENT_COPY_HINT = "Press Ctrl+C, then paste it in your browser or Discord.",
   TALENT_READ_FAILED = "couldn't read your talents yet. Try again in a moment.",
+
+  -- Talents tab: link box, preview, summary (13.2 - 13.4, step 9)
+  TALENT_LINK_LABEL = "Talent link",
+  TALENT_LINK_PLACEHOLDER = "talents.html#%s/...",
+  TALENT_TAB_HINT = "Paste a link from the site's talent calculator (Copy link), then click Preview. "
+    .. "Nothing is learned by previewing.",
+  BTN_PREVIEW = "Preview",
+  BTN_COPY_BUILD = "Copy my build",
+  BTN_LEARN = "Learn talents",
+  TALENT_LEARN_LATER = "Learning talents comes in a later version. For now, learn them in the talent window.",
+  TALENT_READ_FAILED_TAB = "Couldn't read your talents yet. Try again in a moment.",
+  TALENT_BAD_LINK = "That isn't a talent link. Click Copy link on the site's talent calculator and paste it here.",
+  TALENT_WRONG_CLASS = "This is a %s build. You're playing a %s.",
+  TALENT_HASH_MISMATCH = "This link was made with different talent trees than your game has. Nothing was learned. "
+    .. "Make a new link on the site or wait for the site to update.",
+  TALENT_NO_HASH = "Older link: can't check it against your talent trees.",
+  TALENT_HASH_LOCALE = "Your game isn't in English, so this link can't be checked against your talent trees.",
+  TALENT_POINTS = "%d points",
+  TALENT_POINT_ONE = "1 point",
+  TALENT_USES = "This build uses %s.",
+  TALENT_USES_HAVE = "This build uses %s, %d of them already learned.",
+  TALENT_FREE = "You have %d free.",
+  TALENT_FREE_PART = "You have %d free: %d will be learned now, %d later.",
+  TALENT_WILL_ALL = "All %d will be learned.",
+  TALENT_WILL_ONE = "It will be learned.",
+  TALENT_SUMMARY_NO_POINTS = "No free talent points.",
+  TALENT_SUMMARY_DONE = "You already have this whole build.",
+  TALENT_SUMMARY_EMPTY = "This link has no talent points in it.",
+  TALENT_CONFLICT_UNUSED = "You already have %s in %s, which this build doesn't use. "
+    .. "Reset your talents at a trainer first.",
+  TALENT_CONFLICT_FEWER = "You have %s in %s, but this build only uses %d. Reset your talents at a trainer first.",
+  TALENT_CONFLICT_OVERMAX = "The link puts %s in %s, which has only %d ranks in your game. "
+    .. "Make a new link on the site or wait for the site to update.",
+  TALENT_CONFLICT_NOSPOT = "The link has points in a talent your %s tree doesn't have. "
+    .. "Make a new link on the site or wait for the site to update.",
+  TALENT_CONFLICT_NOTREE = "The link has points in a talent tree your class doesn't have. "
+    .. "Make a new link on the site or wait for the site to update.",
+  TALENT_TREE_N = "Tree %d",
+  TALENT_TREE_HEAD = "%d -> %d",
+  TALENT_LATER = "later",
+  TALENT_TIP_BUILD = "Build: %d / %d",
+  TALENT_TIP_NOW = "Learned now: +%d",
+  TALENT_TIP_LATER = "Later, when you have free points: +%d",
+  TALENT_TIP_CONFLICT = "You have points here that this build doesn't use.",
+  TALENT_TIP_OVERMAX = "The link asks for more ranks than this talent has.",
 
   -- Minimap button (12.2)
   MM_LIBRARY = "%d macros in your library",
@@ -161,7 +201,7 @@ R2F.L = {
     "/r2ft or /r2f talents  the Talents tab",
     "/r2f minimap  show or hide the minimap button",
     "/r2f import  paste an import string",
-    "/r2f copybuild  copy your talents as a site link",
+    "/r2f copybuild  copy your talents as a site link (also a button on the Talents tab)",
     "/r2f help  this list",
   },
   UNKNOWN_COMMAND = "unknown command \"%s\". Type /r2f help for the list.",

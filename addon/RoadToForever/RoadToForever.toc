@@ -2,7 +2,7 @@
 ## Title: |cffffd100Road to Forever|r
 ## Notes: Import macros and talent builds from the Road to Forever site.
 ## Author: nobody174
-## Version: 0.6.0
+## Version: 0.7.0
 ## SavedVariables: R2FDB
 ## SavedVariablesPerCharacter: R2FCharDB
 
@@ -24,6 +24,7 @@ UI\ImportFrame.lua
 UI\Settings.lua
 UI\MacroBook.lua
 UI\Home.lua
+UI\TalentPanel.lua
 UI\MainWindow.lua
 Minimap.lua
 Core.lua

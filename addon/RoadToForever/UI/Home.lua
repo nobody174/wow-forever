@@ -2,7 +2,7 @@
 --
 -- Two large entries in spellbook-slot style (big icon in the quick-slot
 -- border, gold name, white line under it): Macro Book with live counts, and
--- Talents (a placeholder until the talent steps). Clicking an entry switches
+-- Talents with the free talent points (12.4). Clicking an entry switches
 -- the main window to that tab. Below them: the Import macros button (opens
 -- the existing Import window) and one line on how to get an import string.
 --
@@ -36,6 +36,14 @@ function Home.MacroLine()
   return n == 1 and L.HOME_MACROS_COUNT_ONE:format(m) or L.HOME_MACROS_COUNT:format(n, m)
 end
 
+-- 12.4: "5 free talent points", or "No free talent points" (step 9 replaced
+-- the step-6 placeholder). Same wording as the minimap tooltip.
+function Home.TalentLine()
+  local n = R2F.Talents.FreePoints()
+  if n <= 0 then return L.HOME_NO_TALENT_POINTS end
+  return n == 1 and L.MM_TALENT_POINTS_ONE or L.MM_TALENT_POINTS:format(n)
+end
+
 -- One big entry: a 44 px icon in the quick-slot border (the spellbook's look,
 -- 5.3, scaled up), name and sub line to the right. The whole row is the
 -- button, with the quest log's row highlight, so the click target is large.
@@ -67,8 +75,6 @@ end
 local function build(f)
   ui.macros = entry(f, -86, "INV_Misc_Book_09", L.HOME_MACROS, "macros")
   ui.talents = entry(f, -156, "INV_Misc_Book_11", L.HOME_TALENTS, "talents")
-  ui.talents.sub:SetText(L.HOME_TALENTS_LATER)
-  ui.talents.sub:SetTextColor(0.6, 0.6, 0.6)
 
   ui.import = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   ui.import:SetSize(160, 24)
@@ -98,6 +104,7 @@ end
 function Home.Refresh()
   if not page or not page:IsVisible() then return end
   ui.macros.sub:SetText(Home.MacroLine())
+  ui.talents.sub:SetText(Home.TalentLine())
   -- Import is greyed out in combat, like the book's Import button (6.7):
   -- every import button behaves the same.
   local combat = R2F.InCombat()

@@ -39,8 +39,9 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
       CHANGELOG.md. `/r2f copybuild` for now (the Talents tab button comes with 9/10,
       ADDON_PLAN 13.6). Not yet run in the game: `TESTING.md` section 13 (the hash
       must equal the site's per class).
-- [ ] **9. Talent import preview:** paste a Copy link URL, three mini trees,
-      summary, conflict/mismatch warnings. Nothing learned.
+- [x] **9. Talent import preview:** shipped 2026-10-02 as v0.7.0 (tag `r2f-v0.7.0`)
+      — see CHANGELOG.md. Learn talents button present but disabled until step 10
+      (ADDON_PLAN 13.7). Not yet run in the game: `TESTING.md` section 14.
 - [ ] **10. Talent learning:** Learn talents + confirm popup, one point at a
       time, stops on combat/errors; guided glow mode if `LearnTalent` is blocked.
 - [ ] **Quick settings (Home tab):** three checkboxes that change game settings

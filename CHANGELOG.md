@@ -4,6 +4,31 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon plan, step 9: talent import preview, Road to Forever addon v0.7.0)
+
+- **Addon v0.7.0** (tag `r2f-v0.7.0`): the Talents tab replaces its step-6 placeholder
+  (new `UI/TalentPanel.lua`). Paste a site talent link (full URL, `talents.html#...`,
+  `#...` or bare `class/code`), Preview: three 4x7 mini trees (learned / learned now
+  with gold glow and `+N` / later / not in build / red conflict), tree headers
+  `current -> planned`, the game's talent tooltip + `Build: X / Y`, and 13.4's
+  summary line. `Talents.lua` gained `ParseLink` / `Preview` / `Plan` / `Summary` /
+  `LearnOrder`, mapping digits through step 8's own `ReadTrees` (no second sort).
+  Hash on import: match -> preview; none -> yellow "Older link" line; different ->
+  13.3's stop message, except on a non-English client, where it gets a yellow "can't
+  be checked" line (names are translated, so it could never match; ADDON_PLAN 13.6's
+  hand-off). Sanity checks (rank over max, no such talent / tree) show as red
+  conflicts. Learn talents is present but disabled until step 10; Copy my build is a
+  button on the tab (`/r2f copybuild` kept as a shortcut). Last link remembered per
+  character; preview re-runs on `CHARACTER_POINTS_CHANGED` / `PLAYER_LEVEL_UP`; Home's
+  Talents line shows free talent points (12.4). Read-only, so it works in combat.
+- **Tests:** `run_tests.py` 6223 checks pass (was 5837): every link the real
+  `talentcalc.js` makes for the fixture builds parses and previews as exactly that
+  build; all hash cases; every summary sentence word for word; mini-tree states and
+  widgets on template and fallback paths; the fake client's `LearnTalent` raises and is
+  never called, and a source scan finds no talent-learning call. 18 hand mutations of
+  the new code each fail the suite. luacheck 0 warnings. Decisions in `ADDON_PLAN.md`
+  13.7; in-game checks in `addon/RoadToForever/TESTING.md` 14.
+
 ## 2026-10-02 (Addon plan, step 8: talent export + `~hash`, Road to Forever addon v0.6.0)
 
 - **Site, `talentcalc.js`:** every talent link the site hands out now ends in a

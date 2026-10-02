@@ -115,6 +115,9 @@ function Library.Init()
   if type(cdb) ~= "table" then cdb = {} end
   if type(cdb.created) ~= "table" then cdb.created = {} end
   if type(cdb.changed) ~= "table" then cdb.changed = {} end
+  -- Talents tab (6.3, step 9): the last link previewed on this character,
+  -- put back in the link box. Per character because a link is per class.
+  if type(cdb.lastTalentLink) ~= "string" then cdb.lastTalentLink = nil end
   _G.R2FCharDB = cdb
 
   Library.db, Library.cdb = db, cdb

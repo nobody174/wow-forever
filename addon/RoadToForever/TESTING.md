@@ -1,4 +1,4 @@
-# Road to Forever: in-game test checklist (v0.6.0, addon steps 3 to 8)
+# Road to Forever: in-game test checklist (v0.7.0, addon steps 3 to 9)
 
 Since v0.4.0 the Macro Book is the **Macros tab** of the main window: wherever an
 older section below says "`/r2f` opens the Macro Book" or "open the book", use
@@ -275,12 +275,14 @@ checkable here.
       `gap` values in `UI/MainWindow.lua` `TAB_TEMPLATES`.
 - [ ] **Tabs.** Click Macros: the title becomes `Road to Forever: Macros` and the
       Macro Book shows exactly as before (side tabs on the right edge, grid, bottom
-      bar). Click Talents: placeholder text. A tab sound plays on switching.
+      bar). Click Talents: the Talents tab (since v0.7.0 the real tab, section 14).
+      A tab sound plays on switching.
 - [ ] **Home.** `N macros in your library, M on your bars` matches: N = your whole
       library, M = Road to Forever macros on your action bars. Put one more on a bar
       with Home open: M goes up within a moment. Click the Macro Book entry: Macros
       tab. Click Talents: Talents tab. **Import macros** opens the Import window
-      (greyed out in combat).
+      (greyed out in combat). Since v0.7.0 the Talents entry reads `5 free talent
+      points` / `No free talent points` (section 14).
 - [ ] **Remembered.** Drag the window somewhere, switch to Macros, close it,
       `/reload`, `/r2f`. **Pass:** same spot, Macros tab.
 - [ ] Esc closes the window. Spellbook open/close sounds play.
@@ -383,11 +385,66 @@ site's (ADDON_PLAN 11, 13.6):
 - [ ] Right-click > Copy text in the Macro Book afterwards still shows its own hint
       (`Press Ctrl+C to copy, then Esc.`).
 
-## Known gaps in v0.6.0 (by design, later steps)
+## 14. Talent import preview (v0.7.0, step 9)
 
-- The Talents tab and the Home Talents entry are placeholders (steps 9 and 10).
-  Copy my build exists only as `/r2f copybuild` until the Talents tab gets its
-  button (ADDON_PLAN 13.6).
+Out of the game, `run_tests.py` parses every link the site's real `talentcalc.js`
+makes for the fixture builds and previews each one as exactly that build, checks
+the hash rules, the sanity checks, every summary sentence, the per-talent states
+and the tab's widgets, on both the template and fallback paths, and proves nothing
+learns a talent (the fake `LearnTalent` raises; the source has no call to it).
+What only the game can show:
+
+- [ ] **The tab.** `/r2ft`. **Pass:** `Talent link` + a text box with a grey
+      `talents.html#<your class>/...` placeholder, `Preview`, `Copy my build`, three
+      mini trees with your current talents (rank numbers on learned ones), tree names
+      above them (`Arms`, `Fury`, `Protection` for a Warrior). If the names read
+      `Tree 1..3`, `GetTalentTabInfo` has another shape: `/dump GetTalentTabInfo(1)`
+      and note it in ADDON_PLAN 13.7. `Cancel` and `Learn talents` are greyed out.
+      `/dump R2FTalentLink ~= nil`: `true` = `InputBoxTemplate` exists; `false` (and
+      `R2FTalentLinkPlain` exists) = the plain fallback box.
+- [ ] **Preview a site link.** On the site's talent calculator make a small build for
+      your class (fewer points than you have free), Copy link, paste it in the box
+      (Ctrl+V), click Preview (or Enter). **Pass:** gold glow and gold `+N` on exactly
+      the talents of the build, no Lua error, and `This build uses N points. You have M
+      free. All N will be learned.` Nothing changes in Blizzard's talent window
+      (preview only).
+- [ ] **More points than you have.** A bigger build. **Pass:** `... You have M free: M
+      will be learned now, K later.`; the top talents glow, deeper ones are dim gold
+      with `later`.
+- [ ] **Look at 26 px.** Learned / glowing / `later` / desaturated / red rings are
+      clearly different from each other, and the rank badge sits on the corner, not
+      off the icon. If not, adjust sizes in `UI/TalentPanel.lua` (`buildCell`).
+- [ ] **Tooltip.** Hover a mini-tree talent. **Pass:** the game's own talent tooltip
+      (name, rank, description) **for that talent**, plus `Build: X / Y`. Only a name
+      line = `GameTooltip:SetTalent` is missing or different (note it in ADDON_PLAN
+      11 / 13.7). A wrong talent's tooltip = it takes another index (report it).
+- [ ] **Conflict.** With a point in a talent the build doesn't use: red ring on it and
+      the red line `You already have 1 point in X, which this build doesn't use. Reset
+      your talents at a trainer first.`
+- [ ] **Wrong class.** Paste another class's link. **Pass:** `This is a Paladin build.
+      You're playing a Warrior.` (red), your own trees shown.
+- [ ] **Old link.** Delete the `~xxxx` from a link, Preview. **Pass:** yellow `Older
+      link: can't check it against your talent trees.` above the preview.
+- [ ] **Changed link.** Change the 4 characters after `~`. **Pass (English client):**
+      red `This link was made with different talent trees than your game has. ...`,
+      no preview. **Non-English client:** a real site link previews with the yellow
+      `Your game isn't in English, so this link can't be checked ...` line instead
+      (ADDON_PLAN 13.7).
+- [ ] **Live.** With a preview showing, spend a point in Blizzard's talent window.
+      **Pass:** within a moment the trees and the summary update (e.g. `..., 1 of them
+      already learned`); Home's free-points line too.
+- [ ] **Remembered.** Preview a link, `/reload`, `/r2ft`. **Pass:** the link is back
+      in the box and previewed. Cancel clears it (and it stays cleared after a reload).
+- [ ] **Combat.** In combat: Preview, Cancel and Copy my build still work (read-only),
+      no "action blocked". Learn talents stays greyed out (step 10).
+- [ ] Hover `Learn talents`: tooltip `Learning talents comes in a later version...`.
+
+## Known gaps in v0.7.0 (by design, later steps)
+
+- **Talents are previewed, not learned.** Learn talents is greyed out until step 10
+  (ADDON_PLAN 13.5). `/r2f copybuild` is also a button on the Talents tab now.
+- A non-English client can't verify links (the hash is over English names); it gets
+  the yellow "can't check" line and the sanity checks only (ADDON_PLAN 13.7).
 - The window has a fixed size (ADDON_PLAN 6.10); only position and tab are saved.
 - No embedded libraries: without another addon that loads LibDBIcon, the minimap
   button is our own, which some minimap-button collector addons may not pick up

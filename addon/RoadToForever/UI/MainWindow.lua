@@ -7,7 +7,8 @@
 -- a time:
 --   Home    -> UI/Home.lua builds into it
 --   Macros  -> UI/MacroBook.lua builds into it (the step-3 book, reparented)
---   Talents -> a placeholder text until the talent steps (9: UI/TalentPanel.lua)
+--   Talents -> UI/TalentPanel.lua builds into it (step 9: link, preview,
+--              Copy my build; Learn talents arrives in step 10)
 --
 -- Saved in R2FDB.settings: windowPos (by UI.Window when dragged) and
 -- lastTab. The size is fixed (540 x 500, the book's size): the book's grid is
@@ -39,11 +40,14 @@ local function refreshPage(key)
     R2F.Home.Refresh()
   elseif key == "macros" then
     R2F.MacroBook.Refresh()
+  elseif key == "talents" then
+    R2F.TalentPanel.Refresh()
   end
 end
 
 local function pageHidden(key)
   if key == "macros" then R2F.MacroBook.OnHide() end
+  if key == "talents" then R2F.TalentPanel.OnHide() end
 end
 
 -- ---------------------------------------------------------------------------
@@ -109,13 +113,6 @@ end
 -- Building
 -- ---------------------------------------------------------------------------
 
-local function buildTalentsPage(p)
-  local text = p:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-  text:SetPoint("TOP", 0, -160)
-  text:SetWidth(400)
-  text:SetText(L.TALENTS_TAB_LATER)
-end
-
 local function build()
   local f = UI.Window("R2FMain", 540, 500, "windowPos")
   if f.r2fPortrait then
@@ -131,7 +128,7 @@ local function build()
   end
   R2F.Home.Build(pages.home)
   R2F.MacroBook.Build(pages.macros)
-  buildTalentsPage(pages.talents)
+  R2F.TalentPanel.Build(pages.talents)
 
   for i, key in ipairs(MainWindow.TABS) do tabButtons[i] = buildTab(f, i, key) end
   f.Tabs = tabButtons
@@ -210,11 +207,13 @@ end
 
 function MainWindow.Frame() return frame end
 
--- UPDATE_MACROS / ACTIONBAR_SLOT_CHANGED / LEARNED_SPELL_IN_TAB: redraw the
--- visible page (both are throttled and no-ops while hidden).
+-- UPDATE_MACROS / ACTIONBAR_SLOT_CHANGED / LEARNED_SPELL_IN_TAB /
+-- CHARACTER_POINTS_CHANGED / PLAYER_LEVEL_UP: redraw the visible page (all
+-- three are throttled and no-ops while hidden).
 function MainWindow.RequestRefresh()
   R2F.MacroBook.RequestRefresh()
   R2F.Home.RequestRefresh()
+  R2F.TalentPanel.RequestRefresh()
 end
 
 -- PLAYER_REGEN_DISABLED / ENABLED.

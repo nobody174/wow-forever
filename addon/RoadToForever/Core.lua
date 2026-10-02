@@ -53,6 +53,11 @@ handlers.UPDATE_MACROS = function() R2F.MainWindow.RequestRefresh() end
 handlers.ACTIONBAR_SLOT_CHANGED = function() R2F.MainWindow.RequestRefresh() end
 -- Newly learned spells: icons and "Learn later" states change.
 handlers.LEARNED_SPELL_IN_TAB = function() R2F.MainWindow.RequestRefresh() end
+-- Talent points spent (here or in Blizzard's talent window) or gained on a
+-- level-up: Home's free-points line and the Talents tab's preview (6.5).
+-- Step 10 also uses CHARACTER_POINTS_CHANGED to confirm each learned point.
+handlers.CHARACTER_POINTS_CHANGED = function() R2F.MainWindow.RequestRefresh() end
+handlers.PLAYER_LEVEL_UP = function() R2F.MainWindow.RequestRefresh() end
 
 events:SetScript("OnEvent", function(_, event, ...)
   local fn = handlers[event]
@@ -97,8 +102,9 @@ local COMMANDS = {
     R2F.MainWindow.Show("macros")
     R2F.ImportFrame.Show()
   end,
-  -- Step 8: Copy my build until the Talents tab has its button (steps 9/10,
-  -- ADDON_PLAN 13.6). Read-only, so no combat check.
+  -- Copy my build (step 8). Since step 9 it's also a button on the Talents
+  -- tab; the command stays as a shortcut (ADDON_PLAN 13.7). Read-only, so no
+  -- combat check.
   copybuild = function() R2F.Talents.CopyMyBuild() end,
 }
 R2F.COMMANDS = COMMANDS

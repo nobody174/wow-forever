@@ -207,6 +207,29 @@ function Macros.QueueSize() return #queue end
 -- Ensure / Create / Replace / Update
 -- ---------------------------------------------------------------------------
 
+-- Can this character use library entry `e`? Universal macros: always. Class
+-- macros: only on a character of that class. Since v0.10.0 the Macro Book
+-- can show another class's macros (class picker, ADDON_PLAN 5.10), read-only.
+-- The book already refuses drag/click on those, but this is the real gate:
+-- Create / Replace / Ensure check it too, so no code path can ever put a
+-- Paladin macro into a Warrior's macro list or onto its bars, where every
+-- spell in it would fail ("Unknown spell") and it would cost a macro slot.
+local function playerClass()
+  return R2F.playerClass or select(2, UnitClass("player"))
+end
+
+function Macros.UsableHere(e)
+  return e ~= nil and (e.class == "ANY" or e.class == playerClass())
+end
+
+-- The red refusal for another class's macro (same wording as its tooltip).
+function Macros.OtherClassError(e)
+  local names = LOCALIZED_CLASS_NAMES_MALE
+  local cls = e.class or ""
+  local name = (names and names[cls]) or (cls:sub(1, 1) .. cls:sub(2):lower())
+  R2F.Error(L.OTHER_CLASS_USE:format(name))
+end
+
 -- Which slots a new macro goes to (2, setting slotsFirst). Returns
 -- perCharacter (true/false) or nil when both are full.
 -- Read at every CreateMacro, so changing the setting (Settings panel, step 5)
@@ -229,6 +252,7 @@ function Macros.Create(id)
   if InCombatLockdown() then R2F.Error(L.ERR_COMBAT); return false end
   local e = Library.Get(id)
   if not e then R2F.Error(L.ERR_MISSING); return false end
+  if not Macros.UsableHere(e) then Macros.OtherClassError(e); return false end
   local perCharacter = Macros.ChooseSlot()
   if perCharacter == nil then R2F.Error(L.ERR_NO_SLOTS); return false end
 
@@ -266,6 +290,7 @@ function Macros.Replace(id)
   if InCombatLockdown() then R2F.Error(L.ERR_COMBAT); return false end
   local e = Library.Get(id)
   if not e then R2F.Error(L.ERR_MISSING); return false end
+  if not Macros.UsableHere(e) then Macros.OtherClassError(e); return false end
   local idx = GetMacroIndexByName(e.short) or 0
   if idx == 0 then return Macros.Create(id) end
   idx = write(id, idx, e.short, e)
@@ -281,6 +306,9 @@ function Macros.Ensure(id)
   if InCombatLockdown() then R2F.Error(L.ERR_COMBAT); return false end
   local e = Library.Get(id)
   if not e then R2F.Error(L.ERR_MISSING); return false end
+  -- Before anything else: not even the Replace popup for another class's
+  -- macro (its Replace would overwrite one of YOUR macros with it).
+  if not Macros.UsableHere(e) then Macros.OtherClassError(e); return false end
 
   local idx, body = live(e.short)
   if idx == 0 then return Macros.Create(id) end
@@ -375,12 +403,12 @@ function Macros.UpdateMany(ids, done, queuedMsg)
   return Macros.RunOrQueue(run, queuedMsg) and "now" or "queued"
 end
 
--- Can this character ever see `id` in its Macro Book? Only Universal and the
--- player's own class have tabs (5.7), so a Changed flag on anything else
--- could never be hovered and would never clear.
+-- Should this character get a Changed flag for `id`? Only Universal and the
+-- player's own class: the flag is about THIS character's action bars, and
+-- another class's macro can't be on them (v0.10.0's class picker shows
+-- other classes read-only, but a flag there would mean nothing).
 local function visible(id)
-  local e = Library.Get(id)
-  return e ~= nil and (e.class == "ANY" or e.class == R2F.playerClass)
+  return Macros.UsableHere(Library.Get(id))
 end
 
 -- Set the Changed marker (5.3) for each id whose real macro is on a bar.

@@ -29,8 +29,30 @@ R2F.L = {
   BTN_SETTINGS = "Settings",
   EMPTY_LIBRARY = "Your macro library is empty.\n\nClick Import and paste the import string from the Macros page.",
   EMPTY_CLASS = "No macros for your class or Universal yet.\n\nPick some on the Macros page and import them.",
-  OTHER_CLASSES = "You also have macros for %s. Log in on that character to use them.",
+  OTHER_CLASSES = "You also have macros for %s. Click a class icon at the top to look at them; "
+    .. "log in on that character to use them.",
   OTHER_CLASS_ENTRY = "%s (%d)",
+  -- Class picker (v0.10.0, ADDON_PLAN 5.10): browse any class in the library
+  PICKER_YOURS = "%s (your class)",
+  PICKER_PREVIEW = "%s (preview)",
+  PICKER_TIP_YOURS = "Your class: drag these to your bars.",
+  PICKER_TIP_OTHER = "Preview only. Log in on a %s character to use these macros.",
+  OTHER_CLASS_USE = "Log in on a %s character to use this macro.",
+  BROWSE_NOTE = "Previewing %s macros: read-only on this character. "
+    .. "The slot counts and gold checks below are for the character you're playing.",
+  TIP_SHARE = "Shift-click to put it in chat.",
+  -- Remove from library (right-click menu, v0.10.0 confirm popup, ADDON_PLAN 5.10)
+  REMOVE_CONFIRM = "Remove %s (%s) from your library?\n\nIt disappears from the Macro Book. "
+    .. "Any macro you already made from it stays in the game and on your bars; "
+    .. "Tidy up or Remove all can delete it later.",
+  -- Tidy up button tooltip (v0.10.0): what it does, and how it differs from
+  -- Remove from library.
+  TIDY_TIP = "Deletes the macros Road to Forever made in your game that aren't on any action bar "
+    .. "and that you haven't edited, to give you those macro slots back. "
+    .. "Macros on a bar, and macros you edited, are left alone.",
+  TIDY_TIP_LIBRARY = "Your library doesn't change: the macros stay in this book and can be dragged out again. "
+    .. "To take a macro out of the book itself, right-click it and choose Remove from library.",
+  TIDY_TIP_COMBAT = "Can't be used in combat.",
   TAB_TOOLTIP_COUNT_ONE = "1 macro",
   TAB_TOOLTIP_COUNT = "%d macros",
   LEARN_LATER = "Learn later",

@@ -129,6 +129,8 @@ end
 
 -- Remove from library only. A real macro made from it stays (the player may
 -- have it on a bar); Tidy up can delete it later because it's still recorded.
+-- A later import of the same id finds no library entry, so it counts as
+-- "new" again (Import.Diff compares against the library only).
 function Library.Remove(id)
   Library.db.library[id] = nil
   Library.SetChanged(id, nil) -- no slot left to hover, so it could never clear
@@ -217,14 +219,23 @@ function Library.Sections(cls)
   return out
 end
 
--- Count library macros per class other than `cls` and ANY (5.7).
-function Library.OtherClassCounts(cls)
+-- Count library macros per class token, Universal (ANY) left out: token -> n.
+-- Only classes that really have macros appear (the Macro Book's class
+-- picker lists exactly these, v0.10.0, ADDON_PLAN 5.10).
+function Library.ClassCounts()
   local counts = {}
   for _, e in pairs(Library.db.library) do
-    if e.class ~= cls and e.class ~= "ANY" then
+    if e.class ~= "ANY" then
       counts[e.class] = (counts[e.class] or 0) + 1
     end
   end
+  return counts
+end
+
+-- Count library macros per class other than `cls` and ANY (5.7).
+function Library.OtherClassCounts(cls)
+  local counts = Library.ClassCounts()
+  counts[cls or ""] = nil
   return counts
 end
 

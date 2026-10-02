@@ -1,4 +1,4 @@
-# Road to Forever: in-game test checklist (v0.9.0, addon steps 3 to 10 + Quick settings)
+# Road to Forever: in-game test checklist (v0.10.0, addon steps 3 to 10 + Quick settings + class picker)
 
 Since v0.4.0 the Macro Book is the **Macros tab** of the main window: wherever an
 older section below says "`/r2f` opens the Macro Book" or "open the book", use
@@ -67,7 +67,8 @@ you got:
 - [ ] Re-import the same string. **Pass:** `... 0 new, 0 updated, 66 unchanged.`
 - [ ] Import "Select everything" on a Warrior. **Pass:** preview mentions
       `... are for another class and will be kept for those characters.`; the
-      Universal tab shows `You also have macros for Hunter (..), Mage (..), ...`.
+      Universal tab shows `You also have macros for Hunter (..), Mage (..), ...`
+      (since v0.10.0 the book also shows the class picker row: section 17).
 
 ## 4. Macro Book
 
@@ -84,7 +85,8 @@ you got:
       when full. **Also confirm the limits really are 120 + 18 (section 11).**
 - [ ] Shift-click a macro with the chat box open: the body appears in one line.
 - [ ] Right-click: menu with `Remove from library` / `Copy text`. Copy text opens a
-      box with the body highlighted; Ctrl+C works.
+      box with the body highlighted; Ctrl+C works. (Remove from library asks first
+      since v0.10.0: section 17.)
 
 ## 5. Creating real macros (the important part)
 
@@ -584,6 +586,79 @@ combat, report a refused or clamped value, and the Macro Book hides exactly `ANY
       no macro is needed.` shows at the bottom. A real macro you made from one of them
       before v0.9.0 still works and is untouched.
 
+## 17. Class picker, Remove from library, Tidy up tooltip (v0.10.0)
+
+Asked for after the first real in-game test (2026-10-02): Warrior macros imported on
+a Paladin went into the library but never showed. Decisions in ADDON_PLAN 5.10.
+**Nothing here has run in the client yet**; the out-of-game tests only prove the
+logic. Easiest setup: a Paladin (or any class) with your own class + Universal
+imported, then import another class's macros (e.g. Warrior) on the same character.
+
+- [ ] **The original report.** On the Paladin, import a Warrior string. **Pass:** chat
+      says `imported N macros.`, the book opens on the **Warrior preview**: a row of
+      class circles top left (Paladin first, a small gap, then Warrior), the Warrior
+      one highlighted, `Warrior (preview)` in grey next to the row, Universal +
+      General / Tank / DPS tabs on the right, Warrior macros in the grid.
+- [ ] **Look of the picker row** (unverifiable outside the client). **Pass:** the
+      circles sit between the portrait and the first grid row without overlapping
+      either (row at y -46, 24 px buttons, starting x 70; the first grid row starts at
+      y -80), the selected class has the same yellow checked glow as a selected side
+      tab, hover shows the square highlight. The square highlight on a round icon may
+      look slightly off: note it if so (a round `UI-Minimap-ZoomButton-Highlight` would
+      be the alternative). On the `R2FMainPlain` fallback window (no portrait) the row
+      just starts a little to the right.
+- [ ] **Read-only.** In the Warrior preview, drag a Warrior macro to a bar and
+      left-click one. **Pass:** nothing on the cursor, red `Log in on a Warrior
+      character to use this macro.` at the top of the screen, `/macro` shows no new
+      macro, **no "action blocked" / taint message**. Icons are grey (likely question
+      marks: the client only knows icons of spells you have), subtext is the group,
+      never `Learn later`. Hover: the tooltip ends with that red line and green
+      `Shift-click to put it in chat.`; Shift-click works.
+- [ ] **Universal still works in the preview.** Universal tab while previewing
+      Warrior: drag a Universal macro. **Pass:** it lands on the bar as usual.
+- [ ] **Counters and checks are yours.** In the preview, `Character x / 18` and
+      `Account y / 120` still match `/macro` on the Paladin; the note above them reads
+      `Previewing Warrior macros: read-only on this character. The slot counts and
+      gold checks below are for the character you're playing.` (it may wrap to two
+      lines: check it doesn't run into the last grid row or the counters).
+- [ ] **Back to your class.** Click the Paladin circle. **Pass:** `Paladin (your
+      class)` in gold, Paladin tabs, drag works again, the note is gone and the
+      Universal tab shows `You also have macros for Warrior (51). Click a class icon at
+      the top to look at them; ...`.
+- [ ] **Remembered, then reset.** Pick Warrior, close the window (Esc), reopen with
+      `/r2f macros`: still Warrior. Switch to Home and back: still Warrior. Now
+      `/reload` (or relog) and open the book. **Pass:** it opens on your own class.
+- [ ] **Tooltips on the circles:** class name, `N macros`, then green `Your class: drag
+      these to your bars.` (yours) or red `Preview only. Log in on a Warrior character
+      to use these macros.`
+- [ ] **Class icons.** "Select everything" import: one circle per class with macros,
+      in the site's order (yours first). **Pass:** each circle shows the right class
+      (`CLASS_ICON_TCOORDS`); a question mark means the client lacks that class's
+      coordinates (note which).
+- [ ] **Remove from library.** Right-click one of your own macros that you already
+      dragged to a bar, `Remove from library`. **Pass:** a popup `Remove <name> (<short>)
+      from your library? ...` with Remove / Cancel; Cancel changes nothing. Remove: the
+      macro leaves the book, chat says `removed <short> from the library.`, **the button
+      on your bar still works and `/macro` still has it**. Take it off the bar and click
+      Tidy up: it's offered for deletion. Re-import the string: the preview counts it as
+      **new**, and it's back in the book (gold check back if it's on a bar).
+- [ ] **Remove from library while previewing** another class: same popup, the entry goes
+      away, nothing changes in `/macro`.
+- [ ] **Tidy up tooltip.** Hover Tidy up. **Pass:** white `Tidy up`, gold text on what it
+      deletes, grey line saying the library doesn't change and pointing at Remove from
+      library. In combat (button greyed out) the tooltip still shows, plus red `Can't be
+      used in combat.` (`SetMotionScriptsWhileDisabled`, unverified in this client: if
+      no tooltip shows while greyed, note it).
+
+## Known gaps in v0.10.0 (by design / later)
+
+- **No bulk Remove from library** (ADDON_PLAN 5.10): removing a whole imported-by-mistake
+  class is one right-click + popup per macro.
+- **Other classes' icons are mostly question marks** in the preview: the client only
+  returns icons for spells this character knows; the site's `icon` field is used when
+  the macro has one.
+- **The 5.7 line isn't clickable**; use the class circles (ADDON_PLAN 5.10).
+
 ## Known gaps in v0.9.0 (by design / later)
 
 - **Quick settings in combat:** refused even if the game would allow it (ADDON_PLAN
@@ -607,4 +682,5 @@ combat, report a refused or clamped value, and the Macro Book hides exactly `ANY
   ones); use it on each character to clear theirs.
 - An icon-only change to a macro made with v0.1.0 isn't pushed until its body
   changes too (v0.1.0 didn't store the icon; ADDON_PLAN 6.8).
-- Other classes' macros have no tabs; they're kept and listed on the Universal tab.
+- ~~Other classes' macros have no tabs~~: since v0.10.0 the class picker shows them
+  read-only (section 17).

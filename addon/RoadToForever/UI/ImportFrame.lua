@@ -46,8 +46,9 @@ local function doImport()
   -- Library write + real-macro updates + chat summary (Import.Commit).
   local diff = R2F.Import.Commit(parsed, playerClass(), time())
   frame:Hide()
-  -- Jump to the first tab that got a new macro (5.6), if it's one we show.
-  local first = diff.firstNew
+  -- Jump to the first tab that got a new macro (5.6): a Universal / own-class
+  -- one if any, else another class's, shown as a preview (5.10, v0.10.0).
+  local first = diff.firstNewOwn or diff.firstNew
   R2F.MacroBook.ShowSection(first and first.class, first and first.section)
 end
 

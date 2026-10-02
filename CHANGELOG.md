@@ -4,6 +4,31 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon v0.10.0: Macro Book class picker, Remove from library confirm, Tidy up tooltip)
+
+Requested from the first real in-game testing session (not in the original addon
+plan): on a Paladin, the tester imported Warrior macros and saw no Warrior tab,
+since the book only showed the logged-in class (ADDON_PLAN.md 5.7).
+
+- **Addon v0.10.0** (tag `r2f-v0.10.0`): `UI/MacroBook.lua` gets a class picker (row of
+  `UI-Classes-Circles` check buttons, own class pinned first, only classes with
+  library macros, hidden when no other class has any). Other classes are browsed
+  **read-only**: drag/click refused in the book and, independently, in
+  `Macros.Ensure`/`Create`/`Replace` via the new `Macros.UsableHere`; grey icons, no
+  `Learn later`, Shift-click and the right-click menu still work. Slot counters and
+  on-bars checks stay this character's, with a note while previewing. Browsed class is
+  a session-only Lua local (relog/reload = own class), nothing new in SavedVariables.
+  Import prefers a new Universal/own-class tab (`Import.Diff` `firstNewOwn`), else opens
+  the imported class's preview. DPS tab icon follows the tab's class.
+- **Remove from library** (right-click) now has a confirm popup, removes the library
+  entry only (real macro and its record untouched; re-import counts it as new); allowed
+  on previewed classes too. **Tidy up** gets a tooltip that contrasts it with Remove
+  from library. Single right-click delete chosen over a bulk check-box mode.
+- **Tests:** `run_tests.py` 8608 checks pass (was 8310): new `test_class_picker` and
+  `test_remove_from_library` on template + fallback paths; 23 hand mutations each fail
+  the suite. luacheck 0 warnings. Decisions in `ADDON_PLAN.md` 5.10; in-game checks in
+  `addon/RoadToForever/TESTING.md` 17.
+
 ## 2026-10-02 (Addon v0.9.1: fix the Interface number — addon wasn't loading)
 
 First real in-game install (0.9.0) showed the addon in the AddOns list but

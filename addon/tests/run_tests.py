@@ -709,7 +709,11 @@ def test_ui_smoke(templates, fx):
       for _, f in ipairs(TEST.allFrames) do
         if f.__kind == 'Button' and f.__text == R2F.L.MENU_REMOVE then f:Click() end
       end""")
-    check(lua.eval("R2F.Library.Count()") == before - 1, "right-click > Remove from library")
+    # v0.10.0: Remove from library asks first (ADDON_PLAN 5.10).
+    check(lua.eval("R2F.Library.Count()") == before and lua.eval("R2FConfirm:IsShown()") is True,
+          "right-click > Remove from library opens a confirm popup first")
+    lua.execute("R2FConfirm.yes:Click()")
+    check(lua.eval("R2F.Library.Count()") == before - 1, "right-click > Remove from library (confirmed)")
 
     # Combat: Import/Tidy greyed out, In combat shown, drag refused.
     # Real event order: PLAYER_REGEN_DISABLED is handled while InCombatLockdown()
@@ -2614,7 +2618,7 @@ def test_talent_source_writes():
           "glow/host are unnamed frames on UIParent; Blizzard frames only looked up")
     toc = open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read()
     check("UI\\TalentPanel.lua" in toc and "UI\\TalentGuide.lua" in toc, "TalentPanel.lua and TalentGuide.lua in the TOC")
-    check(re.search(r"^## Version: 0\.9\.1$", toc, re.M) is not None, "TOC version 0.9.1")
+    check(re.search(r"^## Version: 0\.10\.0$", toc, re.M) is not None, "TOC version 0.10.0")
 
 
 def test_quick_settings(templates, fx):
@@ -2887,6 +2891,403 @@ def test_quick_settings(templates, fx):
     check(body.index("R2F.InCombat()") < body.index("pcall(set"), "Set checks combat before SetCVar")
 
 
+def lua_literal(v):
+    """Python view of a Lua value (lupa table / scalar) -> Lua source, to carry
+    SavedVariables over into a fresh runtime (a simulated relog)."""
+    if v is None:
+        return "nil"
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    if isinstance(v, (int, float)):
+        return repr(v)
+    if isinstance(v, str):
+        return json.dumps(v)  # JSON string escapes are valid Lua for our ASCII/UTF-8 data
+    items = ", ".join("[%s] = %s" % (lua_literal(k), lua_literal(v[k])) for k in list(v.keys()))
+    return "{" + items + "}"
+
+
+def login(templates, cls, saved=None):
+    """Fresh client logged in as class token `cls`; `saved` = (R2FDB, R2FCharDB) source."""
+    lua = new_runtime(templates)
+    T = lua.eval("TEST")
+    lua.execute("TEST.classToken = %r TEST.className = %r" % (cls, cls.capitalize()))
+    if saved:
+        lua.execute("R2FDB = %s R2FCharDB = %s" % saved)
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    return lua, T
+
+
+def apply_classes(lua, fx, classes, now=1):
+    """Store the site's records of the given classes (as an import would)."""
+    lua.eval("""function(recs, keep, now)
+      local out = {}
+      for i = 1, #recs do if keep[recs[i].class] then out[#out + 1] = recs[i] end end
+      R2F.Library.Apply(out, now) end""")(
+        lua.eval("function(s) return (R2F.Import.Parse(s)).records end")(fx["everything"]["string"]),
+        lua.table_from({c: True for c in classes}), now)
+
+
+def book_state(lua):
+    """Visible side tabs, picker buttons, slots and the bottom note of the Macro Book."""
+    find_frames(lua, "f.__kind == 'CheckButton' and f.sec and f.__shown", "BTABS")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.cls and f.__shown", "PICKS")
+    find_frames(lua, "f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton", "BSLOTS")
+    tabs = [(lua.eval("BTABS[%d].sec.class" % i), lua.eval("BTABS[%d].sec.section" % i)) for i in range(1, lua.eval("#BTABS") + 1)]
+    picks = [lua.eval("PICKS[%d].cls" % i) for i in range(1, lua.eval("#PICKS") + 1)]
+    checked = [lua.eval("PICKS[%d]:GetChecked()" % i) is True for i in range(1, lua.eval("#PICKS") + 1)]
+    return tabs, picks, checked
+
+
+def font_text(lua, pattern):
+    """Text of the first FontString whose text matches a Lua pattern (or None)."""
+    lua.execute("FT = nil for _, f in ipairs(TEST.allFrames) do if f.__kind == 'FontString' and type(f.__text) == 'string'"
+                " and f.__shown and f.__text:find(%s) then FT = f end end" % json.dumps(pattern))
+    return lua.eval("FT and FT.__text")
+
+
+def test_class_picker(templates, fx):
+    """v0.10.0 (ADDON_PLAN 5.10): browse any class in the library from the Macro Book,
+    read-only for classes other than your own; counters/checks stay this character's."""
+    tag = "templates" if templates else "fallbacks"
+    lua, T = login(templates, "PALADIN")
+    L = lua.eval("R2F.L")
+    MB = lua.eval("R2F.MacroBook")
+    errors = lambda: lua_table_to_list(lua.eval("TEST.errors"))
+    calls = lambda: lua_table_to_list(lua.eval("TEST.calls"))
+    check(lua.eval("R2F.playerClass") == "PALADIN", "%s: logged in as a Paladin" % tag)
+
+    # ---- Only your own class + Universal: no picker, the book looks as before ----
+    apply_classes(lua, fx, {"ANY", "PALADIN"})
+    lua.execute("R2F.MacroBook.Show()")
+    tabs, picks, _ = book_state(lua)
+    check(picks == [], "%s: no other class in the library -> no picker at all: %s" % (tag, picks))
+    check(tabs == [("ANY", "Universal"), ("PALADIN", "General"), ("PALADIN", "Tank"), ("PALADIN", "DPS"),
+                   ("PALADIN", "Healer")], "own view: Universal + Paladin tabs: %s" % tabs)
+    check(font_text(lua, "^Paladin %(") is None, "no picker label without a picker")
+
+    # ---- The real-game report: import Warrior macros while on a Paladin ---------
+    lua.execute('SlashCmdList.R2F("import")')
+    lua.execute("""
+      for _, f in ipairs(TEST.allFrames) do
+        if f.__kind == 'EditBox' and f.__scripts.OnTextChanged and f.__parent and
+           (f.__parent == R2FImportScroll or f.__parent == R2FImportScrollPlain) then EDIT = f end
+        if f.__kind == 'Button' and f.__text == 'Import' and f.__parent == R2FImport then IMPORTBTN = f end
+      end""")
+    lua.eval("EDIT.SetText")(lua.eval("EDIT"), fx["warriorUniversal"]["string"])
+    T.runTimers()
+    lua.execute("IMPORTBTN:Click()")
+    check(lua.eval("R2F.Library.ClassCounts().WARRIOR") == 51, "the Warrior import landed in the library (51)")
+    check(MB.BrowsedClass() == "WARRIOR" and MB.IsShown() is True,
+          "%s: after importing only Warrior macros the book opens on the Warrior preview" % tag)
+    tabs, picks, checked = book_state(lua)
+    check(tabs == [("ANY", "Universal"), ("WARRIOR", "General"), ("WARRIOR", "Tank"), ("WARRIOR", "DPS")],
+          "%s: Warrior preview = Universal + Warrior tabs: %s" % (tag, tabs))
+    check(picks == ["PALADIN", "WARRIOR"] and checked == [False, True],
+          "picker lists your class first, then Warrior; Warrior selected: %s %s" % (picks, checked))
+    check(font_text(lua, "^Warrior %(preview%)$") == "Warrior (preview)", "picker label says preview")
+    check(lua.eval("BTABS[2]:GetChecked()") is True, "the preview opens on the class's first new section (General)")
+
+    # ---- Read-only: drag / click never makes a real macro -----------------------
+    warrior_general = [r for r in fx["warriorUniversal"]["records"] if r["section"] == "General"]
+    check(lua.eval("BSLOTS[1].entry.id") == warrior_general[0]["id"], "grid shows the Warrior's General macros")
+    lua.execute("TEST.errors = {} TEST.calls = {} TEST.cursor = nil")
+    lua.execute("BSLOTS[1]:Fire('OnDragStart')")
+    msg = lua.eval("R2F.L.OTHER_CLASS_USE:format('Warrior')")
+    check(T.cursor is None and calls() == [] and errors() == [msg],
+          "%s: dragging a Warrior macro on a Paladin is refused, nothing created: %s %s" % (tag, calls(), errors()))
+    lua.execute("TEST.errors = {} BSLOTS[2]:Click('LeftButton')")
+    check(T.cursor is None and calls() == [] and errors() == [msg], "left-click refused the same way")
+    # The book refuses before Macros is even asked (two independent layers).
+    lua.execute("ENSURES = 0 local orig = R2F.Macros.Ensure R2F.Macros.Ensure = function(...) ENSURES = ENSURES + 1"
+                " return orig(...) end TEST.errors = {} BSLOTS[1]:Fire('OnDragStart') BSLOTS[1]:Click('LeftButton')"
+                " R2F.Macros.Ensure = orig")
+    check(lua.eval("ENSURES") == 0 and errors() == [msg, msg], "the book's own guard: Macros.Ensure never called for a preview")
+    for fn in ("Ensure", "Create", "Replace"):
+        lua.execute("TEST.errors = {}")
+        check(lua.eval("R2F.Macros.%s(%r)" % (fn, warrior_general[0]["id"])) is False and errors() == [msg] and calls() == [],
+              "Macros.%s refuses another class's macro on its own (the real gate)" % fn)
+    # A Paladin macro called like the Warrior's: still no Replace popup for it.
+    lua.execute("TEST.addMacro(%r, '/say mine', true) CONFIRMSHOWN = R2FConfirm and R2FConfirm:IsShown()"
+                % warrior_general[0]["short"])
+    lua.execute("TEST.errors = {}")
+    lua.eval("R2F.Macros.Ensure")(warrior_general[0]["id"])
+    check(lua.eval("not (R2FConfirm and R2FConfirm:IsShown())") is True and T.bodyOf(warrior_general[0]["short"]) == "/say mine",
+          "no Replace popup for another class's macro, the player's own macro untouched")
+    lua.execute("BSLOTS[1]:Fire('OnEnter')")
+    tip = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(tip[-2:] == [msg, L.TIP_SHARE] and L.TIP_DRAG not in tip,
+          "read-only tooltip: why + Shift-click hint, no drag hint: %s" % tip[-2:])
+    shown = [i for i in range(1, 13) if lua.eval("BSLOTS[%d].__shown" % i)]
+    subs = [lua.eval("BSLOTS[%d].sub.__text" % i) for i in shown]
+    check(all(lua.eval("BSLOTS[%d].icon.__desat" % i) is True for i in shown) and L.LEARN_LATER not in subs
+          and len(shown) == 12, "read-only icons are grey, subtext is the group (never Learn later): %s" % subs)
+    # Same macros on a Warrior: some are "Learn later" (spell unknown), proving the check above means something.
+    lua.execute("R2F.playerClass = 'WARRIOR' R2F.MacroBook.Refresh()")
+    check(L.LEARN_LATER in [lua.eval("BSLOTS[%d].sub.__text" % i) for i in shown],
+          "(control: the same page on a Warrior does show Learn later)")
+    lua.execute("R2F.playerClass = 'PALADIN' R2F.MacroBook.Browse('WARRIOR')")
+    check(lua.eval("BSLOTS[1].readOnly") is True, "back on the Paladin, previewing Warrior again")
+    T.shift = True
+    lua.execute("TEST.chatInsert = nil BSLOTS[1]:Click('LeftButton')")
+    T.shift = False
+    check(lua.eval("TEST.chatInsert") is not None and calls() == [], "Shift-click still shares a previewed macro in chat")
+
+    # ---- Universal stays usable while previewing --------------------------------
+    lua.execute("BTABS[1]:Click()")
+    check(lua.eval("BSLOTS[1].entry.class") == "ANY" and lua.eval("BSLOTS[1].readOnly") is False,
+          "Universal entries are not read-only in the Warrior preview")
+    lua.execute("TEST.cursor = nil TEST.errors = {} BSLOTS[1]:Fire('OnDragStart')")
+    check(T.cursor == lua.eval("BSLOTS[1].entry.short") and errors() == [], "dragging a Universal macro works while previewing")
+    note = font_text(lua, "^Previewing ")
+    check(note is not None and note.startswith(lua.eval("R2F.L.BROWSE_NOTE:format('Warrior')")),
+          "Universal tab in preview: the read-only / this-character note: %r" % note)
+    check(font_text(lua, "You also have macros for") is None, "5.7's line is left out while previewing")
+
+    # ---- Counters and gold checks = the character you're playing ----------------
+    check(font_text(lua, "^Character ") == "Character 1 / 18" and font_text(lua, "^Account ") == "Account 0 / 120",
+          "slot counters count this character's real macros while previewing: %s / %s"
+          % (font_text(lua, "^Character "), font_text(lua, "^Account ")))
+    # An account-slot macro made from a Warrior entry on another character, and on
+    # THIS character's bar: the check shows (real state), the others don't.
+    hs = warrior_general[1]
+    lua.eval("""function(id, short, body)
+      TEST.addMacro(short, body, false)
+      R2F.Library.SetCreated(id, { name = short, hash = R2F.Library.Hash(body), account = true })
+      TEST.actions[7] = short end""")(hs["id"], hs["short"], hs["body"])
+    lua.execute("BTABS[2]:Click()")
+    find_frames(lua, "f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton", "BSLOTS")
+    check(lua.eval("BSLOTS[2].entry.id") == hs["id"] and lua.eval("BSLOTS[2].check.__shown") is True
+          and lua.eval("BSLOTS[3].check.__shown") is False,
+          "gold check in preview = on THIS character's bars (account macro on slot 7)")
+    check(font_text(lua, "^Account ") == "Account 1 / 120", "account counter follows the live macro list")
+    check(note is not None and font_text(lua, "^Previewing ") is not None, "class tab in preview carries the note too")
+    lua.execute("TEST.actions[7] = nil")
+    T.fire("ACTIONBAR_SLOT_CHANGED")
+    T.runTimers()
+    check(lua.eval("BSLOTS[2].check.__shown") is False, "taking it off the bar clears the check (live, while previewing)")
+    lua.execute("BSLOTS[2]:Fire('OnEnter')")
+    check(L.TIP_ON_BARS not in lua_table_to_list(lua.eval("GameTooltip.lines")), "no on-bars tooltip line once it's off")
+
+    # ---- Back to your own class: full interaction --------------------------------
+    lua.execute("PICKS[1]:Click()")
+    tabs, picks, checked = book_state(lua)
+    check(MB.BrowsedClass() == "PALADIN" and checked == [True, False] and tabs[1][0] == "PALADIN",
+          "%s: clicking your class returns to the Paladin view: %s" % (tag, tabs))
+    check(lua.eval("BTABS[2]:GetChecked()") is True, "picking a class opens its first section")
+    check(font_text(lua, "^Paladin %(your class%)$") == "Paladin (your class)", "picker label marks your own class")
+    check(font_text(lua, "^Previewing ") is None, "no preview note in your own view")
+    lua.execute("TEST.cursor = nil TEST.errors = {} TEST.calls = {}")
+    find_frames(lua, "f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton", "BSLOTS")
+    lua.execute("BSLOTS[1]:Fire('OnDragStart')")
+    check(T.cursor == lua.eval("BSLOTS[1].entry.short") and calls() == ["create:" + T.cursor] and errors() == [],
+          "%s: dragging your own class's macro creates + picks it up as before" % tag)
+    lua.execute("BTABS[1]:Click()")
+    other = font_text(lua, "^You also have macros for")
+    check(other is not None and other.split("\n")[0] == lua.eval("R2F.L.OTHER_CLASSES:format('Warrior (51)')"),
+          "5.7's line in your own view: %r" % other)
+
+    # Picker tooltips.
+    lua.execute("PICKS[1]:Fire('OnEnter')")
+    check(lua_table_to_list(lua.eval("GameTooltip.lines")) == ["Paladin", "53 macros", L.PICKER_TIP_YOURS],
+          "own class button tooltip")
+    lua.execute("PICKS[2]:Fire('OnEnter')")
+    check(lua_table_to_list(lua.eval("GameTooltip.lines")) == ["Warrior", "51 macros",
+                                                               lua.eval("R2F.L.PICKER_TIP_OTHER:format('Warrior')")],
+          "other class button tooltip says preview only")
+    check(lua.eval("PICKS[1].__normal.__tex") == "Interface\\TargetingFrame\\UI-Classes-Circles",
+          "class button = the class circle texture")
+
+    # ---- Remembered for the session: close / reopen / other tabs ----------------
+    lua.execute("PICKS[2]:Click()")
+    lua.execute("R2F.MainWindow.Hide() R2F.MacroBook.Show()")
+    check(MB.BrowsedClass() == "WARRIOR" and book_state(lua)[1:] == (["PALADIN", "WARRIOR"], [False, True]),
+          "%s: closing and reopening the window keeps the browsed class" % tag)
+    lua.execute("R2F.MainWindow.SelectTab('home') R2F.MainWindow.SelectTab('macros')")
+    check(MB.BrowsedClass() == "WARRIOR", "switching to Home and back keeps it too")
+    check(lua.eval("R2FDB.settings.browse == nil and R2FCharDB.browse == nil"), "the browsed class is not saved")
+    saved = (lua_literal(lua.eval("R2FDB")), lua_literal(lua.eval("R2FCharDB")))
+    check("WARRIOR" not in saved[1] and "browse" not in saved[0] + saved[1],
+          "nothing about browsing in SavedVariables")
+
+    # ---- A fresh login (relog / reload) starts on your own class -----------------
+    lua2, T2 = login(templates, "PALADIN", saved)
+    check(lua2.eval("R2F.Library.ClassCounts().WARRIOR") == 51, "relog: the library came back from SavedVariables")
+    lua2.execute("R2F.MacroBook.Show()")
+    tabs2, picks2, checked2 = book_state(lua2)
+    check(lua2.eval("R2F.MacroBook.BrowsedClass()") == "PALADIN" and checked2 == [True, False]
+          and tabs2[1][0] == "PALADIN", "%s: after a relog the book opens on your own class: %s" % (tag, tabs2))
+
+    # ---- The browsed class emptied -> back to your own ---------------------------
+    lua.execute("PICKS[2]:Click()")
+    lua.execute("for id, e in pairs(R2F.Library.db.library) do if e.class == 'WARRIOR' then R2F.Library.Remove(id) end end"
+                " R2F.MacroBook.Refresh()")
+    tabs, picks, _ = book_state(lua)
+    check(MB.BrowsedClass() == "PALADIN" and picks == [] and tabs[0] == ("ANY", "Universal")
+          and all(c in ("ANY", "PALADIN") for c, _ in tabs) and len(tabs) == 5,
+          "%s: removing every Warrior macro falls back to your class, picker gone" % tag)
+
+    # ---- Every class: only classes with macros, roster order, own first -----------
+    apply_classes(lua, fx, {"ANY", "PRIEST", "WARLOCK", "MAGE", "ROGUE", "SHAMAN", "HUNTER", "PALADIN", "WARRIOR"}, 2)
+    lua.execute("R2F.MacroBook.Refresh()")
+    tabs, picks, _ = book_state(lua)
+    check(picks == ["PALADIN", "PRIEST", "WARLOCK", "MAGE", "ROGUE", "SHAMAN", "HUNTER", "WARRIOR"],
+          "picker: your class, then every class with macros in roster order, no Druid: %s" % picks)
+    check(lua.eval("PICKS[2].__normal.__tex") == "Interface\\Icons\\INV_Misc_QuestionMark",
+          "a class without CLASS_ICON_TCOORDS gets the question mark, not a wrong slice")
+    lua.execute("PICKS[2]:Click()")
+    tabs, _, _ = book_state(lua)
+    check(tabs == [("ANY", "Universal"), ("PRIEST", "Shared"), ("PRIEST", "Shadow"), ("PRIEST", "Holy"),
+                   ("PRIEST", "Discipline")], "browsing Priest shows Universal + Priest tabs: %s" % tabs)
+
+    # ---- Import lands on your own class when it brought something new for it ----
+    lua.execute("R2F.Library.db.library = {}")
+    apply_classes(lua, fx, {"ANY"})
+    d = lua.eval("function(s) local p = R2F.Import.Parse(s) return R2F.Import.Diff(p, R2F.Library.db.library, 'PALADIN') end")(
+        fx["everything"]["string"])
+    check(d.firstNew["class"] == "PRIEST" and d.firstNewOwn["class"] == "PALADIN",
+          "mixed import: firstNew is the Priest's, firstNewOwn the Paladin's (%s / %s)"
+          % (d.firstNew["class"], d.firstNewOwn["class"]))
+    apply_classes(lua, fx, {"ANY", "PRIEST", "PALADIN"}, 3)
+    lua.execute("R2F.MacroBook.ShowSection(%r, %r)" % ("PRIEST", "Shared"))
+    check(MB.BrowsedClass() == "PRIEST", "ShowSection on another class opens its preview")
+    lua.execute("R2F.MacroBook.ShowSection('ANY', 'Universal')")
+    check(MB.BrowsedClass() == "PALADIN", "ShowSection on Universal returns to your own view")
+
+    # ---- A caster browsing a melee class: the DPS tab icon is the TAB's class ----
+    lua3, T3 = login(templates, "MAGE")
+    # Mixed import through the Import window (Universal already in the library,
+    # so the first NEW record is a Priest's): the book opens on your own class.
+    apply_classes(lua3, fx, {"ANY"})
+    lua3.execute('SlashCmdList.R2F("import")')
+    lua3.execute("""
+      for _, f in ipairs(TEST.allFrames) do
+        if f.__kind == 'EditBox' and f.__scripts.OnTextChanged and f.__parent and
+           (f.__parent == R2FImportScroll or f.__parent == R2FImportScrollPlain) then EDIT = f end
+        if f.__kind == 'Button' and f.__text == 'Import' and f.__parent == R2FImport then IMPORTBTN = f end
+      end""")
+    lua3.eval("EDIT.SetText")(lua3.eval("EDIT"), fx["everything"]["string"])
+    T3.runTimers()
+    lua3.execute("IMPORTBTN:Click()")
+    check(lua3.eval("R2F.MacroBook.BrowsedClass()") == "MAGE"
+          and lua3.eval("R2F.MacroBook.IsShown()") is True,
+          "%s: an import with new macros for your class opens your own view, not the first class in it" % tag)
+    lua3.execute("R2F.MacroBook.Browse('PALADIN')")
+    find_frames(lua3, "f.__kind == 'CheckButton' and f.sec and f.__shown and f.sec.section == 'DPS'", "DPST")
+    check(lua3.eval("DPST[1].__normal.__tex") == "Interface\\Icons\\Ability_DualWield",
+          "a Mage browsing Paladin sees the melee DPS icon (tab's class, not the player's)")
+
+    # ---- No new globals -----------------------------------------------------------
+    lua.execute("NEWG = {} for k in pairs(_G) do if not BEFORE[k] then NEWG[#NEWG + 1] = k end end")
+    test_vars = {"EDIT", "IMPORTBTN", "BTABS", "PICKS", "BSLOTS", "FT", "NS", "NEWG", "CONFIRMSHOWN", "ENSURES"}
+    bad = [g for g in lua_table_to_list(lua.eval("NEWG")) if g not in test_vars and not g.startswith("R2F")
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1") and g not in BINDING_GLOBALS]
+    check(not bad, "%s: the class picker adds no globals: %s" % (tag, bad))
+
+
+def test_remove_from_library(templates, fx):
+    """v0.10.0: right-click > Remove from library asks first, removes the library entry
+    only (never the real macro), and a later import counts it as new again.
+    Plus the Tidy up tooltip."""
+    tag = "templates" if templates else "fallbacks"
+    lua, T = login(templates, "PALADIN")
+    L = lua.eval("R2F.L")
+    calls = lambda: lua_table_to_list(lua.eval("TEST.calls"))
+    apply_classes(lua, fx, {"ANY", "PALADIN"})
+    lua.execute("R2F.MacroBook.ShowSection('PALADIN', 'General')")
+    find_frames(lua, "f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton", "BSLOTS")
+    rec = lua.eval("BSLOTS[1].entry")
+    mid, short, name, body = rec.id, rec.short, rec.name, rec.body
+    # A real macro made from it, on a bar.
+    lua.execute("BSLOTS[1]:Fire('OnDragStart')")
+    lua.execute("TEST.actions[3] = %r" % short)
+    check(lua.eval("GetMacroIndexByName(%r)" % short) > 0, "real macro made from %s" % mid)
+    lua.execute("TEST.calls = {}")
+
+    def open_remove(slot=1):
+        lua.execute("BSLOTS[%d]:Click('RightButton')" % slot)
+        find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.MENU_REMOVE", "RMB")
+        lua.execute("RMB[1]:Click()")
+
+    open_remove()
+    check(lua.eval("R2FConfirm:IsShown()") is True and lua.eval("R2F.Library.Get(%r) ~= nil" % mid),
+          "%s: Remove from library opens the confirm popup and removes nothing yet" % tag)
+    text = lua.eval("R2FConfirm.text.__text")
+    check(text == lua.eval("R2F.L.REMOVE_CONFIRM:format(%s, %s)" % (json.dumps(name), json.dumps(short))),
+          "confirm names the macro and says the real macro stays: %r" % text)
+    check(lua.eval("R2FConfirm.yes.__text") == L.BTN_REMOVE and lua.eval("R2FConfirm.no.__text") == L.BTN_CANCEL,
+          "confirm buttons: Remove / Cancel")
+    lua.execute("R2FConfirm.no:Click()")
+    check(lua.eval("R2F.Library.Get(%r) ~= nil" % mid) and lua.eval("BSLOTS[1].entry.id") == mid,
+          "Cancel keeps it in the library and the grid")
+    open_remove()
+    T.chat = lua.table()
+    lua.execute("R2FConfirm.yes:Click()")
+    check(lua.eval("R2F.Library.Get(%r) == nil" % mid), "%s: Remove confirmed: gone from the library" % tag)
+    find_frames(lua, "f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton and f.__shown", "VIS")
+    shown_ids = [lua.eval("VIS[%d].entry.id" % i) for i in range(1, lua.eval("#VIS") + 1)]
+    check(mid not in shown_ids, "and gone from the grid")
+    check(calls() == [] and T.bodyOf(short) == body and lua.eval("TEST.actions[3]") == short,
+          "the real macro is untouched: no delete/edit, same body, still on the bar")
+    check(lua.eval("R2F.Library.Created(%r) ~= nil" % mid), "its created record stays (Tidy up / Remove all still know it)")
+    check(any(("removed %s from the library." % short) in c for c in chat_lines(lua)),
+          "chat confirms the removal")
+    lua.execute("TEST.actions[3] = nil")
+    cands = [c.id for c in lua_table_to_list(lua.eval("R2F.Macros.TidyCandidates()"))]
+    check(mid in cands, "Tidy up can still delete the real macro once it's off the bar")
+    lua.execute("TEST.actions[3] = %r" % short)
+
+    # Re-import: counted as new (not updated), and back in the book.
+    d = lua.eval("function(s) local p = R2F.Import.Parse(s) return R2F.Import.Diff(p, R2F.Library.db.library, 'PALADIN') end")(
+        fx["everything"]["string"])
+    check(d.status[mid] == "new", "%s: re-importing a removed macro counts it as new (%s)" % (tag, d.status[mid]))
+    other_status = d.status[lua.eval("BSLOTS[2].entry.id")]
+    check(other_status == "unchanged", "the macros that stayed are unchanged (%s)" % other_status)
+    lua.eval("function(s) R2F.Import.Commit(R2F.Import.Parse(s), 'PALADIN', 9) end")(fx["everything"]["string"])
+    lua.execute("R2F.MacroBook.ShowSection('PALADIN', 'General')")
+    check(lua.eval("BSLOTS[1].entry.id") == mid and lua.eval("BSLOTS[1].check.__shown") is True,
+          "re-imported: back in the grid, and its real macro on the bar is recognised again")
+
+    # Popup accepted after the entry already went away: nothing happens, no error.
+    open_remove()
+    lua.execute("R2F.Library.Remove(%r)" % mid)
+    T.chat = lua.table()
+    lua.execute("R2FConfirm.yes:Click()")
+    check(chat_lines(lua) == [], "accepting after the entry is already gone does nothing")
+
+    # Another class's macro while previewing: allowed (library only, no game macro).
+    lua.execute("R2F.MacroBook.Browse('WARRIOR')")
+    find_frames(lua, "f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton", "BSLOTS")
+    wid = lua.eval("BSLOTS[1].entry.id")
+    check(wid.startswith("WARRIOR/") and lua.eval("BSLOTS[1].readOnly") is True, "previewing Warrior")
+    lua.execute("TEST.calls = {}")
+    open_remove()
+    check(lua.eval("R2FConfirm:IsShown()") is True, "%s: Remove from library is offered for a previewed class too" % tag)
+    lua.execute("R2FConfirm.yes:Click()")
+    check(lua.eval("R2F.Library.Get(%r) == nil" % wid) and calls() == [],
+          "removing a previewed class's macro only touches the library")
+    # Copy text works read-only too.
+    lua.execute("BSLOTS[1]:Click('RightButton')")
+    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.MENU_COPY", "CPB")
+    lua.execute("CPB[1]:Click()")
+    check(lua.eval("R2FCopy:IsShown()") is True and lua.eval("R2FCopy.text") == lua.eval("BSLOTS[1].entry.body"),
+          "Copy text works on a previewed macro")
+
+    # ---- Tidy up tooltip -----------------------------------------------------------
+    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.BTN_TIDY", "TIDYB")
+    lua.execute("TIDYB[1]:Fire('OnEnter')")
+    tip = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(tip == [L.BTN_TIDY, L.TIDY_TIP, L.TIDY_TIP_LIBRARY], "%s: Tidy up tooltip: %s" % (tag, tip))
+    check("aren't on any action bar" in L.TIDY_TIP and "haven't edited" in L.TIDY_TIP
+          and "Remove from library" in L.TIDY_TIP_LIBRARY, "Tidy up tooltip explains it and contrasts Remove from library")
+    T.fire("PLAYER_REGEN_DISABLED")
+    lua.execute("TIDYB[1]:Fire('OnEnter')")
+    tip = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(lua.eval("TIDYB[1].__enabled") is False and tip[-1] == L.TIDY_TIP_COMBAT,
+          "in combat Tidy up is greyed out and its tooltip says why")
+    T.fire("PLAYER_REGEN_ENABLED")
+
+
 def main():
     fx = fixtures()
     lua = new_runtime()
@@ -2916,6 +3317,10 @@ def main():
     test_talent_source_writes()
     test_quick_settings(True, fx)
     test_quick_settings(False, fx)
+    test_class_picker(True, fx)
+    test_class_picker(False, fx)
+    test_remove_from_library(True, fx)
+    test_remove_from_library(False, fx)
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
 

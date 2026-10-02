@@ -1,10 +1,20 @@
 -- UI/MacroBook.lua: the spellbook-style Macro Book (ADDON_PLAN.md 5.1 - 5.5, 5.7).
 --
 -- Layout: 2 columns x 6 rows of macro entries per page, side tabs on the
--- right edge (Universal, then the player's class sections), bottom bar with
+-- right edge (Universal, then the browsed class's sections), bottom bar with
 -- slot counters, paging and the Import / Tidy up / Settings buttons.
--- Only Universal + the player's own class get tabs; other classes' macros
--- stay in the library and are mentioned on the Universal tab (5.7).
+--
+-- Class picker (v0.10.0, ADDON_PLAN 5.10, asked for after the first real
+-- in-game test): when the library holds macros for a class other than the
+-- player's, a row of class icons at the top lets the player browse any of
+-- them (your class pinned first). Browsing another class shows Universal +
+-- that class's tabs READ-ONLY: icons, names, tooltips, Shift-click to chat
+-- and the right-click menu work, but drag/click never makes a real macro,
+-- because a Warrior can't cast a Paladin's spells and the macro would only
+-- waste a slot and fail on the bar (Macros.UsableHere is the real gate).
+-- The slot counters and gold "on your bars" checks always describe the
+-- character you're PLAYING, whatever class is browsed: they're live game
+-- state, and blanking them would hide real information.
 --
 -- Since step 6 the book is the Macros tab of the main window (12.4,
 -- UI/MainWindow.lua). It was REPARENTED, not rebuilt: MainWindow calls
@@ -48,9 +58,23 @@ local SECTION_ICONS = {
 }
 local MELEE = { WARRIOR = true, ROGUE = true, PALADIN = true }
 
+-- Class picker order after your own class: the site's roster order (armor
+-- type, cloth -> plate, CLAUDE.md), Druid with the leather classes. Any
+-- token not listed (none today: imports only accept known classes) follows
+-- alphabetically.
+local CLASS_ORDER = { "PRIEST", "WARLOCK", "MAGE", "ROGUE", "DRUID", "SHAMAN", "HUNTER", "PALADIN", "WARRIOR" }
+local PICK_SIZE, PICK_STEP = 24, 30
+
 local book, slots, tabs = nil, {}, {}   -- book = the Macros tab's page frame
 local ui = {}            -- bottom-bar widgets
-local state = { key = nil, page = 1, tabs = {} }
+local picks = {}         -- class picker buttons
+-- browse = the class being looked at, nil = your own. Kept in this Lua
+-- table only, NOT in SavedVariables (ADDON_PLAN 5.10): closing and reopening
+-- the window (or switching tabs) keeps it, but a relog or /reload starts
+-- every session on your own class, the one class you can actually use.
+-- Saving it in R2FCharDB would only store a value that every login must
+-- ignore.
+local state = { key = nil, page = 1, tabs = {}, browse = nil }
 local menu               -- right-click menu
 
 local function escape(s) return (s:gsub("|", "||")) end
@@ -100,7 +124,14 @@ local function showTooltip(btn)
     Library.SetChanged(e.id, nil)
     btn.arrow:Hide()
   end
-  GameTooltip:AddLine(L.TIP_DRAG, 0.1, 1, 0.1)
+  if btn.readOnly then
+    -- Red like Blizzard's "requires" lines: says why it can't be dragged,
+    -- then what CAN be done with it here.
+    GameTooltip:AddLine(L.OTHER_CLASS_USE:format(className(e.class)), 1, 0.1, 0.1, true)
+    GameTooltip:AddLine(L.TIP_SHARE, 0.1, 1, 0.1)
+  else
+    GameTooltip:AddLine(L.TIP_DRAG, 0.1, 1, 0.1)
+  end
   GameTooltip:Show()
 end
 
@@ -133,11 +164,26 @@ local function buildMenu()
     b:SetText(label)
     b:SetScript("OnClick", function() local id = m.id; m:Hide(); fn(id) end)
   end
+  -- Remove from library (5.3). Since v0.10.0 it asks first (UI.Confirm, the
+  -- dialog Tidy up / Remove all use): it used to remove on the spot, and the
+  -- entry only comes back by importing it again. Library only, never the
+  -- real macro (6.7): a macro made from it may be on a bar right now, and
+  -- Tidy up / Remove all still know it (its created record stays).
+  -- Allowed for another class's macros too, while browsing them (5.10):
+  -- the library is account-wide and this writes SavedVariables only, never
+  -- a game macro, so it isn't what "read-only" protects against; and a class
+  -- imported by mistake (no character of it) could otherwise never leave.
   item(L.MENU_REMOVE, -8, function(id)
     local e = Library.Get(id)
-    Library.Remove(id)
-    if e then R2F.Print(L.REMOVED:format(e.short)) end
-    MacroBook.Refresh()
+    if not e then return end
+    UI.Confirm(L.REMOVE_CONFIRM:format(e.name, e.short), L.BTN_REMOVE, L.BTN_CANCEL, function()
+      -- Re-read at accept time: the popup may have sat open across an import.
+      local now = Library.Get(id)
+      if not now then return end
+      Library.Remove(id)
+      R2F.Print(L.REMOVED:format(now.short))
+      MacroBook.Refresh()
+    end)
   end)
   item(L.MENU_COPY, -34, function(id)
     local e = Library.Get(id)
@@ -164,6 +210,18 @@ local function openMenu(btn)
   menu:Show()
 end
 
+-- Left-click / drag on a slot. Another class's macro (browsing, 5.10) is
+-- refused here with the tooltip's own words, before Macros is even asked;
+-- Macros.Ensure refuses it again on its own (the real gate).
+local function pickUp(self)
+  if not self.entry then return end
+  if self.readOnly then
+    Macros.OtherClassError(self.entry)
+    return
+  end
+  Macros.Ensure(self.entry.id)
+end
+
 local function slotOnClick(self, button)
   if not self.entry then return end
   if button == "RightButton" then
@@ -171,7 +229,7 @@ local function slotOnClick(self, button)
   elseif IsShiftKeyDown() then
     shareInChat(self.entry)
   else
-    Macros.Ensure(self.entry.id)
+    pickUp(self)
   end
 end
 
@@ -223,9 +281,7 @@ local function buildSlot(parent, i)
   b:RegisterForDrag("LeftButton")
   b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
   -- Dragging picks the macro up exactly like a spellbook spell (5.3).
-  b:SetScript("OnDragStart", function(self)
-    if self.entry then Macros.Ensure(self.entry.id) end
-  end)
+  b:SetScript("OnDragStart", pickUp)
   b:SetScript("OnClick", slotOnClick)
   b:SetScript("OnEnter", showTooltip)
   b:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -235,7 +291,9 @@ end
 local function setTabIcon(tab, sec)
   local icon = SECTION_ICONS[sec.section]
   if not icon and sec.section == "DPS" then
-    icon = MELEE[R2F.playerClass] and "Ability_DualWield" or "Spell_Fire_FlameBolt"
+    -- The tab's own class, not the player's: a browsed Paladin's DPS tab is
+    -- melee even on a Mage (5.10).
+    icon = MELEE[sec.class] and "Ability_DualWield" or "Spell_Fire_FlameBolt"
   end
   local coords = classCoords(sec.class)
   if not icon and (sec.section == "General" or sec.section == "Shared") and coords then
@@ -294,6 +352,72 @@ local function pageButton(parent, kind)
   return b
 end
 
+-- Class picker button (5.10): the class circle from the same
+-- UI-Classes-Circles texture the General/Shared tabs use, with the side
+-- tabs' highlight/checked textures, so it reads as part of the book. A
+-- token without CLASS_ICON_TCOORDS (a client that lacks one) gets the
+-- question-mark icon instead of a wrong slice of the sheet.
+-- Not built from a dropdown template: UIDropDownMenu is the taint source
+-- 6.7 already rules out, and nine icons fit in one row.
+local function buildPick(parent, i)
+  local p = CreateFrame("CheckButton", nil, parent)
+  p:SetSize(PICK_SIZE, PICK_SIZE)
+  -- A small extra gap after the first button: your own class is pinned
+  -- there, apart from the classes you can only preview.
+  local x = 70 + (i - 1) * PICK_STEP + (i > 1 and 8 or 0)
+  p:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -46)
+  p:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+  p:SetCheckedTexture("Interface\\Buttons\\CheckButtonHilight", "ADD")
+  p:SetScript("OnClick", function(self)
+    if self.cls then
+      UI.PlaySound("IG_ABILITY_PAGE_TURN")
+      MacroBook.Browse(self.cls)
+    else
+      MacroBook.Refresh()
+    end
+  end)
+  p:SetScript("OnEnter", function(self)
+    if not self.cls then return end
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:AddLine(className(self.cls), 1, 1, 1)
+    local n = self.count or 0
+    GameTooltip:AddLine(n == 1 and L.TAB_TOOLTIP_COUNT_ONE or L.TAB_TOOLTIP_COUNT:format(n), 1, 0.82, 0)
+    if self.cls == R2F.playerClass then
+      GameTooltip:AddLine(L.PICKER_TIP_YOURS, 0.1, 1, 0.1)
+    else
+      GameTooltip:AddLine(L.PICKER_TIP_OTHER:format(className(self.cls)), 1, 0.1, 0.1, true)
+    end
+    GameTooltip:Show()
+  end)
+  p:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  return p
+end
+
+local function setPickIcon(p, token)
+  local coords = classCoords(token)
+  if coords then
+    p:SetNormalTexture(CLASS_CIRCLES)
+    p:GetNormalTexture():SetTexCoord(unpack(coords))
+  else
+    p:SetNormalTexture(ICONS .. "INV_Misc_QuestionMark")
+    local tex = p:GetNormalTexture()
+    if tex then tex:SetTexCoord(0, 1, 0, 1) end
+  end
+end
+
+-- Tidy up's tooltip (v0.10.0): the button name alone didn't say what it
+-- deletes. It also points at Remove from library, so the two "remove"
+-- actions can't be mixed up: Tidy up deletes real game macros and never
+-- touches the library; Remove from library is the opposite.
+local function showTidyTip(self)
+  GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+  GameTooltip:AddLine(L.BTN_TIDY, 1, 1, 1)
+  GameTooltip:AddLine(L.TIDY_TIP, 1, 0.82, 0, true)
+  GameTooltip:AddLine(L.TIDY_TIP_LIBRARY, 0.6, 0.6, 0.6, true)
+  if R2F.InCombat() then GameTooltip:AddLine(L.TIDY_TIP_COMBAT, 1, 0.1, 0.1, true) end
+  GameTooltip:Show()
+end
+
 local function onTidy()
   local cands = Macros.TidyCandidates()
   if #cands == 0 then R2F.Print(L.TIDY_NONE); return end
@@ -327,7 +451,15 @@ local function build(f)
   empty:SetWidth(400)
   ui.empty = empty
 
-  -- 5.7: other classes' macros, shown on the Universal tab.
+  -- Class picker label (5.10), right of the picker row: which class the
+  -- grid shows, and whether it's yours or a preview. The buttons are built
+  -- on demand in Refresh (only classes with macros get one).
+  ui.pickLabel = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  ui.pickLabel:SetJustifyH("LEFT")
+  ui.pickLabel:Hide()
+
+  -- 5.7: other classes' macros, shown on the Universal tab. Since 5.10 also
+  -- the "previewing another class" note, on every tab of that class.
   local other = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
   other:SetPoint("BOTTOMLEFT", 24, 76)
   other:SetWidth(490)
@@ -371,6 +503,11 @@ local function build(f)
   ui.tidy = button(L.BTN_TIDY, 100)
   ui.tidy:SetPoint("LEFT", ui.import, "RIGHT", 8, 0)
   ui.tidy:SetScript("OnClick", onTidy)
+  -- Tooltip also while greyed out in combat, so it can say why (Home's
+  -- Quick settings boxes do the same).
+  if ui.tidy.SetMotionScriptsWhileDisabled then ui.tidy:SetMotionScriptsWhileDisabled(true) end
+  ui.tidy:SetScript("OnEnter", showTidyTip)
+  ui.tidy:SetScript("OnLeave", function() GameTooltip:Hide() end)
   -- Settings panel (5.8, step 5). Stays enabled in combat: the panel greys
   -- out its own Remove all button, and its other settings are safe anytime.
   ui.settings = button(L.BTN_SETTINGS, 100)
@@ -411,9 +548,11 @@ local function visibleEntries(sec)
   return out
 end
 
-local function collectTabs()
+-- Tabs: Universal, then the sections of class `cls` (the browsed class, 5.10;
+-- your own unless you picked another).
+local function collectTabs(browsed)
   local list = {}
-  for _, cls in ipairs({ "ANY", R2F.playerClass }) do
+  for _, cls in ipairs({ "ANY", browsed }) do
     for _, sec in ipairs(Library.Sections(cls)) do
       sec.entries = visibleEntries(sec)
       if #sec.entries > 0 then list[#list + 1] = sec end
@@ -442,6 +581,66 @@ local function otherClassesText()
   return L.OTHER_CLASSES:format(table.concat(parts, ", "))
 end
 
+-- The class the grid shows (5.10). A browsed class whose macros are all gone
+-- (removed from the library) falls back to your own, so the book can't be
+-- stuck on a class that isn't in the picker any more.
+local function browsedClass(counts)
+  local own = R2F.playerClass
+  if state.browse and state.browse ~= own and (counts[state.browse] or 0) > 0 then
+    return state.browse
+  end
+  state.browse = nil
+  return own
+end
+
+-- Picker entries: your class first (always, even with no class macros: it's
+-- the way back, and its view still has Universal), then every other class
+-- that has macros, in roster order. Empty when no other class has macros:
+-- a picker with one choice would only take space, and the book then looks
+-- exactly as it did before v0.10.0.
+local function pickerClasses(counts)
+  local own = R2F.playerClass
+  local list, seen = {}, {}
+  for token in pairs(counts) do
+    if token ~= own then seen[token] = true end
+  end
+  if not next(seen) then return list end
+  if own then list[1] = own end
+  for _, token in ipairs(CLASS_ORDER) do
+    if seen[token] then list[#list + 1] = token; seen[token] = nil end
+  end
+  local rest = {}
+  for token in pairs(seen) do rest[#rest + 1] = token end
+  table.sort(rest)
+  for _, token in ipairs(rest) do list[#list + 1] = token end
+  return list
+end
+
+local function refreshPicker(counts, browsed)
+  local list = pickerClasses(counts)
+  for i, token in ipairs(list) do
+    picks[i] = picks[i] or buildPick(book, i)
+    local p = picks[i]
+    p.cls, p.count = token, counts[token] or 0
+    setPickIcon(p, token)
+    p:SetChecked(token == browsed)
+    p:Show()
+  end
+  for i = #list + 1, #picks do picks[i]:Hide(); picks[i].cls = nil end
+  -- No browsed class = class not read yet (before PLAYER_LOGIN): no label.
+  if #list == 0 or not browsed then
+    ui.pickLabel:Hide()
+    return
+  end
+  local own = browsed == R2F.playerClass
+  ui.pickLabel:ClearAllPoints()
+  ui.pickLabel:SetPoint("LEFT", picks[#list], "RIGHT", 10, 0)
+  ui.pickLabel:SetText((own and L.PICKER_YOURS or L.PICKER_PREVIEW):format(className(browsed)))
+  -- Gold = yours (GameFontNormal's own colour), grey = preview only.
+  if own then ui.pickLabel:SetTextColor(1, 0.82, 0) else ui.pickLabel:SetTextColor(0.7, 0.7, 0.7) end
+  ui.pickLabel:Show()
+end
+
 local function refreshBottom()
   local acc, maxAcc, char, maxChar = Macros.Counts()
   ui.char:SetText(L.SLOTS_CHARACTER:format(char, maxChar))
@@ -464,7 +663,11 @@ end
 
 function MacroBook.Refresh()
   if not bookVisible() then return end
-  state.tabs = collectTabs()
+  local counts = Library.ClassCounts()
+  local browsed = browsedClass(counts)
+  local preview = browsed ~= R2F.playerClass
+  refreshPicker(counts, browsed)
+  state.tabs = collectTabs(browsed)
 
   -- Resolve the selected tab by key, so new imports can't shift it.
   local current
@@ -496,17 +699,25 @@ function MacroBook.Refresh()
     local e = entries[first + i]
     b.entry = e
     if e then
+      -- Another class's macro (browsing, 5.10): read-only, shown grey like
+      -- an unusable spellbook entry. Its subtext is the group, never
+      -- "Learn later": this character will never learn that spell.
+      b.readOnly = not Macros.UsableHere(e)
       local tex, learnLater = Macros.DisplayIcon(e)
+      if b.readOnly then learnLater = false end
       b.icon:SetTexture(tex)
-      b.icon:SetDesaturated(learnLater)
+      b.icon:SetDesaturated(learnLater or b.readOnly)
       b.name:SetText(e.short)
       b.sub:SetText(learnLater and L.LEARN_LATER or groupLabel(e.group))
+      -- The gold check is THIS character's action bars even while browsing
+      -- (5.10): it's real game state (an account-slot macro made on another
+      -- character can sit on this one's bars), so it's never blanked.
       b.onBars = Macros.OnBars(e.id, onBars)
       b.check:SetShown(b.onBars)
       b.arrow:SetShown(Library.Changed(e.id) ~= nil)
       b:Show()
     else
-      b.onBars = false
+      b.onBars, b.readOnly = false, false
       b.arrow:Hide()
       b:Hide()
     end
@@ -523,14 +734,22 @@ function MacroBook.Refresh()
   else
     ui.empty:SetText("")
   end
-  local showOther = (not sec) or sec.class == "ANY"
+  local onUniversal = (not sec) or sec.class == "ANY"
   local lines = {}
-  if showOther then
-    for _, text in ipairs({ otherClassesText(), quickSettingsNote() }) do
-      if text ~= "" then lines[#lines + 1] = text end
-    end
+  -- Previewing another class (5.10): on every tab, say it's read-only and
+  -- that the counters / gold checks still describe the character you play.
+  if preview then lines[#lines + 1] = L.BROWSE_NOTE:format(className(browsed)) end
+  if onUniversal then
+    -- 5.7's line only in your own view: while previewing, the picker row
+    -- already shows the other classes, and the line would crowd the note.
+    if not preview then lines[#lines + 1] = otherClassesText() end
+    lines[#lines + 1] = quickSettingsNote()
   end
-  ui.other:SetText(table.concat(lines, "\n"))
+  local shown = {}
+  for _, text in ipairs(lines) do
+    if text ~= "" then shown[#shown + 1] = text end
+  end
+  ui.other:SetText(table.concat(shown, "\n"))
 
   refreshBottom()
 end
@@ -563,11 +782,33 @@ function MacroBook.IsShown()
   return bookVisible()
 end
 
--- Open on a given section's tab (after an import, 5.6). Sections of other
--- classes have no tab here, so the book just opens on its current tab.
+-- Open on a given section's tab (after an import, 5.6). Since v0.10.0 a
+-- section of another class opens that class's preview (5.10): the import was
+-- the player choosing that class on the site, so showing what just arrived
+-- is no surprise (the first real-game test expected exactly that). Import
+-- prefers a new Universal / own-class section when there is one
+-- (Import.Diff's firstNewOwn), so a mixed import still lands on your class.
+-- Universal / own class: back to your own view.
 function MacroBook.ShowSection(cls, section)
-  if cls and section and (cls == "ANY" or cls == R2F.playerClass) then
+  if cls and section then
+    state.browse = (cls ~= "ANY" and cls ~= R2F.playerClass) and cls or nil
     state.key, state.page = cls .. "\0" .. section, 1
   end
   MacroBook.Show()
+end
+
+-- Class picker click (5.10): show Universal + that class, on the class's
+-- first section (that's what the player asked to see), else Universal.
+-- Your own class = nil, the default view.
+function MacroBook.Browse(cls)
+  state.browse = (cls ~= R2F.playerClass) and cls or nil
+  local secs = Library.Sections(cls)
+  state.key = secs[1] and tabKey(secs[1]) or nil
+  state.page = 1
+  MacroBook.Refresh()
+end
+
+-- The class the book shows right now (tests, /dump): your own unless browsing.
+function MacroBook.BrowsedClass()
+  return state.browse or R2F.playerClass
 end

@@ -102,6 +102,7 @@ local COMPARE = { "class", "section", "group", "name", "short", "icon", "body", 
 
 -- Diff parsed records against the current library (5.6 preview).
 -- Returns { total, new, updated, unchanged, otherClass, skipped, firstNew = record,
+--           firstNewOwn = first new Universal / own-class record (or nil),
 --           status = {id -> "new"/"updated"/"unchanged"},
 --           plan = { update = {ids}, edited = {ids} } }
 -- `plan` (step 4) = real macros this import will rewrite, and ones the player
@@ -127,6 +128,10 @@ function Import.Diff(parsed, library, playerClass)
     if status == "new" and not d.firstNew then d.firstNew = r end
     if r.class ~= "ANY" and r.class ~= playerClass then
       d.otherClass = d.otherClass + 1
+    elseif status == "new" and not d.firstNewOwn then
+      -- The first new Universal / own-class record: where the book opens
+      -- after the import (v0.10.0, ADDON_PLAN 5.10), ahead of other classes.
+      d.firstNewOwn = r
     end
   end
   return d

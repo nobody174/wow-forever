@@ -3,6 +3,34 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.10.0 (2026-10-02): class picker, Remove from library asks first, Tidy up tooltip
+
+**Requested from first real in-game testing, 2026-10-02** — not part of the original
+build plan (steps 3 to 10 + Quick settings). On a Paladin, the tester imported Warrior
+macros: chat said `imported 51 macros.`, but no Warrior tab ever appeared, because the
+book only showed the class you're logged in as. Decisions in `ADDON_PLAN.md` 5.10. Not
+tested in the game yet; see `TESTING.md` section 17.
+
+- **Class picker in the Macro Book:** when your library has macros for another class, a
+  row of class icons appears at the top of the book (your class first). Click one to
+  look at that class's macros from any character, e.g. to prepare an alt.
+- **Other classes are preview only:** their macros show grey, with tooltips, and
+  Shift-click still puts them in chat, but they can't be dragged to your bars (a Warrior
+  can't cast Paladin spells; the addon refuses and says `Log in on a Paladin character
+  to use this macro.`). Universal macros keep working in every view.
+- The slot counters and gold "on your bars" checks always describe the character you're
+  playing; a note says so while you preview another class.
+- The book remembers the class you picked while you play, and opens on your own class
+  again after a relog or `/reload`.
+- After an import, the book opens on your own class if the import brought anything new
+  for it, otherwise on the imported class's preview.
+- **Remove from library** (right-click a macro) now asks first. It only takes the macro
+  out of your book: a macro you already made from it stays in the game and on your bars
+  (Tidy up or Remove all can delete it later). Importing it again brings it back as new.
+  Works on previewed classes too, so a class imported by mistake can be cleared out.
+- **Tidy up has a tooltip** saying what it deletes (unedited Road to Forever macros that
+  aren't on any bar) and that it never changes your library.
+
 ## 0.9.1 (2026-10-02): fix — addon wouldn't load at all
 
 First real in-game install of 0.9.0 reported: addon shows in the list, no

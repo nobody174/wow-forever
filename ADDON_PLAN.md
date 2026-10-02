@@ -399,6 +399,9 @@ other classes). Icons:
 
 Tooltip on a tab: section name + "12 macros".
 
+Since v0.10.0 "the class" is the class being **browsed** in the class picker
+(5.10): your own by default, or another class's sections shown read-only.
+
 ### 5.3 Macro slots (the grid)
 
 - Each entry looks like a spellbook entry: 36 px icon in the standard
@@ -415,7 +418,8 @@ Tooltip on a tab: section name + "12 macros".
   a small green up-arrow until you hover it.
 - Left-click or drag: picks the macro up (creating it if needed), exactly like a
   spellbook spell. Shift-click: puts the macro body in chat for sharing.
-- Right-click: small menu: `Remove from library`, `Copy text`.
+- Right-click: small menu: `Remove from library`, `Copy text`. Since v0.10.0
+  Remove from library asks first (confirm popup, 5.10).
 
 ### 5.4 Tooltip (GameTooltip)
 
@@ -455,6 +459,11 @@ The library keeps every class you imported. On a Warrior you only see Universal
 + Warrior tabs. A line at the bottom of the Universal tab:
 `You also have macros for Paladin (53). Log in on that character to use them.`
 
+**Changed in v0.10.0 (5.10):** the book now has a class picker, so other classes
+can be browsed read-only from any character. The line stays in your own view and
+now ends `Click a class icon at the top to look at them; log in on that character
+to use them.`
+
 ### 5.8 Settings (small panel)
 
 - New macros go to: Character slots first / Account slots first.
@@ -473,6 +482,175 @@ Errors say what happened and what to do:
 | Drag in combat | `You can't create macros in combat.` |
 | No free slot anywhere | `No free macro slots. Click Tidy up or delete a macro in /macro.` |
 | Name taken by your own macro | popup: `You already have a macro called "VR". Replace it?` [Replace] [Keep mine] |
+
+### 5.10 Decisions made while building it (class picker + Remove from library, v0.10.0, 2026-10-02)
+
+**Not in the original plan.** Requested from the first real in-game test
+(2026-10-02): the player imported Paladin macros on a Paladin (fine), then exported
+**Warrior** macros from the site and imported them while still on the Paladin. Chat
+said `imported 51 macros.`, but no Warrior tab appeared, because by 5.7 the book only
+showed Universal + the class you're logged in as. They expected to pick any class
+inside the addon and browse it from any character (e.g. to prepare an alt before ever
+logging into it). In the same release, on the same file: a confirm popup for **Remove
+from library** and a **tooltip on Tidy up**, also asked for after that session.
+
+**The picker (UI/frame designer)**
+- **A row of class circles**, top left of the book (from x 70, right of the portrait,
+  y -46, 24 px buttons 30 px apart), the selected one checked; a label to the right:
+  `Paladin (your class)` in gold or `Warrior (preview)` in grey. Icons are the
+  `UI-Classes-Circles` slices the General/Shared tabs already use; highlight and
+  checked textures are the side tabs' (`ButtonHilight-Square`, `CheckButtonHilight`).
+  Plain `CheckButton`s, **no dropdown template**: `UIDropDownMenu` is the taint source
+  6.7/6.10 already rule out, nine icons fit in one row, and icons say "class" faster
+  than a list. A class without `CLASS_ICON_TCOORDS` gets the question mark instead of
+  a wrong slice of the sheet. No template is used, so there is nothing to fall back
+  from; the look is unverified in the client (TESTING.md 17).
+- **Which classes:** exactly the classes with at least one library macro
+  (`Library.ClassCounts`; Universal excluded, it shows in every view), in the site's
+  roster order (cloth -> plate, Druid with leather), **your class pinned first** with
+  an extra 8 px gap after it, even when you have no class macros of your own (it's the
+  way back, and its view still has Universal).
+- **No picker at all** when no other class has macros: one choice is no choice, and
+  the book then looks exactly as before v0.10.0.
+- **Picking a class** shows Universal + that class's tabs (same tab, grid, paging and
+  tooltip code, fed another class), opening on the class's first section. The DPS tab
+  icon now follows the **tab's** class, not the player's (a Mage browsing Paladin sees
+  the melee icon).
+- **A browsed class that empties** (all its macros removed) drops back to your own, so
+  the book can't be stuck on a class missing from the picker.
+
+**Read-only other classes (Taint & secure execution)**
+- **Option chosen: strictly read-only for other classes, full interaction for your
+  own** (the simpler, safer of the two options in the brief). Read-only = no drag, no
+  click-to-pick-up, no Replace popup: a Warrior can't cast a Paladin's spells, so a
+  macro made from one would fail on the bar ("Unknown spell") and still cost one of the
+  18 + 120 slots, and Replace would even overwrite one of the player's own macros with
+  it. Allowed while previewing: tooltips, Shift-click to chat (5.3), and the
+  right-click menu (Copy text; Remove from library, below).
+- **Per macro, not per view:** the test is `Macros.UsableHere(e)` = Universal or your
+  class. So while previewing Warrior, the Universal tab is fully usable (Universal
+  macros work on any class); only the Warrior tabs are read-only.
+- **Two independent layers.** The book refuses drag/click on a read-only slot itself
+  (red `Log in on a Warrior character to use this macro.`, 5.7's wording) without
+  calling Macros at all; and **`Macros.Ensure`, `Macros.Create` and `Macros.Replace`
+  refuse another class's macro on their own**, first thing, so no present or future
+  code path can create one. A wrong-class `CreateMacro` would be a real bug, not a
+  cosmetic one, so the gate lives where the write happens. `Macros.UsableHere` falls
+  back to `UnitClass` if `R2F.playerClass` isn't set yet.
+- **Look of a read-only slot:** icon desaturated (like an unusable spellbook entry),
+  subtext = the group, **never `Learn later`** (this character will never learn that
+  spell); the tooltip ends with the red line above and a green `Shift-click to put it
+  in chat.` instead of `Drag to an action bar.`. Icons are mostly the question mark:
+  the client only returns textures for spells this character knows; the site's `icon`
+  field is used when the macro has one.
+- No new globals (picker frames are unnamed), no hooks, no Blizzard template, nothing
+  written to Blizzard tables. Changed flags stay own-class only (6.8; Macros.lua's
+  `visible` now reuses `UsableHere`).
+
+**Counters and on-your-bars checks while previewing**
+- **They always describe the character you're playing.** `Character x / 18` /
+  `Account y / 120` come from `GetNumMacros()` and the gold check from this character's
+  action slots: live game state, true whatever class is browsed. Blanking them would
+  hide real information (an account-slot macro made from a Warrior entry on another
+  character CAN sit on this Paladin's bars, and the check then shows it).
+- **The UI says so instead:** while previewing, a note above the counters on every tab
+  of the preview: `Previewing Warrior macros: read-only on this character. The slot
+  counts and gold checks below are for the character you're playing.`
+- The 5.7 line is left out while previewing (the picker row already shows the other
+  classes, and the bottom area only holds about four lines); the Quick-settings note
+  (12.4.1) still shows on the Universal tab.
+
+**Remember vs. default**
+- **Remembered for the session only, in a Lua local** (`state.browse` in MacroBook.lua),
+  **not in SavedVariables.** Closing and reopening the window, or switching to Home /
+  Talents and back, keeps the browsed class; a relog or `/reload` always opens on your
+  own class. The brief suggested "persist in R2FCharDB (or similar)" and also "always
+  default back to your own class when the window is first opened fresh (e.g. after a
+  relog)". A saved value that every login has to ignore is dead data, and the only thing
+  it could ever do is cause the surprise the second rule forbids. Session memory gives
+  both rules exactly. The tests check that nothing about browsing lands in
+  SavedVariables, and that a simulated relog (SavedVariables carried into a fresh
+  runtime) opens on your class.
+- **An import may open a preview.** After an import the book jumps to the first tab
+  with new macros (5.6). It now prefers a new Universal / own-class section
+  (`Import.Diff`'s new `firstNewOwn`), so a mixed "Select everything" import still
+  lands on your class. Only when the import brought nothing new for you (the original
+  report: Warrior macros imported on a Paladin) does it open that class's preview.
+  That isn't the surprise the default rule is about: the player just chose that class
+  on the site, and seeing it is exactly what they expected. `ShowSection` on Universal
+  or your class returns to your own view.
+
+**The 5.7 line: kept, not made clickable.** One line can name several classes
+(`Hunter (51), Mage (36), ...`), so a single click target would be ambiguous, and
+per-class hit areas inside a font string would mean measuring rendered text widths,
+which is fragile across fonts and clients. The picker circles sit right above the grid,
+so the line now points at them instead (`Click a class icon at the top to look at
+them; ...`).
+
+**Remove from library (right-click menu, 5.3)**
+- **It already existed** (step 3) and removed on the spot. v0.10.0 adds a **confirm
+  popup** (`UI.Confirm`, the dialog Tidy up / Remove all use): `Remove <name> (<short>)
+  from your library? It disappears from the Macro Book. Any macro you already made from
+  it stays in the game and on your bars; Tidy up or Remove all can delete it later.`
+  [Remove] [Cancel]. The entry is re-read when Remove is clicked (an import may have run
+  while the popup was open); already gone = nothing happens.
+- **Library only, never the real macro** (6.7 unchanged): its created record stays, so
+  the button on the bar keeps working and Tidy up / Remove all can still delete it.
+- **Re-import = "new" again:** `Import.Diff` compares against the library only, so a
+  removed id comes back counted as `new`, not `updated`. If its real macro is still
+  ours and unedited, it then follows the library like every tracked macro (what Ensure
+  and the login sync would do anyway), and the gold check comes back.
+- **Allowed for other classes while previewing too.** The brief's safer default was
+  own-class only, with leave to decide otherwise. Removing writes SavedVariables only,
+  never a game macro, so it isn't what read-only protects against; the library is
+  account-wide; and without it a class imported by mistake, with no character of that
+  class (exactly how the user ended up with Warrior macros on a Paladin), could never
+  leave the book. The popup still asks first.
+- **Right-click, not a bulk check box + Delete button.** The user also suggested a check
+  box on each macro plus a Delete button next to Import / Tidy up. Single right-click won:
+  the menu item already existed and 5.3 specifies it; the bottom bar has no room for a
+  fourth button without shrinking the others; and check boxes on a spellbook-style grid
+  would fight the drag / click / Shift-click gestures every slot already has. Cost:
+  removing a whole imported-by-mistake class is one popup per macro. If that matters,
+  the natural next step is a "Remove this class's macros" item on the picker circle (one
+  popup for the lot), not check boxes.
+
+**Tidy up tooltip**
+- Hovering **Tidy up** shows `Tidy up` (white); gold `Deletes the macros Road to
+  Forever made in your game that aren't on any action bar and that you haven't edited,
+  to give you those macro slots back. Macros on a bar, and macros you edited, are left
+  alone.`; grey `Your library doesn't change: the macros stay in this book and can be
+  dragged out again. To take a macro out of the book itself, right-click it and choose
+  Remove from library.` The last line **contrasts the two removals** on purpose: Tidy up
+  = real game macros, library untouched; Remove from library = the library, real macros
+  untouched. Shown while greyed out in combat too (`SetMotionScriptsWhileDisabled`, like
+  Home's Quick settings boxes), with red `Can't be used in combat.`
+
+**Testing.** `run_tests.py` adds `test_class_picker` and `test_remove_from_library`, both
+on the template and fallback paths (8310 -> 8608 checks; the existing tests unchanged
+except step 3's Remove test, which now accepts the popup). Covered: no picker with only
+your class; the user's exact flow through the real Import window (Warrior string on a
+Paladin opens the Warrior preview); picker = classes with macros only, roster order,
+own class first and marked, label texts, tooltips, class circle vs question mark; drag /
+click refused with the message and **no `CreateMacro` / `EditMacro` call**; `Macros.Ensure`
+/ `Create` / `Replace` each refusing on their own; the book never calling `Ensure` for a
+preview; no Replace popup over the player's own same-named macro; grey icons and no
+`Learn later` (with a control showing the same page on a Warrior does say `Learn later`);
+Shift-click; Universal draggable in a preview; counters and the gold check from this
+character while previewing (an account-slot macro on this character's bar, live after
+`ACTIONBAR_SLOT_CHANGED`); back to your class = drag works; the 5.7 line in your own view
+only; browsing kept across close/reopen and tab switches, nothing saved, a simulated relog
+opens on your class; an emptied class falls back; a mixed import prefers your class
+(`firstNewOwn`, through the Import window); a Mage browsing Paladin gets the melee DPS
+icon; no new globals. Remove: popup first, Cancel keeps it, Remove takes it out of the
+library and grid, real macro untouched (no delete/edit call, same body, still on the bar),
+record kept, Tidy up still offers it, re-import = `new`, back in the grid with its check;
+accept after it's gone = no-op; a previewed class's macro removable, Copy text works there;
+Tidy up tooltip lines and the combat line. **23 hand mutations** of the new code (each
+guard, desaturation, Learn later, tooltip, blanked checks, picker rules, saving/resetting
+the browsed class, empty-class fallback, notes, DPS icon, `ShowSection`, `firstNewOwn`, no
+confirm, dropping the record, stale accept, both Tidy tooltip parts) each fail the suite.
+luacheck 0 warnings. In-game checks: TESTING.md 17.
 
 ---
 
@@ -1157,6 +1335,9 @@ shows under the repo's Actions tab.
     check boxes that set CVars directly, and the Macro Book hides the three site
     macros they replace. Done in v0.9.0; decisions in 12.4.1. This was the last
     planned build step.
+12. **Class picker + Remove from library confirm + Tidy up tooltip** (not planned:
+    requested after the first real in-game test, 2026-10-02). Browse any class in
+    the library read-only from any character. Done in v0.10.0; decisions in 5.10.
 
 ## 10. Later / ideas
 
@@ -1217,6 +1398,8 @@ shows under the repo's Actions tab.
       trees, and `GetTalentTabInfo(tab)` returns the tree name first or second
       (13.7; else the headers read `Tree 1..3`). `InputBoxTemplate` exists (link box).
 - [ ] The mini trees read well at 26 px (13.7: talent-frame ring tints, glow, badge).
+- [ ] Class picker (5.10): the row of class circles fits between the portrait and the
+      grid; `SetMotionScriptsWhileDisabled` exists (Tidy up tooltip while greyed out).
 - [ ] Quick settings (12.4.1): `GetCVar` / `SetCVar` / `GetCVarDefault` exist and know
       `cameraDistanceMaxZoomFactor`, `UnitNamePlayerGuild`, `UnitNamePlayerPVPTitle`;
       the client takes `cameraDistanceMaxZoomFactor 4` without clamping it; whether

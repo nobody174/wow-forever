@@ -1,14 +1,16 @@
-## Interface: 11507
+## Interface: 16001
 ## Title: |cffffd100Road to Forever|r
 ## Notes: Import macros and talent builds from the Road to Forever site.
 ## Author: nobody174
-## Version: 0.9.0
+## Version: 0.9.1
 ## SavedVariables: R2FDB
 ## SavedVariablesPerCharacter: R2FCharDB
 
-# Interface number above is a PLACEHOLDER (Classic Era 1.15.7 = 11507).
-# Confirm it in the Forever beta with /dump select(4, GetBuildInfo())
-# (ADDON_PLAN.md section 11, TESTING.md item 1) and replace it.
+# Interface number confirmed 2026-10-02 against a real WoW Forever client:
+# GetBuildInfo() returns version="1.60.1", build="70170", tocversion=16001.
+# The original placeholder (11507, Classic Era 1.15.7) made the game flag the
+# addon "incompatible" and refuse to load it at all, with no Lua error to show
+# since nothing ever ran (ADDON_PLAN.md section 11, TESTING.md item 1).
 #
 # Bindings.xml is deliberately NOT listed: the client loads it from the addon
 # folder on its own (ADDON_PLAN.md 6.9).

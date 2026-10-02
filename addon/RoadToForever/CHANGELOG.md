@@ -3,6 +3,20 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.9.1 (2026-10-02): fix — addon wouldn't load at all
+
+First real in-game install of 0.9.0 reported: addon shows in the list, no
+minimap icon, `/r2f` does nothing, no Lua errors. Turned out the game flagged
+it "Incompatible" (yellow) in the AddOns list and refused to load any of it —
+so there was nothing to error, since nothing ever ran.
+
+- **Fix:** `## Interface: 11507` was a Classic Era placeholder, never actually
+  checked against a real WoW Forever client. The real value, confirmed via
+  `/dump GetBuildInfo()` on a live Forever client, is **16001**
+  (`version="1.60.1", build="70170", tocversion=16001`).
+- No code changed — this is the TOC fix alone. Everything built in 0.1.0
+  through 0.9.0 should now actually load for the first time.
+
 ## 0.9.0 (2026-10-02): Quick settings (ADDON_PLAN.md 12.4.1)
 
 Not tested in the game yet; see `TESTING.md` section 16.

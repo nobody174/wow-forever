@@ -2614,7 +2614,7 @@ def test_talent_source_writes():
           "glow/host are unnamed frames on UIParent; Blizzard frames only looked up")
     toc = open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read()
     check("UI\\TalentPanel.lua" in toc and "UI\\TalentGuide.lua" in toc, "TalentPanel.lua and TalentGuide.lua in the TOC")
-    check(re.search(r"^## Version: 0\.9\.0$", toc, re.M) is not None, "TOC version 0.9.0")
+    check(re.search(r"^## Version: 0\.9\.1$", toc, re.M) is not None, "TOC version 0.9.1")
 
 
 def test_quick_settings(templates, fx):

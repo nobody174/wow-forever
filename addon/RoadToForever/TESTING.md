@@ -18,10 +18,13 @@ on the character screen. Turn Lua errors on: `/console scriptErrors 1`.
 
 ## 1. Loads at all
 
-- [ ] **Interface number.** In game: `/dump select(4, GetBuildInfo())`. Put that
-      number in `RoadToForever.toc` (`## Interface:`; `11507` now is a placeholder for
-      Classic Era 1.15.7). **Pass:** the addon is not listed as "out of date" on the
-      character screen's AddOns list.
+- [x] **Interface number.** Confirmed 2026-10-02: `## Interface: 16001` (this
+      client's `GetBuildInfo()` returns `tocversion=16001`). The original
+      placeholder (`11507`, Classic Era) made the game show the addon as
+      "Incompatible" (yellow) and refuse to load it at all — no Lua error,
+      since nothing ever ran. Shipped as v0.9.1. If `select(4, GetBuildInfo())`
+      comes back empty on your client, use a plain `/dump GetBuildInfo()`
+      instead and read the 4th value from the full dump.
 - [ ] Log in. **Pass:** no Lua error. `/r2f` opens the main window (Home). `/r2f help`
       prints the command list.
 - [ ] `/dump R2F` shows a table; `/dump R2FDB.version` shows `1`.

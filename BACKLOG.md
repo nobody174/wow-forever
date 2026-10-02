@@ -51,7 +51,8 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
       decisions in 12.4.1. Last item of the addon build. Not yet run in the game:
       `TESTING.md` section 16 (incl. whether `SetCVar` is combat-blocked for
       these CVars; the addon refuses in combat either way).
-- [ ] **Beta checks** (plan section 11): Interface number, slot limits,
+- [ ] **Beta checks** (plan section 11): ~~Interface number~~ (fixed 2026-10-02,
+      see CHANGELOG — was `11507`, real value `16001`, addon v0.9.1), slot limits,
       templates, CreateMacro+PickupMacro, relog survival, paste speed,
       LibDBIcon, menu API, LearnTalent from a click, talent order vs our links.
       Step-by-step list for the addon so far: `addon/RoadToForever/TESTING.md`.

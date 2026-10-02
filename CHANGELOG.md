@@ -4,6 +4,18 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon v0.9.1: fix the Interface number — addon wasn't loading)
+
+First real in-game install (0.9.0) showed the addon in the AddOns list but
+flagged "Incompatible" — the game refused to load any of it, so there were no
+errors to see, no minimap icon, and `/r2f` did nothing. Root cause: the TOC's
+`## Interface: 11507` was always a Classic Era placeholder, documented as
+needing a real beta check (ADDON_PLAN.md section 11) that hadn't happened
+until this report came in. Confirmed the real number via `/dump
+GetBuildInfo()` on the live Forever client: `tocversion=16001`. Fixed the TOC,
+updated ADDON_PLAN.md/TESTING.md to mark this beta check done, re-ran the full
+test suite (8310 checks, 0 failed). Tag `r2f-v0.9.1`, no addon code changed.
+
 ## 2026-10-02 (Addon plan: Quick settings, Road to Forever addon v0.9.0)
 
 - **Addon v0.9.0** (tag `r2f-v0.9.0`): the last item of the addon build. Home tab gets

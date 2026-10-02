@@ -524,7 +524,7 @@ No embedded libraries (step 6 decided against them for the minimap button, 6.10)
 ### 6.2 TOC
 
 ```
-## Interface: <Forever client number, check in beta with /dump select(4, GetBuildInfo())>
+## Interface: 16001 (confirmed 2026-10-02 via /dump GetBuildInfo(); tocversion=16001)
 ## Title: |cffffd100Road to Forever|r
 ## Notes: Import macros and talent builds from the Road to Forever site.
 ## Author: nobody174
@@ -699,7 +699,12 @@ Account-slot macros are also recorded in `R2FDB.createdAccount`.
   token. Addon versions are tagged `r2f-v<version>` (first: `r2f-v0.1.0`).
   **Settled in step 7 (8.1):** `r2f-v*` is the one tag prefix, the release workflow
   builds from it, and the TOC keeps a literal version (no token).
-- `## Interface: 11507` (Classic Era 1.15.7) is a placeholder until the beta check (11).
+- `## Interface: 16001` — confirmed 2026-10-02 against a real WoW Forever client
+  (`GetBuildInfo()` returns `version="1.60.1", build="70170", tocversion=16001`).
+  The original placeholder (`11507`, Classic Era 1.15.7) made the game flag the
+  addon "incompatible" in the AddOns list and refuse to load it at all — with no
+  Lua error, since nothing ever ran. First real in-game bug, found and fixed the
+  same day the 0.9.0 zip was first installed. Shipped as `## Version: 0.9.1`.
 
 **Testing outside the game**
 - `python addon/tests/run_tests.py` runs the addon under real PUC Lua 5.1 (via the
@@ -1163,7 +1168,13 @@ shows under the repo's Actions tab.
 
 ## 11. Things to confirm in the beta
 
-- [ ] TOC `## Interface:` number (`/dump select(4, GetBuildInfo())`).
+- [x] TOC `## Interface:` number — confirmed `16001` 2026-10-02. Note:
+      `select(4, GetBuildInfo())` itself came back empty on this client; use
+      `select(4, GetBuildInfo())` only after confirming `GetBuildInfo()` returns
+      4 values via a plain `/dump GetBuildInfo()` first (this client returns
+      `version, build, date, tocversion` — 4 values — so the call should have
+      worked; the empty result is unexplained and worth a second look, but a
+      plain full dump always works as the fallback).
 - [ ] Slot limits really are 120 account + 18 character.
 - [ ] `PortraitFrameTemplate`, `InputScrollFrameTemplate`, spellbook tab and page
       button templates exist in the Forever client (`/fstack` on the spellbook).

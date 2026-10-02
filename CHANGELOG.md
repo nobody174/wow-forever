@@ -4,6 +4,32 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon plan, step 6: Road to Forever addon v0.4.0, main window, minimap button, logo)
+
+- The addon now has **one main window** (`UI/MainWindow.lua`) with Home / Macros /
+  Talents tabs at the bottom and the new logo as portrait (tag `r2f-v0.4.0`). The
+  step-3 Macro Book was reparented into the Macros tab (same code and public
+  functions, no separate window). **Home** (`UI/Home.lua`) shows library / on-bars
+  counts, a Talents placeholder and Import macros. Position and last tab are saved.
+- **Minimap button** (`Minimap.lua`): logo icon, tooltip, left-click toggles the
+  window, right-click menu (MenuUtil when the client has it, else our own menu
+  frame; never UIDropDownMenu), drag around the rim (round and square minimaps),
+  lock/hide from the menu, Settings or `/r2f minimap`. **No libraries embedded:**
+  LibDataBroker-1.1 is "All Rights Reserved" with no reuse grant, and LibDBIcon
+  can't load without it, so the button is our own; if another addon already loaded
+  LibDBIcon, it's registered through that copy. Findings per library in
+  `ADDON_PLAN.md` 6.10.
+- **Logo:** hand-written `addon/art/logo.svg` (gold road curling into an infinity
+  sign on a navy disc), exported by `addon/art/export_logo.py` (resvg + Pillow) to
+  `media/logo64.tga` / `logo128.tga` (32-bit with alpha).
+- Full slash-command set (`/r2f`, `/r2f macros`, `/r2f talents`, `/r2ft`,
+  `/r2f minimap`, `/r2f help`, `/r2f import` kept); the three key bindings now open
+  the main window's tabs.
+- Tests: `addon/tests/run_tests.py` now 5655 checks (was 5346), new main-window,
+  Home, reparented-book, minimap, menu, slash-command, LibDBIcon-backend and TGA
+  cases on both template and fallback paths; luacheck 0 warnings. Decisions in
+  `ADDON_PLAN.md` 6.10; in-game checks in `addon/RoadToForever/TESTING.md` 11.
+
 ## 2026-10-02 (Addon plan, step 5: Road to Forever addon v0.3.0, Settings, Remove all, key bindings)
 
 - The Macro Book's **Settings** button opens a new panel (`UI/Settings.lua`):

@@ -3,6 +3,29 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.4.0 (2026-10-02): main window, minimap button, logo (ADDON_PLAN.md step 6)
+
+Not tested in the game yet; see `TESTING.md` section 11.
+
+- **One window with three tabs** at the bottom: **Home**, **Macros** and
+  **Talents**. The Macro Book is now the Macros tab (same book, same buttons),
+  and the window has the Road to Forever logo as its portrait. It remembers where
+  you put it and which tab you used last.
+- **Home** shows how many macros are in your library and how many are on your
+  bars, a Talents entry (coming in a later version), and an **Import macros**
+  button. Click an entry to go to that tab.
+- **Minimap button** with the logo: left-click opens/closes the window, right-click
+  opens a menu (Open Road to Forever, Macros, Talents, Lock button position, Hide
+  minimap button), drag it around the minimap. The tooltip shows your library
+  count (and free talent points, if any). The Show / Lock minimap button settings
+  now work. If you have another addon that uses LibDBIcon, the button goes through
+  it, so minimap-button collector addons see it too.
+- **Slash commands:** `/r2f` (window, last tab), `/r2f macros`, `/r2f talents` or
+  `/r2ft`, `/r2f minimap` (hide/show the button), `/r2f import`, `/r2f help`.
+- **Key bindings:** Toggle Road to Forever opens the window on your last tab;
+  Open Macros / Open Talents open (or close) that tab.
+- The Talents tab is a placeholder until the talent versions.
+
 ## 0.3.0 (2026-10-02): Settings, Remove all, key bindings (ADDON_PLAN.md step 5)
 
 Not tested in the game yet; see `TESTING.md` sections 7, 9 and 10.

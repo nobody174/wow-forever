@@ -5,9 +5,9 @@
 --   -> R2FDB.settings.slotsFirst, read by Macros.ChooseSlot at every
 --   CreateMacro (so it only affects macros made from then on).
 -- * Show minimap button / Lock minimap button -> R2FDB.minimap.hide / .lock
---   (LibDBIcon's format, 6.3). The button itself is step 6; until then these
---   are stored only, and the panel says so. Step 6 provides
---   R2F.Minimap.Apply(), which this panel calls after every change.
+--   (LibDBIcon's format, 6.3), then R2F.Minimap.Apply() (Minimap.lua, step 6)
+--   puts the change on the button. The minimap button's own right-click menu
+--   and /r2f minimap change the same values and call Settings.Refresh.
 -- * Remove all Road to Forever macros (confirm popup; Macros.RemoveAll).
 --
 -- Only the Remove all button is greyed out in combat (it deletes macros,
@@ -40,7 +40,8 @@ local function setSlots(value)
   refresh()
 end
 
--- Step 6 hook: the minimap button re-reads R2FDB.minimap.
+-- The minimap button re-reads R2FDB.minimap. Still guarded: the Settings
+-- tests swap R2F.Minimap out, and a client without a Minimap frame has none.
 local function applyMinimap()
   if R2F.Minimap and R2F.Minimap.Apply then R2F.Minimap.Apply() end
 end
@@ -144,12 +145,6 @@ local function build()
     refresh()
     applyMinimap()
   end)
-  -- Until step 6 adds the button, say so instead of letting the boxes look broken.
-  ui.minimapNote = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-  ui.minimapNote:SetPoint("TOPLEFT", 52, -200)
-  ui.minimapNote:SetWidth(260)
-  ui.minimapNote:SetJustifyH("LEFT")
-  ui.minimapNote:SetText(L.SETTINGS_MINIMAP_LATER)
 
   ui.removeAll = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   ui.removeAll:SetSize(270, 22)
@@ -163,7 +158,6 @@ end
 
 function Settings.Show()
   frame = frame or build()
-  if R2F.Minimap and R2F.Minimap.Apply then ui.minimapNote:Hide() end
   frame:Show()
   refresh()
 end
@@ -178,5 +172,10 @@ end
 
 -- PLAYER_REGEN_DISABLED / ENABLED (6.5): grey out / re-enable Remove all.
 function Settings.SetCombat()
+  if frame and frame:IsShown() then refresh() end
+end
+
+-- Redraw the boxes after the minimap menu or /r2f minimap changed a value.
+function Settings.Refresh()
   if frame and frame:IsShown() then refresh() end
 end

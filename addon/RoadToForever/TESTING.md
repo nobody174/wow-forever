@@ -1,4 +1,8 @@
-# Road to Forever: in-game test checklist (v0.3.0, addon steps 3 to 5)
+# Road to Forever: in-game test checklist (v0.4.0, addon steps 3 to 6)
+
+Since v0.4.0 the Macro Book is the **Macros tab** of the main window: wherever an
+older section below says "`/r2f` opens the Macro Book" or "open the book", use
+`/r2f macros` (plain `/r2f` opens the tab you used last, Home the first time).
 
 Nothing in this addon has run in the real WoW client yet. Out of the game it was
 tested under real Lua 5.1 against a fake client (`addon/tests/`), which checks
@@ -16,7 +20,8 @@ on the character screen. Turn Lua errors on: `/console scriptErrors 1`.
       number in `RoadToForever.toc` (`## Interface:`; `11507` now is a placeholder for
       Classic Era 1.15.7). **Pass:** the addon is not listed as "out of date" on the
       character screen's AddOns list.
-- [ ] Log in. **Pass:** no Lua error. `/r2f` opens the Macro Book. `/r2f help` prints a line.
+- [ ] Log in. **Pass:** no Lua error. `/r2f` opens the main window (Home). `/r2f help`
+      prints the command list.
 - [ ] `/dump R2F` shows a table; `/dump R2FDB.version` shows `1`.
 
 ## 2. Templates exist (section 11)
@@ -24,11 +29,12 @@ on the character screen. Turn Lua errors on: `/console scriptErrors 1`.
 The addon tries each template and falls back if it's missing, so check which one
 you got:
 
-- [ ] **PortraitFrameTemplate.** `/dump R2FMacroBook ~= nil`. **Pass:** `true` and the
-      book has the round class-icon portrait top left, a gold title "Road to Forever"
-      and an X button. If `R2FMacroBookB` exists instead, the client only had
-      `ButtonFrameTemplate`; if `R2FMacroBookPlain`, neither (plain dialog border,
-      no portrait). Fallbacks work but look less native: note which one in ADDON_PLAN 11.
+- [ ] **PortraitFrameTemplate.** `/dump R2FMain ~= nil` (v0.4.0; before that the book
+      was `R2FMacroBook`). **Pass:** `true` and the window has the round logo portrait
+      top left, a gold title "Road to Forever" and an X button. If `R2FMainB` exists
+      instead, the client only had `ButtonFrameTemplate`; if `R2FMainPlain`, neither
+      (plain dialog border, no portrait). Fallbacks work but look less native: note
+      which one in ADDON_PLAN 11.
 - [ ] **InputScrollFrameTemplate.** Click Import. `/dump R2FImportScroll ~= nil`.
       **Pass:** `true`, the box scrolls, no Lua error when the window opens (watch for
       a `SetMaxLetters` error from the template's OnLoad). `R2FImportScrollPlain`
@@ -197,8 +203,7 @@ game can show:
 - [ ] Click **Settings** at the bottom right of the book. **Pass:** a small panel
       "Settings" opens with: `New macros go to:` and two round radio buttons
       (Character slots first selected), a grey note under them, two square check
-      boxes (Show minimap button ticked, Lock minimap button unticked), a grey line
-      `The minimap button comes in a later version.`, and a wide
+      boxes (Show minimap button ticked, Lock minimap button unticked) and a wide
       `Remove all Road to Forever macros` button. No green squares; nothing overlaps.
       If the radios look like square check boxes, `UIRadioButtonTemplate` is missing
       in this client (the fallback was used): note it in ADDON_PLAN 11.
@@ -208,8 +213,8 @@ game can show:
       Switch back to Character first: the next new macro goes to the character tab,
       and the first one stays where it was.
 - [ ] Tick/untick the minimap boxes, `/reload`, reopen Settings. **Pass:** the boxes
-      remember (`/dump R2FDB.minimap` shows `hide` / `lock`). Nothing else happens yet:
-      the minimap button is step 6.
+      remember (`/dump R2FDB.minimap` shows `hide` / `lock`). Since v0.4.0 the minimap
+      button follows them at once (section 11).
 - [ ] Esc closes the Settings panel; the X button closes it; the Settings button
       opens and closes it.
 - [ ] **Remove all.** Make 4 macros from the book: 2 on bars, 1 not, 1 edited in
@@ -241,23 +246,86 @@ valid XML, each binding calls a real function and the label globals exist.
       `Open Macros`, `Open Talents`. Note where it shows: under an AddOns section
       (`category="ADDONS"` worked) or elsewhere (e.g. at the bottom / "Other"). If the
       header is missing entirely, check for an XML error on login and note it.
-- [ ] Bind a key to each. **Pass:** Toggle opens and closes the Macro Book;
-      Open Macros does the same; Open Talents prints
-      `Road to Forever: the Talents window comes in a later version.` (step 6/9).
-- [ ] Press Toggle in combat. **Pass:** the book opens (In combat shown), no
-      "action blocked", no Lua error.
+- [ ] Bind a key to each. **Pass (v0.4.0):** Toggle opens and closes the main window
+      on the tab used last; Open Macros opens it on the Macros tab and closes it when
+      pressed again on that tab; Open Talents does the same with the Talents tab
+      (placeholder text until the talent versions).
+- [ ] Press Toggle in combat. **Pass:** the window opens (In combat shown on the
+      Macros tab), no "action blocked", no Lua error.
 - [ ] Bindings survive a `/reload` and a relog.
 
-## Known gaps in v0.3.0 (by design, later steps)
+## 11. Main window, minimap button, logo (v0.4.0, step 6)
 
-- Show / Lock minimap button settings are stored but do nothing visible yet: the
-  minimap button is step 6 (it reads `R2FDB.minimap`, ADDON_PLAN 6.9).
-- Key bindings: Toggle and Open Macros both toggle the Macro Book; Open Talents only
-  prints a line. Step 6 points them at the main window's tabs, step 9 fills Talents.
+Out of the game, `run_tests.py` covers tab switching, the saved last tab and
+position, the Home counts, the reparented book (slots, tabs, drag, tooltip,
+paging, menu), every slash command and binding, `R2F.Minimap.Apply`, drag angles,
+square minimaps, the tooltip lines, both menu paths (`MenuUtil` and our own), a
+fake LibDBIcon, and the TGA headers. Looks and the real client APIs are only
+checkable here.
+
+- [ ] **Main window.** `/r2f`. **Pass:** the window opens on **Home**, with the
+      round **logo** as portrait (not a green square: the TGA loaded), title
+      `Road to Forever`, three tabs **under** the window (Home / Macros / Talents)
+      in the character-frame tab style, Home selected. `/dump R2FMainTab1.r2fTemplate`
+      says which tab template was used (`PanelTabButtonTemplate`,
+      `CharacterFrameTabButtonTemplate`, or `UIPanelButtonTemplate` = fallback).
+      Note it in ADDON_PLAN 11; if the tabs overlap badly or have gaps, adjust the
+      `gap` values in `UI/MainWindow.lua` `TAB_TEMPLATES`.
+- [ ] **Tabs.** Click Macros: the title becomes `Road to Forever: Macros` and the
+      Macro Book shows exactly as before (side tabs on the right edge, grid, bottom
+      bar). Click Talents: placeholder text. A tab sound plays on switching.
+- [ ] **Home.** `N macros in your library, M on your bars` matches: N = your whole
+      library, M = Road to Forever macros on your action bars. Put one more on a bar
+      with Home open: M goes up within a moment. Click the Macro Book entry: Macros
+      tab. Click Talents: Talents tab. **Import macros** opens the Import window
+      (greyed out in combat).
+- [ ] **Remembered.** Drag the window somewhere, switch to Macros, close it,
+      `/reload`, `/r2f`. **Pass:** same spot, Macros tab.
+- [ ] Esc closes the window. Spellbook open/close sounds play.
+- [ ] **Minimap button.** A round button with the logo on the minimap rim
+      (bottom-left at first). **Pass:** it looks like other minimap buttons (gold
+      ring, dark background), the road and the infinity sign are recognisable at
+      that size (12.1: "check it in-game at the real size"). If not, note what's
+      unreadable; the source is `addon/art/logo.svg`, re-export with
+      `py -3.12 addon/art/export_logo.py`.
+- [ ] Hover it: `Road to Forever` (gold), `N macros in your library` (white),
+      `Left-click to open.`, `Right-click for options.`, `Drag to move.` (green).
+      With unspent talent points, `5 free talent points` too (checks
+      `UnitCharacterPoints` exists in Forever).
+- [ ] Left-click opens/closes the window on the last tab.
+- [ ] **Drag** it around the minimap: it follows the rim smoothly. `/reload`:
+      **Pass:** it's where you left it. With a square-minimap addon, it follows the
+      square edge.
+- [ ] **Right-click menu (section 11 of the plan: which menu API).**
+      `/dump MenuUtil ~= nil`: `true` = Blizzard's menu is used, `false` = our own
+      small menu. Either way: gold title `Road to Forever` (not clickable), Open
+      Road to Forever, Macros, Talents, a divider, `Lock button position` with a
+      check mark state, `Hide minimap button`. Each item does what it says; after
+      Lock, dragging does nothing and the tooltip has no `Drag to move.`; Hide
+      prints `Road to Forever: minimap button hidden. Type /r2f minimap to show it
+      again.` Note which menu API it was in ADDON_PLAN 11.
+- [ ] `/r2f minimap` shows it again (chat `minimap button shown.`); again hides it.
+      Settings' Show/Lock boxes follow menu and slash-command changes while open.
+- [ ] **With another addon that embeds LibDBIcon** (e.g. one with its own minimap
+      button) enabled: `/dump R2F.Minimap.backend` says `libdbicon` and the button
+      works the same (drag, menu, tooltip, hide/lock); without such an addon it
+      says `own`. A minimap-button collector addon picks the button up in either
+      case or at least in `libdbicon` mode; note which.
+- [ ] **Slash commands:** `/r2f macros`, `/r2f talents`, `/r2ft`, `/r2f import`,
+      `/r2f help` (prints 7 lines), `/r2f nonsense` (prints `unknown command`).
+- [ ] `/console taintLog 1`, use the window, tabs, minimap drag and menu (also in
+      combat: open/close the window, open the menu), `/reload`, check
+      `Logs\taint.log`. **Pass:** no entries blaming RoadToForever.
+
+## Known gaps in v0.4.0 (by design, later steps)
+
+- The Talents tab and the Home Talents entry are placeholders (steps 8 to 10).
+- The window has a fixed size (ADDON_PLAN 6.10); only position and tab are saved.
+- No embedded libraries: without another addon that loads LibDBIcon, the minimap
+  button is our own, which some minimap-button collector addons may not pick up
+  (ADDON_PLAN 6.10).
 - Remove all only reaches this character's character-slot macros (plus account
   ones); use it on each character to clear theirs.
 - An icon-only change to a macro made with v0.1.0 isn't pushed until its body
   changes too (v0.1.0 didn't store the icon; ADDON_PLAN 6.8).
-- No main window, minimap button or full slash-command set (step 6). `/r2f` opens
-  the Macro Book directly, `/r2f import` opens the Import window.
 - Other classes' macros have no tabs; they're kept and listed on the Universal tab.

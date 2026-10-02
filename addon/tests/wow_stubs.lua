@@ -20,7 +20,11 @@ T.templates = { PortraitFrameTemplate = true, InputScrollFrameTemplate = true,
                 UIPanelButtonTemplate = true, UIPanelCloseButton = true,
                 UIPanelScrollFrameTemplate = true, BackdropTemplate = true,
                 ButtonFrameTemplate = true, UICheckButtonTemplate = true,
-                UIRadioButtonTemplate = true }
+                UIRadioButtonTemplate = true,
+                -- Step 6: only the Classic tab template, so the main window's
+                -- PanelTabButtonTemplate -> CharacterFrameTabButtonTemplate
+                -- chain is exercised (the first one is "missing").
+                CharacterFrameTabButtonTemplate = true }
 T.calls = {}          -- log of macro API writes
 
 -- ---------------------------------------------------------------------------
@@ -121,7 +125,8 @@ function GetSpellTexture(name) return T.knownSpells[name] end
 function GetItemInfo() return nil end
 function UnitClass() return "Warrior", "WARRIOR", 1 end
 function IsShiftKeyDown() return T.shift or false end
-function GetCursorPosition() return 500, 400 end
+function GetCursorPosition() return T.cursorX or 500, T.cursorY or 400 end
+function UnitCharacterPoints() return T.talentPoints or 0 end
 function PlaySound() end
 SOUNDKIT = { IG_SPELLBOOK_OPEN = 1, IG_SPELLBOOK_CLOSE = 2, IG_ABILITY_PAGE_TURN = 3, IG_MAINMENU_OPEN = 4 }
 time = os.time
@@ -160,7 +165,7 @@ for _, name in ipairs({
   "SetPushedTexture", "SetDisabledTexture", "SetCheckedTexture", "RegisterForClicks",
   "SetMultiLine", "SetAutoFocus", "SetFontObject", "SetMaxLetters", "SetMaxBytes",
   "SetScrollChild", "SetFocus", "ClearFocus", "HighlightText",
-  "SetMotionScriptsWhileDisabled", "SetHitRectInsets",
+  "SetMotionScriptsWhileDisabled", "SetHitRectInsets", "SetFrameLevel",
 }) do methods[name] = noop end
 local MT = { __index = methods }
 
@@ -184,7 +189,24 @@ function methods:Hide()
 end
 function methods:SetShown(v) if v then self:Show() else self:Hide() end end
 function methods:IsShown() return self.__shown end
-function methods:IsVisible() return self.__shown end
+-- Like the real client: IsShown is the frame's own flag, IsVisible also
+-- needs every parent shown (the main window's pages rely on this, step 6).
+function methods:IsVisible()
+  local o = self
+  while o do
+    if not o.__shown then return false end
+    o = o.__parent
+  end
+  return true
+end
+function methods:SetID(i) self.__id = i end
+function methods:GetID() return self.__id end
+function methods:SetSize(w, h) self.__w, self.__h = w, h end
+function methods:GetWidth() return self.__w or 0 end
+function methods:GetHeight() return self.__h or 0 end
+function methods:GetCenter() return self.__cx or 0, self.__cy or 0 end
+function methods:SetPoint(...) self.__point = { ... } end
+function methods:ClearAllPoints() self.__point = nil end
 function methods:SetScript(k, fn) self.__scripts[k] = fn end
 function methods:GetScript(k) return self.__scripts[k] end
 function methods:HookScript(k, fn)
@@ -251,6 +273,40 @@ UIErrorsFrame = newObject("Frame", "UIErrorsFrame")
 function UIErrorsFrame:AddMessage(m) table.insert(T.errors, m) end
 DEFAULT_CHAT_FRAME = newObject("Frame", "DEFAULT_CHAT_FRAME")
 function DEFAULT_CHAT_FRAME:AddMessage(m) table.insert(T.chat, m) end
+
+-- Step 6: the minimap (140 x 140, centre at 1000, 600 on a scale-1 screen).
+Minimap = newObject("Frame", "Minimap")
+Minimap:SetSize(140, 140)
+Minimap.__cx, Minimap.__cy = 1000, 600
+
+-- Blizzard's tab helpers (SharedXML PanelTemplates), reduced to what the
+-- main window uses: the selected tab is disabled, like the real one does.
+function PanelTemplates_SetNumTabs(frame, n) frame.numTabs = n end
+function PanelTemplates_TabResize() end
+function PanelTemplates_SetTab(frame, id)
+  frame.selectedTab = id
+  for i = 1, frame.numTabs do
+    local tab = frame.Tabs[i]
+    if i == id then tab:Disable() else tab:Enable() end
+  end
+end
+
+-- MenuUtil (newer clients): records the menu the generator builds into
+-- T.menu = { {kind=, text=, ...}, ... } and keeps the callbacks callable.
+MenuUtil = {
+  CreateContextMenu = function(owner, generator)
+    local items = {}
+    local root = {}
+    function root:CreateTitle(text) table.insert(items, { kind = "title", text = text }) end
+    function root:CreateDivider() table.insert(items, { kind = "divider" }) end
+    function root:CreateButton(text, fn) table.insert(items, { kind = "button", text = text, func = fn }) end
+    function root:CreateCheckbox(text, isSel, setSel)
+      table.insert(items, { kind = "check", text = text, isChecked = isSel, func = setSel })
+    end
+    generator(owner, root)
+    T.menu, T.menuOwner = items, owner
+  end,
+}
 
 -- Find the frame the addon registered for events (Core.lua's anonymous one).
 T.allFrames = {}

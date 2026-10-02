@@ -93,10 +93,10 @@ function Library.Init()
   if type(db.settings) ~= "table" then db.settings = {} end
   if type(db.createdAccount) ~= "table" then db.createdAccount = {} end
   if type(db.sectionSeen) ~= "table" then db.sectionSeen = {} end
-  -- LibDBIcon's own format (6.3): step 6 hands this table to
-  -- LibDBIcon:Register as-is. The Settings panel (step 5) already writes
-  -- hide/lock, so fill each field separately rather than only when the
-  -- whole table is missing.
+  -- LibDBIcon's own format (6.3). Minimap.lua (step 6) reads it for our own
+  -- button, or hands it to LibDBIcon:Register as-is when another addon has
+  -- loaded LibDBIcon (6.10). Settings writes hide/lock, so fill each field
+  -- separately rather than only when the whole table is missing.
   if type(db.minimap) ~= "table" then db.minimap = {} end
   local mm = db.minimap
   if type(mm.hide) ~= "boolean" then mm.hide = false end
@@ -104,6 +104,11 @@ function Library.Init()
   if type(mm.minimapPos) ~= "number" then mm.minimapPos = 220 end
   local s = db.settings
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
+  -- Main window (12.4, step 6): the tab /r2f reopens. Home on first use.
+  -- windowPos (the window's saved spot) is written by UI.Window when moved;
+  -- before step 6 it was the Macro Book's own window, now it's the main
+  -- window that holds the book, so a moved book keeps its spot.
+  if s.lastTab ~= "home" and s.lastTab ~= "macros" and s.lastTab ~= "talents" then s.lastTab = "home" end
   _G.R2FDB = db
 
   local cdb = _G.R2FCharDB

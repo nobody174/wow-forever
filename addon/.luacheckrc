@@ -8,7 +8,7 @@ exclude_files = { "tests/**" }
 globals = {
   "R2F",                    -- the addon's one namespace table
   "R2FDB", "R2FCharDB",     -- SavedVariables (the TOC makes them global)
-  "SLASH_R2F1",             -- slash command registration
+  "SLASH_R2F1", "SLASH_R2FT1", -- slash command registration (/r2f, /r2ft)
   "SlashCmdList",           -- .R2F field
   "UISpecialFrames",        -- Esc-to-close (append only)
   -- Key Bindings menu labels for Bindings.xml (names fixed by Blizzard, 6.9)
@@ -32,4 +32,10 @@ read_globals = {
   "ChatEdit_InsertLink", "ChatFrame_OpenChat",
   "CLASS_ICON_TCOORDS", "LOCALIZED_CLASS_NAMES_MALE",
   "PlaySound", "SOUNDKIT",
+  -- Step 6: main window tabs, minimap button, menu
+  "PanelTemplates_SetTab", "PanelTemplates_SetNumTabs", "PanelTemplates_TabResize",
+  "GameFontNormalSmall", "GameFontHighlightSmall",
+  "Minimap", "GetMinimapShape", "MenuUtil", "UnitCharacterPoints",
 }
+-- Nothing is vendored in libs\ (ADDON_PLAN.md 6.10), so there is no
+-- third-party code to exclude; LibStub is only read through _G in Minimap.lua.

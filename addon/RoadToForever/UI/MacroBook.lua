@@ -6,8 +6,15 @@
 -- Only Universal + the player's own class get tabs; other classes' macros
 -- stay in the library and are mentioned on the Universal tab (5.7).
 --
--- Step 6 moves this into the Macros tab of the main window; for now /r2f
--- opens it directly as its own window.
+-- Since step 6 the book is the Macros tab of the main window (12.4,
+-- UI/MainWindow.lua). It was REPARENTED, not rebuilt: MainWindow calls
+-- MacroBook.Build(page) with the tab's page frame and the book draws the same
+-- slots, side tabs and bottom bar into it, at the same offsets (the page fills
+-- the main window, which has the book's old size). Everything else stays
+-- here, so the public functions (Show, Toggle, IsShown, Refresh,
+-- RequestRefresh, SetCombat, ShowSection) keep their meaning for Core.lua,
+-- ImportFrame.lua, Settings.lua and the tests: "shown" now means "the main
+-- window is open on the Macros tab", and Show / Toggle go through MainWindow.
 
 local _, R2F = ...
 local L = R2F.L
@@ -41,7 +48,7 @@ local SECTION_ICONS = {
 }
 local MELEE = { WARRIOR = true, ROGUE = true, PALADIN = true }
 
-local book, slots, tabs = nil, {}, {}
+local book, slots, tabs = nil, {}, {}   -- book = the Macros tab's page frame
 local ui = {}            -- bottom-bar widgets
 local state = { key = nil, page = 1, tabs = {} }
 local menu               -- right-click menu
@@ -307,18 +314,12 @@ local function onTidy()
   end)
 end
 
-local function build()
-  local f = UI.Window("R2FMacroBook", 540, 500, "windowPos")
-  f.r2fSetTitle(L.BOOK_TITLE)
-
-  if f.r2fPortrait then
-    local coords = classCoords(R2F.playerClass)
-    if coords then
-      f.r2fPortrait:SetTexture(CLASS_CIRCLES)
-      f.r2fPortrait:SetTexCoord(unpack(coords))
-    end
-  end
-
+-- Draws the book into `f`, the main window's Macros page (a frame filling
+-- the 540 x 500 main window, so the offsets below are the same as when the
+-- book was its own window). The window frame, title, portrait, Esc and
+-- open/close sounds belong to MainWindow now; the portrait is the logo
+-- (12.4), not the class icon of 5.1, since the window is shared by every tab.
+local function build(f)
   for i = 1, PER_PAGE do slots[i] = buildSlot(f, i) end
 
   local empty = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
@@ -375,16 +376,19 @@ local function build()
   ui.settings = button(L.BTN_SETTINGS, 100)
   ui.settings:SetPoint("BOTTOMRIGHT", -20, 16)
   ui.settings:SetScript("OnClick", function() R2F.Settings.Toggle() end)
-
-  f:SetScript("OnShow", function()
-    UI.PlaySound("IG_SPELLBOOK_OPEN")
-    MacroBook.Refresh()
-  end)
-  f:SetScript("OnHide", function()
-    UI.PlaySound("IG_SPELLBOOK_CLOSE")
-    if menu then menu:Hide() end
-  end)
   return f
+end
+
+-- Called once by MainWindow with the Macros page frame.
+function MacroBook.Build(page)
+  book = build(page)
+  return book
+end
+
+-- MainWindow: the Macros page was hidden (tab switch or window closed).
+-- The right-click menu belongs to UIParent, so it has to be closed by hand.
+function MacroBook.OnHide()
+  if menu then menu:Hide() end
 end
 
 -- ---------------------------------------------------------------------------
@@ -421,8 +425,15 @@ local function refreshBottom()
   ui.tidy:SetEnabled(not combat)
 end
 
+-- IsVisible, not IsShown: the page keeps its own "shown" flag while the
+-- main window is closed or on another tab, and only IsVisible looks at the
+-- parents.
+local function bookVisible()
+  return book ~= nil and book:IsVisible()
+end
+
 function MacroBook.Refresh()
-  if not book or not book:IsShown() then return end
+  if not bookVisible() then return end
   state.tabs = collectTabs()
 
   -- Resolve the selected tab by key, so new imports can't shift it.
@@ -492,28 +503,28 @@ end
 -- dozens at once), so markers refresh at most every 0.2 s, and only while open.
 local pending = false
 function MacroBook.RequestRefresh()
-  if not book or not book:IsShown() or pending then return end
+  if not bookVisible() or pending then return end
   if not (C_Timer and C_Timer.After) then MacroBook.Refresh(); return end
   pending = true
   C_Timer.After(0.2, function() pending = false; MacroBook.Refresh() end)
 end
 
 function MacroBook.SetCombat()
-  if book and book:IsShown() then refreshBottom() end
+  if bookVisible() then refreshBottom() end
 end
 
+-- Open the main window on the Macros tab.
 function MacroBook.Show()
-  book = book or build()
-  book:Show()
-  MacroBook.Refresh()
+  R2F.MainWindow.Show("macros")
 end
 
+-- Close the window if it's showing the book, else open it on the book.
 function MacroBook.Toggle()
-  if book and book:IsShown() then book:Hide() else MacroBook.Show() end
+  R2F.MainWindow.Toggle("macros")
 end
 
 function MacroBook.IsShown()
-  return book ~= nil and book:IsShown()
+  return bookVisible()
 end
 
 -- Open on a given section's tab (after an import, 5.6). Sections of other

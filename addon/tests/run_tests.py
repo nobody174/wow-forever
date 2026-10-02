@@ -63,7 +63,10 @@ def new_runtime(templates=True):
     if not templates:
         lua.execute("TEST.templates.PortraitFrameTemplate = nil; TEST.templates.ButtonFrameTemplate = nil;"
                     "TEST.templates.InputScrollFrameTemplate = nil; TEST.templates.UICheckButtonTemplate = nil;"
-                    "TEST.templates.UIRadioButtonTemplate = nil")
+                    "TEST.templates.UIRadioButtonTemplate = nil;"
+                    # Step 6 fallbacks: no tab template, no PanelTemplates helpers, no MenuUtil.
+                    "TEST.templates.CharacterFrameTabButtonTemplate = nil; PanelTemplates_SetTab = nil;"
+                    "PanelTemplates_SetNumTabs = nil; PanelTemplates_TabResize = nil; MenuUtil = nil")
     # Globals present before the addon loads, for the one-global audit.
     lua.execute("BEFORE = {} for k in pairs(_G) do BEFORE[k] = true end BEFORE.BEFORE = true")
     lua.execute("NS = {}")
@@ -561,7 +564,7 @@ def test_ui_updates(fx):
       TABS = {} SLOTS = {}
       for _, f in ipairs(TEST.allFrames) do
         if f.__kind == 'CheckButton' and f.sec and f.__shown then table.insert(TABS, f) end
-        if f.__kind == 'Button' and f.__scripts.OnDragStart then table.insert(SLOTS, f) end
+        if f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton then table.insert(SLOTS, f) end
       end
       TABS[2]:Click()""")
     lua.execute("SLOTS[1]:Fire('OnDragStart')")
@@ -612,11 +615,17 @@ def test_ui_smoke(templates, fx):
     T.fire("ADDON_LOADED", "RoadToForever")
     T.fire("PLAYER_LOGIN")
     check(lua.eval("R2F.playerClass") == "WARRIOR", "class read on PLAYER_LOGIN")
+    # Step 6: /r2f opens the main window on its last tab (Home the first
+    # time); /r2f macros shows the Macro Book inside it.
     lua.execute('SlashCmdList.R2F("")')
-    check(lua.eval("R2F.MacroBook.IsShown()") is True, "/r2f opens the Macro Book")
+    check(lua.eval("R2F.MainWindow.IsShown()") is True and lua.eval("R2F.MainWindow.CurrentTab()") == "home",
+          "/r2f opens the main window on Home the first time")
+    check(lua.eval("R2F.MacroBook.IsShown()") is False, "the book is not visible while Home is showing")
+    lua.execute('SlashCmdList.R2F("macros")')
+    check(lua.eval("R2F.MacroBook.IsShown()") is True, "/r2f macros shows the Macro Book")
     tag = "templates" if templates else "fallbacks"
-    check(lua.eval("R2FMacroBook ~= nil") if templates else lua.eval("R2FMacroBookPlain ~= nil"),
-          "%s: book frame created via %s" % (tag, "PortraitFrameTemplate" if templates else "fallback"))
+    check(lua.eval("R2FMain ~= nil") if templates else lua.eval("R2FMainPlain ~= nil"),
+          "%s: main window created via %s" % (tag, "PortraitFrameTemplate" if templates else "fallback"))
 
     lua.execute('SlashCmdList.R2F("import")')
     check(lua.eval("R2FImport:IsShown()") is True, "import window opens")
@@ -659,7 +668,7 @@ def test_ui_smoke(templates, fx):
       TABS = {} SLOTS = {}
       for _, f in ipairs(TEST.allFrames) do
         if f.__kind == 'CheckButton' and f.sec and f.__shown then table.insert(TABS, f) end
-        if f.__kind == 'Button' and f.__scripts.OnDragStart then table.insert(SLOTS, f) end
+        if f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton then table.insert(SLOTS, f) end
       end""")
     secs = [lua.eval("TABS[%d].sec.section" % i) for i in range(1, lua.eval("#TABS") + 1)]
     check(secs == ["Universal", "General", "Tank", "DPS"], "%s: tabs %s" % (tag, secs))
@@ -747,12 +756,12 @@ def test_ui_smoke(templates, fx):
 
     # Esc support + the one-global audit.
     special = lua_table_to_list(lua.eval("UISpecialFrames"))
-    check("R2FImport" in special and any(s.startswith("R2FMacroBook") for s in special), "windows close with Esc: %s" % special)
+    check("R2FImport" in special and any(s.startswith("R2FMain") for s in special), "windows close with Esc: %s" % special)
     new_globals = lua.eval("""(function()
       local out = {}
       for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
-    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1"} | BINDING_GLOBALS
+    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1", "SLASH_R2FT1"} | BINDING_GLOBALS
     test_vars = {"EDIT", "PREVIEW", "IMPORTBTN", "BADTEXT", "TABS", "SLOTS", "PAGETEXT", "TIDY", "BOOKIMPORT",
                  "COMBATTEXT", "OTHER", "NS"}
     bad = [g for g in new_globals if g and g not in allowed_exact and g not in test_vars and not g.startswith("R2F")]
@@ -902,16 +911,21 @@ def test_step5_ui(templates, fx):
     lua.eval("R2F.Library.Apply")(res.records, 1)
     lib_count = lua.eval("R2F.Library.Count()")
 
-    # Key bindings: Toggle / Open Macros toggle the book, Open Talents is a stub.
+    # Key bindings (repointed in step 6, ADDON_PLAN 6.9 / 6.10): Toggle = main
+    # window on its last tab, Open Macros / Open Talents = that tab (toggling).
     lua.execute("R2F.Bindings.Toggle()")
-    check(lua.eval("R2F.MacroBook.IsShown()") is True, "%s: binding Toggle opens the Macro Book" % tag)
+    check(lua.eval("R2F.MainWindow.IsShown()") is True and lua.eval("R2F.MainWindow.CurrentTab()") == "home",
+          "%s: binding Toggle opens the main window on its last tab (Home at first)" % tag)
     lua.execute("R2F.Bindings.Toggle()")
-    check(lua.eval("R2F.MacroBook.IsShown()") is False, "binding Toggle closes it again")
+    check(lua.eval("R2F.MainWindow.IsShown()") is False, "binding Toggle closes it again")
     lua.execute("R2F.Bindings.OpenMacros()")
-    check(lua.eval("R2F.MacroBook.IsShown()") is True, "binding Open Macros opens the Macro Book")
-    T.chat = lua.table()
+    check(lua.eval("R2F.MacroBook.IsShown()") is True, "binding Open Macros opens the Macro Book tab")
     lua.execute("R2F.Bindings.OpenTalents()")
-    check(any(lua.eval("R2F.L.TALENTS_LATER") in c for c in chat_lines(lua)), "binding Open Talents says it comes later")
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "talents" and lua.eval("R2F.MacroBook.IsShown()") is False,
+          "binding Open Talents switches to the Talents tab")
+    lua.execute("R2F.Bindings.OpenTalents()")
+    check(lua.eval("R2F.MainWindow.IsShown()") is False, "binding Open Talents on the Talents tab closes the window")
+    lua.execute("R2F.Bindings.OpenMacros()")
     for g in BINDING_GLOBALS:
         check(isinstance(lua.eval(g), str) and lua.eval(g) != "", "binding label global %s is set" % g)
 
@@ -950,13 +964,13 @@ def test_step5_ui(templates, fx):
     # Minimap checkboxes: stored in R2FDB.minimap (step 6 reads them).
     check(lua.eval(rb("SETTINGS_MINIMAP_SHOW") + ":GetChecked()") is True and lua.eval(rb("SETTINGS_MINIMAP_LOCK") + ":GetChecked()") is False,
           "Settings: minimap shown + unlocked by default")
-    lua.execute("APPLIED = 0 R2F.Minimap = { Apply = function() APPLIED = APPLIED + 1 end }")
+    lua.execute("REAL_MM = R2F.Minimap APPLIED = 0 R2F.Minimap = { Apply = function() APPLIED = APPLIED + 1 end }")
     lua.execute(rb("SETTINGS_MINIMAP_SHOW") + ":Click() " + rb("SETTINGS_MINIMAP_LOCK") + ":Click()")
     check(lua.eval("R2FDB.minimap.hide") is True and lua.eval("R2FDB.minimap.lock") is True
           and lua.eval(rb("SETTINGS_MINIMAP_SHOW") + ":GetChecked()") is False and lua.eval(rb("SETTINGS_MINIMAP_LOCK") + ":GetChecked()") is True,
           "Settings: minimap checkboxes write R2FDB.minimap.hide / .lock")
     check(lua.eval("APPLIED") == 2, "Settings calls the step-6 hook R2F.Minimap.Apply after each minimap change")
-    lua.execute(rb("SETTINGS_MINIMAP_SHOW") + ":Click() R2F.Minimap = nil")
+    lua.execute(rb("SETTINGS_MINIMAP_SHOW") + ":Click() R2F.Minimap = REAL_MM")
     check(lua.eval("R2FDB.minimap.hide") is False, "Show minimap button toggles back")
 
     # Combat: Remove all greyed out, Settings button still usable.
@@ -997,9 +1011,9 @@ def test_step5_ui(templates, fx):
       local out = {}
       for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
-    test_vars = {"SETBTN", "CHECKS", "REMOVEALL", "L", "APPLIED", "NS"}
+    test_vars = {"SETBTN", "CHECKS", "REMOVEALL", "L", "APPLIED", "NS", "REAL_MM"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1",) and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
     check(not bad, "%s: step 5 adds no globals besides R2F* frames and the binding labels: %s" % (tag, bad))
 
 
@@ -1025,6 +1039,364 @@ def test_bindings_xml(lua):
     check(root.find("Binding").get("header") == "ROADTOFOREVER", "first binding carries the header")
 
 
+def find_frames(lua, cond, var):
+    """Collect TEST.allFrames entries matching a Lua condition on `f` into global `var`."""
+    lua.execute("%s = {} for _, f in ipairs(TEST.allFrames) do if %s then table.insert(%s, f) end end" % (var, cond, var))
+    return lua.eval("#" + var)
+
+
+def test_step6_ui(templates, fx):
+    """Step 6: main window + tabs, Home counts, reparented Macro Book, minimap button + menu, slash commands."""
+    lua = new_runtime(templates)
+    tag = "templates" if templates else "fallbacks"
+    T = lua.eval("TEST")
+    L = lua.eval("R2F.L")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    MW = lua.eval("R2F.MainWindow")
+    win = "R2FMain" if templates else "R2FMainPlain"
+
+    # ---- Minimap button: own backend, R2F.Minimap.Apply -------------------
+    check(lua.eval("R2F.Minimap.backend") == "own", "%s: no LibDBIcon loaded -> own minimap button" % tag)
+    check(lua.eval("R2FMinimapButton ~= nil and R2FMinimapButton.__parent == Minimap"), "minimap button is a child of Minimap")
+    check(lua.eval("R2FMinimapButton.icon.__tex") == "Interface\\AddOns\\RoadToForever\\media\\logo64",
+          "minimap icon = media/logo64")
+    pt = lua_table_to_list(lua.eval("R2FMinimapButton.__point"))
+    import math
+    want = (75 * math.cos(math.radians(220)), 75 * math.sin(math.radians(220)))
+    check(pt[0] == "CENTER" and abs(pt[3] - want[0]) < 1e-6 and abs(pt[4] - want[1]) < 1e-6,
+          "default minimapPos 220 puts the button on the rim (round minimap): %s" % pt)
+    lua.execute("R2FDB.minimap.hide = true R2F.Minimap.Apply()")
+    check(lua.eval("R2FMinimapButton:IsShown()") is False, "Apply: hide = true hides the button")
+    lua.execute("R2FDB.minimap.hide = false R2F.Minimap.Apply()")
+    check(lua.eval("R2FMinimapButton:IsShown()") is True, "Apply: hide = false shows it again")
+    lua.execute("R2FDB.minimap.minimapPos = 90 R2F.Minimap.Apply()")
+    pt = lua_table_to_list(lua.eval("R2FMinimapButton.__point"))
+    check(abs(pt[3]) < 1e-6 and abs(pt[4] - 75) < 1e-6, "Apply: minimapPos 90 = top of the minimap")
+    lua.execute("function GetMinimapShape() return 'SQUARE' end")
+    x, y = lua.eval("R2F.Minimap.Offset")(45)
+    check(abs(x - 75) < 1e-6 and abs(y - 75) < 1e-6, "square minimap: 45 degrees = the corner (%s, %s)" % (x, y))
+    x, y = lua.eval("R2F.Minimap.Offset")(30)
+    check(abs(x - 75) < 1e-6 and 0 < y < 75, "square minimap: 30 degrees follows the right edge")
+    lua.execute("GetMinimapShape = nil")
+
+    # Drag: locked = nothing; unlocked = follows the cursor, saves minimapPos.
+    lua.execute("R2FDB.minimap.lock = true R2F.Minimap.Apply() R2FMinimapButton:Fire('OnDragStart')")
+    check(lua.eval("R2FMinimapButton.__scripts.OnUpdate") is None, "locked: dragging does nothing")
+    lua.execute("R2FDB.minimap.lock = false R2FMinimapButton:Fire('OnDragStart')")
+    check(lua.eval("R2FMinimapButton.__scripts.OnUpdate ~= nil"), "unlocked: drag starts an OnUpdate")
+    T.cursorX, T.cursorY = 1000, 700          # straight above the centre (1000, 600)
+    lua.execute("R2FMinimapButton:Fire('OnUpdate')")
+    check(abs(lua.eval("R2FDB.minimap.minimapPos") - 90) < 1e-6, "drag: cursor above the minimap -> 90 degrees")
+    T.cursorX, T.cursorY = 900, 600           # left of it
+    lua.execute("R2FMinimapButton:Fire('OnUpdate') R2FMinimapButton:Fire('OnDragStop')")
+    check(abs(lua.eval("R2FDB.minimap.minimapPos") - 180) < 1e-6 and lua.eval("R2FMinimapButton.__scripts.OnUpdate") is None,
+          "drag stop saves 180 degrees and removes the OnUpdate")
+    T.cursorX, T.cursorY = None, None
+
+    # Tooltip (12.2).
+    lua.execute("R2FMinimapButton:Fire('OnEnter')")
+    lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(lines == ["Road to Forever", "0 macros in your library", L.MM_LEFT, L.MM_RIGHT, L.MM_DRAG],
+          "minimap tooltip lines: %s" % lines)
+    T.talentPoints = 5
+    lua.execute("R2FDB.minimap.lock = true R2FMinimapButton:Fire('OnEnter')")
+    lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check("5 free talent points" in lines and L.MM_DRAG not in lines,
+          "tooltip: free talent points when > 0, no drag hint when locked: %s" % lines)
+    lua.execute("R2FDB.minimap.lock = false")
+    T.talentPoints = 0
+
+    # Left-click toggles the main window on its last tab.
+    lua.execute("R2FMinimapButton:Click('LeftButton')")
+    check(MW.IsShown() is True and MW.CurrentTab() == "home", "minimap left-click opens the main window (Home first)")
+    lua.execute("R2FMinimapButton:Click('LeftButton')")
+    check(MW.IsShown() is False, "minimap left-click closes it again")
+
+    # ---- Right-click menu (MenuUtil on the template run, own menu on fallbacks)
+    lua.execute("R2FMinimapButton:Click('RightButton')")
+    expected = [("title", "Road to Forever"), ("button", L.MENU_OPEN), ("button", L.MENU_MACROS),
+                ("button", L.MENU_TALENTS), ("divider", None), ("check", L.MENU_LOCK), ("button", L.MENU_HIDE)]
+    if templates:
+        menu = lua.eval("TEST.menu")
+        got = [(menu[i].kind, menu[i].text) for i in range(1, len(menu) + 1)]
+        check(got == expected, "MenuUtil menu = 12.2's items in order: %s" % got)
+        click = lambda i: lua.execute("TEST.menu[%d].func()" % i)
+        checked = lambda: lua.eval("TEST.menu[6].isChecked()")
+    else:
+        check(lua.eval("R2FMenu ~= nil and R2FMenu:IsShown()") is True, "no MenuUtil -> own menu frame opens")
+        rows = lua.eval("R2FMenu.rows")
+        got = [(rows[i].item.kind, rows[i].item.text) for i in range(1, len(expected) + 1)]
+        check(got == expected, "own menu rows = 12.2's items in order: %s" % got)
+        check(lua.eval("R2FMenu.rows[1].__enabled") is False and lua.eval("R2FMenu.rows[5].__enabled") is False,
+              "own menu: title and divider are not clickable")
+        check(lua.eval("R2FMenu.rows[6].check.__tex") == "Interface\\Buttons\\UI-CheckBox-Up", "own menu: lock unchecked")
+        check("R2FMenu" in lua_table_to_list(lua.eval("UISpecialFrames")), "own menu closes with Esc")
+
+        def click(i):
+            lua.execute("R2F.UI.ContextMenu(R2F.Minimap.MenuItems()) R2FMenu.rows[%d]:Click()" % i)
+        checked = lambda: lua.eval("R2F.Minimap.MenuItems()[6].isChecked()")
+    click(3)
+    check(MW.IsShown() is True and MW.CurrentTab() == "macros", "%s: menu > Macros opens the Macros tab" % tag)
+    click(4)
+    check(MW.CurrentTab() == "talents", "menu > Talents opens the Talents tab")
+    click(2)
+    check(MW.CurrentTab() == "talents", "menu > Open Road to Forever keeps the last tab")
+    lua.execute("R2F.Settings.Show()")
+    click(6)
+    check(lua.eval("R2FDB.minimap.lock") is True and checked() is True, "menu > Lock button position locks (check item)")
+    lua.execute("""
+      for _, f in ipairs(TEST.allFrames) do
+        if f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_MINIMAP_LOCK then LOCKBOX = f end
+        if f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_MINIMAP_SHOW then SHOWBOX = f end
+      end""")
+    check(lua.eval("LOCKBOX:GetChecked()") is True, "the open Settings panel follows the menu's lock")
+    click(6)
+    check(lua.eval("R2FDB.minimap.lock") is False, "Lock again unlocks")
+    T.chat = lua.table()
+    click(7)
+    check(lua.eval("R2FDB.minimap.hide") is True and lua.eval("R2FMinimapButton:IsShown()") is False,
+          "menu > Hide minimap button hides it")
+    check(any("minimap button hidden. Type /r2f minimap to show it again." in c for c in chat_lines(lua)),
+          "hiding prints how to get it back (12.2)")
+    check(lua.eval("SHOWBOX:GetChecked()") is False, "Settings' Show box follows the hide")
+    lua.execute("R2F.Settings.Toggle()")
+
+    # ---- Slash commands (12.3) ---------------------------------------------
+    slash = lambda m: lua.execute('SlashCmdList.R2F(%r)' % m)
+    T.chat = lua.table()
+    slash("minimap")
+    check(lua.eval("R2FDB.minimap.hide") is False and lua.eval("R2FMinimapButton:IsShown()") is True
+          and any(L.MM_SHOWN in c for c in chat_lines(lua)), "/r2f minimap shows the hidden button")
+    slash("minimap")
+    check(lua.eval("R2FDB.minimap.hide") is True and lua.eval("R2FMinimapButton:IsShown()") is False, "/r2f minimap toggles")
+    slash("minimap")
+    T.chat = lua.table()
+    slash("help")
+    help_lines = lua_table_to_list(L.HELP_LINES)
+    chat = chat_lines(lua)
+    check(len(chat) == len(help_lines) and all(c.endswith(h) for c, h in zip(chat, help_lines)), "/r2f help prints the list")
+    for cmd in ("/r2f macros", "/r2ft", "/r2f talents", "/r2f minimap", "/r2f help"):
+        check(any(h.startswith(cmd) or ("or " + cmd) in h for h in help_lines), "help lists " + cmd)
+    lua.execute("R2F.MainWindow.Hide()")
+    slash("  MACROS ")
+    check(MW.IsShown() is True and MW.CurrentTab() == "macros" and lua.eval("R2F.MacroBook.IsShown()") is True,
+          "/r2f macros (any case/spaces) opens the Macros tab")
+    slash("macros")
+    check(MW.IsShown() is True, "/r2f macros on the Macros tab keeps it open (opens, doesn't toggle)")
+    lua.execute("SlashCmdList.R2FT('')")
+    check(MW.CurrentTab() == "talents" and lua.eval("SLASH_R2FT1") == "/r2ft", "/r2ft opens the Talents tab")
+    slash("home")
+    check(any('unknown command "home"' in c for c in chat_lines(lua)), "unknown command says so")
+    slash("")
+    check(MW.IsShown() is False, "/r2f toggles the window closed")
+    slash("")
+    check(MW.CurrentTab() == "talents", "/r2f reopens on the last tab used")
+    slash("talents")
+    check(MW.CurrentTab() == "talents", "/r2f talents opens the Talents tab")
+    slash("import")
+    check(MW.CurrentTab() == "macros" and lua.eval("R2FImport:IsShown()") is True, "/r2f import still works (Macros + Import)")
+    lua.execute("R2FImport:Hide()")
+
+    # ---- Main window tabs ----------------------------------------------------
+    n = find_frames(lua, "f.r2fKey ~= nil", "MTABS")
+    check(n == 3, "three bottom tabs")
+    keys = [lua.eval("MTABS[%d].r2fKey" % i) for i in range(1, 4)]
+    names = [lua.eval("MTABS[%d]:GetName()" % i) for i in range(1, 4)]
+    labels = [lua.eval("MTABS[%d].__text" % i) for i in range(1, 4)]
+    check(keys == ["home", "macros", "talents"] and labels == ["Home", "Macros", "Talents"]
+          and names == [win + "Tab%d" % i for i in range(1, 4)], "tabs Home / Macros / Talents, named %s" % names)
+    tpl = lua.eval("MTABS[1].r2fTemplate")
+    check(tpl == ("CharacterFrameTabButtonTemplate" if templates else "UIPanelButtonTemplate"),
+          "%s: tab template chain picked %s" % (tag, tpl))
+    lua.execute("MTABS[1]:Click()")
+    check(MW.CurrentTab() == "home" and lua.eval("MTABS[1].__enabled") is False and lua.eval("MTABS[2].__enabled") is True,
+          "clicking Home selects it (selected tab looks selected = disabled)")
+    check(lua.eval("R2FDB.settings.lastTab") == "home", "last tab saved in R2FDB.settings.lastTab")
+    title = lua.eval("%s.__title" % win) if templates else lua.eval("%s.r2fTitle.__text" % win)
+    check(title == "Road to Forever", "Home title: %r" % title)
+    lua.execute("MTABS[2]:Click()")
+    title = lua.eval("%s.__title" % win) if templates else lua.eval("%s.r2fTitle.__text" % win)
+    check(MW.CurrentTab() == "macros" and title == "Road to Forever: Macros", "Macros tab + title")
+    check(lua.eval("R2FDB.settings.lastTab") == "macros", "switching tabs saves lastTab")
+    lua.execute("MTABS[3]:Click()")
+    check(MW.CurrentTab() == "talents" and lua.eval("R2F.MacroBook.IsShown()") is False, "Talents tab hides the book")
+    check(find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.TALENTS_TAB_LATER", "TT") == 1,
+          "Talents tab shows its placeholder")
+    if templates:
+        check(lua.eval("R2FMain.PortraitContainer.portrait.__tex") == "Interface\\AddOns\\RoadToForever\\media\\logo128",
+              "portrait = media/logo128")
+    check(win in lua_table_to_list(lua.eval("UISpecialFrames")), "main window closes with Esc (UISpecialFrames)")
+    check(lua.eval("R2FMacroBook == nil and R2FMacroBookPlain == nil"), "no separate Macro Book window any more")
+    lua.execute("R2F.MainWindow.Hide() R2FDB.settings.lastTab = 'bogus' R2F.Library.Init()")
+    check(lua.eval("R2FDB.settings.lastTab") == "home", "Init resets an unknown lastTab to home")
+
+    # ---- Home counts -----------------------------------------------------------
+    parse = lua.eval("function(s) local a, b = R2F.Import.Parse(s) return a, b end")
+    res, _ = parse(fx["everything"]["string"])
+    lua.eval("R2F.Library.Apply")(res.records, 1)
+    total = len(fx["everything"]["records"])
+    for i in ("WARRIOR/VR", "WARRIOR/HS", "WARRIOR/Rend"):
+        lua.execute('R2F.Macros.Ensure(%r)' % i)
+    lua.execute('TEST.actions[1] = "VR" TEST.actions[80] = "Rend" TEST.addMacro("Mine", "/dance", true) TEST.actions[2] = "Mine"')
+    inlib, onbars = lua.eval("R2F.Home.Counts")()
+    check((inlib, onbars) == (total, 2), "Home counts: whole library, our macros on bars only (%s, %s)" % (inlib, onbars))
+    lua.execute("R2F.MainWindow.Show('home')")
+    find_frames(lua, "f.__kind == 'Button' and f.tab ~= nil and f.sub ~= nil", "HOME")
+    check(lua.eval("#HOME") == 2, "Home has two big entries")
+    check(lua.eval("HOME[1].sub.__text") == "%d macros in your library, 2 on your bars" % total,
+          "Home Macro Book line: %r" % lua.eval("HOME[1].sub.__text"))
+    check(lua.eval("HOME[2].sub.__text") == "Coming in a later version", "Home Talents line is the placeholder")
+    lua.execute('TEST.actions[80] = nil')
+    T.fire("ACTIONBAR_SLOT_CHANGED")
+    T.runTimers()
+    check(lua.eval("HOME[1].sub.__text").endswith(", 1 on your bars"), "Home count follows ACTIONBAR_SLOT_CHANGED")
+    lua.execute("R2F.Library.db.library = {} R2F.Library.Apply({ { id = 'ANY/Zoom', class = 'ANY', section = 'Universal',"
+                " group = 'Misc / UI', name = 'Zoom', short = 'Zoom', body = '/x' } }, 1) R2F.Home.Refresh()")
+    check(lua.eval("HOME[1].sub.__text").startswith("1 macro in your library"), "singular wording for 1 macro")
+    lua.eval("R2F.Library.Apply")(res.records, 1)
+    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.HOME_IMPORT", "HIMPORT")
+    T.fire("PLAYER_REGEN_DISABLED")
+    check(lua.eval("HIMPORT[1].__enabled") is False, "Home's Import macros is greyed out in combat")
+    T.fire("PLAYER_REGEN_ENABLED")
+    lua.execute("HIMPORT[1]:Click()")
+    check(lua.eval("R2FImport:IsShown()") is True, "Home's Import macros opens the Import window")
+    lua.execute("R2FImport:Hide() HOME[1]:Click()")
+    check(MW.CurrentTab() == "macros", "clicking the Macro Book entry switches to the Macros tab")
+    lua.execute("R2F.MainWindow.SelectTab('home') HOME[2]:Click()")
+    check(MW.CurrentTab() == "talents", "clicking the Talents entry switches to the Talents tab")
+
+    # ---- Macro Book reparented: refresh, tabs, drag, tooltip, paging, menu ------
+    lua.execute("R2F.MainWindow.SelectTab('home') R2F.MacroBook.Refresh()")
+    find_frames(lua, "f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton", "SLOTS")
+    check(lua.eval("#SLOTS") == 12 and lua.eval("SLOTS[1].__parent.__parent:GetName()") == win,
+          "the book's 12 slots live in a page of the main window")
+    check(lua.eval("R2F.MacroBook.IsShown()") is False, "book not 'shown' while Home is the tab")
+    lua.execute("R2F.MacroBook.ShowSection('WARRIOR', 'General')")
+    check(MW.CurrentTab() == "macros" and lua.eval("R2F.MacroBook.IsShown()") is True, "ShowSection opens the Macros tab")
+    general = [r for r in fx["everything"]["records"] if r["class"] == "WARRIOR" and r["section"] == "General"]
+    check(lua.eval("SLOTS[1].entry.id") == general[0]["id"], "book shows the requested section after reparenting")
+    lua.execute("SLOTS[1]:Fire('OnEnter')")
+    lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(lines[0] == general[0]["name"] and lines[-1] == "Drag to an action bar.", "slot tooltip still works")
+    T.cursor = None
+    lua.execute("SLOTS[2]:Fire('OnDragStart')")
+    check(T.cursor == general[1]["short"], "dragging from the reparented book still creates + picks up")
+    pages = -(-len(general) // 12)
+    find_frames(lua, "f.__kind == 'FontString' and type(f.__text) == 'string' and f.__text:match('^Page ')", "PAGETEXT")
+    find_frames(lua, "f.__normal and f.__normal.__tex == 'Interface\\\\Buttons\\\\UI-SpellbookIcon-NextPage-Up'", "NEXT")
+    check(lua.eval("PAGETEXT[1].__text") == "Page 1 of %d" % pages, "paging text in the reparented book")
+    if pages > 1:
+        lua.execute("NEXT[1]:Click()")
+        check(lua.eval("PAGETEXT[1].__text") == "Page 2 of %d" % pages and lua.eval("SLOTS[1].entry.id") == general[12]["id"],
+              "next page works in the reparented book")
+    lua.execute("SLOTS[1]:Click('RightButton')")
+    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.MENU_REMOVE", "RM")
+    menu_frame = "RM[1].__parent"
+    check(lua.eval(menu_frame + ":IsShown()") is True, "slot right-click menu opens")
+    lua.execute("R2F.MainWindow.Hide()")
+    check(lua.eval(menu_frame + ":IsShown()") is False, "closing the main window closes the slot menu")
+    check(lua.eval("R2F.MacroBook.IsShown()") is False, "book is not 'shown' with the window closed")
+    lua.execute("R2F.MacroBook.Toggle()")
+    check(lua.eval("R2F.MacroBook.IsShown()") is True and MW.CurrentTab() == "macros", "MacroBook.Toggle opens the Macros tab")
+    lua.execute("R2F.MacroBook.Toggle()")
+    check(MW.IsShown() is False, "MacroBook.Toggle on the Macros tab closes the window")
+    # Refresh while hidden must not touch anything (no error, nothing shown).
+    for ev in ("UPDATE_MACROS", "ACTIONBAR_SLOT_CHANGED", "LEARNED_SPELL_IN_TAB", "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED"):
+        T.fire(ev)
+    T.runTimers()
+    check(MW.IsShown() is False, "events with the window closed don't open it")
+
+
+def test_minimap_libdbicon(fx):
+    """Step 6: when another addon has loaded LibDataBroker + LibDBIcon, use that copy (6.10)."""
+    lua = new_runtime()
+    T = lua.eval("TEST")
+    lua.execute("""
+      DBI = { calls = {} }
+      LDB = { objects = {} }
+      function LDB:NewDataObject(name, obj) self.objects[name] = obj return obj end
+      for _, m in ipairs({ 'Register', 'Show', 'Hide', 'Lock', 'Unlock' }) do
+        DBI[m] = function(self, name, a, b)
+          table.insert(self.calls, m .. ':' .. name)
+          if m == 'Register' then self.obj, self.db = a, b end
+        end
+      end
+      LibStub = { GetLibrary = function(self, major, silent)
+        if major == 'LibDataBroker-1.1' then return LDB end
+        if major == 'LibDBIcon-1.0' then return DBI end
+      end }""")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    check(lua.eval("R2F.Minimap.backend") == "libdbicon", "LibDBIcon from another addon -> used")
+    check(lua.eval("DBI.calls[1]") == "Register:RoadToForever" and lua.eval("DBI.db == R2FDB.minimap"),
+          "Register gets R2FDB.minimap as-is (6.3/6.9)")
+    check(lua.eval("R2FMinimapButton") is None, "no second, own button")
+    obj = lua.eval("LDB.objects.RoadToForever")
+    check(obj.type == "launcher" and obj.icon == "Interface\\AddOns\\RoadToForever\\media\\logo64", "LDB launcher object")
+    lua.execute("DBI.calls = {} R2FDB.minimap.hide = true R2FDB.minimap.lock = true R2F.Minimap.Apply()")
+    check(lua_table_to_list(lua.eval("DBI.calls")) == ["Hide:RoadToForever", "Lock:RoadToForever"], "Apply -> Hide + Lock")
+    lua.execute("DBI.calls = {} R2FDB.minimap.hide = false R2FDB.minimap.lock = false R2F.Minimap.Apply()")
+    check(lua_table_to_list(lua.eval("DBI.calls")) == ["Show:RoadToForever", "Unlock:RoadToForever"], "Apply -> Show + Unlock")
+    lua.execute("LDB.objects.RoadToForever.OnClick(UIParent, 'LeftButton')")
+    check(lua.eval("R2F.MainWindow.IsShown()") is True, "LDB OnClick left = open the main window")
+    lua.execute("LDB.objects.RoadToForever.OnClick(UIParent, 'RightButton')")
+    check(lua.eval("TEST.menu ~= nil and #TEST.menu == 7"), "LDB OnClick right = the menu")
+    lua.execute("GameTooltip:SetOwner() LDB.objects.RoadToForever.OnTooltipShow(GameTooltip)")
+    check(lua_table_to_list(lua.eval("GameTooltip.lines"))[0] == "Road to Forever", "LDB tooltip filled by FillTooltip")
+
+    # A broken copy (Register errors) -> our own button instead, no error.
+    lua2 = new_runtime()
+    lua2.execute("LibStub = { GetLibrary = function(_, major) return { NewDataObject = function() return {} end,"
+                 " Register = function() error('old copy') end } end }")
+    lua2.eval("TEST").fire("ADDON_LOADED", "RoadToForever")
+    lua2.eval("TEST").fire("PLAYER_LOGIN")
+    check(lua2.eval("R2F.Minimap.backend") == "own" and lua2.eval("R2FMinimapButton ~= nil"),
+          "broken LibDBIcon copy -> falls back to our own button")
+    # lastTab survives a reload: saved data from an earlier session decides /r2f's tab.
+    lua4 = new_runtime()
+    lua4.execute("R2FDB = { settings = { lastTab = 'talents', windowPos = { 'TOPLEFT', 'TOPLEFT', 30, -40 } } }")
+    lua4.eval("TEST").fire("ADDON_LOADED", "RoadToForever")
+    lua4.eval("TEST").fire("PLAYER_LOGIN")
+    lua4.execute("SlashCmdList.R2F('')")
+    check(lua4.eval("R2F.MainWindow.CurrentTab()") == "talents", "after a reload /r2f opens the saved last tab")
+    pt = lua_table_to_list(lua4.eval("R2FMain.__point"))
+    check(pt[0] == "TOPLEFT" and pt[3:] == [30, -40], "main window opens at the saved windowPos: %s" % pt)
+    # No Minimap frame at all -> no button, no error.
+    lua3 = new_runtime()
+    lua3.execute("Minimap = nil")
+    lua3.eval("TEST").fire("ADDON_LOADED", "RoadToForever")
+    lua3.eval("TEST").fire("PLAYER_LOGIN")
+    check(lua3.eval("R2F.Minimap.backend") == "none", "no Minimap frame -> no button, no error")
+    lua3.execute("R2F.Minimap.Apply() SlashCmdList.R2F('minimap')")
+    check(lua3.eval("R2FDB.minimap.hide") is True, "/r2f minimap still stores the setting without a button")
+
+
+def test_media():
+    """Step 6 logo (12.1): both TGAs exist, 32-bit with alpha, power-of-two, transparent outside the circle."""
+    import struct
+    check(os.path.exists(os.path.join(ROOT, "addon", "art", "logo.svg")), "addon/art/logo.svg exists")
+    for size in (64, 128):
+        path = os.path.join(ADDON, "media", "logo%d.tga" % size)
+        check(os.path.exists(path), "media/logo%d.tga exists" % size)
+        if not os.path.exists(path):
+            continue
+        data = open(path, "rb").read()
+        id_len, cmap, kind = data[0], data[1], data[2]
+        w, h = struct.unpack("<HH", data[12:16])
+        bpp, desc = data[16], data[17]
+        check(kind == 2 and cmap == 0, "logo%d: uncompressed true-color TGA" % size)
+        check((w, h) == (size, size) and size & (size - 1) == 0, "logo%d: %dx%d, power of two" % (size, w, h))
+        check(bpp == 32 and desc & 0x0F == 8, "logo%d: 32 bpp with 8 alpha bits" % size)
+        px = data[18 + id_len:18 + id_len + w * h * 4]
+        check(len(px) == w * h * 4, "logo%d: full pixel data" % size)
+        alpha = lambda x, y: px[(y * w + x) * 4 + 3]   # BGRA; row order doesn't matter for these points
+        check(all(alpha(x, y) == 0 for x, y in ((0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1))),
+              "logo%d: transparent corners" % size)
+        check(alpha(w // 2, h // 2) == 255, "logo%d: opaque centre" % size)
+    check(not os.path.exists(os.path.join(ADDON, "libs")), "no libs folder shipped (6.10: nothing vendored)")
+
+
 def main():
     fx = fixtures()
     lua = new_runtime()
@@ -1041,6 +1413,10 @@ def main():
     test_step5_ui(True, fx)
     test_step5_ui(False, fx)
     test_bindings_xml(new_runtime())
+    test_step6_ui(True, fx)
+    test_step6_ui(False, fx)
+    test_minimap_libdbicon(fx)
+    test_media()
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
 

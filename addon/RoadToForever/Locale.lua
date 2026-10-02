@@ -10,7 +10,13 @@ _G.R2F = R2F
 
 R2F.L = {
   ADDON_NAME = "Road to Forever",
-  BOOK_TITLE = "Road to Forever",
+  -- Main window (12.4): title per tab, bottom tabs
+  TITLE_HOME = "Road to Forever",
+  TITLE_MACROS = "Road to Forever: Macros",
+  TITLE_TALENTS = "Road to Forever: Talents",
+  TAB_HOME = "Home",
+  TAB_MACROS = "Macros",
+  TAB_TALENTS = "Talents",
   CHAT_PREFIX = "|cffffd100Road to Forever:|r ",
 
   -- Macro Book (5.3 - 5.5, 5.7)
@@ -97,7 +103,6 @@ R2F.L = {
   SETTINGS_SLOTS_NOTE = "Only for macros made from now on. Macros you already have stay where they are.",
   SETTINGS_MINIMAP_SHOW = "Show minimap button",
   SETTINGS_MINIMAP_LOCK = "Lock minimap button",
-  SETTINGS_MINIMAP_LATER = "The minimap button comes in a later version.",
   BTN_REMOVE_ALL = "Remove all Road to Forever macros",
   BTN_REMOVE = "Remove",
   BTN_OK = "OK",
@@ -113,11 +118,47 @@ R2F.L = {
   REMOVE_ALL_DONE_ONE = "removed 1 Road to Forever macro. Your macro library is unchanged.",
   REMOVE_ALL_DONE_KEPT = " Kept %d you edited as your own.",
 
-  -- Key bindings (Bindings.xml; step 6 gives Open Talents a window)
-  TALENTS_LATER = "the Talents window comes in a later version.",
+  -- Home tab (12.4)
+  HOME_MACROS = "Macro Book",
+  HOME_MACROS_COUNT = "%d macros in your library, %d on your bars",
+  HOME_MACROS_COUNT_ONE = "1 macro in your library, %d on your bars",
+  HOME_TALENTS = "Talents",
+  HOME_TALENTS_LATER = "Coming in a later version",
+  HOME_IMPORT = "Import macros",
+  HOME_IMPORT_HINT = "Pick macros on the Macros page of the Road to Forever site, click Copy import string, "
+    .. "then click Import macros and paste it.",
 
-  -- Slash command
-  HELP = "type /r2f to open the Macro Book.",
+  -- Talents tab: placeholder until the talent steps (ADDON_PLAN 9, steps 8 to 10)
+  TALENTS_TAB_LATER = "Talents are coming in a later version.\n\nYou'll paste a link from the site's talent "
+    .. "calculator here, see a preview, and learn the build with one click.",
+
+  -- Minimap button (12.2)
+  MM_LIBRARY = "%d macros in your library",
+  MM_LIBRARY_ONE = "1 macro in your library",
+  MM_TALENT_POINTS = "%d free talent points",
+  MM_TALENT_POINTS_ONE = "1 free talent point",
+  MM_LEFT = "Left-click to open.",
+  MM_RIGHT = "Right-click for options.",
+  MM_DRAG = "Drag to move.",
+  MENU_OPEN = "Open Road to Forever",
+  MENU_MACROS = "Macros",
+  MENU_TALENTS = "Talents",
+  MENU_LOCK = "Lock button position",
+  MENU_HIDE = "Hide minimap button",
+  MM_HIDDEN = "minimap button hidden. Type /r2f minimap to show it again.",
+  MM_SHOWN = "minimap button shown.",
+
+  -- Slash commands (12.3). /r2f help prints HELP_LINES, one chat line each.
+  HELP_LINES = {
+    "commands:",
+    "/r2f  open Road to Forever (the tab you used last)",
+    "/r2f macros  the Macros tab",
+    "/r2ft or /r2f talents  the Talents tab",
+    "/r2f minimap  show or hide the minimap button",
+    "/r2f import  paste an import string",
+    "/r2f help  this list",
+  },
+  UNKNOWN_COMMAND = "unknown command \"%s\". Type /r2f help for the list.",
 }
 
 -- Key Bindings menu labels (Bindings.xml). The client looks these up as

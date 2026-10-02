@@ -1,8 +1,8 @@
--- Core.lua: events, slash command, key bindings, init (ADDON_PLAN.md 6.5, 12.3).
+-- Core.lua: events, slash commands, key bindings, init (ADDON_PLAN.md 6.5, 12.3).
 --
 -- Event order on login: ADDON_LOADED (our SavedVariables are readable from
--- here on) -> PLAYER_LOGIN (UnitClass is reliable from here on). The UI is
--- only built when first opened, after both.
+-- here on) -> PLAYER_LOGIN (UnitClass is reliable from here on). The main
+-- window is only built when first opened, after both.
 
 local ADDON_NAME, R2F = ...
 local L = R2F.L
@@ -22,14 +22,18 @@ handlers.PLAYER_LOGIN = function()
   -- character's macros; catch up now (combat-safe: queued if in combat,
   -- e.g. after a /reload mid-fight).
   R2F.Macros.SyncOnLogin()
+  -- Minimap button (12.2). At PLAYER_LOGIN every other (non-load-on-demand)
+  -- addon has loaded, so Minimap.Init can see whether one of them brought
+  -- LibDBIcon (ADDON_PLAN 6.10).
+  R2F.Minimap.Init()
 end
 
--- Combat: grey out Import / Tidy up, show "In combat" (drags are refused
--- inside Macros.Ensure itself).
+-- Combat: grey out the Import / Tidy up buttons, show "In combat" (drags are
+-- refused inside Macros.Ensure itself).
 -- The flag matters: InCombatLockdown() is still false during this event.
 handlers.PLAYER_REGEN_DISABLED = function()
   R2F.inCombat = true
-  R2F.MacroBook.SetCombat()
+  R2F.MainWindow.SetCombat()
   R2F.ImportFrame.SetCombat(true)
   R2F.Settings.SetCombat()
 end
@@ -39,16 +43,16 @@ end
 handlers.PLAYER_REGEN_ENABLED = function()
   R2F.inCombat = false
   R2F.Macros.RunQueue()
-  R2F.MacroBook.SetCombat()
+  R2F.MainWindow.SetCombat()
   R2F.ImportFrame.SetCombat(false)
   R2F.Settings.SetCombat()
 end
 
--- Slot counter + markers; Refresh is a no-op while the book is closed.
-handlers.UPDATE_MACROS = function() R2F.MacroBook.RequestRefresh() end
-handlers.ACTIONBAR_SLOT_CHANGED = function() R2F.MacroBook.RequestRefresh() end
+-- Slot counter, markers and the Home counts; no-ops while the window is closed.
+handlers.UPDATE_MACROS = function() R2F.MainWindow.RequestRefresh() end
+handlers.ACTIONBAR_SLOT_CHANGED = function() R2F.MainWindow.RequestRefresh() end
 -- Newly learned spells: icons and "Learn later" states change.
-handlers.LEARNED_SPELL_IN_TAB = function() R2F.MacroBook.RequestRefresh() end
+handlers.LEARNED_SPELL_IN_TAB = function() R2F.MainWindow.RequestRefresh() end
 
 events:SetScript("OnEvent", function(_, event, ...)
   local fn = handlers[event]
@@ -64,34 +68,52 @@ end
 -- Bindings.xml runs its Lua as plain (insecure) code on key press, which is
 -- fine here: opening our own non-secure frames is allowed in combat, and
 -- nothing in these calls writes a macro.
--- Until step 6 builds the main window (Home / Macros / Talents, 12.4):
--- * Toggle Road to Forever and Open Macros both toggle the Macro Book, which
---   is what /r2f does today. Open Macros toggles too (not show-only), like
---   Blizzard's own Spellbook key, so the same key closes it again. Step 6:
---   Toggle = main window on its last tab, Open Macros = main window on the
---   Macros tab (or close it if that tab is already showing).
--- * Open Talents has nothing to open yet: it prints one chat line. Step 6
---   points it at the Talents tab (filled by step 9).
+-- * Toggle Road to Forever: the main window on the tab used last (= /r2f).
+-- * Open Macros / Open Talents: the main window on that tab, or close it if
+--   that tab is already showing, like Blizzard's Spellbook / Talents keys.
+-- Bindings.xml is unchanged since step 5; only these three functions moved on
+-- (ADDON_PLAN 6.9's hand-off).
 R2F.Bindings = {
-  Toggle = function() R2F.MacroBook.Toggle() end,
-  OpenMacros = function() R2F.MacroBook.Toggle() end,
-  OpenTalents = function() R2F.Print(L.TALENTS_LATER) end,
+  Toggle = function() R2F.MainWindow.Toggle() end,
+  OpenMacros = function() R2F.MainWindow.Toggle("macros") end,
+  OpenTalents = function() R2F.MainWindow.Toggle("talents") end,
 }
 
--- /r2f opens the Macro Book. The full command set (12.3: /r2f macros,
--- /r2ft, /r2f minimap, /r2f help) comes with the main window in step 6.
--- SLASH_R2F1 / SlashCmdList.R2F are the WoW API's way to register a
--- command; they're the only globals besides R2F, R2FDB and R2FCharDB and
--- the R2F-prefixed frame names (see ADDON_PLAN 6.6).
+-- Slash commands (12.3). /r2f macros, /r2f talents and /r2ft OPEN their tab
+-- (typing one never hides what you asked for); /r2f with nothing after it
+-- toggles, like the minimap button's left-click and the Toggle key.
+-- /r2f import (step 3) still works: Macros tab + Import window.
+local function printHelp()
+  for _, line in ipairs(L.HELP_LINES) do R2F.Print(line) end
+end
+
+local COMMANDS = {
+  [""] = function() R2F.MainWindow.Toggle() end,
+  macros = function() R2F.MainWindow.Show("macros") end,
+  talents = function() R2F.MainWindow.Show("talents") end,
+  minimap = function() R2F.Minimap.ToggleHidden() end,
+  help = printHelp,
+  import = function()
+    R2F.MainWindow.Show("macros")
+    R2F.ImportFrame.Show()
+  end,
+}
+R2F.COMMANDS = COMMANDS
+
+-- SLASH_R2F1 / SLASH_R2FT1 and the R2F / R2FT fields in SlashCmdList are the
+-- WoW API's way to register a command; with R2F, R2FDB, R2FCharDB, the
+-- binding labels and the R2F-prefixed frame names they are the only globals
+-- (ADDON_PLAN 6.6, 6.10).
 _G.SLASH_R2F1 = "/r2f"
 SlashCmdList.R2F = function(msg)
   msg = (msg or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
-  if msg == "help" then
-    R2F.Print(L.HELP)
-  elseif msg == "import" then
-    R2F.MacroBook.Show()
-    R2F.ImportFrame.Show()
+  local fn = COMMANDS[msg]
+  if fn then
+    fn()
   else
-    R2F.MacroBook.Toggle()
+    R2F.Print(L.UNKNOWN_COMMAND:format(msg))
   end
 end
+
+_G.SLASH_R2FT1 = "/r2ft"
+SlashCmdList.R2FT = function() R2F.MainWindow.Show("talents") end

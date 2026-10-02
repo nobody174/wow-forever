@@ -1,17 +1,17 @@
 # Addon plan: Road to Forever (macros + talents)
 
 Status: **in progress** (scoped 2026-10-01). Steps 1 (data), 2 (site export),
-3 (addon MVP, v0.1.0), 4 (updates, v0.2.0) and 5 (Tidy up, Settings, Remove all,
-key bindings, v0.3.0) shipped, no addon version tested in the game yet; see
-`CHANGELOG.md`.
+3 (addon MVP, v0.1.0), 4 (updates, v0.2.0), 5 (Tidy up, Settings, Remove all,
+key bindings, v0.3.0) and 6 (main window, minimap button, logo, v0.4.0) shipped,
+no addon version tested in the game yet; see `CHANGELOG.md`.
 Target: usable before the Nov 4 launch.
 
 | | |
 |---|---|
 | Addon name | Road to Forever |
 | Folder | `addon/RoadToForever/` (in this repo) |
-| Slash commands | `/r2f` (main window), `/r2ft` (Talents), `/r2f macros`, `/r2f minimap` (show the minimap button again) |
-| Minimap button | yes, draggable around the minimap (section 12) |
+| Slash commands | `/r2f` (main window), `/r2ft` (Talents), `/r2f macros`, `/r2f minimap` (show the minimap button again), `/r2f help`, `/r2f import` |
+| Minimap button | yes, draggable around the minimap (section 12; our own button, no embedded libraries, 6.10) |
 | Global table | `R2F` (the only global the addon creates) |
 | SavedVariables | `R2FDB` (account), `R2FCharDB` (per character) |
 
@@ -496,19 +496,22 @@ addon/RoadToForever/
   UI\Home.lua       Home tab
   UI\TalentPanel.lua talent link box, preview trees, Learn button
   Talents.lua       parse link, map to the game's trees, plan, learn, export
-  Minimap.lua       LibDataBroker launcher + LibDBIcon button + right-click menu
+  Minimap.lua       own minimap button + right-click menu; uses LibDBIcon only if
+                    another addon has loaded it (6.10)
   Bindings.xml      "Toggle Road to Forever", "Open Macros", "Open Talents"
                     (step 5; NOT listed in the TOC, the client loads it itself, 6.9)
   Core.lua          events, slash commands, init
-  libs\            LibStub, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0
+  libs\            NOT shipped. Planned for LibStub, CallbackHandler-1.0,
+                    LibDataBroker-1.1, LibDBIcon-1.0; dropped in step 6 over
+                    LibDataBroker's license (6.10)
   media\logo64.tga  minimap icon (64x64, 32-bit with alpha)
   media\logo128.tga main window portrait
-addon/art/logo.svg  logo source (not shipped); build script exports the .tga files
+addon/art/logo.svg  logo source (not shipped); addon/art/export_logo.py exports the .tga files
 addon/tests/        out-of-game tests (not shipped): run_tests.py, run_luacheck.py
 addon/.luacheckrc   allowed globals / WoW API list for luacheck
 ```
 
-No libraries in v1 (LibDBIcon only when the minimap button is added).
+No embedded libraries (step 6 decided against them for the minimap button, 6.10).
 
 ### 6.2 TOC
 
@@ -879,6 +882,141 @@ Account-slot macros are also recorded in `R2FDB.createdAccount`.
   and the fallback paths. Rendering, the key-binding menu and the popups in the real
   client are TESTING.md 9 and 10.
 
+### 6.10 Decisions made while building it (step 6, v0.4.0, 2026-10-02)
+
+**Libraries: none embedded (licensing).** 12.2 planned LibStub +
+CallbackHandler-1.0 + LibDataBroker-1.1 + LibDBIcon-1.0 in `libs\`. Each one's
+license was checked at its authoritative source on 2026-10-02:
+
+| Library | Version checked | License found | Where |
+|---|---|---|---|
+| LibStub | minor 2, WowAce SVN trunk r109 | Public domain ("LibStub is hereby placed in the Public Domain", file header; TOC `X-License: Public Domain`; WowAce page: Public Domain) | `repos.wowace.com/wow/libstub/trunk/`, `wowace.com/projects/libstub` |
+| CallbackHandler-1.0 | minor 8, WowAce SVN trunk r29 | BSD (TOC `X-License: BSD-2.0`; WowAce page: BSD License; Ace3's `LICENSE.txt` is the BSD text) | `repos.wowace.com/wow/callbackhandler/trunk/`, `wowace.com/projects/callbackhandler`, `github.com/WoWUIDev/Ace3` |
+| LibDBIcon-1.0 | minor 56, WowAce SVN trunk r162 | **Ace3 Style BSD** on the project page (redistribution allowed with the notice; only "a stand alone version" needs permission), even though its TOC still says `X-License: All Rights Reserved` (the stale-placeholder quirk) | `curseforge.com/wow/addons/libdbicon-1-0/license`, `wowace.com/projects/libdbicon-1-0` |
+| LibDataBroker-1.1 | minor 4, GitHub `tekkub/libdatabroker-1-1` commit `1a63ede` (2008) | **All Rights Reserved** on its WowAce project page; the repository has no LICENSE file, the .lua has no license header, the README and wiki say nothing about reuse | `wowace.com/projects/libdatabroker-1-1`, `github.com/tekkub/libdatabroker-1-1` |
+
+LibStub, CallbackHandler and LibDBIcon could be shipped, but **LibDBIcon refuses
+to load without LibDataBroker** (`error("LibDBIcon-1.0 requires
+LibDataBroker-1.1.")`), and LibDataBroker has no grant to redistribute it at all.
+It is embedded by countless addons in practice, but "everyone does it" is not a
+license, and this repo is meant to go public on GitHub/CurseForge. Shipping three
+libraries that can't run without the fourth would be dead weight, so **nothing
+is vendored** and there is no `libs\` folder. If tekkub's terms are ever
+clarified (or a LibDataBroker with a stated license appears), embedding is a
+small change: `Minimap.Init` already speaks the LibDBIcon API.
+
+**What Minimap.lua does instead (two backends, picked at `PLAYER_LOGIN`):**
+- **`libdbicon`**: another installed addon already loaded LibDataBroker-1.1 and
+  LibDBIcon-1.0 (common: many popular addons embed them). We create our LDB
+  launcher in that copy and `Register` with `R2FDB.minimap` as-is (6.9), so
+  collector addons and LibDBIcon's own options see our button. Using a library
+  another addon loaded is what LibStub is for, and we redistribute nothing.
+  A broken/old copy (`Register` errors) falls back to our own button (`pcall`).
+- **`own`** (otherwise): a 31 px `Button` named `R2FMinimapButton` parented to
+  `Minimap`, built from the textures LibDBIcon itself uses
+  (`MiniMap-TrackingBorder`, `UI-Minimap-Background`,
+  `UI-Minimap-ZoomButton-Highlight`), our `logo64` inside. Dragging (OnDragStart
+  -> OnUpdate only while dragging -> OnDragStop) stores `minimapPos` in degrees,
+  counter-clockwise from 3 o'clock: **LibDBIcon's convention**, so the saved spot
+  carries over if a player's backend changes. `GetMinimapShape()` (set by square
+  minimap addons) is honoured per quadrant, round by default. The name is
+  R2F-prefixed (collector addons find buttons by name).
+- **No `Minimap` frame at all** (a UI replacement without it): no button, no
+  error; `/r2f minimap` and Settings still store the value.
+- **`R2F.Minimap.Apply()`** (6.9's hook) puts `hide` / `lock` / `minimapPos` on
+  whichever backend is live. The menu and `/r2f minimap` call `Settings.Refresh`
+  so an open Settings panel follows them; Settings' old "comes in a later
+  version" line is gone.
+
+**Right-click menu API (11).** `MenuUtil.CreateContextMenu` when the client has it
+(title / buttons / divider / checkbox, built from one item list,
+`Minimap.MenuItems`). Without it, **not `UIDropDownMenu`/`EasyMenu`**: they write
+Blizzard's shared `UIDROPDOWNMENU_*` state, the classic taint source (6.7 made
+the same call for the book's menu). The fallback is `UI.ContextMenu`, a small
+named frame (`R2FMenu`, Esc closes it) in tooltip/quest-log textures with a title
+row, buttons, a divider and a check row. Both paths are tested.
+
+**Tooltip (12.2).** As specced; `Drag to move.` is left out while the button is
+locked (it can't be dragged then). Free talent points come from Classic's
+`UnitCharacterPoints("player")` (guarded; newer clients removed it).
+
+**Main window (12.4).**
+- **The Macro Book was reparented, not rebuilt.** `UI/MainWindow.lua` owns the
+  window (`UI.Window("R2FMain", 540, 500, "windowPos")`, so the same template
+  chain and fallbacks as step 3: `R2FMain` / `R2FMainB` / `R2FMainPlain`) and
+  makes one page frame per tab filling it. `MacroBook.Build(page)` draws the
+  book's slots, side tabs and bottom bar into the Macros page at the old offsets
+  (same window size). The book's public functions keep their meaning, so
+  Core/Import/Settings and the step-3 to step-5 tests still drive it: `Show` /
+  `Toggle` = main window on the Macros tab, `IsShown` = visible (`IsVisible`,
+  since a page keeps its own shown flag while the window is closed). There is no
+  separate `R2FMacroBook` window any more; the window's saved spot
+  (`settings.windowPos`) carries over from the book.
+- **Portrait = `logo128`** (12.4) instead of the class icon (5.1): the window is
+  shared by all tabs. The title follows the tab: `Road to Forever`,
+  `Road to Forever: Macros`, `Road to Forever: Talents`.
+- **Bottom tabs:** `PanelTabButtonTemplate` -> `CharacterFrameTabButtonTemplate`
+  -> plain `UIPanelButtonTemplate` buttons, each checked like every template
+  (6.7). Named `<window>Tab1..3` (older `PanelTemplates_*` and the Classic
+  template's `$parent` textures need names). Selection via Blizzard's
+  `PanelTemplates_SetTab` on our own frame (no taint: it only touches the frame
+  passed in); without it, the selected tab is disabled. Gaps between tabs
+  (3 / -15 / 4 px) are guesses until the beta (TESTING.md 11).
+- **Default tab = Home** (6.3's `lastTab = "home"`): first open shows Home with
+  the Import button and the how-to line; after that, the last tab used
+  (`settings.lastTab`, validated by `Library.Init`).
+- **Size is fixed** (540 x 500). 12.4 says "position, size and last tab are
+  saved": position and last tab are; the book's 2 x 6 grid is laid out for that
+  size, so a resize handle would only add empty space. Revisit with the Talents
+  tab (step 9) if it needs more room.
+- **Home** (`UI/Home.lua`): two big spellbook-style entries (44 px icon in the
+  quick-slot border, the whole row clickable): Macro Book with
+  `N macros in your library, M on your bars` (N = whole library, all classes;
+  M = macros this addon made, character + account records, that are on this
+  character's action slots, the book's gold-check rule) and Talents with
+  `Coming in a later version` (12.4's free-points text arrives with the talent
+  steps). Below: **Import macros** (greyed out in combat like the book's Import,
+  6.7) and a one-line how-to. Counts refresh on `UPDATE_MACROS` /
+  `ACTIONBAR_SLOT_CHANGED`, throttled to 0.2 s like the book.
+- **Talents tab** is a placeholder text until steps 8 to 10 (`UI/TalentPanel.lua`).
+- **Settings and Import stay their own dialogs** over the window (6.9 allowed
+  moving Settings in; not needed).
+
+**Entry points.** `/r2f`, the minimap left-click and the **Toggle** key toggle the
+window on its last tab. **Open Macros** / **Open Talents** keys open that tab, or
+close the window if that tab is already showing (6.9). `/r2f macros`,
+`/r2f talents` and `/r2ft` only open (typing a command never hides what you asked
+for). `/r2f minimap` toggles hide with a chat line either way. `/r2f import`
+(step 3) still works (Macros tab + Import window). `/r2f help` prints the list,
+anything else prints `unknown command`. Menu > Open Road to Forever opens on the
+last tab.
+
+**Globals (6.6/6.7 extended).** New: `SLASH_R2FT1` (+ `SlashCmdList.R2FT`) for
+`/r2ft`, and R2F-prefixed frame names `R2FMain` (`...B`/`...Plain`),
+`R2FMainTab1..3`, `R2FMinimapButton`, `R2FMenu`. Nothing else; the tests' global
+audit allows exactly these. `LibStub` is only **read** (via `_G`), never created:
+if it exists, another addon made it.
+
+**Logo (12.1).** Hand-written `addon/art/logo.svg` (128 grid: navy radial disc,
+gold road narrowing from the bottom edge with a dashed navy centre line, joining
+an infinity band 16 units wide = 8 px at 64 px, darker gold edge, pale highlight
+along the top). `addon/art/export_logo.py` rasterises it with **resvg** (real SVG
+renderer, `resvg_py`, run with `py -3.12`; cairosvg is installed but has no cairo
+DLL on this machine), at 4x then Lanczos-downscaled, and writes the TGAs with
+Pillow: uncompressed type 2, 32 bpp, 8 alpha bits, transparent outside the disc.
+The script re-reads its own output and checks header, size and alpha; the test
+suite checks the same. The 20 px preview was checked by eye; the in-game check is
+TESTING.md 11.
+
+**Testing.** `run_tests.py` adds step-6 tests on both template and fallback paths
+(Apply vs `R2FDB.minimap`, drag angles, square minimap, tooltip, both menu
+backends and every item, all slash commands, bindings, tab switching + titles +
+saved last tab, Home counts and buttons, the reparented book's refresh / tabs /
+drag / tooltip / paging / menu), a fake LibDBIcon for the `libdbicon` backend
+(plus a broken copy and no Minimap), and the TGA headers. Spot mutations of the
+new code (hide ignored, lastTab not saved, counts ignoring bars, `IsShown` instead
+of `IsVisible`, lock ignored, square shape ignored) each fail tests.
+
 ---
 
 ## 7. Import string format
@@ -926,8 +1064,8 @@ Body keeps its real newlines. Empty icon = `""`.
    click/drag creates the macro, slot counter, combat lock.
 4. **Updates**: re-import updates unedited macros; Changed markers.
 5. **Tidy up**, Settings, Remove all, keybindings.
-6. **Main window + minimap**: Home / Macros / Talents tabs, logo, LibDBIcon
-   button with right-click menu, `/r2f`, `/r2ft`, `/r2f minimap`. Moves the
+6. **Main window + minimap**: Home / Macros / Talents tabs, logo, minimap
+   button (own, not LibDBIcon: 6.10) with right-click menu, `/r2f`, `/r2ft`, `/r2f minimap`. Moves the
    step-3 Macro Book (`R2F.MacroBook`) and Import window into the main window
    (6.7).
 7. **Release** zip + Download link. CurseForge later. Settle the tag prefix
@@ -963,8 +1101,12 @@ Body keeps its real newlines. Empty icon = `""`.
 - [ ] `Bindings.xml` is picked up without a TOC entry, the three bindings show under
       a "Road to Forever" header (AddOns section, `category="ADDONS"`) and work;
       `UIRadioButtonTemplate` / `UICheckButtonTemplate` exist (Settings) (6.9).
-- [ ] LibDBIcon button drags around the round minimap and saves its spot.
-- [ ] Right-click menu API: `UIDropDownMenu`/`EasyMenu` or the newer `MenuUtil`.
+- [ ] Minimap button (our own, 6.10) drags around the round minimap and saves its
+      spot, looks like other minimap buttons, and the logo reads at that size (12.1).
+- [ ] Right-click menu API: does `MenuUtil` exist? (If not, our own menu frame is
+      used; `UIDropDownMenu`/`EasyMenu` are deliberately never used, 6.10.)
+- [ ] Bottom tab template: `PanelTabButtonTemplate` or `CharacterFrameTabButtonTemplate`
+      (main window, 6.10).
 - [ ] `LearnTalent(tab, index)` works from our button click (else guided mode).
 - [ ] Classic has no talent preview/commit (or, if Forever adds one, use it).
 - [ ] Sorting `GetTalentInfo` by tier then column gives the same order as our
@@ -997,10 +1139,13 @@ Body keeps its real newlines. Empty icon = `""`.
 
 ### 12.2 Minimap button
 
-- Built with **LibDataBroker-1.1 + LibDBIcon-1.0** (embedded in `libs\`). That
-  gives the standard round minimap-button border so it looks native,
-  **dragging around the minimap edge** (position saved), square-minimap support,
-  and it works with minimap-button collector addons.
+- ~~Built with **LibDataBroker-1.1 + LibDBIcon-1.0** (embedded in `libs\`).~~
+  **Changed in step 6 (6.10):** our own button from the same Blizzard textures
+  LibDBIcon uses (standard round minimap-button border, so it looks native),
+  **dragging around the minimap edge** (position saved), square-minimap support.
+  If another installed addon already loaded LibDataBroker + LibDBIcon, the
+  button is registered through that copy instead, which also makes it visible to
+  minimap-button collector addons. Nothing is embedded.
 - **Left-click:** open/close the main window (on the tab you used last).
 - **Right-click:** menu:
 

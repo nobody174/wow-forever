@@ -269,6 +269,115 @@ function UI.CheckButton(parent, label, radio)
 end
 
 -- ---------------------------------------------------------------------------
+-- Context menu (minimap button right-click, 12.2)
+-- ---------------------------------------------------------------------------
+
+-- items = { { kind = "title" | "button" | "check" | "divider", text =,
+--             func = function() end, isChecked = function() return bool end }, ... }
+--
+-- Why not UIDropDownMenu / EasyMenu: those write Blizzard's shared
+-- UIDROPDOWNMENU_* globals, the classic source of "action blocked" taint in
+-- Classic clients (6.7). Blizzard's newer MenuUtil doesn't have that problem
+-- and Minimap.lua uses it when the client has it; this plain frame is the
+-- fallback, built from tooltip/quest textures so it still looks native.
+-- One menu at a time (named, so Esc closes it); it closes after a click or
+-- when the mouse has left it for a moment, like MacroBook's two-item menu.
+local menuFrame
+local ROW_H, MENU_W = 18, 190
+
+local function buildMenuFrame()
+  local m = CreateFrame("Frame", "R2FMenu", UIParent, (BackdropTemplateMixin and "BackdropTemplate") or nil)
+  if m.SetBackdrop then
+    m:SetBackdrop({
+      bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+      edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+      tile = true, tileSize = 16, edgeSize = 16,
+      insets = { left = 4, right = 4, top = 4, bottom = 4 },
+    })
+    m:SetBackdropColor(0, 0, 0, 0.9)
+  end
+  m:SetFrameStrata("DIALOG")
+  m:SetClampedToScreen(true)
+  m:EnableMouse(true)
+  m:Hide()
+  m.rows = {}
+  closeOnEsc("R2FMenu")
+  m:SetScript("OnLeave", function(self)
+    if not (C_Timer and C_Timer.After) then return end
+    C_Timer.After(0.4, function()
+      if self:IsShown() and not self:IsMouseOver() then self:Hide() end
+    end)
+  end)
+  return m
+end
+
+local function menuRow(m, i)
+  local r = m.rows[i]
+  if r then return r end
+  r = CreateFrame("Button", nil, m)
+  r:SetSize(MENU_W - 16, ROW_H)
+  r:SetPoint("TOPLEFT", 8, -8 - (i - 1) * ROW_H)
+  r:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
+  r.text = r:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  r.text:SetPoint("LEFT", 20, 0)
+  r.text:SetJustifyH("LEFT")
+  r.check = r:CreateTexture(nil, "ARTWORK")
+  r.check:SetSize(16, 16)
+  r.check:SetPoint("LEFT", 0, 0)
+  r.line = r:CreateTexture(nil, "ARTWORK")
+  r.line:SetTexture("Interface\\Common\\UI-TooltipDivider-Transparent")
+  r.line:SetSize(MENU_W - 24, 8)
+  r.line:SetPoint("LEFT", 4, 0)
+  -- Stay open while the mouse moves over the rows (they're the menu too).
+  r:SetScript("OnLeave", function() local s = m:GetScript("OnLeave"); if s then s(m) end end)
+  m.rows[i] = r
+  return r
+end
+
+function UI.ContextMenu(items)
+  menuFrame = menuFrame or buildMenuFrame()
+  local m = menuFrame
+  m.items = items
+  for i, it in ipairs(items) do
+    local r = menuRow(m, i)
+    r.item = it
+    r.text:SetText(it.text or "")
+    r.line:SetShown(it.kind == "divider")
+    if it.kind == "title" then
+      r.text:SetFontObject(GameFontNormalSmall or GameFontHighlight)
+      r.text:SetPoint("LEFT", 0, 0)
+    else
+      r.text:SetFontObject(GameFontHighlightSmall or GameFontHighlight)
+      r.text:SetPoint("LEFT", 20, 0)
+    end
+    -- Title and divider rows aren't clickable (12.2: "not clickable").
+    r:SetEnabled(it.kind == "button" or it.kind == "check")
+    r:EnableMouse(it.kind == "button" or it.kind == "check")
+    if it.kind == "check" then
+      local on = it.isChecked and it.isChecked()
+      r.check:SetTexture(on and "Interface\\Buttons\\UI-CheckBox-Check" or "Interface\\Buttons\\UI-CheckBox-Up")
+      r.check:Show()
+    else
+      r.check:Hide()
+    end
+    r:SetScript("OnClick", function(self)
+      m:Hide()
+      if self.item and self.item.func then self.item.func() end
+    end)
+    r:Show()
+  end
+  for i = #items + 1, #m.rows do m.rows[i]:Hide(); m.rows[i].item = nil end
+  m:SetSize(MENU_W, #items * ROW_H + 16)
+  m:ClearAllPoints()
+  -- Under the cursor, so the mouse starts inside it.
+  local x, y = GetCursorPosition()
+  local scale = UIParent:GetEffectiveScale()
+  m:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / scale - 20, y / scale + 10)
+  m:Show()
+  return m
+end
+
+-- ---------------------------------------------------------------------------
 -- Copy box (right-click > Copy text)
 -- ---------------------------------------------------------------------------
 

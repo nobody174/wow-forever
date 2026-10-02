@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Road to Forever logo (ADDON_PLAN.md 12.1). Hand-written SVG, not shipped
+  with the addon: addon/art/export_logo.py renders it to
+  addon/RoadToForever/media/logo64.tga and logo128.tga.
+
+  Idea: a road starts wide at the bottom of the disc, narrows into the
+  distance and curls into an infinity sign.
+  Small-size rule: it must read at 18 to 20 px on the minimap, so no text,
+  thick shapes only. The infinity band is 16 units wide on this 128 grid
+  (8 px on the 64 px export) and the road is never narrower than that.
+
+  Colors (the site's own): gold #FFD100, darker gold edge #C79C00, pale
+  highlight #FFE566 along the top of the band, navy disc radial
+  #2A335A (center) to #0E1428 (edge). Everything outside the disc is
+  transparent.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="disc" cx="64" cy="58" r="66" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2A335A"/>
+      <stop offset="1" stop-color="#0E1428"/>
+    </radialGradient>
+    <clipPath id="inside">
+      <circle cx="64" cy="64" r="62"/>
+    </clipPath>
+    <!-- The infinity sign: two round loops meeting at (64, 45). -->
+    <path id="inf" d="M64,45
+      C72,31 79,22 89,22 C101,22 110,32 110,45 C110,58 101,67 89,67 C79,67 72,59 64,45
+      C56,31 49,22 39,22 C27,22 18,32 18,45 C18,58 27,67 39,67 C49,67 56,59 64,45 Z"/>
+    <!-- Only the upper part of the band gets the pale highlight. -->
+    <clipPath id="top">
+      <rect x="0" y="0" width="128" height="38"/>
+    </clipPath>
+  </defs>
+
+  <!-- Navy disc -->
+  <circle cx="64" cy="64" r="62" fill="url(#disc)"/>
+
+  <g clip-path="url(#inside)">
+    <!-- The road: wide at the bottom edge, narrowing upward with a slight
+         bend, ending under the crossing of the infinity sign. -->
+    <path d="M30,132
+             C40,104 54,84 56,54
+             L72,54
+             C74,84 90,104 100,132 Z"
+          fill="#FFD100" stroke="#C79C00" stroke-width="3" stroke-linejoin="round"/>
+    <!-- Centre line of the road (navy dashes), fading into the distance. -->
+    <path d="M65,124 L64.6,108 M64.4,97 L64.2,86 M64.1,78 L64,72"
+          stroke="#0E1428" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+
+    <!-- Infinity: dark edge, gold band, pale highlight along the top. -->
+    <use href="#inf" fill="none" stroke="#C79C00" stroke-width="21" stroke-linejoin="round"/>
+    <use href="#inf" fill="none" stroke="#FFD100" stroke-width="16" stroke-linejoin="round"/>
+    <g clip-path="url(#top)">
+      <use href="#inf" transform="translate(0,-4.5)" fill="none" stroke="#FFE566"
+           stroke-width="3" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

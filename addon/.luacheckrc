@@ -36,8 +36,11 @@ read_globals = {
   "PanelTemplates_SetTab", "PanelTemplates_SetNumTabs", "PanelTemplates_TabResize",
   "GameFontNormalSmall", "GameFontHighlightSmall",
   "Minimap", "GetMinimapShape", "MenuUtil", "UnitCharacterPoints",
-  -- Step 8: talent export (read-only)
-  "GetNumTalentTabs", "GetNumTalents", "GetTalentInfo",
+  -- Step 8: talent export (read-only). 13.10: read through C_Traits;
+  -- GetTalentInfo only confirms a Classic address before a Classic write.
+  "GetTalentInfo", "C_Traits", "C_SpecializationInfo", "GetSpellInfo",
+  -- 12.4.2: TOC metadata for the Home footer
+  "C_AddOns", "GetAddOnMetadata",
   -- Step 9: talent import preview (still read-only; no LearnTalent yet)
   "GetTalentTabInfo", "GetLocale",
   -- Step 10: talent learning (the one talent write: LearnTalent, ADDON_PLAN 13.8),

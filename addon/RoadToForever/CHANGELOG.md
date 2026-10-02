@@ -3,7 +3,39 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.10.4 (2026-10-03): fix — read talents through C_Traits (corrects 0.10.3)
+
+0.10.3's fix was wrong: it force-loaded `Blizzard_TalentUI`, but on WoW Forever
+`LoadAddOn("Blizzard_TalentUI")` answers `false, "MISSING"` and the Classic talent
+functions never exist. So Preview and Copy my build still said "couldn't read your
+talents yet." WoW Forever keeps its talents in the trait system (`C_Traits`), the
+same API WeakAuras Forever reads them with. Full evidence: `ADDON_PLAN.md` 13.10.
+
+- **Fix:** `Talents.ReadTrees()` reads the active talent config through
+  `C_SpecializationInfo` / `C_Traits` / `C_Spell`. Rows and columns come from the
+  nodes' positions (ranked, so any scale works; checked against 8 real Paladin nodes
+  and Wowhead's row/col for the same ids). The three panes (e.g. Holy / Protection /
+  Retribution) are one trait tree on Forever, split by the gaps between columns.
+  Same output shape as before, so links, the `~hash`, the preview and the learning
+  order are unchanged. Every call is guarded: a missing or not-ready API means
+  "couldn't read yet", never an error.
+- **Learning is guided on WoW Forever.** `LearnTalent(tab, index)` addresses
+  talents the Classic way, which this client doesn't have, so the addon no longer
+  calls it unless Classic's `GetTalentInfo` confirms the exact talent at that
+  address. On Forever, Learn talents names each talent to click in Blizzard's window
+  and writes nothing itself.
+- Talent tooltips use `GameTooltip:SetSpellByID`; `TRAIT_CONFIG_UPDATED` refreshes
+  the Talents tab like `CHARACTER_POINTS_CHANGED`.
+- Removed: the `Blizzard_TalentUI` force-load and its tests. The test stub now models
+  `C_Traits` (and answers `MISSING` for `Blizzard_TalentUI`), plus a realistic
+  Forever client with no Classic talent API at all.
+- Suite: 9259 checks, 0 failed (8770 before); luacheck 0 warnings.
+- Still to confirm in game (TESTING.md 19): every class other than Paladin, the
+  Protection/Retribution positions, pending (un-applied) points.
+
 ## 0.10.3 (2026-10-02): fix — Talent Preview failed on a fresh login
+
+> Superseded by 0.10.4: `Blizzard_TalentUI` turned out not to exist on WoW Forever.
 
 Reported from real in-game testing: pasting a talent link and clicking Preview
 always showed "couldn't read your talents yet. Try again in a moment," even

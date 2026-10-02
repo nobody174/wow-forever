@@ -61,15 +61,22 @@ local LOOK = {
 -- ---------------------------------------------------------------------------
 
 -- Hover (13.4): the game's own talent tooltip plus "Build: 3 / 3".
--- GameTooltip:SetTalent(tab, index) is the Classic call, with the client's
--- own talent index (not our sorted position). It's guarded: missing, an
--- error (another signature), or an empty tooltip all fall back to the name.
+-- Since 13.10 talents are read through C_Traits and carry their spell id, so
+-- the tooltip is GameTooltip:SetSpellByID(spellID): our (tab, index) is no
+-- longer Classic's talent index, and SetTalent(tab, index) could show another
+-- talent's text. SetTalent stays only for an entry without a spell id. Both
+-- guarded: missing, an error, or an empty tooltip all fall back to the name.
 local function cellTooltip(b)
   local e = b.entry
   if not e then return end
   GameTooltip:SetOwner(b, "ANCHOR_RIGHT")
   local shown = false
-  if GameTooltip.SetTalent then
+  if e.spellID then
+    if GameTooltip.SetSpellByID then
+      shown = pcall(GameTooltip.SetSpellByID, GameTooltip, e.spellID)
+      if shown and GameTooltip.NumLines then shown = GameTooltip:NumLines() > 0 end
+    end
+  elseif GameTooltip.SetTalent then
     shown = pcall(GameTooltip.SetTalent, GameTooltip, e.tab, e.index)
     if shown and GameTooltip.NumLines then shown = GameTooltip:NumLines() > 0 end
   end
@@ -474,13 +481,11 @@ function TalentPanel.Preview()
   -- Only a readable link is remembered; junk would come back on every open.
   if Talents.ParseLink(text) then cdb().lastTalentLink = text end
   TalentPanel.Refresh()
-  -- GetNumTalentTabs/GetTalentInfo only exist once Blizzard_TalentUI has
-  -- loaded; Talents.ReadTrees() now force-loads it, but LoadAddOn firing
-  -- ADDON_LOADED doesn't guarantee the talent data itself is already
-  -- queryable in the very same tick on every client. One retry a moment
-  -- later covers that without turning ReadTrees() itself into an async
-  -- API for every other caller (13.7-style defensive check, confirmed
-  -- needed against a real WoW Forever client 2026-10-02).
+  -- The trait config (C_SpecializationInfo / C_Traits, 13.10) may not be
+  -- readable in the first moments after login. One retry a moment later
+  -- covers that without turning ReadTrees() into an async API for every
+  -- other caller (13.7-style defensive check). Kept from 13.9, whose
+  -- Blizzard_TalentUI premise was wrong but whose "not ready yet" case isn't.
   if state.result and state.result.error == L.TALENT_READ_FAILED_TAB and C_Timer and C_Timer.After then
     C_Timer.After(0.5, function()
       if state.text == text then TalentPanel.Refresh() end

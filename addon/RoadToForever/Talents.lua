@@ -7,9 +7,9 @@
 --   Step 10: the learning engine (13.5, decisions in ADDON_PLAN 13.8), at the
 --           end of this file.
 --
--- Steps 8 and 9 are read-only: they only call GetNumTalentTabs /
--- GetNumTalents / GetTalentInfo / GetTalentTabInfo / UnitCharacterPoints /
--- GetLocale and show our own copy box, which is all allowed in combat, so the
+-- Steps 8 and 9 are read-only: they only call the C_Traits /
+-- C_SpecializationInfo readers (13.10), GetTalentTabInfo, UnitCharacterPoints
+-- and GetLocale and show our own copy box, which is all allowed in combat, so the
 -- InCombatLockdown() / RunOrQueue pattern that guards macro writes (6.4, 6.9)
 -- doesn't apply to them (ADDON_PLAN 13.6, 13.7).
 -- Step 10 is the one irreversible write in the addon: the ONLY LearnTalent
@@ -24,65 +24,206 @@ R2F.Talents = Talents
 
 Talents.SITE_URL = "https://nobody174.github.io/wow-forever-macros/talents.html#"
 
--- GetNumTalentTabs/GetNumTalents/GetTalentInfo (and PlayerTalentFrame) are not
--- globals until Blizzard's own on-demand UI addon, Blizzard_TalentUI, has
--- loaded -- normally only when the player opens the real Talent window by
--- hand, same as Blizzard_Calendar/Blizzard_MacroUI/etc. (confirmed 2026-10-02
--- against a real WoW Forever client: an addon already running there,
--- RXPGuides, waits on ADDON_LOADED("Blizzard_TalentUI") for exactly this
--- reason). Force-loading it here means Preview/Copy my build work the first
--- time, without the player having to separately open the Talent window first
--- -- same IsAddOnLoaded + LoadAddOn pattern already proven working on this
--- client by RXPGuides' own Blizzard_Calendar load. C_AddOns is tried first,
--- same as every other API-era check in this addon (ADDON_PLAN.md 12.4.2).
-local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or _G.IsAddOnLoaded
-local LoadAddOn = (C_AddOns and C_AddOns.LoadAddOn) or _G.LoadAddOn
-
-local function ensureTalentUI()
-  if not (IsAddOnLoaded and LoadAddOn) then return end
-  local ok, loaded = pcall(IsAddOnLoaded, "Blizzard_TalentUI")
-  if ok and not loaded then pcall(LoadAddOn, "Blizzard_TalentUI") end
+-- ---------------------------------------------------------------------------
+-- Reading the talents: C_Traits (ADDON_PLAN 13.10)
+-- ---------------------------------------------------------------------------
+-- WoW Forever runs Classic's talent trees on the modern engine's trait
+-- system, so the Classic globals (GetNumTalentTabs / GetTalentInfo) don't
+-- exist at all -- not even after LoadAddOn("Blizzard_TalentUI"), which
+-- answers false, "MISSING" there (13.9's premise was wrong; 13.10). The chain
+-- below is the one WeakAuras Forever's Private.GetTalentData uses on the same
+-- client, confirmed with live /dump output (13.10): active spec group ->
+-- combat config -> config.treeIDs -> nodes -> entry -> definition -> spell.
+--
+-- Every call is guarded: the config may not exist yet right after login, and
+-- a missing namespace or function must mean "can't read yet" (nil), never a
+-- Lua error, same as every API check in this addon.
+local function call(fn, ...)
+  if type(fn) ~= "function" then return nil end
+  local ok, a = pcall(fn, ...)
+  if ok then return a end
+  return nil
 end
 
--- The game's talents, one list per talent tab, each sorted by tier, then
--- column. That is the order of the site's share code (one digit per talent,
--- Wowhead's row/column order), so digit k of a tree's part of a link is the
--- k-th talent here. GetTalentInfo's own index order is not guaranteed to be
--- that (it follows the client's talent table), hence the sort. Ties can't
--- happen in a real tree (one talent per cell); the index tiebreak only keeps
--- the order deterministic, since table.sort is not stable.
--- Returns { { {name, icon, tier, column, rank, maxRank, index}, ... }, ... } or
--- nil when the client has no talent API, or no tabs / no talents yet.
+local function spellName(id)
+  if C_Spell and C_Spell.GetSpellName then
+    local n = call(C_Spell.GetSpellName, id)
+    if n then return n end
+  end
+  return call(GetSpellInfo, id)
+end
+
+local function spellIcon(id)
+  if C_Spell and C_Spell.GetSpellTexture then
+    local t = call(C_Spell.GetSpellTexture, id)
+    if t then return t end
+  end
+  return call(GetSpellTexture, id)
+end
+
+-- Distinct values of `key` over `nodes`, sorted ascending, as value -> rank
+-- (1-based). Why ranks and not arithmetic: the 8 real Paladin nodes (13.10)
+-- show posX/posY are Wowhead's col/row grid scaled by 600 with an offset, but
+-- nothing promises the same scale or offset for every tree or class. Only the
+-- ORDER of the distinct values is relied on, which survives any scale/offset.
+local function ranks(nodes, key)
+  local seen, list = {}, {}
+  for _, n in ipairs(nodes) do
+    local v = n[key]
+    if not seen[v] then seen[v] = true; list[#list + 1] = v end
+  end
+  table.sort(list)
+  local out = {}
+  for i, v in ipairs(list) do out[v] = i end
+  return out, #list
+end
+Talents.GridRanks = ranks   -- test hook (run_tests.py's real-data check, 13.10)
+
+-- The three Classic panes (e.g. Holy / Protection / Retribution) inside ONE
+-- trait tree. Paladin's config has a single treeID (1100) with 50 nodes, i.e.
+-- all three panes in one tree (13.10); in the real Talents window they are
+-- three side-by-side column groups sharing the same rows. So the panes are
+-- found by X: the two widest gaps between consecutive distinct posX values
+-- are the gutters between panes. Inside a pane neighbouring columns are one
+-- grid step apart, so a gutter only loses to an inner gap if a pane had two
+-- empty columns side by side. When the split isn't clear-cut (fewer than 3
+-- distinct X values, or a tie between the 2nd and 3rd widest gap) this
+-- returns nil: "can't read" is safe, a wrong split would map link digits onto
+-- the wrong talents (the ~hash would catch it, but nil says it earlier).
+local function splitPanes(nodes)
+  local xs, seen = {}, {}
+  for _, n in ipairs(nodes) do
+    if not seen[n.posX] then seen[n.posX] = true; xs[#xs + 1] = n.posX end
+  end
+  if #xs < 3 then return nil end
+  table.sort(xs)
+  local gaps = {}
+  for i = 2, #xs do gaps[#gaps + 1] = { size = xs[i] - xs[i - 1], at = i } end
+  table.sort(gaps, function(a, b)
+    if a.size ~= b.size then return a.size > b.size end
+    return a.at < b.at
+  end)
+  if gaps[3] and gaps[3].size >= gaps[2].size then return nil end
+  local cut1, cut2 = math.min(gaps[1].at, gaps[2].at), math.max(gaps[1].at, gaps[2].at)
+  local panes = { {}, {}, {} }
+  for _, n in ipairs(nodes) do
+    local p = 1
+    if n.posX >= xs[cut2] then p = 3 elseif n.posX >= xs[cut1] then p = 2 end
+    table.insert(panes[p], n)
+  end
+  return panes
+end
+
+-- One node -> one talent, or nil for an empty/placeholder node. Classic
+-- talents are single-choice nodes, so the first entry is the talent (the
+-- node's activeEntry wins if a node ever carries more than one).
+local function readNode(configID, nodeID, order)
+  local node = call(C_Traits.GetNodeInfo, configID, nodeID)
+  if type(node) ~= "table" or not node.ID or node.ID == 0 then return nil end
+  if type(node.posX) ~= "number" or type(node.posY) ~= "number" then return nil end
+  local entryID = node.activeEntry and node.activeEntry.entryID
+  if not entryID and type(node.entryIDs) == "table" then entryID = node.entryIDs[1] end
+  if not entryID then return nil end
+  local entry = call(C_Traits.GetEntryInfo, configID, entryID)
+  local def = entry and entry.definitionID and call(C_Traits.GetDefinitionInfo, entry.definitionID)
+  if type(def) ~= "table" then return nil end
+  local spellID = def.spellID
+  local name = def.overrideName
+  if type(name) ~= "string" or name == "" then name = spellID and spellName(spellID) end
+  if type(name) ~= "string" or name == "" then return nil end
+  -- activeRank = what's learned (WeakAuras Forever reads the same field);
+  -- ranksPurchased is the older/other name for it.
+  local rank = node.activeRank or node.ranksPurchased or 0
+  return { name = name, icon = def.overrideIcon or (spellID and spellIcon(spellID)),
+           rank = rank, maxRank = node.maxRanks or 0, posX = node.posX, posY = node.posY,
+           nodeID = node.ID, entryID = entryID, spellID = spellID, configID = configID,
+           order = order }
+end
+
+-- The game's talents, one list per Classic pane (in the site's tree order),
+-- each sorted by tier, then column. That is the order of the site's share
+-- code (one digit per talent, Wowhead's row/column order), so digit k of a
+-- tree's part of a link is the k-th talent here. Ties can't happen in a real
+-- tree (one talent per cell); the index tiebreak only keeps the order
+-- deterministic, since table.sort is not stable.
+-- Returns { { {name, icon, tier, column, rank, maxRank, index, nodeID,
+-- spellID, ...}, ... } x3 } or nil when the client has no trait API, the
+-- config isn't ready yet, or there are no talents.
+--   tier   = rank of the node's posY among the whole tree's distinct posY
+--            (rows are shared by all three panes; posY grows downwards:
+--            tier 1 has the smallest posY, verified on the 8 real nodes).
+--   column = rank of its posX among its own pane's distinct posX.
+--   index  = its position in its pane, in C_Traits.GetTreeNodes order (the
+--            trait API's own order, standing in for Classic's talent index).
+-- Same shape as before 13.10, so encoding, hash, preview and learning order
+-- keep working unchanged; nodeID / spellID are new extras.
 -- Step 9's preview maps a pasted link onto exactly this list (13.2), so the
 -- export and the import can never disagree about which digit is which talent.
 function Talents.ReadTrees()
-  ensureTalentUI()
-  if not (GetNumTalentTabs and GetNumTalents and GetTalentInfo) then return nil end
-  local numTabs = GetNumTalentTabs() or 0
-  if numTabs < 1 then return nil end
-  local trees, count = {}, 0
-  for tab = 1, numTabs do
-    local list = {}
-    for i = 1, (GetNumTalents(tab) or 0) do
-      -- Classic: name, iconTexture, tier, column, rank, maxRank, ... (tier and
-      -- column 1-based; rank = points learned, not a preview).
-      local name, icon, tier, column, rank, maxRank = GetTalentInfo(tab, i)
-      if name then
-        list[#list + 1] = { name = name, icon = icon, tier = tier or 0, column = column or 0,
-                            rank = rank or 0, maxRank = maxRank or 0, index = i }
+  if not (C_Traits and C_SpecializationInfo) then return nil end
+  local group = call(C_SpecializationInfo.GetActiveSpecGroup)
+  if not group then return nil end
+  local configID = call(C_SpecializationInfo.GetCombatConfigIDForSpecGroup, group)
+  if not configID then return nil end
+  local config = call(C_Traits.GetConfigInfo, configID)
+  if type(config) ~= "table" or type(config.treeIDs) ~= "table" or #config.treeIDs == 0 then return nil end
+
+  local panes
+  if #config.treeIDs == 1 then
+    -- The observed case (13.10): all three panes in one tree.
+    local nodes = {}
+    for _, nodeID in ipairs(call(C_Traits.GetTreeNodes, config.treeIDs[1]) or {}) do
+      local x = readNode(configID, nodeID, #nodes + 1)
+      if x then nodes[#nodes + 1] = x end
+    end
+    if #nodes == 0 then return nil end
+    panes = splitPanes(nodes)
+  elseif #config.treeIDs == 3 then
+    -- Never seen, but the other natural layout: one trait tree per pane, in
+    -- the config's order. The ~hash still verifies the order on import.
+    panes = {}
+    for p, treeID in ipairs(config.treeIDs) do
+      panes[p] = {}
+      for _, nodeID in ipairs(call(C_Traits.GetTreeNodes, treeID) or {}) do
+        local x = readNode(configID, nodeID, #panes[p] + 1)
+        if x then table.insert(panes[p], x) end
       end
+    end
+  end
+  if not panes then return nil end
+
+  -- Rows over every pane together: the panes share their rows on screen, and
+  -- a tier must mean the same thing in all three trees (13.5's learning order
+  -- runs tier by tier across all trees).
+  local all = {}
+  for _, pane in ipairs(panes) do
+    for _, x in ipairs(pane) do all[#all + 1] = x end
+  end
+  if #all == 0 then return nil end
+  local tierOf, numTiers = ranks(all, "posY")
+  -- Classic grid: 7 tiers x 4 columns. More distinct values than that means
+  -- the coordinates aren't the grid we verified: refuse rather than guess.
+  if numTiers > 7 then return nil end
+
+  local trees = {}
+  for p, pane in ipairs(panes) do
+    local colOf, numCols = ranks(pane, "posX")
+    if numCols > 4 then return nil end
+    -- index = order within this pane, in GetTreeNodes order.
+    table.sort(pane, function(a, b) return a.order < b.order end)
+    local list = {}
+    for i, x in ipairs(pane) do
+      list[i] = { name = x.name, icon = x.icon, tier = tierOf[x.posY], column = colOf[x.posX],
+                  rank = x.rank, maxRank = x.maxRank, index = i, nodeID = x.nodeID,
+                  entryID = x.entryID, spellID = x.spellID, configID = x.configID }
     end
     table.sort(list, function(a, b)
       if a.tier ~= b.tier then return a.tier < b.tier end
       if a.column ~= b.column then return a.column < b.column end
       return a.index < b.index
     end)
-    trees[tab] = list
-    count = count + #list
+    trees[p] = list
   end
-  -- Tabs but no talents at all = the client hasn't loaded talent data yet; a
-  -- link from that would be an empty build with a wrong hash, so say "can't".
-  if count == 0 then return nil end
   return trees
 end
 
@@ -334,7 +475,8 @@ function Talents.Plan(trees, codes, free)
       -- tree (and drops empty trailing trees), so a short code is normal.
       local planned = tonumber(code:sub(k, k)) or 0
       local e = { name = x.name, icon = x.icon, tier = x.tier, column = x.column, rank = x.rank,
-                  maxRank = x.maxRank, index = x.index, tab = t, planned = planned,
+                  maxRank = x.maxRank, index = x.index, nodeID = x.nodeID, spellID = x.spellID,
+                  tab = t, planned = planned,
                   add = 0, now = 0, later = 0 }
       tree.current = tree.current + x.rank
       tree.planned = tree.planned + planned
@@ -520,13 +662,28 @@ end
 -- The CVar test matters: a client can carry the preview functions without
 -- the feature being on (shared code), and filling a preview nobody sees
 -- would learn nothing.
+-- 13.10: the trees are read through C_Traits now, so a talent's (tab, index)
+-- is OUR address (pane, position in GetTreeNodes order), not Classic's
+-- talent-table index. LearnTalent and AddPreviewTalentPoints take Classic's
+-- (tab, index). Both are irreversible-ish writes, so they are only used on a
+-- client that also has Classic's GetTalentInfo (the "preview" and "direct"
+-- modes require it) and, per point, only when GetTalentInfo names exactly this
+-- talent at exactly this address. WoW Forever has no GetTalentInfo (13.10),
+-- so there learning is "guided": the addon writes nothing at all.
+local function legacyMatches(tab, index, name)
+  if type(GetTalentInfo) ~= "function" then return false end
+  local ok, n = pcall(GetTalentInfo, tab, index)
+  return ok and n == name
+end
+
 function Talents.LearnMode()
-  if type(AddPreviewTalentPoints) == "function" and type(LearnPreviewTalents) == "function"
+  local legacy = type(GetTalentInfo) == "function"
+  if legacy and type(AddPreviewTalentPoints) == "function" and type(LearnPreviewTalents) == "function"
      and GetCVarBool then
     local ok, on = pcall(GetCVarBool, "previewTalents")
     if ok and on then return "preview" end
   end
-  if type(LearnTalent) == "function" and not session.blocked then return "direct" end
+  if legacy and type(LearnTalent) == "function" and not session.blocked then return "direct" end
   return "guided"
 end
 
@@ -650,6 +807,9 @@ end
 -- when InCombatLockdown() is still false (6.7).
 local function learnPoint(p)
   if R2F.InCombat() then return false, "combat" end
+  -- 13.10: never send a point to an address Classic's API doesn't confirm is
+  -- this very talent (see legacyMatches).
+  if not legacyMatches(p.tab, p.index, p.name) then return false, "mismatch" end
   if not pcall(LearnTalent, p.tab, p.index) then return false, "rejected" end
   return true
 end
@@ -678,6 +838,9 @@ stepDirect = function(r)
   if not ok then
     r.waiting = nil
     if why == "combat" then return stop(r, "combat", p) end
+    -- Nothing was sent, so it's no sign LearnTalent is blocked: a plain
+    -- "your talents changed" stop, not a refusal.
+    if why == "mismatch" then return stop(r, "changed", p) end
     return reject(r, p)
   end
   -- ADDON_ACTION_FORBIDDEN can fire inside the LearnTalent call itself and
@@ -900,6 +1063,7 @@ function Talents.FillPreview(plan)
   local n = 0
   for _, e in ipairs(Talents.LearnOrder(plan)) do
     if e.now > 0 then
+      if not legacyMatches(e.tab, e.index, e.name) then break end
       if not pcall(AddPreviewTalentPoints, e.tab, e.index, e.now) then break end
       n = n + e.now
     end

@@ -1400,9 +1400,14 @@ shows under the repo's Actions tab.
 - [ ] Talent tab order (`GetTalentInfo(tab, ...)` for tab 1..3) matches `talentcalc.js`
       `CLASSES` order. Step 8 doesn't call `GetTalentTabInfo` at all (its return
       shape differs between client versions); the hash check above covers the order.
-- [ ] `GetNumTalentTabs` / `GetNumTalents` / `GetTalentInfo` exist and return
-      `name, icon, tier, column, rank, maxRank` (Classic shape; 13.6). Talent names
-      come back in English on an English client (the hash is over names, 13.6).
+- [x] `GetNumTalentTabs` / `GetNumTalents` / `GetTalentInfo` exist: **no** (answered
+      2026-10-02; `Blizzard_TalentUI` is `MISSING`). Talents are read via `C_Traits`
+      since v0.10.4 (13.10). The sort/tab-order items above now mean the C_Traits
+      reader's tier/column ranks and pane split; the per-class hash check is the test.
+- [ ] C_Traits reader (13.10): Protection/Retribution posX and every class other than
+      Paladin unseen; `activeRank` vs pending points; `SetSpellByID` tooltip; which
+      event fires on Apply Changes; does `GetTalentTabInfo` exist (else `Tree 1..3`).
+      Talent names come back in English on an English client (the hash is over names).
 - [ ] `GameTooltip:SetTalent(tab, index)` shows the talent tooltip from our mini
       trees, and `GetTalentTabInfo(tab)` returns the tree name first or second
       (13.7; else the headers read `Tree 1..3`). `InputBoxTemplate` exists (link box).
@@ -1686,6 +1691,8 @@ The link from **Copy link** is the import format. No separate string.
   Wrong class: `This is a Paladin build. You're playing a Warrior.`
 - Mapping to the game: for each talent tab (`GetNumTalentTabs`), list every
   talent with `GetTalentInfo(tab, i)` -> name, icon, tier, column, rank, maxRank.
+  (**13.10:** those don't exist on WoW Forever; the same lists now come from
+  `C_Traits`, panes split by position. The sort below is unchanged.)
   **Sort by tier, then column.** Digit k of that tree's part of the link = planned
   rank of the k-th talent in this sorted list (that's how the site encodes it:
   Wowhead's row/column order). Missing trailing digits = 0.
@@ -2182,6 +2189,10 @@ CVar, event order, forbidden event, locks, glow hiding, label) each fail the sui
 
 ### 13.9 Fix: Blizzard_TalentUI is load-on-demand (2026-10-02)
 
+> **Superseded by 13.10 (v0.10.4).** The premise below was wrong:
+> `LoadAddOn("Blizzard_TalentUI")` returns `false, "MISSING"` on WoW Forever, and
+> the Classic talent globals never appear. Kept as the record of what was tried.
+
 **The bug.** Preview on a real WoW Forever client, cold (no Talent window opened
 yet this session): "couldn't read your talents yet. Try again in a moment." every
 time, with no errors visible to the player. `/dump GetNumTalentTabs()` in-game
@@ -2244,3 +2255,141 @@ as loaded. Confirmed as a real regression test, not just a passing assertion: wi
 `ensureTalentUI()`'s call site removed, the suite doesn't just fail a check, it
 crashes outright downstream (a `nil` from `ReadTrees()` reaching code that assumed
 a table), which is an even stronger signal the fix is load-bearing.
+
+### 13.10 Correction: talents are read through C_Traits (v0.10.4, 2026-10-03)
+
+**Corrects 13.9.** In game, `LoadAddOn("Blizzard_TalentUI")` returns `false,
+"MISSING"`: the addon doesn't exist on WoW Forever, not even load-on-demand, and
+`GetNumTalentTabs` / `GetTalentInfo` never appear. WoW Forever (the 12.x engine,
+interface 16001) keeps Classic's three-pane talent trees in retail's **trait system**
+(`C_Traits`), with an "Apply Changes" button like retail. v0.10.3's fix could never
+have worked; its tests passed because the stub modelled the wrong premise.
+
+**Evidence (all real, none guessed).**
+- **The API chain** is the one WeakAuras Forever 1.3.0 uses on this client
+  (`Interface/AddOns/WeakAuras/Prototypes.lua`, `Private.GetTalentData`, reader taken
+  from ForeverAuras): `C_SpecializationInfo.GetActiveSpecGroup()` ->
+  `GetCombatConfigIDForSpecGroup(group)` -> `C_Traits.GetConfigInfo(configID).treeIDs`
+  -> `C_Traits.GetTreeNodes(treeID)` -> `C_Traits.GetNodeInfo(configID, nodeID)` ->
+  `GetEntryInfo(configID, entryID).definitionID` -> `GetDefinitionInfo(...).spellID`.
+- **A live dump** (`talent_dump.lua`, run on a Paladin 2026-10-02; the output is still in
+  the user's saved chat log, `WTF/.../SavedVariables/Prat-3.0.lua`):
+  `treeIDs = 1100`, `tree 1100 has 50 nodes`, and 8 nodes with `posX`, `posY`, max rank
+  and `C_Spell.GetSpellName(spellID)` name.
+- **Wowhead's Forever data** (the site's own source, `talentcalc.js`; a copy from step 8
+  was on disk) has the **same node ids** as `C_Traits` (Wowhead talent id = trait node
+  id, e.g. 105320 = Light's Vigil), the same names, and row/col for each.
+- **The user's screenshot** of Blizzard's Talents window (2026-10-02): Holy /
+  Protection / Retribution side by side, left to right, each a 4 x 7 grid, all three on
+  the same row lines.
+
+**Positions -> tier / column (proven on real data).** The 8 dumped nodes against
+Wowhead's row/col for the same ids:
+
+| node | posX | posY | Wowhead row, col |
+|---|---|---|---|
+| 105320 Light's Vigil | 1620 | 5730 | 6, 1 |
+| 105321 Holy Power | 2220 | 5130 | 5, 2 |
+| 105323 Holy Shock | 1620 | 4530 | 4, 1 |
+| 105324 Divine Precision | 1020 | 4530 | 4, 0 |
+| 105325 Divine Favor | 2220 | 3930 | 3, 2 |
+| 105327 Purifying Power | 2220 | 3330 | 2, 2 |
+| 105329 Illumination | 1620 | 3930 | 3, 1 |
+| 105330 Voice of Truth | 1020 | 3330 | 2, 0 |
+
+So `col = (posX - 1020) / 600`, `row = (posY - 2130) / 600` for Holy, exactly. Note
+the direction: **posY grows with the row** (screen coordinates, tier 1 on top). The
+first hand-off sketch had posY sorted descending; the table above shows that's
+backwards, and a test checks the descending order would not match Wowhead.
+`ReadTrees` doesn't hard-code 600 / 1020 / 2130: it **ranks** the distinct values
+(tier = rank of the node's posY among the whole tree's distinct posY; column = rank
+of its posX among its own pane's distinct posX), which gives the same numbers for any
+scale or offset. Ranking needs every tier present somewhere in the class and every
+pane to use its first column: Wowhead's Forever data has all 7 rows in every class
+and column 0 in all 27 trees (only Warlock Destruction lacks column 3, which doesn't
+shift anything). And whatever the absolute numbers, the link digits, the hash and the
+learning order only use the **relative order** (tier, then column), which ranking
+always preserves.
+
+**The three panes (the open question).** Not a C_Traits field: WeakAuras' reader has
+none (it only knows `subTreeID`, retail's hero talents), and neither does its talent
+picker, which just draws `posX/posY`. Evidence that the panes are three column groups
+inside one tree: Paladin's config has **one** tree with **50** nodes, and Wowhead's
+three Paladin trees have 17 + 16 + 17 = **50** talents; the screenshot shows three
+non-overlapping column groups on shared rows. So `ReadTrees` splits the tree by X: the
+two widest gaps between consecutive distinct posX values are the gutters. In the
+screenshot a pane step is ~59 px per column and the panes start ~393 px apart, i.e.
+about 6.6 column steps: from a pane's last column to the next pane's first is ~3.6
+steps, against exactly 1 step between neighbouring columns inside a pane (all 27
+Wowhead trees have contiguous columns). Panes are ordered left to right, which is the site's order
+(`CLASSES`: Holy 382, Protection 383, Retribution 381 = the screenshot). If the split
+isn't clear-cut (fewer than 3 X values, or the 2nd and 3rd widest gaps equal),
+`ReadTrees` returns nil ("couldn't read") instead of guessing. More than 7 tiers or
+4 columns in a pane also returns nil (not the grid we verified). A config with three
+tree ids (never seen) is read as one pane per tree in config order.
+
+**Contract.** `ReadTrees()` returns the same shape as before: three lists (site tree
+order), each sorted by tier then column, entries `name, icon, tier, column, rank,
+maxRank, index`. New extras: `nodeID, entryID, spellID, configID`. `index` is now the
+talent's position in its pane in `GetTreeNodes` order (it was Classic's talent index).
+`rank` = `node.activeRank` (WeakAuras' field; `ranksPurchased` as fallback). Encode,
+Hash, ParseLink, Plan, Summary and LearnOrder are unchanged; the hash cross-check
+against the real `talentcalc.js` passes unchanged through the new reader.
+
+**What changed downstream, and why.** Three places used `(tab, index)` as Classic's
+address, which it no longer is:
+- **Learning** (`LearnTalent(tab, index)`, `AddPreviewTalentPoints(tab, index, n)`): a
+  wrong address learns the wrong talent, which only a paid reset undoes. `direct` and
+  `preview` modes now need Classic's `GetTalentInfo` to exist, and every point checks
+  `GetTalentInfo(tab, index)` names this very talent before the write (else the run
+  stops, nothing sent). WoW Forever has no `GetTalentInfo`, so there learning is
+  always **guided** (the addon writes nothing; it names the talent to click). Real
+  auto-learning on Forever would be `C_Traits.PurchaseRank(configID, nodeID)` (+ the
+  player's Apply Changes, or `CommitConfig`): not built, a separate step.
+- **Guided glow:** only on a Blizzard button `GetTalentInfo` confirms; on Forever the
+  text alone (no glow on a possibly wrong button).
+- **Tooltip:** `GameTooltip:SetSpellByID(spellID)` instead of `SetTalent(tab, index)`.
+- **Events:** `TRAIT_CONFIG_UPDATED` (what WeakAuras Forever listens to) runs the
+  same handler as `CHARACTER_POINTS_CHANGED`.
+- `ensureTalentUI()` and the Blizzard_TalentUI force-load are gone. Its one valid idea
+  ("not ready yet" right after login) is kept: every call in the chain is
+  `pcall`-guarded, a missing piece returns nil, and the Preview's 0.5 s retry stays.
+- Tree names still come from `GetTalentTabInfo` if it exists, else `Tree 1..3`.
+
+**Testing.** `wow_stubs.lua` now models `C_SpecializationInfo` / `C_Traits` /
+`C_Spell` over the same talent table (one tree 1100, real Holy grid numbers, panes
+3930 apart, `GetTreeNodes` interleaving the panes so grouping by order fails), and
+`LoadAddOn` answers `MISSING`; `GetNumTalentTabs` / `GetNumTalents` are gone. Classic's
+`GetTalentInfo` stays in the default fake client only as the hypothetical Classic client
+the direct engine is tested on; `new_runtime(before_load=...)` removes it (and
+`LearnTalent`, etc.) for the realistic Forever client. New `test_talent_traits`: the 8
+real nodes' ranks against Wowhead's row/col (direction and order, real data only), the
+8 real nodes inside a full tree (absolute tier/column; the other 42 nodes synthesized
+on the same grid), scale/offset invariance, every refusal, the per-pane layout, live
+ranks, the event, and the Forever client (link == `talentcalc.js`, preview learnable,
+guided, zero writes, a guided run finishing on `TRAIT_CONFIG_UPDATED`, still guided
+with a stray `LearnTalent`), plus a Classic client whose address names another talent
+(stopped before `LearnTalent`). The 13.9 tests that checked the force-load were
+replaced. Suite: 9259 checks, 0 failed (8770 before; every step 8/9/10 check kept,
+two changed on purpose: the tooltip is `SetSpellByID`, and Cruelty's cell moved one
+column left because the fixture's truncated Fury tree has no column-0 talent). Hand
+mutations (posY sorted descending, no address check, no tie refusal, rank always 0,
+LearnMode without the GetTalentInfo gate, panes by node order) each fail the suite.
+Outside the repo (Wowhead data isn't stored): all 9 classes from Wowhead's Forever
+data laid out on the verified grid, nodes shuffled, read back with exact row/col and
+link + hash identical to `talentcalc.js`: 9/9.
+
+**Proven vs not yet.**
+- Proven on real data: the API chain works on this client (WeakAuras + the dump);
+  Paladin = one tree, 50 nodes = all three panes; Holy's posX/posY are Wowhead's
+  col/row on a 600 grid, posY growing downwards; node ids and names = Wowhead's.
+- Not yet seen in game (TESTING.md 19): the posX of the Protection and Retribution
+  nodes (the gutter is read off the screenshot, not dumped); any class but Paladin
+  (one tree per class? same layout?); `activeRank` vs pending, un-applied points;
+  `SetSpellByID` tooltips; which event fires when the player applies talents (guided
+  mode advances on either); whether `GetTalentTabInfo` exists (else `Tree 1..3`).
+  The `~hash` remains the backstop on import: if any of this is wrong for a class,
+  Preview stops with the "different talent trees" message (English client) instead of
+  mapping digits wrongly. On **export** the site ignores the hash, so a wrong mapping
+  would open the wrong build there: TESTING.md 13's hash comparison per class is the
+  check for that.

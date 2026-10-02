@@ -363,11 +363,21 @@ one link per class also matched on Wowhead's live Forever data for all 9 classes
 What only the game can show is whether the **game's** talent data agrees with the
 site's (ADDON_PLAN 11, 13.6):
 
-- [ ] **API shape.** `/dump GetNumTalentTabs(), GetNumTalents(1)` then
-      `/dump GetTalentInfo(1, 1)`. **Pass:** 3 tabs; GetTalentInfo returns a name, an
-      icon, then tier and column (small numbers from 1), then your rank and the max
-      rank. If the order of those returns differs, `Talents.ReadTrees` needs the new
-      positions: note the exact `/dump` output in ADDON_PLAN 13.6.
+- [x] ~~**API shape.** `/dump GetNumTalentTabs(), ...`~~ Answered 2026-10-02: those
+      globals don't exist on WoW Forever, and `Blizzard_TalentUI` is `MISSING`.
+      Talents are read through `C_Traits` since v0.10.4 (ADDON_PLAN 13.10).
+- [ ] **C_Traits read (v0.10.4, ADDON_PLAN 13.10), on a Paladin first.** Fresh
+      login, Talents tab, Preview your own `/r2f copybuild` link. **Pass:** no
+      "couldn't read your talents yet"; the three mini trees show Holy / Protection /
+      Retribution content in that order (left to right), each talent in the same row
+      and column as in Blizzard's Talents window, rank badges matching your real
+      points. Then the same on every other class you can log in with: the pane split
+      (by X gaps) and the row/column ranking are only proven on Paladin's Holy pane.
+      Wrong pane contents or order = note the class and run
+      `/dump C_Traits.GetConfigInfo(C_SpecializationInfo.GetCombatConfigIDForSpecGroup(C_SpecializationInfo.GetActiveSpecGroup())).treeIDs`.
+- [ ] **Applied vs pending points (13.10).** Click a talent in Blizzard's window but
+      don't Apply Changes yet, then `/r2f copybuild`. Note whether the link includes
+      the pending point (it reads `activeRank`); then Apply and check again.
 - [ ] **Copy my build.** Spend a few talent points (or use a character that has
       some). `/r2f copybuild`. **Pass:** a small box with the hint
       `Press Ctrl+C, then paste it in your browser or Discord.` and a link like
@@ -422,9 +432,10 @@ What only the game can show:
       clearly different from each other, and the rank badge sits on the corner, not
       off the icon. If not, adjust sizes in `UI/TalentPanel.lua` (`buildCell`).
 - [ ] **Tooltip.** Hover a mini-tree talent. **Pass:** the game's own talent tooltip
-      (name, rank, description) **for that talent**, plus `Build: X / Y`. Only a name
-      line = `GameTooltip:SetTalent` is missing or different (note it in ADDON_PLAN
-      11 / 13.7). A wrong talent's tooltip = it takes another index (report it).
+      (name, rank, description) **for that talent**, plus `Build: X / Y`. Since v0.10.4
+      it's `GameTooltip:SetSpellByID(spellID)` (13.10): only a name line = that call
+      is missing or failed here (note it in ADDON_PLAN 11); a spell tooltip without
+      talent rank text is expected (it's the spell, not Blizzard's talent button).
 - [ ] **Conflict.** With a point in a talent the build doesn't use: red ring on it and
       the red line `You already have 1 point in X, which this build doesn't use. Reset
       your talents at a trainer first.`
@@ -446,6 +457,11 @@ What only the game can show:
       no "action blocked". Learn talents is greyed out in combat (since v0.8.0, 15).
 
 ## 15. Talent learning (v0.8.0, step 10) -- READ ALL OF THIS FIRST
+
+**Since v0.10.4 (ADDON_PLAN 13.10):** WoW Forever has no Classic `GetTalentInfo`, so
+the addon never calls `LearnTalent` there; Learn talents is always guided mode
+(section 19). The direct/preview checks below only apply to a client that has
+Classic's talent API.
 
 **This is the one part of the addon that changes your character for good.** Every
 learned point is permanent until a paid trainer reset. Do these checks on a **throwaway
@@ -664,28 +680,29 @@ imported, then import another class's macros (e.g. Warrior) on the same characte
       or get clipped at the window's bottom edge — this was only measured against the
       fixed 540x500 window size, never seen on a real screen.
 
-## 19. Talent Preview on a cold login (v0.10.3 fix)
+## 19. Talent reading through C_Traits (v0.10.4; replaces v0.10.3's section)
 
-Confirmed broken, then fixed, from real in-game testing 2026-10-02 — see
-ADDON_PLAN.md 13.9 for the full investigation.
+v0.10.3's fix (force-loading `Blizzard_TalentUI`) was built on a wrong premise:
+that addon is `MISSING` on WoW Forever. v0.10.4 reads talents through `C_Traits`
+(ADDON_PLAN.md 13.10, which also lists exactly what is proven and what isn't).
 
-- [ ] **The actual bug report, re-verify it's fixed.** Log in fresh (or `/reload`),
-      do **not** open the real Talent window, go straight to `/r2f` → Talents →
-      paste a Copy-link from the site → Preview. **Pass:** the preview actually
-      shows (trees, summary line), not "couldn't read your talents yet."
-- [ ] **Copy my build, also cold.** Same fresh-login state, click Copy my build
-      before ever opening the real Talent window. **Pass:** a real link comes
-      back, not nothing / an error.
-- [ ] **No visible flash/stutter.** `LoadAddOn("Blizzard_TalentUI")` shouldn't
-      cause any visible frame flicker or delay — if it does, note how long.
-- [ ] **The real Talent window still opens normally afterward.** Open it by hand
-      (default binding) after having used Preview/Copy my build first. **Pass:**
-      looks and works exactly as before — nothing about force-loading it early
-      should change its own behavior.
-- [ ] **If it's STILL broken cold** (same error message on a true fresh login):
-      the 0.5s retry in `TalentPanel.Preview()` may not be enough time on this
-      connection — note exactly how long after Preview it starts working if you
-      wait and click Preview again by hand.
+- [ ] **The original bug.** Fresh login (or `/reload`), don't open Blizzard's
+      Talents window, `/r2f` → Talents → paste a site link of your class → Preview.
+      **Pass:** trees + summary line, not "couldn't read your talents yet."
+- [ ] **Copy my build, cold.** Same state, Copy my build. **Pass:** a link; open it on
+      the site: same talents and ranks as Blizzard's window. Then the hash check of
+      section 13 (the 4 characters after `~` equal the site's Copy link for the same
+      build). Equal hashes prove names, order and pane order all match for that class.
+- [ ] **Every class you can log in with.** Repeat the two checks above per class:
+      the pane split (by X gaps between columns) is only proven on Paladin.
+- [ ] **Learning is guided on Forever (13.10).** With a learnable preview, Learn
+      talents. **Pass:** chat says which talent to click (`Click X (1 of N)`); no
+      gold glow on Blizzard's window (expected: the addon can't confirm its buttons);
+      nothing is learned by the addon itself. Click the named talent in Blizzard's
+      window and **Apply Changes**. **Pass:** the addon moves on to the next talent.
+      If it doesn't move until something else happens, note whether it moved on the
+      click or only on Apply (which event fires: `/etrace`, look for
+      `TRAIT_CONFIG_UPDATED` / `CHARACTER_POINTS_CHANGED`).
 
 ## Known gaps in v0.10.0 (by design / later)
 

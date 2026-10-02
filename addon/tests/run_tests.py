@@ -786,15 +786,6 @@ def test_ui_smoke(templates, fx):
 BINDING_GLOBALS = {"BINDING_HEADER_ROADTOFOREVER", "BINDING_NAME_R2F_TOGGLE", "BINDING_NAME_R2F_MACROS",
                    "BINDING_NAME_R2F_TALENTS"}
 
-# Blizzard's own globals, created by its on-demand Blizzard_TalentUI "addon"
-# loading (GetNumTalentTabs/GetTalentInfo don't exist until then, confirmed
-# 2026-10-02 against a real WoW Forever client -- RXPGuides, a working addon
-# there, waits on exactly this). Talents.ReadTrees() force-loads it, so any
-# test that calls into talent reading legitimately adds these three globals;
-# they are the game's, not ours, so they're excused the same way R2F* frames
-# and the binding labels are, not folded into either of those categories.
-BLIZZARD_TALENT_GLOBALS = {"GetNumTalentTabs", "GetNumTalents", "GetTalentInfo"}
-
 
 def names_of(lua_list):
     return [lua_list[i].name for i in range(1, len(lua_list) + 1)]
@@ -1036,9 +1027,8 @@ def test_step5_ui(templates, fx):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"SETBTN", "CHECKS", "REMOVEALL", "L", "APPLIED", "NS", "REAL_MM"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in BLIZZARD_TALENT_GLOBALS
            and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
-    check(not bad, "%s: step 5 adds no globals besides R2F* frames, the binding labels and Blizzard_TalentUI's own: %s" % (tag, bad))
+    check(not bad, "%s: step 5 adds no globals besides R2F* frames and the binding labels: %s" % (tag, bad))
 
 
 def test_bindings_xml(lua):
@@ -1494,9 +1484,15 @@ def talent_js(fixture_path=TALENT_FIXTURE):
 
 
 def set_game_talents(lua, raw, tree_ids, ranks, order="name"):
-    """Fill the GetTalentInfo stubs from Wowhead-format data: one tab per tree id,
-    talents in a client order that is NOT row/col (by name, or reversed)."""
+    """Fill the fake client's talents (C_Traits view, wow_stubs.lua) from
+    Wowhead-format data: one pane per tree id, talents in a client order that
+    is NOT row/col (by name, or reversed). A tree with no talents can only be
+    expressed with one trait tree per pane (an empty pane has no position to
+    be found by in a single tree; a real tree never has one), so then the
+    stub's "perPane" layout is used, otherwise the real single-tree one."""
     lua.execute("TEST.talentTabs = {}")
+    empty = any(not (raw.get(str(tid)) or {}) for tid in tree_ids)
+    lua.execute("TEST.traitLayout = %r" % ("perPane" if empty else "single"))
     add = lua.eval("function(t, n, tier, col, rank, mx, ptier, pcol) TEST.talentTabs[t] = TEST.talentTabs[t] or {}"
                    " table.insert(TEST.talentTabs[t], { name = n, tier = tier, column = col, rank = rank, maxRank = mx,"
                    " prereq = ptier and { ptier, pcol } or nil }) end")
@@ -1528,46 +1524,45 @@ def test_talents(templates):
     TL = lua.eval("R2F.Talents")
     read = lua.eval("function() return R2F.Talents.ReadTrees() end")
 
-    # ---- Blizzard_TalentUI is load-on-demand on a real client (confirmed -------
-    # 2026-10-02: GetNumTalentTabs/GetTalentInfo errored "attempt to call a nil
-    # value" on a fresh WoW Forever login, before the real Talent window was
-    # ever opened -- "couldn't read your talents yet" every time). ReadTrees()
-    # must force it to load itself, not just check if it happens to be loaded.
+    # ---- 13.10: talents come from C_Traits, nothing is loaded on demand ------
+    # (13.9 force-loaded Blizzard_TalentUI; on WoW Forever that answers
+    # false, "MISSING" and the Classic globals never appear.)
     set_game_talents(lua, raw, js["classes"]["warrior"], {})
-    check(lua.eval("TEST.loadedAddons.Blizzard_TalentUI") is not True,
-          "%s: sanity check -- Blizzard_TalentUI genuinely not loaded yet" % tag)
+    T.loadAddOnCalls = lua.table()
     trees = read()
-    check(trees is not None, "%s: ReadTrees() works on the very first call, Blizzard_TalentUI never opened by hand" % tag)
-    check(lua.eval("TEST.loadedAddons.Blizzard_TalentUI") is True,
-          "%s: ReadTrees() force-loaded Blizzard_TalentUI itself" % tag)
-    # Calling again doesn't reload it or error (IsAddOnLoaded short-circuits).
-    trees2 = read()
-    check(trees2 is not None, "%s: a second ReadTrees() call still works" % tag)
-
-    # A client with neither C_AddOns.LoadAddOn nor the bare global: ReadTrees()
-    # must fail CLEANLY (nil), not error -- same defensive bar as every other
-    # API-existence check in this addon. Talents.lua captures LoadAddOn as a
-    # local at load time, so the global has to be gone BEFORE new_runtime()
-    # loads the addon files, not nil'd out afterward.
-    lua2 = new_runtime(templates, before_load="C_AddOns.LoadAddOn = nil LoadAddOn = nil")
-    lua2.execute("TEST.fire('ADDON_LOADED', 'RoadToForever') TEST.fire('PLAYER_LOGIN')")
-    set_game_talents(lua2, raw, js["classes"]["warrior"], {})
-    check(lua2.eval("R2F.Talents.ReadTrees()") is None,
-          "%s: no LoadAddOn at all -> ReadTrees() fails cleanly (nil), no error" % tag)
-
-    # A client where LoadAddOn("Blizzard_TalentUI") exists but is refused
-    # (e.g. disabled by the user, or genuinely missing on this client) must
-    # also fail cleanly rather than erroring on the missing globals.
-    lua3 = new_runtime(templates)
-    T3 = lua3.eval("TEST")
-    T3.blockAddonLoad = True
-    T3.fire("ADDON_LOADED", "RoadToForever")
-    T3.fire("PLAYER_LOGIN")
-    set_game_talents(lua3, raw, js["classes"]["warrior"], {})
-    check(lua3.eval("R2F.Talents.ReadTrees()") is None,
-          "%s: LoadAddOn refused -> ReadTrees() fails cleanly (nil), no error" % tag)
-    check(lua3.eval("TEST.loadedAddons.Blizzard_TalentUI") is not True,
-          "%s: a refused load doesn't get marked as loaded" % tag)
+    check(trees is not None and len(trees) == 3, "%s: ReadTrees() reads 3 panes from C_Traits on the first call" % tag)
+    check(len(lua_table_to_list(T.loadAddOnCalls)) == 0, "%s: ReadTrees() never calls LoadAddOn" % tag)
+    check(lua.eval("GetNumTalentTabs == nil and GetNumTalents == nil") is True,
+          "%s: the fake client has no Classic tab API at all (like WoW Forever)" % tag)
+    check(lua.eval("select(2, LoadAddOn('Blizzard_TalentUI'))") == "MISSING",
+          "%s: the fake client answers Blizzard_TalentUI with MISSING, like the real one" % tag)
+    # Config not ready yet (right after login): nil, then fine once it is.
+    T.traitsReady = False
+    check(read() is None, "%s: no combat config yet -> ReadTrees() nil, no error" % tag)
+    T.traitsReady = True
+    check(read() is not None, "%s: config ready -> ReadTrees() works" % tag)
+    # Each missing / failing piece of the chain: nil, never a Lua error.
+    for setup in ("C_Traits = nil", "C_SpecializationInfo = nil",
+                  "C_SpecializationInfo.GetActiveSpecGroup = nil",
+                  "C_SpecializationInfo.GetCombatConfigIDForSpecGroup = function() error('boom') end",
+                  "C_Traits.GetConfigInfo = function() return nil end",
+                  "C_Traits.GetConfigInfo = function() return { treeIDs = {} } end",
+                  "C_Traits.GetTreeNodes = function() error('boom') end",
+                  "C_Traits.GetNodeInfo = function() error('boom') end",
+                  "C_Traits.GetDefinitionInfo = function() return nil end",
+                  "C_Spell.GetSpellName = function() return nil end GetSpellInfo = nil"):
+        lua_x = new_runtime(templates)
+        lua_x.execute("TEST.fire('ADDON_LOADED', 'RoadToForever') TEST.fire('PLAYER_LOGIN')")
+        set_game_talents(lua_x, raw, js["classes"]["warrior"], {})
+        lua_x.execute(setup)
+        check(lua_x.eval("R2F.Talents.ReadTrees()") is None, "%s: %s -> ReadTrees() nil, no error" % (tag, setup))
+    # GetSpellInfo fallback when C_Spell has no GetSpellName.
+    lua_x = new_runtime(templates)
+    lua_x.execute("TEST.fire('ADDON_LOADED', 'RoadToForever') TEST.fire('PLAYER_LOGIN')")
+    set_game_talents(lua_x, raw, js["classes"]["warrior"], {})
+    lua_x.execute("C_Spell = nil GetSpellInfo = function(id) return TEST.spellNames[id] end")
+    check(lua_x.eval("R2F.Talents.Hash(R2F.Talents.ReadTrees())") == js["hashes"]["warrior"],
+          "%s: names via GetSpellInfo when C_Spell is missing" % tag)
 
     # ---- The hash: Lua == JS == Python, per class, on the same names -----------
     check(TL.HashText("") == ref_talent_hash("") == "045h", "%s: hash of '' = 5381 -> '045h'" % tag)
@@ -1672,8 +1667,8 @@ def test_talents(templates):
     lua.execute("TEST.talentTabs = { {}, {}, {} }")
     check(lua.eval("R2F.Talents.CopyMyBuild()") is None and lua.eval("R2FCopy:IsShown()") is False,
           "%s: tabs without talents (data not loaded) -> no link" % tag)
-    lua.execute("GetTalentInfo = nil")
-    check(lua.eval("R2F.Talents.CopyMyBuild()") is None, "%s: no talent API -> nil, no error" % tag)
+    lua.execute("C_Traits = nil")
+    check(lua.eval("R2F.Talents.CopyMyBuild()") is None, "%s: no talent API (C_Traits) -> nil, no error" % tag)
     help_lines = lua_table_to_list(lua.eval("R2F.L.HELP_LINES"))
     check(any(h.startswith("/r2f copybuild") for h in help_lines), "%s: help lists /r2f copybuild" % tag)
 
@@ -1942,7 +1937,11 @@ def test_talent_preview(templates):
           and lua.eval(c(1, 1, 2) + ".icon.__desat") is False, "%s: learned cell: rank 5, normal icon" % tag)
     check(lua.eval(c(1, 1, 3) + ".rank.__text") == "+3" and lua.eval(c(1, 1, 3) + ".glow.__shown") is True
           and lua.eval(c(1, 1, 3) + ".rank.__color[3]") == 0, "%s: now cell: gold +3 and glow" % tag)
-    check(lua.eval(c(2, 1, 3) + ".rank.__text") == "+1", "%s: Cruelty now +1" % tag)
+    # 13.10: columns are ranks of the pane's own distinct posX, and the
+    # fixture's (truncated) Fury tree has nothing in Wowhead's column 0, so
+    # Cruelty (Wowhead col 2) is drawn in column 2 here, not 3. Cosmetic only:
+    # link order / hash / learning order depend on the relative order alone.
+    check(lua.eval(c(2, 1, 2) + ".rank.__text") == "+1", "%s: Cruelty now +1" % tag)
     check(lua.eval(c(1, 2, 1) + ".later.__shown") is True and lua.eval(c(1, 2, 1) + ".rank.__text") == "1"
           and lua.eval(c(1, 2, 1) + ".icon.__vertex[1]") < 1, "%s: later cell: 'later', dim, current rank 1" % tag)
     check(lua.eval(c(3, 1, 1) + ".icon.__desat") is True and lua.eval(c(3, 1, 1) + ".badge.__shown") is False,
@@ -1953,20 +1952,23 @@ def test_talent_preview(templates):
     check(lua.eval("#HN") >= 1, "%s: tree name header from GetTalentTabInfo" % tag)
     check(lua.eval(btn["Learn talents"] + ".__enabled") is False and lua.eval(btn["Cancel"] + ".__enabled") is True,
           "%s: conflict: Learn disabled, Cancel enabled" % tag)
-    # Hover: the game's tooltip (client index!) + "Build: x / y".
-    lua.execute(c(1, 1, 2) + ":Fire('OnEnter')")
+    # Hover: the game's tooltip + "Build: x / y". 13.10: talents carry their
+    # spell id from C_Traits, so it's SetSpellByID(spellID), never
+    # SetTalent(tab, index) (our index isn't Classic's any more).
+    lua.execute("GameTooltip.talentArgs = nil " + c(1, 1, 2) + ":Fire('OnEnter')")
     lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
-    idx = lua.eval(c(1, 1, 2) + ".entry.index")
-    if templates:
-        args = lua_table_to_list(lua.eval("GameTooltip.talentArgs"))
-        check(args == [1, idx] and lines[0] == "Deflection", "%s: SetTalent(tab, client index %s): %s" % (tag, idx, args))
-    else:
-        check(lines[0] == "Deflection", "%s: no SetTalent -> name line" % tag)
+    sid = lua.eval(c(1, 1, 2) + ".entry.spellID")
+    args = lua_table_to_list(lua.eval("GameTooltip.spellArgs"))
+    check(sid is not None and args == [sid] and lines[0] == "Deflection",
+          "%s: SetSpellByID(spell id %s): %s" % (tag, sid, args))
+    check(lua.eval("GameTooltip.talentArgs") is None, "%s: SetTalent not used for C_Traits talents" % tag)
     check("Build: 5 / 5" in lines, "%s: tooltip 'Build: 5 / 5': %s" % (tag, lines))
     lua.execute(c(1, 1, 3) + ":Fire('OnEnter')")
     check("Learned now: +3" in lua_table_to_list(lua.eval("GameTooltip.lines")), "%s: tooltip says +3 now" % tag)
-    lua.execute("GameTooltip.SetTalent = function() error('other signature') end " + c(1, 1, 2) + ":Fire('OnEnter')")
-    check(lua_table_to_list(lua.eval("GameTooltip.lines"))[0] == "Deflection", "%s: SetTalent error -> name line" % tag)
+    lua.execute("GameTooltip.SetSpellByID = function() error('other signature') end " + c(1, 1, 2) + ":Fire('OnEnter')")
+    check(lua_table_to_list(lua.eval("GameTooltip.lines"))[0] == "Deflection", "%s: SetSpellByID error -> name line" % tag)
+    lua.execute("GameTooltip.SetSpellByID = nil " + c(1, 1, 2) + ":Fire('OnEnter')")
+    check(lua_table_to_list(lua.eval("GameTooltip.lines"))[0] == "Deflection", "%s: no SetSpellByID -> name line" % tag)
     lua.execute("GameTooltip.SetTalent = nil")
     # A learnable build: since step 10 Learn talents is enabled (13.8).
     game({}, 21)
@@ -2040,9 +2042,8 @@ def test_talent_preview(templates):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"NS", "TBTN", "PH", "SUM", "HEAD", "HN", "S21", "CAU", "ERR", "WC"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in BLIZZARD_TALENT_GLOBALS
            and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
-    check(not bad, "%s: step 9 adds no globals besides R2F* frames and Blizzard_TalentUI's own: %s" % (tag, bad))
+    check(not bad, "%s: step 9 adds no globals besides R2F* frames: %s" % (tag, bad))
 
     # ---- The last link comes back in a new session (6.3 lastTalentLink) ---------------
     lua2 = new_runtime(templates)
@@ -2670,9 +2671,224 @@ def test_talent_learning(templates):
     # TalentFrame* = the stub's fake Blizzard window; PREV / GetCVarBool = this test's setup.
     bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST", "NOTE", "BZ", "PREV", "GetCVarBool")
            and not g.startswith("TalentFrame")
-           and g not in BINDING_GLOBALS and g not in BLIZZARD_TALENT_GLOBALS
+           and g not in BINDING_GLOBALS
            and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
-    check(not bad, "%s: step 10 adds no globals besides Blizzard_TalentUI's own: %s" % (tag, bad))
+    check(not bad, "%s: step 10 adds no globals of its own: %s" % (tag, bad))
+
+
+# The 8 Paladin Holy nodes dumped from a real WoW Forever client (tree 1100,
+# /tdump, 2026-10-02; still in the user's saved chat log), with Wowhead's own
+# row/col (0-based) for the same node ids. ADDON_PLAN 13.10.
+#   node id: (posX, posY, name, maxRank, wowhead row, wowhead col)
+REAL_HOLY_NODES = {
+    105320: (1620, 5730, "Light's Vigil", 1, 6, 1),
+    105321: (2220, 5130, "Holy Power", 5, 5, 2),
+    105323: (1620, 4530, "Holy Shock", 1, 4, 1),
+    105324: (1020, 4530, "Divine Precision", 3, 4, 0),
+    105325: (2220, 3930, "Divine Favor", 1, 3, 2),
+    105327: (2220, 3330, "Purifying Power", 2, 2, 2),
+    105329: (1620, 3930, "Illumination", 5, 3, 1),
+    105330: (1020, 3330, "Voice of Truth", 1, 2, 0),
+}
+
+
+def trait_tree_lua(tree_ids, trees):
+    """Lua source for TEST.traitTree from {tree id: [(id, posX, posY, name, rank, maxRank)]}."""
+    parts = []
+    for tid in tree_ids:
+        nodes = ", ".join("{ id = %d, posX = %s, posY = %s, name = %s, rank = %d, maxRank = %d, spellID = %d }"
+                          % (i, x, y, lua_literal(n), r, m, 300000 + i) for i, x, y, n, r, m in trees[tid])
+        parts.append("[%d] = { %s }" % (tid, nodes))
+    return "TEST.traitTree = { treeIDs = { %s }, trees = { %s } }" % (", ".join(str(t) for t in tree_ids), ", ".join(parts))
+
+
+def paladin_like_tree(transform=lambda x, y: (x, y)):
+    """One tree (1100) = the 8 REAL Holy nodes + SYNTHESIZED filler: Holy's rows
+    0/1 and column 3 (which the dump didn't print; their positions follow the
+    verified 600-step grid) and Protection / Retribution panes at the
+    screenshot-read pane offset. Only the 8 real nodes are asserted on."""
+    nodes = [(i, x, y, n, 0, m) for i, (x, y, n, m, _, _) in REAL_HOLY_NODES.items()]
+    synth = [(1, 1, 0), (1, 2, 0), (1, 0, 1), (1, 1, 1), (1, 2, 1), (1, 3, 1), (1, 3, 3)]
+    for p in (2, 3):
+        synth += [(p, c, r) for r in range(7) for c in range(4) if (r + c + p) % 2 == 0]
+    for k, (p, c, r) in enumerate(synth):
+        nodes.append((900000 + k, 1020 + (p - 1) * 3930 + c * 600, 2130 + r * 600, "Synth %d" % k, 0, 1))
+    nodes = [(i, *transform(x, y), n, r, m) for i, x, y, n, r, m in nodes]
+    return trait_tree_lua([1100], {1100: nodes})
+
+
+def test_talent_traits(templates):
+    """13.10: reading talents through C_Traits. The position -> row/column
+    conversion is checked against REAL dumped node data, the pane split and its
+    refusals, and the realistic WoW Forever client (no Classic talent API at
+    all: reading works, learning is guided and writes nothing)."""
+    tag = "templates" if templates else "fallbacks"
+    fxt = json.load(open(TALENT_FIXTURE, encoding="utf-8"))
+    raw = fxt["talents"]
+    js = talent_js()
+    lua = new_runtime(templates)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    TL = lua.eval("R2F.Talents")
+    read = lua.eval("function() return R2F.Talents.ReadTrees() end")
+
+    def by_node(trees):
+        out = {}
+        for t in range(1, len(trees) + 1):
+            for k in range(1, len(trees[t]) + 1):
+                e = trees[t][k]
+                out[e.nodeID] = (t, e.tier, e.column, e.name, k)
+        return out
+
+    # ---- Real data, nothing synthesized: the rank conversion alone ---------
+    # Ranks of the 8 real nodes' distinct posX / posY, compared with Wowhead's
+    # row/col for the same node ids. Only Wowhead rows 2..6 and cols 0..2 are
+    # in the dump, so absolute values need an offset here; what this proves
+    # from real data alone is the DIRECTION and the strict order of both axes
+    # (posY grows with the row, posX with the column), i.e. exactly the
+    # (row, column) sort that the link digits, the hash and the learn order use.
+    lua.execute("REALN = { %s }" % ", ".join("{ posX = %d, posY = %d }" % (v[0], v[1]) for v in REAL_HOLY_NODES.values()))
+    colr = lua.eval("(R2F.Talents.GridRanks(REALN, 'posX'))")
+    rowr = lua.eval("(R2F.Talents.GridRanks(REALN, 'posY'))")
+    min_row = min(v[4] for v in REAL_HOLY_NODES.values())
+    min_col = min(v[5] for v in REAL_HOLY_NODES.values())
+    for nid, (x, y, name, _, row, col) in REAL_HOLY_NODES.items():
+        check(rowr[y] - 1 == row - min_row and colr[x] - 1 == col - min_col,
+              "%s: real node %d %s: ranks (%d, %d) == Wowhead (row %d, col %d) minus the dump's offset"
+              % (tag, nid, name, rowr[y], colr[x], row, col))
+    ours = sorted(REAL_HOLY_NODES, key=lambda n: (rowr[REAL_HOLY_NODES[n][1]], colr[REAL_HOLY_NODES[n][0]]))
+    wh = sorted(REAL_HOLY_NODES, key=lambda n: (REAL_HOLY_NODES[n][4], REAL_HOLY_NODES[n][5]))
+    check(ours == wh, "%s: real nodes sorted by our (tier, column) == Wowhead (row, col) order: %s" % (tag, ours))
+    rev = sorted(REAL_HOLY_NODES, key=lambda n: (-REAL_HOLY_NODES[n][1], REAL_HOLY_NODES[n][0]))
+    check(rev != wh, "%s: sanity: treating posY as decreasing with the row would NOT match Wowhead" % tag)
+
+    # ---- Real nodes inside a full tree: absolute tier/column -----------------
+    lua.execute(paladin_like_tree())
+    trees = read()
+    check(trees is not None and len(trees) == 3, "%s: Paladin-like single tree (1100) splits into 3 panes" % tag)
+    got = by_node(trees)
+    for nid, (x, y, name, _, row, col) in REAL_HOLY_NODES.items():
+        t, tier, column, nm, _ = got.get(nid, (None,) * 5)
+        check(t == 1 and tier == row + 1 and column == col + 1 and nm == name,
+              "%s: real node %d %s -> pane %s tier %s column %s (Wowhead row %d col %d, +1)"
+              % (tag, nid, name, t, tier, column, row, col))
+    check(len(trees[1]) == 15 and len(trees[2]) == 14 and len(trees[3]) == 14,
+          "%s: every node lands in its own pane (15/14/14)" % tag)
+    # Scale and offset of the coordinates don't matter (ranks, not arithmetic).
+    base = {k: v[:3] for k, v in got.items()}
+    lua.execute(paladin_like_tree(lambda x, y: (x * 0.5 + 77, y * 2 - 13)))
+    check({k: v[:3] for k, v in by_node(read()).items()} == base, "%s: scaled/offset coordinates -> same result" % tag)
+    lua.execute(paladin_like_tree(lambda x, y: (x / 10.0, y / 10.0)))
+    check({k: v[:3] for k, v in by_node(read()).items()} == base, "%s: posX/10 (UI units) -> same result" % tag)
+
+    # ---- Refusals: nil rather than a wrong mapping ---------------------------
+    lua.execute("TEST.traitTree = nil")
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+    lua.execute("TEST.traitLayout = 'single' table.remove(TEST.talentTabs[3], 1)")
+    check(read() is not None, "%s: sanity: warrior single tree reads" % tag)
+    lua.execute("TEST.talentTabs[3] = {}")
+    check(read() is None, "%s: single tree with an empty pane -> nil (2 groups can't be 3 panes)" % tag)
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+    T.traitPaneOffset = 1800          # panes touching: every gap is one grid step, no clear split
+    check(read() is None, "%s: pane gutter no wider than a column gap -> nil" % tag)
+    T.traitPaneOffset = 3930
+    lua.execute("for k = 1, 8 do TEST.talentTabs[1][k].tier = k end")
+    check(read() is None, "%s: more than 7 distinct rows -> nil" % tag)
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+    lua.execute(trait_tree_lua([1100], {1100: [(1 + i, 1020 + i * 600, 2130, "C%d" % i, 0, 1) for i in range(5)]
+                                         + [(10, 9000, 2130, "P2", 0, 1), (11, 15000, 2130, "P3", 0, 1)]}))
+    check(read() is None, "%s: more than 4 columns in a pane -> nil" % tag)
+    lua.execute("TEST.traitTree = nil")
+    # Two-tree configs: neither 1 (observed) nor 3 (one per pane) -> nil.
+    lua.execute(trait_tree_lua([1, 2], {1: [(1, 0, 0, "A", 0, 1)], 2: [(2, 0, 0, "B", 0, 1)]}))
+    check(read() is None, "%s: a 2-tree config -> nil" % tag)
+    lua.execute("TEST.traitTree = nil")
+
+    # ---- One tree per pane (never seen; supported) == single tree ----------
+    for sc in fxt["scenarios"][:3]:
+        lua.execute("TEST.classToken = %r" % sc["cls"].upper())
+        set_game_talents(lua, raw, js["classes"][sc["cls"]], sc["ranks"])
+        single = TL.LinkBody(TL.ClassId(), read()) if lua.eval("TEST.traitLayout") == "single" else None
+        lua.execute("TEST.traitLayout = 'perPane'")
+        per = TL.LinkBody(TL.ClassId(), read())
+        want = "%s/%s~%s" % (sc["cls"], sc["code"], js["hashes"][sc["cls"]])
+        check(per == want and single in (None, want), "%s: %s: per-pane layout link %r == site %r" % (tag, sc["name"], per, want))
+    lua.execute("TEST.classToken = nil")
+
+    # ---- Live ranks: a point learned shows up on the next read --------------
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+    lua.execute("for _, x in ipairs(TEST.talentTabs[1]) do if x.name == 'Deflection' then x.rank = 3 end end")
+    check(any(e.name == "Deflection" and e.rank == 3 for e in (read()[1][k] for k in range(1, len(read()[1]) + 1))),
+          "%s: activeRank read live" % tag)
+
+    # ---- TRAIT_CONFIG_UPDATED drives the same refresh as CHARACTER_POINTS_CHANGED
+    check(lua.eval("(function() for _, f in ipairs(TEST.allFrames) do if f.__events and f.__events.TRAIT_CONFIG_UPDATED"
+                   " and f.__events.CHARACTER_POINTS_CHANGED then return true end end return false end)()") is True,
+          "%s: Core registers TRAIT_CONFIG_UPDATED next to CHARACTER_POINTS_CHANGED" % tag)
+
+    # ---- The realistic WoW Forever client: no Classic talent API at all -----
+    fv = new_runtime(templates, before_load="GetTalentInfo = nil LearnTalent = nil GetTalentPrereqs = nil "
+                     "GetTalentTabInfo = nil AddPreviewTalentPoints = nil LearnPreviewTalents = nil")
+    F = fv.eval("TEST")
+    F.fire("ADDON_LOADED", "RoadToForever")
+    F.fire("PLAYER_LOGIN")
+    sc = fxt["scenarios"][1]
+    fv.execute("TEST.classToken = %r" % sc["cls"].upper())
+    set_game_talents(fv, raw, js["classes"][sc["cls"]], sc["ranks"])
+    want = "%s/%s~%s" % (sc["cls"], sc["code"], js["hashes"][sc["cls"]])
+    check(fv.eval("R2F.Talents.MyBuildLink()") == SITE_TALENTS + want,
+          "%s: Forever client: Copy my build link == talentcalc.js's (%s)" % (tag, want))
+    # A learnable build on that client.
+    set_game_talents(fv, raw, js["classes"]["warrior"], {})
+    fv.execute("TEST.classToken = 'WARRIOR'")
+    F.talentPoints = 10
+    link = "warrior/05~" + js["hashes"]["warrior"]
+    res = fv.eval("R2F.Talents.Preview(%s)" % lua_literal(link))
+    check(res.plan is not None and res.plan.learnable is True and res.error is None,
+          "%s: Forever client: Preview works and the plan is learnable" % tag)
+    check(fv.eval("R2F.Talents.TreeName(1)") == fv.eval("R2F.L.TALENT_TREE_N:format(1)"),
+          "%s: Forever client: no GetTalentTabInfo -> 'Tree 1' header" % tag)
+    check(fv.eval("R2F.Talents.LearnMode()") == "guided", "%s: Forever client: learning is guided" % tag)
+    # Even if a LearnTalent (and a switched-on preview API) existed there: no
+    # Classic GetTalentInfo = no way to confirm a (tab, index) address -> guided.
+    fv.execute("LearnTalent = function() error('must not be called') end "
+               "AddPreviewTalentPoints = LearnTalent LearnPreviewTalents = LearnTalent "
+               "GetCVarBool = function() return true end")
+    check(fv.eval("R2F.Talents.LearnMode()") == "guided",
+          "%s: Forever client with a stray LearnTalent / preview API: still guided" % tag)
+    fv.execute("LearnTalent = nil AddPreviewTalentPoints = nil LearnPreviewTalents = nil GetCVarBool = nil")
+    fv.execute("R2F.Talents.StartLearn(%s, R2F.Talents.LearnPoints(R2F.Talents.Preview(%s).plan))"
+               % (lua_literal(link), lua_literal(link)))
+    F.runTimers()
+    st = fv.eval("R2F.Talents.LearnStatus()")
+    check(st.phase == "guided" and st.point.name == "Deflection", "%s: Forever client: guided run points at Deflection" % tag)
+    check(fv.eval("R2F.TalentGuide.Glow() == nil or not R2F.TalentGuide.Glow():IsShown()") is True,
+          "%s: Forever client: no glow on a Blizzard button it can't confirm" % tag)
+    check(F.talentWrites == 0, "%s: Forever client: nothing written" % tag)
+    # The player applies the points in Blizzard's window (fires TRAIT_CONFIG_UPDATED):
+    # the guided run follows.
+    for _ in range(5):
+        fv.execute("for _, x in ipairs(TEST.talentTabs[1]) do if x.name == 'Deflection' then x.rank = (x.rank or 0) + 1 end end"
+                   " TEST.talentPoints = TEST.talentPoints - 1")
+        F.fire("TRAIT_CONFIG_UPDATED", 7001)
+    check(fv.eval("R2F.Talents.LearnStatus().phase") == "done" and F.talentWrites == 0,
+          "%s: Forever client: guided run finishes on TRAIT_CONFIG_UPDATED, still nothing written" % tag)
+
+    # ---- A Classic-API client whose address names another talent: no write --
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+    lua.execute("TEST.classToken = 'WARRIOR' R2F.Talents.ResetSession()")
+    T.talentPoints = 10
+    lua.execute("REAL_GTI = GetTalentInfo GetTalentInfo = function(tab, i) local n, a, b, c, d, e = REAL_GTI(tab, i)"
+                " return n and ('Not ' .. n), a, b, c, d, e end")
+    T.learnCalls = lua.table()
+    check(lua.eval("R2F.Talents.LearnMode()") == "direct", "%s: sanity: Classic API present -> direct mode" % tag)
+    lua.execute("R2F.Talents.StartLearn(%s, R2F.Talents.LearnPoints(R2F.Talents.Preview(%s).plan))"
+                % (lua_literal(link), lua_literal(link)))
+    T.runTimers()
+    check(len(lua_table_to_list(T.learnCalls)) == 0 and lua.eval("R2F.Talents.LearnStatus().phase") == "stopped",
+          "%s: Classic address doesn't name the talent -> stopped before LearnTalent, nothing sent" % tag)
+    lua.execute("GetTalentInfo = REAL_GTI")
 
 
 def test_talent_source_writes():
@@ -2700,7 +2916,16 @@ def test_talent_source_writes():
     body = src[src.index("local function learnPoint(p)"):]
     body = body[:body.index("\nend\n")]
     check(body.index("R2F.InCombat()") < body.index("LearnTalent"), "learnPoint checks combat before LearnTalent")
-    guide = open(os.path.join(ADDON, "UI", "TalentGuide.lua"), encoding="utf-8").read()
+    # 13.10: and confirms the Classic address names this very talent first.
+    check(body.index("legacyMatches(") < body.index("LearnTalent"), "learnPoint checks the Classic address before LearnTalent")
+    fill = src[src.index("function Talents.FillPreview(plan)"):]
+    fill = fill[:fill.index("\nend\n")]
+    check(fill.index("legacyMatches(") < fill.index("AddPreviewTalentPoints"),
+          "FillPreview checks the Classic address before AddPreviewTalentPoints")
+    code = "\n".join(l.split("--", 1)[0] for l in src.splitlines())
+    check(not re.search(r"\b(GetNumTalentTabs|GetNumTalents|LoadAddOn|IsAddOnLoaded|Blizzard_TalentUI)\b", code),
+          "Talents.lua no longer touches the Classic tab API or LoadAddOn (13.10)")
+    guide =open(os.path.join(ADDON, "UI", "TalentGuide.lua"), encoding="utf-8").read()
     guide_code = "\n".join(l.split("--", 1)[0] for l in guide.splitlines())
     # Only our own frames (glow, host, label, texture) get written to.
     writes = re.findall(r"(\w+)[:.](SetScript|HookScript|SetPoint|SetParent|Show|Hide|SetSize|ClearAllPoints|Disable|Enable)\(",
@@ -2712,7 +2937,7 @@ def test_talent_source_writes():
           "glow/host are unnamed frames on UIParent; Blizzard frames only looked up")
     toc = open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read()
     check("UI\\TalentPanel.lua" in toc and "UI\\TalentGuide.lua" in toc, "TalentPanel.lua and TalentGuide.lua in the TOC")
-    check(re.search(r"^## Version: 0\.10\.3$", toc, re.M) is not None, "TOC version 0.10.3")
+    check(re.search(r"^## Version: 0\.10\.4$", toc, re.M) is not None, "TOC version 0.10.4")
 
 
 def test_quick_settings(templates, fx):
@@ -3408,6 +3633,8 @@ def main():
     test_talent_preview(False)
     test_talent_learning(True)
     test_talent_learning(False)
+    test_talent_traits(True)
+    test_talent_traits(False)
     test_talent_source_writes()
     test_quick_settings(True, fx)
     test_quick_settings(False, fx)

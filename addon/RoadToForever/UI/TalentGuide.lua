@@ -72,6 +72,13 @@ function TalentGuide.Target(p)
     if type(tab) == "table" and tab.IsVisible and tab:IsVisible() then return tab, "tab" end
     return nil
   end
+  -- 13.10: p.index comes from C_Traits (our pane position), not Classic's
+  -- talent index, so a glow on Button<index> is only right if Classic's
+  -- GetTalentInfo names this very talent there. Otherwise no glow: the text
+  -- alone is better than a gold ring on the wrong talent.
+  if type(GetTalentInfo) ~= "function" then return nil end
+  local ok, n = pcall(GetTalentInfo, p.tab, p.index)
+  if not ok or n ~= p.name then return nil end
   local b = _G[name .. "Talent" .. p.index]
   if type(b) == "table" and b.IsVisible and b:IsVisible() then return b, "talent" end
   return nil

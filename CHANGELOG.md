@@ -4,7 +4,25 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-03 (Addon v0.10.4: read talents through C_Traits, corrects v0.10.3)
+
+v0.10.3's premise was wrong: `LoadAddOn("Blizzard_TalentUI")` returns `false,
+"MISSING"` on WoW Forever and the Classic talent globals never exist, so Preview
+still failed. Talents live in the trait system (`C_Traits`), the API WeakAuras
+Forever reads them with. `Talents.ReadTrees()` now reads the active trait config;
+node positions are ranked into tier/column (verified against 8 real Paladin nodes
+and Wowhead's row/col for the same node ids), and the three panes, which are one
+trait tree on Forever (Paladin: 1 tree, 50 nodes = Wowhead's 17+16+17), are split by
+the gaps between columns. Same output shape, so links, hash, preview and learning
+order are unchanged. Learning on Forever is now always guided (the addon no longer
+calls `LearnTalent` without Classic's `GetTalentInfo` confirming the address).
+Tooltips via `SetSpellByID`; `TRAIT_CONFIG_UPDATED` handled. See `ADDON_PLAN.md`
+13.10 for evidence and what's still unverified (non-Paladin classes, Prot/Ret
+positions). Suite: 9259 checks, 0 failed; luacheck 0 warnings. Tag `r2f-v0.10.4`.
+
 ## 2026-10-02 (Addon v0.10.3: fix Talent Preview on a fresh login)
+
+> Superseded by v0.10.4 above: the Blizzard_TalentUI premise was wrong.
 
 Reported from real in-game testing: Preview always failed with "couldn't read
 your talents yet" until the player had separately opened their real Talent

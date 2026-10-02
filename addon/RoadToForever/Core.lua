@@ -65,6 +65,11 @@ handlers.CHARACTER_POINTS_CHANGED = function()
   R2F.Talents.OnPointsChanged()
   R2F.MainWindow.RequestRefresh()
 end
+-- WoW Forever stores talents as a trait config (13.10): applying talents in
+-- Blizzard's window fires TRAIT_CONFIG_UPDATED (WeakAuras Forever listens to
+-- it for the same reason); whether CHARACTER_POINTS_CHANGED also fires there
+-- isn't confirmed, so both run the same handler.
+handlers.TRAIT_CONFIG_UPDATED = handlers.CHARACTER_POINTS_CHANGED
 handlers.PLAYER_LEVEL_UP = function() R2F.MainWindow.RequestRefresh() end
 -- A CVar changed (/console, Blizzard's options, another addon, or our own
 -- Quick settings): redraw Home's boxes from the live values (12.4.1). They

@@ -37,36 +37,18 @@ T.metadata = { Version = "0.10.1", Author = "nobody174" }
 C_AddOns = { GetAddOnMetadata = function(_, field) return T.metadata[field] end }
 function GetAddOnMetadata(_, field) return T.metadata[field] end
 
--- On-demand addons (confirmed 2026-10-02 against a real WoW Forever client:
--- Blizzard_TalentUI, same as Blizzard_Calendar/Blizzard_MacroUI, is NOT
--- loaded at login -- GetNumTalentTabs/GetTalentInfo don't exist as globals
--- until it loads, normally only when the player opens the real Talent
--- window). T.loadedAddons starts empty; T.loadOnDemand lists what
--- LoadAddOn("Blizzard_TalentUI") actually switches on, same pattern real
--- addons on that client use (IsAddOnLoaded check, then LoadAddOn).
+-- On-demand addons. Blizzard_TalentUI does NOT exist on WoW Forever:
+-- LoadAddOn("Blizzard_TalentUI") answers false, "MISSING" (confirmed in game,
+-- ADDON_PLAN 13.10; 13.9 had wrongly modelled it as load-on-demand). Every
+-- LoadAddOn call is logged in T.loadAddOnCalls so a test can prove the addon
+-- doesn't depend on it any more.
 T.loadedAddons = {}
-T.loadOnDemand = {
-  Blizzard_TalentUI = function()
-    GetNumTalentTabs = function() return #T.talentTabs end
-    GetNumTalents = function(tab) local t = T.talentTabs[tab]; return t and #t or 0 end
-    GetTalentInfo = function(tab, i)
-      local x = T.talentTabs[tab] and T.talentTabs[tab][i]
-      if not x then return nil end
-      return x.name, x.icon or "Interface\\Icons\\INV_Misc_QuestionMark", x.tier, x.column, x.rank or 0, x.maxRank,
-        false, true
-    end
-  end,
-}
+T.loadAddOnCalls = {}
 C_AddOns.IsAddOnLoaded = function(name) return T.loadedAddons[name] == true end
 C_AddOns.LoadAddOn = function(name)
+  table.insert(T.loadAddOnCalls, name)
   if T.loadedAddons[name] then return true end
-  local setup = T.loadOnDemand[name]
-  if not setup then return false, "MISSING" end
-  if T.blockAddonLoad then return false, "DISABLED" end
-  setup()
-  T.loadedAddons[name] = true
-  T.fire("ADDON_LOADED", name)
-  return true
+  return false, "MISSING"
 end
 function IsAddOnLoaded(name) return C_AddOns.IsAddOnLoaded(name) end
 function LoadAddOn(name) return C_AddOns.LoadAddOn(name) end
@@ -169,15 +151,129 @@ function GetActionText(slot)
   if name and GetMacroIndexByName(name) > 0 then return name end
 end
 
--- Talents (step 8). T.talentTabs[tab] = list of { name, tier, column, rank,
--- maxRank } in the client's OWN index order (deliberately not tier/column
--- order in the tests, since the real GetTalentInfo order isn't guaranteed).
--- Classic's GetTalentInfo returns name, iconTexture, tier, column, rank,
--- maxRank, isExceptional, available (tier/column 1-based). GetNumTalentTabs/
--- GetNumTalents/GetTalentInfo themselves are NOT defined here any more: see
--- T.loadOnDemand.Blizzard_TalentUI above -- they don't exist as globals
--- until that "addon" loads, same as the real client.
+-- Talents. T.talentTabs[tab] = list of { name, tier, column, rank, maxRank,
+-- prereq } per Classic pane, in the client's OWN order (deliberately not
+-- tier/column order in the tests). It is the one source of truth; the APIs
+-- below are views of it, so a rank changed by the fake server shows up in
+-- all of them.
 T.talentTabs = {}
+
+-- C_Traits, the API WoW Forever really reads talents through (ADDON_PLAN
+-- 13.10; same chain as WeakAuras Forever's Private.GetTalentData). Modelled
+-- on the real data: ONE trait tree (1100, like Paladin's) holding all three
+-- panes as side-by-side column groups. Grid step 600 in both axes, posY grows
+-- downwards with the tier, pane 1 column 1 / tier 1 at (1020, 2130): exactly
+-- the real Holy pane's numbers (the 8 dumped nodes, 13.10). The pane offset
+-- (3930) is our reading of the screenshot (13.10), not a dumped value.
+-- GetTreeNodes interleaves the panes (pane 1 node 1, pane 2 node 1, ...), so
+-- a reader that groups by node order instead of by position fails the tests.
+-- T.traitTree = { treeIDs = {...}, trees = { [treeID] = { {id, posX, posY,
+--   name, rank, maxRank, spellID}, ... } } } replaces the derived layout (the
+-- real-data test, odd layouts). T.traitsReady = false: no config yet (login).
+T.traitTree = nil
+T.traitsReady = true
+T.traitPaneOffset = 3930
+T.spellNames = {}
+local CONFIG_ID = 7001
+
+-- T.traitLayout = "perPane": one trait tree per pane (1101..1103) instead of
+-- one tree for all. Never seen in game; ReadTrees supports it, and it's the
+-- only layout that can express an EMPTY pane (a pane with no nodes has no
+-- position to be found by), which the step-8 fixture's "hunter, missing third
+-- tree" scenario needs.
+T.traitLayout = "single"
+local function traitData()
+  if T.traitTree then return T.traitTree end
+  local nodes, most = {}, 0
+  local perPane = T.traitLayout == "perPane"
+  local data = { treeIDs = {}, trees = {} }
+  for p in ipairs(T.talentTabs) do
+    if perPane then data.treeIDs[p] = 1100 + p; data.trees[1100 + p] = {} end
+  end
+  if not perPane then data.treeIDs[1] = 1100; data.trees[1100] = nodes end
+  for _, list in ipairs(T.talentTabs) do most = math.max(most, #list) end
+  for k = 1, most do
+    for p, list in ipairs(T.talentTabs) do
+      local x = list[k]
+      if x then
+        table.insert(perPane and data.trees[1100 + p] or nodes, { id = 100000 + p * 1000 + k,
+          spellID = 200000 + p * 1000 + k,
+          posX = 1020 + (p - 1) * T.traitPaneOffset + (x.column - 1) * 600,
+          posY = 2130 + (x.tier - 1) * 600, src = x, name = x.name })
+      end
+    end
+  end
+  return data
+end
+
+local nodeIndex = {}     -- nodeID -> node record, rebuilt by GetTreeNodes
+local function nodeRank(n) if n.src then return n.src.rank or 0 end return n.rank or 0 end
+local function nodeMax(n) if n.src then return n.src.maxRank end return n.maxRank end
+
+C_SpecializationInfo = {
+  GetActiveSpecGroup = function() return 1 end,
+  GetCombatConfigIDForSpecGroup = function(group)
+    if not T.traitsReady or group ~= 1 then return nil end
+    return CONFIG_ID
+  end,
+}
+C_Traits = {
+  GetConfigInfo = function(configID)
+    if configID ~= CONFIG_ID then return nil end
+    local ids = {}
+    for i, id in ipairs(traitData().treeIDs) do ids[i] = id end
+    return { ID = configID, type = 1, name = "", treeIDs = ids }
+  end,
+  GetTreeNodes = function(treeID)
+    local data = traitData()
+    local out = {}
+    for _, n in ipairs(data.trees[treeID] or {}) do
+      nodeIndex[n.id] = n
+      T.spellNames[n.spellID] = n.name
+      out[#out + 1] = n.id
+    end
+    return out
+  end,
+  GetNodeInfo = function(configID, nodeID)
+    local n = nodeIndex[nodeID]
+    -- The real API answers an unknown node with a table whose ID is 0.
+    if configID ~= CONFIG_ID or not n then return { ID = 0, entryIDs = {}, visibleEdges = {} } end
+    return { ID = n.id, posX = n.posX, posY = n.posY, activeRank = nodeRank(n), ranksPurchased = nodeRank(n),
+             currentRank = nodeRank(n), maxRanks = nodeMax(n), entryIDs = { n.id + 500000 }, visibleEdges = {},
+             isVisible = true }
+  end,
+  GetEntryInfo = function(configID, entryID)
+    if configID ~= CONFIG_ID or not nodeIndex[entryID - 500000] then return nil end
+    return { definitionID = entryID + 500000, type = 1, maxRanks = nodeMax(nodeIndex[entryID - 500000]) }
+  end,
+  GetDefinitionInfo = function(definitionID)
+    local n = nodeIndex[definitionID - 1000000]
+    if not n then return nil end
+    return { spellID = n.spellID }
+  end,
+}
+C_Spell = {
+  GetSpellName = function(id) return T.spellNames[id] end,
+  -- Takes a spell id (talents) or a name (Macros.lua's spellbook check, same
+  -- answer as the GetSpellTexture global below), like the real one.
+  GetSpellTexture = function(id)
+    if T.knownSpells[id] then return T.knownSpells[id] end
+    if T.spellNames[id] then return "Interface\\Icons\\INV_Misc_QuestionMark" end
+  end,
+}
+
+-- Classic's GetTalentInfo(tab, index): NOT on WoW Forever (13.10). It stays in
+-- the default fake client only as the "hypothetical Classic client" that step
+-- 10's direct LearnTalent engine is tested against: the addon reads talents
+-- through C_Traits only, and uses GetTalentInfo just to confirm a (tab, index)
+-- address before any Classic-style write (Talents.lua legacyMatches). The
+-- realistic Forever client is new_runtime(forever=True), which removes it.
+function GetTalentInfo(tab, i)
+  local x = T.talentTabs[tab] and T.talentTabs[tab][i]
+  if not x then return nil end
+  return x.name, x.icon or "Interface\\Icons\\INV_Misc_QuestionMark", x.tier, x.column, x.rank or 0, x.maxRank,
+    false, true
+end
 -- Step 9: tree names. Classic shape (name, icon, pointsSpent, fileName) by
 -- default; T.tabInfoShape = "new" gives the newer id-first shape, "error"
 -- makes it throw, and GetTalentTabInfo = nil tests a client without it.
@@ -495,6 +591,12 @@ function GameTooltip:NumLines() return #self.lines end
 function GameTooltip:SetTalent(tab, i)
   self.talentArgs = { tab, i }
   local name = GetTalentInfo(tab, i)
+  if name then table.insert(self.lines, name) end
+end
+-- 13.10: the spell tooltip, used for talents read through C_Traits.
+function GameTooltip:SetSpellByID(id)
+  self.spellArgs = { id }
+  local name = T.spellNames[id]
   if name then table.insert(self.lines, name) end
 end
 UIErrorsFrame = newObject("Frame", "UIErrorsFrame")

@@ -33,6 +33,9 @@ end
 -- The flag matters: InCombatLockdown() is still false during this event.
 handlers.PLAYER_REGEN_DISABLED = function()
   R2F.inCombat = true
+  -- Talent learning stops at once, mid-run (13.5); the flag above is already
+  -- set, so no further LearnTalent goes out.
+  R2F.Talents.OnCombat()
   R2F.MainWindow.SetCombat()
   R2F.ImportFrame.SetCombat(true)
   R2F.Settings.SetCombat()
@@ -55,9 +58,21 @@ handlers.ACTIONBAR_SLOT_CHANGED = function() R2F.MainWindow.RequestRefresh() end
 handlers.LEARNED_SPELL_IN_TAB = function() R2F.MainWindow.RequestRefresh() end
 -- Talent points spent (here or in Blizzard's talent window) or gained on a
 -- level-up: Home's free-points line and the Talents tab's preview (6.5).
--- Step 10 also uses CHARACTER_POINTS_CHANGED to confirm each learned point.
-handlers.CHARACTER_POINTS_CHANGED = function() R2F.MainWindow.RequestRefresh() end
+-- Step 10: CHARACTER_POINTS_CHANGED is the server's answer to a learned point
+-- (or the player's click in guided mode); the engine checks it first, then
+-- the tab redraws.
+handlers.CHARACTER_POINTS_CHANGED = function()
+  R2F.Talents.OnPointsChanged()
+  R2F.MainWindow.RequestRefresh()
+end
 handlers.PLAYER_LEVEL_UP = function() R2F.MainWindow.RequestRefresh() end
+-- The game refusing a protected call from an addon (args: addon name,
+-- function). Only ours matters; for LearnTalent it means guided mode (13.8).
+local function actionBlocked(addon, fn)
+  if addon == ADDON_NAME then R2F.Talents.OnActionBlocked(fn) end
+end
+handlers.ADDON_ACTION_FORBIDDEN = actionBlocked
+handlers.ADDON_ACTION_BLOCKED = actionBlocked
 
 events:SetScript("OnEvent", function(_, event, ...)
   local fn = handlers[event]

@@ -140,7 +140,6 @@ R2F.L = {
   BTN_PREVIEW = "Preview",
   BTN_COPY_BUILD = "Copy my build",
   BTN_LEARN = "Learn talents",
-  TALENT_LEARN_LATER = "Learning talents comes in a later version. For now, learn them in the talent window.",
   TALENT_READ_FAILED_TAB = "Couldn't read your talents yet. Try again in a moment.",
   TALENT_BAD_LINK = "That isn't a talent link. Click Copy link on the site's talent calculator and paste it here.",
   TALENT_WRONG_CLASS = "This is a %s build. You're playing a %s.",
@@ -176,6 +175,36 @@ R2F.L = {
   TALENT_TIP_LATER = "Later, when you have free points: +%d",
   TALENT_TIP_CONFLICT = "You have points here that this build doesn't use.",
   TALENT_TIP_OVERMAX = "The link asks for more ranks than this talent has.",
+
+  -- Talent learning (13.4, 13.5, step 10; decisions in ADDON_PLAN 13.8)
+  BTN_LEARN_CONFIRM = "Learn",
+  BTN_STOP = "Stop",
+  TALENT_CONFIRM = "Learn %d talent points? Only a trainer reset can undo this.",
+  TALENT_CONFIRM_ONE = "Learn 1 talent point? Only a trainer reset can undo this.",
+  TALENT_CONFIRM_GUIDED = "Your game doesn't let addons learn talents, so Blizzard's talent window opens "
+    .. "and shows you which talent to click, one at a time.",
+  TALENT_LEARN_TIP = "Learns the gold +N points shown in the trees, one at a time. Only a trainer reset can undo it.",
+  TALENT_LEARN_COMBAT = "You can't learn talents in combat.",
+  TALENT_LEARNING = "Learning %d / %d",
+  TALENT_LEARN_WAITING = "After combat",
+  TALENT_LEARN_QUEUED = "you're in combat; learning starts when combat ends.",
+  TALENT_LEARNED = "Learned %d talent points.",
+  TALENT_LEARNED_ONE = "Learned 1 talent point.",
+  TALENT_STOP_REJECTED = "Stopped at %s: the game didn't accept the point. %d of %d learned.",
+  TALENT_STOP_COMBAT = "Stopped: you entered combat. %d of %d learned. Click Learn talents to continue.",
+  TALENT_STOP_USER = "Stopped. %d of %d learned. Click Learn talents to continue.",
+  TALENT_STOP_LOCKED = "Stopped at %s: its tier or prerequisite isn't met in your game. %d of %d learned.",
+  TALENT_STOP_NOPOINTS = "Stopped: no free talent points left. %d of %d learned.",
+  TALENT_STOP_CHANGED = "Stopped: your talents changed while learning. %d of %d learned. "
+    .. "Check the preview, then click Learn talents again.",
+  TALENT_BLOCKED_HINT = "Your game may not let addons learn talents. "
+    .. "Click Learn talents to be shown which talents to click instead.",
+  TALENT_LATE = "The point in %s arrived late after all. %d of %d learned. Click Learn talents to continue.",
+  TALENT_GUIDE_CLICK = "Click %s (%d of %d)",
+  TALENT_GUIDE_TAB = "Open the %s tab, then click %s (%d of %d)",
+  TALENT_GUIDE_START = "click the glowing talent in Blizzard's talent window, one at a time.",
+  TALENT_GUIDE_OPEN = "open your talent window (default key N) and click the talents named here, one at a time.",
+  TALENT_PREVIEW_FILLED = "added %d talent points to the talent window's preview. Click its Learn button to keep them.",
 
   -- Minimap button (12.2)
   MM_LIBRARY = "%d macros in your library",

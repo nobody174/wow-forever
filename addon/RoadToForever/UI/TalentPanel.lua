@@ -1,10 +1,13 @@
 -- UI/TalentPanel.lua: the Talents tab of the main window (ADDON_PLAN.md 13.4).
 --
--- Step 9 = preview only: a talent-link box + Preview, Copy my build (step 8's
--- function, now with its button), three mini trees side by side, the summary
--- line, and the Learn talents button, which is DISABLED until step 10 builds
--- the learning engine (13.5). Nothing on this tab writes anything to the game:
--- the logic lives in Talents.lua (ParseLink / Preview / Plan) and only reads.
+-- Step 9: a talent-link box + Preview, Copy my build (step 8's function, now
+-- with its button), three mini trees side by side, the summary line.
+-- Step 10: Learn talents -> confirm popup -> Talents.lua's learning engine
+-- (13.5, 13.8). This file only shows its state: "Learning X / N" on the
+-- button, the rest of the tab locked meanwhile (Cancel becomes Stop), the
+-- stop / done message in the status line, guided mode's "Click ..." in the
+-- note line. The engine runs on events, not on this tab: closing the window
+-- doesn't stop a run.
 --
 -- Layout (page = the 540 x 500 main window):
 --   Talent link [ talents.html#warrior/...               ] [Preview]
@@ -250,30 +253,39 @@ local function build(f)
   ui.summary:SetWidth(490)
   ui.summary:SetJustifyH("LEFT")
 
-  -- Learn talents exists now but stays disabled: step 10 builds the learning
-  -- engine (13.5) and enables it then. The tooltip (shown while disabled via
-  -- SetMotionScriptsWhileDisabled) and the grey note say why.
+  -- Learn talents (13.4). Enabled only for a plan with zero conflicts and
+  -- points to learn now (plan.learnable), out of combat, while no run is
+  -- active. The tooltip shows while disabled too (SetMotionScriptsWhileDisabled)
+  -- so "why is it grey" has an answer in combat.
   ui.learn = button(f, L.BTN_LEARN, 130)
   ui.learn:SetPoint("BOTTOMRIGHT", -20, 16)
   ui.learn:SetEnabled(false)
   if ui.learn.SetMotionScriptsWhileDisabled then ui.learn:SetMotionScriptsWhileDisabled(true) end
+  ui.learn:SetScript("OnClick", function() TalentPanel.Learn() end)
   ui.learn:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:AddLine(L.TALENT_LEARN_LATER, 1, 1, 1, true)
+    if R2F.InCombat() and not Talents.LearnBusy() then
+      GameTooltip:AddLine(L.TALENT_LEARN_COMBAT, 1, 0.15, 0.15, true)
+    else
+      GameTooltip:AddLine(L.TALENT_LEARN_TIP, 1, 1, 1, true)
+    end
     GameTooltip:Show()
   end)
   ui.learn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
+  -- Cancel; while a run is active it reads Stop (a way out of a run that is
+  -- waiting on the server or on the player's clicks in guided mode).
   ui.cancel = button(f, L.BTN_CANCEL, 90)
   ui.cancel:SetPoint("RIGHT", ui.learn, "LEFT", -8, 0)
-  ui.cancel:SetScript("OnClick", function() TalentPanel.Cancel() end)
+  ui.cancel:SetScript("OnClick", function()
+    if Talents.LearnBusy() then Talents.StopLearn() else TalentPanel.Cancel() end
+  end)
 
-  ui.note = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  -- Guided mode's "Click Cruelty (2 of 21)" (13.5); empty otherwise.
+  ui.note = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   ui.note:SetPoint("BOTTOMLEFT", 24, 20)
-  ui.note:SetWidth(250)
+  ui.note:SetWidth(270)
   ui.note:SetJustifyH("LEFT")
-  ui.note:SetTextColor(0.6, 0.6, 0.6)
-  ui.note:SetText(L.TALENT_LEARN_LATER)
   return f
 end
 
@@ -328,6 +340,44 @@ end
 -- The last result shown (for the tests and step 10).
 function TalentPanel.Result() return state.result end
 
+-- The Learn / Cancel buttons and the locks from the learning engine's state
+-- (13.4: "While learning: button reads Learning 7 / 21, everything else
+-- locked"). `plan` = the build preview, nil when there is none.
+-- Locked while a run is active: the link box, Preview, Copy my build. They
+-- would be harmless (read-only), but changing the link mid-run would make
+-- the trees show another build than the one being learned. Cancel turns into
+-- Stop, the one way out.
+local function setLocked(locked)
+  for _, w in ipairs({ ui.preview, ui.copy }) do w:SetEnabled(not locked) end
+  if locked then
+    ui.edit:ClearFocus()
+    if ui.edit.Disable then ui.edit:Disable() end
+  elseif ui.edit.Enable then
+    ui.edit:Enable()
+  end
+end
+
+local function applyLearnState(plan)
+  local st = Talents.LearnStatus()
+  local busy = Talents.LearnBusy()
+  setLocked(busy)
+  if busy then
+    ui.learn:SetText(st.phase == "queued" and L.TALENT_LEARN_WAITING
+      or L.TALENT_LEARNING:format(st.current, st.total))
+    ui.learn:SetEnabled(false)
+    ui.cancel:SetText(L.BTN_STOP)
+    ui.cancel:SetEnabled(true)
+  else
+    ui.learn:SetText(L.BTN_LEARN)
+    -- plan.learnable = zero conflicts AND points needed AND points free
+    -- (Talents.Plan). Nothing else can enable this button.
+    ui.learn:SetEnabled(plan ~= nil and plan.learnable == true and not R2F.InCombat())
+    ui.cancel:SetText(L.BTN_CANCEL)
+    ui.cancel:SetEnabled(state.text ~= nil)
+  end
+  ui.note:SetText(st.phase == "guided" and R2F.TalentGuide.Text() or "")
+end
+
 function TalentPanel.Refresh()
   if not page or not page:IsVisible() then return end
   -- Re-run the preview every time: it's cheap and read-only, and the free
@@ -343,8 +393,19 @@ function TalentPanel.Refresh()
   end
   drawTrees(plan, withBuild)
 
+  local msg = Talents.LearnMessage()
   if res and res.error then
     showStatus(res.error, 1, 0.15, 0.15)
+  elseif msg then
+    -- A learning stop (red) / done (green) / preview-filled (gold) message
+    -- outranks the yellow caution: it's what just happened to the character.
+    if msg.kind == "stop" then
+      showStatus(msg.text, 1, 0.15, 0.15)
+    elseif msg.kind == "done" then
+      showStatus(msg.text, 0.1, 1, 0.1)
+    else
+      showStatus(msg.text, 1, 0.82, 0)
+    end
   elseif res and res.caution then
     showStatus(res.caution, 1, 0.82, 0)            -- 13.3's yellow line
   elseif not plan then
@@ -360,21 +421,55 @@ function TalentPanel.Refresh()
   else
     ui.summary:SetText("")
   end
-  ui.cancel:SetEnabled(state.text ~= nil)
-  -- Step 9: never enabled (see build). Step 10: plan.learnable, not in combat.
-  ui.learn:SetEnabled(false)
+  applyLearnState(withBuild and plan or nil)
+end
+
+-- Learn talents (13.4, 13.5). The preview is re-run here rather than taking
+-- the one on screen (it may be up to 0.2 s old). Then, by client:
+--   preview mode -> fill Blizzard's own preview (its Learn button commits,
+--                   so no popup of ours);
+--   a stopped run for this same link -> continue it (13.5: "Click Learn
+--                   talents to continue"), no second popup;
+--   otherwise    -> the confirm popup (13.4), the commit step on a client
+--                   that learns a talent the moment it's sent.
+function TalentPanel.Learn()
+  if Talents.LearnBusy() or R2F.InCombat() or not state.text then return end
+  local text = state.text
+  local plan = Talents.Preview(text).plan
+  if not (plan and plan.learnable) then TalentPanel.Refresh(); return end
+  local mode = Talents.LearnMode()
+  if mode == "preview" then
+    Talents.FillPreview(plan)
+    return
+  end
+  if Talents.CanResume(text) then
+    Talents.ResumeLearn()
+    return
+  end
+  local points = Talents.LearnPoints(plan)
+  local n = #points
+  local question = n == 1 and L.TALENT_CONFIRM_ONE or L.TALENT_CONFIRM:format(n)
+  if mode == "guided" then question = question .. "\n\n" .. L.TALENT_CONFIRM_GUIDED end
+  UI.Confirm(question, L.BTN_LEARN_CONFIRM, L.BTN_CANCEL, function()
+    -- The link may have been changed or cancelled while the popup was open.
+    if state.text ~= text or Talents.LearnBusy() then return end
+    Talents.StartLearn(text, points)
+  end)
 end
 
 -- Preview button / Enter in the link box. Reads the box, remembers the link
 -- for this character, redraws. Read-only, so it isn't greyed out or queued
--- in combat (13.7): nothing it calls is protected.
+-- in combat (13.7): nothing it calls is protected. Locked during a run.
 function TalentPanel.Preview()
+  if Talents.LearnBusy() then return end
   local text = (ui.edit:GetText() or ""):gsub("^%s+", ""):gsub("%s+$", "")
   ui.edit:ClearFocus()
   if text == "" then
     TalentPanel.Cancel()
     return
   end
+  -- Another link: a stopped run (and its message) belonged to the old one.
+  if text ~= state.text then Talents.ResetLearn() end
   state.text = text
   -- Only a readable link is remembered; junk would come back on every open.
   if Talents.ParseLink(text) then cdb().lastTalentLink = text end
@@ -383,6 +478,8 @@ end
 
 -- Cancel: drop the previewed build, back to the character's own trees.
 function TalentPanel.Cancel()
+  if Talents.LearnBusy() then return end
+  Talents.ResetLearn()
   state.text = nil
   cdb().lastTalentLink = nil
   ui.edit:SetText("")
@@ -404,6 +501,13 @@ function TalentPanel.RequestRefresh()
   if not (C_Timer and C_Timer.After) then TalentPanel.Refresh(); return end
   pending = true
   C_Timer.After(0.2, function() pending = false; TalentPanel.Refresh() end)
+end
+
+-- PLAYER_REGEN_DISABLED / ENABLED (MainWindow.SetCombat): Learn talents greys
+-- out in combat and comes back after (6.9's rule for every destructive
+-- button). A run in progress was already stopped by Talents.OnCombat.
+function TalentPanel.SetCombat()
+  TalentPanel.Refresh()
 end
 
 -- Test hook: the cell drawn for tree t, tier row, column col.

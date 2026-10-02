@@ -4,15 +4,17 @@
 --   Step 9: read a pasted link (13.2), check it against the game (13.3) and
 --           work out the preview: per talent learned / now / later / not in
 --           the build / conflict, plus the summary line (13.4).
---   Step 10 adds the learning engine (13.5).
+--   Step 10: the learning engine (13.5, decisions in ADDON_PLAN 13.8), at the
+--           end of this file.
 --
--- Still read-only after step 9: this file only calls GetNumTalentTabs /
+-- Steps 8 and 9 are read-only: they only call GetNumTalentTabs /
 -- GetNumTalents / GetTalentInfo / GetTalentTabInfo / UnitCharacterPoints /
--- GetLocale and shows our own copy box. It never learns a talent (no
--- LearnTalent anywhere yet) and never touches a macro, so the
+-- GetLocale and show our own copy box, which is all allowed in combat, so the
 -- InCombatLockdown() / RunOrQueue pattern that guards macro writes (6.4, 6.9)
--- doesn't apply: reading talent info and showing non-secure frames are both
--- allowed in combat (ADDON_PLAN 13.6, 13.7).
+-- doesn't apply to them (ADDON_PLAN 13.6, 13.7).
+-- Step 10 is the one irreversible write in the addon: the ONLY LearnTalent
+-- call is learnPoint() below, every point is checked against combat first,
+-- and nothing learns while R2F.InCombat() is true (13.8).
 
 local _, R2F = ...
 local L = R2F.L
@@ -371,7 +373,8 @@ function Talents.Plan(trees, codes, free)
     end
   end
   plan.summary, plan.kind = Talents.Summary(plan)
-  -- What step 10's Learn button will need. Step 9 never enables the button.
+  -- Step 10's Learn button is enabled from exactly this (plus "not in combat,
+  -- not already learning"), so a plan with ANY conflict can never be learned.
   plan.learnable = #plan.conflicts == 0 and plan.need > 0 and plan.free > 0
   return plan
 end
@@ -430,3 +433,461 @@ function Talents.Preview(text)
   end
   return { plan = Talents.Plan(trees, link.codes, Talents.FreePoints()), caution = caution, link = link }
 end
+
+-- ===========================================================================
+-- Step 10: learning (13.5; decisions in ADDON_PLAN 13.8)
+-- ===========================================================================
+--
+-- Why a state machine and not a loop: the game confirms a point
+-- asynchronously (the server answers, then CHARACTER_POINTS_CHANGED fires),
+-- so "learn 21 points" is 21 round trips. A loop calling LearnTalent 21 times
+-- in one go would send points whose tier requirement depends on points the
+-- server hasn't confirmed yet, and could notice neither a refused point nor
+-- combat starting halfway. So: one point, wait for the answer, re-check the
+-- live game, next point. Everything a run needs is in `run`, so it can stop
+-- at any moment (combat, a refused point, the Stop button) and continue from
+-- the same place when Learn talents is clicked again.
+--
+-- `run` lives for this session only (a file local, not SavedVariables): after
+-- a /reload the remembered link (lastTalentLink) previews what's left and a
+-- new Learn click asks again. Resuming from saved data, possibly days later,
+-- would act on a confirmation the player gave in another situation.
+
+Talents.LEARN_TIMEOUT = 0.5   -- 13.5: how long to wait for the server's answer
+
+local run            -- the current / last run (see Talents.StartLearn)
+-- worked: LearnTalent has landed a point this session (so addons may use it).
+-- blocked: it was refused with no other explanation before ever working, so
+-- this client probably blocks it for addons -> guided mode (13.5's fallback).
+local session = { worked = false, blocked = false }
+local message        -- { text =, kind = "stop" | "done" | "info" } for the tab
+
+local function say(text, kind)
+  message = { text = text, kind = kind }
+  R2F.Print(text)
+end
+
+-- Redraw the Talents tab (label "Learning X / N", locks, trees). It's a
+-- no-op while the tab isn't showing; the run itself never depends on the UI.
+local function notify()
+  if R2F.TalentPanel then R2F.TalentPanel.Refresh() end
+end
+
+-- The points the confirm popup promises, one entry per point, in 13.5's order:
+-- Talents.LearnOrder, the very list step 9's preview hands its "now" points
+-- out from (13.7), so the run learns exactly the gold +N cells, in that order.
+-- target = the talent's rank once this point has landed.
+function Talents.LearnPoints(plan)
+  local out = {}
+  for _, e in ipairs(Talents.LearnOrder(plan)) do
+    for k = 1, e.now do
+      out[#out + 1] = { tab = e.tab, index = e.index, name = e.name, tier = e.tier,
+                        column = e.column, target = e.rank + k }
+    end
+  end
+  return out
+end
+
+-- Which way talents get learned on this client (13.5, 13.8):
+--   "preview"  Blizzard's own preview/commit API exists AND is switched on
+--              (Wrath-style; the previewTalents CVar). 13.5: prefer it. We
+--              only fill Blizzard's preview; its own Learn button commits.
+--   "direct"   LearnTalent(tab, index), one point at a time (Classic).
+--   "guided"   no LearnTalent at all, or this session saw it refused with no
+--              other explanation before it ever worked: we point at the
+--              talent to click in Blizzard's own window instead.
+-- The CVar test matters: a client can carry the preview functions without
+-- the feature being on (shared code), and filling a preview nobody sees
+-- would learn nothing.
+function Talents.LearnMode()
+  if type(AddPreviewTalentPoints) == "function" and type(LearnPreviewTalents) == "function"
+     and GetCVarBool then
+    local ok, on = pcall(GetCVarBool, "previewTalents")
+    if ok and on then return "preview" end
+  end
+  if type(LearnTalent) == "function" and not session.blocked then return "direct" end
+  return "guided"
+end
+
+local function packed(...) return { n = select("#", ...), ... } end
+
+-- Prerequisites (13.5: "double-check ... GetTalentPrereqs"). Classic returns
+-- tier, column, isLearnable per prerequisite. We look the prerequisite up in
+-- the live tree and require it maxed (the Classic rule) rather than trust
+-- isLearnable, whose exact meaning can't be confirmed outside the game.
+-- No API or an error: no extra check here; the server still refuses an
+-- illegal point and the rank re-read after LearnTalent stops the run then.
+local function prereqsMet(p, tree)
+  if not GetTalentPrereqs then return true end
+  local got = packed(pcall(GetTalentPrereqs, p.tab, p.index))
+  if not got[1] then return true end
+  for i = 2, got.n, 3 do
+    local tier, column = got[i], got[i + 1]
+    if type(tier) == "number" and type(column) == "number" then
+      for _, x in ipairs(tree.talents) do
+        if x.tier == tier and x.column == column and x.rank < x.maxRank then return false end
+      end
+    end
+  end
+  return true
+end
+
+-- Re-check ONE point against the live game right before it's spent. The
+-- point list was made when the popup opened; since then the player may have
+-- spent points in Blizzard's window, levelled, entered combat and left it, or
+-- the server refused something. So nothing precomputed is trusted for the
+-- write itself: the whole preview is re-run (hash, sanity checks, conflicts)
+-- and the tier rule and prerequisites are checked on live ranks.
+-- Returns "ok" | "have" (the game already has this rank) | "nopoints" |
+-- "locked" (tier / prerequisite not met) | "changed" (trees or build moved).
+local function verify(r, p)
+  local plan = Talents.Preview(r.text).plan
+  if not plan or #plan.conflicts > 0 then return "changed" end
+  local tree = plan.trees[p.tab]
+  local e
+  for _, x in ipairs(tree and tree.talents or {}) do
+    if x.index == p.index then e = x; break end
+  end
+  if not e or e.name ~= p.name then return "changed" end
+  if e.rank >= p.target then return "have" end
+  -- Points go one at a time and in order, so this talent is exactly one short.
+  if e.rank ~= p.target - 1 then return "changed" end
+  if Talents.FreePoints() <= 0 then return "nopoints" end
+  -- Classic tier rule: 5 points in this tree per tier above the first.
+  if tree.current < (e.tier - 1) * 5 then return "locked" end
+  if not prereqsMet(p, tree) then return "locked" end
+  return "ok"
+end
+
+local function liveRank(p)
+  if not GetTalentInfo then return nil end
+  local name, _, _, _, rank = GetTalentInfo(p.tab, p.index)
+  if name ~= p.name then return nil end
+  return rank or 0
+end
+
+-- Stops that "Learn talents" can pick up again from the same point. The
+-- others (no points, tier/prerequisite, trees changed) need a fresh preview,
+-- so the next click starts over with a new popup.
+local RESUMABLE = { combat = true, user = true, rejected = true }
+
+local function stopText(r, why, name)
+  if why == "combat" then return L.TALENT_STOP_COMBAT:format(r.done, r.total) end
+  if why == "user" then return L.TALENT_STOP_USER:format(r.done, r.total) end
+  if why == "rejected" then
+    local text = L.TALENT_STOP_REJECTED:format(name, r.done, r.total)
+    if session.blocked then text = text .. " " .. L.TALENT_BLOCKED_HINT end
+    return text
+  end
+  if why == "locked" then return L.TALENT_STOP_LOCKED:format(name, r.done, r.total) end
+  if why == "nopoints" then return L.TALENT_STOP_NOPOINTS:format(r.done, r.total) end
+  return L.TALENT_STOP_CHANGED:format(r.done, r.total)
+end
+
+local function stop(r, why, p)
+  r.phase, r.why = "stopped", why
+  -- New token: a timeout or event still on its way for the old point is
+  -- ignored (the point may still land; lateCheck counts it then).
+  r.token = r.token + 1
+  r.resumable = RESUMABLE[why] or false
+  R2F.TalentGuide.Hide()
+  say(stopText(r, why, p and p.name or ""), "stop")
+  notify()
+end
+
+local function finish(r)
+  r.phase = "done"
+  r.token = r.token + 1
+  R2F.TalentGuide.Hide()
+  say(r.done == 1 and L.TALENT_LEARNED_ONE or L.TALENT_LEARNED:format(r.done), "done")
+  notify()
+end
+
+-- The next point to spend, skipping points the game already has (spent by the
+-- player in Blizzard's window, or an answer that arrived after a stop).
+-- Returns the point, or nil after stopping or finishing the run.
+local function nextPoint(r)
+  while true do
+    local p = r.points[r.pos]
+    if not p then finish(r); return nil end
+    local check = verify(r, p)
+    if check == "have" then
+      r.done, r.pos = r.done + 1, r.pos + 1
+    elseif check == "ok" then
+      return p
+    else
+      stop(r, check, p)
+      return nil
+    end
+  end
+end
+
+-- The ONLY LearnTalent call in the addon (Taint & secure execution, 6.6).
+-- Combat is checked here, at the write, not just when the button was clicked:
+-- a run spans many server round trips and combat can start between any two.
+-- R2F.InCombat() also covers the moment PLAYER_REGEN_DISABLED is handled,
+-- when InCombatLockdown() is still false (6.7).
+local function learnPoint(p)
+  if R2F.InCombat() then return false, "combat" end
+  if not pcall(LearnTalent, p.tab, p.index) then return false, "rejected" end
+  return true
+end
+
+local stepDirect, settle
+
+local function reject(r, p)
+  r.waiting = nil
+  r.late = p          -- if the answer was only slow, lateCheck still counts it
+  if not session.worked then session.blocked = true end
+  stop(r, "rejected", p)
+end
+
+-- One point, then wait: CHARACTER_POINTS_CHANGED (OnPointsChanged) or the
+-- timeout, whichever comes first, decides via settle().
+stepDirect = function(r)
+  if run ~= r or r.phase ~= "learning" then return end
+  if R2F.InCombat() then return stop(r, "combat", r.points[r.pos]) end
+  local p = nextPoint(r)
+  if not p then return end
+  r.waiting = p
+  r.token = r.token + 1
+  local tok = r.token
+  notify()
+  local ok, why = learnPoint(p)
+  if not ok then
+    r.waiting = nil
+    if why == "combat" then return stop(r, "combat", p) end
+    return reject(r, p)
+  end
+  -- ADDON_ACTION_FORBIDDEN can fire inside the LearnTalent call itself and
+  -- has already stopped the run (Talents.OnActionBlocked).
+  if r.phase ~= "learning" then return end
+  if C_Timer and C_Timer.After then
+    C_Timer.After(Talents.LEARN_TIMEOUT, function() settle(r, tok, true) end)
+  end
+end
+
+-- Did the point land? Re-read the rank (13.5). Not yet on an event: keep
+-- waiting (the event also fires for other reasons, e.g. a level-up). Not
+-- yet when it's final (the timeout): stop, never continue past it.
+-- resend = this was a point from before a stop that we only waited for (see
+-- begin): not there after the wait = it never got through, so send it now.
+settle = function(r, tok, final, resend)
+  if run ~= r or r.token ~= tok or r.phase ~= "learning" or not r.waiting then return end
+  local p = r.waiting
+  local rank = liveRank(p)
+  if rank and rank >= p.target then
+    r.waiting = nil
+    r.done, r.pos = r.done + 1, r.pos + 1
+    session.worked, session.blocked = true, false
+    stepDirect(r)
+  elseif final and resend then
+    r.waiting = nil
+    stepDirect(r)
+  elseif final then
+    reject(r, p)
+  end
+end
+
+-- After a stop, the point that was on its way may still land (a slow
+-- server, or combat started right after it was sent). Count it, and if it
+-- was a "refused" stop, LearnTalent does work after all: no guided mode.
+local function lateCheck(r)
+  local p = r.late
+  if not p then return end
+  local rank = liveRank(p)
+  if not (rank and rank >= p.target) then return end
+  r.late = nil
+  session.worked, session.blocked = true, false
+  if r.points[r.pos] == p then r.done, r.pos = r.done + 1, r.pos + 1 end
+  if r.pos > r.total then return finish(r) end
+  if r.why == "rejected" then
+    say(L.TALENT_LATE:format(p.name, r.done, r.total), "stop")
+  else
+    say(stopText(r, r.why, p.name), "stop")
+  end
+  notify()
+end
+
+-- Guided mode: show the next point in Blizzard's window and wait for the
+-- player's click (CHARACTER_POINTS_CHANGED calls this again). The same
+-- verify() runs before every point, so a click on the wrong talent stops it.
+local function stepGuided(r)
+  if run ~= r or r.phase ~= "guided" then return end
+  if R2F.InCombat() then return stop(r, "combat", r.points[r.pos]) end
+  local p = nextPoint(r)
+  if not p then return end
+  if r.shown ~= r.pos then
+    r.shown = r.pos
+    R2F.Print(L.TALENT_GUIDE_CLICK:format(p.name, r.done + 1, r.total))
+  end
+  R2F.TalentGuide.Show(p, r.done + 1, r.total, Talents.TreeName(p.tab))
+  notify()
+end
+
+local function begin(r)
+  if run ~= r then return end       -- cancelled while it waited for combat to end
+  local pending = r.late
+  r.waiting, r.late, r.shown = nil, nil, nil
+  message = nil
+  if Talents.LearnMode() == "guided" then
+    r.mode, r.phase = "guided", "guided"
+    if R2F.TalentGuide.OpenTalentWindow() then
+      R2F.Print(L.TALENT_GUIDE_START)
+    else
+      R2F.Print(L.TALENT_GUIDE_OPEN)
+    end
+    stepGuided(r)
+    return
+  end
+  r.mode, r.phase = "direct", "learning"
+  if pending and C_Timer and C_Timer.After then
+    -- A point sent before the stop may still be on its way (Stop, then Learn
+    -- talents clicked right away). Sending it again now could land BOTH: one
+    -- rank more than the build wants, in a talent that may be at its planned
+    -- maximum, which only a trainer reset undoes. So wait for it first,
+    -- exactly like for a point just sent; only if it's still not there after
+    -- the timeout is it sent again (settle's resend). Without C_Timer there's
+    -- no way to wait; it is sent again at once (every Classic Era client has
+    -- C_Timer, 13.8).
+    r.waiting = pending
+    r.token = r.token + 1
+    local tok = r.token
+    notify()
+    C_Timer.After(Talents.LEARN_TIMEOUT, function() settle(r, tok, true, true) end)
+    return
+  end
+  stepDirect(r)
+end
+
+-- After the confirm popup's Learn (TalentPanel). `list` = LearnPoints(plan)
+-- as counted in the popup: a run never learns more than the player agreed to,
+-- even if a level-up adds points meanwhile. Accepted in combat (popup opened
+-- before combat): the start waits for PLAYER_REGEN_ENABLED in
+-- Macros.RunOrQueue, the queue every confirmed write in the addon uses (6.9),
+-- and begin() re-checks everything when it runs. Returns the run.
+function Talents.StartLearn(text, list)
+  local r = { text = text, points = list, total = #list, done = 0, pos = 1,
+              phase = "queued", token = 0, resumable = false }
+  run = r
+  message = nil
+  notify()
+  R2F.Macros.RunOrQueue(function() begin(r) end, L.TALENT_LEARN_QUEUED)
+  return r
+end
+
+-- A stopped run for this exact link that Learn talents can continue (13.5:
+-- "Click Learn talents to continue"); no second popup, same X of Y.
+function Talents.CanResume(text)
+  local r = run
+  return r ~= nil and r.phase == "stopped" and r.resumable and r.text == text and r.pos <= r.total
+end
+
+function Talents.ResumeLearn()
+  local r = run
+  if not (r and r.phase == "stopped" and r.resumable) then return false end
+  begin(r)
+  return true
+end
+
+-- The tab's Stop button. A point already sent may still land (lateCheck).
+function Talents.StopLearn()
+  local r = run
+  if not r then return end
+  if r.phase == "queued" then
+    run, message = nil, nil        -- the queued start finds run ~= r and does nothing
+    notify()
+  elseif r.phase == "learning" or r.phase == "guided" then
+    if r.waiting then r.late, r.waiting = r.waiting, nil end
+    stop(r, "user", r.points[r.pos])
+  end
+end
+
+function Talents.LearnBusy()
+  local r = run
+  return r ~= nil and (r.phase == "queued" or r.phase == "learning" or r.phase == "guided")
+end
+
+-- New link previewed or Cancel: forget a stopped / finished run and its
+-- message. Refused while a run is active (the tab is locked then anyway).
+function Talents.ResetLearn()
+  if Talents.LearnBusy() then return false end
+  run, message = nil, nil
+  R2F.TalentGuide.Hide()
+  return true
+end
+
+-- { phase = "idle" | "queued" | "learning" | "guided" | "stopped" | "done",
+--   mode, done, total, current (the point being learned, 1-based), text,
+--   resumable, point }
+function Talents.LearnStatus()
+  local r = run
+  if not r then return { phase = "idle" } end
+  return { phase = r.phase, mode = r.mode, done = r.done, total = r.total,
+           current = math.min(r.done + 1, r.total), text = r.text, resumable = r.resumable,
+           point = r.points[r.pos] }
+end
+
+function Talents.LearnMessage() return message end
+
+-- CHARACTER_POINTS_CHANGED (Core.lua, before the tab's refresh).
+function Talents.OnPointsChanged()
+  local r = run
+  if not r then return end
+  if r.phase == "learning" and r.waiting then
+    -- Without C_Timer there is no timeout, so this event is the final word.
+    settle(r, r.token, not (C_Timer and C_Timer.After))
+  elseif r.phase == "guided" then
+    stepGuided(r)
+  elseif r.phase == "stopped" then
+    lateCheck(r)
+  end
+end
+
+-- PLAYER_REGEN_DISABLED (Core.lua): stop AT ONCE, mid-run (13.5), not only
+-- refuse to start. The point already sent can't be called back; it is
+-- counted if it lands (lateCheck). No new LearnTalent goes out after this:
+-- learnPoint checks R2F.InCombat(), which is true from this event on.
+function Talents.OnCombat()
+  local r = run
+  if r and (r.phase == "learning" or r.phase == "guided") then
+    if r.waiting then r.late, r.waiting = r.waiting, nil end
+    stop(r, "combat", r.points[r.pos])
+  end
+end
+
+-- ADDON_ACTION_FORBIDDEN / ADDON_ACTION_BLOCKED (Core.lua, our addon only):
+-- the game's own word that it refused a call. For LearnTalent that is the
+-- clearest "blocked for addons" signal there is (13.5's guided fallback), so
+-- it switches this session to guided mode at once, even if a point worked
+-- before, and the point in flight is settled as refused now.
+function Talents.OnActionBlocked(fn)
+  if type(fn) ~= "string" or not fn:find("LearnTalent", 1, true) then return end
+  session.blocked, session.worked = true, false
+  local r = run
+  if r and r.phase == "learning" and r.waiting then settle(r, r.token, true) end
+end
+
+-- "preview" mode (13.5: if the client has Blizzard's preview API, use it and
+-- let Blizzard's own Learn button confirm): put the points into Blizzard's
+-- preview in the same order and open the talent window. Nothing is learned
+-- until the player clicks Blizzard's button, so our popup isn't shown, and
+-- LearnPreviewTalents (the commit) is never called by us. Returns the number
+-- of points placed.
+function Talents.FillPreview(plan)
+  if R2F.InCombat() then return 0 end
+  local n = 0
+  for _, e in ipairs(Talents.LearnOrder(plan)) do
+    if e.now > 0 then
+      if not pcall(AddPreviewTalentPoints, e.tab, e.index, e.now) then break end
+      n = n + e.now
+    end
+  end
+  R2F.TalentGuide.OpenTalentWindow()
+  say(L.TALENT_PREVIEW_FILLED:format(n), "info")
+  notify()
+  return n
+end
+
+-- Test hook: forget what this session learned about LearnTalent.
+function Talents.ResetSession() session.worked, session.blocked = false, false end

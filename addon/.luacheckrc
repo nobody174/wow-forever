@@ -40,6 +40,10 @@ read_globals = {
   "GetNumTalentTabs", "GetNumTalents", "GetTalentInfo",
   -- Step 9: talent import preview (still read-only; no LearnTalent yet)
   "GetTalentTabInfo", "GetLocale",
+  -- Step 10: talent learning (the one talent write: LearnTalent, ADDON_PLAN 13.8),
+  -- preview-API detection, guided mode (Blizzard talent window, read only)
+  "LearnTalent", "GetTalentPrereqs", "AddPreviewTalentPoints", "LearnPreviewTalents", "GetCVarBool",
+  "ToggleTalentFrame", "PanelTemplates_GetSelectedTab",
 }
 -- Nothing is vendored in libs\ (ADDON_PLAN.md 6.10), so there is no
 -- third-party code to exclude; LibStub is only read through _G in Minimap.lua.

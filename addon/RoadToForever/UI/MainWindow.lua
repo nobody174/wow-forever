@@ -8,7 +8,7 @@
 --   Home    -> UI/Home.lua builds into it
 --   Macros  -> UI/MacroBook.lua builds into it (the step-3 book, reparented)
 --   Talents -> UI/TalentPanel.lua builds into it (step 9: link, preview,
---              Copy my build; Learn talents arrives in step 10)
+--              Copy my build; step 10: Learn talents)
 --
 -- Saved in R2FDB.settings: windowPos (by UI.Window when dragged) and
 -- lastTab. The size is fixed (540 x 500, the book's size): the book's grid is
@@ -220,4 +220,5 @@ end
 function MainWindow.SetCombat()
   R2F.MacroBook.SetCombat()
   R2F.Home.SetCombat()
+  R2F.TalentPanel.SetCombat()
 end

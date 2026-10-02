@@ -147,15 +147,109 @@ function GetTalentTabInfo(tab)
   return name, "icon", 0, "file"
 end
 function GetLocale() return T.locale or "enUS" end
--- Step 9 is preview only: anything that would learn (or preview-spend) a
--- talent must never be called. These count and raise if it ever happens.
+
+-- Step 10: a fake server for talent learning. LearnTalent only SENDS a
+-- request (like the real one: the rank changes when the server answers);
+-- T.server() delivers the queued requests, applying Classic's rules (a free
+-- point, rank below max, 5 points in that tree per tier, prerequisite maxed),
+-- and fires CHARACTER_POINTS_CHANGED for each point that landed. A refused
+-- request changes nothing and fires nothing. T.learnBlocked = true: requests
+-- vanish (an addon-blocked call; with T.forbiddenEvent the client also fires
+-- ADDON_ACTION_FORBIDDEN). T.learnError: LearnTalent raises.
+-- It raises in combat, so a learn sent in combat fails the tests.
+-- talentWrites counts every call (steps 8/9 tests require 0).
 T.talentWrites = 0
-local function talentWrite(what)
-  return function() T.talentWrites = T.talentWrites + 1; error(what .. " called during a read-only step", 2) end
+T.learnCalls = {}
+T.learnQueue = {}
+function LearnTalent(tab, i)
+  T.talentWrites = T.talentWrites + 1
+  if T.combat then error("LearnTalent: blocked in combat (test stub)", 2) end
+  table.insert(T.learnCalls, tab .. ":" .. i)
+  if T.learnError then error(T.learnError, 2) end
+  if T.learnBlocked then
+    if T.forbiddenEvent then T.fire("ADDON_ACTION_FORBIDDEN", "RoadToForever", "LearnTalent()") end
+    return
+  end
+  table.insert(T.learnQueue, { tab, i })
 end
-LearnTalent = talentWrite("LearnTalent")
+local function talentAt(tab, tier, column)
+  for _, x in ipairs(T.talentTabs[tab] or {}) do
+    if x.tier == tier and x.column == column then return x end
+  end
+end
+function T.canLearn(tab, i)
+  local x = T.talentTabs[tab] and T.talentTabs[tab][i]
+  if not x or (T.talentPoints or 0) <= 0 or (x.rank or 0) >= x.maxRank then return false end
+  local spent = 0
+  for _, y in ipairs(T.talentTabs[tab]) do spent = spent + (y.rank or 0) end
+  if spent < (x.tier - 1) * 5 then return false end
+  if x.prereq then
+    local p = talentAt(tab, x.prereq[1], x.prereq[2])
+    if p and (p.rank or 0) < p.maxRank then return false end
+  end
+  return true
+end
+local function applyPoint(tab, i)
+  local x = T.talentTabs[tab][i]
+  x.rank = (x.rank or 0) + 1
+  T.talentPoints = T.talentPoints - 1
+end
+-- Deliver up to `max` queued requests (default: until the queue is empty;
+-- each answer may make the addon send the next one).
+function T.server(max)
+  local n = 0
+  while #T.learnQueue > 0 and n < (max or 1000) do
+    local req = table.remove(T.learnQueue, 1)
+    n = n + 1
+    if not T.serverRejects and T.canLearn(req[1], req[2]) then
+      applyPoint(req[1], req[2])
+      T.fire("CHARACTER_POINTS_CHANGED")
+    end
+  end
+  return n
+end
+-- The player clicking a talent in Blizzard's own window (guided mode).
+function T.playerLearn(tab, i)
+  if not T.canLearn(tab, i) then return false end
+  applyPoint(tab, i)
+  T.fire("CHARACTER_POINTS_CHANGED")
+  return true
+end
+-- Classic shape: tier, column, isLearnable per prerequisite (isLearnable is
+-- 1 or nil, so the addon must not count returns with #).
+function GetTalentPrereqs(tab, i)
+  local x = T.talentTabs[tab] and T.talentTabs[tab][i]
+  if not (x and x.prereq) then return end
+  local p = talentAt(tab, x.prereq[1], x.prereq[2])
+  return x.prereq[1], x.prereq[2], (p and (p.rank or 0) >= p.maxRank) and 1 or nil
+end
+-- Blizzard's preview/commit API (Wrath-style). Present in the stubs but OFF
+-- (no GetCVarBool), like a client that only carries the shared code. The
+-- commit must never be called by the addon; the fill only in preview mode.
+local function talentWrite(what)
+  return function() T.talentWrites = T.talentWrites + 1; error(what .. " called outside preview mode", 2) end
+end
 LearnPreviewTalents = talentWrite("LearnPreviewTalents")
 AddPreviewTalentPoints = talentWrite("AddPreviewTalentPoints")
+
+-- Blizzard's talent window (load-on-demand Blizzard_TalentUI), for guided
+-- mode: <name>, <name>Talent<i> (button i = talent index i of the tab shown),
+-- <name>Tab<n>, .selectedTab. Not loaded until ToggleTalentFrame is called.
+T.talentFrameName = "TalentFrame"
+function T.makeTalentFrame(name)
+  local f = CreateFrame("Frame", name, UIParent)
+  f:Hide()
+  f.selectedTab = 1
+  for i = 1, 30 do CreateFrame("Button", name .. "Talent" .. i, f):SetSize(37, 37) end
+  for t = 1, 3 do CreateFrame("Button", name .. "Tab" .. t, f):SetSize(60, 24) end
+  return f
+end
+function ToggleTalentFrame()
+  T.toggles = (T.toggles or 0) + 1
+  local f = _G[T.talentFrameName] or T.makeTalentFrame(T.talentFrameName)
+  if f:IsShown() then f:Hide() else f:Show() end
+end
+function PanelTemplates_GetSelectedTab(f) return f.selectedTab end
 
 function InCombatLockdown() return T.combat end
 function GetSpellTexture(name) return T.knownSpells[name] end
@@ -175,6 +269,13 @@ function T.runTimers()
     T.timers = {}
     for _, fn in ipairs(list) do fn() end
   end
+end
+-- Step 10: only the timers pending NOW (one 0.5 s step), not the ones they
+-- schedule (runTimers would also fire the next point's timeout at once).
+function T.runTimersOnce()
+  local list = T.timers
+  T.timers = {}
+  for _, fn in ipairs(list) do fn() end
 end
 C_XMLUtil = { GetTemplateInfo = function(name) if T.templates[name] then return {} end end }
 CLASS_ICON_TCOORDS = { WARRIOR = { 0, 0.25, 0, 0.25 }, PALADIN = { 0, 0.25, 0.5, 0.75 } }
@@ -275,6 +376,22 @@ function methods:SetTexture(t) self.__tex = t end
 function methods:SetDesaturated(v) self.__desat = v end
 function methods:SetTextColor(r, g, b) self.__color = { r, g, b } end
 function methods:SetVertexColor(r, g, b) self.__vertex = { r, g, b } end
+-- Step 10: the guided glow's pulse. T.frameMethods.CreateAnimationGroup = nil
+-- simulates a client without it (the fallback runtime does).
+function methods:CreateAnimationGroup()
+  local ag = { playing = false }
+  function ag:CreateAnimation()
+    local a = {}
+    for _, m in ipairs({ "SetFromAlpha", "SetToAlpha", "SetDuration" }) do a[m] = noop end
+    return a
+  end
+  function ag:SetLooping(v) self.looping = v end
+  function ag:Play() self.playing = true end
+  function ag:Stop() self.playing = false end
+  self.__anim = ag
+  return ag
+end
+T.frameMethods = methods
 function methods:RegisterEvent(e) self.__events = self.__events or {}; self.__events[e] = true end
 function methods:UnregisterEvent(e) if self.__events then self.__events[e] = nil end end
 -- Test helpers on frames

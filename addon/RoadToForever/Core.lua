@@ -97,6 +97,9 @@ local COMMANDS = {
     R2F.MainWindow.Show("macros")
     R2F.ImportFrame.Show()
   end,
+  -- Step 8: Copy my build until the Talents tab has its button (steps 9/10,
+  -- ADDON_PLAN 13.6). Read-only, so no combat check.
+  copybuild = function() R2F.Talents.CopyMyBuild() end,
 }
 R2F.COMMANDS = COMMANDS
 

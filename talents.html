@@ -76,7 +76,7 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
 .credit{color:var(--muted);font-size:12.5px;margin-top:36px}
 .credit a{color:var(--muted)}
 </style>
-<link rel="stylesheet" href="talentcalc.css?v=20261001b">
+<link rel="stylesheet" href="talentcalc.css?v=20261002a">
 </head>
 <body>
 <div class="topbar">
@@ -101,8 +101,8 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
   <p class="credit">Talent data: <a href="https://www.wowhead.com/forever/talent-calc" target="_blank" rel="noopener">Wowhead's Forever talent calculator</a>, loaded live, so it updates when they do. Icons © Blizzard Entertainment.</p>
 </div>
 
-<script src="talentcalc.js?v=20261001b"></script>
-<script src="talentsaved.js?v=20261001b"></script>
+<script src="talentcalc.js?v=20261002a"></script>
+<script src="talentsaved.js?v=20261002a"></script>
 <script>
 (function () {
   "use strict";
@@ -120,13 +120,15 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
     renderRoster(clsId);
     calc = TC.mountSync($("calc"), raw, {
       cls: clsId, code: code,
-      onChange: function (inst) { try { history.replaceState(null, "", "#" + inst.encode()); } catch (e) { location.hash = inst.encode(); } }
+      // The address bar carries the ~hash too, since people copy it as a link.
+      onChange: function (inst) { try { history.replaceState(null, "", "#" + inst.link()); } catch (e) { location.hash = inst.link(); } }
     });
   }
-  // Hash: #<class>/<tree1>-<tree2>-<tree3>
+  // Hash: #<class>/<tree1>-<tree2>-<tree3>[~<check>]; the check is ignored here
+  // (it's for the Road to Forever addon, ADDON_PLAN.md 13.3).
   function fromHash() {
     var h = decodeURIComponent(location.hash.slice(1)), slash = h.indexOf("/");
-    var id = slash === -1 ? h : h.slice(0, slash), code = slash === -1 ? "" : h.slice(slash + 1);
+    var id = slash === -1 ? h : h.slice(0, slash), code = slash === -1 ? "" : TC.cleanCode(h.slice(slash + 1));
     if (!TC.classById(id)) { id = calc ? calc.cls.id : "hunter"; code = ""; }
     show(id, code);
   }

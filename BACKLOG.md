@@ -35,8 +35,10 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
       and `softprops/action-gh-release@v2` target Node.js 20 (deprecated, forced
       onto Node 24 for now). Bump both to their Node-24 majors before GitHub
       drops Node 20, then tag the next release and check its run.
-- [ ] **8. Talent export:** Copy my build as a site link. Site links get the
-      `~hash` check; `talentcalc.js` ignores `~...` when reading (bump `?v=`).
+- [x] **8. Talent export:** shipped 2026-10-02 as v0.6.0 (tag `r2f-v0.6.0`) — see
+      CHANGELOG.md. `/r2f copybuild` for now (the Talents tab button comes with 9/10,
+      ADDON_PLAN 13.6). Not yet run in the game: `TESTING.md` section 13 (the hash
+      must equal the site's per class).
 - [ ] **9. Talent import preview:** paste a Copy link URL, three mini trees,
       summary, conflict/mismatch warnings. Nothing learned.
 - [ ] **10. Talent learning:** Learn talents + confirm popup, one point at a

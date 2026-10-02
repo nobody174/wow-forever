@@ -36,6 +36,8 @@ read_globals = {
   "PanelTemplates_SetTab", "PanelTemplates_SetNumTabs", "PanelTemplates_TabResize",
   "GameFontNormalSmall", "GameFontHighlightSmall",
   "Minimap", "GetMinimapShape", "MenuUtil", "UnitCharacterPoints",
+  -- Step 8: talent export (read-only)
+  "GetNumTalentTabs", "GetNumTalents", "GetTalentInfo",
 }
 -- Nothing is vendored in libs\ (ADDON_PLAN.md 6.10), so there is no
 -- third-party code to exclude; LibStub is only read through _G in Minimap.lua.

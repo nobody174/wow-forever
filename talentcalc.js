@@ -19,8 +19,15 @@
        opts.onChange   function(instance) after every point change
        opts.saveName   default name offered by the "Save build" button
      instance.encode() "<class>/<code>"   instance.reset()   instance.setCode(code)
+     instance.link()   "<class>/<code>~<hash>" (what every link we hand out uses)
      instance.split() [pts, pts, pts]      instance.mainTree()   instance.total()
      TalentCalc.presetCode(raw, cls, preset) -> "<class>/<code>" or ""
+     TalentCalc.treeHash(raw, cls)   4-char check of the class's talent names
+     TalentCalc.hashFor(cls)         same, from the data already loaded ("" if none)
+     TalentCalc.cleanCode(code)      code with any "~<hash>" removed (link readers)
+   The ~hash (ADDON_PLAN.md 13.3) lets the Road to Forever addon refuse a link
+   made from different talent trees than the game has. Talents.lua computes the
+   identical hash; addon/tests/run_tests.py runs both on one fixture.
    A "Save build" button is added to the bar when talentsaved.js is on the page.
    ============================================================================= */
 (function () {
@@ -45,8 +52,43 @@
   function classById(id) { return CLASSES.filter(function (c) { return c.id === id; })[0] || null; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
+  // --- Link order + the ~hash (ADDON_PLAN.md 13.2 / 13.3) -----------------------
+  // One class's three trees, each talent list sorted by row, then column. This
+  // is the share code's digit order (one digit per talent), and the addon sorts
+  // GetTalentInfo by tier, then column to get the same list.
+  function sortedTrees(raw, cls) {
+    return cls.trees.map(function (tr) {
+      var src = (raw && raw[tr[0]]) || {};
+      var list = Object.keys(src).map(function (k) { return src[k]; });
+      list.sort(function (a, b) { return a.row - b.row || a.col - b.col; });
+      return { id: tr[0], name: tr[1], talents: list };
+    });
+  }
+  // The check appended to links: djb2 over the class's talent names in link
+  // order ("," between talents, ";" between trees, so a talent moving across a
+  // tree boundary also changes it), as UTF-8 bytes (WoW's Lua strings are UTF-8
+  // bytes), wrapped to 32 bits, then mod 36^4 in base36, zero-padded to 4.
+  // The names are hashed in link order on purpose: if the game's list differs
+  // in any position, digit k would land on a different talent, and that is
+  // exactly what the hash must catch. Talents.lua (R2F.Talents.Hash) must stay
+  // byte-for-byte identical.
+  function hashText(text) {
+    var bytes = unescape(encodeURIComponent(text)), h = 5381;
+    for (var i = 0; i < bytes.length; i++) h = (Math.imul(h, 33) + bytes.charCodeAt(i)) >>> 0;
+    return ("000" + (h % 1679616).toString(36)).slice(-4);
+  }
+  function treeHash(raw, cls) {
+    return hashText(sortedTrees(raw, cls).map(function (t) {
+      return t.talents.map(function (x) { return x.name; }).join(",");
+    }).join(";"));
+  }
+  // Link readers ignore everything from "~" on, so links from before the hash
+  // existed and links with it both open (13.3). Without this the hash's
+  // letters and digits would be read as ranks of the last tree's talents.
+  function cleanCode(c) { c = String(c == null ? "" : c); var i = c.indexOf("~"); return i === -1 ? c : c.slice(0, i); }
+
   // --- Data loading (once per page) -------------------------------------------
-  var loading = null;
+  var loading = null, loadedRaw = null;
   function load() {
     if (loading) return loading;
     loading = new Promise(function (resolve, reject) {
@@ -60,7 +102,7 @@
       var s = document.createElement("script");
       s.src = DATA_URL;
       s.async = true;
-      s.onload = function () { if (raw) resolve(raw); else reject(new Error("no data")); };
+      s.onload = function () { if (raw) { loadedRaw = raw; resolve(raw); } else reject(new Error("no data")); };
       s.onerror = function () { reject(new Error("load failed")); };
       setTimeout(function () { if (!raw) reject(new Error("timeout")); }, 15000);
       document.head.appendChild(s);
@@ -101,12 +143,9 @@
     var self = this;
     var cls = classById(opts.cls) || CLASSES[0];
     var compact = !!opts.compact;
-    var trees = cls.trees.map(function (tr) {
-      var src = raw[tr[0]] || {};
-      var list = Object.keys(src).map(function (k) { return src[k]; });
-      list.sort(function (a, b) { return a.row - b.row || a.col - b.col; });
-      return { id: tr[0], name: tr[1], talents: list };
-    });
+    if (raw) loadedRaw = loadedRaw || raw;
+    var trees = sortedTrees(raw, cls);
+    var linkHash = treeHash(raw, cls);
     var byId = {}, byName = {}, ranks = {};
     trees.forEach(function (t, ti) {
       t.talents.forEach(function (x) { x._tree = ti; byId[x.id] = x; byName[x.name.toLowerCase()] = byName[x.name.toLowerCase()] || x; });
@@ -150,7 +189,7 @@
     }
     function applyCode(c) {
       ranks = {};
-      var parts = String(c || "").split("-");
+      var parts = cleanCode(c).split("-");
       trees.forEach(function (t, ti) {
         var s = parts[ti] || "";
         t.talents.forEach(function (x, i) { var n = parseInt(s.charAt(i), 10) || 0; if (n) ranks[x.id] = n; });
@@ -248,7 +287,7 @@
       set("left", MAX_POINTS - spent);
       set("level", spent ? String(spent + 9) : "—");
       var open = q('[data-tc="open"]');
-      if (open) open.href = "talents.html#" + self.encode();
+      if (open) open.href = "talents.html#" + self.link();
       if (changed && typeof opts.onChange === "function") opts.onChange(self);
       if (tipState && tipState.inst === self) showTip(tipState.x, tipState.anchor, tipState.touch);
     }
@@ -295,7 +334,7 @@
         if (act.dataset.tcAct === "save") { if (window.TalentSaved) window.TalentSaved.openSave(self, opts.saveName); }
         else if (act.dataset.tcAct === "reset") { ranks = compact ? JSON.parse(initial) : {}; update(true); }
         else if (act.dataset.tcAct === "copy") {
-          var url = new URL("talents.html#" + self.encode(), location.href).href;
+          var url = new URL("talents.html#" + self.link(), location.href).href;
           var done = function () { act.textContent = "Copied!"; setTimeout(function () { act.textContent = "Copy link"; }, 1500); };
           if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () { window.prompt("Copy this link:", url); });
           else window.prompt("Copy this link:", url);
@@ -347,7 +386,12 @@
 
     // Public API
     this.cls = cls;
+    // encode() is the stored form (saved builds, Group picks): no hash, so
+    // talentsaved.js can sum its digits. link() is what we hand out: always
+    // "<class>/<code>~<hash>", even with no points ("hunter/~<hash>"), the same
+    // shape the addon's Copy my build makes.
     this.encode = function () { var c = code(); return cls.id + (c ? "/" + c : ""); };
+    this.link = function () { return cls.id + "/" + code() + "~" + linkHash; };
     // Points per tree, e.g. [31, 20, 0], and the tree with the most points.
     this.split = function () { return trees.map(function (t, ti) { return treePoints(ti); }); };
     this.mainTree = function () { var sp = self.split(), m = 0; sp.forEach(function (n, i) { if (n > sp[m]) m = i; }); return sp[m] ? trees[m].name : ""; };
@@ -373,6 +417,11 @@
     presetCode: function (raw, clsId, preset) {
       var inst = new Calc(document.createElement("div"), raw, { cls: clsId, preset: preset });
       return inst.total() ? inst.encode() : "";
-    }
+    },
+    treeHash: function (raw, clsId) { var c = classById(clsId); return c ? treeHash(raw, c) : ""; },
+    // For pages that only hold a stored code (talentsaved.js): the hash from
+    // the data this page already loaded, or "" before it has loaded.
+    hashFor: function (clsId) { var c = classById(clsId); return c && loadedRaw ? treeHash(loadedRaw, c) : ""; },
+    cleanCode: cleanCode
   };
 })();

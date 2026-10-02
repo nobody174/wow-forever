@@ -31,7 +31,13 @@
   function sSet(k, v) { try { if (v) sessionStorage.setItem(k, v); else sessionStorage.removeItem(k); } catch (e) { /* blocked */ } }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function uid(p) { return (p || "b") + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
-  function link(code) { return new URL("talents.html#" + code, location.href).href; }
+  // Stored codes have no ~hash (it's part of links, not of the build); links we
+  // copy get it once this page has the talent data (ADDON_PLAN.md 13.3).
+  function link(code) {
+    var c = String(code), h = TC.hashFor ? TC.hashFor(c.split("/")[0]) : "";
+    if (h) c = (c.indexOf("/") === -1 ? c + "/" : c) + "~" + h;
+    return new URL("talents.html#" + c, location.href).href;
+  }
   function clsOf(code) { return TC.classById(String(code).split("/")[0]); }
 
   var builds = load(KEY, []);
@@ -277,12 +283,14 @@
   }
   function persist() { if (!save(KEY, builds)) alert("Couldn't save — this browser is blocking local storage (private window?)."); }
 
-  // Accepts "https://…/talents.html#hunter/05-…", "#hunter/05", or "hunter/05".
+  // Accepts "https://…/talents.html#hunter/05-…", "#hunter/05", or "hunter/05",
+  // each with or without a trailing "~<hash>" (dropped: builds are stored bare).
   function parseCode(s) {
     s = String(s || "").trim();
     var h = s.indexOf("#");
     if (h !== -1) s = s.slice(h + 1);
     try { s = decodeURIComponent(s); } catch (e) { /* keep as is */ }
+    if (TC.cleanCode) s = TC.cleanCode(s);
     var m = /^([a-z]+)(\/[0-9]*(-[0-9]*){0,2})?$/.exec(s);
     return m && TC.classById(m[1]) ? s : "";
   }

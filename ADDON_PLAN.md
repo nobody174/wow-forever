@@ -2,16 +2,16 @@
 
 Status: **in progress** (scoped 2026-10-01). Steps 1 (data), 2 (site export),
 3 (addon MVP, v0.1.0), 4 (updates, v0.2.0), 5 (Tidy up, Settings, Remove all,
-key bindings, v0.3.0), 6 (main window, minimap button, logo, v0.4.0) and 7
-(release zip on GitHub Releases, v0.5.0) shipped, no addon version tested in the
-game yet; see `CHANGELOG.md`.
+key bindings, v0.3.0), 6 (main window, minimap button, logo, v0.4.0), 7
+(release zip on GitHub Releases, v0.5.0) and 8 (talent export + the site's `~hash`,
+v0.6.0) shipped, no addon version tested in the game yet; see `CHANGELOG.md`.
 Target: usable before the Nov 4 launch.
 
 | | |
 |---|---|
 | Addon name | Road to Forever |
 | Folder | `addon/RoadToForever/` (in this repo) |
-| Slash commands | `/r2f` (main window), `/r2ft` (Talents), `/r2f macros`, `/r2f minimap` (show the minimap button again), `/r2f help`, `/r2f import` |
+| Slash commands | `/r2f` (main window), `/r2ft` (Talents), `/r2f macros`, `/r2f minimap` (show the minimap button again), `/r2f help`, `/r2f import`, `/r2f copybuild` (step 8, 13.6) |
 | Minimap button | yes, draggable around the minimap (section 12; our own button, no embedded libraries, 6.10) |
 | Global table | `R2F` (the only global the addon creates) |
 | SavedVariables | `R2FDB` (account), `R2FCharDB` (per character) |
@@ -1131,7 +1131,7 @@ shows under the repo's Actions tab.
 7. **Release** zip + Download link. CurseForge later. Tag prefix settled:
    `r2f-v*` (8.1).
 8. **Talent export** (read-only, no risk): Copy my build as a link. Site links get
-   the `~hash` check (section 13.3).
+   the `~hash` check (section 13.3). Done in v0.6.0; decisions in 13.6.
 9. **Talent import preview**: paste link, mini trees, summary, warnings. Nothing learned.
 10. **Talent learning**: Learn talents + confirm popup, point-by-point learning
     (or the guided fallback if `LearnTalent` is blocked).
@@ -1170,8 +1170,15 @@ shows under the repo's Actions tab.
 - [ ] `LearnTalent(tab, index)` works from our button click (else guided mode).
 - [ ] Classic has no talent preview/commit (or, if Forever adds one, use it).
 - [ ] Sorting `GetTalentInfo` by tier then column gives the same order as our
-      share links (test with the level-30 builds).
-- [ ] `GetTalentTabInfo` tab order matches `talentcalc.js` `CLASSES` order.
+      share links (test with the level-30 builds). Since step 8 this has a direct
+      test: `/r2f copybuild`'s `~hash` must equal the site's for your class
+      (TESTING.md 13); equal hashes prove names, order and tab order all match.
+- [ ] Talent tab order (`GetTalentInfo(tab, ...)` for tab 1..3) matches `talentcalc.js`
+      `CLASSES` order. Step 8 doesn't call `GetTalentTabInfo` at all (its return
+      shape differs between client versions); the hash check above covers the order.
+- [ ] `GetNumTalentTabs` / `GetNumTalents` / `GetTalentInfo` exist and return
+      `name, icon, tier, column, rank, maxRank` (Classic shape; 13.6). Talent names
+      come back in English on an English client (the hash is over names, 13.6).
 
 ---
 
@@ -1243,6 +1250,7 @@ Drag to move.                           (green)
 | `/r2f macros` | Macros tab |
 | `/r2ft` or `/r2f talents` | Talents tab |
 | `/r2f minimap` | shows the minimap button again (toggles) |
+| `/r2f copybuild` | Copy my build popup (step 8, until the Talents tab has its button, 13.6) |
 | `/r2f help` | prints the list above |
 
 ### 12.4 Main window
@@ -1375,3 +1383,90 @@ talent. Fix:
   to `UIParent`, anchored over the talent button; never modify Blizzard's
   frames) on the next talent to click, with `Click Improved Bloodrage (2 of 21)`.
   Advance on `CHARACTER_POINTS_CHANGED`.
+
+### 13.6 Decisions made while building it (step 8, v0.6.0, 2026-10-02)
+
+**The hash, exactly (13.3 left the details open).** Both sides build one string
+from the class's talent names in link order: talents in a tree joined with `,`,
+the three trees joined with `;` (Warrior: `Arms names;Fury names;Protection names`).
+Then djb2 (h = 5381; h = h * 33 + byte, wrapped to 32 bits) over the string's
+**UTF-8 bytes**, then `h mod 36^4` written in base36 (`0-9a-z`), zero-padded to 4
+characters. Why each part:
+- **Link order (tier, then column)** because that is the digit order of the link
+  itself: if the game's sorted list differs from the site's anywhere (a talent
+  missing like Crusade, renamed, moved, or the tabs in another order), digit k
+  would land on a different talent, and exactly then the hash differs.
+- **Separators** so a talent that moves from the end of one tree to the start of
+  the next (same names, same overall order) still changes the hash; a plain
+  concatenation would not see that. Talent names contain neither `,` nor `;`.
+- **UTF-8 bytes**, because WoW's Lua strings are UTF-8 bytes; JavaScript strings are
+  UTF-16, so `talentcalc.js` converts first (`unescape(encodeURIComponent(...))`).
+  Hashing UTF-16 units would give a different hash for any non-ASCII name.
+- **mod 36^4, zero-padded** (not "the first 4 base36 digits"), so the result is
+  always exactly 4 characters and neither side needs slicing rules.
+- **Names only, no ranks or icons** (13.3 as written). Max ranks are checked
+  separately in step 9 (13.3's "extra sanity checks").
+- **Implementations:** `talentcalc.js` `hashText` / `treeHash` (exported as
+  `TalentCalc.treeHash(raw, cls)`), `Talents.lua` `Talents.HashText` / `Talents.Hash`.
+  `addon/tests/run_tests.py` runs the real `talentcalc.js` in Node
+  (`addon/tests/talent_link_check.js`, a tiny fake DOM) and `Talents.lua` under Lua
+  5.1 on the same fixture (`addon/tests/talent_fixture.json`) and requires identical
+  output, plus a third Python implementation. During step 8 the same comparison also
+  ran once on Wowhead's live Forever data (all 9 classes, the hash and one link
+  each: 18/18 identical); that data isn't stored in the repo.
+
+**Link shape.** Every link we hand out is `<class>/<code>~<hash>`: always with the
+`/` and the hash, even with no points (`warrior/~<hash>`), on both sides. The code is
+the site's existing one, unchanged (per tree one digit per talent, trailing zeros
+removed; trees joined with `-`, trailing `-` removed). The addon's full link
+prefixes `https://nobody174.github.io/wow-forever-macros/talents.html#`.
+
+**Site side (`talentcalc.js`; `?v=20261002a` on talents.html and builds.html).**
+- `instance.encode()` stays the **stored** form, without hash (saved builds, Group
+  picks in `group-builds.json`): `talentsaved.js` sums a code's digits to show the
+  point split, and a hash like `~k7f2` would add its digits to the last tree.
+  New `instance.link()` = encode + hash, used by every link the site hands out:
+  **Copy link** (both modes), **Open in Talent Calc** (builds.html), the talents.html
+  **address bar** (people copy it as a link too), and the saved-builds sidebar's
+  Copy link (`TalentCalc.hashFor(cls)`, from the data the page already loaded; no
+  hash before it has loaded).
+- **Reading ignores everything from `~`** (`TalentCalc.cleanCode`): in `applyCode`
+  (so both `opts.code` and `setCode`), talents.html's `fromHash`, and the saved-builds
+  import (which stores the bare code). It was needed, not cosmetic: before step 8 the
+  reader took the hash's characters as more digits of the last tree, so a check with
+  digits could become a valid but **wrong** build (`35~111` read as `350111`).
+  Tested on both paths.
+
+**Addon side (`Talents.lua`, v0.6.0).**
+- **API used: `GetNumTalentTabs`, `GetNumTalents`, `GetTalentInfo` only**, with
+  Classic's return shape `name, iconTexture, tier, column, rank, maxRank` (tier and
+  column 1-based, `rank` = learned points). `GetTalentTabInfo` isn't needed (its
+  returns differ between client versions). Missing API or no tabs yet: chat line
+  `couldn't read your talents yet...`, no popup, no error (TESTING.md 13 checks the
+  real shape).
+- **Sort:** tier, then column, then the client's index as a tiebreak (only so
+  `table.sort`, which isn't stable, can never make two runs differ; a real tree has
+  one talent per cell).
+- **Class id** = `select(2, UnitClass("player")):lower()`, the same ids as
+  `talentcalc.js` `CLASSES`.
+- **Locale limit (for step 9).** The hash is over names, and a non-English client
+  returns translated names, so its hash never equals the site's (English, from
+  Wowhead). For export that's harmless (the site ignores the hash). **Step 9 must not
+  block imports on a non-English client** because of it: treat a mismatch there like
+  an old link (yellow "can't check" line) when `GetLocale()` isn't `enUS`/`enGB`, or
+  find a locale-free key. Recorded here so step 9 doesn't rediscover it.
+- **Why no combat check (6.4/6.9 don't apply).** Copy my build only reads talent
+  info and shows our own non-secure copy box; it never learns a talent, never writes
+  a macro, never calls a protected function. Reading `GetTalentInfo` and showing an
+  insecure frame are allowed in combat, so the `InCombatLockdown()` / `RunOrQueue`
+  pattern (made for macro writes) isn't used and the command works in combat. A
+  test checks it runs in combat with zero macro API calls. Step 10's learning
+  (`LearnTalent`) is a write and gets combat rules then (13.5).
+- **Popup = the existing copy box** (`UI.ShowCopy`, step 3), which now takes an
+  optional hint line: `Press Ctrl+C, then paste it in your browser or Discord.`
+  (13.4); without one, Copy text keeps `Press Ctrl+C to copy, then Esc.` The text is
+  selected on open and typing can't change it. No new globals.
+- **Trigger for now: `/r2f copybuild`** (in `/r2f help`, and mentioned on the
+  Talents tab placeholder). 13.4's **Copy my build** button belongs on the Talents
+  tab, built in steps 9/10: they add it (calling `R2F.Talents.CopyMyBuild()`) and
+  may keep or drop the slash command.

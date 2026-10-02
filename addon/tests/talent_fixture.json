@@ -1,0 +1,53 @@
+{
+  "_comment": "Step 8 talent fixture (ADDON_PLAN.md 13.3). 'talents' is in Wowhead's format (tree id -> talent id -> {id,row,col,icon,name,ranks,requires}), as talentcalc.js reads it. run_tests.py feeds the same data to Talents.lua through the GetTalentInfo stubs (tier = row+1, column = col+1) in a shuffled index order, and to talentcalc.js through talent_link_check.js. Synthetic and small on purpose; ids are deliberately NOT in row/col order, and 'Ünbridled Wrath' is deliberately non-ASCII (UTF-8 bytes path). Hunter's Survival tree (362) is deliberately missing (empty tree edge case). Scenario 'code' values were worked out by hand from this layout.",
+  "talents": {
+    "161": {
+      "9": {"id": 9, "row": 0, "col": 0, "icon": "ability_rogue_ambush", "name": "Improved Heroic Strike", "ranks": [1, 2, 3]},
+      "3": {"id": 3, "row": 0, "col": 1, "icon": "ability_parry", "name": "Deflection", "ranks": [1, 2, 3, 4, 5]},
+      "7": {"id": 7, "row": 0, "col": 2, "icon": "ability_gouge", "name": "Improved Rend", "ranks": [1, 2, 3]},
+      "1": {"id": 1, "row": 1, "col": 0, "icon": "ability_warrior_charge", "name": "Improved Charge", "ranks": [1, 2]},
+      "8": {"id": 8, "row": 1, "col": 1, "icon": "spell_nature_enchantarmor", "name": "Tactical Mastery", "ranks": [1, 2, 3, 4, 5]},
+      "2": {"id": 2, "row": 1, "col": 3, "icon": "ability_thunderclap", "name": "Improved Thunder Clap", "ranks": [1, 2, 3]},
+      "6": {"id": 6, "row": 2, "col": 0, "icon": "inv_sword_05", "name": "Improved Overpower", "ranks": [1, 2]},
+      "4": {"id": 4, "row": 2, "col": 1, "icon": "spell_holy_blessingofstamina", "name": "Anger Management", "ranks": [1], "requires": [{"id": 8, "qty": 5}]},
+      "5": {"id": 5, "row": 2, "col": 2, "icon": "ability_backstab", "name": "Deep Wounds", "ranks": [1, 2, 3], "requires": [{"id": 7, "qty": 3}]}
+    },
+    "164": {
+      "24": {"id": 24, "row": 1, "col": 2, "icon": "spell_nature_stoneclawtotem", "name": "Ünbridled Wrath", "ranks": [1, 2, 3, 4, 5]},
+      "21": {"id": 21, "row": 0, "col": 1, "icon": "spell_nature_purge", "name": "Booming Voice", "ranks": [1, 2, 3, 4, 5]},
+      "23": {"id": 23, "row": 1, "col": 1, "icon": "ability_warrior_warcry", "name": "Improved Demoralizing Shout", "ranks": [1, 2, 3, 4, 5]},
+      "22": {"id": 22, "row": 0, "col": 2, "icon": "ability_rogue_eviscerate", "name": "Cruelty", "ranks": [1, 2, 3, 4, 5]}
+    },
+    "163": {
+      "35": {"id": 35, "row": 2, "col": 0, "icon": "spell_magic_magearmor", "name": "Iron Will", "ranks": [1, 2, 3, 4, 5]},
+      "34": {"id": 34, "row": 1, "col": 2, "icon": "spell_holy_devotion", "name": "Toughness", "ranks": [1, 2, 3, 4, 5]},
+      "33": {"id": 33, "row": 1, "col": 1, "icon": "ability_racial_bloodrage", "name": "Improved Bloodrage", "ranks": [1, 2]},
+      "32": {"id": 32, "row": 0, "col": 1, "icon": "spell_nature_mirrorimage", "name": "Anticipation", "ranks": [1, 2, 3, 4, 5]},
+      "31": {"id": 31, "row": 0, "col": 0, "icon": "inv_shield_06", "name": "Shield Specialization", "ranks": [1, 2, 3, 4, 5]}
+    },
+    "361": {
+      "42": {"id": 42, "row": 0, "col": 2, "icon": "ability_hunter_aspectofthemonkey", "name": "Improved Aspect of the Monkey", "ranks": [1, 2, 3, 4, 5]},
+      "41": {"id": 41, "row": 0, "col": 1, "icon": "ability_hunter_aspectofthehawk", "name": "Improved Aspect of the Hawk", "ranks": [1, 2, 3, 4, 5]}
+    },
+    "363": {
+      "51": {"id": 51, "row": 0, "col": 1, "icon": "spell_frost_stun", "name": "Improved Concussive Shot", "ranks": [1, 2, 3, 4, 5]},
+      "52": {"id": 52, "row": 0, "col": 2, "icon": "spell_frost_wizardmark", "name": "Efficiency", "ranks": [1, 2, 3, 4, 5]}
+    }
+  },
+  "scenarios": [
+    {"name": "no points", "cls": "warrior", "ranks": {}, "code": ""},
+    {"name": "Arms only, trailing zeros and empty trees dropped", "cls": "warrior",
+     "ranks": {"Deflection": 5, "Improved Rend": 3, "Tactical Mastery": 2}, "code": "05302"},
+    {"name": "Protection only, leading empty trees kept", "cls": "warrior",
+     "ranks": {"Shield Specialization": 5, "Anticipation": 3, "Toughness": 4, "Iron Will": 1}, "code": "--53041"},
+    {"name": "Arms + Fury, inner zeros kept", "cls": "warrior",
+     "ranks": {"Improved Heroic Strike": 3, "Cruelty": 5, "Ünbridled Wrath": 2}, "code": "3-0502"},
+    {"name": "empty middle tree", "cls": "warrior",
+     "ranks": {"Deflection": 1, "Anticipation": 2}, "code": "01--02"},
+    {"name": "all three trees, deep talents", "cls": "warrior",
+     "ranks": {"Deflection": 5, "Tactical Mastery": 5, "Anger Management": 1, "Booming Voice": 5, "Shield Specialization": 1},
+     "code": "05005001-5-1"},
+    {"name": "hunter, missing third tree", "cls": "hunter",
+     "ranks": {"Improved Aspect of the Hawk": 4, "Efficiency": 2}, "code": "4-02"}
+  ]
+}

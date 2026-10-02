@@ -130,7 +130,12 @@ R2F.L = {
 
   -- Talents tab: placeholder until the talent steps (ADDON_PLAN 9, steps 8 to 10)
   TALENTS_TAB_LATER = "Talents are coming in a later version.\n\nYou'll paste a link from the site's talent "
-    .. "calculator here, see a preview, and learn the build with one click.",
+    .. "calculator here, see a preview, and learn the build with one click.\n\n"
+    .. "Already works: type /r2f copybuild to copy your current talents as a site link.",
+
+  -- Talent export (13.4 Copy my build, step 8)
+  TALENT_COPY_HINT = "Press Ctrl+C, then paste it in your browser or Discord.",
+  TALENT_READ_FAILED = "couldn't read your talents yet. Try again in a moment.",
 
   -- Minimap button (12.2)
   MM_LIBRARY = "%d macros in your library",
@@ -156,6 +161,7 @@ R2F.L = {
     "/r2ft or /r2f talents  the Talents tab",
     "/r2f minimap  show or hide the minimap button",
     "/r2f import  paste an import string",
+    "/r2f copybuild  copy your talents as a site link",
     "/r2f help  this list",
   },
   UNKNOWN_COMMAND = "unknown command \"%s\". Type /r2f help for the list.",

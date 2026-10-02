@@ -3,6 +3,22 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.6.0 (2026-10-02): Copy my build (ADDON_PLAN.md step 8)
+
+Not tested in the game yet; see `TESTING.md` section 13.
+
+- **`/r2f copybuild`** reads your current talents and shows them as a link to the
+  Road to Forever talent calculator, already selected: press Ctrl+C and paste it in
+  your browser or Discord. The link opens the site's calculator with your build.
+  It only reads your talents (it never learns or changes anything), so it also
+  works in combat.
+- Links end in a short check (`~` and 4 characters) made from your class's talent
+  names. The site's links now carry the same check, so the next version can warn you
+  when a link was made with different talent trees than your game has.
+- The Talents tab still has its placeholder; it now mentions `/r2f copybuild`. The
+  Talents tab's own Copy my build button comes with the talent import version.
+- `/r2f help` lists the new command.
+
 ## 0.5.0 (2026-10-02): first downloadable release (ADDON_PLAN.md step 7)
 
 No change to what the addon does in the game: same code as 0.4.0. This is the

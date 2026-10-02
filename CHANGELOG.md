@@ -4,6 +4,41 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon plan, step 8: talent export + `~hash`, Road to Forever addon v0.6.0)
+
+- **Site, `talentcalc.js`:** every talent link the site hands out now ends in a
+  4-character check, `talents.html#<class>/<code>~<hash>` (ADDON_PLAN.md 13.3):
+  djb2 over the class's talent names in link order (`,` between talents, `;`
+  between trees, UTF-8 bytes), `mod 36^4` in base36, zero-padded. New
+  `instance.link()` (Copy link in both modes, builds.html's Open in Talent Calc,
+  talents.html's address bar), `TalentCalc.treeHash` / `hashFor` / `cleanCode`.
+  `instance.encode()` and stored codes (saved builds, `group-builds.json`) stay
+  without the hash. **Readers ignore everything from `~`** (calculator, talents.html
+  hash, saved-builds import), so old and new links both open; before this a hash
+  with digits would have been read as extra ranks (`35~111` -> `350111`).
+  `talentsaved.js`: its Copy link adds the hash once the page has the data.
+  `?v=20261001b` -> `?v=20261002a` for all three files on talents.html and builds.html.
+- **Addon v0.6.0** (tag `r2f-v0.6.0`): new `Talents.lua` reads the character's
+  talents (`GetNumTalentTabs` / `GetNumTalents` / `GetTalentInfo`, sorted tier then
+  column = the link's digit order), encodes them exactly like the site, adds the same
+  hash from the game's own talent names, and shows the full site link in the copy
+  box (`/r2f copybuild` until the Talents tab gets its button in step 9/10).
+  Read-only, so it works in combat (reasoning in ADDON_PLAN.md 13.6). The copy box
+  takes a per-use hint line.
+- **Cross-checked, not hand-traced:** `addon/tests/run_tests.py` runs the real
+  `talentcalc.js` in Node (`talent_link_check.js`) and `Talents.lua` under Lua 5.1
+  on one fixture (`talent_fixture.json`: unsorted ids, a non-ASCII name, an empty
+  tree) plus a Python reference: identical hash per class and identical links for 7
+  builds, matching hand-worked codes. Also run once on Wowhead's live Forever data
+  (9 classes, hash + one link each, 18/18 identical; data not stored). Mutations of
+  either side (separators, sort, UTF-8, modulus, zero/dash stripping, the `~` rule)
+  each fail the suite. `run_tests.py` 5837 checks pass (was 5655; +166 talent
+  checks on the template and fallback paths, +16 "TOC file exists" checks for the
+  new file), luacheck 0 warnings; a Playwright run of talents.html /
+  builds.html confirmed the hashed links, the `~` rule, the saved-builds import and
+  the new `?v=`. Decisions in `ADDON_PLAN.md` 13.6 (incl. a locale caveat for step 9);
+  in-game checks in `addon/RoadToForever/TESTING.md` 13.
+
 ## 2026-10-02 (Addon plan, step 7: release pipeline, Road to Forever addon v0.5.0)
 
 - **Release workflow** `.github/workflows/release.yml`: pushing an `r2f-v*` tag

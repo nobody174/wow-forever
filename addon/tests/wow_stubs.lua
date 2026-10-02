@@ -120,10 +120,24 @@ function GetActionText(slot)
   if name and GetMacroIndexByName(name) > 0 then return name end
 end
 
+-- Talents (step 8). T.talentTabs[tab] = list of { name, tier, column, rank,
+-- maxRank } in the client's OWN index order (deliberately not tier/column
+-- order in the tests, since the real GetTalentInfo order isn't guaranteed).
+-- Classic's GetTalentInfo returns name, iconTexture, tier, column, rank,
+-- maxRank, isExceptional, available (tier/column 1-based).
+T.talentTabs = {}
+function GetNumTalentTabs() return #T.talentTabs end
+function GetNumTalents(tab) local t = T.talentTabs[tab]; return t and #t or 0 end
+function GetTalentInfo(tab, i)
+  local x = T.talentTabs[tab] and T.talentTabs[tab][i]
+  if not x then return nil end
+  return x.name, "Interface\\Icons\\INV_Misc_QuestionMark", x.tier, x.column, x.rank or 0, x.maxRank, false, true
+end
+
 function InCombatLockdown() return T.combat end
 function GetSpellTexture(name) return T.knownSpells[name] end
 function GetItemInfo() return nil end
-function UnitClass() return "Warrior", "WARRIOR", 1 end
+function UnitClass() return T.className or "Warrior", T.classToken or "WARRIOR", 1 end
 function IsShiftKeyDown() return T.shift or false end
 function GetCursorPosition() return T.cursorX or 500, T.cursorY or 400 end
 function UnitCharacterPoints() return T.talentPoints or 0 end

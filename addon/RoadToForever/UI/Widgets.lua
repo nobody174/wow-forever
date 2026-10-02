@@ -378,12 +378,15 @@ function UI.ContextMenu(items)
 end
 
 -- ---------------------------------------------------------------------------
--- Copy box (right-click > Copy text)
+-- Copy box (right-click > Copy text; /r2f copybuild, step 8)
 -- ---------------------------------------------------------------------------
 
 local copyBox
 
-function UI.ShowCopy(text)
+-- hint = the line above the box; default "Press Ctrl+C to copy, then Esc."
+-- Copy my build passes its own (13.4: "Press Ctrl+C, then paste it in your
+-- browser or Discord.").
+function UI.ShowCopy(text, hint)
   if not copyBox then
     local f = UI.DialogFrame("R2FCopy", UIParent)
     f:SetSize(420, 220)
@@ -393,9 +396,8 @@ function UI.ShowCopy(text)
     f:EnableMouse(true)
     f:Hide()
     closeOnEsc("R2FCopy")
-    local hint = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    hint:SetPoint("TOP", 0, -18)
-    hint:SetText(R2F.L.COPY_HINT)
+    f.hint = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    f.hint:SetPoint("TOP", 0, -18)
     local scroll, edit = UI.MultiLineEdit(f, "R2FCopyScroll", 350, 130)
     scroll:SetPoint("TOPLEFT", 24, -44)
     edit:SetScript("OnEscapePressed", function() f:Hide() end)
@@ -408,6 +410,7 @@ function UI.ShowCopy(text)
     f.edit = edit
     copyBox = f
   end
+  copyBox.hint:SetText(hint or R2F.L.COPY_HINT)
   copyBox.text = text
   copyBox.edit:SetText(text)
   copyBox:Show()

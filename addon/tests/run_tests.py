@@ -1397,6 +1397,166 @@ def test_media():
     check(not os.path.exists(os.path.join(ADDON, "libs")), "no libs folder shipped (6.10: nothing vendored)")
 
 
+TALENT_FIXTURE = os.path.join(HERE, "talent_fixture.json")
+SITE_TALENTS = "https://nobody174.github.io/wow-forever-macros/talents.html#"
+
+
+def ref_talent_hash(text):
+    """Third, independent implementation of the 13.3 hash (Python), on UTF-8 bytes."""
+    h = 5381
+    for b in text.encode("utf-8"):
+        h = (h * 33 + b) % 2**32
+    v, out = h % 36**4, ""
+    for _ in range(4):
+        out = "0123456789abcdefghijklmnopqrstuvwxyz"[v % 36] + out
+        v //= 36
+    return out
+
+
+def talent_js(fixture_path=TALENT_FIXTURE):
+    """Run the real talentcalc.js (Node) on a talent fixture."""
+    out = subprocess.run(["node", os.path.join(HERE, "talent_link_check.js"), fixture_path],
+                         capture_output=True, check=True, cwd=ROOT)
+    return json.loads(out.stdout.decode("utf-8"))
+
+
+def set_game_talents(lua, raw, tree_ids, ranks, order="name"):
+    """Fill the GetTalentInfo stubs from Wowhead-format data: one tab per tree id,
+    talents in a client order that is NOT row/col (by name, or reversed)."""
+    lua.execute("TEST.talentTabs = {}")
+    add = lua.eval("function(t, n, tier, col, rank, mx) TEST.talentTabs[t] = TEST.talentTabs[t] or {}"
+                   " table.insert(TEST.talentTabs[t], { name = n, tier = tier, column = col, rank = rank, maxRank = mx }) end")
+    for t, tid in enumerate(tree_ids, start=1):
+        lua.execute("TEST.talentTabs[%d] = {}" % t)
+        talents = list((raw.get(str(tid)) or {}).values())
+        talents.sort(key=lambda x: x["name"], reverse=(order == "reverse"))
+        for x in talents:
+            add(t, x["name"], x["row"] + 1, x["col"] + 1, ranks.get(x["name"], 0), len(x["ranks"]))
+
+
+def test_talents(templates):
+    """Step 8: Talents.lua (read, encode, ~hash, Copy my build) cross-checked
+    against the real talentcalc.js on the same fixture (ADDON_PLAN 13.3)."""
+    tag = "templates" if templates else "fallbacks"
+    fxt = json.load(open(TALENT_FIXTURE, encoding="utf-8"))
+    raw = fxt["talents"]
+    js = talent_js()
+    lua = new_runtime(templates)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    TL = lua.eval("R2F.Talents")
+    read = lua.eval("function() return R2F.Talents.ReadTrees() end")
+
+    # ---- The hash: Lua == JS == Python, per class, on the same names -----------
+    check(TL.HashText("") == ref_talent_hash("") == "045h", "%s: hash of '' = 5381 -> '045h'" % tag)
+    for s in ("Deflection", "Ünbridled Wrath", "a,b;c", "x" * 300):
+        check(TL.HashText(s) == ref_talent_hash(s), "%s: Lua HashText == Python reference for %r" % (tag, s[:20]))
+    # A class with no data at all (Paladin isn't in the fixture): the site hashes
+    # ";;"; the addon never makes a link from that (no talents -> can't read).
+    check(TL.HashText(";;") == js["hashes"]["paladin"], "%s: empty-class hash agrees (';;')" % tag)
+    for cls in ("warrior", "hunter"):
+        set_game_talents(lua, raw, js["classes"][cls], {})
+        lua_hash = TL.Hash(read())
+        names = ";".join(",".join(x["name"] for x in sorted((raw.get(str(tid)) or {}).values(),
+                                                             key=lambda x: (x["row"], x["col"])))
+                         for tid in js["classes"][cls])
+        check(lua_hash == js["hashes"][cls] == ref_talent_hash(names),
+              "%s: %s ~hash identical in Talents.lua (%s), talentcalc.js (%s) and Python (%s)"
+              % (tag, cls, lua_hash, js["hashes"][cls], ref_talent_hash(names)))
+    # Client index order must not matter (the sort is what makes it link order).
+    set_game_talents(lua, raw, js["classes"]["warrior"], {}, order="reverse")
+    check(TL.Hash(read()) == js["hashes"]["warrior"], "%s: hash independent of GetTalentInfo index order" % tag)
+
+    # ---- Reading: sorted by tier, then column -----------------------------------
+    set_game_talents(lua, raw, js["classes"]["warrior"], {"Deflection": 5})
+    trees = read()
+    arms = [trees[1][i].name for i in range(1, len(trees[1]) + 1)]
+    want = [x["name"] for x in sorted(raw["161"].values(), key=lambda x: (x["row"], x["col"]))]
+    check(arms == want, "%s: ReadTrees sorts by tier then column: %s" % (tag, arms))
+    check(len(trees) == 3 and trees[1][2].rank == 5 and trees[1][2].maxRank == 5, "%s: ranks and max ranks read" % tag)
+
+    # ---- Encoder + full link, every scenario: hand-made == JS == Lua ------------
+    for sc, jsc in zip(fxt["scenarios"], js["scenarios"]):
+        lua.execute("TEST.classToken = %r" % sc["cls"].upper())
+        set_game_talents(lua, raw, js["classes"][sc["cls"]], sc["ranks"])
+        trees = read()
+        code = TL.Encode(trees)
+        body = TL.LinkBody(TL.ClassId(), trees)
+        want_body = "%s/%s~%s" % (sc["cls"], sc["code"], js["hashes"][sc["cls"]])
+        check(jsc["total"] == jsc["points"], "%s: %s: fixture build is valid on the site" % (tag, sc["name"]))
+        check(code == sc["code"], "%s: %s: Lua code %r == hand-worked %r" % (tag, sc["name"], code, sc["code"]))
+        check(body == jsc["link"] == want_body, "%s: %s: Lua link %r == talentcalc.js link %r" % (tag, sc["name"], body, jsc["link"]))
+        check(jsc["reread"] == jsc["rereadBare"] == jsc["rereadSetCode"] == jsc["encode"],
+              "%s: %s: site reads the link with and without ~hash to the same build" % (tag, sc["name"]))
+        check(TL.MyBuildLink() == SITE_TALENTS + body, "%s: %s: full link = site URL + body" % (tag, sc["name"]))
+    lua.execute("TEST.classToken = nil")
+    check(TL.SITE_URL == SITE_TALENTS, "%s: SITE_URL" % tag)
+    check(js["clean"] == {"05302": "05302", "05302~abcd": "05302", "--53041~0000": "--53041", "~abcd": "",
+                          "": "", "3-0502~": "3-0502", "a~b~c": "a"}, "%s: cleanCode drops everything from ~" % tag)
+    want_read = {"35~111": "warrior/35", "35~111-5": "warrior/35", "--53041~1z9k": "warrior/--53041", "3-0502~00": "warrior/3-0502"}
+    for k, v in want_read.items():
+        check(js["readHashed"][k] == [v, v], "%s: site reads %r as %r (got %s)" % (tag, k, v, js["readHashed"][k]))
+    check(js["hashForBefore"] == "" and js["hashForAfterMount"] == js["hashes"]["warrior"]
+          and js["hashForUnknownClass"] == "", "%s: hashFor only once data is loaded" % tag)
+
+    # ---- The hash catches what it's for -------------------------------------------
+    base = js["hashes"]["warrior"]
+    def variant(mutate):
+        r = json.loads(json.dumps(raw))
+        mutate(r)
+        set_game_talents(lua, r, js["classes"]["warrior"], {})
+        return TL.Hash(read())
+    check(variant(lambda r: r["161"]["3"].update(name="Deflectio")) != base, "%s: renamed talent -> different hash" % tag)
+    check(variant(lambda r: r["163"].pop("33")) != base, "%s: missing talent (like Crusade) -> different hash" % tag)
+    check(variant(lambda r: (r["161"]["9"].update(col=2), r["161"]["7"].update(col=0))) != base,
+          "%s: two talents swapped -> different hash" % tag)
+    set_game_talents(lua, raw, [163, 164, 161], {})
+    check(TL.Hash(read()) != base, "%s: tabs in another order -> different hash" % tag)
+    r2 = json.loads(json.dumps(raw))
+    r2["163"]["33"]["row"] = 3   # Improved Bloodrage moves below Iron Will: same names, new link order
+    set_game_talents(lua, r2, js["classes"]["warrior"], {})
+    check(TL.Hash(read()) != base, "%s: talent moved to another tier -> different hash" % tag)
+
+    # ---- Copy my build: /r2f copybuild, popup with the link selected ------------
+    set_game_talents(lua, raw, js["classes"]["warrior"], fxt["scenarios"][1]["ranks"])
+    link = SITE_TALENTS + "warrior/%s~%s" % (fxt["scenarios"][1]["code"], base)
+    T.calls = lua.table()
+    lua.execute("SlashCmdList.R2F('copybuild')")
+    check(lua.eval("R2FCopy ~= nil and R2FCopy:IsShown()") is True, "%s: /r2f copybuild opens the copy box" % tag)
+    check(lua.eval("R2FCopy.edit:GetText()") == link, "%s: copy box holds the link: %r" % (tag, lua.eval("R2FCopy.edit:GetText()")))
+    check(lua.eval("R2FCopy.hint.__text") == lua.eval("R2F.L.TALENT_COPY_HINT")
+          == "Press Ctrl+C, then paste it in your browser or Discord.", "%s: copy hint per 13.4" % tag)
+    # Typing into the box puts the link back (the copy box's own rule).
+    lua.execute("R2FCopy.edit.__text = 'x' R2FCopy.edit.__scripts.OnTextChanged(R2FCopy.edit, true)")
+    check(lua.eval("R2FCopy.edit:GetText()") == link, "%s: typing can't change the link" % tag)
+    # Read-only: works in combat, no macro or talent writes at all.
+    lua.execute("R2FCopy:Hide()")
+    T.combat = True
+    T.fire("PLAYER_REGEN_DISABLED")
+    got = lua.eval("R2F.Talents.CopyMyBuild()")
+    check(got == link and lua.eval("R2FCopy:IsShown()") is True, "%s: Copy my build works in combat (read-only)" % tag)
+    check(len(lua_table_to_list(T.calls)) == 0, "%s: Copy my build makes no macro API calls" % tag)
+    T.combat = False
+    T.fire("PLAYER_REGEN_ENABLED")
+    # The macro book's Copy text still gets its own hint afterwards.
+    lua.execute("R2F.UI.ShowCopy('/cast x')")
+    check(lua.eval("R2FCopy.hint.__text") == lua.eval("R2F.L.COPY_HINT"), "%s: default copy hint restored for Copy text" % tag)
+    lua.execute("R2FCopy:Hide()")
+    # No talent data yet / no talent API: a chat line, no popup, no error.
+    lua.execute("TEST.talentTabs = {} TEST.chat = {}")
+    check(lua.eval("R2F.Talents.CopyMyBuild()") is None and lua.eval("R2FCopy:IsShown()") is False
+          and any(lua.eval("R2F.L.TALENT_READ_FAILED") in c for c in chat_lines(lua)),
+          "%s: no talent tabs -> chat line, no popup" % tag)
+    lua.execute("TEST.talentTabs = { {}, {}, {} }")
+    check(lua.eval("R2F.Talents.CopyMyBuild()") is None and lua.eval("R2FCopy:IsShown()") is False,
+          "%s: tabs without talents (data not loaded) -> no link" % tag)
+    lua.execute("GetTalentInfo = nil")
+    check(lua.eval("R2F.Talents.CopyMyBuild()") is None, "%s: no talent API -> nil, no error" % tag)
+    help_lines = lua_table_to_list(lua.eval("R2F.L.HELP_LINES"))
+    check(any(h.startswith("/r2f copybuild") for h in help_lines), "%s: help lists /r2f copybuild" % tag)
+
+
 def main():
     fx = fixtures()
     lua = new_runtime()
@@ -1417,6 +1577,8 @@ def main():
     test_step6_ui(False, fx)
     test_minimap_libdbicon(fx)
     test_media()
+    test_talents(True)
+    test_talents(False)
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
 

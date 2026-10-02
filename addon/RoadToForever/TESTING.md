@@ -1,4 +1,4 @@
-# Road to Forever: in-game test checklist (v0.5.0, addon steps 3 to 7)
+# Road to Forever: in-game test checklist (v0.6.0, addon steps 3 to 8)
 
 Since v0.4.0 the Macro Book is the **Macros tab** of the main window: wherever an
 older section below says "`/r2f` opens the Macro Book" or "open the book", use
@@ -314,7 +314,7 @@ checkable here.
       says `own`. A minimap-button collector addon picks the button up in either
       case or at least in `libdbicon` mode; note which.
 - [ ] **Slash commands:** `/r2f macros`, `/r2f talents`, `/r2ft`, `/r2f import`,
-      `/r2f help` (prints 7 lines), `/r2f nonsense` (prints `unknown command`).
+      `/r2f help` (prints 8 lines since v0.6.0), `/r2f nonsense` (prints `unknown command`).
 - [ ] `/console taintLog 1`, use the window, tabs, minimap drag and menu (also in
       combat: open/close the window, open the menu), `/reload`, check
       `Logs\taint.log`. **Pass:** no entries blaming RoadToForever.
@@ -344,9 +344,50 @@ new release once:
       `RoadToForever\RoadToForever\` or `addon\RoadToForever\`), and the AddOns list
       on the character screen shows Road to Forever.
 
-## Known gaps in v0.5.0 (by design, later steps)
+## 13. Copy my build and the `~hash` (v0.6.0, step 8)
 
-- The Talents tab and the Home Talents entry are placeholders (steps 8 to 10).
+Out of the game, `run_tests.py` runs `Talents.lua` (Lua 5.1, fake `GetTalentInfo`)
+and the site's real `talentcalc.js` (Node) on the same talent fixture and requires
+the same `~hash` and the same link for 7 builds; it also covers the sort, the
+encoder, the copy box, combat and a missing talent API. During step 8 the hash and
+one link per class also matched on Wowhead's live Forever data for all 9 classes.
+What only the game can show is whether the **game's** talent data agrees with the
+site's (ADDON_PLAN 11, 13.6):
+
+- [ ] **API shape.** `/dump GetNumTalentTabs(), GetNumTalents(1)` then
+      `/dump GetTalentInfo(1, 1)`. **Pass:** 3 tabs; GetTalentInfo returns a name, an
+      icon, then tier and column (small numbers from 1), then your rank and the max
+      rank. If the order of those returns differs, `Talents.ReadTrees` needs the new
+      positions: note the exact `/dump` output in ADDON_PLAN 13.6.
+- [ ] **Copy my build.** Spend a few talent points (or use a character that has
+      some). `/r2f copybuild`. **Pass:** a small box with the hint
+      `Press Ctrl+C, then paste it in your browser or Discord.` and a link like
+      `https://nobody174.github.io/wow-forever-macros/talents.html#warrior/05302~xxxx`,
+      already selected. Ctrl+C, paste it into a browser. **Pass:** the site's talent
+      calculator opens on your class with **exactly the talents you have in the game**
+      (same talents, same ranks, same trees). If points sit on different talents, the
+      tier/column sort or the tab order differs from the site's (ADDON_PLAN 11).
+- [ ] **The hash matches the site (the key check).** On the site, set the same build
+      by hand (or just open the pasted link and click one talent on and off), click
+      **Copy link**. **Pass:** the 4 characters after `~` are the same as in the
+      addon's link. Different = the game's talent names/order differ from Wowhead's
+      Forever data (a missing or renamed talent, like Paladin's Crusade): note the
+      class, and expect step 9 to refuse imports for that class until the site's data
+      matches. Repeat for every class you can log in with (each class has its own
+      hash). A non-English client always differs (names are translated; ADDON_PLAN
+      13.6), so do this check on an English client.
+- [ ] With **no talent points** spent: `/r2f copybuild` gives `...#warrior/~xxxx` and
+      the site opens an empty Warrior calculator.
+- [ ] **Combat.** `/r2f copybuild` in combat. **Pass:** the box opens, no
+      "action blocked", no Lua error (it only reads).
+- [ ] Right-click > Copy text in the Macro Book afterwards still shows its own hint
+      (`Press Ctrl+C to copy, then Esc.`).
+
+## Known gaps in v0.6.0 (by design, later steps)
+
+- The Talents tab and the Home Talents entry are placeholders (steps 9 and 10).
+  Copy my build exists only as `/r2f copybuild` until the Talents tab gets its
+  button (ADDON_PLAN 13.6).
 - The window has a fixed size (ADDON_PLAN 6.10); only position and tab are saved.
 - No embedded libraries: without another addon that loads LibDBIcon, the minimap
   button is our own, which some minimap-button collector addons may not pick up

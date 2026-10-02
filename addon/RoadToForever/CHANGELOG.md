@@ -3,6 +3,21 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.10.2 (2026-10-02): version/author footer on the Home tab (ADDON_PLAN.md 12.4.2)
+
+**Requested from real in-game testing, 2026-10-02** — there was no way to see
+the addon's version or who made it without opening the TOC file.
+
+- A quiet line at the bottom of the Home tab reads the TOC's own `## Version:`
+  / `## Author:` fields through `GetAddOnMetadata` (tries `C_AddOns` first,
+  falls back to the bare global, never a second hardcoded copy that could
+  drift out of sync): `Road to Forever v0.10.2 · by nobody174 ·
+  nobody174.github.io/wow-forever`.
+- If neither metadata API exists on this client, shows a plain line with no
+  version instead of erroring.
+- Hovering it shows the TOC's `## Notes:` text as a one-line "what is this."
+- Full suite re-run: 8688 checks, 0 failed.
+
 ## 0.10.1 (2026-10-02): fix — character macro slot limit was wrong
 
 Reported from real in-game testing: the Macro Book's Character counter should

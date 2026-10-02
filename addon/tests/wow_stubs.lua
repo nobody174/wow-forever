@@ -27,6 +27,16 @@ T.templates = { PortraitFrameTemplate = true, InputScrollFrameTemplate = true,
                 CharacterFrameTabButtonTemplate = true,
                 -- Step 9: the Talents tab's link box.
                 InputBoxTemplate = true }
+
+-- Home footer (12.4.2): real client TOC metadata. Both the modern (C_AddOns)
+-- and legacy (global function) APIs are wired on by default, same as the
+-- templates table; a test clears one or both afterward (C_AddOns = nil,
+-- GetAddOnMetadata = nil) the same way it clears a template to reach the
+-- "neither API exists" fallback path.
+T.metadata = { Version = "0.10.1", Author = "nobody174" }
+C_AddOns = { GetAddOnMetadata = function(_, field) return T.metadata[field] end }
+function GetAddOnMetadata(_, field) return T.metadata[field] end
+
 T.calls = {}          -- log of macro API writes
 
 -- ---------------------------------------------------------------------------

@@ -1622,6 +1622,45 @@ regardless, pattern match, toggle direction, read-back, numeric compare, pcall,
 `C_CVar` fallback, book filter, empty tab, note, live read, combat greying,
 `CVAR_UPDATE`) each fail the suite.
 
+### 12.4.2 Version/author footer (v0.10.1, 2026-10-02)
+
+**Why.** Real in-game testing: no way to see the addon's version, who made it, or
+where it came from short of opening the TOC file by hand.
+
+**Where it lives.** One line at the very bottom of the Home tab (`UI/Home.lua`,
+`buildFooter`), below Quick settings, `GameFontDisableSmall` (the same quiet style
+`Settings.lua`'s slot-order note already uses) so it doesn't compete with the real
+content above it. Built once with the page, like every other Home widget — it isn't
+re-read on every tab open, since the version/author genuinely can't change mid-session.
+
+**Source of truth.** Reads the TOC's own `## Version:` / `## Author:` fields through
+`GetAddOnMetadata`/`C_AddOns.GetAddOnMetadata`, never a second hardcoded string, so the
+footer can't quietly drift out of sync with the TOC the way two independent copies of
+the same fact eventually do.
+
+**API existence check.** Same pattern as every other client-API uncertainty in this
+project (section 11): the metadata function moved from a bare global to `C_AddOns` at
+some point, and this project has already found this exact client leaves some legacy
+globals undefined (`GetBuildInfo()`'s 4th return value, `MAX_CHARACTER_MACROS`). Tries
+`C_AddOns.GetAddOnMetadata` first, falls back to the bare global, and if neither exists
+(or the call itself errors — wrapped in `pcall`) shows a plain line with no version
+number rather than erroring or showing a blank. Not an error state: just an older/odd
+API surface, same stance as the rest of this addon's defensive checks.
+
+**Content:** `Road to Forever v<version> · by <author> · nobody174.github.io/wow-forever`
+when both fields are readable; `Road to Forever · nobody174.github.io/wow-forever` with
+no version/author shown otherwise. Hovering the line shows the TOC's own `## Notes:`
+text (held as its own locale string rather than re-read live, matching how every other
+tooltip in this addon is built) as a one-line "what is this and why" — the same text
+already seen in the AddOns list, so the in-game and TOC descriptions can't contradict
+each other either.
+
+**Tested:** real version/author shown when either metadata API exists; the "neither
+exists" fallback line (no version, no error) via `C_AddOns = nil, GetAddOnMetadata =
+nil`; the legacy-only path (`C_AddOns = nil`, bare global only) still reads real values;
+hover shows and clears the tooltip; no new globals (the hit-frame marker is a table
+field, not a global). Both the template and Blizzard-template-less fallback UI paths.
+
 ---
 
 ## 13. Talent import / export

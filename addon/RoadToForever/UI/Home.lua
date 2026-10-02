@@ -7,6 +7,12 @@
 -- the existing Import window) and one line on how to get an import string.
 -- Under that, Quick settings (12.4.1, step "Quick settings", v0.9.0): three
 -- check boxes that change game settings with SetCVar (QuickSettings.lua).
+-- At the very bottom, a version/author footer (12.4.2, added 2026-10-02 from
+-- real in-game feedback: there was no in-game way to see the addon's version
+-- or who made it short of opening the TOC file). Reads the TOC's own
+-- ## Version / ## Author fields through GetAddOnMetadata so the footer can
+-- never drift out of sync with the TOC the way a second hardcoded string
+-- would.
 --
 -- Built into the page frame MainWindow hands it, like MacroBook.
 
@@ -160,9 +166,49 @@ local function build(f)
   return f
 end
 
+-- Reads the TOC's own ## Version / ## Author so the footer can't drift out of
+-- sync with a second hardcoded copy. The metadata API moved from a global
+-- function to C_AddOns sometime between Classic eras (same kind of API churn
+-- already found with GetBuildInfo()'s return count, section 11), so try both
+-- and fall back to a plain "no version info" line rather than erroring if
+-- this client has neither.
+local function addonMetadata(field)
+  local fn = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
+  if not fn then return nil end
+  local ok, value = pcall(fn, "RoadToForever", field)
+  if ok then return value end
+  return nil
+end
+
+local function buildFooter(f)
+  local version, author = addonMetadata("Version"), addonMetadata("Author")
+  ui.footer = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+  ui.footer:SetPoint("BOTTOMLEFT", 52, 14)
+  ui.footer:SetWidth(440)
+  ui.footer:SetJustifyH("LEFT")
+  if version and author then
+    ui.footer:SetText(L.HOME_FOOTER:format(version, author))
+  else
+    -- Missing metadata isn't a sign of anything broken (just an older/odd
+    -- API surface), so this stays a plain line, not an error state.
+    ui.footer:SetText(L.HOME_FOOTER_FALLBACK)
+  end
+  local hit = CreateFrame("Frame", nil, f)
+  hit.r2fFooterHit = true  -- marks this frame for the test harness (find_frames)
+  hit:SetAllPoints(ui.footer)
+  hit:SetScript("OnEnter", function()
+    GameTooltip:SetOwner(hit, "ANCHOR_TOP")
+    GameTooltip:AddLine(L.HOME_FOOTER_TIP, nil, nil, nil, true)
+    GameTooltip:Show()
+  end)
+  hit:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  ui.footerHit = hit
+end
+
 -- Called once by MainWindow with the Home page frame.
 function Home.Build(f)
   page = build(f)
+  buildFooter(f)
   return page
 end
 

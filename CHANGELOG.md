@@ -4,6 +4,16 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon v0.10.2: version/author footer on the Home tab)
+
+Requested from real in-game testing: no way to see the addon's version or who
+made it without opening the TOC file. Added a quiet line at the bottom of the
+Home tab that reads the TOC's own `## Version:`/`## Author:` fields through
+`GetAddOnMetadata` (`C_AddOns` first, bare global fallback, plain no-version
+line if neither exists — never a second hardcoded copy). Hovering it shows the
+TOC's `## Notes:` text. See `ADDON_PLAN.md` 12.4.2. Full suite re-run: 8688
+checks, 0 failed. Tag `r2f-v0.10.2`.
+
 ## 2026-10-02 (Addon v0.10.1: fix the per-character macro slot limit — 18 to 30)
 
 Reported from real in-game testing: the Macro Book's Character counter should

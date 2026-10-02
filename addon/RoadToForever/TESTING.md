@@ -652,6 +652,22 @@ imported, then import another class's macros (e.g. Warrior) on the same characte
       used in combat.` (`SetMotionScriptsWhileDisabled`, unverified in this client: if
       no tooltip shows while greyed, note it).
 
+## 18. Version/author footer (v0.10.2)
+
+- [ ] **Home tab, bottom.** Open `/r2f` on the Home tab. **Pass:** a quiet grey line
+      below Quick settings reads `Road to Forever v0.10.2 · by nobody174 ·
+      nobody174.github.io/wow-forever`. Confirm the version matches the AddOns list's.
+- [ ] **Hover the line.** **Pass:** a tooltip shows "Import macros and talent builds
+      from the Road to Forever site." (the TOC's own `## Notes:` text).
+- [ ] **Fits without overlap.** Check the line doesn't run into Quick settings above it
+      or get clipped at the window's bottom edge — this was only measured against the
+      fixed 540x500 window size, never seen on a real screen.
+- [ ] **If the version is missing** (reads just "Road to Forever · nobody174.github.io
+      /wow-forever" with no `v...`): this client has neither `C_AddOns.GetAddOnMetadata`
+      nor the bare global `GetAddOnMetadata`. Not a bug by itself, but note it — every
+      other "confirm in beta" item in this file that depends on checking the AddOns list
+      instead of in-game `/dump`s may be affected by the same gap.
+
 ## Known gaps in v0.10.0 (by design / later)
 
 - **No bulk Remove from library** (ADDON_PLAN 5.10): removing a whole imported-by-mistake

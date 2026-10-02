@@ -150,6 +150,11 @@ R2F.L = {
   HOME_IMPORT_HINT = "Pick macros on the Macros page of the Road to Forever site, click Copy import string, "
     .. "then click Import macros and paste it.",
 
+  -- Version/author footer at the bottom of Home (12.4.2). %s/%s = version, author.
+  HOME_FOOTER = "Road to Forever v%s \194\183 by %s \194\183 nobody174.github.io/wow-forever",
+  HOME_FOOTER_FALLBACK = "Road to Forever \194\183 nobody174.github.io/wow-forever",
+  HOME_FOOTER_TIP = "Import macros and talent builds from the Road to Forever site.",
+
   -- Quick settings on the Home tab (12.4.1): game settings via SetCVar, no macro
   QS_TITLE = "Quick settings",
   QS_NOTE = "These change your game settings directly. No macro or macro slot needed.",

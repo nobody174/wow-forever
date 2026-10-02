@@ -1288,6 +1288,42 @@ def test_step6_ui(templates, fx):
     lua.execute("R2F.MainWindow.SelectTab('home') HOME[2]:Click()")
     check(MW.CurrentTab() == "talents", "clicking the Talents entry switches to the Talents tab")
 
+    # ---- Home footer: version/author (12.4.2) ----------------------------------
+    # The footer is built once with the page (same as every other Home widget),
+    # so each metadata scenario needs its own fresh runtime, not a hide/show
+    # cycle on this one. Matched by r2fFooterHit, not by text, since the window
+    # title ("Road to Forever") would otherwise also match a loose text pattern.
+    lua.execute("R2F.MainWindow.SelectTab('home')")
+    find_frames(lua, "f.r2fFooterHit", "FOOTERHIT")
+    check(lua.eval("#FOOTERHIT") == 1, "%s: footer has exactly one hover hit-frame" % tag)
+    find_frames(lua, "f.__kind == 'FontString' and f.__text and f.__text:find('github.io/wow%-forever')", "FOOTER")
+    check(lua.eval("#FOOTER") == 1 and lua.eval("FOOTER[1].__text") ==
+          "Road to Forever v0.10.1 · by nobody174 · nobody174.github.io/wow-forever",
+          "%s: footer reads the TOC's real version/author: %r" % (tag, lua.eval("FOOTER[1].__text")))
+    lua.execute("FOOTERHIT[1]:Fire('OnEnter')")
+    lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(lines == [lua.eval("R2F.L.HOME_FOOTER_TIP")],
+          "%s: hovering the footer shows the why-it-exists tooltip: %r" % (tag, lines))
+    lua.execute("FOOTERHIT[1]:Fire('OnLeave')")
+    check(lua.eval("GameTooltip:IsShown()") is False, "%s: leaving the footer hides the tooltip" % tag)
+
+    # Neither metadata API exists on this client -> plain fallback line, no error.
+    lua2 = new_runtime(templates)
+    lua2.execute("C_AddOns = nil GetAddOnMetadata = nil")
+    lua2.execute("TEST.fire('ADDON_LOADED', 'RoadToForever') TEST.fire('PLAYER_LOGIN') R2F.MainWindow.Show('home')")
+    find_frames(lua2, "f.__kind == 'FontString' and f.__text and f.__text:find('github.io/wow%-forever')", "FOOTER2")
+    check(lua2.eval("FOOTER2[1].__text") == "Road to Forever · nobody174.github.io/wow-forever",
+          "%s: no metadata API -> plain fallback line, not an error: %r" % (tag, lua2.eval("FOOTER2[1].__text")))
+
+    # Only the legacy global exists (an older client) -> still reads the real values.
+    lua3 = new_runtime(templates)
+    lua3.execute("C_AddOns = nil")
+    lua3.execute("TEST.fire('ADDON_LOADED', 'RoadToForever') TEST.fire('PLAYER_LOGIN') R2F.MainWindow.Show('home')")
+    find_frames(lua3, "f.__kind == 'FontString' and f.__text and f.__text:find('github.io/wow%-forever')", "FOOTER3")
+    check(lua3.eval("FOOTER3[1].__text") ==
+          "Road to Forever v0.10.1 · by nobody174 · nobody174.github.io/wow-forever",
+          "%s: legacy-only GetAddOnMetadata still reads the real values: %r" % (tag, lua3.eval("FOOTER3[1].__text")))
+
     # ---- Macro Book reparented: refresh, tabs, drag, tooltip, paging, menu ------
     lua.execute("R2F.MainWindow.SelectTab('home') R2F.MacroBook.Refresh()")
     find_frames(lua, "f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton", "SLOTS")
@@ -2618,7 +2654,7 @@ def test_talent_source_writes():
           "glow/host are unnamed frames on UIParent; Blizzard frames only looked up")
     toc = open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read()
     check("UI\\TalentPanel.lua" in toc and "UI\\TalentGuide.lua" in toc, "TalentPanel.lua and TalentGuide.lua in the TOC")
-    check(re.search(r"^## Version: 0\.10\.1$", toc, re.M) is not None, "TOC version 0.10.1")
+    check(re.search(r"^## Version: 0\.10\.2$", toc, re.M) is not None, "TOC version 0.10.2")
 
 
 def test_quick_settings(templates, fx):

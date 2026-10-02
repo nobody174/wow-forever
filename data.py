@@ -18,6 +18,9 @@
 # for anything that actually /cast's a spell) following the user's style rules:
 #   dps      -> TT-aware DPS (Priest only): /cast [@targettarget, harm, exists][harm] SPELL
 #   dpsHarm  -> plain harm-target DPS (every other class): /cast [harm] SPELL
+#   dpsMO    -> mouseover-harm w/ target fallback: /cast [@mouseover, harm, exists][harm] SPELL
+#              (hit whatever's under your mouse without changing your actual
+#              target; falls back to your target if nothing's under the mouse)
 #   heal     -> mouseover heal w/ self fallback: /cast [@mouseover, help, exists][help][@player] SPELL
 #   util     -> friend-or-foe w/ self fallback:  /cast [@mouseover, exists][exists][@player] SPELL
 #   buff     -> buff w/ self fallback: /cast [@mouseover, help, exists][help][@player] SPELL
@@ -36,6 +39,9 @@ def dps(spell):
 
 def dpsHarm(spell):
     return f"#showtooltip {spell}\n/cast [harm] {spell}"
+
+def dpsMO(spell):
+    return f"#showtooltip {spell}\n/cast [@mouseover, harm, exists][harm] {spell}"
 
 def heal(spell):
     return f"#showtooltip {spell}\n/cast [@mouseover, help, exists][help][@player] {spell}"
@@ -851,7 +857,9 @@ CLASSES = [
                   "Forever: Judgement no longer uses up your seal, so no reseal needed.", short="Judge"),
                 M("Hammer of Wrath", dpsHarm("Hammer of Wrath"), short="HoW"),
                 M("Exorcism", dpsHarm("Exorcism"), short="Exo"),
-                M("Hammer of Justice", dpsHarm("Hammer of Justice"), short="HoJ"),
+                M("Hammer of Justice", dpsMO("Hammer of Justice"),
+                  "Stuns whatever's under your mouse without changing your target; "
+                  "falls back to your target if nothing's under the mouse.", short="HoJ"),
                 M("Consecration", plain("Consecration"), short="Consec"),
                 M("Holy Wrath", plain("Holy Wrath"), short="HWrath"),
             ]),

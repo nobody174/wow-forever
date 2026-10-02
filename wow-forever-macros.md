@@ -2020,10 +2020,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Exorcism
 ```
 
-**Hammer of Justice** (`HoJ`)
+**Hammer of Justice** (`HoJ`) — Stuns whatever's under your mouse without changing your target; falls back to your target if nothing's under the mouse.
 ```
 #showtooltip Hammer of Justice
-/cast [harm] Hammer of Justice
+/cast [@mouseover, harm, exists][harm] Hammer of Justice
 ```
 
 **Consecration** (`Consec`)

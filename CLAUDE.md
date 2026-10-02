@@ -176,6 +176,11 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - DPS, Priest only (needs target-of-target): `/cast [@targettarget, harm, exists][harm] SPELL`
 - DPS, every other class (Shaman/Paladin/Warlock/Hunter/Warrior/Rogue — no TT needed):
   `/cast [harm] SPELL`
+- Mouseover-harm with target fallback (interrupts/CC you want to land on
+  whatever's under your mouse without changing your actual target — e.g.
+  Hammer of Justice): `/cast [@mouseover, harm, exists][harm] SPELL`
+  (helper: `dpsMO()`, added 2026-10-02). Applied per-macro on request, not a
+  blanket replacement for `dpsHarm()` — ask before converting another one.
 - Heal/utility, with self fallback: `/cast [@mouseover, help, exists][help][@player] SPELL`
   — added 2026-10-02: with no mouseover and no friendly target, this used to do
   nothing; now it heals you instead. (First real in-game play session caught this.)

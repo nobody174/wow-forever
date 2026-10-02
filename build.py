@@ -72,8 +72,8 @@ assign_ids_and_validate()
 INTRO_RULES = [
     ("Damage (Priest — target-of-target aware)", dps("SPELL")),
     ("Damage (every other class)", dpsHarm("SPELL")),
-    ("Mouseover heal / utility", heal("SPELL")),
-    ("Friend-or-foe (Dispel Magic)", util("SPELL")),
+    ("Mouseover heal / utility (adds self fallback)", heal("SPELL")),
+    ("Friend-or-foe, e.g. Dispel Magic (adds self fallback)", util("SPELL")),
     ("Buffs (adds self fallback)", buff("SPELL")),
     ("Spam-safe channel", chan("SPELL")),
     ("Wand", WAND),
@@ -110,8 +110,9 @@ for name, code in INTRO_RULES:
 md.append("## Notes\n")
 md.append(
     "- Spells without a rank cast your highest rank automatically.\n"
-    "- Buff macros add `[@player]` as a last fallback so they self-buff with no target. "
-    "Delete it if you want the strict two-clause style.\n"
+    "- Buff, heal/utility and friend-or-foe macros all add `[@player]` as a last "
+    "fallback, so they hit you instead of doing nothing with no target. Delete it "
+    "if you want the strict targeting-only style.\n"
     "- Item macros (`/use ...`) need the item name edited to the rank you carry.\n"
     "- WoW Forever changes some classes/systems; if a spell name is renamed or missing "
     "in beta, swap the name and keep the pattern.\n"

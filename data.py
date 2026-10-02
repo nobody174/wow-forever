@@ -18,8 +18,8 @@
 # for anything that actually /cast's a spell) following the user's style rules:
 #   dps      -> TT-aware DPS (Priest only): /cast [@targettarget, harm, exists][harm] SPELL
 #   dpsHarm  -> plain harm-target DPS (every other class): /cast [harm] SPELL
-#   heal     -> mouseover heal/util: /cast [@mouseover, help, exists][help] SPELL
-#   util     -> friend-or-foe:       /cast [@mouseover, exists][exists] SPELL
+#   heal     -> mouseover heal w/ self fallback: /cast [@mouseover, help, exists][help][@player] SPELL
+#   util     -> friend-or-foe w/ self fallback:  /cast [@mouseover, exists][exists][@player] SPELL
 #   buff     -> buff w/ self fallback: /cast [@mouseover, help, exists][help][@player] SPELL
 #   chan     -> spam-safe channel:   /cast [...,nochanneling][...,nochanneling] SPELL
 #   melee    -> /startattack + [harm] cast (melee strikes)
@@ -38,10 +38,10 @@ def dpsHarm(spell):
     return f"#showtooltip {spell}\n/cast [harm] {spell}"
 
 def heal(spell):
-    return f"#showtooltip {spell}\n/cast [@mouseover, help, exists][help] {spell}"
+    return f"#showtooltip {spell}\n/cast [@mouseover, help, exists][help][@player] {spell}"
 
 def util(spell):
-    return f"#showtooltip {spell}\n/cast [@mouseover, exists][exists] {spell}"
+    return f"#showtooltip {spell}\n/cast [@mouseover, exists][exists][@player] {spell}"
 
 def buff(spell):
     return f"#showtooltip {spell}\n/cast [@mouseover, help, exists][help][@player] {spell}"
@@ -272,7 +272,7 @@ CLASSES = [
         {"spec": "Holy", "groups": [
             G(HEAL, [
                 M("Inner Focus + Greater Heal",
-                  "#showtooltip Greater Heal\n/cast Inner Focus\n/cast [@mouseover, help, exists][help] Greater Heal",
+                  "#showtooltip Greater Heal\n/cast Inner Focus\n/cast [@mouseover, help, exists][help][@player] Greater Heal",
                   short="IF+GHeal"),
                 M("Holy Nova", plain("Holy Nova"), short="HNova"),
                 M("Prayer of Mending", heal("Prayer of Mending"),
@@ -287,7 +287,7 @@ CLASSES = [
                 M("Penance (friend or foe)", util("Penance"),
                   "New in Forever. Heals a friendly mouseover/target, damages an enemy one.", short="Penance"),
                 M("Inner Focus + Greater Heal",
-                  "#showtooltip Greater Heal\n/cast Inner Focus\n/cast [@mouseover, help, exists][help] Greater Heal",
+                  "#showtooltip Greater Heal\n/cast Inner Focus\n/cast [@mouseover, help, exists][help][@player] Greater Heal",
                   short="InnerFocus"),
             ]),
             G(BUFF, [

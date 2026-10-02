@@ -176,8 +176,15 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - DPS, Priest only (needs target-of-target): `/cast [@targettarget, harm, exists][harm] SPELL`
 - DPS, every other class (Shaman/Paladin/Warlock/Hunter/Warrior/Rogue — no TT needed):
   `/cast [harm] SPELL`
-- Heal/utility (friendly only): `/cast [@mouseover, help, exists][help] SPELL`
-- Friend-or-foe spells (e.g. Dispel Magic): `/cast [@mouseover, exists][exists] SPELL`
+- Heal/utility, with self fallback: `/cast [@mouseover, help, exists][help][@player] SPELL`
+  — added 2026-10-02: with no mouseover and no friendly target, this used to do
+  nothing; now it heals you instead. (First real in-game play session caught this.)
+- Friend-or-foe spells (e.g. Dispel Magic), with self fallback:
+  `/cast [@mouseover, exists][exists][@player] SPELL`
+  — same self-fallback added, accepted deliberately even though it means a
+  spell that removes a FRIENDLY buff on self-cast (Dispel Magic, Remove Curse)
+  could strip your own buff if you have no target. User's call: consistency
+  with heal()/buff() beats the edge case.
 - Buffs: `/cast [@mouseover, help, exists][help][@player] SPELL`
 - Spam-safe channels (Warlock): `/cast [@targettarget, harm, exists, nochanneling][harm, nochanneling] SPELL`
   — chan() keeps TT; only the dps() helper was split by class, chan()/stance() were not.

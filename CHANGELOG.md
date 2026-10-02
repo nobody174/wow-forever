@@ -4,6 +4,26 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (heal() and util() macros: add self-cast fallback)
+
+Reported from real gameplay: Holy Light (and every other `heal()` macro — Flash
+Heal, Healing Wave, etc.) did nothing at all with no mouseover and no friendly
+target, since `/cast [@mouseover, help, exists][help] SPELL` has no fallback
+clause. Added `[@player]` as a third clause, matching the pattern `buff()`
+already used, so these now heal yourself instead of fizzling.
+
+Also added the same fallback to `util()` (friend-or-foe spells: Dispel Magic,
+Remove Curse, Penance, Holy Shock) for consistency — user's explicit call,
+accepting that Dispel Magic/Remove Curse self-cast with no target could strip
+one of your OWN beneficial buffs, same risk a Dispel Magic button always has
+used on the wrong target. Fixed two hand-written "Inner Focus + Greater Heal"
+macros (Discipline, Holy) that duplicated the old pattern by hand instead of
+calling `heal()`. Left the Soulstone mouseover item-macro alone (self-casting
+a soulstone on yourself doesn't make sense). Updated `CLAUDE.md`'s documented
+macro style rules and `build.py`'s markdown-cheatsheet pattern notes to match.
+Rebuilt `macros.html`/`wow-forever-macros.md`; every macro still ≤255 chars
+(longest unchanged at 204).
+
 ## 2026-10-02 (Addon v0.10.0: Macro Book class picker, Remove from library confirm, Tidy up tooltip)
 
 Requested from the first real in-game testing session (not in the original addon

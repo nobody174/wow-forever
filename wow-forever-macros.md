@@ -16,16 +16,16 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] SPELL
 ```
 
-**Mouseover heal / utility**
+**Mouseover heal / utility (adds self fallback)**
 ```
 #showtooltip SPELL
-/cast [@mouseover, help, exists][help] SPELL
+/cast [@mouseover, help, exists][help][@player] SPELL
 ```
 
-**Friend-or-foe (Dispel Magic)**
+**Friend-or-foe, e.g. Dispel Magic (adds self fallback)**
 ```
 #showtooltip SPELL
-/cast [@mouseover, exists][exists] SPELL
+/cast [@mouseover, exists][exists][@player] SPELL
 ```
 
 **Buffs (adds self fallback)**
@@ -50,7 +50,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ## Notes
 
 - Spells without a rank cast your highest rank automatically.
-- Buff macros add `[@player]` as a last fallback so they self-buff with no target. Delete it if you want the strict two-clause style.
+- Buff, heal/utility and friend-or-foe macros all add `[@player]` as a last fallback, so they hit you instead of doing nothing with no target. Delete it if you want the strict targeting-only style.
 - Item macros (`/use ...`) need the item name edited to the rank you carry.
 - WoW Forever changes some classes/systems; if a spell name is renamed or missing in beta, swap the name and keep the pattern.
 - Macro limit is 255 characters; every macro here fits.
@@ -183,37 +183,37 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Flash Heal** (`FHeal`)
 ```
 #showtooltip Flash Heal
-/cast [@mouseover, help, exists][help] Flash Heal
+/cast [@mouseover, help, exists][help][@player] Flash Heal
 ```
 
 **Heal** (`Heal`)
 ```
 #showtooltip Heal
-/cast [@mouseover, help, exists][help] Heal
+/cast [@mouseover, help, exists][help][@player] Heal
 ```
 
 **Greater Heal** (`GHeal`)
 ```
 #showtooltip Greater Heal
-/cast [@mouseover, help, exists][help] Greater Heal
+/cast [@mouseover, help, exists][help][@player] Greater Heal
 ```
 
 **Lesser Heal** (`LHeal`)
 ```
 #showtooltip Lesser Heal
-/cast [@mouseover, help, exists][help] Lesser Heal
+/cast [@mouseover, help, exists][help][@player] Lesser Heal
 ```
 
 **Renew** (`Renew`)
 ```
 #showtooltip Renew
-/cast [@mouseover, help, exists][help] Renew
+/cast [@mouseover, help, exists][help][@player] Renew
 ```
 
 **Power Word: Shield** (`PWS`)
 ```
 #showtooltip Power Word: Shield
-/cast [@mouseover, help, exists][help] Power Word: Shield
+/cast [@mouseover, help, exists][help][@player] Power Word: Shield
 ```
 
 **Prayer of Healing** (`PoH`) — Party-wide, no target needed.
@@ -225,7 +225,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Resurrection** (`Rez`)
 ```
 #showtooltip Resurrection
-/cast [@mouseover, help, exists][help] Resurrection
+/cast [@mouseover, help, exists][help][@player] Resurrection
 ```
 
 #### Cleanse / dispel
@@ -233,19 +233,19 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Dispel Magic (friend or foe)** (`Dispel`)
 ```
 #showtooltip Dispel Magic
-/cast [@mouseover, exists][exists] Dispel Magic
+/cast [@mouseover, exists][exists][@player] Dispel Magic
 ```
 
 **Cure Disease** (`CureDisease`)
 ```
 #showtooltip Cure Disease
-/cast [@mouseover, help, exists][help] Cure Disease
+/cast [@mouseover, help, exists][help][@player] Cure Disease
 ```
 
 **Abolish Disease** (`AbolishDis`)
 ```
 #showtooltip Abolish Disease
-/cast [@mouseover, help, exists][help] Abolish Disease
+/cast [@mouseover, help, exists][help][@player] Abolish Disease
 ```
 
 #### Wand / auto-attack
@@ -389,7 +389,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Greater Heal
 /cast Inner Focus
-/cast [@mouseover, help, exists][help] Greater Heal
+/cast [@mouseover, help, exists][help][@player] Greater Heal
 ```
 
 **Holy Nova** (`HNova`)
@@ -401,7 +401,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Prayer of Mending** (`PoM`) — New in Forever. Heals, then jumps to another group member when they take damage.
 ```
 #showtooltip Prayer of Mending
-/cast [@mouseover, help, exists][help] Prayer of Mending
+/cast [@mouseover, help, exists][help][@player] Prayer of Mending
 ```
 
 **Lightwell** (`Lightwell`)
@@ -417,20 +417,20 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Power Infusion** (`PowerInf`)
 ```
 #showtooltip Power Infusion
-/cast [@mouseover, help, exists][help] Power Infusion
+/cast [@mouseover, help, exists][help][@player] Power Infusion
 ```
 
 **Penance (friend or foe)** (`Penance`) — New in Forever. Heals a friendly mouseover/target, damages an enemy one.
 ```
 #showtooltip Penance
-/cast [@mouseover, exists][exists] Penance
+/cast [@mouseover, exists][exists][@player] Penance
 ```
 
 **Inner Focus + Greater Heal** (`InnerFocus`)
 ```
 #showtooltip Greater Heal
 /cast Inner Focus
-/cast [@mouseover, help, exists][help] Greater Heal
+/cast [@mouseover, help, exists][help][@player] Greater Heal
 ```
 
 #### Buffs
@@ -581,7 +581,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Devour Magic (Felhunter)** (`DevourMagic`)
 ```
 #showtooltip Devour Magic
-/cast [@mouseover, help, exists][help] Devour Magic
+/cast [@mouseover, help, exists][help][@player] Devour Magic
 ```
 
 #### Wand / auto-attack
@@ -923,7 +923,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Remove Curse (friend or foe)** (`RemCurse@`)
 ```
 #showtooltip Remove Curse
-/cast [@mouseover, exists][exists] Remove Curse
+/cast [@mouseover, exists][exists][@player] Remove Curse
 ```
 
 #### Buffs
@@ -1008,7 +1008,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Remove Curse** (`RemoveCurse`)
 ```
 #showtooltip Remove Curse
-/cast [@mouseover, help, exists][help] Remove Curse
+/cast [@mouseover, help, exists][help][@player] Remove Curse
 ```
 
 #### Focus
@@ -1396,31 +1396,31 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Healing Wave** (`HWave`)
 ```
 #showtooltip Healing Wave
-/cast [@mouseover, help, exists][help] Healing Wave
+/cast [@mouseover, help, exists][help][@player] Healing Wave
 ```
 
 **Lesser Healing Wave** (`LHWave`)
 ```
 #showtooltip Lesser Healing Wave
-/cast [@mouseover, help, exists][help] Lesser Healing Wave
+/cast [@mouseover, help, exists][help][@player] Lesser Healing Wave
 ```
 
 **Chain Heal** (`ChainHeal`)
 ```
 #showtooltip Chain Heal
-/cast [@mouseover, help, exists][help] Chain Heal
+/cast [@mouseover, help, exists][help][@player] Chain Heal
 ```
 
 **Ancestral Spirit** (`AncSpirit`)
 ```
 #showtooltip Ancestral Spirit
-/cast [@mouseover, help, exists][help] Ancestral Spirit
+/cast [@mouseover, help, exists][help][@player] Ancestral Spirit
 ```
 
 **Riptide** (`Riptide`) — New in Forever. Instant heal + HoT that boosts your next Chain Heal.
 ```
 #showtooltip Riptide
-/cast [@mouseover, help, exists][help] Riptide
+/cast [@mouseover, help, exists][help][@player] Riptide
 ```
 
 #### Cleanse / dispel
@@ -1428,13 +1428,13 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Cure Poison** (`CurePoison`)
 ```
 #showtooltip Cure Poison
-/cast [@mouseover, help, exists][help] Cure Poison
+/cast [@mouseover, help, exists][help][@player] Cure Poison
 ```
 
 **Cure Disease** (`CureDisease`)
 ```
 #showtooltip Cure Disease
-/cast [@mouseover, help, exists][help] Cure Disease
+/cast [@mouseover, help, exists][help][@player] Cure Disease
 ```
 
 #### Wand / auto-attack
@@ -2043,37 +2043,37 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Holy Light** (`HL`)
 ```
 #showtooltip Holy Light
-/cast [@mouseover, help, exists][help] Holy Light
+/cast [@mouseover, help, exists][help][@player] Holy Light
 ```
 
 **Flash of Light** (`FoL`)
 ```
 #showtooltip Flash of Light
-/cast [@mouseover, help, exists][help] Flash of Light
+/cast [@mouseover, help, exists][help][@player] Flash of Light
 ```
 
 **Lay on Hands** (`LoH`)
 ```
 #showtooltip Lay on Hands
-/cast [@mouseover, help, exists][help] Lay on Hands
+/cast [@mouseover, help, exists][help][@player] Lay on Hands
 ```
 
 **Blessing of Protection** (`BoP`)
 ```
 #showtooltip Blessing of Protection
-/cast [@mouseover, help, exists][help] Blessing of Protection
+/cast [@mouseover, help, exists][help][@player] Blessing of Protection
 ```
 
 **Blessing of Freedom** (`BoF`)
 ```
 #showtooltip Blessing of Freedom
-/cast [@mouseover, help, exists][help] Blessing of Freedom
+/cast [@mouseover, help, exists][help][@player] Blessing of Freedom
 ```
 
 **Redemption** (`Rez`)
 ```
 #showtooltip Redemption
-/cast [@mouseover, help, exists][help] Redemption
+/cast [@mouseover, help, exists][help][@player] Redemption
 ```
 
 #### Cleanse / dispel
@@ -2081,13 +2081,13 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Cleanse** (`Cleanse`)
 ```
 #showtooltip Cleanse
-/cast [@mouseover, help, exists][help] Cleanse
+/cast [@mouseover, help, exists][help][@player] Cleanse
 ```
 
 **Purify** (`Purify`)
 ```
 #showtooltip Purify
-/cast [@mouseover, help, exists][help] Purify
+/cast [@mouseover, help, exists][help][@player] Purify
 ```
 
 #### Wand / auto-attack
@@ -2228,7 +2228,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Divine Intervention** (`DI`)
 ```
 #showtooltip Divine Intervention
-/cast [@mouseover, help, exists][help] Divine Intervention
+/cast [@mouseover, help, exists][help][@player] Divine Intervention
 ```
 
 **Auras on one button** (`Auras`) — Plain click: Devotion. Shift: Concentration. Ctrl: Retribution.
@@ -2350,7 +2350,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Holy Shock (friend or foe)** (`HShock`) — Heals a friendly mouseover/target, damages an enemy one.
 ```
 #showtooltip Holy Shock
-/cast [@mouseover, exists][exists] Holy Shock
+/cast [@mouseover, exists][exists][@player] Holy Shock
 ```
 
 ## Warrior

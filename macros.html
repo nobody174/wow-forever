@@ -125,13 +125,12 @@ pre{margin:8px 0 0;padding:8px 10px;background:#0A0F1F;border-radius:4px;overflo
 }
 .tabgroup .panel .note{color:var(--muted);font-size:14px;margin:0 0 8px}
 .tabgroup .panel pre{margin:0}
-/* ---- Export mode ("Pick macros for the game"), ADDON_PLAN.md section 4 ---- */
+/* ---- Export mode ("Export macros"), ADDON_PLAN.md section 4 ---- */
 .xtoggle{
   margin-left:auto;display:inline-flex;align-items:center;gap:7px;
   font:500 14px var(--sans);background:var(--panel);border:1px solid var(--edge);color:var(--muted);
-  padding:5px 12px 5px 6px;border-radius:999px;cursor:pointer;
+  padding:5px 12px;border-radius:999px;cursor:pointer;
 }
-.xtoggle img{width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.4)}
 .xtoggle:hover{color:var(--text)}
 .xtoggle[aria-pressed="true"]{color:var(--text);border-color:var(--gold)}
 .xcb{display:none;position:relative;flex:none;width:16px;height:16px;vertical-align:-2px;margin-right:10px}
@@ -235,7 +234,7 @@ pre{margin:8px 0 0;padding:8px 10px;background:#0A0F1F;border-radius:4px;overflo
   <nav class="roster" id="roster" aria-label="Class"></nav>
   <div class="spec-row">
     <nav class="specs" id="specs" aria-label="Spec"></nav>
-    <button type="button" class="xtoggle" id="xtoggle" aria-pressed="false" aria-controls="xtray"><img src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg" alt="">Pick macros for the game</button>
+    <button type="button" class="xtoggle" id="xtoggle" aria-pressed="false" aria-controls="xtray">Export macros</button>
   </div>
   <main id="out"></main>
 </div>

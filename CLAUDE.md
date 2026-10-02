@@ -23,7 +23,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   that swaps when a pill is clicked, styled after warcrafttavern.com/forever's macro
   guide layout. Search results still use the old always-expanded list style
   (`groupHTML`/`details.section`), since search spans multiple classes/groups at once.
-  Also holds the addon **export mode** ("Pick macros for the game" toggle, checkboxes,
+  Also holds the addon **export mode** ("Export macros" toggle, checkboxes,
   export tray, `R2F1:` import string, selection in localStorage `wf-export-v1`);
   spec and build decisions in `ADDON_PLAN.md` sections 4 and 7.
 - `build.py` — generates `macros.html` and `wow-forever-macros.md` from `data.py` +

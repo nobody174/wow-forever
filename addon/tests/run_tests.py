@@ -54,12 +54,17 @@ def fixtures():
     return json.loads(out.stdout.decode("utf-8"))
 
 
-def new_runtime(templates=True):
-    """Fresh Lua 5.1 state with the WoW stubs and the addon loaded in TOC order."""
+def new_runtime(templates=True, before_load=None):
+    """Fresh Lua 5.1 state with the WoW stubs and the addon loaded in TOC order.
+    before_load: optional Lua source run after the stubs but before any addon
+    file, for scenarios that need an API gone before addon code captures it
+    as a local (same reason templates=False works the way it does below)."""
     lua = lua51.LuaRuntime(unpack_returned_tuples=True)
     assert lua.eval("_VERSION") == "Lua 5.1", lua.eval("_VERSION")
     stubs = os.path.join(HERE, "wow_stubs.lua").replace("\\", "/")
     lua.execute('assert(loadfile("%s"))()' % stubs)
+    if before_load:
+        lua.execute(before_load)
     if not templates:
         lua.execute("TEST.templates.PortraitFrameTemplate = nil; TEST.templates.ButtonFrameTemplate = nil;"
                     "TEST.templates.InputScrollFrameTemplate = nil; TEST.templates.UICheckButtonTemplate = nil;"
@@ -781,6 +786,15 @@ def test_ui_smoke(templates, fx):
 BINDING_GLOBALS = {"BINDING_HEADER_ROADTOFOREVER", "BINDING_NAME_R2F_TOGGLE", "BINDING_NAME_R2F_MACROS",
                    "BINDING_NAME_R2F_TALENTS"}
 
+# Blizzard's own globals, created by its on-demand Blizzard_TalentUI "addon"
+# loading (GetNumTalentTabs/GetTalentInfo don't exist until then, confirmed
+# 2026-10-02 against a real WoW Forever client -- RXPGuides, a working addon
+# there, waits on exactly this). Talents.ReadTrees() force-loads it, so any
+# test that calls into talent reading legitimately adds these three globals;
+# they are the game's, not ours, so they're excused the same way R2F* frames
+# and the binding labels are, not folded into either of those categories.
+BLIZZARD_TALENT_GLOBALS = {"GetNumTalentTabs", "GetNumTalents", "GetTalentInfo"}
+
 
 def names_of(lua_list):
     return [lua_list[i].name for i in range(1, len(lua_list) + 1)]
@@ -1022,8 +1036,9 @@ def test_step5_ui(templates, fx):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"SETBTN", "CHECKS", "REMOVEALL", "L", "APPLIED", "NS", "REAL_MM"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
+           and g not in BLIZZARD_TALENT_GLOBALS
            and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
-    check(not bad, "%s: step 5 adds no globals besides R2F* frames and the binding labels: %s" % (tag, bad))
+    check(not bad, "%s: step 5 adds no globals besides R2F* frames, the binding labels and Blizzard_TalentUI's own: %s" % (tag, bad))
 
 
 def test_bindings_xml(lua):
@@ -1513,6 +1528,47 @@ def test_talents(templates):
     TL = lua.eval("R2F.Talents")
     read = lua.eval("function() return R2F.Talents.ReadTrees() end")
 
+    # ---- Blizzard_TalentUI is load-on-demand on a real client (confirmed -------
+    # 2026-10-02: GetNumTalentTabs/GetTalentInfo errored "attempt to call a nil
+    # value" on a fresh WoW Forever login, before the real Talent window was
+    # ever opened -- "couldn't read your talents yet" every time). ReadTrees()
+    # must force it to load itself, not just check if it happens to be loaded.
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+    check(lua.eval("TEST.loadedAddons.Blizzard_TalentUI") is not True,
+          "%s: sanity check -- Blizzard_TalentUI genuinely not loaded yet" % tag)
+    trees = read()
+    check(trees is not None, "%s: ReadTrees() works on the very first call, Blizzard_TalentUI never opened by hand" % tag)
+    check(lua.eval("TEST.loadedAddons.Blizzard_TalentUI") is True,
+          "%s: ReadTrees() force-loaded Blizzard_TalentUI itself" % tag)
+    # Calling again doesn't reload it or error (IsAddOnLoaded short-circuits).
+    trees2 = read()
+    check(trees2 is not None, "%s: a second ReadTrees() call still works" % tag)
+
+    # A client with neither C_AddOns.LoadAddOn nor the bare global: ReadTrees()
+    # must fail CLEANLY (nil), not error -- same defensive bar as every other
+    # API-existence check in this addon. Talents.lua captures LoadAddOn as a
+    # local at load time, so the global has to be gone BEFORE new_runtime()
+    # loads the addon files, not nil'd out afterward.
+    lua2 = new_runtime(templates, before_load="C_AddOns.LoadAddOn = nil LoadAddOn = nil")
+    lua2.execute("TEST.fire('ADDON_LOADED', 'RoadToForever') TEST.fire('PLAYER_LOGIN')")
+    set_game_talents(lua2, raw, js["classes"]["warrior"], {})
+    check(lua2.eval("R2F.Talents.ReadTrees()") is None,
+          "%s: no LoadAddOn at all -> ReadTrees() fails cleanly (nil), no error" % tag)
+
+    # A client where LoadAddOn("Blizzard_TalentUI") exists but is refused
+    # (e.g. disabled by the user, or genuinely missing on this client) must
+    # also fail cleanly rather than erroring on the missing globals.
+    lua3 = new_runtime(templates)
+    T3 = lua3.eval("TEST")
+    T3.blockAddonLoad = True
+    T3.fire("ADDON_LOADED", "RoadToForever")
+    T3.fire("PLAYER_LOGIN")
+    set_game_talents(lua3, raw, js["classes"]["warrior"], {})
+    check(lua3.eval("R2F.Talents.ReadTrees()") is None,
+          "%s: LoadAddOn refused -> ReadTrees() fails cleanly (nil), no error" % tag)
+    check(lua3.eval("TEST.loadedAddons.Blizzard_TalentUI") is not True,
+          "%s: a refused load doesn't get marked as loaded" % tag)
+
     # ---- The hash: Lua == JS == Python, per class, on the same names -----------
     check(TL.HashText("") == ref_talent_hash("") == "045h", "%s: hash of '' = 5381 -> '045h'" % tag)
     for s in ("Deflection", "Ünbridled Wrath", "a,b;c", "x" * 300):
@@ -1984,8 +2040,9 @@ def test_talent_preview(templates):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"NS", "TBTN", "PH", "SUM", "HEAD", "HN", "S21", "CAU", "ERR", "WC"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
+           and g not in BLIZZARD_TALENT_GLOBALS
            and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
-    check(not bad, "%s: step 9 adds no globals besides R2F* frames: %s" % (tag, bad))
+    check(not bad, "%s: step 9 adds no globals besides R2F* frames and Blizzard_TalentUI's own: %s" % (tag, bad))
 
     # ---- The last link comes back in a new session (6.3 lastTalentLink) ---------------
     lua2 = new_runtime(templates)
@@ -2613,8 +2670,9 @@ def test_talent_learning(templates):
     # TalentFrame* = the stub's fake Blizzard window; PREV / GetCVarBool = this test's setup.
     bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST", "NOTE", "BZ", "PREV", "GetCVarBool")
            and not g.startswith("TalentFrame")
-           and g not in BINDING_GLOBALS and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
-    check(not bad, "%s: step 10 adds no globals: %s" % (tag, bad))
+           and g not in BINDING_GLOBALS and g not in BLIZZARD_TALENT_GLOBALS
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
+    check(not bad, "%s: step 10 adds no globals besides Blizzard_TalentUI's own: %s" % (tag, bad))
 
 
 def test_talent_source_writes():
@@ -2654,7 +2712,7 @@ def test_talent_source_writes():
           "glow/host are unnamed frames on UIParent; Blizzard frames only looked up")
     toc = open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read()
     check("UI\\TalentPanel.lua" in toc and "UI\\TalentGuide.lua" in toc, "TalentPanel.lua and TalentGuide.lua in the TOC")
-    check(re.search(r"^## Version: 0\.10\.2$", toc, re.M) is not None, "TOC version 0.10.2")
+    check(re.search(r"^## Version: 0\.10\.3$", toc, re.M) is not None, "TOC version 0.10.3")
 
 
 def test_quick_settings(templates, fx):

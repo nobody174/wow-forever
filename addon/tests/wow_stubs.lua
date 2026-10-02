@@ -37,6 +37,40 @@ T.metadata = { Version = "0.10.1", Author = "nobody174" }
 C_AddOns = { GetAddOnMetadata = function(_, field) return T.metadata[field] end }
 function GetAddOnMetadata(_, field) return T.metadata[field] end
 
+-- On-demand addons (confirmed 2026-10-02 against a real WoW Forever client:
+-- Blizzard_TalentUI, same as Blizzard_Calendar/Blizzard_MacroUI, is NOT
+-- loaded at login -- GetNumTalentTabs/GetTalentInfo don't exist as globals
+-- until it loads, normally only when the player opens the real Talent
+-- window). T.loadedAddons starts empty; T.loadOnDemand lists what
+-- LoadAddOn("Blizzard_TalentUI") actually switches on, same pattern real
+-- addons on that client use (IsAddOnLoaded check, then LoadAddOn).
+T.loadedAddons = {}
+T.loadOnDemand = {
+  Blizzard_TalentUI = function()
+    GetNumTalentTabs = function() return #T.talentTabs end
+    GetNumTalents = function(tab) local t = T.talentTabs[tab]; return t and #t or 0 end
+    GetTalentInfo = function(tab, i)
+      local x = T.talentTabs[tab] and T.talentTabs[tab][i]
+      if not x then return nil end
+      return x.name, x.icon or "Interface\\Icons\\INV_Misc_QuestionMark", x.tier, x.column, x.rank or 0, x.maxRank,
+        false, true
+    end
+  end,
+}
+C_AddOns.IsAddOnLoaded = function(name) return T.loadedAddons[name] == true end
+C_AddOns.LoadAddOn = function(name)
+  if T.loadedAddons[name] then return true end
+  local setup = T.loadOnDemand[name]
+  if not setup then return false, "MISSING" end
+  if T.blockAddonLoad then return false, "DISABLED" end
+  setup()
+  T.loadedAddons[name] = true
+  T.fire("ADDON_LOADED", name)
+  return true
+end
+function IsAddOnLoaded(name) return C_AddOns.IsAddOnLoaded(name) end
+function LoadAddOn(name) return C_AddOns.LoadAddOn(name) end
+
 T.calls = {}          -- log of macro API writes
 
 -- ---------------------------------------------------------------------------
@@ -139,16 +173,11 @@ end
 -- maxRank } in the client's OWN index order (deliberately not tier/column
 -- order in the tests, since the real GetTalentInfo order isn't guaranteed).
 -- Classic's GetTalentInfo returns name, iconTexture, tier, column, rank,
--- maxRank, isExceptional, available (tier/column 1-based).
+-- maxRank, isExceptional, available (tier/column 1-based). GetNumTalentTabs/
+-- GetNumTalents/GetTalentInfo themselves are NOT defined here any more: see
+-- T.loadOnDemand.Blizzard_TalentUI above -- they don't exist as globals
+-- until that "addon" loads, same as the real client.
 T.talentTabs = {}
-function GetNumTalentTabs() return #T.talentTabs end
-function GetNumTalents(tab) local t = T.talentTabs[tab]; return t and #t or 0 end
-function GetTalentInfo(tab, i)
-  local x = T.talentTabs[tab] and T.talentTabs[tab][i]
-  if not x then return nil end
-  return x.name, x.icon or "Interface\\Icons\\INV_Misc_QuestionMark", x.tier, x.column, x.rank or 0, x.maxRank,
-    false, true
-end
 -- Step 9: tree names. Classic shape (name, icon, pointsSpent, fileName) by
 -- default; T.tabInfoShape = "new" gives the newer id-first shape, "error"
 -- makes it throw, and GetTalentTabInfo = nil tests a client without it.

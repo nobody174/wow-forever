@@ -654,19 +654,38 @@ imported, then import another class's macros (e.g. Warrior) on the same characte
 
 ## 18. Version/author footer (v0.10.2)
 
-- [ ] **Home tab, bottom.** Open `/r2f` on the Home tab. **Pass:** a quiet grey line
-      below Quick settings reads `Road to Forever v0.10.2 · by nobody174 ·
-      nobody174.github.io/wow-forever`. Confirm the version matches the AddOns list's.
+- [x] **Home tab, bottom.** Open `/r2f` on the Home tab. **Pass:** a quiet grey line
+      below Quick settings reads `Road to Forever v<version> · by nobody174 ·
+      nobody174.github.io/wow-forever`. Confirmed working in-game 2026-10-02;
+      the metadata API exists on this client (version/author show correctly).
 - [ ] **Hover the line.** **Pass:** a tooltip shows "Import macros and talent builds
       from the Road to Forever site." (the TOC's own `## Notes:` text).
 - [ ] **Fits without overlap.** Check the line doesn't run into Quick settings above it
       or get clipped at the window's bottom edge — this was only measured against the
       fixed 540x500 window size, never seen on a real screen.
-- [ ] **If the version is missing** (reads just "Road to Forever · nobody174.github.io
-      /wow-forever" with no `v...`): this client has neither `C_AddOns.GetAddOnMetadata`
-      nor the bare global `GetAddOnMetadata`. Not a bug by itself, but note it — every
-      other "confirm in beta" item in this file that depends on checking the AddOns list
-      instead of in-game `/dump`s may be affected by the same gap.
+
+## 19. Talent Preview on a cold login (v0.10.3 fix)
+
+Confirmed broken, then fixed, from real in-game testing 2026-10-02 — see
+ADDON_PLAN.md 13.9 for the full investigation.
+
+- [ ] **The actual bug report, re-verify it's fixed.** Log in fresh (or `/reload`),
+      do **not** open the real Talent window, go straight to `/r2f` → Talents →
+      paste a Copy-link from the site → Preview. **Pass:** the preview actually
+      shows (trees, summary line), not "couldn't read your talents yet."
+- [ ] **Copy my build, also cold.** Same fresh-login state, click Copy my build
+      before ever opening the real Talent window. **Pass:** a real link comes
+      back, not nothing / an error.
+- [ ] **No visible flash/stutter.** `LoadAddOn("Blizzard_TalentUI")` shouldn't
+      cause any visible frame flicker or delay — if it does, note how long.
+- [ ] **The real Talent window still opens normally afterward.** Open it by hand
+      (default binding) after having used Preview/Copy my build first. **Pass:**
+      looks and works exactly as before — nothing about force-loading it early
+      should change its own behavior.
+- [ ] **If it's STILL broken cold** (same error message on a true fresh login):
+      the 0.5s retry in `TalentPanel.Preview()` may not be enough time on this
+      connection — note exactly how long after Preview it starts working if you
+      wait and click Preview again by hand.
 
 ## Known gaps in v0.10.0 (by design / later)
 

@@ -24,6 +24,26 @@ R2F.Talents = Talents
 
 Talents.SITE_URL = "https://nobody174.github.io/wow-forever-macros/talents.html#"
 
+-- GetNumTalentTabs/GetNumTalents/GetTalentInfo (and PlayerTalentFrame) are not
+-- globals until Blizzard's own on-demand UI addon, Blizzard_TalentUI, has
+-- loaded -- normally only when the player opens the real Talent window by
+-- hand, same as Blizzard_Calendar/Blizzard_MacroUI/etc. (confirmed 2026-10-02
+-- against a real WoW Forever client: an addon already running there,
+-- RXPGuides, waits on ADDON_LOADED("Blizzard_TalentUI") for exactly this
+-- reason). Force-loading it here means Preview/Copy my build work the first
+-- time, without the player having to separately open the Talent window first
+-- -- same IsAddOnLoaded + LoadAddOn pattern already proven working on this
+-- client by RXPGuides' own Blizzard_Calendar load. C_AddOns is tried first,
+-- same as every other API-era check in this addon (ADDON_PLAN.md 12.4.2).
+local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or _G.IsAddOnLoaded
+local LoadAddOn = (C_AddOns and C_AddOns.LoadAddOn) or _G.LoadAddOn
+
+local function ensureTalentUI()
+  if not (IsAddOnLoaded and LoadAddOn) then return end
+  local ok, loaded = pcall(IsAddOnLoaded, "Blizzard_TalentUI")
+  if ok and not loaded then pcall(LoadAddOn, "Blizzard_TalentUI") end
+end
+
 -- The game's talents, one list per talent tab, each sorted by tier, then
 -- column. That is the order of the site's share code (one digit per talent,
 -- Wowhead's row/column order), so digit k of a tree's part of a link is the
@@ -36,6 +56,7 @@ Talents.SITE_URL = "https://nobody174.github.io/wow-forever-macros/talents.html#
 -- Step 9's preview maps a pasted link onto exactly this list (13.2), so the
 -- export and the import can never disagree about which digit is which talent.
 function Talents.ReadTrees()
+  ensureTalentUI()
   if not (GetNumTalentTabs and GetNumTalents and GetTalentInfo) then return nil end
   local numTabs = GetNumTalentTabs() or 0
   if numTabs < 1 then return nil end

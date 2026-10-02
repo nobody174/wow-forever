@@ -4,6 +4,20 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon v0.10.3: fix Talent Preview on a fresh login)
+
+Reported from real in-game testing: Preview always failed with "couldn't read
+your talents yet" until the player had separately opened their real Talent
+window. Root cause confirmed via `/dump GetNumTalentTabs()` in-game: that
+function (and `GetTalentInfo`) don't exist as globals until Blizzard's own
+on-demand `Blizzard_TalentUI` addon loads, same as `Blizzard_Calendar`/
+`Blizzard_MacroUI`. Found the fix by reading RXPGuides, a working third-party
+addon already on the client, which already solves this exact problem and
+separately has a proven working `LoadAddOn` call to copy the pattern from.
+`Talents.ReadTrees()` now force-loads `Blizzard_TalentUI` itself. See
+`ADDON_PLAN.md` 13.9. Full suite re-run: 8770 checks, 0 failed. Tag
+`r2f-v0.10.3`.
+
 ## 2026-10-02 (Addon v0.10.2: version/author footer on the Home tab)
 
 Requested from real in-game testing: no way to see the addon's version or who

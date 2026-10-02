@@ -3,6 +3,37 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.10.3 (2026-10-02): fix — Talent Preview failed on a fresh login
+
+Reported from real in-game testing: pasting a talent link and clicking Preview
+always showed "couldn't read your talents yet. Try again in a moment," even
+though the character genuinely had talent points spent. `/dump
+GetNumTalentTabs()` confirmed the cause directly: the function doesn't exist
+as a global until Blizzard's own on-demand `Blizzard_TalentUI` addon has
+loaded, which normally only happens the first time the player opens the real
+Talent window by hand — the addon never tried to make that happen itself, it
+only checked whether it already had.
+
+- **Fix:** `Talents.ReadTrees()` now force-loads `Blizzard_TalentUI` via
+  `LoadAddOn` (tries `C_AddOns.LoadAddOn` first, falls back to the bare
+  global, `pcall`-wrapped) before checking for the talent functions, so
+  Preview and Copy my build work the first time without the player needing
+  to open their Talent window separately first. A one-shot retry 0.5s later
+  covers the (believed unlikely) case where the force-load succeeds but the
+  data isn't queryable in the exact same tick.
+- Found by reading a third-party addon (RXPGuides) already working on the
+  same WoW Forever client — it already solved this exact problem for its own
+  talent-related features, and separately already has a proven, working
+  `LoadAddOn` call for a different on-demand Blizzard addon. See
+  `ADDON_PLAN.md` 13.9 for the full investigation and reasoning.
+- The Lua test stub (`wow_stubs.lua`) previously defined the talent functions
+  as always-available globals — an inaccurate model of the real client that
+  every prior talent test was unknowingly built against. Fixed to match
+  reality: they're now genuinely load-on-demand in the stub too.
+- Full suite re-run: 8770 checks, 0 failed (up from 8688), including new
+  tests specifically covering the cold-login scenario, no-LoadAddOn-at-all,
+  and a refused load — each confirmed to fail cleanly, no errors.
+
 ## 0.10.2 (2026-10-02): version/author footer on the Home tab (ADDON_PLAN.md 12.4.2)
 
 **Requested from real in-game testing, 2026-10-02** — there was no way to see

@@ -474,6 +474,18 @@ function TalentPanel.Preview()
   -- Only a readable link is remembered; junk would come back on every open.
   if Talents.ParseLink(text) then cdb().lastTalentLink = text end
   TalentPanel.Refresh()
+  -- GetNumTalentTabs/GetTalentInfo only exist once Blizzard_TalentUI has
+  -- loaded; Talents.ReadTrees() now force-loads it, but LoadAddOn firing
+  -- ADDON_LOADED doesn't guarantee the talent data itself is already
+  -- queryable in the very same tick on every client. One retry a moment
+  -- later covers that without turning ReadTrees() itself into an async
+  -- API for every other caller (13.7-style defensive check, confirmed
+  -- needed against a real WoW Forever client 2026-10-02).
+  if state.result and state.result.error == L.TALENT_READ_FAILED_TAB and C_Timer and C_Timer.After then
+    C_Timer.After(0.5, function()
+      if state.text == text then TalentPanel.Refresh() end
+    end)
+  end
 end
 
 -- Cancel: drop the previewed build, back to the character's own trees.

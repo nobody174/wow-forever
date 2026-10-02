@@ -2179,3 +2179,68 @@ removed or flipped: combat at the write, timeout continuing, prereq/tier/conflic
 have/free-point checks, combat interrupt, Learn enabling, targets, the in-flight wait,
 late answers, resumability, guided switch, tab hint, the combat queue, link check,
 CVar, event order, forbidden event, locks, glow hiding, label) each fail the suite.
+
+### 13.9 Fix: Blizzard_TalentUI is load-on-demand (2026-10-02)
+
+**The bug.** Preview on a real WoW Forever client, cold (no Talent window opened
+yet this session): "couldn't read your talents yet. Try again in a moment." every
+time, with no errors visible to the player. `/dump GetNumTalentTabs()` in-game
+confirmed the root cause directly: `attempt to call a nil value` — the function
+doesn't exist as a global at all until Blizzard's own on-demand UI addon,
+`Blizzard_TalentUI`, has loaded. That addon is not loaded at login, same as
+`Blizzard_Calendar`/`Blizzard_MacroUI`/etc.: normally it only loads the first
+time the player opens the real in-game Talent window by hand. `Talents.ReadTrees()`
+only ever *checked* whether the functions already existed; it never tried to make
+them exist, so a player who hadn't separately opened their Talent window got stuck
+on this message indefinitely.
+
+**How this was actually found, not guessed.** `C_SpecializationInfo` exists on
+this client and looked at first like the real talent API (it has a `GetTalentInfo`
+too) — a red herring: that's retail's specialization/PvP-talent API, a different
+system, and its `GetTalentInfo` takes a query table, not `(tab, index)`. The real
+answer came from reading a third-party addon already running successfully on the
+user's own WoW Forever client: `RXPGuides/Talents.lua` explicitly waits on
+`ADDON_LOADED("Blizzard_TalentUI")` before touching `GetNumTalentTabs`/
+`GetTalentInfo`, and `RXPGuides/functions.lua` has a working, already-proven
+`LoadAddOn("Blizzard_Calendar")` call for a different on-demand Blizzard addon,
+using exactly the `C_AddOns.LoadAddOn or _G.LoadAddOn` fallback pattern this
+addon already uses elsewhere (12.4.2). The user's own screenshot of the real
+Talent window (three panes — Holy/Protection/Retribution, "Apply Changes" button,
+points already spent shown with coloured borders) confirmed the underlying talent
+SYSTEM is still the classic tier/column tri-tree the site and this addon already
+assume — only the API surface that reads it had moved, not the data model.
+
+**The fix.** `Talents.ReadTrees()` now calls a new `ensureTalentUI()` first: if
+`GetNumTalentTabs` et al. aren't already global, it checks
+`IsAddOnLoaded("Blizzard_TalentUI")` and, if not, calls
+`LoadAddOn("Blizzard_TalentUI")` (both via `C_AddOns` first, bare-global fallback,
+`pcall`-wrapped) before the existing existence check runs. This means Preview and
+Copy my build now work the very first time, without the player needing to
+separately open their real Talent window first. `TalentPanel.Preview()` also adds
+one `C_Timer.After(0.5, ...)` retry specifically for the case where the force-load
+succeeds but the talent data isn't queryable in the exact same tick on every
+client — cheap insurance, not a redesign; `ReadTrees()` itself stays a plain
+synchronous function for every other caller.
+
+**Why this wasn't caught by the test suite until now.** `wow_stubs.lua` defined
+`GetNumTalentTabs`/`GetNumTalents`/`GetTalentInfo` as globals unconditionally from
+the start — an inaccurate model of the real client that every prior talent test
+(steps 8, 9, 10) was unknowingly built against. Fixed: these three are now only
+installed when the stub's own `C_AddOns.LoadAddOn("Blizzard_TalentUI")` (also
+newly added, alongside `IsAddOnLoaded`) is actually called, exactly mirroring the
+real client. Every existing talent test continuing to pass unmodified after this
+change (because `ReadTrees()`'s new force-load makes it "just work") is itself
+part of the proof the fix is correct, not a coincidence.
+
+**Tested:** `ReadTrees()` succeeds on the very first call with `Blizzard_TalentUI`
+never previously loaded (the exact bug scenario); a second call doesn't reload it;
+no `LoadAddOn` at all on the client → fails cleanly (`nil`), no error, confirmed
+by constructing that scenario with `LoadAddOn`/`C_AddOns.LoadAddOn` removed
+*before* the addon's files load (it's captured as a local at load time, so
+nil-ing the global afterward doesn't actually test anything — `new_runtime()`
+gained a `before_load` parameter for exactly this ordering requirement);
+`LoadAddOn` present but refused → also fails cleanly, and isn't wrongly marked
+as loaded. Confirmed as a real regression test, not just a passing assertion: with
+`ensureTalentUI()`'s call site removed, the suite doesn't just fail a check, it
+crashes outright downstream (a `nil` from `ReadTrees()` reaching code that assumed
+a table), which is an even stronger signal the fix is load-bearing.

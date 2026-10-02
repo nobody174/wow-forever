@@ -326,8 +326,11 @@ servers, on a pushed `r2f-v*` tag; nothing on a PC can run it. Out of GitHub, th
 workflow's own `git archive` command was run locally and the zip checked (top
 folder `RoadToForever/`, TOC inside, no `addon/tests` or `addon/art`, every `.lua`
 parses under Lua 5.1), and the YAML parsed. Whether the workflow publishes
-correctly is only known from a real tag push (ADDON_PLAN.md 8.1). Check each new
-release once:
+correctly is only known from a real tag push (ADDON_PLAN.md 8.1). **v0.5.0, the
+first run (2026-10-02):** green; release `Road to Forever 0.5.0`, pre-release,
+notes from CHANGELOG, one asset; the downloaded zip is byte-for-byte the same 19
+files as the local build. The in-game unzip check below is still open. Check each
+new release once:
 
 - [ ] The tag's run (repo > Actions > "Release addon") is green.
 - [ ] The release is named `Road to Forever <version>`, is marked **Pre-release**

@@ -1110,7 +1110,10 @@ shows under the repo's Actions tab.
   push: YAML parsed, actionlint 1.7.12 clean (without shellcheck), every shell
   step traced by hand, and the packaging, version-check (matching, mismatched
   and malformed tags) and notes commands run locally on the same tree. The `r2f-v0.5.0`
-  push is the workflow's first real run (TESTING.md 12).
+  push is the workflow's first real run (TESTING.md 12). **Result:** green; the
+  release is a pre-release with the CHANGELOG notes and one asset, identical to
+  the local zip; `/releases/latest` was confirmed to redirect to `/releases`
+  while only pre-releases exist.
 
 ## 9. Build order (each step shippable)
 

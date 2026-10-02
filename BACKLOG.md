@@ -31,6 +31,10 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
 - [x] **7. Release:** shipped 2026-10-02 as v0.5.0 (tag `r2f-v0.5.0`, first
       GitHub Release, pre-release) — see CHANGELOG.md. Tag prefix settled as
       `r2f-v*` (ADDON_PLAN 8.1). Check each release once: `TESTING.md` section 12.
+- [ ] **Release workflow upkeep:** the first run warned that `actions/checkout@v4`
+      and `softprops/action-gh-release@v2` target Node.js 20 (deprecated, forced
+      onto Node 24 for now). Bump both to their Node-24 majors before GitHub
+      drops Node 20, then tag the next release and check its run.
 - [ ] **8. Talent export:** Copy my build as a site link. Site links get the
       `~hash` check; `talentcalc.js` ignores `~...` when reading (bump `?v=`).
 - [ ] **9. Talent import preview:** paste a Copy link URL, three mini trees,

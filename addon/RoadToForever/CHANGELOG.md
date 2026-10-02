@@ -3,6 +3,23 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.9.0 (2026-10-02): Quick settings (ADDON_PLAN.md 12.4.1)
+
+Not tested in the game yet; see `TESTING.md` section 16.
+
+- **Quick settings on the Home tab:** three check boxes that change game settings
+  directly, with no macro and no macro slot: **Max camera zoom** (zoom the camera out
+  further; untick = the game's own default), **Hide guild names** and **Hide PvP
+  titles**. They always show your game's current setting, also when you changed it
+  some other way (`/console`, the game's options, another addon).
+- **Not in combat:** the boxes grey out in combat and can't be changed until it ends.
+- **The Macro Book no longer shows** the Zoom out more, Hide guild names and Hide PvP
+  titles macros, since Quick settings does the same for free. A line on the Universal
+  tab says so. They're still on the website for players without the addon, and a real
+  macro you already made from one keeps working.
+- If your game lacks one of these settings, its box is greyed out and its macro shows
+  in the book again.
+
 ## 0.8.0 (2026-10-02): talent learning (ADDON_PLAN.md step 10)
 
 Not tested in the game yet. **This version can learn talents, which only a trainer

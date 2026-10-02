@@ -4,6 +4,28 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-02 (Addon plan: Quick settings, Road to Forever addon v0.9.0)
+
+- **Addon v0.9.0** (tag `r2f-v0.9.0`): the last item of the addon build. Home tab gets
+  **Quick settings**, three check boxes that set CVars directly (new `QuickSettings.lua`):
+  Max camera zoom = `cameraDistanceMaxZoomFactor 4` (unticked = `GetCVarDefault`, never
+  a hardcoded number), Hide guild names = `UnitNamePlayerGuild 0/1`, Hide PvP titles =
+  `UnitNamePlayerPVPTitle 0/1`. Boxes are redrawn from `GetCVar` on every Home refresh
+  (tab open, combat change, new `CVAR_UPDATE` handler), nothing stored in
+  SavedVariables; writes are read back (refused/clamped values reported). Out of combat
+  only: boxes grey out, and `QuickSettings.Set` checks `R2F.InCombat()` before
+  `SetCVar` (refused, not queued). Global `GetCVar`/`SetCVar`/`GetCVarDefault` with a
+  `C_CVar` fallback; a missing CVar greys its box out.
+- **Macro Book** hides exactly `ANY/Zoom`, `ANY/HideGuild`, `ANY/HidePvP` (exact-id
+  lookup, only while the matching box can work) with a note on the Universal tab. The
+  three macros stay on the website (`data.py` untouched) and in the addon's library.
+- **Tests:** `run_tests.py` 8310 checks pass (was 8006): new `test_quick_settings` on
+  both template and fallback paths (CVar stubs in `wow_stubs.lua`), ids checked against
+  macros.html's data, look-alike ids not hidden; 15 hand mutations each fail the
+  suite. luacheck 0 warnings. Decisions in `ADDON_PLAN.md` 12.4.1; in-game checks in
+  `addon/RoadToForever/TESTING.md` 16 (incl. whether `SetCVar` is really
+  combat-blocked for these CVars, unconfirmed).
+
 ## 2026-10-02 (Addon plan, step 10: talent learning, Road to Forever addon v0.8.0)
 
 - **Addon v0.8.0** (tag `r2f-v0.8.0`): Learn talents is live. Confirm popup (`Learn N

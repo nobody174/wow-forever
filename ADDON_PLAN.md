@@ -1,11 +1,13 @@
 # Addon plan: Road to Forever (macros + talents)
 
-Status: **in progress** (scoped 2026-10-01). Steps 1 (data), 2 (site export),
-3 (addon MVP, v0.1.0), 4 (updates, v0.2.0), 5 (Tidy up, Settings, Remove all,
-key bindings, v0.3.0), 6 (main window, minimap button, logo, v0.4.0), 7
-(release zip on GitHub Releases, v0.5.0), 8 (talent export + the site's `~hash`,
-v0.6.0) and 9 (talent import preview, v0.7.0) shipped, no addon version tested in
-the game yet; see `CHANGELOG.md`.
+Status: **built** (scoped 2026-10-01, every planned step shipped 2026-10-02). Steps
+1 (data), 2 (site export), 3 (addon MVP, v0.1.0), 4 (updates, v0.2.0), 5 (Tidy up,
+Settings, Remove all, key bindings, v0.3.0), 6 (main window, minimap button, logo,
+v0.4.0), 7 (release zip on GitHub Releases, v0.5.0), 8 (talent export + the site's
+`~hash`, v0.6.0), 9 (talent import preview, v0.7.0), 10 (talent learning, v0.8.0)
+and Quick settings (Home tab, v0.9.0, 12.4.1) shipped. No addon version has been
+tested in the game yet: what's left is the in-game checks (section 11,
+`addon/RoadToForever/TESTING.md`); see `CHANGELOG.md`.
 Target: usable before the Nov 4 launch.
 
 | | |
@@ -499,6 +501,8 @@ addon/RoadToForever/
   UI\TalentPanel.lua talent link box, preview trees, Learn button
   UI\TalentGuide.lua guided mode: glow over Blizzard's talent button (step 10, 13.8)
   Talents.lua       parse link, map to the game's trees, plan, learn, export
+  QuickSettings.lua Home tab's Quick settings: CVar read/write + the Macro Book's
+                    hidden-macro list (v0.9.0, 12.4.1)
   Minimap.lua       own minimap button + right-click menu; uses LibDBIcon only if
                     another addon has loaded it (6.10)
   Bindings.xml      "Toggle Road to Forever", "Open Macros", "Open Talents"
@@ -590,6 +594,7 @@ Account-slot macros are also recorded in `R2FDB.createdAccount`.
 | `CHARACTER_POINTS_CHANGED` | talent learning: confirm the last point landed, then spend the next |
 | `PLAYER_LEVEL_UP` | refresh free talent points on Home and Talents |
 | `ADDON_ACTION_FORBIDDEN` / `ADDON_ACTION_BLOCKED` | (step 10) ours + `LearnTalent`: switch to guided mode (13.8) |
+| `CVAR_UPDATE` | (v0.9.0) redraw Home's Quick settings boxes from the live CVars (throttled, only while Home shows, 12.4.1) |
 
 ### 6.6 Taint and secure code (role: taint auditor)
 
@@ -1143,6 +1148,10 @@ shows under the repo's Actions tab.
 10. **Talent learning**: Learn talents + confirm popup, point-by-point learning
     (or the guided fallback if `LearnTalent` is blocked). Done in v0.8.0; decisions
     in 13.8.
+11. **Quick settings** (added to the backlog 2026-10-01, after step 10): three Home
+    check boxes that set CVars directly, and the Macro Book hides the three site
+    macros they replace. Done in v0.9.0; decisions in 12.4.1. This was the last
+    planned build step.
 
 ## 10. Later / ideas
 
@@ -1197,6 +1206,11 @@ shows under the repo's Actions tab.
       trees, and `GetTalentTabInfo(tab)` returns the tree name first or second
       (13.7; else the headers read `Tree 1..3`). `InputBoxTemplate` exists (link box).
 - [ ] The mini trees read well at 26 px (13.7: talent-frame ring tints, glow, badge).
+- [ ] Quick settings (12.4.1): `GetCVar` / `SetCVar` / `GetCVarDefault` exist and know
+      `cameraDistanceMaxZoomFactor`, `UnitNamePlayerGuild`, `UnitNamePlayerPVPTitle`;
+      the client takes `cameraDistanceMaxZoomFactor 4` without clamping it; whether
+      `SetCVar` on these three is really blocked in combat (we refuse in combat either
+      way); `CVAR_UPDATE` fires on a `/console` change.
 
 ---
 
@@ -1279,12 +1293,131 @@ Classic `CharacterFrameTabButtonTemplate`):
 
 | Tab | Content |
 |---|---|
-| **Home** | two large entries in spellbook-slot style: **Macro Book** (`38 macros in your library, 12 on your bars`) and **Talents** (`5 free talent points`, or `No free talent points`). Clicking one switches tab. Below: Import macros button. |
+| **Home** | two large entries in spellbook-slot style: **Macro Book** (`38 macros in your library, 12 on your bars`) and **Talents** (`5 free talent points`, or `No free talent points`). Clicking one switches tab. Below: Import macros button. Below that: **Quick settings** (12.4.1). |
 | **Macros** | the Macro Book (section 5) |
 | **Talents** | section 13.4 |
 
 Window position, size and last tab are saved. Esc closes it. Same sounds as the
 Spellbook.
+
+**Quick settings (Home tab, built in v0.9.0).** Three check boxes that change game
+settings directly with `SetCVar`, so no macro and no macro slot is used:
+
+```
+ Quick settings
+ These change your game settings directly. No macro or macro slot needed.
+ [x] Max camera zoom      cameraDistanceMaxZoomFactor 4   (unticked = GetCVarDefault)
+ [ ] Hide guild names     UnitNamePlayerGuild 0           (unticked = 1)
+ [ ] Hide PvP titles      UnitNamePlayerPVPTitle 0        (unticked = 1)
+```
+
+- The boxes read the current value with `GetCVar` whenever the Home tab is drawn,
+  so a value set some other way shows correctly. Out of combat only.
+- The three site macros that do the same (`ANY/Zoom`, `ANY/HideGuild`,
+  `ANY/HidePvP` in data.py's Universal "Misc / UI" group) **stay on the website**
+  for players without the addon; the addon **hides them from the Macro Book**.
+
+### 12.4.1 Decisions made while building it (Quick settings, v0.9.0, 2026-10-02)
+
+**Where the code lives.** `QuickSettings.lua` (new, top level like `Macros.lua` /
+`Talents.lua`: logic, no frames) holds the three items (`QuickSettings.ITEMS`: CVar,
+on value, off value, the site macro id it replaces), reads/writes the CVars and
+answers the Macro Book's `HidesMacro(id)`. `UI/Home.lua` draws the boxes. One table
+drives both, so the boxes and the hidden macros can't drift apart.
+
+**Reading (Event flow).**
+- The boxes are redrawn from `GetCVar` on every Home refresh: tab opened (the
+  existing `MainWindow` page hook), combat start/end (`Home.SetCombat`), and the new
+  `CVAR_UPDATE` (fires when anything changes a CVar: `/console`, Blizzard's options,
+  another addon, ours). `CVAR_UPDATE` goes through Home's existing 0.2 s throttle and
+  does nothing while Home isn't showing. `PLAYER_ENTERING_WORLD` isn't needed: CVars
+  are loaded before any addon code runs, and nothing is read until Home is drawn.
+- **Nothing is stored in SavedVariables.** The game saves CVars itself; a stored copy
+  could only disagree with the live value, and the box must show reality.
+- **"Ticked" = the live value equals the on value**, compared as numbers when both
+  are numbers (a client may report `4` as `4.000000`). A zoom at 2.2 set by something
+  else shows unticked; ticking it sets 4.
+- After a click the box is redrawn from the live value again (6.9's rule: never from
+  `GetChecked`), and the click flips the *live* value, not the box's own state, so a
+  stale box can't write the wrong way.
+
+**Writing.**
+- **Zoom unticked = `GetCVarDefault("cameraDistanceMaxZoomFactor")`, never a typed-in
+  number.** The default differs between client versions and Forever may change it;
+  a guessed "default" would leave the player on a camera distance they never chose,
+  with nothing on screen saying so. If the client has no `GetCVarDefault` (or it
+  returns nothing), unticking is **refused** with `Couldn't read the game's default
+  for this setting, so it was left as it is.` (ticking still works). Guild and PvP
+  titles have fixed off values (`1`), as specced.
+- **Read back after `SetCVar`** (`pcall`-guarded). If the game refused the value,
+  raised, or stored something else (e.g. clamped the zoom to its own maximum), the
+  player sees `The game didn't accept that setting.` and the box shows the live value.
+- **API lookup:** the global `GetCVar` / `SetCVar` / `GetCVarDefault` first (Classic
+  Era), else `C_CVar.<same name>` (newer clients keep only that table). Missing
+  `SetCVar`, or `GetCVar` returning nil for that CVar (unknown in this client): the
+  box is greyed out with the tooltip `Your game doesn't have this setting.`
+
+**Combat (Taint & secure execution).**
+- **Refused in combat, as BACKLOG specifies** ("Out of combat only"). The boxes grey
+  out on `PLAYER_REGEN_DISABLED` (the Import button's rule, 6.7) with `Can't be changed
+  in combat.` in the tooltip, and `QuickSettings.Set` itself checks `R2F.InCombat()`
+  (event flag + `InCombatLockdown()`) **before** `SetCVar`, as the backstop for a click
+  landing between the event and the redraw (`You can't change game settings in combat.`).
+- **Refused, not queued:** a click is not a confirmed popup (6.9 queues only those),
+  and a setting flipping by itself after the fight would be a surprise (6.7's drag
+  rule).
+- **Whether the real client blocks `SetCVar` for these three CVars in combat is
+  unconfirmed.** Some CVars are combat-protected in newer clients (mostly nameplate
+  ones); these three are probably not. The gate is implemented anyway because the
+  BACKLOG item states it as a requirement, it costs nothing (nobody needs to change
+  camera zoom mid-pull), and it keeps every write in this addon under one rule. If the
+  beta shows they're unprotected, the gate can stay. TESTING.md 16 checks it.
+- No frames are named (no new globals), nothing of Blizzard's is hooked or written;
+  `SetCVar` from addon code out of combat is an ordinary call. A source test pins every
+  CVar API use to `QuickSettings.lua` and the combat check before the write.
+
+**The Macro Book (hiding the three).**
+- **Exact ids, not a pattern:** `ANY/Zoom`, `ANY/HideGuild`, `ANY/HidePvP`, the ids
+  build.py makes from data.py (`ANY/` + `short`). A pattern ("contains Zoom", "body
+  has /console") would also hide unrelated macros: a player's or the site's future
+  macro that mentions the camera, or a class macro whose short happens to be `Zoom`.
+  The tests check the ids **against data.py's own output** (each must be the
+  `/console <cvar> <on>` macro in macros.html), so renaming a `short` on the site fails
+  the tests instead of silently showing the macro again.
+- **Hidden only in the grid** (`MacroBook` filters each tab's entries; a tab left empty
+  disappears; the tab tooltip counts what's shown). They **stay in the library**: an
+  import still stores them (the preview counts them as usual), and a real macro a
+  player already made from one is still tracked, updated, tidied and removed like any
+  other. Home's `N macros in your library` keeps counting the whole library.
+- **Only while its box can work:** if this client lacks the CVar or `SetCVar`, the
+  macro is shown again, so the player always has one way to get the setting.
+- **A line on the Universal tab** says where they went, when the library has any of
+  them: `Zoom, guild names and PvP titles are Quick settings on the Home tab, so no
+  macro is needed.` (after the 5.7 other-classes line).
+
+**Layout.** Heading `Quick settings` (GameFontNormal) + a grey note, then the three
+boxes (`UI.CheckButton`: same `UICheckButtonTemplate` -> plain CheckButton chain as
+Settings, 6.9) under Home's import hint, 26 px apart; labels grey out with the box.
+Each box has a tooltip naming the CVar. Positions are unverified in the client
+(TESTING.md 16).
+
+**Testing.** `run_tests.py` adds `test_quick_settings` (template and fallback paths).
+The stubs got `GetCVar` / `SetCVar` / `GetCVarDefault` (strings; a default of `1.7`,
+deliberately not a usual one; `SetCVar` logs every call, raises in combat, can clamp
+or raise on demand, and fires `CVAR_UPDATE`). Covered: the items vs data.py; boxes read
+values set elsewhere on open, after `CVAR_UPDATE` and on re-opening Home; tick/untick
+write exactly `4` / the default (two different defaults) / `0` / `1`; flip from the
+live value; no `GetCVarDefault` (refused, message) and the `C_CVar` fallbacks; combat
+by event flag and by lockdown alone (refused, nothing written, boxes greyed, tooltip),
+working again after; clamp and raise reported; the book hides exactly the three ids
+while look-alikes (`ANY/ZoomIn`, `ANY/HideGuilds`, `WARRIOR/Zoom`, wrong case/space)
+stay, every other Universal macro shows, tab count, the note, library and Home count
+unchanged; an unknown CVar or no `SetCVar` brings the macro back and greys the box; a
+library holding only the three; nothing in SavedVariables; no new globals; the source
+pins. 15 hand mutations of the new code (combat gate, hardcoded default, hide
+regardless, pattern match, toggle direction, read-back, numeric compare, pcall,
+`C_CVar` fallback, book filter, empty tab, note, live read, combat greying,
+`CVAR_UPDATE`) each fail the suite.
 
 ---
 

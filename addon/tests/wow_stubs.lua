@@ -251,6 +251,29 @@ function ToggleTalentFrame()
 end
 function PanelTemplates_GetSelectedTab(f) return f.selectedTab end
 
+-- Quick settings (ADDON_PLAN 12.4.1): CVars as strings, like the client.
+-- T.cvars = live values, T.cvarDefaults = what GetCVarDefault answers
+-- (deliberately not a "usual" default, so a hardcoded guess fails the tests).
+-- GetCVar of an unknown CVar = nil. SetCVar logs every call in T.cvarWrites and
+-- RAISES in combat: that is test strictness (any SetCVar in combat fails the
+-- suite), not a claim about the real client (TESTING.md 16). T.cvarClamp[name]
+-- = the value the client stores instead (a client that clamps); T.cvarError =
+-- SetCVar raises. It fires CVAR_UPDATE like the client.
+T.cvars = { cameraDistanceMaxZoomFactor = "1.7", UnitNamePlayerGuild = "1", UnitNamePlayerPVPTitle = "1" }
+T.cvarDefaults = { cameraDistanceMaxZoomFactor = "1.7", UnitNamePlayerGuild = "1", UnitNamePlayerPVPTitle = "1" }
+T.cvarWrites = {}
+T.cvarClamp = {}
+function GetCVar(name) return T.cvars[name] end
+function GetCVarDefault(name) return T.cvarDefaults[name] end
+function SetCVar(name, value)
+  if T.combat then error("SetCVar: called in combat (test stub)", 2) end
+  table.insert(T.cvarWrites, name .. "=" .. tostring(value))
+  if T.cvarError then error(T.cvarError, 2) end
+  if T.cvars[name] == nil then return end
+  T.cvars[name] = T.cvarClamp[name] or tostring(value)
+  T.fire("CVAR_UPDATE", name, value)
+end
+
 function InCombatLockdown() return T.combat end
 function GetSpellTexture(name) return T.knownSpells[name] end
 function GetItemInfo() return nil end

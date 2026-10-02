@@ -395,12 +395,42 @@ end
 -- Refresh
 -- ---------------------------------------------------------------------------
 
+-- Quick settings (12.4.1) replace three Universal macros (ANY/Zoom,
+-- ANY/HideGuild, ANY/HidePvP), so the book doesn't show them: offering a
+-- macro that costs a slot for something a Home check box does for free would
+-- only confuse. They stay in the library (an import still stores them, and a
+-- real macro already made from one is still tracked, updated and tidied);
+-- they're only left out of the grid here. The test is QuickSettings'
+-- exact-id lookup, which also keeps a macro visible while its box can't work
+-- (no CVar / SetCVar in this client). A section left empty gets no tab.
+local function visibleEntries(sec)
+  local out = {}
+  for _, e in ipairs(sec.entries) do
+    if not R2F.QuickSettings.HidesMacro(e.id) then out[#out + 1] = e end
+  end
+  return out
+end
+
 local function collectTabs()
   local list = {}
   for _, cls in ipairs({ "ANY", R2F.playerClass }) do
-    for _, sec in ipairs(Library.Sections(cls)) do list[#list + 1] = sec end
+    for _, sec in ipairs(Library.Sections(cls)) do
+      sec.entries = visibleEntries(sec)
+      if #sec.entries > 0 then list[#list + 1] = sec end
+    end
   end
   return list
+end
+
+-- The Universal tab's note when the library holds any of the hidden three,
+-- so a player who imported them knows where they went.
+local function quickSettingsNote()
+  for _, item in ipairs(R2F.QuickSettings.ITEMS) do
+    if Library.Get(item.macro) and R2F.QuickSettings.HidesMacro(item.macro) then
+      return L.BOOK_QUICK_SETTINGS
+    end
+  end
+  return ""
 end
 
 local function otherClassesText()
@@ -494,7 +524,13 @@ function MacroBook.Refresh()
     ui.empty:SetText("")
   end
   local showOther = (not sec) or sec.class == "ANY"
-  ui.other:SetText(showOther and otherClassesText() or "")
+  local lines = {}
+  if showOther then
+    for _, text in ipairs({ otherClassesText(), quickSettingsNote() }) do
+      if text ~= "" then lines[#lines + 1] = text end
+    end
+  end
+  ui.other:SetText(table.concat(lines, "\n"))
 
   refreshBottom()
 end

@@ -46,15 +46,11 @@ when dragged, so the 18/120 slot limit only counts macros you actually use.
       CHANGELOG.md. Decisions in ADDON_PLAN 13.8. **Never run on a real client:** do
       `TESTING.md` section 15 on a test character before learning a real build with it
       (`LearnTalent` from an addon/event, 0.5 s timeout vs ping, guided-mode frame names).
-- [ ] **Quick settings (Home tab):** three checkboxes that change game settings
-      directly with `SetCVar`, so no macro or macro slot is used. Max camera
-      zoom = `cameraDistanceMaxZoomFactor 4` (unticked = game default via
-      `GetCVarDefault`). Hide guild names = `UnitNamePlayerGuild 0` (unticked =
-      1). Hide PvP titles = `UnitNamePlayerPVPTitle 0` (unticked = 1).
-      Checkboxes read the current value with `GetCVar` when the tab opens. Out
-      of combat only. The three macros stay on the website, but the addon
-      hides them from the Macro Book. Add it to `ADDON_PLAN.md` section 12.4
-      when it gets built.
+- [x] **Quick settings (Home tab):** shipped 2026-10-02 as v0.9.0 (tag
+      `r2f-v0.9.0`) — see CHANGELOG.md. Documented in `ADDON_PLAN.md` 12.4,
+      decisions in 12.4.1. Last item of the addon build. Not yet run in the game:
+      `TESTING.md` section 16 (incl. whether `SetCVar` is combat-blocked for
+      these CVars; the addon refuses in combat either way).
 - [ ] **Beta checks** (plan section 11): Interface number, slot limits,
       templates, CreateMacro+PickupMacro, relog survival, paste speed,
       LibDBIcon, menu API, LearnTalent from a click, talent order vs our links.

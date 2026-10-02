@@ -2614,7 +2614,277 @@ def test_talent_source_writes():
           "glow/host are unnamed frames on UIParent; Blizzard frames only looked up")
     toc = open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read()
     check("UI\\TalentPanel.lua" in toc and "UI\\TalentGuide.lua" in toc, "TalentPanel.lua and TalentGuide.lua in the TOC")
-    check(re.search(r"^## Version: 0\.8\.0$", toc, re.M) is not None, "TOC version 0.8.0")
+    check(re.search(r"^## Version: 0\.9\.0$", toc, re.M) is not None, "TOC version 0.9.0")
+
+
+def test_quick_settings(templates, fx):
+    """Quick settings (ADDON_PLAN 12.4.1): Home check boxes read GetCVar, write SetCVar
+    (GetCVarDefault for the zoom's off value), refuse in combat, and the Macro Book
+    hides exactly ANY/Zoom, ANY/HideGuild, ANY/HidePvP."""
+    lua = new_runtime(templates)
+    tag = "templates" if templates else "fallbacks"
+    T = lua.eval("TEST")
+    L = lua.eval("R2F.L")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    QS = lua.eval("R2F.QuickSettings")
+    writes = lambda: lua_table_to_list(lua.eval("TEST.cvarWrites"))
+    errors = lambda: lua_table_to_list(lua.eval("TEST.errors"))
+    clear = lambda: lua.execute("TEST.cvarWrites = {} TEST.errors = {}")
+
+    # ---- The three items match data.py's macros exactly (via macros.html) -----
+    html = open(os.path.join(ROOT, "macros.html"), encoding="utf-8").read()
+    data = json.loads(re.search(r"^const D = (.*);$", html, re.M).group(1))
+    site = {"ANY/" + m["short"]: m for s in data["universal"]["sections"] for g in s["groups"] for m in g["macros"]
+            if m.get("short")}
+    items = [(lua.eval("R2F.QuickSettings.ITEMS[%d].macro" % i), lua.eval("R2F.QuickSettings.ITEMS[%d].cvar" % i),
+              lua.eval("R2F.QuickSettings.ITEMS[%d].on" % i), lua.eval("R2F.QuickSettings.ITEMS[%d].off" % i))
+             for i in range(1, lua.eval("#R2F.QuickSettings.ITEMS") + 1)]
+    check([i[0] for i in items] == ["ANY/Zoom", "ANY/HideGuild", "ANY/HidePvP"], "exactly the three macro ids: %s" % items)
+    for mid, cvar, on, _ in items:
+        check(mid in site and site[mid]["code"] == "/console %s %s" % (cvar, on),
+              "%s is data.py's '/console %s %s' macro" % (mid, cvar, on))
+    check([(i[1], i[2], i[3]) for i in items] == [("cameraDistanceMaxZoomFactor", "4", None),
+                                                  ("UnitNamePlayerGuild", "0", "1"), ("UnitNamePlayerPVPTitle", "0", "1")],
+          "CVar values as BACKLOG specifies (zoom off = game default, not a constant)")
+    zoom_ref = re.search(r"cameraDistanceMaxZoomFactor\", on = \"4\", off = nil", open(
+        os.path.join(ADDON, "QuickSettings.lua"), encoding="utf-8").read())
+    check(zoom_ref is not None, "zoom's off value is nil in the source (no hardcoded default)")
+
+    # Import everything, as a player who picked every macro on the site would.
+    parse = lua.eval("function(s) local a, b = R2F.Import.Parse(s) return a, b end")
+    res, _ = parse(fx["everything"]["string"])
+    lua.eval("R2F.Library.Apply")(res.records, 1)
+    total = len(fx["everything"]["records"])
+
+    # ---- Home opens: the boxes show the LIVE values ----------------------------
+    # Set by "someone else" (a /console, another addon) before Home is opened.
+    lua.execute("TEST.cvars.UnitNamePlayerGuild = '0' TEST.cvars.cameraDistanceMaxZoomFactor = '4.000000'")
+    lua.execute('SlashCmdList.R2F("")')
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "home", "%s: Home first" % tag)
+    n = find_frames(lua, "f.qsItem ~= nil", "QSB")
+    check(n == 3, "%s: three Quick settings boxes on Home (%d)" % (tag, n))
+    check([lua.eval("QSB[%d].qsItem.key" % i) for i in (1, 2, 3)] == ["zoom", "guild", "pvp"], "boxes in item order")
+    check([lua.eval("QSB[%d].r2fLabel.__text" % i) for i in (1, 2, 3)] == [L.QS_ZOOM, L.QS_GUILD, L.QS_PVP],
+          "box labels: %s / %s / %s" % (L.QS_ZOOM, L.QS_GUILD, L.QS_PVP))
+    check(lua.eval("QSB[1]:IsVisible() and QSB[3]:IsVisible()") is True, "boxes live on the visible Home page")
+    checked = lambda: [lua.eval("QSB[%d]:GetChecked()" % i) is True for i in (1, 2, 3)]
+    enabled = lambda: [lua.eval("QSB[%d]:IsEnabled()" % i) is True for i in (1, 2, 3)]
+    check(checked() == [True, True, False], "Home open reads GetCVar: zoom 4.000000 + guild 0 set elsewhere -> ticked; "
+          "pvp 1 -> unticked: %s" % checked())
+    check(writes() == [], "opening Home writes no CVar")
+    check(enabled() == [True, True, True], "boxes enabled out of combat")
+    check(find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.QS_TITLE", "QT") == 1 and
+          find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.QS_NOTE", "QN") == 1,
+          "Quick settings heading + note line on Home")
+
+    # Changed elsewhere while Home is showing: CVAR_UPDATE redraws (throttled).
+    lua.execute("TEST.cvars.UnitNamePlayerPVPTitle = '0'")
+    T.fire("CVAR_UPDATE", "UnitNamePlayerPVPTitle", "0")
+    T.runTimers()
+    check(checked() == [True, True, True], "CVAR_UPDATE from elsewhere ticks the pvp box")
+    # Changed while another tab shows, no event: re-read when Home opens again.
+    lua.execute("R2F.MainWindow.SelectTab('macros') TEST.cvars.UnitNamePlayerPVPTitle = '1' "
+                "TEST.cvars.cameraDistanceMaxZoomFactor = '2.2' R2F.MainWindow.SelectTab('home')")
+    check(checked() == [False, True, False], "switching back to Home re-reads every CVar (zoom 2.2 = not max)")
+
+    # ---- Ticking / unticking writes exactly the right values -------------------
+    clear()
+    lua.execute("QSB[1]:Click()")
+    check(writes() == ["cameraDistanceMaxZoomFactor=4"] and checked()[0], "tick zoom -> SetCVar(cameraDistanceMaxZoomFactor, 4)")
+    clear()
+    lua.execute("QSB[1]:Click()")
+    check(writes() == ["cameraDistanceMaxZoomFactor=1.7"] and not checked()[0],
+          "untick zoom -> the GetCVarDefault value (1.7): %s" % writes())
+    # A different default in another client: still read, never assumed.
+    lua.execute("TEST.cvarDefaults.cameraDistanceMaxZoomFactor = '2.6' TEST.cvars.cameraDistanceMaxZoomFactor = '4'"
+                " R2F.Home.Refresh()")
+    clear()
+    lua.execute("QSB[1]:Click()")
+    check(writes() == ["cameraDistanceMaxZoomFactor=2.6"], "untick zoom follows GetCVarDefault (2.6): %s" % writes())
+    clear()
+    lua.execute("QSB[2]:Click()")
+    check(writes() == ["UnitNamePlayerGuild=1"] and not checked()[1], "untick guild -> UnitNamePlayerGuild 1")
+    clear()
+    lua.execute("QSB[2]:Click()")
+    check(writes() == ["UnitNamePlayerGuild=0"] and checked()[1], "tick guild -> UnitNamePlayerGuild 0")
+    clear()
+    lua.execute("QSB[3]:Click()")
+    check(writes() == ["UnitNamePlayerPVPTitle=0"] and checked()[2], "tick pvp -> UnitNamePlayerPVPTitle 0")
+    clear()
+    lua.execute("QSB[3]:Click()")
+    check(writes() == ["UnitNamePlayerPVPTitle=1"] and not checked()[2], "untick pvp -> UnitNamePlayerPVPTitle 1")
+    check(errors() == [], "no errors on normal clicks: %s" % errors())
+    # The flip is from the live value, not the button's own toggle.
+    lua.execute("TEST.cvars.UnitNamePlayerPVPTitle = '0'")   # changed elsewhere, no event, box still unticked
+    clear()
+    lua.execute("QSB[3]:Click()")
+    check(writes() == ["UnitNamePlayerPVPTitle=1"] and not checked()[2],
+          "a click flips the LIVE value (0 -> 1), even when the box was stale")
+
+    # No GetCVarDefault: zoom can't be unticked (no guessing); C_CVar fallback works.
+    lua.execute("TEST.cvars.cameraDistanceMaxZoomFactor = '4' SAVED_DEF = GetCVarDefault GetCVarDefault = nil"
+                " R2F.Home.Refresh()")
+    clear()
+    lua.execute("QSB[1]:Click()")
+    check(writes() == [] and errors() == [L.QS_NO_DEFAULT] and checked()[0],
+          "no GetCVarDefault: untick refused with a message, nothing written, box stays ticked")
+    check(lua.eval("R2F.QuickSettings.OffValue(R2F.QuickSettings.ITEMS[2])") == "1",
+          "guild/pvp off value is the fixed 1 (no default needed)")
+    lua.execute("C_CVar = { GetCVarDefault = function(n) return '1.9' end }")
+    clear()
+    lua.execute("QSB[1]:Click()")
+    check(writes() == ["cameraDistanceMaxZoomFactor=1.9"], "C_CVar.GetCVarDefault used when the global is missing")
+    lua.execute("GetCVarDefault = SAVED_DEF C_CVar = nil")
+
+    # ---- Combat gate ------------------------------------------------------------
+    T.fire("PLAYER_REGEN_DISABLED")       # flag set; InCombatLockdown() still false here
+    check(enabled() == [False, False, False], "boxes greyed out in combat")
+    check(lua.eval("QSB[1].r2fLabel.__color[1]") == 0.5, "labels grey while disabled")
+    clear()
+    lua.execute("QSB[2]:Fire('OnClick')")  # a click that lands anyway (between event and redraw)
+    check(writes() == [] and errors() == [L.QS_COMBAT], "combat (event flag): click refused, nothing written: %s" % errors())
+    T.combat = True
+    clear()
+    for i in (1, 2, 3):
+        lua.execute("QSB[%d]:Fire('OnClick')" % i)
+        check(lua.eval("R2F.QuickSettings.Set(R2F.QuickSettings.ITEMS[%d], true)" % i) is False,
+              "Set refused in combat (item %d)" % i)
+    check(writes() == [], "no SetCVar in combat at all (the stub would raise)")
+    check(checked() == [False, True, False], "boxes still show the live values in combat")
+    lua.execute("QSB[1]:Fire('OnEnter')")
+    check(L.QS_TIP_COMBAT in lua_table_to_list(lua.eval("GameTooltip.lines")), "tooltip says why in combat")
+    lua.execute("R2F.inCombat = false")    # lockdown only, no flag: still refused
+    clear()
+    lua.execute("R2F.QuickSettings.Toggle(R2F.QuickSettings.ITEMS[1])")
+    check(writes() == [] and errors() == [L.QS_COMBAT], "InCombatLockdown alone also refuses")
+    T.combat = False
+    T.fire("PLAYER_REGEN_ENABLED")
+    check(enabled() == [True, True, True], "boxes enabled again after combat")
+    clear()
+    lua.execute("QSB[2]:Click()")
+    check(writes() == ["UnitNamePlayerGuild=1"], "after combat a click works (nothing was queued meanwhile)")
+    lua.execute("QSB[1]:Fire('OnEnter')")
+    tip = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(tip[0] == L.QS_ZOOM and tip[1] == L.QS_ZOOM_TIP and L.QS_TIP_COMBAT not in tip, "tooltip out of combat: %s" % tip)
+
+    # ---- The game refusing or clamping ------------------------------------------
+    lua.execute("TEST.cvarClamp.cameraDistanceMaxZoomFactor = '3.4'")
+    clear()
+    lua.execute("QSB[1]:Click()")
+    check(writes() == ["cameraDistanceMaxZoomFactor=4"] and errors() == [L.QS_NOT_ACCEPTED] and not checked()[0],
+          "a clamped value is reported and the box shows the live 3.4 (unticked)")
+    lua.execute("TEST.cvarClamp = {} TEST.cvarError = 'boom'")
+    clear()
+    lua.execute("QSB[3]:Click()")
+    check(errors() == [L.QS_NOT_ACCEPTED], "SetCVar raising is caught (pcall) and reported")
+    lua.execute("TEST.cvarError = nil")
+
+    # ---- Macro Book: exactly the three ids hidden ------------------------------
+    # A few look-alikes the filter must NOT catch (exact ids only).
+    lua.execute("""R2F.Library.Apply({
+      { id = 'ANY/ZoomIn', class = 'ANY', section = 'Universal', group = 'Misc / UI', name = 'Zoom in', short = 'ZoomIn',
+        body = '/console cameraDistanceMaxZoomFactor 2' },
+      { id = 'ANY/HideGuilds', class = 'ANY', section = 'Universal', group = 'Misc / UI', name = 'x', short = 'HideGuilds',
+        body = '/console UnitNamePlayerGuild 0' },
+      { id = 'WARRIOR/Zoom', class = 'WARRIOR', section = 'General', group = 'Class QoL', name = 'x', short = 'Zoom',
+        body = '/console cameraDistanceMaxZoomFactor 4' },
+    }, 2)""")
+    for mid in ("ANY/ZoomIn", "ANY/HideGuilds", "WARRIOR/Zoom", "ANY/zoom", "ANY/Zoom ", "ANY/HidePvP2", "Zoom", ""):
+        check(QS.HidesMacro(mid) is False, "look-alike id %r is not hidden" % mid)
+    for mid in ("ANY/Zoom", "ANY/HideGuild", "ANY/HidePvP"):
+        check(QS.HidesMacro(mid) is True, "%s hidden while its box works" % mid)
+
+    def book_ids(section="Universal", cls="ANY"):
+        lua.execute("R2F.MacroBook.ShowSection('%s', '%s')" % (cls, section))
+        find_frames(lua, "f.__kind == 'Button' and f.__scripts.OnDragStart and f ~= R2FMinimapButton", "BS")
+        find_frames(lua, "f.__kind == 'Button' and f.__normal and f.__normal.__tex and "
+                    "f.__normal.__tex:find('NextPage%-Up')", "NEXTB")
+        ids = []
+        for _ in range(20):
+            ids += [lua.eval("BS[%d].entry.id" % i) for i in range(1, 13) if lua.eval("BS[%d]:IsShown()" % i)]
+            if not lua.eval("NEXTB[1]:IsEnabled()"):
+                break
+            lua.execute("NEXTB[1]:Click()")
+        return ids
+
+    universal = [r["id"] for r in fx["everything"]["records"] if r["class"] == "ANY"]
+    for mid in ("ANY/Zoom", "ANY/HideGuild", "ANY/HidePvP"):
+        check(mid in universal, "fixture (site import) contains %s" % mid)
+    shown = book_ids()
+    expected = [i for i in universal if i not in ("ANY/Zoom", "ANY/HideGuild", "ANY/HidePvP")]
+    check(not {"ANY/Zoom", "ANY/HideGuild", "ANY/HidePvP"} & set(shown), "%s: Universal tab hides the three" % tag)
+    check(set(expected) <= set(shown) and {"ANY/ZoomIn", "ANY/HideGuilds"} <= set(shown)
+          and len(shown) == len(expected) + 2,
+          "every other Universal macro (and both look-alikes) still shows: %d of %d" % (len(shown), len(expected) + 2))
+    find_frames(lua, "f.__kind == 'CheckButton' and f.sec and f.__shown and f.sec.class == 'ANY'", "UT")
+    lua.execute("UT[1]:Fire('OnEnter')")
+    tip = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(tip[1] == "%d macros" % (len(expected) + 2), "Universal tab tooltip counts the visible macros: %s" % tip)
+    check(find_frames(lua, "f.__kind == 'FontString' and type(f.__text) == 'string' and "
+                      "f.__text:find(R2F.L.BOOK_QUICK_SETTINGS, 1, true)", "QNOTE") == 1,
+          "Universal tab says where the three went")
+    check("WARRIOR/Zoom" in book_ids("General", "WARRIOR"), "a class macro with short Zoom still shows (id differs)")
+    check(lua.eval("R2F.Library.Get('ANY/Zoom') ~= nil and R2F.Library.Get('ANY/HidePvP') ~= nil"),
+          "the three stay in the library (only the grid hides them)")
+    lua.execute("R2F.MainWindow.SelectTab('home')")
+    lua.execute("QHOME = nil for _, f in ipairs(TEST.allFrames) do if f.tab == 'macros' then QHOME = f end end")
+    check(lua.eval("QHOME.sub.__text").startswith("%d macros in your library" % (total + 3)),
+          "Home's library count still counts the whole library")
+
+    # A box that can't work keeps its macro visible.
+    lua.execute("TEST.cvars.UnitNamePlayerPVPTitle = nil R2F.Home.Refresh()")
+    check(enabled() == [True, True, False] and checked()[2] is False, "unknown CVar: that box disabled + unticked")
+    clear()
+    lua.execute("QSB[3]:Fire('OnClick')")
+    check(writes() == [] and errors() == [L.QS_UNAVAILABLE], "unknown CVar: click refused with a message")
+    lua.execute("QSB[3]:Fire('OnEnter')")
+    check(L.QS_UNAVAILABLE in lua_table_to_list(lua.eval("GameTooltip.lines")), "unknown CVar: tooltip says so")
+    shown = book_ids()
+    check("ANY/HidePvP" in shown and "ANY/Zoom" not in shown and "ANY/HideGuild" not in shown,
+          "unknown CVar: only that macro comes back to the book")
+    lua.execute("TEST.cvars.UnitNamePlayerPVPTitle = '1' SAVED_SET = SetCVar SetCVar = nil")
+    shown = book_ids()
+    check({"ANY/Zoom", "ANY/HideGuild", "ANY/HidePvP"} <= set(shown), "no SetCVar: all three macros show again")
+    lua.execute("R2F.MainWindow.SelectTab('home')")
+    check(enabled() == [False, False, False], "no SetCVar: every box disabled")
+    lua.execute("C_CVar = { SetCVar = SAVED_SET }")
+    check(QS.HidesMacro("ANY/Zoom") is True, "C_CVar.SetCVar counts as available")
+    lua.execute("SetCVar = SAVED_SET C_CVar = nil")
+
+    # Library with only the hidden three: no Universal tab, but the note.
+    lua.execute("R2F.Library.db.library = {}")
+    lua.eval("R2F.Library.Apply")(lua.eval("""(function(recs)
+      local out = {}
+      for i = 1, #recs do local r = recs[i]
+        if r.id == 'ANY/Zoom' or r.id == 'ANY/HideGuild' or r.id == 'ANY/HidePvP' then out[#out + 1] = r end
+      end
+      return out end)""")(res.records), 3)
+    book_ids()
+    check(find_frames(lua, "f.__kind == 'CheckButton' and f.sec and f.__shown", "VT") == 0,
+          "only hidden macros: no tab")
+    check(find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.EMPTY_CLASS", "EC") == 1 and
+          find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.BOOK_QUICK_SETTINGS", "QN2") == 1,
+          "only hidden macros: the empty-class text plus the Quick settings note")
+
+    # ---- Nothing saved, no new globals, SetCVar only in QuickSettings.lua -------
+    check(lua.eval("R2FDB.quick == nil and R2FDB.settings.quick == nil and R2FCharDB.quick == nil"),
+          "Quick settings store nothing in SavedVariables")
+    lua.execute("NEWG = {} for k in pairs(_G) do if not BEFORE[k] then NEWG[#NEWG + 1] = k end end")
+    newg = set(lua_table_to_list(lua.eval("NEWG")))
+    check(not any("Quick" in g or g.startswith("build") for g in newg), "%s: no Quick-settings globals: %s" % (tag, sorted(newg)))
+    users = []
+    for dirpath, _, names in os.walk(ADDON):
+        for nm in names:
+            if nm.endswith(".lua"):
+                code = "\n".join(l.split("--", 1)[0] for l in open(os.path.join(dirpath, nm), encoding="utf-8"))
+                if re.search(r"\b(SetCVar|GetCVar|GetCVarDefault)\b", code):
+                    users.append(nm)
+    check(users == ["QuickSettings.lua"], "CVar API only in QuickSettings.lua: %s" % users)
+    src = open(os.path.join(ADDON, "QuickSettings.lua"), encoding="utf-8").read()
+    body = src[src.index("function QuickSettings.Set("):]
+    body = body[:body.index("\nend\n")]
+    check(body.index("R2F.InCombat()") < body.index("pcall(set"), "Set checks combat before SetCVar")
 
 
 def main():
@@ -2644,6 +2914,8 @@ def main():
     test_talent_learning(True)
     test_talent_learning(False)
     test_talent_source_writes()
+    test_quick_settings(True, fx)
+    test_quick_settings(False, fx)
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
 

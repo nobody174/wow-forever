@@ -1,4 +1,4 @@
-# Road to Forever: in-game test checklist (v0.8.0, addon steps 3 to 10)
+# Road to Forever: in-game test checklist (v0.9.0, addon steps 3 to 10 + Quick settings)
 
 Since v0.4.0 the Macro Book is the **Macros tab** of the main window: wherever an
 older section below says "`/r2f` opens the Macro Book" or "open the book", use
@@ -536,7 +536,57 @@ everything looks. ADDON_PLAN 13.8 has the reasoning.
       when you later open/close the talent window in combat (`/console taintLog 1` and
       check `Logs\taint.log` for `RoadToForever` after a session).
 
-## Known gaps in v0.8.0 (by design / later)
+## 16. Quick settings (v0.9.0)
+
+Out of the game, `run_tests.py` checks the three boxes against a fake CVar store: they
+read values set elsewhere, write exactly `4` / the game default / `0` / `1`, refuse in
+combat, report a refused or clamped value, and the Macro Book hides exactly `ANY/Zoom`,
+`ANY/HideGuild`, `ANY/HidePvP` (ADDON_PLAN 12.4.1). What only the game can show:
+
+- [ ] **API.** `/dump GetCVar("cameraDistanceMaxZoomFactor"), GetCVarDefault("cameraDistanceMaxZoomFactor")`,
+      `/dump GetCVar("UnitNamePlayerGuild"), GetCVar("UnitNamePlayerPVPTitle")`,
+      `/dump SetCVar ~= nil`. **Pass:** every value is a number (as text), `true` at the
+      end. Note the zoom default here: ________. A `nil` means that box shows greyed
+      out with `Your game doesn't have this setting.` (and its macro is back in the book).
+- [ ] **The block.** `/r2f` -> Home. **Pass:** `Quick settings`, a grey note, three
+      check boxes under the Import hint, inside the window (not over the bottom tabs),
+      labels readable. Hover each: name + what it does.
+- [ ] **Reads reality.** Close the window, type `/console UnitNamePlayerGuild 0`, open
+      Home. **Pass:** `Hide guild names` is ticked. Type `/console UnitNamePlayerGuild 1`
+      with Home open. **Pass:** it unticks within a moment (`CVAR_UPDATE`; if it only
+      changes after switching tabs, the event doesn't exist here, which is fine).
+- [ ] **Max camera zoom.** Tick it, scroll the camera all the way out. **Pass:** it goes
+      clearly further than before; `/dump GetCVar("cameraDistanceMaxZoomFactor")` says
+      `4` (if it says something lower, the client clamps it: you'd see `The game didn't
+      accept that setting.` and the box unticked; note the value). Untick. **Pass:** the
+      dump shows the default noted above, and the camera can't go as far.
+- [ ] **Hide guild names / PvP titles.** Stand near a guilded player (and one with a PvP
+      rank if you can find one). Tick each. **Pass:** the guild line / rank title
+      disappears from their name; untick brings it back.
+- [ ] **Survives a relog.** Tick all three, `/reload` (and once a full relog). **Pass:**
+      still ticked and still in effect (the game saves CVars itself; the addon stores
+      nothing).
+- [ ] **Combat.** Attack a training dummy. **Pass:** the three boxes grey out, hover
+      says `Can't be changed in combat.`, clicking does nothing, no Lua error, no
+      "action blocked". After combat they work again. **Unconfirmed:** whether the game
+      itself blocks `SetCVar` for these three in combat. The addon refuses either way
+      (the backlog's "out of combat only"); if you want to know, out of the addon:
+      `/run C_Timer.After(3, function() SetCVar("UnitNamePlayerGuild", 0) end)`, pull
+      within 3 s, and see whether it changes or shows a blocked message. Note the
+      result in ADDON_PLAN 12.4.1.
+- [ ] **Macro Book.** Import a string that includes Zoom out more / Hide guild names /
+      Hide PvP titles (e.g. "Select everything" on the site). `/r2f macros`, Universal
+      tab. **Pass:** those three are not in the grid, every other Universal macro is, and
+      the line `Zoom, guild names and PvP titles are Quick settings on the Home tab, so
+      no macro is needed.` shows at the bottom. A real macro you made from one of them
+      before v0.9.0 still works and is untouched.
+
+## Known gaps in v0.9.0 (by design / later)
+
+- **Quick settings in combat:** refused even if the game would allow it (ADDON_PLAN
+  12.4.1); change them out of combat.
+- Hidden Quick-settings macros still count in Home's `N macros in your library` (they
+  are in the library; only the book hides them).
 
 - **Talent learning has never run on a real client.** Do section 15 on a test character
   before trusting it with a real build.

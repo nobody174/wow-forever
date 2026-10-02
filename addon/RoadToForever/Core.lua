@@ -66,6 +66,11 @@ handlers.CHARACTER_POINTS_CHANGED = function()
   R2F.MainWindow.RequestRefresh()
 end
 handlers.PLAYER_LEVEL_UP = function() R2F.MainWindow.RequestRefresh() end
+-- A CVar changed (/console, Blizzard's options, another addon, or our own
+-- Quick settings): redraw Home's boxes from the live values (12.4.1). They
+-- are also re-read every time the Home tab opens, so a client without this
+-- event only loses the live update while Home is already showing.
+handlers.CVAR_UPDATE = function() R2F.Home.RequestRefresh() end
 -- The game refusing a protected call from an addon (args: addon name,
 -- function). Only ours matters; for LearnTalent it means guided mode (13.8).
 local function actionBlocked(addon, fn)

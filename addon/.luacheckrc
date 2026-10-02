@@ -44,6 +44,9 @@ read_globals = {
   -- preview-API detection, guided mode (Blizzard talent window, read only)
   "LearnTalent", "GetTalentPrereqs", "AddPreviewTalentPoints", "LearnPreviewTalents", "GetCVarBool",
   "ToggleTalentFrame", "PanelTemplates_GetSelectedTab",
+  -- Quick settings (ADDON_PLAN 12.4.1): game settings via CVars. QuickSettings.lua
+  -- reads them through _G (falling back to C_CVar), so only C_CVar is named here.
+  "C_CVar",
 }
 -- Nothing is vendored in libs\ (ADDON_PLAN.md 6.10), so there is no
 -- third-party code to exclude; LibStub is only read through _G in Minimap.lua.

@@ -128,6 +128,23 @@ R2F.L = {
   HOME_IMPORT_HINT = "Pick macros on the Macros page of the Road to Forever site, click Copy import string, "
     .. "then click Import macros and paste it.",
 
+  -- Quick settings on the Home tab (12.4.1): game settings via SetCVar, no macro
+  QS_TITLE = "Quick settings",
+  QS_NOTE = "These change your game settings directly. No macro or macro slot needed.",
+  QS_ZOOM = "Max camera zoom",
+  QS_ZOOM_TIP = "Lets you zoom the camera out further (cameraDistanceMaxZoomFactor 4). "
+    .. "Untick to go back to the game's default.",
+  QS_GUILD = "Hide guild names",
+  QS_GUILD_TIP = "Hides guild names under players' names (UnitNamePlayerGuild 0).",
+  QS_PVP = "Hide PvP titles",
+  QS_PVP_TIP = "Hides PvP rank titles in players' names (UnitNamePlayerPVPTitle 0).",
+  QS_TIP_COMBAT = "Can't be changed in combat.",
+  QS_COMBAT = "You can't change game settings in combat.",
+  QS_UNAVAILABLE = "Your game doesn't have this setting.",
+  QS_NO_DEFAULT = "Couldn't read the game's default for this setting, so it was left as it is.",
+  QS_NOT_ACCEPTED = "The game didn't accept that setting.",
+  BOOK_QUICK_SETTINGS = "Zoom, guild names and PvP titles are Quick settings on the Home tab, so no macro is needed.",
+
   -- Talent export (13.4 Copy my build, step 8)
   TALENT_COPY_HINT = "Press Ctrl+C, then paste it in your browser or Discord.",
   TALENT_READ_FAILED = "couldn't read your talents yet. Try again in a moment.",

@@ -15,6 +15,10 @@
 -- Step 10 is the one irreversible write in the addon: the ONLY LearnTalent
 -- call is learnPoint() below, every point is checked against combat first,
 -- and nothing learns while R2F.InCombat() is true (13.8).
+-- 13.12 adds the "traits" mode for WoW Forever: the ONLY C_Traits writes
+-- (PurchaseRank, CommitConfig) are in purchasePoint() below, under the same
+-- rules, plus a two-way read-back and a fall back to guided mode on anything
+-- unexpected. It also moves the free-points source here (FreePointsInfo).
 
 local _, R2F = ...
 local L = R2F.L
@@ -230,11 +234,18 @@ end
 -- keep working unchanged; nodeID / spellID are new extras.
 -- Step 9's preview maps a pasted link onto exactly this list (13.2), so the
 -- export and the import can never disagree about which digit is which talent.
-function Talents.ReadTrees()
+-- The live talent config id (active spec group -> combat config), or nil.
+-- Shared by the reader, the free-points source (13.12) and the "traits"
+-- learning mode, so all three always look at the same config.
+local function liveConfigID()
   if not (C_Traits and C_SpecializationInfo) then return nil end
   local group = call(C_SpecializationInfo.GetActiveSpecGroup)
   if not group then return nil end
-  local configID = call(C_SpecializationInfo.GetCombatConfigIDForSpecGroup, group)
+  return call(C_SpecializationInfo.GetCombatConfigIDForSpecGroup, group)
+end
+
+function Talents.ReadTrees()
+  local configID = liveConfigID()
   if not configID then return nil end
   local config = call(C_Traits.GetConfigInfo, configID)
   if type(config) ~= "table" or type(config.treeIDs) ~= "table" or #config.treeIDs == 0 then return nil end
@@ -439,10 +450,88 @@ function Talents.IsEnglishClient()
   return loc == nil or loc == "enUS" or loc == "enGB"
 end
 
--- Unspent talent points: one function for the whole addon (the minimap
--- tooltip has had it since step 6; UnitCharacterPoints is guarded there).
+-- ---------------------------------------------------------------------------
+-- Unspent talent points (ADDON_PLAN 13.12): the ONE place the addon finds
+-- them. The Talents tab, the learning engine, Home and the minimap tooltip
+-- (Minimap.FreeTalentPoints) all come through here.
+-- ---------------------------------------------------------------------------
+-- Why C_Traits first: on WoW Forever the talents themselves live in a trait
+-- config (13.10), and a real screenshot showed Blizzard's window at "Unspent
+-- Talents: 17" while UnitCharacterPoints-based code said 0. In retail's trait
+-- system (the API family Forever's client carries) unspent points are a trait
+-- CURRENCY of the tree: C_Traits.GetTreeCurrencyInfo(configID, treeID,
+-- excludeStagedChanges) returns a list of { traitCurrencyID, quantity,
+-- maxQuantity, spent }, and quantity is what's left to spend.
+--   Note: C_Traits.GetTraitCurrencyInfo (seen in the live /dump) is NOT the
+--   amount in retail: it takes a traitCurrencyID and describes the currency
+--   (flags, type, icon). So it isn't used here.
+-- excludeStagedChanges = true: the rest of the addon reads activeRank, the
+-- APPLIED rank (13.10), so the free points must be the applied ones too, not
+-- "what's left after the changes sitting un-applied in Blizzard's window".
+-- Confidence: medium. The retail signature is well known; that Forever's
+-- client has GetTreeCurrencyInfo with the same shape is NOT confirmed (the
+-- dump excerpt didn't list it). Every step is guarded, and anything odd gives
+-- "unknown", never a guess.
+-- excludeStaged: true for the applied amount (everything here); false only
+-- to see how many points are staged (stagedPoints, 13.12).
+local function traitFreePoints(configID, excludeStaged)
+  if not (C_Traits and type(C_Traits.GetTreeCurrencyInfo) == "function") then return nil end
+  local config = call(C_Traits.GetConfigInfo, configID)
+  if type(config) ~= "table" or type(config.treeIDs) ~= "table" or #config.treeIDs == 0 then return nil end
+  -- Per currency id, so a pool shared by several trees (one tree per pane,
+  -- 13.10's other layout) is counted once, not once per tree.
+  local byCurrency, n = {}, 0
+  for _, treeID in ipairs(config.treeIDs) do
+    local list = call(C_Traits.GetTreeCurrencyInfo, configID, treeID, excludeStaged)
+    if type(list) ~= "table" then return nil end
+    for _, c in ipairs(list) do
+      local q = type(c) == "table" and c.quantity
+      if type(q) ~= "number" or q < 0 then return nil end
+      local id = c.traitCurrencyID or ("tree" .. treeID)
+      if byCurrency[id] == nil then n = n + 1 end
+      byCurrency[id] = q
+    end
+  end
+  -- Retail's class trees have two currencies (class and spec points); which
+  -- one a Classic pane would spend from is unknown. One currency, or several
+  -- that agree, is a clear answer; anything else is "unknown".
+  local value
+  for _, q in pairs(byCurrency) do
+    if value ~= nil and q ~= value then return nil end
+    value = q
+  end
+  if n == 0 then return nil end
+  return value
+end
+
+-- n, source: n = unspent points, or nil when the client gives no usable
+-- answer ("unknown" is not "zero": the summary says so and Learn stays off).
+-- source = "traits" | "classic".
+function Talents.FreePointsInfo()
+  local configID = liveConfigID()
+  if configID then
+    local n = traitFreePoints(configID, true)
+    if n then return n, "traits" end
+  end
+  -- Classic's call, unchanged in meaning (first return = unspent points).
+  if type(UnitCharacterPoints) == "function" then
+    local ok, n = pcall(UnitCharacterPoints, "player")
+    if ok and type(n) == "number" then
+      -- On a client whose talents are a trait config (configID found) this
+      -- legacy call is exactly what read 0 next to 17 real points. A positive
+      -- answer is still believable; a 0 there could be that bug, so it's
+      -- "unknown" rather than a confident "no points".
+      if configID and n <= 0 then return nil end
+      return math.max(n, 0), "classic"
+    end
+  end
+  return nil
+end
+
+-- The number, for code that only compares it (unknown counts as 0, which
+-- is the safe side: nothing is learned with 0 free points).
 function Talents.FreePoints()
-  return R2F.Minimap.FreeTalentPoints()
+  return (Talents.FreePointsInfo()) or 0
 end
 
 -- Tree names for the mini-tree headers. GetTalentTabInfo's returns differ by
@@ -510,7 +599,11 @@ function Talents.Summary(plan)
   if first then return conflictText(first), "conflict" end
   if plan.total == 0 then return L.TALENT_SUMMARY_EMPTY, "empty" end
   if plan.need == 0 then return L.TALENT_SUMMARY_DONE, "done" end
-  if plan.free <= 0 then return L.TALENT_SUMMARY_NO_POINTS, "nopoints" end
+  if plan.free <= 0 then
+    -- 13.12: "couldn't read" is not "you have none"; say which one it is.
+    if plan.freeKnown == false then return L.TALENT_SUMMARY_POINTS_UNKNOWN, "nopoints" end
+    return L.TALENT_SUMMARY_NO_POINTS, "nopoints"
+  end
   -- 13.4's two wordings, exactly, when none of the build is learned yet
   -- (the normal case). When part of it already is (a half-learned build
   -- after leveling), "uses 21 points ... All 21 will be learned" would be
@@ -529,7 +622,9 @@ end
 -- the read-only GetTalentTabInfo, for header names), so the tests can feed it
 -- any state.
 --   trees = ReadTrees() output, codes = ParseLink(...).codes (or {} = "no
---   build": everything you have counts as kept), free = unspent points.
+--   build": everything you have counts as kept), free = unspent points, or
+--   nil = couldn't be read (13.12: planned as 0, so nothing is learnable,
+--   and plan.freeKnown = false makes the summary say why).
 -- Per talent (on the ReadTrees entry's copy): planned, add (points to learn),
 -- now / later (of add), state:
 --   "learned"  you have it and the build wants exactly that (rank shown)
@@ -542,7 +637,7 @@ end
 -- is what the player needs to fix it); they only block learning (13.4).
 function Talents.Plan(trees, codes, free)
   local plan = { trees = {}, conflicts = {}, total = 0, have = 0, need = 0,
-                 free = math.max(tonumber(free) or 0, 0) }
+                 free = math.max(tonumber(free) or 0, 0), freeKnown = tonumber(free) ~= nil }
   local linkProblems, unused = {}, {}
   for t, list in ipairs(trees) do
     local code = codes[t] or ""
@@ -631,7 +726,7 @@ function Talents.CurrentPlan()
     for k, x in ipairs(list) do d[k] = tostring(x.rank) end
     codes[t] = table.concat(d)
   end
-  return Talents.Plan(trees, codes, Talents.FreePoints())
+  return Talents.Plan(trees, codes, (Talents.FreePointsInfo()))
 end
 
 -- Preview (13.2 - 13.4): text -> result.
@@ -672,7 +767,7 @@ function Talents.Preview(text)
     -- still apply.
     caution = L.TALENT_HASH_LOCALE
   end
-  return { plan = Talents.Plan(trees, link.codes, Talents.FreePoints()), caution = caution, link = link }
+  return { plan = Talents.Plan(trees, link.codes, (Talents.FreePointsInfo())), caution = caution, link = link }
 end
 
 -- ===========================================================================
@@ -695,12 +790,22 @@ end
 -- would act on a confirmation the player gave in another situation.
 
 Talents.LEARN_TIMEOUT = 0.5   -- 13.5: how long to wait for the server's answer
+-- "traits" mode (13.12): one point there is a purchase AND a commit, and the
+-- commit is a server round trip (Blizzard's own window shows an "applying"
+-- wait for it). A too-short wait only turns into a stop + guided mode (safe,
+-- but annoying), so it gets more room than Classic's single LearnTalent.
+Talents.TRAITS_TIMEOUT = 2
 
 local run            -- the current / last run (see Talents.StartLearn)
 -- worked: LearnTalent has landed a point this session (so addons may use it).
 -- blocked: it was refused with no other explanation before ever working, so
 -- this client probably blocks it for addons -> guided mode (13.5's fallback).
-local session = { worked = false, blocked = false }
+-- traitsWorked / traitsBlocked: the same two facts for the "traits" mode
+-- (C_Traits.PurchaseRank, 13.12). Kept apart so one write path's trouble
+-- never says anything about the other. traitsBlocked, unlike blocked, is never
+-- cleared by a late success: anything unexpected in that mode means guided
+-- mode for the rest of the session (a /reload tries "traits" again).
+local session = { worked = false, blocked = false, traitsWorked = false, traitsBlocked = false }
 local message        -- { text =, kind = "stop" | "done" | "info" } for the tab
 
 local function say(text, kind)
@@ -717,13 +822,14 @@ end
 -- The points the confirm popup promises, one entry per point, in 13.5's order:
 -- Talents.LearnOrder, the very list step 9's preview hands its "now" points
 -- out from (13.7), so the run learns exactly the gold +N cells, in that order.
--- target = the talent's rank once this point has landed.
+-- target = the talent's rank once this point has landed. nodeID = its trait
+-- node (13.10), the "traits" mode's address (13.12); the order is untouched.
 function Talents.LearnPoints(plan)
   local out = {}
   for _, e in ipairs(Talents.LearnOrder(plan)) do
     for k = 1, e.now do
       out[#out + 1] = { tab = e.tab, index = e.index, name = e.name, tier = e.tier,
-                        column = e.column, target = e.rank + k }
+                        column = e.column, target = e.rank + k, nodeID = e.nodeID }
     end
   end
   return out
@@ -747,11 +853,27 @@ end
 -- client that also has Classic's GetTalentInfo (the "preview" and "direct"
 -- modes require it) and, per point, only when GetTalentInfo names exactly this
 -- talent at exactly this address. WoW Forever has no GetTalentInfo (13.10),
--- so there learning is "guided": the addon writes nothing at all.
+-- so there neither of those modes applies.
+--   "traits"   (13.12) C_Traits.PurchaseRank(configID, nodeID), one point at a
+--              time, committed and verified per point. The address is the
+--              trait node itself (no Classic index to translate), checked
+--              against the live config right before each write. Only when the
+--              Classic modes don't apply, and never again this session once
+--              anything in it looked wrong (session.traitsBlocked).
 local function legacyMatches(tab, index, name)
   if type(GetTalentInfo) ~= "function" then return false end
   local ok, n = pcall(GetTalentInfo, tab, index)
   return ok and n == name
+end
+
+-- Everything the "traits" mode calls, present as functions. CommitConfig is
+-- deliberately NOT required: whether a purchase needs it can only be seen at
+-- run time (purchasePoint), and without it a staged point is handed to the
+-- player's own Apply Changes button instead.
+local function traitsWritable()
+  return type(C_Traits) == "table" and type(C_SpecializationInfo) == "table"
+    and type(C_Traits.PurchaseRank) == "function" and type(C_Traits.GetNodeInfo) == "function"
+    and type(C_Traits.GetConfigInfo) == "function" and type(C_Traits.GetTreeNodes) == "function"
 end
 
 function Talents.LearnMode()
@@ -762,6 +884,7 @@ function Talents.LearnMode()
     if ok and on then return "preview" end
   end
   if legacy and type(LearnTalent) == "function" and not session.blocked then return "direct" end
+  if traitsWritable() and not session.traitsBlocked then return "traits" end
   return "guided"
 end
 
@@ -773,8 +896,12 @@ local function packed(...) return { n = select("#", ...), ... } end
 -- isLearnable, whose exact meaning can't be confirmed outside the game.
 -- No API or an error: no extra check here; the server still refuses an
 -- illegal point and the rank re-read after LearnTalent stops the run then.
+-- 13.12: only at an address Classic's API confirms (legacyMatches). Without
+-- it (WoW Forever) (tab, index) is our C_Traits address and GetTalentPrereqs,
+-- if a client had it, would describe some other talent; the "traits" mode
+-- asks the trait node itself instead (purchasePoint's canPurchaseRank).
 local function prereqsMet(p, tree)
-  if not GetTalentPrereqs then return true end
+  if not GetTalentPrereqs or not legacyMatches(p.tab, p.index, p.name) then return true end
   local got = packed(pcall(GetTalentPrereqs, p.tab, p.index))
   if not got[1] then return true end
   for i = 2, got.n, 3 do
@@ -815,26 +942,134 @@ local function verify(r, p)
   return "ok"
 end
 
-local function liveRank(p)
+-- ---------------------------------------------------------------------------
+-- C_Traits helpers for the "traits" mode (13.12)
+-- ---------------------------------------------------------------------------
+-- Node fields, retail meaning (the API family Forever's client carries; not
+-- every field is confirmed on Forever, so each one is optional here):
+--   activeRank    the APPLIED rank (what the reader shows, 13.10)
+--   currentRank   the rank INCLUDING changes staged in the client but not yet
+--                 applied (Blizzard's window shows those as pending)
+--   ranksPurchased  purchased ranks (staged included); older/other name
+local function traitNode(configID, nodeID)
+  local node = call(C_Traits.GetNodeInfo, configID, nodeID)
+  if type(node) ~= "table" or not node.ID or node.ID == 0 then return nil end
+  return node
+end
+
+-- Same fallback as readNode's rank, so "applied" means one thing everywhere.
+local function appliedOf(node) return node.activeRank or node.ranksPurchased or 0 end
+
+local function stagedOf(node)
+  if type(node.currentRank) == "number" then return node.currentRank end
+  if type(node.ranksPurchased) == "number" then return node.ranksPurchased end
+  return nil
+end
+
+-- Un-applied (staged) changes anywhere in the config, other than on node
+-- `skip`. Why it matters: a commit applies EVERYTHING staged, so committing
+-- while the player has half-made changes in Blizzard's window would apply
+-- talents they never confirmed in our popup. An unreadable config counts as
+-- "yes" (stop): never commit blind.
+-- Points staged in the config according to its currency (applied free
+-- points minus free points with staged changes), or nil if unreadable.
+local function stagedPoints(configID)
+  local applied, withStaged = traitFreePoints(configID, true), traitFreePoints(configID, false)
+  if not (applied and withStaged) then return nil end
+  return applied - withStaged
+end
+
+local function pendingElsewhere(configID, skip)
+  -- The currency's view too, so staging is seen even on a client whose node
+  -- fields don't show it. One staged point is expected right after our own
+  -- purchase (skip given), none before it.
+  local d = stagedPoints(configID)
+  if d and d > (skip and 1 or 0) then return true end
+  local config = call(C_Traits.GetConfigInfo, configID)
+  if type(config) ~= "table" or type(config.treeIDs) ~= "table" then return true end
+  for _, treeID in ipairs(config.treeIDs) do
+    for _, nodeID in ipairs(call(C_Traits.GetTreeNodes, treeID) or {}) do
+      if nodeID ~= skip then
+        local node = traitNode(configID, nodeID)
+        local s = node and stagedOf(node)
+        if s and s ~= appliedOf(node) then return true end
+      end
+    end
+  end
+  return false
+end
+
+-- Point p is sitting in the run's config bought but not applied (its node
+-- says so, or the currency shows staged points: see pendingElsewhere).
+local function stagedPending(r, p)
+  if not (C_Traits and r.configID and p.nodeID) then return false end
+  local node = traitNode(r.configID, p.nodeID)
+  local s = node and stagedOf(node)
+  if s ~= nil and s > appliedOf(node) then return true end
+  local d = stagedPoints(r.configID)
+  return d ~= nil and d > 0
+end
+
+-- The talent's APPLIED rank in the live game, or nil when it can't be
+-- confirmed to be this very talent. Classic: GetTalentInfo at the Classic
+-- address (unchanged since step 10). "traits": the trait node in the run's
+-- config, through the reader's own readNode (activeRank + the name check).
+local function liveRank(r, p)
+  if r.mode == "traits" then
+    local configID = liveConfigID()
+    if not configID or configID ~= r.configID or not p.nodeID then return nil end
+    local x = readNode(configID, p.nodeID, 0)
+    if not x or x.name ~= p.name then return nil end
+    return x.rank
+  end
   if not GetTalentInfo then return nil end
   local name, _, _, _, rank = GetTalentInfo(p.tab, p.index)
   if name ~= p.name then return nil end
   return rank or 0
 end
 
+-- Did point p land? Classic: the rank re-read (13.5), unchanged. "traits"
+-- (13.12): the applied rank AND, independently, the free points (read with
+-- staged changes excluded, 13.12) having gone down since the send. Two
+-- different API answers must agree, because the one thing this mode must
+-- never do is call a point learned when it isn't. If activeRank turned out to
+-- count staged ranks on this client, the rank alone would say "yes" right
+-- after a purchase that was never applied; the free points would still say
+-- "no". Cost: a level-up landing in the same moment (+1 free) makes a real
+-- point look unconfirmed -> a stop and guided mode, the safe direction.
+local function landed(r, p)
+  local rank = liveRank(r, p)
+  if not (rank and rank >= p.target) then return false end
+  if r.mode ~= "traits" then return true end
+  local free = Talents.FreePointsInfo()
+  return free ~= nil and r.freeBefore ~= nil and free < r.freeBefore
+end
+
 -- Stops that "Learn talents" can pick up again from the same point. The
 -- others (no points, tier/prerequisite, trees changed) need a fresh preview,
--- so the next click starts over with a new popup.
-local RESUMABLE = { combat = true, user = true, rejected = true }
+-- so the next click starts over with a new popup. 13.12: "staged" (resumes in
+-- guided mode) and "pending" (once Blizzard's window is applied or undone).
+local RESUMABLE = { combat = true, user = true, rejected = true, staged = true, pending = true }
+
+-- The guided-mode hint goes on a refusal when the mode that refused is now
+-- switched off for this session.
+local function blockedNow(r)
+  if r.mode == "traits" then return session.traitsBlocked end
+  return session.blocked
+end
 
 local function stopText(r, why, name)
   if why == "combat" then return L.TALENT_STOP_COMBAT:format(r.done, r.total) end
   if why == "user" then return L.TALENT_STOP_USER:format(r.done, r.total) end
   if why == "rejected" then
     local text = L.TALENT_STOP_REJECTED:format(name, r.done, r.total)
-    if session.blocked then text = text .. " " .. L.TALENT_BLOCKED_HINT end
+    if blockedNow(r) then text = text .. " " .. L.TALENT_BLOCKED_HINT end
     return text
   end
+  if why == "staged" then
+    return L.TALENT_STOP_STAGED:format(name, r.done, r.total) .. " " .. L.TALENT_BLOCKED_HINT
+  end
+  if why == "pending" then return L.TALENT_STOP_PENDING:format(r.done, r.total) end
   if why == "locked" then return L.TALENT_STOP_LOCKED:format(name, r.done, r.total) end
   if why == "nopoints" then return L.TALENT_STOP_NOPOINTS:format(r.done, r.total) end
   return L.TALENT_STOP_CHANGED:format(r.done, r.total)
@@ -892,18 +1127,109 @@ local function learnPoint(p)
   return true
 end
 
-local stepDirect, settle
+-- The ONLY C_Traits writes in the addon (13.12; Taint & secure execution,
+-- 6.6): PurchaseRank, and CommitConfig when the purchase turned out to be
+-- staged. Same order as learnPoint: combat first, then the address, then the
+-- write; nothing is sent unless every check passes.
+--
+-- Signature: retail's C_Traits.PurchaseRank(configID, nodeID) -> success
+-- (boolean), on the same (configID, nodeID) pair every C_Traits reader here
+-- already uses (13.10). Only `false` or an error count as "refused" at once;
+-- `true` or nothing proves nothing: the read-back (landed) decides.
+--
+-- Staged or applied at once? In retail, PurchaseRank only STAGES the change
+-- in the client's copy of the config (Blizzard's window shows it pending and
+-- lights "Apply Changes"); C_Traits.CommitConfig(configID) sends what's
+-- staged to the server, which answers with TRAIT_CONFIG_UPDATED (or
+-- CONFIG_COMMIT_FAILED). The "Apply Changes" button in the user's screenshot
+-- of Forever's window points the same way. Not confirmed on Forever, so it is
+-- read off the node right after the call instead of assumed. A server can't
+-- answer inside the call, so ANY rank change visible right after it is the
+-- client's local (staged) copy:
+--   a rank moved      -> staged: commit exactly this one point, and only when
+--                        nothing else is staged. Without CommitConfig, wait:
+--                        landed() never counts a merely staged point, so it
+--                        ends as a "waiting in Blizzard's window" stop.
+--   nothing moved     -> the server may apply it later; wait, landed() decides
+--                        (this also catches a "true" that changed nothing).
+-- One commit per point, not one at the end: each point is then one server
+-- round trip, exactly like Classic's LearnTalent, so every step-10 guard
+-- (verify before each point, per-point combat check, read-back, timeout,
+-- resume, no double send) applies unchanged, and at most one point is ever
+-- un-applied. Confidence: medium on the signature, low-to-medium on staging
+-- vs immediate on Forever; the read-back is what makes either answer safe.
+-- Returns true (sent; wait for the answer) or false, why: "combat" |
+-- "mismatch" | "pending" | "locked" | "rejected" | "staged" | "stopped" (the
+-- run was already stopped inside the call, e.g. ADDON_ACTION_FORBIDDEN).
+local function purchasePoint(r, p)
+  r.freeBefore = nil
+  if R2F.InCombat() then return false, "combat" end
+  -- The config the run started on (a spec switch changes it), and the node
+  -- there is still this very talent, exactly one applied rank short.
+  local configID = liveConfigID()
+  if not configID or configID ~= r.configID or not p.nodeID then return false, "mismatch" end
+  local x = readNode(configID, p.nodeID, 0)
+  if not x or x.name ~= p.name or x.rank ~= p.target - 1 then return false, "mismatch" end
+  local node = traitNode(configID, p.nodeID)
+  if not node then return false, "mismatch" end
+  -- Nothing staged anywhere, this node included: a commit must only ever
+  -- apply the one point the player confirmed, and a point already staged
+  -- here must not get a second rank stacked on it (no double send).
+  if pendingElsewhere(configID, nil) then return false, "pending" end
+  -- The node's / config's own word, when the client gives it (retail
+  -- fields). Absent = no extra check; the server still refuses and the
+  -- read-back stops the run then.
+  if node.canPurchaseRank == false then return false, "locked" end
+  if type(C_Traits.CanEditConfig) == "function" then
+    local ok, can = pcall(C_Traits.CanEditConfig, configID)
+    if ok and can == false then return false, "rejected" end
+  end
+  -- The second, independent confirmation landed() needs. verify() has just
+  -- checked there is at least one free point, so this is a real number.
+  r.freeBefore = Talents.FreePointsInfo()
+  if not r.freeBefore then return false, "mismatch" end
+  local ok, res = pcall(C_Traits.PurchaseRank, configID, p.nodeID)
+  if run ~= r or r.phase ~= "learning" then return false, "stopped" end
+  if not ok or res == false then return false, "rejected" end
+  node = traitNode(configID, p.nodeID)
+  if not node then return false, "rejected" end
+  local moved = math.max(appliedOf(node), stagedOf(node) or 0)
+  if moved < p.target then return true end
+  if type(C_Traits.CommitConfig) ~= "function" then return true end
+  -- More than this one rank moved, or something else got staged meanwhile:
+  -- don't commit what nobody confirmed.
+  if moved > p.target or pendingElsewhere(configID, p.nodeID) then return false, "staged" end
+  local cok, cres = pcall(C_Traits.CommitConfig, configID)
+  if run ~= r or r.phase ~= "learning" then return false, "stopped" end
+  if not cok or cres == false then return false, "staged" end
+  return true
+end
 
-local function reject(r, p)
+local stepSend, settle
+
+-- A point that didn't land. Classic: guided mode is only suspected when
+-- LearnTalent never worked this session (13.8). "traits" (13.12): ANY refusal,
+-- error, failed commit or unconfirmed point switches the session to guided
+-- mode at once; nothing more is fired at C_Traits until a /reload. If the
+-- point is sitting staged in Blizzard's window, the message says so: the
+-- player's Apply Changes keeps it (lateCheck counts it), undo drops it.
+local function reject(r, p, why)
   r.waiting = nil
   r.late = p          -- if the answer was only slow, lateCheck still counts it
+  if r.mode == "traits" then
+    session.traitsBlocked = true
+    if why == "staged" or stagedPending(r, p) then return stop(r, "staged", p) end
+    return stop(r, "rejected", p)
+  end
   if not session.worked then session.blocked = true end
   stop(r, "rejected", p)
 end
 
--- One point, then wait: CHARACTER_POINTS_CHANGED (OnPointsChanged) or the
--- timeout, whichever comes first, decides via settle().
-stepDirect = function(r)
+-- One point, then wait: CHARACTER_POINTS_CHANGED / TRAIT_CONFIG_UPDATED
+-- (OnPointsChanged), CONFIG_COMMIT_FAILED (OnCommitFailed) or the timeout,
+-- whichever comes first, decides via settle(). The same for both write
+-- modes; only the "spend this one point" call differs (r.mode).
+stepSend = function(r)
   if run ~= r or r.phase ~= "learning" then return end
   if R2F.InCombat() then return stop(r, "combat", r.points[r.pos]) end
   local p = nextPoint(r)
@@ -912,58 +1238,78 @@ stepDirect = function(r)
   r.token = r.token + 1
   local tok = r.token
   notify()
-  local ok, why = learnPoint(p)
+  local ok, why
+  if r.mode == "traits" then
+    ok, why = purchasePoint(r, p)
+  else
+    ok, why = learnPoint(p)
+  end
   if not ok then
+    if why == "stopped" then return end
     r.waiting = nil
     if why == "combat" then return stop(r, "combat", p) end
-    -- Nothing was sent, so it's no sign LearnTalent is blocked: a plain
+    -- Nothing was sent, so it's no sign the write is blocked: a plain
     -- "your talents changed" stop, not a refusal.
     if why == "mismatch" then return stop(r, "changed", p) end
-    return reject(r, p)
+    if why == "pending" or why == "locked" then return stop(r, why, p) end
+    return reject(r, p, why)
   end
-  -- ADDON_ACTION_FORBIDDEN can fire inside the LearnTalent call itself and
-  -- has already stopped the run (Talents.OnActionBlocked).
+  -- ADDON_ACTION_FORBIDDEN can fire inside the write itself and has already
+  -- stopped the run (Talents.OnActionBlocked).
   if r.phase ~= "learning" then return end
   if C_Timer and C_Timer.After then
-    C_Timer.After(Talents.LEARN_TIMEOUT, function() settle(r, tok, true) end)
+    local wait = r.mode == "traits" and Talents.TRAITS_TIMEOUT or Talents.LEARN_TIMEOUT
+    C_Timer.After(wait, function() settle(r, tok, true) end)
   end
 end
 
--- Did the point land? Re-read the rank (13.5). Not yet on an event: keep
--- waiting (the event also fires for other reasons, e.g. a level-up). Not
--- yet when it's final (the timeout): stop, never continue past it.
+-- Did the point land? (landed: the rank re-read, 13.5; "traits" also the
+-- free points, 13.12.) Not yet on an event: keep waiting (the event also
+-- fires for other reasons, e.g. a level-up). Not yet when it's final (the
+-- timeout): stop, never continue past it.
 -- resend = this was a point from before a stop that we only waited for (see
 -- begin): not there after the wait = it never got through, so send it now.
+-- Classic only: in "traits" a purchase whose commit is still on its way may
+-- be invisible locally, and a second purchase could then land BOTH, so a
+-- traits point is never sent twice; not there after the wait = a refusal.
 settle = function(r, tok, final, resend)
   if run ~= r or r.token ~= tok or r.phase ~= "learning" or not r.waiting then return end
   local p = r.waiting
-  local rank = liveRank(p)
-  if rank and rank >= p.target then
+  if landed(r, p) then
     r.waiting = nil
     r.done, r.pos = r.done + 1, r.pos + 1
-    session.worked, session.blocked = true, false
-    stepDirect(r)
-  elseif final and resend then
+    if r.mode == "traits" then
+      session.traitsWorked = true
+    else
+      session.worked, session.blocked = true, false
+    end
+    stepSend(r)
+  elseif final and resend and r.mode ~= "traits" then
     r.waiting = nil
-    stepDirect(r)
+    stepSend(r)
   elseif final then
     reject(r, p)
   end
 end
 
 -- After a stop, the point that was on its way may still land (a slow
--- server, or combat started right after it was sent). Count it, and if it
--- was a "refused" stop, LearnTalent does work after all: no guided mode.
+-- server, combat started right after it was sent, or the player clicked
+-- Apply Changes on a staged point). Count it. Classic: if it was a "refused"
+-- stop, LearnTalent does work after all, so no guided mode. "traits" stays
+-- guided for the session (see session).
 local function lateCheck(r)
   local p = r.late
   if not p then return end
-  local rank = liveRank(p)
-  if not (rank and rank >= p.target) then return end
+  if not landed(r, p) then return end
   r.late = nil
-  session.worked, session.blocked = true, false
+  if r.mode == "traits" then
+    session.traitsWorked = true
+  else
+    session.worked, session.blocked = true, false
+  end
   if r.points[r.pos] == p then r.done, r.pos = r.done + 1, r.pos + 1 end
   if r.pos > r.total then return finish(r) end
-  if r.why == "rejected" then
+  if r.why == "rejected" or r.why == "staged" then
     say(L.TALENT_LATE:format(p.name, r.done, r.total), "stop")
   else
     say(stopText(r, r.why, p.name), "stop")
@@ -992,7 +1338,8 @@ local function begin(r)
   local pending = r.late
   r.waiting, r.late, r.shown = nil, nil, nil
   message = nil
-  if Talents.LearnMode() == "guided" then
+  local mode = Talents.LearnMode()
+  if mode == "guided" then
     r.mode, r.phase = "guided", "guided"
     if R2F.TalentGuide.OpenTalentWindow() then
       R2F.Print(L.TALENT_GUIDE_START)
@@ -1002,24 +1349,28 @@ local function begin(r)
     stepGuided(r)
     return
   end
-  r.mode, r.phase = "direct", "learning"
+  r.mode, r.phase = mode == "traits" and "traits" or "direct", "learning"
+  -- The config this (part of the) run writes to; every point checks the
+  -- live one still matches (13.12).
+  if r.mode == "traits" then r.configID = liveConfigID() end
   if pending and C_Timer and C_Timer.After then
     -- A point sent before the stop may still be on its way (Stop, then Learn
     -- talents clicked right away). Sending it again now could land BOTH: one
     -- rank more than the build wants, in a talent that may be at its planned
     -- maximum, which only a trainer reset undoes. So wait for it first,
     -- exactly like for a point just sent; only if it's still not there after
-    -- the timeout is it sent again (settle's resend). Without C_Timer there's
-    -- no way to wait; it is sent again at once (every Classic Era client has
-    -- C_Timer, 13.8).
+    -- the timeout is it sent again (settle's resend; never in "traits").
+    -- Without C_Timer there's no way to wait; it is sent again at once (every
+    -- Classic Era client has C_Timer, 13.8).
     r.waiting = pending
     r.token = r.token + 1
     local tok = r.token
     notify()
-    C_Timer.After(Talents.LEARN_TIMEOUT, function() settle(r, tok, true, true) end)
+    local wait = r.mode == "traits" and Talents.TRAITS_TIMEOUT or Talents.LEARN_TIMEOUT
+    C_Timer.After(wait, function() settle(r, tok, true, true) end)
     return
   end
-  stepDirect(r)
+  stepSend(r)
 end
 
 -- After the confirm popup's Learn (TalentPanel). `list` = LearnPoints(plan)
@@ -1080,8 +1431,8 @@ function Talents.ResetLearn()
 end
 
 -- { phase = "idle" | "queued" | "learning" | "guided" | "stopped" | "done",
---   mode, done, total, current (the point being learned, 1-based), text,
---   resumable, point }
+--   mode ("direct" | "traits" | "guided"), done, total, current (the point
+--   being learned, 1-based), text, resumable, point }
 function Talents.LearnStatus()
   local r = run
   if not r then return { phase = "idle" } end
@@ -1092,7 +1443,11 @@ end
 
 function Talents.LearnMessage() return message end
 
--- CHARACTER_POINTS_CHANGED (Core.lua, before the tab's refresh).
+-- CHARACTER_POINTS_CHANGED, TRAIT_CONFIG_UPDATED and
+-- TRAIT_TREE_CURRENCY_INFO_UPDATED (Core.lua, before the tab's refresh).
+-- Which of them Forever fires for an applied point isn't confirmed (13.12);
+-- none of them is trusted on its own: each one only makes settle() re-read
+-- the game (landed), and the timeout is the final word.
 function Talents.OnPointsChanged()
   local r = run
   if not r then return end
@@ -1106,10 +1461,22 @@ function Talents.OnPointsChanged()
   end
 end
 
+-- CONFIG_COMMIT_FAILED (Core.lua; retail's "the server refused the commit",
+-- args: configID). The server's explicit no for the point in flight: settle
+-- it as final now (landed() still gets the last word, so a point that did
+-- land is counted) instead of waiting for the timeout.
+function Talents.OnCommitFailed(configID)
+  local r = run
+  if not (r and r.mode == "traits" and r.phase == "learning" and r.waiting) then return end
+  if configID ~= nil and configID ~= r.configID then return end
+  settle(r, r.token, true)
+end
+
 -- PLAYER_REGEN_DISABLED (Core.lua): stop AT ONCE, mid-run (13.5), not only
 -- refuse to start. The point already sent can't be called back; it is
--- counted if it lands (lateCheck). No new LearnTalent goes out after this:
--- learnPoint checks R2F.InCombat(), which is true from this event on.
+-- counted if it lands (lateCheck). No new write goes out after this:
+-- learnPoint and purchasePoint check R2F.InCombat(), which is true from this
+-- event on.
 function Talents.OnCombat()
   local r = run
   if r and (r.phase == "learning" or r.phase == "guided") then
@@ -1122,12 +1489,18 @@ end
 -- the game's own word that it refused a call. For LearnTalent that is the
 -- clearest "blocked for addons" signal there is (13.5's guided fallback), so
 -- it switches this session to guided mode at once, even if a point worked
--- before, and the point in flight is settled as refused now.
+-- before, and the point in flight is settled as refused now. 13.12: the same
+-- for the C_Traits writes (PurchaseRank / CommitConfig), on their own flag.
 function Talents.OnActionBlocked(fn)
-  if type(fn) ~= "string" or not fn:find("LearnTalent", 1, true) then return end
-  session.blocked, session.worked = true, false
+  if type(fn) ~= "string" then return end
   local r = run
-  if r and r.phase == "learning" and r.waiting then settle(r, r.token, true) end
+  if fn:find("LearnTalent", 1, true) then
+    session.blocked, session.worked = true, false
+    if r and r.mode ~= "traits" and r.phase == "learning" and r.waiting then settle(r, r.token, true) end
+  elseif fn:find("PurchaseRank", 1, true) or fn:find("CommitConfig", 1, true) then
+    session.traitsBlocked = true
+    if r and r.mode == "traits" and r.phase == "learning" and r.waiting then settle(r, r.token, true) end
+  end
 end
 
 -- "preview" mode (13.5: if the client has Blizzard's preview API, use it and
@@ -1153,4 +1526,6 @@ function Talents.FillPreview(plan)
 end
 
 -- Test hook: forget what this session learned about LearnTalent.
-function Talents.ResetSession() session.worked, session.blocked = false, false end
+function Talents.ResetSession()
+  session.worked, session.blocked, session.traitsWorked, session.traitsBlocked = false, false, false, false
+end

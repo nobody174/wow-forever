@@ -2850,7 +2850,8 @@ def test_talent_traits(templates):
           "%s: Forever client: Preview works and the plan is learnable" % tag)
     check(fv.eval("R2F.Talents.TreeName(1)") == fv.eval("R2F.L.TALENT_TREE_N:format(1)"),
           "%s: Forever client: no GetTalentTabInfo -> 'Tree 1' header" % tag)
-    check(fv.eval("R2F.Talents.LearnMode()") == "guided", "%s: Forever client: learning is guided" % tag)
+    check(fv.eval("R2F.Talents.LearnMode()") == "guided",
+          "%s: Forever client without C_Traits writes (13.12 adds them): learning is guided" % tag)
     # Even if a LearnTalent (and a switched-on preview API) existed there: no
     # Classic GetTalentInfo = no way to confirm a (tab, index) address -> guided.
     fv.execute("LearnTalent = function() error('must not be called') end "
@@ -3130,6 +3131,600 @@ def test_talent_grid_jitter(templates):
     lua.execute("TEST.traitTree = nil")
 
 
+# 13.12: the realistic WoW Forever client for the "traits" learning tests: no
+# Classic talent API at all, plus the C_Traits write stubs in the given model.
+def forever_setup(model="staged", extra=""):
+    return ("GetTalentInfo = nil LearnTalent = nil GetTalentPrereqs = nil AddPreviewTalentPoints = nil "
+            "LearnPreviewTalents = nil TEST.installTraitWrites(%r) %s" % (model, extra))
+
+
+def trait_calls(c):
+    return lua_table_to_list(c.ev("TEST.traitCalls"))
+
+
+def purchases(c):
+    return [x[len("purchase:"):] for x in trait_calls(c) if x.startswith("purchase:")]
+
+
+def commits(c):
+    return trait_calls(c).count("commit")
+
+
+def staged_of(c, name):
+    return c.ev("(function() for _, l in ipairs(TEST.talentTabs) do for _, x in ipairs(l) do "
+                "if x.name == %r then return x.staged or 0 end end end end)()" % name)
+
+
+def test_talent_traits_learning(templates):
+    """13.12: the "traits" learning mode (C_Traits.PurchaseRank + CommitConfig,
+    one point at a time, two-way read-back, guided fallback) driven through the
+    real Talents tab on a WoW Forever-like client, against fake trait servers
+    (wow_stubs.lua T.installTraitWrites): staged + commit, immediate, async,
+    staged without a commit, and every failure switch."""
+    tag = "templates" if templates else "fallbacks"
+    fxt = json.load(open(TALENT_FIXTURE, encoding="utf-8"))
+    raw = fxt["talents"]
+    js = talent_js()
+    W = js["classes"]["warrior"]
+    wh = js["hashes"]["warrior"]
+    deep = fxt["scenarios"][5]                 # 17 points, the step-10 build
+    link = "%swarrior/%s~%s" % (SITE_TALENTS, deep["code"], wh)
+    order17 = (["Deflection"] * 5 + ["Booming Voice"] * 5 + ["Shield Specialization"]
+               + ["Tactical Mastery"] * 5 + ["Anger Management"])
+    STOP_COMBAT = "Stopped: you entered combat. %d of %d learned. Click Learn talents to continue."
+    HINT = None
+
+    def ctx(model="staged", ranks=None, pts=17, lnk=link, extra=""):
+        return LearnCtx(templates, ranks or {}, pts, lnk, raw, W, forever_setup(model, extra))
+
+    def drain(c):
+        while c.ev("#TEST.traitQueue") > 0:
+            c.T.traitServer(1)
+
+    def exact_build(c):
+        return all(c.rank(n) == v for n, v in deep["ranks"].items())
+
+    # ---- Mode detection ------------------------------------------------------------
+    c = ctx()
+    HINT = c.ev("R2F.L.TALENT_BLOCKED_HINT")
+    check(c.ev("R2F.Talents.LearnMode()") == "traits", "%s: Forever client + C_Traits.PurchaseRank -> 'traits' mode" % tag)
+    d = LearnCtx(templates, {}, 17, link, raw, W, "TEST.installTraitWrites('staged')")
+    check(d.ev("R2F.Talents.LearnMode()") == "direct",
+          "%s: Classic API present too -> still 'direct' (Classic path unchanged, traits only as its alternative)" % tag)
+    d = ctx(extra="C_Traits.GetNodeInfo = nil")
+    check(d.ev("R2F.Talents.LearnMode()") == "guided", "%s: C_Traits without GetNodeInfo -> guided" % tag)
+    d = ctx(extra="C_Traits.PurchaseRank = 'not a function'")
+    check(d.ev("R2F.Talents.LearnMode()") == "guided", "%s: PurchaseRank not a function -> guided" % tag)
+
+    # ---- Order: the shared plan, untouched; points carry their node id --------------
+    lp = c.ev("(function() local o = {} for i, p in ipairs(R2F.Talents.LearnPoints(R2F.TalentPanel.Result().plan))"
+              " do o[i] = p.name .. '>' .. p.target .. '>' .. tostring(p.nodeID) end return o end)()")
+    lp = lua_table_to_list(lp)
+    check([s.split(">")[0] for s in lp] == order17, "%s: traits mode learns in the same tier/tree/column order" % tag)
+    check(all(s.split(">")[2] != "nil" for s in lp), "%s: every point carries its trait node id" % tag)
+    nid = c.ev("(function() for _, t in ipairs(R2F.Talents.ReadTrees()) do for _, x in ipairs(t) do"
+               " if x.name == 'Deflection' then return x.nodeID end end end end)()")
+    check(lp[0].split(">")[2] == str(nid), "%s: the node id is the reader's own (ReadTrees) for that talent" % tag)
+
+    # ---- Popup; Cancel writes nothing -------------------------------------------------
+    check(c.enabled(c.learn) is True, "%s: traits: learnable -> Learn enabled" % tag)
+    c.click(c.learn)
+    check(c.popup() == "Learn 17 talent points? Only a trainer reset can undo this.", "%s: traits: same 13.4 popup" % tag)
+    c.lua.execute("R2FConfirm.no:Click()")
+    check(c.ev("TEST.talentWrites") == 0 and trait_calls(c) == [] and c.status().phase == "idle",
+          "%s: traits: popup Cancel writes nothing" % tag)
+
+    # ---- Full run, staged model (retail-like): purchase, commit, wait, verify -------
+    c.T.calls = c.lua.table()
+    c.click(c.learn)
+    c.accept()
+    check(trait_calls(c) == ["purchase:Deflection", "commit"] and c.status().phase == "learning"
+          and c.status().mode == "traits", "%s: Learn -> one purchase + one commit, then waits: %s" % (tag, trait_calls(c)))
+    check(staged_of(c, "Deflection") == 1 and c.rank("Deflection") == 0,
+          "%s: (stub) the point is staged, not applied, until the server answers" % tag)
+    check(c.text(c.learn) == "Learning 1 / 17" and c.enabled(c.learn) is False and c.text(c.cancel) == "Stop"
+          and c.enabled(c.previewb) is False and c.ev(c.edit + ".__enabled") is False,
+          "%s: traits: 'Learning 1 / 17', tab locked, Stop" % tag)
+    c.T.fire("TRAIT_TREE_CURRENCY_INFO_UPDATED", 1100)
+    c.T.fire("CHARACTER_POINTS_CHANGED")
+    check(len(purchases(c)) == 1 and c.status().phase == "learning",
+          "%s: events without the applied point don't advance or stop the run" % tag)
+    c.T.traitServer(1)
+    check(purchases(c) == ["Deflection"] * 2 and commits(c) == 2 and c.text(c.learn) == "Learning 2 / 17",
+          "%s: next point only after TRAIT_CONFIG_UPDATED + read-back: %s" % (tag, c.text(c.learn)))
+    labels = []
+    while c.ev("#TEST.traitQueue") > 0:
+        c.T.traitServer(1)
+        labels.append(c.text(c.learn))
+    check(purchases(c) == order17 and commits(c) == 17, "%s: whole run: 17 purchases in order, 17 commits" % tag)
+    check(labels[:2] == ["Learning 3 / 17", "Learning 4 / 17"] and labels[-1] == "Learn talents",
+          "%s: traits: label counts up, back to 'Learn talents'" % tag)
+    check(exact_build(c) and c.ev("TEST.talentPoints") == 0 and all(staged_of(c, n) == 0 for n in deep["ranks"]),
+          "%s: traits: the game has exactly the build, nothing left staged" % tag)
+    check(c.said("Learned 17 talent points.") and c.status().phase == "done" and "Learned 17 talent points." in c.status_line(),
+          "%s: traits: 'Learned 17 talent points.' in chat and on the tab" % tag)
+    check(c.ev("TEST.talentWrites") == 34, "%s: traits: exactly 34 writes (17 x purchase + commit)" % tag)
+    nchat = len(c.chat())
+    c.T.runTimers()
+    check(len(c.chat()) == nchat and c.status().phase == "done" and len(purchases(c)) == 17,
+          "%s: traits: stale timeouts after success do nothing" % tag)
+    check(len(lua_table_to_list(c.T.calls)) == 0, "%s: traits: no macro API calls" % tag)
+    check(c.ev("R2F.TalentPanel.Result().plan.summary") == "You already have this whole build.",
+          "%s: traits: afterwards the preview shows the whole build" % tag)
+    # Fewer points: only the 'now' points; singular.
+    c = ctx(pts=12)
+    c.click(c.learn)
+    check(c.popup() == "Learn 12 talent points? Only a trainer reset can undo this.", "%s: traits: popup counts 'now' points" % tag)
+    c.accept()
+    drain(c)
+    check(purchases(c) == order17[:12] and c.said("Learned 12 talent points."), "%s: traits: partial build, first 12 in order" % tag)
+    c = ctx(pts=1, lnk="warrior/1~" + wh)
+    c.click(c.learn)
+    c.accept()
+    drain(c)
+    check(c.said("Learned 1 talent point.") and purchases(c) == ["Improved Heroic Strike"], "%s: traits: single point" % tag)
+
+    # ---- Immediate model (no commit): event-driven, and timeout-only ----------------
+    c = ctx("immediate")
+    c.click(c.learn)
+    c.accept()
+    check(trait_calls(c) == ["purchase:Deflection"], "%s: immediate: no CommitConfig on this client -> purchase only" % tag)
+    drain(c)
+    check(purchases(c) == order17 and exact_build(c) and c.said("Learned 17 talent points."),
+          "%s: immediate: full run on TRAIT_CONFIG_UPDATED" % tag)
+    c = ctx("immediate")
+    c.click(c.learn)
+    c.accept()
+    c.lua.execute("TEST.traitQueue = {}")      # never any event: only the timeouts' read-backs
+    for _ in range(17):
+        c.T.runTimersOnce()
+        c.lua.execute("TEST.traitQueue = {}")
+    check(purchases(c) == order17 and exact_build(c) and c.said("Learned 17 talent points."),
+          "%s: immediate: no events at all -> each timeout's read-back confirms (rank AND free points)" % tag)
+
+    # ---- Async model (delayed TRAIT_CONFIG_UPDATED, server applies later) --------------
+    c = ctx("async")
+    c.click(c.learn)
+    c.accept()
+    check(c.rank("Deflection") == 0 and c.status().phase == "learning", "%s: async: sent, nothing applied yet" % tag)
+    drain(c)
+    check(purchases(c) == order17 and exact_build(c) and c.said("Learned 17 talent points.")
+          and c.ev("R2F.Talents.LearnMode()") == "traits", "%s: async: full run, stays in traits mode" % tag)
+
+    # ---- A rejected purchase mid-run: stop, guided fallback, nothing more fired --------
+    c = ctx()
+    c.click(c.learn)
+    c.accept()
+    c.T.traitServer(3)                          # 3 applied; the 4th is in flight
+    c.T.purchaseRejects = True
+    c.T.traitServer(1)                          # 4th applied -> 5th purchase refused
+    want = "Stopped at Deflection: the game didn't accept the point. 4 of 17 learned. " + HINT
+    check(c.status().phase == "stopped" and c.said(want), "%s: refused purchase -> stop + guided hint: %s" % (tag, c.chat()[-1:]))
+    check(want in c.status_line(), "%s: refused purchase: red line on the tab" % tag)
+    check(purchases(c) == ["Deflection"] * 5 and commits(c) == 4, "%s: the refused purchase isn't committed" % tag)
+    check(c.ev("R2F.Talents.LearnMode()") == "guided", "%s: anything unexpected -> guided for the session" % tag)
+    writes = c.ev("TEST.talentWrites")
+    c.T.purchaseRejects = False
+    c.T.fire("TRAIT_CONFIG_UPDATED", 7001)
+    c.T.runTimers()
+    check(c.ev("TEST.talentWrites") == writes, "%s: stays stopped on later events / timers" % tag)
+    c.click(c.learn)
+    check(c.popup() is None and c.status().mode == "guided" and c.said("Click Deflection (5 of 17)"),
+          "%s: Learn continues the SAME run in guided mode (5 of 17), no popup" % tag)
+    for n in order17[4:]:
+        c.T.playerLearn({"Booming Voice": 2, "Shield Specialization": 3}.get(n, 1), c.index_of(n))
+    check(c.said("Learned 17 talent points.") and exact_build(c) and c.ev("TEST.talentWrites") == writes,
+          "%s: guided fallback finishes the build; no C_Traits write after the fallback" % tag)
+    c.lua.execute("R2F.Talents.ResetSession()")
+    check(c.ev("R2F.Talents.LearnMode()") == "traits", "%s: a new session (/reload) tries traits again" % tag)
+    # PurchaseRank raising.
+    c = ctx(extra="TEST.purchaseError = 'some client error'")
+    c.click(c.learn)
+    c.accept()
+    check(c.said("Stopped at Deflection: the game didn't accept the point. 0 of 17 learned. " + HINT)
+          and commits(c) == 0 and c.ev("R2F.Talents.LearnMode()") == "guided", "%s: PurchaseRank error -> refused, guided" % tag)
+    # CanEditConfig says no: nothing purchased at all.
+    c = ctx(extra="C_Traits.CanEditConfig = function() return false, 'nope' end")
+    c.click(c.learn)
+    c.accept()
+    check(c.ev("TEST.talentWrites") == 0 and c.status().phase == "stopped" and c.ev("R2F.Talents.LearnMode()") == "guided",
+          "%s: CanEditConfig false -> stopped before any purchase, guided" % tag)
+    # The node's own canPurchaseRank = false: tier/prerequisite stop, nothing sent.
+    c = ctx(extra="TEST.canPurchaseRank = false")
+    c.click(c.learn)
+    c.accept()
+    check(c.said("Stopped at Deflection: its tier or prerequisite isn't met in your game. 0 of 17 learned.")
+          and c.ev("TEST.talentWrites") == 0, "%s: canPurchaseRank false -> 'locked' stop, nothing sent" % tag)
+    # Shared re-verification still runs first (tier rule on live ranks).
+    c = ctx(pts=1, lnk="warrior/0001~" + wh)
+    c.click(c.learn)
+    c.accept()
+    check(c.said("Stopped at Improved Charge: its tier or prerequisite isn't met in your game. 0 of 1 learned.")
+          and c.ev("TEST.talentWrites") == 0, "%s: traits: tier re-check stops before PurchaseRank" % tag)
+    # ADDON_ACTION_FORBIDDEN for PurchaseRank: stopped at once.
+    c = ctx(extra="TEST.purchaseForbidden = true")
+    c.click(c.learn)
+    c.accept()
+    check(c.status().phase == "stopped" and commits(c) == 0 and c.ev("R2F.Talents.LearnMode()") == "guided"
+          and c.said("Stopped at Deflection: the game didn't accept the point. 0 of 17 learned. " + HINT),
+          "%s: ADDON_ACTION_FORBIDDEN on PurchaseRank -> stop, no commit, guided" % tag)
+    c = ctx()
+    c.T.fire("ADDON_ACTION_FORBIDDEN", "OtherAddon", "C_Traits.PurchaseRank()")
+    c.T.fire("ADDON_ACTION_BLOCKED", "RoadToForever", "CastSpellByName()")
+    check(c.ev("R2F.Talents.LearnMode()") == "traits", "%s: other addons' / other functions' events ignored" % tag)
+    c.T.fire("ADDON_ACTION_BLOCKED", "RoadToForever", "LearnTalent()")
+    check(c.ev("R2F.Talents.LearnMode()") == "traits", "%s: a LearnTalent block says nothing about C_Traits" % tag)
+
+    # ---- Read-back catches a false success ------------------------------------------
+    c = ctx(extra="TEST.purchaseLies = true")
+    c.click(c.learn)
+    c.accept()
+    check(trait_calls(c) == ["purchase:Deflection"] and c.status().phase == "learning",
+          "%s: 'true' that changed nothing: nothing to commit, waiting" % tag)
+    c.T.fire("TRAIT_CONFIG_UPDATED", 7001)
+    check(c.status().phase == "learning", "%s: an event alone proves nothing" % tag)
+    c.T.runTimers()
+    check(c.said("Stopped at Deflection: the game didn't accept the point. 0 of 17 learned. " + HINT)
+          and c.rank("Deflection") == 0 and len(purchases(c)) == 1 and c.ev("R2F.Talents.LearnMode()") == "guided",
+          "%s: false success caught by the read-back at the timeout; guided" % tag)
+    # activeRank that counts STAGED ranks (field semantics differ) + no commit
+    # function: the rank alone would say "learned"; the free points don't.
+    c = ctx("stagedNoCommit", extra="TEST.activeIncludesStaged = true")
+    c.click(c.learn)
+    c.accept()
+    c.T.fire("TRAIT_TREE_CURRENCY_INFO_UPDATED", 1100)
+    check(c.status().phase == "learning", "%s: activeRank includes staged: rank says yes, free points say no -> still waiting" % tag)
+    c.T.runTimers()
+    staged_msg = ("Stopped at Deflection: the point is waiting in Blizzard's talent window but wasn't applied. "
+                  "Click Apply Changes there to keep it, or undo it there. 0 of 17 learned. " + HINT)
+    check(c.said(staged_msg) and c.status().done == 0 and len(purchases(c)) == 1,
+          "%s: ... never counted as learned; 'waiting in Blizzard's window' stop: %s" % (tag, c.chat()[-1:]))
+    c.T.playerApply()
+    check(c.said("The point in Deflection arrived late after all. 1 of 17 learned. Click Learn talents to continue.")
+          and c.ev("R2F.Talents.LearnMode()") == "guided",
+          "%s: player's Apply Changes -> counted late; the session stays guided" % tag)
+    # The same semantics WITH CommitConfig: committed, then really confirmed.
+    c = ctx(extra="TEST.activeIncludesStaged = true")
+    c.click(c.learn)
+    c.accept()
+    drain(c)
+    check(c.said("Learned 17 talent points.") and exact_build(c) and commits(c) == 17,
+          "%s: activeRank-includes-staged client with CommitConfig: every point committed and confirmed" % tag)
+    # Staged, no CommitConfig (normal fields): handed to the player's Apply Changes.
+    c = ctx("stagedNoCommit")
+    c.click(c.learn)
+    c.accept()
+    check(staged_of(c, "Deflection") == 1 and commits(c) == 0, "%s: no CommitConfig: the point stays staged" % tag)
+    c.T.runTimers()
+    check(c.said(staged_msg) and c.ev("R2F.Talents.LearnMode()") == "guided", "%s: no CommitConfig -> 'Apply Changes' stop, guided" % tag)
+    c.click(c.learn)
+    check(c.status().mode == "guided" and c.ev("TEST.talentWrites") == 1, "%s: ... Learn continues guided, nothing more written" % tag)
+
+    # ---- Commit failures --------------------------------------------------------------
+    c = ctx(extra="TEST.commitRejects = true")
+    c.click(c.learn)
+    c.accept()
+    check(c.said(staged_msg) and c.status().phase == "stopped" and c.ev("R2F.Talents.LearnMode()") == "guided",
+          "%s: CommitConfig returns false -> stop at once ('waiting in Blizzard's window'), guided" % tag)
+    c = ctx(extra="TEST.commitError = 'boom'")
+    c.click(c.learn)
+    c.accept()
+    check(c.said(staged_msg), "%s: CommitConfig raising -> same stop" % tag)
+    c = ctx(extra="TEST.commitServerFails = true")
+    c.click(c.learn)
+    c.accept()
+    c.T.fire("CONFIG_COMMIT_FAILED", 9999)
+    check(c.status().phase == "learning", "%s: CONFIG_COMMIT_FAILED for another config is ignored" % tag)
+    c.T.traitServer()
+    check(c.said(staged_msg) and c.status().phase == "stopped" and len(lua_table_to_list(c.T.timers)) >= 1,
+          "%s: CONFIG_COMMIT_FAILED -> stop at once, without waiting for the timeout" % tag)
+    c = ctx(extra="TEST.serverRejects = true")
+    c.click(c.learn)
+    c.accept()
+    c.T.traitServer()
+    c.T.runTimers()
+    check(c.said(staged_msg) and c.rank("Deflection") == 0, "%s: server silently applies nothing -> timeout stop" % tag)
+
+    # ---- Combat mid-run ---------------------------------------------------------------
+    c = ctx()
+    c.click(c.learn)
+    c.accept()
+    c.T.traitServer(5)                          # 5 applied; the 6th purchased + committed
+    writes = c.ev("TEST.talentWrites")
+    c.combat(True)
+    check(c.said(STOP_COMBAT % (5, 17)) and c.status().phase == "stopped", "%s: traits: combat -> stop at once" % tag)
+    check(c.enabled(c.learn) is False, "%s: traits: Learn greyed out in combat" % tag)
+    c.T.traitServer()                           # the commit in flight lands anyway
+    check(c.said(STOP_COMBAT % (6, 17)), "%s: traits: the point in flight is counted when it lands" % tag)
+    c.T.runTimers()
+    c.lua.execute("R2F.TalentPanel.Learn()")
+    check(c.ev("TEST.talentWrites") == writes and c.popup() is None, "%s: traits: nothing written in combat" % tag)
+    c.combat(False)
+    c.click(c.learn)
+    check(c.popup() is None and c.text(c.learn) == "Learning 7 / 17" and c.status().mode == "traits",
+          "%s: traits: resume after combat from 7 / 17, still traits" % tag)
+    drain(c)
+    check(purchases(c) == order17 and exact_build(c) and c.said("Learned 17 talent points."),
+          "%s: traits: resumed run completes, exactly the build" % tag)
+    c = ctx()
+    c.click(c.learn)
+    c.accept()
+    c.lua.execute("R2F.inCombat = true")
+    c.T.traitServer(1)
+    check(c.said(STOP_COMBAT % (1, 17)) and len(purchases(c)) == 1, "%s: traits: combat flag checked before every purchase" % tag)
+    # Popup accepted in combat: queued, starts after.
+    c = ctx()
+    c.click(c.learn)
+    c.combat(True)
+    c.accept()
+    check(c.ev("TEST.talentWrites") == 0 and c.status().phase == "queued" and c.text(c.learn) == "After combat",
+          "%s: traits: accepted in combat -> queued, nothing written" % tag)
+    c.combat(False)
+    check(purchases(c) == ["Deflection"] and c.status().mode == "traits", "%s: traits: starts on PLAYER_REGEN_ENABLED" % tag)
+    drain(c)
+    check(c.said("Learned 17 talent points."), "%s: traits: queued run completes" % tag)
+
+    # ---- No double send ----------------------------------------------------------------
+    c = ctx()
+    c.click(c.learn)
+    c.accept()
+    c.T.traitServer(10)                         # Shield Specialization (11th, 1 rank) in flight
+    check(purchases(c)[-1] == "Shield Specialization", "%s: (setup) Shield Specialization in flight" % tag)
+    c.click(c.cancel)
+    c.click(c.learn)
+    check(purchases(c).count("Shield Specialization") == 1 and c.status().phase == "learning",
+          "%s: traits: Stop + Learn at once waits for the point in flight" % tag)
+    drain(c)
+    c.T.runTimers()
+    check(purchases(c) == order17 and c.rank("Shield Specialization") == 1 and exact_build(c)
+          and c.said("Learned 17 talent points."), "%s: traits: no double send, Shield Specialization 1 / 1" % tag)
+    # The commit got lost: in traits mode it is NEVER re-sent (a second purchase
+    # could stack on an invisible one); it's reported, guided takes over.
+    c = ctx()
+    c.click(c.learn)
+    c.accept()
+    c.T.traitServer(10)
+    c.click(c.cancel)
+    c.lua.execute("TEST.traitQueue = {}")
+    c.click(c.learn)
+    c.T.runTimersOnce()
+    check(purchases(c).count("Shield Specialization") == 1 and c.status().phase == "stopped"
+          and c.said(staged_msg.replace("Deflection", "Shield Specialization").replace("0 of 17", "10 of 17")),
+          "%s: traits: a lost commit is not re-sent; stop says it's waiting in Blizzard's window: %s" % (tag, c.chat()[-1:]))
+    c.T.playerApply()
+    check(c.rank("Shield Specialization") == 1 and c.said("The point in Shield Specialization arrived late after all. "
+                                                          "11 of 17 learned. Click Learn talents to continue."),
+          "%s: ... the player's Apply Changes lands it once, counted late" % tag)
+    # Player's own un-applied changes in Blizzard's window: never committed by us.
+    c = ctx()
+    c.T.playerStage(1, c.index_of("Improved Heroic Strike"))
+    c.click(c.learn)
+    c.accept()
+    pend = ("Stopped: Blizzard's talent window has changes that aren't applied yet. Apply or undo them there first. "
+            "0 of 17 learned. Click Learn talents to continue.")
+    check(c.said(pend) and c.ev("TEST.talentWrites") == 0, "%s: staged changes of the player's -> stop before any write" % tag)
+    check(c.ev("R2F.Talents.LearnMode()") == "traits", "%s: ... no guided switch for that (nothing was sent)" % tag)
+    c.lua.execute("for _, x in ipairs(TEST.talentTabs[1]) do x.staged = 0 end")    # player undoes it
+    c.click(c.learn)
+    check(c.popup() is None and purchases(c) == ["Deflection"], "%s: ... undone -> Learn continues, no popup" % tag)
+    drain(c)
+    check(c.said("Learned 17 talent points.") and c.rank("Improved Heroic Strike") == 0,
+          "%s: ... and the run never applied the player's staged talent" % tag)
+    # Same, on a client whose node fields can't show staging (activeRank counts
+    # staged ranks): only the currency (with vs without staged) reveals it.
+    # (A build talent, so the preview, which then sees it as applied, stays learnable.)
+    c = ctx(extra="TEST.activeIncludesStaged = true")
+    c.T.playerStage(1, c.index_of("Deflection"))
+    c.preview(link)
+    c.click(c.learn)
+    c.accept()
+    check(c.said(pend.replace("0 of 17", "0 of 16")) and c.ev("TEST.talentWrites") == 0,
+          "%s: player's staged change invisible in node fields -> caught by the currency, nothing written" % tag)
+    # Something staged appears between the purchase and the commit: no commit.
+    c = ctx(extra="local P = C_Traits.PurchaseRank C_Traits.PurchaseRank = function(...) local r = P(...)"
+                  " TEST.playerStage(1, 1) return r end")
+    c.click(c.learn)
+    c.accept()
+    check(commits(c) == 0 and c.said(staged_msg), "%s: other staged changes right before the commit -> no commit" % tag)
+    # Window closed mid-run; Stop + late answer.
+    c = ctx()
+    c.click(c.learn)
+    c.accept()
+    c.lua.execute("R2F.MainWindow.Hide()")
+    drain(c)
+    check(c.said("Learned 17 talent points."), "%s: traits: run finishes with the window closed" % tag)
+    c = ctx()
+    c.click(c.learn)
+    c.accept()
+    c.T.traitServer(2)
+    c.click(c.cancel)
+    check(c.said("Stopped. 2 of 17 learned. Click Learn talents to continue."), "%s: traits: Stop" % tag)
+    c.T.traitServer()
+    check(c.said("Stopped. 3 of 17 learned. Click Learn talents to continue.") and len(purchases(c)) == 3,
+          "%s: traits: the point already sent is counted, nothing new sent" % tag)
+    c.click(c.learn)
+    drain(c)
+    check(purchases(c) == order17 and c.said("Learned 17 talent points."), "%s: traits: resume after Stop" % tag)
+    # A point spent elsewhere mid-run -> conflict -> stop (shared verify).
+    c = ctx()
+    c.click(c.learn)
+    c.accept()
+    c.T.traitServer(2)
+    c.T.playerLearn(1, c.index_of("Improved Heroic Strike"))
+    c.T.traitServer()
+    check(c.said("Stopped: your talents changed while learning. 3 of 17 learned. Check the preview, then click Learn talents again."),
+          "%s: traits: a point outside the build mid-run -> stop" % tag)
+
+    # ---- Globals -----------------------------------------------------------------------
+    new_globals = c.ev("""(function()
+      local out = {}
+      for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
+      table.sort(out) return table.concat(out, ",") end)()""").split(",")
+    bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST")
+           and not g.startswith("TalentFrame") and g not in BINDING_GLOBALS
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
+    check(not bad, "%s: traits mode adds no globals: %s" % (tag, bad))
+
+
+def test_free_points(templates):
+    """13.12: unspent talent points. WoW Forever: C_Traits' tree currency (the
+    real screenshot: 'Unspent Talents: 17' while the addon said 0). Classic:
+    UnitCharacterPoints, unchanged. Neither: 'unknown', never a guessed 0."""
+    tag = "templates" if templates else "fallbacks"
+    fxt = json.load(open(TALENT_FIXTURE, encoding="utf-8"))
+    raw = fxt["talents"]
+    js = talent_js()
+    W = js["classes"]["warrior"]
+    wh = js["hashes"]["warrior"]
+    deep = fxt["scenarios"][5]
+    link = "%swarrior/%s~%s" % (SITE_TALENTS, deep["code"], wh)
+
+    def home(lua):
+        lua.execute("R2F.MainWindow.Show('home')")
+        return lua.eval("R2F.Home.TalentLine()")
+
+    # The screenshot's case: talents reset, 17 unspent; the legacy call says 0.
+    c = LearnCtx(templates, {}, 17, link, raw, W, forever_setup("staged", "UnitCharacterPoints = function() return 0 end"))
+    n, src = c.ev("R2F.Talents.FreePointsInfo()")
+    check(n == 17 and src == "traits", "%s: Forever: 17 unspent from C_Traits' tree currency (legacy call says 0): %s %s" % (tag, n, src))
+    check(c.ev("R2F.Minimap.FreeTalentPoints()") == 17 and c.ev("R2F.Talents.FreePoints()") == 17,
+          "%s: Forever: minimap tooltip and the engine read the same 17" % tag)
+    check(c.ev("R2F.TalentPanel.Result().plan.summary") == "This build uses 17 points. You have 17 free. All 17 will be learned."
+          and c.enabled(c.learn) is True, "%s: Forever: the Talents tab sees the 17 points and Learn is enabled" % tag)
+    check(home(c.lua) == "17 free talent points", "%s: Forever: Home says 17 free talent points" % tag)
+    c.lua.execute("GameTooltip:SetOwner() R2F.Minimap.FillTooltip(GameTooltip)")
+    check("17 free talent points" in lua_table_to_list(c.ev("GameTooltip.lines")), "%s: Forever: minimap tooltip line" % tag)
+    # The applied amount: staged changes in Blizzard's window don't count yet.
+    c.T.playerStage(1, c.index_of("Deflection"))
+    check(c.ev("R2F.Talents.FreePoints()") == 17, "%s: staged (un-applied) changes don't lower the free points" % tag)
+    args = c.ev("(function() local real = C_Traits.GetTreeCurrencyInfo local seen"
+                " C_Traits.GetTreeCurrencyInfo = function(cfg, tree, ex) seen = { cfg, tree, tostring(ex) } return real(cfg, tree, ex) end"
+                " R2F.Talents.FreePoints() C_Traits.GetTreeCurrencyInfo = real return seen end)()")
+    check(lua_table_to_list(args) == [7001, 1100, "true"], "%s: called as (configID, treeID, excludeStagedChanges=true): %s"
+          % (tag, lua_table_to_list(args)))
+    # Odd answers -> unknown, never a guess.
+    lua = c.lua
+    lua.execute("REAL_TCI = C_Traits.GetTreeCurrencyInfo UnitCharacterPoints = nil")
+    cases = [
+        ("function() return { { traitCurrencyID = 1, quantity = 17 }, { traitCurrencyID = 2, quantity = 3 } } end", None),
+        ("function() return { { traitCurrencyID = 1, quantity = 9 }, { traitCurrencyID = 2, quantity = 9 } } end", 9),
+        ("function() return {} end", None),
+        ("function() return { { traitCurrencyID = 1, quantity = -1 } } end", None),
+        ("function() return { { traitCurrencyID = 1, quantity = 'x' } } end", None),
+        ("function() return { { traitCurrencyID = 1 } } end", None),
+        ("function() return nil end", None),
+        ("function() error('boom') end", None),
+        ("function() return { { quantity = 4 } } end", 4),
+    ]
+    for fn, want in cases:
+        lua.execute("C_Traits.GetTreeCurrencyInfo = " + fn)
+        check(lua.eval("(R2F.Talents.FreePointsInfo())") == want, "%s: currency answer %s -> %s" % (tag, fn, want))
+    lua.execute("C_Traits.GetTreeCurrencyInfo = REAL_TCI")
+    # One tree per pane sharing one currency: counted once, not three times.
+    lua.execute("TEST.traitLayout = 'perPane'")
+    check(lua.eval("(R2F.Talents.FreePointsInfo())") == 17, "%s: per-pane trees sharing a currency -> 17, not 51" % tag)
+    lua.execute("TEST.traitLayout = 'single'")
+    # No currency API on a trait client: the legacy call's 0 there is the bug
+    # itself, so it's 'unknown'; a positive legacy answer is believed.
+    lua.execute("C_Traits.GetTreeCurrencyInfo = nil UnitCharacterPoints = function() return 0 end")
+    check(lua.eval("R2F.Talents.FreePointsInfo()") is None, "%s: trait client, no currency API, legacy 0 -> unknown" % tag)
+    lua.execute("UnitCharacterPoints = function() return 4 end")
+    n, src = lua.eval("R2F.Talents.FreePointsInfo()")
+    check(n == 4 and src == "classic", "%s: trait client, no currency API, legacy 4 -> 4" % tag)
+    # Neither works: unknown, said as such, Learn stays off.
+    lua.execute("UnitCharacterPoints = nil")
+    c.lua.execute("for _, l in ipairs(TEST.talentTabs) do for _, x in ipairs(l) do x.staged = 0 end end")
+    c.lua.execute("R2F.MainWindow.Show('talents')")          # home() above switched tabs
+    c.preview(link)
+    plan = c.ev("R2F.TalentPanel.Result().plan")
+    check(plan.freeKnown is False and plan.free == 0 and plan.learnable is False
+          and plan.summary == c.ev("R2F.L.TALENT_SUMMARY_POINTS_UNKNOWN"),
+          "%s: no usable answer -> 'couldn't read your free talent points', not 'No free talent points.'" % tag)
+    check(c.enabled(c.learn) is False, "%s: unknown free points -> Learn disabled" % tag)
+    c.lua.execute("R2F.TalentPanel.Learn()")
+    check(c.popup() is None and c.ev("TEST.talentWrites") == 0, "%s: unknown free points -> Learn() refuses, nothing written" % tag)
+    check(home(c.lua) == "Free talent points: couldn't read them", "%s: Home says it couldn't read them" % tag)
+    check(c.ev("R2F.Minimap.FreeTalentPoints()") == 0, "%s: minimap: unknown counts as 0 (no tooltip line)" % tag)
+
+    # Classic-era client (no trait config at all): UnitCharacterPoints, unchanged.
+    cl = new_runtime(templates, before_load="C_Traits = nil C_SpecializationInfo = nil")
+    T = cl.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    T.talentPoints = 5
+    n, src = cl.eval("R2F.Talents.FreePointsInfo()")
+    check(n == 5 and src == "classic" and cl.eval("R2F.Minimap.FreeTalentPoints()") == 5,
+          "%s: Classic: UnitCharacterPoints('player') = 5 -> 5" % tag)
+    check(home(cl) == "5 free talent points", "%s: Classic: Home line" % tag)
+    T.talentPoints = 0
+    n, src = cl.eval("R2F.Talents.FreePointsInfo()")
+    check(n == 0 and src == "classic" and home(cl) == "No free talent points",
+          "%s: Classic: a real 0 is still 'No free talent points'" % tag)
+    cl.execute("UnitCharacterPoints = function() return nil end")
+    check(cl.eval("R2F.Talents.FreePointsInfo()") is None, "%s: Classic: a non-number answer -> unknown" % tag)
+    cl.execute("UnitCharacterPoints = nil")
+    check(cl.eval("R2F.Talents.FreePointsInfo()") is None and cl.eval("R2F.Minimap.FreeTalentPoints()") == 0
+          and home(cl) == "Free talent points: couldn't read them", "%s: no API at all -> unknown, no error" % tag)
+    # Trait config not ready yet (right after login): the legacy call is used as on Classic.
+    lua2 = new_runtime(templates)
+    T2 = lua2.eval("TEST")
+    T2.fire("ADDON_LOADED", "RoadToForever")
+    T2.fire("PLAYER_LOGIN")
+    T2.traitsReady = False
+    T2.talentPoints = 3
+    check(lua2.eval("(R2F.Talents.FreePointsInfo())") == 3, "%s: no trait config yet -> legacy call" % tag)
+
+
+def test_talent_source_traits():
+    """13.12's write discipline on the source: PurchaseRank and CommitConfig are
+    called in exactly one function (purchasePoint, Talents.lua), after its
+    combat check; the refund / reset / bulk C_Traits writes are never touched;
+    the shared plan/order code is byte-identical to the last release."""
+    calls = []
+    for dirpath, _, names in os.walk(ADDON):
+        for n in names:
+            if n.endswith(".lua"):
+                for i, line in enumerate(open(os.path.join(dirpath, n), encoding="utf-8"), 1):
+                    code = line.split("--", 1)[0]
+                    for api in ("PurchaseRank", "CommitConfig", "RefundRank", "RollbackConfig", "ResetTree",
+                                "PurchaseAllRanks", "TryPurchaseAllRanks", "TryPurchaseToNode",
+                                "CascadeRepurchaseRanks", "StageConfig"):
+                        if re.search(r"\b%s\b" % api, code):
+                            calls.append((n, api, code.strip()))
+    used = sorted({(n, a) for n, a, _ in calls})
+    check(used == [("Talents.lua", "CommitConfig"), ("Talents.lua", "PurchaseRank")],
+          "only PurchaseRank and CommitConfig, only in Talents.lua; no refund/reset/bulk writes: %s" % used)
+    src = open(os.path.join(ADDON, "Talents.lua"), encoding="utf-8").read().replace("\r\n", "\n")
+    body = src[src.index("local function purchasePoint(r, p)"):]
+    body = body[:body.index("\nend\n")]
+    rest = src.replace(body, "")
+    check(not re.search(r"C_Traits\.(PurchaseRank|CommitConfig)\s*,|C_Traits\.(PurchaseRank|CommitConfig)\s*\(",
+                        "\n".join(l.split("--", 1)[0] for l in rest.splitlines())),
+          "PurchaseRank / CommitConfig are only called inside purchasePoint")
+    check(body.index("R2F.InCombat()") < body.index("C_Traits.PurchaseRank"), "purchasePoint checks combat before PurchaseRank")
+    check(body.index("pendingElsewhere(configID, nil)") < body.index("C_Traits.PurchaseRank")
+          and body.index("x.name ~= p.name") < body.index("C_Traits.PurchaseRank"),
+          "purchasePoint checks the node's name and staged changes before PurchaseRank")
+    check(body.count("pcall(C_Traits.PurchaseRank") == 1 and body.count("pcall(C_Traits.CommitConfig") == 1,
+          "both writes are pcall-wrapped")
+    # The shared plan / order code is untouched (byte for byte vs the v0.10.5 tag).
+    try:
+        old = subprocess.run(["git", "show", "r2f-v0.10.5:addon/RoadToForever/Talents.lua"], capture_output=True,
+                             check=True, cwd=ROOT).stdout.decode("utf-8").replace("\r\n", "\n")
+    except (subprocess.CalledProcessError, OSError):
+        old = None
+    if old is not None:
+        def fn(text, head):
+            t = text[text.index(head):]
+            return t[:t.index("\nend\n")]
+        for head in ("function Talents.LearnOrder(plan)", "local function verify(r, p)",
+                     "function Talents.Encode(trees)", "function Talents.Hash(trees)"):
+            check(fn(src, head) == fn(old, head), "unchanged since v0.10.5: %s" % head)
+        lp_old, lp_new = fn(old, "function Talents.LearnPoints(plan)"), fn(src, "function Talents.LearnPoints(plan)")
+        check(lp_new.replace(", nodeID = e.nodeID", "") == lp_old,
+              "LearnPoints: only the nodeID field added")
+
+
 def test_talent_source_writes():
     """Step 10's write discipline (ADDON_PLAN 13.8), on the source itself:
     LearnTalent is CALLED in exactly one place (learnPoint in Talents.lua, right
@@ -3176,7 +3771,7 @@ def test_talent_source_writes():
           "glow/host are unnamed frames on UIParent; Blizzard frames only looked up")
     toc = open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read()
     check("UI\\TalentPanel.lua" in toc and "UI\\TalentGuide.lua" in toc, "TalentPanel.lua and TalentGuide.lua in the TOC")
-    check(re.search(r"^## Version: 0\.10\.5$", toc, re.M) is not None, "TOC version 0.10.5")
+    check(re.search(r"^## Version: 0\.11\.0$", toc, re.M) is not None, "TOC version 0.11.0")
 
 
 def test_quick_settings(templates, fx):
@@ -3877,6 +4472,11 @@ def main():
     test_talent_grid_jitter(True)
     test_talent_grid_jitter(False)
     test_talent_source_writes()
+    test_talent_traits_learning(True)
+    test_talent_traits_learning(False)
+    test_free_points(True)
+    test_free_points(False)
+    test_talent_source_traits()
     test_quick_settings(True, fx)
     test_quick_settings(False, fx)
     test_class_picker(True, fx)

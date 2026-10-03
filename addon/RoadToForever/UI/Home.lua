@@ -47,8 +47,11 @@ end
 
 -- 12.4: "5 free talent points", or "No free talent points" (step 9 replaced
 -- the step-6 placeholder). Same wording as the minimap tooltip.
+-- 13.12: a client that gives no usable answer says so instead of "No free
+-- talent points" (which is what hid 17 real points on WoW Forever).
 function Home.TalentLine()
-  local n = R2F.Talents.FreePoints()
+  local n = R2F.Talents.FreePointsInfo()
+  if n == nil then return L.HOME_TALENT_POINTS_UNKNOWN end
   if n <= 0 then return L.HOME_NO_TALENT_POINTS end
   return n == 1 and L.MM_TALENT_POINTS_ONE or L.MM_TALENT_POINTS:format(n)
 end

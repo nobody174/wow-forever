@@ -438,7 +438,8 @@ end
 --   a stopped run for this same link -> continue it (13.5: "Click Learn
 --                   talents to continue"), no second popup;
 --   otherwise    -> the confirm popup (13.4), the commit step on a client
---                   that learns a talent the moment it's sent.
+--                   that learns a talent the moment it's sent. The same
+--                   popup for "direct", "traits" (13.12) and "guided".
 function TalentPanel.Learn()
   if Talents.LearnBusy() or R2F.InCombat() or not state.text then return end
   local text = state.text

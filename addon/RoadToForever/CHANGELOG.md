@@ -3,6 +3,35 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.11.0 (2026-10-03): free talent points on WoW Forever + one-click learning through C_Traits
+
+**The new learning path has never run against a real WoW Forever server. Test it with
+ONE point on a disposable character first (TESTING.md 20), never on a main's build.**
+Full design, confidence levels and the "not verified" list: `ADDON_PLAN.md` 13.12.
+
+- **Fix: free talent points said 0** while Blizzard's window showed "Unspent Talents:
+  17" (real screenshot), so Learn talents stayed grey. The count now comes from
+  `C_Traits.GetTreeCurrencyInfo` (applied points, staged changes excluded), with
+  Classic's `UnitCharacterPoints` kept unchanged for Classic-era clients. One function
+  for the whole addon (`Talents.FreePointsInfo`; the minimap tooltip, Home, the Talents
+  tab and the learning engine all use it). When no API gives a usable answer the addon
+  now says **"couldn't read"** (Talents tab, Home) instead of a misleading "No free
+  talent points", and Learn stays disabled.
+- **New: "traits" learning mode** (WoW Forever). Learn talents spends points itself:
+  `C_Traits.PurchaseRank(configID, nodeID)` per point, then `C_Traits.CommitConfig`
+  when the purchase turns out to be staged (like Blizzard's own Apply Changes), one
+  point at a time. Same order, popup, `Learning X / N`, combat stop, Stop / resume and
+  no-double-send rules as before. A point only counts when its applied rank went up
+  AND the free points went down. Anything unexpected (refused, error, failed commit,
+  unconfirmed point) stops the run and switches to the existing guided mode for the
+  rest of the session. Your own un-applied changes in Blizzard's window are never
+  committed: the run stops and asks you to apply or undo them first.
+- Classic's direct mode and guided mode are unchanged.
+- Tests: fake trait servers (staged + commit, immediate, async, no commit) and every
+  failure case; free points from the currency (17 with the legacy call saying 0),
+  Classic path, unknown. Suite: 10927 checks, 0 failed (9389 before); 22 of 23 hand
+  mutations fail the suite (the 23rd is equivalent); luacheck 0 warnings.
+
 ## 0.10.5 (2026-10-03): fix — Paladin talents unreadable (position jitter)
 
 Follow-up to 0.10.4's C_Traits reader, found by live testing: a dump of all 50

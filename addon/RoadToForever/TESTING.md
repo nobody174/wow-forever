@@ -459,9 +459,9 @@ What only the game can show:
 ## 15. Talent learning (v0.8.0, step 10) -- READ ALL OF THIS FIRST
 
 **Since v0.10.4 (ADDON_PLAN 13.10):** WoW Forever has no Classic `GetTalentInfo`, so
-the addon never calls `LearnTalent` there; Learn talents is always guided mode
-(section 19). The direct/preview checks below only apply to a client that has
-Classic's talent API.
+the addon never calls `LearnTalent` there. The direct/preview checks below only apply
+to a client that has Classic's talent API. **Since v0.11.0** Forever learns through
+`C_Traits` instead ("traits" mode): section 20, not this one.
 
 **This is the one part of the addon that changes your character for good.** Every
 learned point is permanent until a paid trainer reset. Do these checks on a **throwaway
@@ -710,6 +710,102 @@ that addon is `MISSING` on WoW Forever. v0.10.4 reads talents through `C_Traits`
       If it doesn't move until something else happens, note whether it moved on the
       click or only on Apply (which event fires: `/etrace`, look for
       `TRAIT_CONFIG_UPDATED` / `CHARACTER_POINTS_CHANGED`).
+      **Since v0.11.0** Learn talents uses the "traits" mode on Forever when
+      `C_Traits.PurchaseRank` exists (section 20); this guided check now applies only
+      after that mode has stopped and switched itself off for the session.
+
+## 20. Free talent points and one-click learning on WoW Forever (v0.11.0) -- READ ALL OF THIS FIRST
+
+ADDON_PLAN.md 13.12 has the reasoning and the full "not verified" list. Two changes:
+the free-points count now comes from `C_Traits` (it said 0 next to Blizzard's
+"Unspent Talents: 17"), and Learn talents can now spend points itself through
+`C_Traits.PurchaseRank` + `C_Traits.CommitConfig` (the "traits" mode) instead of only
+pointing at talents to click.
+
+**The traits mode has never run against a real WoW Forever server.** Everything below
+it was tested against a fake client that copies retail WoW's C_Traits API. Forever's
+real behaviour may differ. **Use a disposable / test character for all of this.
+Never a main, never a talent build you care about, until every box in this section
+is ticked.** Start with ONE point. Talent changes are undone at a trainer reset (or
+whatever Forever uses instead): annoying, but that is the worst case to plan for.
+
+**A. Read-only checks first (spend nothing):**
+- [ ] On a character with free talent points: `/dump R2F.Talents.FreePointsInfo()`.
+      **Pass:** the same number Blizzard's window shows as "Unspent Talents", then
+      `"traits"`. Note what you got. If it says `nil`: `/dump
+      C_SpecializationInfo.GetCombatConfigIDForSpecGroup(C_SpecializationInfo.GetActiveSpecGroup())`
+      (the config id), then `/dump C_Traits.GetTreeCurrencyInfo(<that id>, <tree id>,
+      true)` (tree id from `/dump C_Traits.GetConfigInfo(<that id>).treeIDs`) and paste
+      the output into ADDON_PLAN 13.12. Several currencies with different amounts =
+      the addon refuses to guess; that needs a code change.
+- [ ] `/r2f` -> Home. **Pass:** `17 free talent points` (your number), not `No free
+      talent points`, and not `Free talent points: couldn't read them`.
+- [ ] Minimap button tooltip. **Pass:** the same `N free talent points` line.
+- [ ] Talents tab, paste a site link, Preview. **Pass:** the summary counts your real
+      free points (`You have N free...`), and Learn talents is enabled.
+- [ ] `/dump type(C_Traits.PurchaseRank), type(C_Traits.CommitConfig),
+      type(C_Traits.CanEditConfig), type(C_Traits.GetTreeCurrencyInfo)` and
+      `/dump R2F.Talents.LearnMode()`. **Expected:** `function` x4 and `traits`.
+      `CommitConfig` not a function is allowed (the addon then hands the point to your
+      own Apply Changes, see C). Note all five answers in ADDON_PLAN 13.12.
+- [ ] Field check on one talent you have points in: `/dump
+      C_Traits.GetNodeInfo(<config id>, <node id>)` (node id from `/dump
+      R2F.Talents.ReadTrees()[1][1].nodeID`). Note `activeRank`, `currentRank`,
+      `ranksPurchased`, `canPurchaseRank`. Then click (don't apply) one more rank in
+      Blizzard's window and dump again: **expected** `currentRank` one higher,
+      `activeRank` unchanged. Undo the click in Blizzard's window afterwards.
+
+**B. One point (the most important test).** Test character, any number of free points,
+nothing pending in Blizzard's window:
+- [ ] On the site, make a build with exactly ONE point in a tier-1 talent, Copy link,
+      paste, Preview. **Pass:** gold `+1` on that talent, `It will be learned.`
+- [ ] `/etrace` open (to see the events), then Learn talents. **Pass:** the popup
+      `Learn 1 talent point? Only a trainer reset can undo this.`; **Cancel** first:
+      nothing changes in Blizzard's window.
+- [ ] Learn talents -> **Learn**. **Pass (all of it):** within ~2 s the point shows as
+      APPLIED in Blizzard's window (not pending, "Apply Changes" not lit); chat
+      `Learned 1 talent point.`; the green line on the tab; Home's free points one
+      lower; no Lua error; **no "Interface action failed because of an AddOn"**. In
+      `/etrace`, note which events fired (`TRAIT_CONFIG_UPDATED`,
+      `TRAIT_TREE_CURRENCY_INFO_UPDATED`, `CHARACTER_POINTS_CHANGED`,
+      `CONFIG_COMMIT_FAILED`).
+- [ ] `/reload`, open Blizzard's window again. **Pass:** the point is still there
+      (it was really applied on the server, not only shown locally).
+- [ ] **If instead** chat says `Stopped at X: the game didn't accept the point...` or
+      `...the point is waiting in Blizzard's talent window but wasn't applied...`:
+      that is the safe fallback working, not a bug in itself. Check Blizzard's window
+      (is the point pending? applied? absent?), note exactly which message and what
+      you see in ADDON_PLAN 13.12, and stop testing the traits mode there; Learn
+      talents now guides you instead for the rest of the session (section 19's check).
+- [ ] If the point landed but the message said it didn't, followed by `The point in X
+      arrived late after all`: the server is slower than 2 s. Note your ping; raise
+      `Talents.TRAITS_TIMEOUT` (ADDON_PLAN 13.12).
+
+**C. Only after B passed: a few points, then the safety stops.** Test character:
+- [ ] 5 points across tier 1 and tier 2 of one tree. **Pass:** `Learning 1 / 5`, `2 / 5`
+      ...; Cancel reads Stop; at the end `Learned 5 talent points.` and exactly the
+      build, all applied (none pending) in Blizzard's window. **If only the first point
+      lands** and the second stops: Forever only lets addons buy talents from a click
+      (follow-up points are sent from an event); note it, guided mode takes over.
+- [ ] **Your own pending changes are never applied by the addon:** in Blizzard's window
+      click a talent that is NOT in the build (don't apply). Learn talents -> Learn.
+      **Pass:** `Stopped: Blizzard's talent window has changes that aren't applied
+      yet...`, nothing learned. Undo your click there; Learn talents continues.
+- [ ] **Combat mid-run:** 5-point run, attack a training dummy at once. **Pass:**
+      `Stopped: you entered combat...`, no "action blocked", nothing bought in combat;
+      after combat Learn talents continues without a popup and ends with the exact
+      build (no talent one rank too high).
+- [ ] **Stop button, then Learn at once.** **Pass:** the build ends exact (no point
+      bought twice).
+- [ ] Only now, if all of the above passed: a full build on the test character, then
+      Copy my build: the link equals the site's link for that build.
+
+**D. If CommitConfig doesn't exist** (A's dump): the first point should stop with
+`...waiting in Blizzard's talent window but wasn't applied. Click Apply Changes...`.
+- [ ] **Pass:** Blizzard's window shows that one point pending; click Apply Changes:
+      chat `The point in X arrived late after all. 1 of N learned...`; the rest of the
+      run is guided (section 19). Report it: a future version could fill all points
+      into Blizzard's window and let you apply them in one click.
 
 ## Known gaps in v0.10.0 (by design / later)
 

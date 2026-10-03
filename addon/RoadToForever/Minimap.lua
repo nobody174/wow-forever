@@ -46,13 +46,12 @@ local function db() return R2F.Library.db.minimap end
 -- Tooltip and clicks (shared by both backends)
 -- ---------------------------------------------------------------------------
 
--- Free talent points (12.2: "only when > 0"). UnitCharacterPoints is the
--- Classic call (first return = unspent talent points); guarded because
--- newer clients removed it.
+-- Free talent points (12.2: "only when > 0"). Since 13.12 the one source is
+-- Talents.FreePointsInfo (C_Traits' tree currency on WoW Forever, Classic's
+-- UnitCharacterPoints elsewhere); "couldn't read" counts as 0 here, which
+-- just leaves the tooltip line out.
 function Minimap_.FreeTalentPoints()
-  if not UnitCharacterPoints then return 0 end
-  local n = UnitCharacterPoints("player")
-  return type(n) == "number" and n or 0
+  return R2F.Talents.FreePoints()
 end
 
 -- `tt` is GameTooltip (own button) or LibDBIcon's tooltip; both have AddLine.

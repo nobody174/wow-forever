@@ -209,6 +209,14 @@ end
 local nodeIndex = {}     -- nodeID -> node record, rebuilt by GetTreeNodes
 local function nodeRank(n) if n.src then return n.src.rank or 0 end return n.rank or 0 end
 local function nodeMax(n) if n.src then return n.src.maxRank end return n.maxRank end
+-- 13.12: ranks bought but not applied yet (retail's staged changes; the
+-- "traits" write stub below). Applied rank = .rank, staged on top = .staged.
+local function nodeStaged(n) return (n.src or n).staged or 0 end
+local function stagedTotal()
+  local s = 0
+  for _, list in ipairs(T.talentTabs) do for _, x in ipairs(list) do s = s + (x.staged or 0) end end
+  return s
+end
 
 C_SpecializationInfo = {
   GetActiveSpecGroup = function() return 1 end,
@@ -238,9 +246,13 @@ C_Traits = {
     local n = nodeIndex[nodeID]
     -- The real API answers an unknown node with a table whose ID is 0.
     if configID ~= CONFIG_ID or not n then return { ID = 0, entryIDs = {}, visibleEdges = {} } end
-    return { ID = n.id, posX = n.posX, posY = n.posY, activeRank = nodeRank(n), ranksPurchased = nodeRank(n),
-             currentRank = nodeRank(n), maxRanks = nodeMax(n), entryIDs = { n.id + 500000 }, visibleEdges = {},
-             isVisible = true }
+    -- Retail meaning (13.12): activeRank = applied, currentRank / ranksPurchased
+    -- = applied + staged. T.activeIncludesStaged models a client where
+    -- activeRank counts staged ranks too (the risk landed() guards against).
+    local r, st = nodeRank(n), nodeStaged(n)
+    return { ID = n.id, posX = n.posX, posY = n.posY, activeRank = T.activeIncludesStaged and r + st or r,
+             ranksPurchased = r + st, currentRank = r + st, maxRanks = nodeMax(n), entryIDs = { n.id + 500000 },
+             visibleEdges = {}, isVisible = true, canPurchaseRank = T.canPurchaseRank }
   end,
   GetEntryInfo = function(configID, entryID)
     if configID ~= CONFIG_ID or not nodeIndex[entryID - 500000] then return nil end
@@ -250,6 +262,17 @@ C_Traits = {
     local n = nodeIndex[definitionID - 1000000]
     if not n then return nil end
     return { spellID = n.spellID }
+  end,
+  -- 13.12: unspent talent points as the tree's trait currency (retail shape:
+  -- a list of { traitCurrencyID, quantity, maxQuantity, spent }). Same pool as
+  -- UnitCharacterPoints below (T.talentPoints); excludeStagedChanges = false
+  -- also subtracts the staged ranks, like the real one. A test removes it
+  -- (= nil) for a client without it, or replaces it for odd answers.
+  GetTreeCurrencyInfo = function(configID, _, excludeStaged)
+    if configID ~= CONFIG_ID then return {} end
+    local q = T.talentPoints or 0
+    if not excludeStaged then q = q - stagedTotal() end
+    return { { traitCurrencyID = 1, quantity = q, maxQuantity = 51, spent = 0 } }
   end,
 }
 C_Spell = {
@@ -369,6 +392,139 @@ local function talentWrite(what)
 end
 LearnPreviewTalents = talentWrite("LearnPreviewTalents")
 AddPreviewTalentPoints = talentWrite("AddPreviewTalentPoints")
+
+-- 13.12: C_Traits WRITES ("traits" learning mode), OFF by default so every
+-- earlier test runs on the client it was written for. T.installTraitWrites(
+-- model) adds them:
+--   "staged"         (retail-like, the expected case) PurchaseRank stages a
+--                    rank locally (currentRank up, activeRank not, free points
+--                    excluding staged unchanged); CommitConfig queues the
+--                    commit; T.traitServer() applies everything staged and
+--                    fires TRAIT_CONFIG_UPDATED(configID).
+--   "stagedNoCommit" the same staging, but no CommitConfig at all.
+--   "immediate"      no CommitConfig; PurchaseRank applies the rank and takes
+--                    the point at once; TRAIT_CONFIG_UPDATED comes later
+--                    (T.traitServer()).
+--   "async"          no CommitConfig; PurchaseRank only sends; T.traitServer()
+--                    applies it (Classic rules) and fires TRAIT_CONFIG_UPDATED.
+-- Failure switches: T.purchaseRejects (returns false), T.purchaseError
+-- (raises), T.purchaseLies (returns true, changes nothing, ever),
+-- T.purchaseForbidden (ADDON_ACTION_FORBIDDEN inside the call),
+-- T.commitRejects / T.commitError, T.commitServerFails (the server answers
+-- CONFIG_COMMIT_FAILED; staged ranks stay staged), T.serverRejects (the
+-- server applies nothing, silently). Both writes raise in combat and count in
+-- T.talentWrites; T.traitCalls logs "purchase:<name>" / "commit".
+T.traitCalls = {}
+T.traitQueue = {}
+local function nodeSrc(nodeID) local n = nodeIndex[nodeID]; return n and (n.src or n) end
+local function tabOf(src)
+  for t, list in ipairs(T.talentTabs) do for _, x in ipairs(list) do if x == src then return t end end end
+end
+-- Classic rules on applied + staged ranks (staging lets you plan the whole
+-- tree before applying, like Blizzard's window).
+local function canStage(x)
+  local t = tabOf(x)
+  if not t or (T.talentPoints or 0) - stagedTotal() <= 0 then return false end
+  if (x.rank or 0) + (x.staged or 0) >= x.maxRank then return false end
+  local spent = 0
+  for _, y in ipairs(T.talentTabs[t]) do spent = spent + (y.rank or 0) + (y.staged or 0) end
+  if spent < (x.tier - 1) * 5 then return false end
+  if x.prereq then
+    local p = talentAt(t, x.prereq[1], x.prereq[2])
+    if p and (p.rank or 0) + (p.staged or 0) < p.maxRank then return false end
+  end
+  return true
+end
+local function traitWrite(what)
+  T.talentWrites = T.talentWrites + 1
+  if T.combat then error(what .. ": blocked in combat (test stub)", 3) end
+end
+function T.installTraitWrites(model)
+  T.traitModel = model or "staged"
+  C_Traits.PurchaseRank = function(configID, nodeID)
+    traitWrite("PurchaseRank")
+    local x = nodeSrc(nodeID)
+    table.insert(T.traitCalls, "purchase:" .. (x and x.name or tostring(nodeID)))
+    if T.purchaseError then error(T.purchaseError, 2) end
+    if T.purchaseForbidden then
+      T.fire("ADDON_ACTION_FORBIDDEN", "RoadToForever", "C_Traits.PurchaseRank()")
+      return
+    end
+    if T.purchaseRejects then return false end
+    if T.purchaseLies then return true end
+    if configID ~= CONFIG_ID or not x then return false end
+    if T.traitModel == "async" then
+      table.insert(T.traitQueue, { kind = "apply", x = x })
+      return true
+    end
+    if not canStage(x) then return false end
+    if T.traitModel == "immediate" then
+      x.rank = (x.rank or 0) + 1
+      T.talentPoints = T.talentPoints - 1
+      table.insert(T.traitQueue, { kind = "event" })
+      return true
+    end
+    x.staged = (x.staged or 0) + 1
+    return true
+  end
+  if T.traitModel == "staged" then
+    C_Traits.CommitConfig = function(configID)
+      traitWrite("CommitConfig")
+      table.insert(T.traitCalls, "commit")
+      if T.commitError then error(T.commitError, 2) end
+      if T.commitRejects then return false end
+      if configID ~= CONFIG_ID or stagedTotal() == 0 then return false end
+      table.insert(T.traitQueue, { kind = "commit" })
+      return true
+    end
+  else
+    C_Traits.CommitConfig = nil
+  end
+end
+-- Deliver up to `max` queued trait requests (default: until the queue is
+-- empty; each answer may make the addon send the next one).
+function T.traitServer(max)
+  local n = 0
+  while #T.traitQueue > 0 and n < (max or 1000) do
+    local req = table.remove(T.traitQueue, 1)
+    n = n + 1
+    if req.kind == "commit" then
+      if T.commitServerFails then
+        T.fire("CONFIG_COMMIT_FAILED", CONFIG_ID)
+      elseif not T.serverRejects then
+        for _, list in ipairs(T.talentTabs) do
+          for _, x in ipairs(list) do
+            if (x.staged or 0) > 0 then
+              x.rank = (x.rank or 0) + x.staged
+              T.talentPoints = T.talentPoints - x.staged
+              x.staged = 0
+            end
+          end
+        end
+        T.fire("TRAIT_CONFIG_UPDATED", CONFIG_ID)
+      end
+    elseif req.kind == "apply" then
+      if not T.serverRejects and canStage(req.x) then
+        req.x.rank = (req.x.rank or 0) + 1
+        T.talentPoints = T.talentPoints - 1
+        T.fire("TRAIT_CONFIG_UPDATED", CONFIG_ID)
+      end
+    else
+      T.fire("TRAIT_CONFIG_UPDATED", CONFIG_ID)
+    end
+  end
+  return n
+end
+-- The player clicking a talent in Blizzard's window WITHOUT applying it (a
+-- staged change of their own), and clicking Apply Changes.
+function T.playerStage(tab, i)
+  local x = T.talentTabs[tab][i]
+  x.staged = (x.staged or 0) + 1
+end
+function T.playerApply()
+  table.insert(T.traitQueue, { kind = "commit" })
+  T.traitServer()
+end
 
 -- Blizzard's talent window (load-on-demand Blizzard_TalentUI), for guided
 -- mode: <name>, <name>Talent<i> (button i = talent index i of the tab shown),

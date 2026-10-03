@@ -70,6 +70,17 @@ end
 -- it for the same reason); whether CHARACTER_POINTS_CHANGED also fires there
 -- isn't confirmed, so both run the same handler.
 handlers.TRAIT_CONFIG_UPDATED = handlers.CHARACTER_POINTS_CHANGED
+-- 13.12: the trait currency (= the free talent points on Forever) changing,
+-- e.g. after an applied point. Same handler: the engine only re-reads the
+-- game on it (no event is trusted alone), and Home / the tab redraw.
+handlers.TRAIT_TREE_CURRENCY_INFO_UPDATED = handlers.CHARACTER_POINTS_CHANGED
+-- 13.12: the server refusing a trait commit (retail's event; args:
+-- configID). Settles the "traits" point in flight at once instead of after
+-- the timeout.
+handlers.CONFIG_COMMIT_FAILED = function(configID)
+  R2F.Talents.OnCommitFailed(configID)
+  R2F.MainWindow.RequestRefresh()
+end
 handlers.PLAYER_LEVEL_UP = function() R2F.MainWindow.RequestRefresh() end
 -- A CVar changed (/console, Blizzard's options, another addon, or our own
 -- Quick settings): redraw Home's boxes from the live values (12.4.1). They

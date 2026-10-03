@@ -4,6 +4,23 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-03 (Addon v0.11.0: free talent points from C_Traits + one-click "traits" learning)
+
+Two fixes in one release. (1) Free talent points read 0 on WoW Forever while
+Blizzard's window showed 17 unspent (real screenshot): `Minimap.FreeTalentPoints` only
+knew Classic's `UnitCharacterPoints`. `Talents.FreePointsInfo()` is now the single
+source: `C_Traits.GetTreeCurrencyInfo(configID, treeID, true)` (applied points), else
+`UnitCharacterPoints` unchanged; "unknown" is shown as unknown, not 0, and keeps Learn
+off. (2) New "traits" learn mode for Forever: `C_Traits.PurchaseRank(configID, nodeID)`
+per point, `C_Traits.CommitConfig` when the purchase is visibly staged, confirmed by
+applied rank AND free points dropping (events only trigger re-reads; 2 s timeout is
+final); never commits the player's own staged changes; any anomaly stops the run and
+falls back to guided mode for the session; traits points are never re-sent. Classic
+direct and guided modes unchanged; plan/order code byte-identical to v0.10.5 (source
+test). Never run against a real Forever server: TESTING.md 20 (one point, disposable
+character first). See `ADDON_PLAN.md` 13.12. Suite: 10927 checks, 0 failed (9389
+before); luacheck 0 warnings. Tag `r2f-v0.11.0`.
+
 ## 2026-10-03 (Addon v0.10.5: tolerate position jitter in talent nodes)
 
 Follow-up to v0.10.4, found with live data: a dump of all 50 nodes of a Paladin's

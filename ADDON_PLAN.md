@@ -2345,7 +2345,8 @@ address, which it no longer is:
   stops, nothing sent). WoW Forever has no `GetTalentInfo`, so there learning is
   always **guided** (the addon writes nothing; it names the talent to click). Real
   auto-learning on Forever would be `C_Traits.PurchaseRank(configID, nodeID)` (+ the
-  player's Apply Changes, or `CommitConfig`): not built, a separate step.
+  player's Apply Changes, or `CommitConfig`): not built, a separate step. (**Built in
+  13.12**, v0.11.0: the "traits" mode.)
 - **Guided glow:** only on a Blizzard button `GetTalentInfo` confirms; on Forever the
   text alone (no glow on a possibly wrong button).
 - **Tooltip:** `GameTooltip:SetSpellByID(spellID)` instead of `SetTalent(tab, index)`.
@@ -2491,3 +2492,246 @@ the previous value, no Y snap. luacheck: 0 warnings.
   the Holy grid in the fixture); **Y jitter** has never been seen (Y snapping is a
   defensive generalisation); any class but Paladin. v0.10.5 itself still needs an
   in-game Preview / Copy my build on the Paladin (TESTING.md 19).
+
+### 13.12 Free talent points from C_Traits, and one-click learning through C_Traits (v0.11.0, 2026-10-03)
+
+> **Read the "NOT VERIFIED" list at the end before trusting any of this.** Nothing in
+> the new write path has run against a real WoW Forever server. It was built from the
+> real `/dump C_Traits` function list plus retail WoW's public C_Traits API, and tested
+> against a fake client that copies retail's behaviour. TESTING.md 20 is the in-game
+> plan, starting with **one point on a disposable character**.
+
+Two fixes, released together because the second is useless without the first.
+
+#### Fix 1: free talent points read 0 on WoW Forever
+
+**The bug (real screenshot, 2026-10-03).** After a talent reset Blizzard's window said
+"Unspent Talents: 17"; the Talents tab said `No free talent points.` and Learn stayed
+grey. `Talents.FreePoints()` went through `Minimap.FreeTalentPoints()`, which only knew
+Classic's `UnitCharacterPoints("player")`. On Forever's trait-based talents that call
+is missing or meaningless, and "missing" was silently turned into 0.
+
+**The source (`Talents.FreePointsInfo()`, the one place; Minimap, Home, the tab and the
+engine all read it).**
+1. `C_Traits.GetTreeCurrencyInfo(configID, treeID, excludeStagedChanges = true)` for
+   each tree of the live config (the same config the reader uses, `liveConfigID()`).
+   In retail's trait system, unspent points ARE a trait currency of the tree; this call
+   returns `{ {traitCurrencyID, quantity, maxQuantity, spent}, ... }` and `quantity` is
+   what's left. Per currency id, so a pool shared by several trees (13.10's one-tree-
+   per-pane layout) is counted once. One currency, or several with the same amount, is
+   the answer; several that disagree is "unknown" (retail class trees have two: class
+   and spec points; which one a Classic pane would use is unknown, so no guess).
+   `excludeStagedChanges = true` because everything else reads `activeRank`, the
+   APPLIED rank (13.10): free points must be the applied ones too.
+2. Otherwise Classic's `UnitCharacterPoints("player")`, same meaning as before. One
+   change: on a client that HAS a trait config, a legacy answer of 0 is exactly the
+   bug above, so it becomes "unknown" (a positive answer is still believed). On a
+   client without a trait config (Classic Era) it is used exactly as before, 0
+   included.
+3. Neither: **unknown** (`nil`). Not 0.
+
+*Note on `GetTraitCurrencyInfo`* (in the live dump): in retail it takes a
+`traitCurrencyID` and describes the currency (flags, type, icon), not the amount, so
+it isn't used.
+
+**Unknown is shown as unknown.** `Plan(trees, codes, free)` takes `nil` = unknown:
+`plan.free = 0` (nothing learnable), `plan.freeKnown = false`, and the summary says
+`Couldn't read your free talent points, so nothing can be learned from here. Learn them
+in Blizzard's talent window.` instead of `No free talent points.`; Home says `Free
+talent points: couldn't read them`. The minimap tooltip just leaves its line out
+(unknown counts as 0 there). Learn is never enabled on an unknown count: the engine's
+per-point check needs at least one free point.
+
+**Confidence: medium.** The retail signature and meaning are well known; that Forever's
+client has `GetTreeCurrencyInfo` (the dump excerpt we have didn't list it) with the same
+shape and a single currency is not confirmed. Every step is `pcall`-guarded and anything
+odd is "unknown", never a wrong number.
+
+#### Fix 2: the "traits" learning mode
+
+**Mode selection (`Talents.LearnMode`).** `preview` and `direct` are unchanged and still
+come first (they need Classic's `GetTalentInfo`). Then **`traits`** when `C_Traits` and
+`C_SpecializationInfo` are tables and `PurchaseRank`, `GetNodeInfo`, `GetConfigInfo`,
+`GetTreeNodes` are functions, and this session hasn't switched it off. Else `guided`,
+exactly as before. On WoW Forever: `traits`.
+
+**What stays exactly as step 10 (13.8).** The plan, `LearnOrder` and the popup's point
+list (tier by tier; `LearnPoints` only gained a `nodeID` field; a source test compares
+`LearnOrder`, `verify`, `Encode`, `Hash` byte for byte with v0.10.5); the confirm popup;
+`verify()` before every point (whole preview re-run on live ranks, conflicts, exactly one
+rank short, a free point, Classic's tier rule); the per-point combat check at the write;
+the state machine, tokens, `Learning X / N`, locks, Stop, resumable stops, late
+answers; the queue for a popup accepted in combat. Only the "spend this one point"
+primitive differs: `learnPoint` (Classic) or `purchasePoint` (traits), chosen by
+`r.mode` in the shared `stepSend` (was `stepDirect`).
+
+**The write: signature and flow (`purchasePoint`, the ONLY C_Traits writes in the addon,
+a source test enforces it).**
+- `C_Traits.PurchaseRank(configID, nodeID)` -> success boolean (retail). The address is
+  the trait node itself, which the reader already has for every talent (13.10), so
+  there is no Classic `(tab, index)` to translate. **Confidence in the signature:
+  medium** (well known in retail, same `(configID, nodeID)` pair as every C_Traits read
+  here; not seen called on Forever).
+- **Before the call** (any failure = nothing sent): not in combat; the live config is
+  the one the run started on (a spec switch changes it); the node, read through the
+  reader's own `readNode`, is this very talent (name) and exactly one APPLIED rank
+  short; **nothing is staged anywhere in the config** (see below); the node's
+  `canPurchaseRank` isn't `false` (else a tier/prerequisite stop) and
+  `C_Traits.CanEditConfig(configID)` isn't `false` (else a refusal), both only when the
+  client has them; the free points (applied) are recorded for the read-back.
+- **The call**, `pcall`-wrapped. An error or `false` = refused. `true` or nothing proves
+  nothing: the read-back decides.
+- **Staged or applied at once? (the commit-step question).** In retail, `PurchaseRank`
+  only STAGES a change in the client's copy of the config (Blizzard's window shows it
+  pending and lights "Apply Changes"), and `C_Traits.CommitConfig(configID)` sends what's
+  staged to the server, which answers `TRAIT_CONFIG_UPDATED` (or `CONFIG_COMMIT_FAILED`).
+  The "Apply Changes" button in the user's screenshot of Forever's own window says the
+  same. **Resolved by reading the node right after the call instead of assuming:** a
+  server can't answer inside the call, so any rank change visible right then is the
+  client's local (staged) copy. So:
+  - a rank moved (`activeRank` or `currentRank`/`ranksPurchased` >= target) -> staged:
+    `pcall(C_Traits.CommitConfig, configID)`, but only if exactly this one rank moved
+    and nothing else is staged; a `false`/error commit = stop. **Without
+    `CommitConfig`** the point is left staged and the run waits; the read-back never
+    counts a staged point, so it ends as `...waiting in Blizzard's talent window but
+    wasn't applied. Click Apply Changes there...` (the player's own button commits it,
+    and the late check counts it).
+  - nothing moved -> the server may apply it later; wait.
+  **Confidence that Forever stages like retail: low-to-medium** (the screenshot's
+  button is the only Forever-specific evidence). Both answers are handled; the read-back
+  is what makes either one safe.
+- **One commit per point, not one at the end.** Each point is then one server round
+  trip, like Classic's `LearnTalent`, so every step-10 guard applies unchanged and at
+  most one point is ever un-applied. Staging all points and committing once would be
+  faster and atomic, but `verify()` (and the whole preview) reads APPLIED ranks, and
+  tier-2 points depend on staged tier-1 points that the read side can't see.
+
+**Why a staged-anything check before every purchase and before every commit.** A commit
+applies EVERYTHING staged. If the player had half-made changes in Blizzard's window, our
+commit would apply talents they never confirmed in our popup. So `pendingElsewhere`
+looks at every node of the config (`currentRank`, else `ranksPurchased`, vs
+`activeRank`) AND at the currency (free points with vs without staged changes): before
+the purchase nothing may be staged (stop `Stopped: Blizzard's talent window has changes
+that aren't applied yet. Apply or undo them there first...`, resumable, no write, no
+guided switch); before the commit only our one point may be. An unreadable config
+counts as "staged" (stop). This check also makes a double send impossible: a point
+already staged on our node can't get a second rank stacked on it.
+
+**Completion detection: what proves a point landed (`landed`).** Two independent reads
+must agree: the node's **applied** rank (`activeRank`, via `readNode`) reached the
+target, **and** the free points (applied, `excludeStagedChanges = true`) are lower than
+right before the send. Why both: if `activeRank` on Forever turned out to count staged
+ranks (field semantics not verified), the rank alone would say "learned" right after an
+un-applied purchase; the free points would still say no. A test runs exactly that
+client. Cost: a level-up landing in the same moment can make a real point look
+unconfirmed -> a stop (safe direction).
+
+**Events: why `TRAIT_CONFIG_UPDATED`, and why it isn't trusted alone.** In retail it is
+the server's "this config changed / your commit went through" event, and the read side
+already listens to it (13.10, as WeakAuras Forever does). Staging fires other events
+(`TRAIT_NODE_CHANGED`, `TRAIT_TREE_CURRENCY_INFO_UPDATED`), not this one. But Forever's
+event behaviour is unverified, so no event counts a point by itself: `TRAIT_CONFIG_UPDATED`,
+`CHARACTER_POINTS_CHANGED` and (new in Core) `TRAIT_TREE_CURRENCY_INFO_UPDATED` all just
+make the engine re-read the game (`landed`); the timeout re-reads one last time and is
+the final word. A test fires the event with nothing applied and the run keeps waiting.
+New: `CONFIG_COMMIT_FAILED` (retail; arg configID, other configs ignored) settles the
+point as final at once instead of waiting for the timeout.
+
+**Timeout: `Talents.TRAITS_TIMEOUT = 2` s** (Classic's stays 0.5). A traits point is a
+purchase and a commit, and the commit is the round trip Blizzard's own window shows an
+"applying" wait for. Too short only means a stop + guided mode + `arrived late after
+all`; raise it if the beta shows that.
+
+**The fallback to guided mode (the safety design).** Any refusal in this mode (`false`,
+an error, a failed commit, `CONFIG_COMMIT_FAILED`, `ADDON_ACTION_FORBIDDEN` naming
+`PurchaseRank`/`CommitConfig`, `CanEditConfig` false, or a point not confirmed by the
+timeout, including a `true` that changed nothing) stops the run AND sets
+`session.traitsBlocked`. From then on `LearnMode()` is `guided` for the rest of the
+session: Learn talents continues the SAME run (same `X of N`, no popup) by naming the
+talents to click, and no further C_Traits write is fired. Unlike Classic's
+`session.blocked`, a late success does NOT clear it (we don't go back to firing
+purchases after something looked wrong); a `/reload` tries traits again. Separate flags
+from Classic's, so one write path's trouble never switches the other. If the stopped
+point is sitting staged, the stop says so (`...waiting in Blizzard's talent window...
+Click Apply Changes there to keep it, or undo it there.`) and the late check counts it
+when the player applies it.
+
+**No double send in traits mode.** Classic re-sends a point that's still missing after
+the post-Stop wait (13.8). Traits never does: a commit still on its way may be invisible
+locally, and a second purchase could then land both. Not there after the wait = a
+refusal (stop, guided). Plus the staged-anything check above.
+
+**Combat / taint (Taint & Secure Execution Auditor).** Same rules as `LearnTalent`:
+`R2F.InCombat()` at the write (first thing in `purchasePoint`), `PLAYER_REGEN_DISABLED`
+stops the run at once (a point in flight is counted if it lands), a popup accepted in
+combat waits in `RunOrQueue`, Learn greys out in combat. `PurchaseRank` and
+`CommitConfig` are called from our own code only (event/timer callbacks after the first
+click), never from a Blizzard frame or hook; nothing of Blizzard's is touched. Only
+those two writes: the refund / reset / rollback / bulk C_Traits writes in the dump
+(`RefundRank`, `RollbackConfig`, `ResetTree`, `PurchaseAllRanks`, `TryPurchaseAllRanks`,
+`TryPurchaseToNode`, `CascadeRepurchaseRanks`, `StageConfig`) are never called (source
+test). Whether Forever allows `PurchaseRank` from addons at all (or only from a click,
+like a protected function) is unknown: the first-point and second-point tests in
+TESTING.md 20 are exactly that check, and a forbidden call falls back to guided.
+
+**Also changed.** `prereqsMet` only asks Classic's `GetTalentPrereqs` at an address
+`GetTalentInfo` confirms (no change on Classic; on a trait client `(tab, index)` is our
+address and could describe another talent). `liveRank` / the late check take the run's
+mode. Core registers `TRAIT_TREE_CURRENCY_INFO_UPDATED` and `CONFIG_COMMIT_FAILED`.
+
+**Testing.** `wow_stubs.lua`: staged ranks on every node (`activeRank` = applied,
+`currentRank` / `ranksPurchased` = applied + staged), `GetTreeCurrencyInfo` (default on,
+same pool as `UnitCharacterPoints`, staged subtracted unless excluded), and opt-in write
+stubs `T.installTraitWrites(model)`: `staged` (retail-like: stage, commit, server applies
++ `TRAIT_CONFIG_UPDATED`), `stagedNoCommit`, `immediate` (applied at once, event later,
+no commit), `async` (server applies later); failure switches for a refused purchase, an
+error, a lie (`true`, nothing changes), `ADDON_ACTION_FORBIDDEN` inside the call, commit
+refused / raising / `CONFIG_COMMIT_FAILED` / silently dropped, `activeRank` counting staged
+ranks, `canPurchaseRank`, the player's own staged changes and Apply Changes. The default
+fake client stays as it was (no writes), so every earlier test runs unchanged.
+New `test_talent_traits_learning` (both UI modes), `test_free_points` (both),
+`test_talent_source_traits`. Suite: **10927 checks, 0 failed (9389 before; every earlier
+check kept and passing; two edited on purpose: the TOC version check now expects 0.11.0,
+and one label now reads "Forever client without C_Traits writes")**. luacheck: 0 warnings.
+
+Hand mutations (23), each run against the full suite: 22 fail it -- landed() without the
+free-points check; no staged check before the purchase / before the commit; no
+currency-based staged detection (caught only after adding a test where node fields
+can't show staging); traits point re-sent after the wait; no guided fallback after a
+refusal; no combat check before PurchaseRank; never committing; commit result ignored;
+PurchaseRank `false` ignored; node name not checked; traits ordered before direct;
+`canPurchaseRank` / `CanEditConfig` ignored; `CONFIG_COMMIT_FAILED` not handled; a
+forbidden PurchaseRank ignored; free points without the C_Traits source / counting
+staged changes / trusting a legacy 0 on a trait client; unknown shown as "no points"
+(tab, Home); a late traits success clearing the session block. The 23rd (per-tree
+instead of per-currency-id keys in `traitFreePoints`) survives because it is
+equivalent: several currencies must agree anyway, so a shared pool reported by three
+trees gives the same answer either way. The per-id key is kept as belt and braces.
+
+#### NOT VERIFIED -- needs real in-game testing (TESTING.md 20) before anyone trusts it with a real build
+
+1. **That `C_Traits.PurchaseRank(configID, nodeID)` works for an addon on Forever at all**,
+   with that signature, from event/timer callbacks (not only a hardware click).
+2. **Whether a purchase is staged (needs `CommitConfig`) or applied at once**, and
+   whether `C_Traits.CommitConfig` even exists on Forever (the dump excerpt we have
+   doesn't list it). Both paths are built; neither has run for real.
+3. **The node fields' meaning on Forever**: `activeRank` = applied and `currentRank` /
+   `ranksPurchased` = applied + staged is retail's; the two-way read-back is built so a
+   different meaning fails safe, but it's unseen.
+4. **Which events fire** on a staged purchase, an applied commit and a failed commit
+   (`TRAIT_CONFIG_UPDATED`, `TRAIT_TREE_CURRENCY_INFO_UPDATED`, `CHARACTER_POINTS_CHANGED`,
+   `CONFIG_COMMIT_FAILED`). The engine re-reads on any of them and the 2 s timeout is the
+   final word, so a missing event only costs time (or a safe stop).
+5. **`GetTreeCurrencyInfo` on Forever**: exists? one currency? `quantity` = Blizzard's
+   "Unspent Talents"? Does `excludeStagedChanges` work? (Fix 1 depends on it; if it's
+   missing, Forever shows "couldn't read" instead of a wrong 0.)
+6. **Server round-trip time** vs the 2 s `TRAITS_TIMEOUT`.
+7. **`CanEditConfig` / `canPurchaseRank`** semantics on Forever (only used when present;
+   a `false` stops before any write).
+8. **Prerequisites** in traits mode are only checked by the server (and
+   `canPurchaseRank` if present); Classic's `GetTalentPrereqs` doesn't apply there. A
+   refused point stops the run (safe).
+9. **Any class but Paladin** (13.10/13.11's reading caveats still apply).
+
+**Start with ONE point on a disposable character** (TESTING.md 20 B), never with a main
+character's real build.

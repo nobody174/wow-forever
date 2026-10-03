@@ -61,10 +61,12 @@ when dragged, so the 30/120 slot limit only counts macros you actually use.
       panes is now dumped (v0.10.5 fixed the jitter it showed, ADDON_PLAN 13.11), but
       v0.10.5 itself hasn't been run in game yet, Prot/Ret posY weren't dumped, and the
       pane split for other classes is a hypothesis.
-- [ ] **Auto-learning on WoW Forever:** `LearnTalent` doesn't fit the trait system,
-      so Learn talents is guided-only there since v0.10.4. Real auto-learning would be
-      `C_Traits.PurchaseRank(configID, nodeID)` per point + Blizzard's Apply Changes
-      (or `CommitConfig`); needs its own design + in-game checks (ADDON_PLAN 13.10).
+- [ ] **Verify v0.11.0 in game (TESTING.md 20, ADDON_PLAN 13.12):** free talent
+      points from `C_Traits` (should match Blizzard's "Unspent Talents"), then the new
+      one-click "traits" learning, **starting with ONE point on a disposable
+      character**. Never-run-for-real: `PurchaseRank` from an addon, staged vs
+      immediate, whether `CommitConfig` exists, node-field meanings, which events fire,
+      `GetTreeCurrencyInfo`'s shape. Note every dump result in ADDON_PLAN 13.12.
 
 Decided: no Druid; only Warrior (General/Tank/DPS) and Paladin
 (General/Tank/DPS/Healer) use role sections, other classes keep their spec

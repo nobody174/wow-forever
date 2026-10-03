@@ -146,6 +146,8 @@ R2F.L = {
   HOME_MACROS_COUNT_ONE = "1 macro in your library, %d on your bars",
   HOME_TALENTS = "Talents",
   HOME_NO_TALENT_POINTS = "No free talent points",
+  -- 13.12: the client gave no usable free-points answer (not the same as 0).
+  HOME_TALENT_POINTS_UNKNOWN = "Free talent points: couldn't read them",
   HOME_IMPORT = "Import macros",
   HOME_IMPORT_HINT = "Pick macros on the Macros page of the Road to Forever site, click Copy import string, "
     .. "then click Import macros and paste it.",
@@ -200,6 +202,8 @@ R2F.L = {
   TALENT_WILL_ALL = "All %d will be learned.",
   TALENT_WILL_ONE = "It will be learned.",
   TALENT_SUMMARY_NO_POINTS = "No free talent points.",
+  TALENT_SUMMARY_POINTS_UNKNOWN = "Couldn't read your free talent points, so nothing can be learned from here. "
+    .. "Learn them in Blizzard's talent window.",
   TALENT_SUMMARY_DONE = "You already have this whole build.",
   TALENT_SUMMARY_EMPTY = "This link has no talent points in it.",
   TALENT_CONFLICT_UNUSED = "You already have %s in %s, which this build doesn't use. "
@@ -244,6 +248,11 @@ R2F.L = {
   TALENT_BLOCKED_HINT = "Your game may not let addons learn talents. "
     .. "Click Learn talents to be shown which talents to click instead.",
   TALENT_LATE = "The point in %s arrived late after all. %d of %d learned. Click Learn talents to continue.",
+  -- 13.12 ("traits" learning on WoW Forever)
+  TALENT_STOP_STAGED = "Stopped at %s: the point is waiting in Blizzard's talent window but wasn't applied. "
+    .. "Click Apply Changes there to keep it, or undo it there. %d of %d learned.",
+  TALENT_STOP_PENDING = "Stopped: Blizzard's talent window has changes that aren't applied yet. "
+    .. "Apply or undo them there first. %d of %d learned. Click Learn talents to continue.",
   TALENT_GUIDE_CLICK = "Click %s (%d of %d)",
   TALENT_GUIDE_TAB = "Open the %s tab, then click %s (%d of %d)",
   TALENT_GUIDE_START = "click the glowing talent in Blizzard's talent window, one at a time.",

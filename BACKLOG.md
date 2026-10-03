@@ -84,11 +84,6 @@ sections; Warrior Arms + Fury stay merged in DPS.
 
 ## Open findings (from the 2026-09-24 WoW role pass)
 
-- **Weapon-swap macro doesn't mention the combat restriction.** WoW blocks weapon
-  swaps while in combat (a hard game rule, not a macro bug) — the site's
-  description doesn't say this, so a player could try it mid-fight and be
-  confused why nothing happens. Explicitly declined a fix when raised; revisit
-  if it turns out to actually confuse people.
 - **No arena/PvP-specific macro coverage.** No `arena1-3` unit tokens or
   stopcasting patterns anywhere, though focus-based interrupt/CC macros exist.
   Confirmed out of scope for now — this site is general-purpose/PvE-leaning per

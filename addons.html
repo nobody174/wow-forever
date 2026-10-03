@@ -66,6 +66,9 @@ h2:first-of-type{margin-top:0}
 }
 .card .addon-btn:active{transform:translateY(0);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
 .card .note{color:var(--muted);font-size:14px;margin-top:10px}
+.card .note ol{margin:6px 0 0;padding-left:20px}
+.card .note li{margin:2px 0}
+.card .note a{color:var(--text)}
 .card .note strong.warn{color:var(--warn)}
 @media (prefers-reduced-motion:reduce){.card .addon-btn{transition:none}}
 .card .unlinked{color:var(--muted);font-size:13px;font-style:italic}
@@ -118,6 +121,13 @@ h2:first-of-type{margin-top:0}
   <div class="card">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/weakauras-forever" target="_blank" rel="noopener">WeakAuras Forever</a>
     <div class="note">The WeakAuras you know, ported for WoW Forever's client (1.60.1). Same saved auras and slash commands — imported auras from other games may need small adjustments.</div>
+    <div class="note">Recommended aura: <a href="https://wago.io/MtMe4SbEJ" target="_blank" rel="noopener">Battle Shout reminder (Warrior)</a>.
+      <ol>
+        <li>Open the link and click "Copy Classic-WeakAura import string".</li>
+        <li>In game, type <code>/wa</code> and click Import.</li>
+        <li>Paste and click Done.</li>
+      </ol>
+    </div>
   </div>
 
   <h2>Checking what's supported</h2>

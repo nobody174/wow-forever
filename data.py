@@ -1026,6 +1026,10 @@ CLASSES = [
             ]),
             G(AUTO, [
                 M("Auto-attack (spam-safe)", MELEE, short="Attack", icon="Ability_GhoulFrenzy"),
+                M("Ranged weapon (Bow/Gun/Crossbow/Thrown)",
+                  "#showtooltip\n/cast [equipped:Thrown] Throw; [equipped:Bows] Shoot Bow; "
+                  "[equipped:Guns] Shoot Gun; [equipped:Crossbows] Shoot Crossbow",
+                  "One button for whatever ranged weapon you have equipped.", short="Ranged"),
             ]),
             G(BUFF, [
                 M("Battle Shout", plain("Battle Shout"), short="BShout"),
@@ -1040,6 +1044,10 @@ CLASSES = [
                 M("Intimidating Shout", dpsHarm("Intimidating Shout"),
                   "No auto-attack on purpose: hitting a feared mob breaks the fear.", short="IShout"),
                 M("Disarm (to Defensive)", stance(2, "Defensive Stance", "Disarm"), short="Disarm"),
+                M("Stance cooldown (Retaliation/Shield Wall/Recklessness)",
+                  "#showtooltip [stance:1] Retaliation; [stance:2] Shield Wall; [stance:3] Recklessness\n"
+                  "/cast [stance:1] Retaliation; [stance:2] Shield Wall; [stance:3] Recklessness",
+                  "Uses the big cooldown of the stance you're in.", short="StanceCD"),
             ]),
             G(QOL, [
                 M("Battle Stance", plain("Battle Stance"), short="Battle"),
@@ -1068,6 +1076,13 @@ CLASSES = [
                   "#showtooltip Battle Stance\n"
                   "/cast [stance:1] Defensive Stance; [stance:2] Berserker Stance; [stance:3] Battle Stance",
                   "One button cycles Battle -> Defensive -> Berserker -> Battle.", short="Stances"),
+                M("Stance toggle (Battle <> Defensive, mods for others)",
+                  "#showtooltip\n/cast [mod:ctrl, nostance:3] Berserker Stance; "
+                  "[mod:alt, nostance:2] Defensive Stance; [stance:1] Defensive Stance; Battle Stance",
+                  "Click swaps Battle <> Defensive. Ctrl = Berserker (level 30). Alt = Defensive.", short="StanceTog"),
+                M("Off-hand <> shield swap",
+                  "/equipslot [noequipped:Shields] 17 Your Shield\n/equipslot [equipped:Shields] 17 Your Offhand",
+                  "Fill in your own shield and off-hand item names.", short="OHSwap", icon="INV_Shield_06"),
             ]),
             G(CLEAN, [
                 M("No dispel", "", "Warriors have no dispel. Interrupt instead with Pummel or Shield Bash."),
@@ -1107,6 +1122,10 @@ CLASSES = [
                 M("Taunt (mouseover)",
                   "#showtooltip Taunt\n/cast [@mouseover, harm, nodead][harm] Taunt",
                   "Defensive Stance. Hover a loose mob to taunt it without changing target.", short="Taunt@"),
+                M("Taunt + equip 1H and shield",
+                  "#showtooltip Taunt\n/equipslot 16 Your One-Hander\n/equipslot 17 Your Shield\n"
+                  "/cast [stance:2] Taunt; Defensive Stance",
+                  "Fill in your own one-hander and shield item names.", short="TauntGear", icon="INV_Shield_06"),
             ]),
         ]},
 

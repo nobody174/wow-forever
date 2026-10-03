@@ -2503,6 +2503,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /startattack [@targettarget, harm, exists][harm]
 ```
 
+**Ranged weapon (Bow/Gun/Crossbow/Thrown)** (`Ranged`) — One button for whatever ranged weapon you have equipped.
+```
+#showtooltip
+/cast [equipped:Thrown] Throw; [equipped:Bows] Shoot Bow; [equipped:Guns] Shoot Gun; [equipped:Crossbows] Shoot Crossbow
+```
+
 #### Buffs
 
 **Battle Shout** (`BShout`)
@@ -2547,6 +2553,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Disarm
 /cast [nostance:2] Defensive Stance; [@targettarget, harm, exists][harm] Disarm
+```
+
+**Stance cooldown (Retaliation/Shield Wall/Recklessness)** (`StanceCD`) — Uses the big cooldown of the stance you're in.
+```
+#showtooltip [stance:1] Retaliation; [stance:2] Shield Wall; [stance:3] Recklessness
+/cast [stance:1] Retaliation; [stance:2] Shield Wall; [stance:3] Recklessness
 ```
 
 #### Class QoL
@@ -2607,6 +2619,18 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Battle Stance
 /cast [stance:1] Defensive Stance; [stance:2] Berserker Stance; [stance:3] Battle Stance
+```
+
+**Stance toggle (Battle <> Defensive, mods for others)** (`StanceTog`) — Click swaps Battle <> Defensive. Ctrl = Berserker (level 30). Alt = Defensive.
+```
+#showtooltip
+/cast [mod:ctrl, nostance:3] Berserker Stance; [mod:alt, nostance:2] Defensive Stance; [stance:1] Defensive Stance; Battle Stance
+```
+
+**Off-hand <> shield swap** (`OHSwap`) — Fill in your own shield and off-hand item names.
+```
+/equipslot [noequipped:Shields] 17 Your Shield
+/equipslot [equipped:Shields] 17 Your Offhand
 ```
 
 #### Focus
@@ -2704,6 +2728,14 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Taunt
 /cast [@mouseover, harm, nodead][harm] Taunt
+```
+
+**Taunt + equip 1H and shield** (`TauntGear`) — Fill in your own one-hander and shield item names.
+```
+#showtooltip Taunt
+/equipslot 16 Your One-Hander
+/equipslot 17 Your Shield
+/cast [stance:2] Taunt; Defensive Stance
 ```
 
 ### Warrior — DPS

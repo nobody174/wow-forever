@@ -4,6 +4,26 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-03 (Warrior macro additions, BACKLOG fix, WeakAuras recommendation)
+
+- **New Warrior (General) macros:** a stance toggle (click swaps Battle <>
+  Defensive, Ctrl = Berserker, Alt = Defensive — kept alongside the existing
+  3-way stance dance), a stance-cooldown button (Retaliation/Shield
+  Wall/Recklessness, whichever matches your current stance), a one-button
+  ranged weapon macro (Bow/Gun/Crossbow/Thrown), and an off-hand <> shield
+  swap (Class QoL, template with your own item names).
+- **New Warrior (Tank) macro:** Taunt + equip a 1-hander and shield in one
+  press (template, your own item names).
+- **Fixed a wrong BACKLOG finding:** "Weapon-swap macro doesn't mention the
+  combat restriction" assumed WoW blocks weapon swaps in combat — it doesn't;
+  only armor swaps are blocked. Removed the finding.
+- **Addons page:** added a recommended WeakAuras aura under the WeakAuras
+  Forever card — "Battle Shout reminder (Warrior)" (wago.io/MtMe4SbEJ), with
+  the 3-step Copy import string / `/wa` / Import / Done flow.
+
+Ran `python build.py`; every macro still ≤255 characters (longest new one is
+the stance-cooldown macro at 162).
+
 ## 2026-10-03 (Rogue macro fixes and additions)
 
 - **Fixed:** melee strikes (Sinister Strike, Backstab, Eviscerate, Hemorrhage,

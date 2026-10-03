@@ -523,22 +523,30 @@ CLASSES = [
 
         {"spec": "Shared", "groups": [
             G(DPS, [
-                M("Sinister Strike", dpsHarm("Sinister Strike"), short="SinStrike"),
-                M("Backstab", dpsHarm("Backstab"), short="Backstab"),
-                M("Eviscerate", dpsHarm("Eviscerate"), short="Evisc"),
+                M("Sinister Strike", melee("Sinister Strike"), short="SinStrike"),
+                M("Backstab", melee("Backstab"), short="Backstab"),
+                M("Eviscerate", melee("Eviscerate"), short="Evisc"),
                 M("Gouge", dpsHarm("Gouge"), short="Gouge"),
-                M("Kidney Shot", dpsHarm("Kidney Shot"), short="KidneyShot"),
-                M("Rupture", dpsHarm("Rupture"), short="Rupture"),
-                M("Garrote", dpsHarm("Garrote"), "Requires stealth.", short="Garrote"),
-                M("Ambush", dpsHarm("Ambush"), "Requires stealth.", short="Ambush"),
-                M("Cheap Shot", dpsHarm("Cheap Shot"), "Requires stealth. Classic stunlock opener.", short="CheapShot"),
+                M("Gouge (mouseover)", "#showtooltip Gouge\n/cast [@mouseover, harm, nodead][harm, nodead] Gouge",
+                  short="Gouge@"),
+                M("Kidney Shot", melee("Kidney Shot"), short="KidneyShot"),
+                M("Rupture", melee("Rupture"), short="Rupture"),
+                M("Garrote", melee("Garrote"), "Requires stealth.", short="Garrote"),
+                M("Ambush", melee("Ambush"), "Requires stealth.", short="Ambush"),
+                M("Cheap Shot", melee("Cheap Shot"), "Requires stealth. Classic stunlock opener.", short="CheapShot"),
                 M("Expose Armor", dpsHarm("Expose Armor"), short="ExposeArmor"),
                 M("Sap", dpsHarm("Sap"), "Only works on an out-of-combat target.", short="Sap"),
                 M("Kick (interrupt)", "#showtooltip Kick\n/stopcasting\n/cast [harm] Kick",
                   "Clears your current cast first so the interrupt fires instantly.", short="Kick"),
+                M("Kick (mouseover)", "#showtooltip Kick\n/stopcasting\n/cast [@mouseover, harm, nodead][harm, nodead] Kick",
+                  "Clears your current cast first so the interrupt fires instantly.", short="Kick@"),
             ]),
             G(AUTO, [
                 M("Auto-attack (spam-safe)", MELEE, short="Attack", icon="Ability_GhoulFrenzy"),
+                M("Ranged weapon (Bow/Gun/Crossbow/Thrown)",
+                  "#showtooltip\n/cast [equipped:Bows] Shoot Bow; [equipped:Guns] Shoot Gun; "
+                  "[equipped:Crossbows] Shoot Crossbow; [equipped:Thrown] Throw",
+                  "One button for whatever ranged weapon you have equipped.", short="Ranged"),
             ]),
             G(BUFF, [
                 M("Slice and Dice", plain("Slice and Dice"), short="SnD"),
@@ -548,21 +556,32 @@ CLASSES = [
                 M("Vanish", plain("Vanish"), short="Vanish"),
                 M("Sprint", plain("Sprint"), short="Sprint"),
                 M("Blind", dpsHarm("Blind"), short="Blind"),
+                M("Blind (mouseover)", "#showtooltip Blind\n/cast [@mouseover, harm, nodead][harm, nodead] Blind",
+                  short="Blind@"),
             ]),
             G(QOL, [
                 M("Stealth (no cancel)", "#showtooltip Stealth\n/cast [nostealth] Stealth", "Won't drop you out of stealth if pressed again.",
                   short="Stealth"),
                 M("Pick Lock", plain("Pick Lock"), short="PickLock"),
                 M("Pick Pocket", dpsHarm("Pick Pocket"), short="PickPocket"),
+                M("Pick Pocket (mouseover)", "#showtooltip Pick Pocket\n/cast [@mouseover, harm, nodead][harm, nodead] Pick Pocket",
+                  short="PickPkt@"),
                 M("Pick Pocket + Sap",
                   "#showtooltip Sap\n/cast [harm] Pick Pocket\n/cast [harm] Sap",
                   "Pick Pocket has no global cooldown, so one press robs and saps.", short="PickPkt+Sap"),
-                M("Apply poison to main hand", "/use Instant Poison\n/use Main Hand Weapon", "Swap the item name to the poison you carry.",
-                  short="PoisonMH", icon="INV_Potion_02"),
-                M("Apply poison to off hand", "/use Deadly Poison\n/use Off Hand Weapon", "Swap the item name to the poison you carry.",
-                  short="PoisonOH", icon="INV_Potion_02"),
-                M("Distract", dpsHarm("Distract"), short="Distract"),
+                M("Apply poison (left = main, right = off hand)",
+                  "#showtooltip Instant Poison\n/use Instant Poison\n/use [button:1] 16; [button:2] 17\n/click StaticPopup1Button1",
+                  "Change the poison name to the rank you have (e.g. Instant Poison II). The last line "
+                  "confirms the \"replace enchant\" popup.", short="Poison", icon="INV_Potion_02"),
+                M("Distract", "#showtooltip Distract\n/cast [@cursor] Distract", short="Distract"),
                 M("Feint", dpsHarm("Feint"), short="Feint"),
+                M("Grenade at cursor", "#showtooltip Iron Grenade\n/use [@cursor] Iron Grenade",
+                  "Swap the item name for the grenade you carry.", short="Grenade", icon="INV_Misc_Bomb_08"),
+                M("Sharpening stone (left = main, right = off hand)",
+                  "#showtooltip Rough Sharpening Stone\n/use Rough Sharpening Stone\n/use [button:1] 16; [button:2] 17\n"
+                  "/click StaticPopup1Button1",
+                  "Swap the item name for the stone you carry. The last line confirms the \"replace enchant\" popup.",
+                  short="Stone", icon="INV_Stone_02"),
             ]),
             G(CLEAN, [
                 M("No dispel", "", "Rogues have no dispel. Interrupt instead with Kick, or silence with Gouge/Kidney Shot/Blind."),
@@ -580,7 +599,7 @@ CLASSES = [
                 M("Venom", dpsHarm("Venom"),
                   "Forever's finisher (replaces Envenom): boosts poison damage and proc chance. "
                   "Longer duration per combo point.", short="Venom"),
-                M("Mutilate", dpsHarm("Mutilate"), short="Mutilate"),
+                M("Mutilate", melee("Mutilate"), short="Mutilate"),
                 M("Cold Blood + Ambush", "#showtooltip Ambush\n/cast Cold Blood\n/cast [harm] Ambush", "Requires stealth.",
                   short="ColdBlood+Amb"),
             ]),
@@ -595,7 +614,7 @@ CLASSES = [
 
         {"spec": "Subtlety", "groups": [
             G(DPS, [
-                M("Hemorrhage", dpsHarm("Hemorrhage"), short="Hemo"),
+                M("Hemorrhage", melee("Hemorrhage"), short="Hemo"),
                 M("Premeditation", plain("Premeditation"), "Requires stealth.", short="Premed"),
             ]),
             G(PANIC, [

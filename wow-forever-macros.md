@@ -1098,18 +1098,21 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Sinister Strike** (`SinStrike`)
 ```
 #showtooltip Sinister Strike
+/startattack [harm]
 /cast [harm] Sinister Strike
 ```
 
 **Backstab** (`Backstab`)
 ```
 #showtooltip Backstab
+/startattack [harm]
 /cast [harm] Backstab
 ```
 
 **Eviscerate** (`Evisc`)
 ```
 #showtooltip Eviscerate
+/startattack [harm]
 /cast [harm] Eviscerate
 ```
 
@@ -1119,33 +1122,44 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Gouge
 ```
 
+**Gouge (mouseover)** (`Gouge@`)
+```
+#showtooltip Gouge
+/cast [@mouseover, harm, nodead][harm, nodead] Gouge
+```
+
 **Kidney Shot** (`KidneyShot`)
 ```
 #showtooltip Kidney Shot
+/startattack [harm]
 /cast [harm] Kidney Shot
 ```
 
 **Rupture** (`Rupture`)
 ```
 #showtooltip Rupture
+/startattack [harm]
 /cast [harm] Rupture
 ```
 
 **Garrote** (`Garrote`) — Requires stealth.
 ```
 #showtooltip Garrote
+/startattack [harm]
 /cast [harm] Garrote
 ```
 
 **Ambush** (`Ambush`) — Requires stealth.
 ```
 #showtooltip Ambush
+/startattack [harm]
 /cast [harm] Ambush
 ```
 
 **Cheap Shot** (`CheapShot`) — Requires stealth. Classic stunlock opener.
 ```
 #showtooltip Cheap Shot
+/startattack [harm]
 /cast [harm] Cheap Shot
 ```
 
@@ -1168,6 +1182,13 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Kick
 ```
 
+**Kick (mouseover)** (`Kick@`) — Clears your current cast first so the interrupt fires instantly.
+```
+#showtooltip Kick
+/stopcasting
+/cast [@mouseover, harm, nodead][harm, nodead] Kick
+```
+
 #### Cleanse / dispel
 
 *Rogues have no dispel. Interrupt instead with Kick, or silence with Gouge/Kidney Shot/Blind.*
@@ -1177,6 +1198,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Auto-attack (spam-safe)** (`Attack`)
 ```
 /startattack [@targettarget, harm, exists][harm]
+```
+
+**Ranged weapon (Bow/Gun/Crossbow/Thrown)** (`Ranged`) — One button for whatever ranged weapon you have equipped.
+```
+#showtooltip
+/cast [equipped:Bows] Shoot Bow; [equipped:Guns] Shoot Gun; [equipped:Crossbows] Shoot Crossbow; [equipped:Thrown] Throw
 ```
 
 #### Buffs
@@ -1213,6 +1240,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Blind
 ```
 
+**Blind (mouseover)** (`Blind@`)
+```
+#showtooltip Blind
+/cast [@mouseover, harm, nodead][harm, nodead] Blind
+```
+
 #### Class QoL
 
 **Stealth (no cancel)** (`Stealth`) — Won't drop you out of stealth if pressed again.
@@ -1233,6 +1266,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Pick Pocket
 ```
 
+**Pick Pocket (mouseover)** (`PickPkt@`)
+```
+#showtooltip Pick Pocket
+/cast [@mouseover, harm, nodead][harm, nodead] Pick Pocket
+```
+
 **Pick Pocket + Sap** (`PickPkt+Sap`) — Pick Pocket has no global cooldown, so one press robs and saps.
 ```
 #showtooltip Sap
@@ -1240,28 +1279,38 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Sap
 ```
 
-**Apply poison to main hand** (`PoisonMH`) — Swap the item name to the poison you carry.
+**Apply poison (left = main, right = off hand)** (`Poison`) — Change the poison name to the rank you have (e.g. Instant Poison II). The last line confirms the "replace enchant" popup.
 ```
+#showtooltip Instant Poison
 /use Instant Poison
-/use Main Hand Weapon
-```
-
-**Apply poison to off hand** (`PoisonOH`) — Swap the item name to the poison you carry.
-```
-/use Deadly Poison
-/use Off Hand Weapon
+/use [button:1] 16; [button:2] 17
+/click StaticPopup1Button1
 ```
 
 **Distract** (`Distract`)
 ```
 #showtooltip Distract
-/cast [harm] Distract
+/cast [@cursor] Distract
 ```
 
 **Feint** (`Feint`)
 ```
 #showtooltip Feint
 /cast [harm] Feint
+```
+
+**Grenade at cursor** (`Grenade`) — Swap the item name for the grenade you carry.
+```
+#showtooltip Iron Grenade
+/use [@cursor] Iron Grenade
+```
+
+**Sharpening stone (left = main, right = off hand)** (`Stone`) — Swap the item name for the stone you carry. The last line confirms the "replace enchant" popup.
+```
+#showtooltip Rough Sharpening Stone
+/use Rough Sharpening Stone
+/use [button:1] 16; [button:2] 17
+/click StaticPopup1Button1
 ```
 
 #### Focus
@@ -1298,6 +1347,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Mutilate** (`Mutilate`)
 ```
 #showtooltip Mutilate
+/startattack [harm]
 /cast [harm] Mutilate
 ```
 
@@ -1331,6 +1381,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 **Hemorrhage** (`Hemo`)
 ```
 #showtooltip Hemorrhage
+/startattack [harm]
 /cast [harm] Hemorrhage
 ```
 

@@ -4,6 +4,33 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-03 (Rogue macro fixes and additions)
+
+- **Fixed:** melee strikes (Sinister Strike, Backstab, Eviscerate, Hemorrhage,
+  Mutilate, Rupture, Garrote, Ambush, Cheap Shot, Kidney Shot) now use
+  `melee()` so they include `/startattack [harm]`. Left Sap, Gouge, Blind,
+  Distract, Kick and Expose Armor alone — `/startattack` breaks the
+  damage-breaks-stealth/CC ones, and Expose Armor isn't a melee strike.
+- **Fixed:** Distract is ground-targeted (`[@cursor]`), not a harm-target cast
+  — it never actually worked as `dpsHarm()`.
+- **Fixed:** the two poison macros used `/use Main Hand Weapon` / `/use Off
+  Hand Weapon`, which aren't real slash commands and never worked. Replaced
+  with one macro: left-click applies to slot 16 (main hand), right-click to
+  slot 17 (off hand), with a `/click StaticPopup1Button1` line to confirm the
+  "replace enchant" popup.
+- **New:** mouseover versions of Gouge, Blind, Kick and Pick Pocket
+  (`[@mouseover, harm, nodead][harm, nodead]`), alongside the existing
+  target/focus versions.
+- **New:** one-button ranged weapon macro (Bow/Gun/Crossbow/Thrown, picked by
+  `[equipped:...]`).
+- **New:** grenade at cursor (Iron Grenade, swap to the one you carry).
+- **New:** sharpening stone, same left/right-click pattern as the poison fix
+  (Rough Sharpening Stone, swap to the one you carry).
+
+Ran `python build.py`; every macro still ≤255 characters (longest unchanged
+at 204, none of the new/changed Rogue macros come close — longest new one is
+the ranged-weapon macro at 133).
+
 ## 2026-10-03 (Addon v0.11.0: free talent points from C_Traits + one-click "traits" learning)
 
 Two fixes in one release. (1) Free talent points read 0 on WoW Forever while

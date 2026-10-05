@@ -4,6 +4,14 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-05 (Download addons straight from the Addons page)
+
+- Every addon card has a **Download** button that fetches its WoW Forever file
+  through CurseForge's own download address (Road to Forever from its GitHub
+  release), plus a Select checkbox. A bar at the bottom downloads every ticked
+  addon in one go (one after another; the browser may ask once to allow
+  multiple downloads). The addon name still opens its CurseForge page.
+
 ## 2026-10-05 (Six more addons on the Addons page)
 
 - **New "Our own addon" section** at the top of `addons.html`: Road to Forever

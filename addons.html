@@ -76,6 +76,31 @@ h2:first-of-type{margin-top:0}
 .checked{color:var(--muted);font-size:13px;margin:-20px 0 30px}
 .checked b{color:var(--text);font-weight:600}
 .card .note code{overflow-wrap:anywhere}
+.dl-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:10px}
+.pick{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:14px;cursor:pointer;user-select:none}
+.pick input{width:18px;height:18px;margin:0;accent-color:var(--gold);cursor:pointer}
+.dl-card.selected{border-color:var(--gold)}
+.dl-card.selected .pick{color:var(--gold)}
+.dl-btn{
+  display:inline-flex;align-items:center;gap:6px;font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;
+  color:#0E1428;text-decoration:none;padding:9px 14px;border-radius:6px;
+  background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border:1px solid #FFE566;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 4px rgba(0,0,0,.35);
+}
+.dl-btn::before{content:"\2193";font-size:14px}
+.dl-btn:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 0 10px rgba(255,209,0,.5)}
+.dl-btn:focus-visible,.tray button:focus-visible,.pick input:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+.tray{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--panel);border-top:1px solid var(--gold);
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 18px rgba(0,0,0,.45)}
+.tray-inner{max-width:760px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.tray .count{font:400 18px/1.2 var(--serif);color:var(--gold)}
+.tray .spacer{flex:1}
+.tray button{font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;padding:10px 14px;border-radius:6px;cursor:pointer;
+  color:var(--gold);background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);border:1px solid var(--edge)}
+.tray button.primary{color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border-color:#FFE566}
+.tray button:disabled{opacity:.45;cursor:not-allowed}
+.tray .status{flex-basis:100%;color:var(--muted);font-size:13px;margin:0}
+.wrap{padding-bottom:150px}
 .card .unlinked{color:var(--muted);font-size:13px;font-style:italic}
 </style>
 </head>
@@ -92,82 +117,138 @@ h2:first-of-type{margin-top:0}
 </div>
 <div class="wrap">
   <h1>Addons</h1>
-  <p class="lede">The addons we're actually running for WoW Forever right now. Each button opens the WoW Forever download on CurseForge, not the Retail or Classic one. Our own addon comes from our GitHub releases.</p>
+  <p class="lede">The addons we're actually running for WoW Forever right now. Every <b>Download</b> button grabs the WoW Forever version straight from CurseForge (our own addon comes from our GitHub releases), so you never end up with a Retail or Classic file. Tick several and use the bar at the bottom to download them all in one go. The addon names still open their CurseForge pages.</p>
   <p class="checked" id="versions-checked">Versions checked on CurseForge: <b>Oct 5, 2026</b></p>
 
   <h2>Our own addon</h2>
-  <div class="card">
+  <div class="card dl-card" data-slug="roadtoforever">
     <a class="addon-btn" href="https://github.com/nobody174/wow-forever/releases/tag/r2f-v0.11.0" target="_blank" rel="noopener">Road to Forever</a>
     <div class="ver" data-addon="roadtoforever">Latest version <b>0.11.0</b> · Oct 3, 2026 · pre-release</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-roadtoforever" value="roadtoforever"> Select</label>
+      <a class="dl-btn" href="#" data-dl="roadtoforever">Download</a>
+    </div>
     <div class="note">Made by us. Pick macros on our <a href="macros.html">Macros</a> page, paste one string in game, and drag them onto your bars from its Macro Book. It also imports talent builds from our <a href="talents.html">Talent Calc</a> links. Type <code>/r2f</code> or click its minimap button.</div>
     <div class="note"><strong class="warn">Test first:</strong> 0.11.0 learns talents for you with one click, but that has never run on a live WoW Forever server. Try it with one talent point on a throwaway character before you use it on a main.</div>
     <div class="note">Install: download <code>RoadToForever-0.11.0.zip</code> from the release page and unzip it into <code>Interface/AddOns/</code>, so you end up with <code>Interface/AddOns/RoadToForever/RoadToForever.toc</code>.</div>
   </div>
 
   <h2>What we use</h2>
-  <div class="card">
+  <div class="card dl-card" data-slug="archivist-for-forever" data-project="1719270">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/archivist-for-forever/files/9063001" target="_blank" rel="noopener">Archivist for Forever</a>
     <div class="ver" data-addon="archivist-for-forever">Forever version <b>1.0.7</b> · Oct 4, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-archivist-for-forever" value="archivist-for-forever"> Select</label>
+      <a class="dl-btn" href="#" data-dl="archivist-for-forever">Download</a>
+    </div>
     <div class="note">Library book tracker built into the Professions window: which books you've turned in, which are in your bags or bank, where the missing ones are, and the rewards. Pairs well with our <a href="library-books.html">Library Books</a> route. Use this Forever version; the older "Archivist" on CurseForge is an unrelated Retail addon.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="atlasloot-continued" data-project="1270310">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/atlasloot-continued/files/9066285" target="_blank" rel="noopener">AtlasLootClassic Continued</a>
     <div class="ver" data-addon="atlasloot-continued">Forever version <b>12482</b> · Oct 5, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-atlasloot-continued" value="atlasloot-continued"> Select</label>
+      <a class="dl-btn" href="#" data-dl="atlasloot-continued">Download</a>
+    </div>
     <div class="note">In-game loot tables for every boss, dungeon and raid. One download covers Classic, TBC and WoW Forever; the CurseForge app picks the right files for you.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="forever-bag-mover" data-project="1702198">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/forever-bag-mover/files/9014303" target="_blank" rel="noopener">Forever Bag Mover</a>
     <div class="ver" data-addon="forever-bag-mover">Forever version <b>0.5.0</b> · Sep 29, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-forever-bag-mover" value="forever-bag-mover"> Select</label>
+      <a class="dl-btn" href="#" data-dl="forever-bag-mover">Download</a>
+    </div>
     <div class="note">Unlock your backpack, drag it wherever you want, lock it back in place. Remembers the position per character and locks movement during combat. Works on the standard backpack and the combined-bag window.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="forever-bestiary-pet-hunter" data-project="1712376">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/forever-bestiary-pet-hunter/files/9016194" target="_blank" rel="noopener">Forever Bestiary</a>
     <div class="ver" data-addon="forever-bestiary-pet-hunter">Forever version <b>0.5.0</b> · Sep 30, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-forever-bestiary-pet-hunter" value="forever-bestiary-pet-hunter"> Select</label>
+      <a class="dl-btn" href="#" data-dl="forever-bestiary-pet-hunter">Download</a>
+    </div>
     <div class="note">Hunter pet bestiary: every tameable beast with its 3D model, family and abilities, so you can plan which pet to tame before you head out.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="foreverlayers" data-project="1714823">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/foreverlayers/files/9069955" target="_blank" rel="noopener">ForeverLayers</a>
     <div class="ver" data-addon="foreverlayers">Forever version <b>1.1.1</b> · Oct 5, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-foreverlayers" value="foreverlayers"> Select</label>
+      <a class="dl-btn" href="#" data-dl="foreverlayers">Download</a>
+    </div>
     <div class="note">Find other players in your current zone and switch layers to group up with them. Both sides need the addon installed, and it works through simple invite requests.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="foreverplus" data-project="1701598">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/foreverplus/files/9069723" target="_blank" rel="noopener">ForeverPlus</a>
     <div class="ver" data-addon="foreverplus">Forever version <b>0.8.6</b> · Oct 5, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-foreverplus" value="foreverplus"> Select</label>
+      <a class="dl-btn" href="#" data-dl="foreverplus">Download</a>
+    </div>
     <div class="note">Modular quality-of-life addon — quest automation, auto-sell/repair at merchants, buff tracking, an info bar, and a customizable tooltip system. Everything toggles individually and profiles can be shared between characters.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="leatrix-maps" data-project="298842">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-maps/files/9067996" target="_blank" rel="noopener">Leatrix Maps</a>
     <div class="ver" data-addon="leatrix-maps">Forever version <b>1.60.12-forever</b> · Oct 5, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-leatrix-maps" value="leatrix-maps"> Select</label>
+      <a class="dl-btn" href="#" data-dl="leatrix-maps">Download</a>
+    </div>
     <div class="note">World map quality-of-life — reveals the map, shows dungeon icons and coordinates, lets you scale/reposition the map, removes the border, and stops zoom from resetting. Configurable via <code>/ltm</code>.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="leatrix-plus" data-project="94855">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-plus/files/9040264" target="_blank" rel="noopener">Leatrix Plus</a>
     <div class="ver" data-addon="leatrix-plus">Forever version <b>1.60.11-forever</b> · Oct 2, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-leatrix-plus" value="leatrix-plus"> Select</label>
+      <a class="dl-btn" href="#" data-dl="leatrix-plus">Download</a>
+    </div>
     <div class="note">Modular UI quality-of-life addon — quest/repair automation, social and chat tweaks, minimap and tooltip improvements, frame management, and a few system optimizations. Enable only the pieces you want.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="prat-3-0" data-project="7473">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/prat-3-0/files/9033507" target="_blank" rel="noopener">Prat 3.0</a>
     <div class="ver" data-addon="prat-3-0">Forever version <b>3.9.112</b> · Oct 2, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-prat-3-0" value="prat-3-0"> Select</label>
+      <a class="dl-btn" href="#" data-dl="prat-3-0">Download</a>
+    </div>
     <div class="note">Chat upgrades: timestamps, class-colored names, message filters and copying text out of chat. One download covers every game version, WoW Forever included.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="questie" data-project="334372">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/questie/files/9015800" target="_blank" rel="noopener">Questie</a>
     <div class="ver" data-addon="questie">Forever version <b>v12.0.3+v1.0.4</b> · Sep 30, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-questie" value="questie"> Select</label>
+      <a class="dl-btn" href="#" data-dl="questie">Download</a>
+    </div>
     <div class="note">Shows quest givers, objectives and turn-ins on your map and minimap, with quest tooltips on mobs and items. One download covers every Classic flavor and WoW Forever. Forever's brand-new quests may be missing from its database while the data catches up.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="threatmaster" data-project="1706235">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/threatmaster/files/8998130" target="_blank" rel="noopener">ThreatMaster</a>
     <div class="ver" data-addon="threatmaster">Forever version <b>0.4.0</b> · Sep 28, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-threatmaster" value="threatmaster"> Select</label>
+      <a class="dl-btn" href="#" data-dl="threatmaster">Download</a>
+    </div>
     <div class="note">A threat meter styled after the game's built-in Damage Meter. Shows threat standing against the current target and warns both DPS and tanks when aggro is about to switch. <strong class="warn">Slash command conflict:</strong> claims <code>/tm</code> for itself, which is also the shorthand for WoW's built-in <code>/targetmarker</code> command — if you have a raid-mark macro using <code>/tm</code> (like our own mark macros used to), it'll silently call ThreatMaster instead of marking your target. Fixed on our macros page by switching to the full <code>/targetmarker</code> name — do the same for any of your own macros using <code>/tm</code>.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="tomtom" data-project="18808">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/tomtom/files/8954093" target="_blank" rel="noopener">TomTom</a>
     <div class="ver" data-addon="tomtom">Forever version <b>v4.3.11-release</b> · Sep 23, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-tomtom" value="tomtom"> Select</label>
+      <a class="dl-btn" href="#" data-dl="tomtom">Download</a>
+    </div>
     <div class="note">Set waypoints by command or by clicking the map, then follow a floating arrow to get there. Shows your coordinates and can bulk-import waypoint lists for questing.</div>
   </div>
-  <div class="card">
+  <div class="card dl-card" data-slug="weakauras-forever" data-project="1713094">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/weakauras-forever/files/9021901" target="_blank" rel="noopener">WeakAuras Forever</a>
     <div class="ver" data-addon="weakauras-forever">Forever version <b>1.3.0</b> · Sep 30, 2026</div>
+    <div class="dl-row">
+      <label class="pick"><input type="checkbox" class="pick-box" id="pick-weakauras-forever" value="weakauras-forever"> Select</label>
+      <a class="dl-btn" href="#" data-dl="weakauras-forever">Download</a>
+    </div>
     <div class="note">The WeakAuras you know, ported for WoW Forever's client (1.60.1). Same saved auras and slash commands — imported auras from other games may need small adjustments.</div>
     <div class="note">Recommended aura: <a href="https://wago.io/MtMe4SbEJ" target="_blank" rel="noopener">Battle Shout reminder (Warrior)</a>.
       <ol>
@@ -185,5 +266,111 @@ h2:first-of-type{margin-top:0}
     <div class="note">Tracks which addons have been ported to Forever, what's built into the game now (no addon needed), and which popular Classic addons aren't available yet and why — including the Midnight-era rule that addons can no longer make combat decisions for you.</div>
   </div>
 </div>
+<div class="tray" role="region" aria-label="Download selected addons">
+  <div class="tray-inner">
+    <span class="count" id="sel-count">0 selected</span>
+    <span class="spacer"></span>
+    <button type="button" id="sel-all">Select all</button>
+    <button type="button" id="sel-none">Clear</button>
+    <button type="button" class="primary" id="sel-dl" disabled>Download selected</button>
+    <p class="status" id="dl-status">Unzip each file into the <code>Interface/AddOns/</code> folder of your WoW Forever install. Your browser may ask once to allow multiple downloads; say Allow.</p>
+  </div>
+</div>
+<script>
+(function () {
+  // Download URLs are built from each card's own links, so the daily version check
+  // only has to keep the addon-btn href (CurseForge file id / GitHub release tag) current.
+  // CurseForge: /api/v1/mods/<projectId>/files/<fileId>/download is the address
+  // CurseForge's own Download button uses (it counts the download for the author).
+  const KEY = "wf-addons-selected-v1";
+  const cards = [...document.querySelectorAll(".dl-card")];
+
+  function downloadUrl(card) {
+    const href = card.querySelector(".addon-btn").getAttribute("href");
+    const cf = href.match(/curseforge\.com\/wow\/addons\/[^/]+\/files\/(\d+)/);
+    if (cf && card.dataset.project) {
+      return "https://www.curseforge.com/api/v1/mods/" + card.dataset.project + "/files/" + cf[1] + "/download";
+    }
+    const gh = href.match(/^(https:\/\/github\.com\/[^/]+\/[^/]+)\/releases\/tag\/r2f-v(.+)$/);
+    if (gh) return gh[1] + "/releases/download/r2f-v" + gh[2] + "/RoadToForever-" + gh[2] + ".zip";
+    return href;
+  }
+  function addonName(card) { return card.querySelector(".addon-btn").textContent.trim(); }
+
+  // Start a download without leaving the page: the server answers with a file, so the
+  // browser saves it instead of navigating.
+  function startDownload(url) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  function loadSel() { try { return new Set(JSON.parse(localStorage.getItem(KEY) || "[]")); } catch (e) { return new Set(); } }
+  function saveSel(set) { try { localStorage.setItem(KEY, JSON.stringify([...set])); } catch (e) {} }
+
+  const sel = loadSel();
+  const countEl = document.getElementById("sel-count");
+  const dlBtn = document.getElementById("sel-dl");
+  const statusEl = document.getElementById("dl-status");
+
+  function render() {
+    let n = 0;
+    cards.forEach(card => {
+      const on = sel.has(card.dataset.slug);
+      card.querySelector(".pick-box").checked = on;
+      card.classList.toggle("selected", on);
+      if (on) n++;
+    });
+    countEl.textContent = n + " selected";
+    dlBtn.disabled = n === 0;
+    dlBtn.textContent = n ? "Download " + n + (n === 1 ? " addon" : " addons") : "Download selected";
+  }
+
+  cards.forEach(card => {
+    card.querySelector(".pick-box").addEventListener("change", e => {
+      e.target.checked ? sel.add(card.dataset.slug) : sel.delete(card.dataset.slug);
+      saveSel(sel); render();
+    });
+    const one = card.querySelector(".dl-btn");
+    one.href = downloadUrl(card);
+    one.addEventListener("click", e => {
+      e.preventDefault();
+      startDownload(one.href);
+      statusEl.textContent = "Downloading " + addonName(card) + "…";
+    });
+  });
+
+  document.getElementById("sel-all").addEventListener("click", () => {
+    cards.forEach(c => sel.add(c.dataset.slug)); saveSel(sel); render();
+  });
+  document.getElementById("sel-none").addEventListener("click", () => {
+    sel.clear(); saveSel(sel); render();
+  });
+
+  dlBtn.addEventListener("click", () => {
+    const list = cards.filter(c => sel.has(c.dataset.slug));
+    if (!list.length) return;
+    dlBtn.disabled = true;
+    let i = 0;
+    (function next() {
+      if (i >= list.length) {
+        statusEl.textContent = "Started " + list.length + (list.length === 1 ? " download" : " downloads") +
+          ". Unzip each into Interface/AddOns/. Missing some? Your browser may have blocked multiple downloads; allow them and try again.";
+        render();
+        return;
+      }
+      const card = list[i++];
+      statusEl.textContent = "Downloading " + i + " of " + list.length + ": " + addonName(card) + "…";
+      startDownload(downloadUrl(card));
+      setTimeout(next, 900);  // browsers drop downloads fired in the same instant
+    })();
+  });
+
+  render();
+})();
+</script>
 </body>
 </html>

@@ -75,6 +75,20 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   `<div class="ver" data-addon="<slug>">` line shows `Forever version <b>X</b> ·
   <upload date>`. The lede's `#versions-checked` line holds the date of the last
   check. Hand-edit directly.
+  **Downloads:** every addon card is a `.dl-card` with `data-slug` (and, for
+  CurseForge addons, `data-project` = CurseForge's numeric project id), a
+  "Select" checkbox and a gold **Download** button. A fixed tray at the bottom
+  (Select all / Clear / Download selected) downloads the ticked ones one after
+  another, 900 ms apart (selection in localStorage `wf-addons-selected-v1`).
+  Download URLs are built in JS from each card's `.addon-btn` href, so the
+  version check only needs to keep that href current: CurseForge →
+  `https://www.curseforge.com/api/v1/mods/<data-project>/files/<fileId>/download`
+  (the address CurseForge's own Download button uses, so authors keep their
+  download counts — don't link the forgecdn file directly); Road to Forever →
+  `.../releases/download/r2f-v<ver>/RoadToForever-<ver>.zip` from the tag link.
+  A new CurseForge addon needs its project id in `data-project` (shown under
+  "About Project" on its CurseForge page, or `"id"` in
+  `https://www.curseforge.com/api/v1/mods/<id>/files/<fileId>` JSON).
   **Addon version check (run daily by a scheduled task, or on request):**
   1. For each `data-addon` slug, WebFetch
      `https://www.curseforge.com/wow/addons/<slug>/files/all` and take the newest

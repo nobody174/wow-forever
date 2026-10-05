@@ -43,7 +43,8 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
   border-color:#FFE566;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(255,209,0,.5);
 }
 @media (prefers-reduced-motion:reduce){.topbar nav a{transition:none}}
-.wrap{max-width:760px;margin:0 auto;padding:36px 20px 80px}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 20px 80px}
+.wrap > h1,.wrap > .lede,.wrap > .checked,.wrap > .section-note{max-width:760px}
 h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6px;letter-spacing:.01em}
 .lede code{overflow-wrap:anywhere}
 .lede{color:var(--muted);margin:0 0 30px;max-width:62ch}
@@ -108,7 +109,7 @@ h2:first-of-type{margin-top:0}
 .dl-btn:focus-visible,.tray button:focus-visible,.pick input:focus-visible{outline:2px solid var(--text);outline-offset:2px}
 .tray{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--panel);border-top:1px solid var(--gold);
   padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 18px rgba(0,0,0,.45)}
-.tray-inner{max-width:760px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.tray-inner{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
 .tray .count{font:400 18px/1.2 var(--serif);color:var(--gold)}
 .tray .spacer{flex:1}
 .tray button{font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;padding:10px 14px;border-radius:6px;cursor:pointer;
@@ -126,6 +127,17 @@ h2:first-of-type{margin-top:0}
 .dl-btn.cf::after{content:"\2197";font-size:13px}
 .tray .status{flex-basis:100%;color:var(--muted);font-size:13px;margin:0}
 .wrap{padding-bottom:150px}
+.addon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:8px;align-items:start}
+.addon-grid .card{margin-bottom:0}
+@media (min-width:1100px){.addon-grid{grid-template-columns:repeat(3,1fr)}}
+.dl-card{padding:8px 12px 8px 0}
+.pick{margin:-8px 0;padding:0 2px 0 12px}
+.dl-card .addon-btn{min-width:0;overflow:hidden;text-overflow:ellipsis;display:block;padding:6px 10px;font-size:11.5px;letter-spacing:.01em;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 1px 2px rgba(0,0,0,.35)}
+.card-head .dl-btn{padding:7px 10px;font-size:11.5px;letter-spacing:.02em}
+.dl-card .ver{margin-top:5px;font-size:12px}
+.dl-card .ver b{font-size:11.5px}
+.dl-card .note{font-size:13px}
+.more{margin-top:2px}
 .card.unavailable{border-left-color:var(--muted);opacity:.75}
 .card.unavailable .addon-btn{color:var(--muted);cursor:default}
 .card .ver.gone{color:var(--warn)}
@@ -149,6 +161,7 @@ h2:first-of-type{margin-top:0}
   <p class="checked" id="versions-checked">Versions checked on CurseForge: <b>Oct 5, 2026</b></p>
 
   <h2>Our own addon</h2>
+  <div class="addon-grid">
   <div class="card dl-card" data-slug="roadtoforever">
     <label class="pick"><input aria-label="Select Road to Forever" type="checkbox" class="pick-box" id="pick-roadtoforever" value="roadtoforever"></label>
     <div class="card-main">
@@ -165,8 +178,10 @@ h2:first-of-type{margin-top:0}
       </details>
     </div>
   </div>
+  </div>
 
   <h2>What we use</h2>
+  <div class="addon-grid">
   <div class="card dl-card" data-slug="archivist-for-forever" data-project="1719270">
     <label class="pick"><input aria-label="Select Archivist for Forever" type="checkbox" class="pick-box" id="pick-archivist-for-forever" value="archivist-for-forever"></label>
     <div class="card-main">
@@ -185,7 +200,7 @@ h2:first-of-type{margin-top:0}
     <label class="pick"><input aria-label="Select AtlasLootClassic Continued" type="checkbox" class="pick-box" id="pick-atlasloot-continued" value="atlasloot-continued"></label>
     <div class="card-main">
       <div class="card-head">
-        <a class="addon-btn" href="https://www.curseforge.com/wow/addons/atlasloot-continued/files/9066285" target="_blank" rel="noopener">AtlasLootClassic Continued</a>
+        <a class="addon-btn" href="https://www.curseforge.com/wow/addons/atlasloot-continued/files/9066285" target="_blank" rel="noopener" title="AtlasLootClassic Continued">AtlasLoot Continued</a>
         <a class="dl-btn" href="#" data-dl="atlasloot-continued">Download</a>
       </div>
       <div class="ver" data-addon="atlasloot-continued">Forever version <b>12482</b> · Oct 5, 2026</div>
@@ -355,6 +370,7 @@ h2:first-of-type{margin-top:0}
         <div class="note">Set waypoints by command or by clicking the map, then follow a floating arrow to get there. Shows your coordinates and can bulk-import waypoint lists for questing.</div>
       </details>
     </div>
+  </div>
   </div>
 
   <h2>Checking what's supported</h2>

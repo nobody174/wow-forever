@@ -75,7 +75,12 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   left-aligned and the gold `.dl-btn` Download right-aligned on the same row —
   then the `.ver` line, then all description/notes inside
   `<details class="more"><summary>Details</summary>…</details>` (collapsed by
-  default). New cards must follow this markup.
+  default). New cards must follow this markup. Cards sit in `.addon-grid`
+  (auto-fill, min 330px per column; 3 columns from 1100px wide, 2 on laptops,
+  1 on phones; `align-items:start` so an opened Details only grows its own
+  card). Page `.wrap` is 1180px wide; keep name buttons short enough to sit
+  beside Download at 3 columns (AtlasLootClassic Continued is shown as
+  "AtlasLoot Continued" with the full name in `title`).
   The button links to the addon's **WoW Forever file page**
   (`/wow/addons/<slug>/files/<fileId>`), not the project page, and under it a
   `<div class="ver" data-addon="<slug>">` line shows `Forever version <b>X</b> ·

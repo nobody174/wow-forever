@@ -4,6 +4,14 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-05 (Addons in a 2–3 column grid)
+
+- Addon cards now sit side by side: 3 per row on wide screens, 2 on laptops,
+  1 on phones, with smaller name/Download buttons. Opening a card's Details
+  only grows that card. Page about 40% shorter. AtlasLootClassic Continued is
+  labelled "AtlasLoot Continued" to fit (full name on hover). Shorter intro
+  with the install folder.
+
 ## 2026-10-05 (Compact addon cards)
 
 - Addons page is much shorter: each card is now one compact row with the

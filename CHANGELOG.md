@@ -4,6 +4,14 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-05 (Downloads without leaving the page)
+
+- CurseForge **Download** buttons now open CurseForge's download page in a
+  small pop-up that our page closes again after 9 seconds, once the file has
+  started; you stay on the Addons page the whole time. Tested in the owner's
+  Chrome (ThreatMaster arrived, pop-up closed itself). Falls back to a normal
+  new tab when pop-ups are blocked.
+
 ## 2026-10-05 (Addon downloads: what CurseForge allows)
 
 - Tested in the owner's Chrome: CurseForge won't let other sites start its

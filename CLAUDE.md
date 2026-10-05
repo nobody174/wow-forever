@@ -81,7 +81,11 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   "Select" checkbox and a gold **Download** button, built in JS from the card's
   `.addon-btn` href (so the version check only keeps that href current):
   - CurseForge addon → `https://www.curseforge.com/wow/addons/<slug>/download/<fileId>`
-    in a new tab; CurseForge starts the file there after ~5 s. Tested
+    in a small pop-up window (`curseforgeDownload()`), which CurseForge starts
+    the file from after ~5 s; our page closes the pop-up after 9 s
+    (`POPUP_CLOSE_MS`; a page may close windows it opened, even cross-origin).
+    Verified 2026-10-05 in the owner's Chrome: file arrived, pop-up closed. If
+    pop-ups are blocked, the link falls back to a normal new tab. Tested
     2026-10-05 in the owner's Chrome: CurseForge does NOT let other sites start
     its files. `edge.forgecdn.net`/`mediafilez.forgecdn.net` links (redirect to
     mediafilez, 503) and `/api/v1/mods/<id>/files/<fileId>/download` from our page
@@ -90,9 +94,9 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
     network log — it showed 503 even for working CurseForge downloads).
   - Road to Forever → `.../releases/download/r2f-v<ver>/RoadToForever-<ver>.zip`,
     downloaded right on the page.
-  The bottom tray's gold button walks the ticked addons: each press opens/starts
-  the next one ("Next: Questie (2 of 3)"), because browsers allow one new tab
-  per click. One combined zip isn't possible: neither forgecdn nor GitHub
+  The bottom tray's gold button walks the ticked addons: each press starts the
+  next one ("Next: Questie (2 of 3)"), because browsers allow one pop-up per
+  click. A hidden iframe of the download page does NOT work (tested). One combined zip isn't possible: neither forgecdn nor GitHub
   release files allow other sites to read them (CORS), and re-hosting other
   authors' addons ourselves needs their permission. Selection: localStorage
   `wf-addons-selected-v1`.

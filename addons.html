@@ -129,7 +129,7 @@ h2:first-of-type{margin-top:0}
 </div>
 <div class="wrap">
   <h1>Addons</h1>
-  <p class="lede">The addons we're actually running for WoW Forever right now, always the WoW Forever version, never a Retail or Classic file. Each <b>Download</b> button opens CurseForge's download page for exactly that file, and the download starts there by itself after about 5 seconds (CurseForge doesn't let other sites start its files directly). Our own addon downloads straight from this page. To grab several, tick them and press the gold button at the bottom once per addon.</p>
+  <p class="lede">The addons we're actually running for WoW Forever right now, always the WoW Forever version, never a Retail or Classic file. Press <b>Download</b> and the file lands in your Downloads folder while you stay on this page. For CurseForge addons a small CurseForge window pops up for a few seconds to hand over the file (CurseForge doesn't let other sites start its files directly) and closes by itself. Our own addon downloads straight from this page. To grab several, tick them and press the gold button at the bottom once per addon.</p>
   <p class="checked" id="versions-checked">Versions checked on CurseForge: <b>Oct 5, 2026</b></p>
 
   <h2>Our own addon</h2>
@@ -285,7 +285,7 @@ h2:first-of-type{margin-top:0}
     <button type="button" id="sel-all">Select all</button>
     <button type="button" id="sel-none">Clear</button>
     <button type="button" class="primary" id="sel-dl" disabled>Download selected</button>
-    <p class="status" id="dl-status">Each press of the gold button opens the next addon's download. Unzip each file into the <code>Interface/AddOns/</code> folder of your WoW Forever install.</p>
+    <p class="status" id="dl-status">Each press of the gold button downloads the next ticked addon. Unzip each file into the <code>Interface/AddOns/</code> folder of your WoW Forever install.</p>
   </div>
 </div>
 <script>
@@ -293,8 +293,10 @@ h2:first-of-type{margin-top:0}
   // How each card downloads (built from the card's own links, so the daily version
   // check only has to keep the .addon-btn href current):
   //  - CurseForge addon -> CurseForge's download page for that exact Forever file,
-  //    in a new tab; it starts the file after ~5 seconds. CurseForge doesn't let
-  //    other sites start its files directly (tested 2026-10-05: forgecdn answers 503).
+  //    opened in a small pop-up that starts the file after ~5 seconds and is closed
+  //    again by this page (a page may close windows it opened). CurseForge doesn't
+  //    let other sites start its files directly (tested 2026-10-05: forgecdn links,
+  //    the /api download address and a hidden iframe never produced a file).
   //  - Road to Forever -> the zip on our own GitHub release, downloaded right here.
   const KEY = "wf-addons-selected-v1";
   const cards = [...document.querySelectorAll(".dl-card")];
@@ -316,6 +318,20 @@ h2:first-of-type{margin-top:0}
     document.body.appendChild(a);
     a.click();
     a.remove();
+  }
+
+  // Open CurseForge's download page in a small pop-up and close it once the file
+  // has started. Returns false when the browser blocked the pop-up.
+  const POPUP_CLOSE_MS = 9000;
+  let popupCount = 0;
+  function curseforgeDownload(url) {
+    const w = 440, h = 340;
+    const left = Math.max(0, (screen.availWidth || 1200) - w - 20);
+    const top = Math.max(0, (screen.availHeight || 800) - h - 40);
+    const win = window.open(url, "cfdl" + (++popupCount), "popup=yes,width=" + w + ",height=" + h + ",left=" + left + ",top=" + top);
+    if (!win) return false;
+    setTimeout(() => { try { win.close(); } catch (e) {} }, POPUP_CLOSE_MS);
+    return true;
   }
 
   function loadSel() { try { return new Set(JSON.parse(localStorage.getItem(KEY) || "[]")); } catch (e) { return new Set(); } }
@@ -364,11 +380,16 @@ h2:first-of-type{margin-top:0}
         statusEl.textContent = "Downloading " + i.name + "…";
       });
     } else {
+      // Fallback when pop-ups are blocked: the link itself opens a normal new tab.
       one.target = "_blank";
       one.rel = "noopener";
-      one.classList.add("ext");
-      one.addEventListener("click", () => {
-        statusEl.textContent = i.name + " opened on CurseForge; the download starts there in about 5 seconds.";
+      one.addEventListener("click", e => {
+        if (curseforgeDownload(i.url)) {
+          e.preventDefault();
+          statusEl.textContent = "Downloading " + i.name + " (a small CurseForge window opens and closes by itself)\u2026";
+        } else {
+          statusEl.textContent = i.name + " opened on CurseForge in a new tab (pop-ups are blocked); the download starts there in about 5 seconds.";
+        }
       });
     }
   });
@@ -387,9 +408,11 @@ h2:first-of-type{margin-top:0}
     if (i.direct) {
       startDownload(i.url);
       statusEl.textContent = "Downloading " + i.name + "…";
+    } else if (curseforgeDownload(i.url)) {
+      statusEl.textContent = "Downloading " + i.name + " (a small CurseForge window opens and closes by itself)\u2026";
     } else {
       window.open(i.url, "_blank", "noopener");
-      statusEl.textContent = i.name + " opened on CurseForge; the download starts there in about 5 seconds.";
+      statusEl.textContent = i.name + " opened on CurseForge in a new tab (pop-ups are blocked); the download starts there in about 5 seconds.";
     }
     if (pos >= queue.length) {
       statusEl.textContent += " That was the last one. Unzip each file into Interface/AddOns/.";

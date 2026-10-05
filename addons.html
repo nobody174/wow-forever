@@ -75,6 +75,7 @@ h2:first-of-type{margin-top:0}
 .card .ver b{color:var(--text);font-weight:600;font-family:"IBM Plex Mono",Consolas,monospace;font-size:12.5px}
 .checked{color:var(--muted);font-size:13px;margin:-20px 0 30px}
 .checked b{color:var(--text);font-weight:600}
+.card .note code{overflow-wrap:anywhere}
 .card .unlinked{color:var(--muted);font-size:13px;font-style:italic}
 </style>
 </head>
@@ -91,14 +92,38 @@ h2:first-of-type{margin-top:0}
 </div>
 <div class="wrap">
   <h1>Addons</h1>
-  <p class="lede">The addons we're actually running for WoW Forever right now. Each button opens the WoW Forever download on CurseForge, not the Retail or Classic one.</p>
+  <p class="lede">The addons we're actually running for WoW Forever right now. Each button opens the WoW Forever download on CurseForge, not the Retail or Classic one. Our own addon comes from our GitHub releases.</p>
   <p class="checked" id="versions-checked">Versions checked on CurseForge: <b>Oct 5, 2026</b></p>
 
+  <h2>Our own addon</h2>
+  <div class="card">
+    <a class="addon-btn" href="https://github.com/nobody174/wow-forever/releases/tag/r2f-v0.11.0" target="_blank" rel="noopener">Road to Forever</a>
+    <div class="ver" data-addon="roadtoforever">Latest version <b>0.11.0</b> · Oct 3, 2026 · pre-release</div>
+    <div class="note">Made by us. Pick macros on our <a href="macros.html">Macros</a> page, paste one string in game, and drag them onto your bars from its Macro Book. It also imports talent builds from our <a href="talents.html">Talent Calc</a> links. Type <code>/r2f</code> or click its minimap button.</div>
+    <div class="note"><strong class="warn">Test first:</strong> 0.11.0 learns talents for you with one click, but that has never run on a live WoW Forever server. Try it with one talent point on a throwaway character before you use it on a main.</div>
+    <div class="note">Install: download <code>RoadToForever-0.11.0.zip</code> from the release page and unzip it into <code>Interface/AddOns/</code>, so you end up with <code>Interface/AddOns/RoadToForever/RoadToForever.toc</code>.</div>
+  </div>
+
   <h2>What we use</h2>
+  <div class="card">
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/archivist-for-forever/files/9063001" target="_blank" rel="noopener">Archivist for Forever</a>
+    <div class="ver" data-addon="archivist-for-forever">Forever version <b>1.0.7</b> · Oct 4, 2026</div>
+    <div class="note">Library book tracker built into the Professions window: which books you've turned in, which are in your bags or bank, where the missing ones are, and the rewards. Pairs well with our <a href="library-books.html">Library Books</a> route. Use this Forever version; the older "Archivist" on CurseForge is an unrelated Retail addon.</div>
+  </div>
+  <div class="card">
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/atlasloot-continued/files/9066285" target="_blank" rel="noopener">AtlasLootClassic Continued</a>
+    <div class="ver" data-addon="atlasloot-continued">Forever version <b>12482</b> · Oct 5, 2026</div>
+    <div class="note">In-game loot tables for every boss, dungeon and raid. One download covers Classic, TBC and WoW Forever; the CurseForge app picks the right files for you.</div>
+  </div>
   <div class="card">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/forever-bag-mover/files/9014303" target="_blank" rel="noopener">Forever Bag Mover</a>
     <div class="ver" data-addon="forever-bag-mover">Forever version <b>0.5.0</b> · Sep 29, 2026</div>
     <div class="note">Unlock your backpack, drag it wherever you want, lock it back in place. Remembers the position per character and locks movement during combat. Works on the standard backpack and the combined-bag window.</div>
+  </div>
+  <div class="card">
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/forever-bestiary-pet-hunter/files/9016194" target="_blank" rel="noopener">Forever Bestiary</a>
+    <div class="ver" data-addon="forever-bestiary-pet-hunter">Forever version <b>0.5.0</b> · Sep 30, 2026</div>
+    <div class="note">Hunter pet bestiary: every tameable beast with its 3D model, family and abilities, so you can plan which pet to tame before you head out.</div>
   </div>
   <div class="card">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/foreverlayers/files/9069955" target="_blank" rel="noopener">ForeverLayers</a>
@@ -119,6 +144,16 @@ h2:first-of-type{margin-top:0}
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-plus/files/9040264" target="_blank" rel="noopener">Leatrix Plus</a>
     <div class="ver" data-addon="leatrix-plus">Forever version <b>1.60.11-forever</b> · Oct 2, 2026</div>
     <div class="note">Modular UI quality-of-life addon — quest/repair automation, social and chat tweaks, minimap and tooltip improvements, frame management, and a few system optimizations. Enable only the pieces you want.</div>
+  </div>
+  <div class="card">
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/prat-3-0/files/9033507" target="_blank" rel="noopener">Prat 3.0</a>
+    <div class="ver" data-addon="prat-3-0">Forever version <b>3.9.112</b> · Oct 2, 2026</div>
+    <div class="note">Chat upgrades: timestamps, class-colored names, message filters and copying text out of chat. One download covers every game version, WoW Forever included.</div>
+  </div>
+  <div class="card">
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/questie/files/9015800" target="_blank" rel="noopener">Questie</a>
+    <div class="ver" data-addon="questie">Forever version <b>v12.0.3+v1.0.4</b> · Sep 30, 2026</div>
+    <div class="note">Shows quest givers, objectives and turn-ins on your map and minimap, with quest tooltips on mobs and items. One download covers every Classic flavor and WoW Forever. Forever's brand-new quests may be missing from its database while the data catches up.</div>
   </div>
   <div class="card">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/threatmaster/files/8998130" target="_blank" rel="noopener">ThreatMaster</a>

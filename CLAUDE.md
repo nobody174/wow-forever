@@ -61,10 +61,13 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   found — flagged for the user to double-check in beta). See `builds_page_pattern`
   project memory for the full pattern and icon-verification rules. Hand-edit
   directly.
-- `addons.html` — hand-written page listing the addons we actually run
-  (Forever Bag Mover, ForeverLayers, ForeverPlus, Leatrix Maps, Leatrix Plus,
-  ThreatMaster, TomTom, WeakAuras Forever — all CurseForge links, sorted
-  alphabetically) plus a link to wow4ever.quest's addon compatibility tracker.
+- `addons.html` — hand-written page. An "Our own addon" section on top (Road to
+  Forever, `data-addon="roadtoforever"`, links to its GitHub release, not
+  CurseForge), then "What we use": Archivist for Forever, AtlasLootClassic
+  Continued, Forever Bag Mover, Forever Bestiary, ForeverLayers, ForeverPlus,
+  Leatrix Maps, Leatrix Plus, Prat 3.0, Questie, ThreatMaster, TomTom, WeakAuras
+  Forever — all CurseForge links, sorted alphabetically (case-insensitive) —
+  plus a link to wow4ever.quest's addon compatibility tracker.
   Each card is a single framed nav-style button (`.addon-btn`) with the addon
   name linking to CurseForge, description below — not a separate name+link pair.
   The button links to the addon's **WoW Forever file page**
@@ -82,6 +85,24 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
      ships one file for every flavor; open the file page to confirm).
      Never pick a Retail/Classic/MoP/TBC/Titan file. Release type R preferred;
      only use a beta/alpha file if no R exists for Forever.
+     Multi-flavor addons (AtlasLootClassic Continued, Prat 3.0, Questie, TomTom)
+     show "Forever + N" in the list. CurseForge's list can come back stale or
+     filtered to another flavor (on 2026-10-05 Prat's list first showed only
+     August files without Forever); if no Forever file shows, read the project
+     page's "Latest release ... Forever + N" line and confirm on that file's page
+     that 1.60.x / Forever is in its supported versions before using it.
+     Watch the slugs: Archivist is `archivist-for-forever` (the plain `archivist`
+     is an old Retail addon), Forever Bestiary is `forever-bestiary-pet-hunter`,
+     AtlasLoot is `atlasloot-continued`.
+     `roadtoforever` is ours and not on CurseForge: its version is the newest
+     `r2f-v*` tag (`git ls-remote --tags origin 'r2f-*' | sort -V`), cross-checked
+     with `## Version` in `addon/RoadToForever/RoadToForever.toc`, its date is
+     the tag's commit date, and the button links to
+     `https://github.com/nobody174/wow-forever/releases/tag/r2f-v<version>`
+     (the repo was renamed from `wow-forever-macros` to `wow-forever`; GitHub
+     redirects the old name). Versions below 1.0.0 are GitHub pre-releases, so
+     keep "· pre-release" on the line until 1.0.0; also update the zip name in
+     the card's Install note.
   2. If newer: update that card's link file id, version and date.
   3. Always set `#versions-checked` to today's date (e.g. `Oct 6, 2026`).
   4. If a project page 404s, retry once, then check `/files/all` — WeakAuras

@@ -4,6 +4,19 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-05 (Six more addons on the Addons page)
+
+- **New "Our own addon" section** at the top of `addons.html`: Road to Forever
+  0.11.0 (tag `r2f-v0.11.0`, Oct 3), linking to its GitHub release, with a
+  "test with one talent point first" warning for the untested C_Traits learning
+  and install steps.
+- **Added to "What we use"** (each linked to its WoW Forever file, verified on
+  the file page): Archivist for Forever 1.0.7, AtlasLootClassic Continued
+  12482, Forever Bestiary 0.5.0, Prat 3.0 3.9.112, Questie v12.0.3+v1.0.4.
+  List re-sorted alphabetically.
+- CLAUDE.md's addon check covers the new slugs, multi-flavor files and how to
+  version-check our own addon from its `r2f-v*` tags.
+
 ## 2026-10-05 (Addon versions from CurseForge)
 
 - **Addons page:** every addon card now shows its latest WoW Forever version and

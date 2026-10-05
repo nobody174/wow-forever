@@ -78,18 +78,28 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   check. Hand-edit directly.
   **Downloads:** every addon card is a `.dl-card` with `data-slug` (and, for
   CurseForge addons, `data-project` = CurseForge's numeric project id), a
-  "Select" checkbox and a gold **Download** button. A fixed tray at the bottom
-  (Select all / Clear / Download selected) downloads the ticked ones one after
-  another, 900 ms apart (selection in localStorage `wf-addons-selected-v1`).
-  Download URLs are built in JS from each card's `.addon-btn` href, so the
-  version check only needs to keep that href current: CurseForge →
-  `https://www.curseforge.com/api/v1/mods/<data-project>/files/<fileId>/download`
-  (the address CurseForge's own Download button uses, so authors keep their
-  download counts — don't link the forgecdn file directly); Road to Forever →
-  `.../releases/download/r2f-v<ver>/RoadToForever-<ver>.zip` from the tag link.
-  A new CurseForge addon needs its project id in `data-project` (shown under
-  "About Project" on its CurseForge page, or `"id"` in
-  `https://www.curseforge.com/api/v1/mods/<id>/files/<fileId>` JSON).
+  "Select" checkbox and a **Download** button. Three kinds, decided in JS from
+  the card's `.addon-btn` href:
+  - `data-file="<CurseForge file name>"` set → **direct download** from
+    `https://edge.forgecdn.net/files/<fileId div 1000>/<fileId mod 1000>/<fileName>`
+    (no leading zeros in the second part: 8954093 → `8954/93`). Works only for
+    files CurseForge lets other sites fetch: on 2026-10-05 that was AtlasLoot,
+    Leatrix Maps, Leatrix Plus, Prat 3.0, Questie, TomTom. `mediafilez.forgecdn.net`
+    and `/api/v1/mods/.../download` did NOT work from our page.
+  - CurseForge without `data-file` → the file server answers 503 for these
+    (Archivist, Forever Bag Mover, Forever Bestiary, ForeverAuras, ForeverLayers,
+    ForeverPlus, ThreatMaster — likely the authors' "third-party download"
+    setting), so the button opens `https://www.curseforge.com/wow/addons/<slug>/download/<fileId>`
+    in a new tab ("download will start in 5 seconds").
+  - Road to Forever → `.../releases/download/r2f-v<ver>/RoadToForever-<ver>.zip`.
+  The bottom tray downloads all ticked direct ones one after another (900 ms
+  apart) and lists ticked CurseForge-only ones as one-click links (browsers
+  block opening several tabs from one click). Bundling into one zip isn't
+  possible: neither forgecdn nor GitHub release files allow other sites to
+  read them (CORS). Selection: localStorage `wf-addons-selected-v1`.
+  To test whether a CurseForge file can be direct: in a real browser, load
+  `https://edge.forgecdn.net/files/<a>/<b>/<fileName>` as an `<img>` and read
+  the network status (200 = direct OK, 503 = CurseForge only).
   **Addon version check (run daily by a scheduled task, or on request):**
   1. For each `data-addon` slug, WebFetch
      `https://www.curseforge.com/wow/addons/<slug>/files/all` and take the newest
@@ -118,7 +128,10 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
      redirects the old name). Versions below 1.0.0 are GitHub pre-releases, so
      keep "· pre-release" on the line until 1.0.0; also update the zip name in
      the card's Install note.
-  2. If newer: update that card's link file id, version and date.
+  2. If newer: update that card's link file id, version and date, and for cards
+     with `data-file` also the file name (exact, from the files list or the
+     file page). If a direct-download addon's new file can't be confirmed,
+     keep it direct anyway; the user will report a broken download.
   3. Always set `#versions-checked` to today's date (e.g. `Oct 6, 2026`).
   4. If a project page 404s, retry once, then check `/files/all` — WeakAuras
      Forever's project page 404'd on 2026-10-05 while its files list worked.

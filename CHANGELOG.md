@@ -4,16 +4,16 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
-## 2026-10-05 (Downloads start on our page)
+## 2026-10-05 (Addon downloads: what CurseForge allows)
 
-- The first download version linked CurseForge's `/api/v1/mods/.../download`,
-  which lands on a CurseForge page instead of starting the file (and GitHub
-  Pages was slow to deploy it). Now: six addons (AtlasLoot, Leatrix Maps,
-  Leatrix Plus, Prat 3.0, Questie, TomTom) plus Road to Forever download
-  straight from our page via CurseForge's file server, and "Download N addons"
-  grabs all ticked ones in a row. The other seven only download on CurseForge
-  (their files are blocked from other sites); their button opens CurseForge's
-  download page in a new tab, and the tray lists them as one-click links.
+- Tested in the owner's Chrome: CurseForge won't let other sites start its
+  files (forgecdn links and the `/api/v1/.../download` address never produced a
+  file; only CurseForge's own download page did). So each CurseForge
+  **Download** button now opens CurseForge's download page for that exact
+  Forever file in a new tab, where the file starts after ~5 seconds. Road to
+  Forever still downloads directly from its GitHub release.
+- The bottom tray's button steps through the ticked addons ("Next: Questie
+  (2 of 3)"), one per press, since browsers allow one new tab per click.
 
 ## 2026-10-05 (Download addons straight from the Addons page)
 

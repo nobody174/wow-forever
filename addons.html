@@ -102,6 +102,7 @@ h2:first-of-type{margin-top:0}
 .tray .cf-list{flex-basis:100%;margin:0;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;color:var(--muted);font-size:13px}
 .cf-chip{color:var(--gold);text-decoration:none;border:1px solid var(--edge);border-radius:99px;padding:4px 10px;font-size:13px}
 .cf-chip:hover{border-color:var(--gold)}
+.dl-btn.ext::after{content:"\2197";font-size:13px}
 .dl-tag{font-size:12.5px;color:var(--muted)}
 .dl-tag.cf{color:var(--warn)}
 .dl-btn.cf{color:var(--gold);background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);border-color:var(--edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 4px rgba(0,0,0,.35)}
@@ -128,7 +129,7 @@ h2:first-of-type{margin-top:0}
 </div>
 <div class="wrap">
   <h1>Addons</h1>
-  <p class="lede">The addons we're actually running for WoW Forever right now, always the WoW Forever version, never a Retail or Classic file. Addons marked <b>Direct download</b> download straight from this page (from CurseForge's file server, or our GitHub for our own addon): tick several and use the bar at the bottom to grab them all in one go. Some addons only download on CurseForge itself (their files are blocked from other sites); for those, the button opens CurseForge's download page in a new tab and the file starts there.</p>
+  <p class="lede">The addons we're actually running for WoW Forever right now, always the WoW Forever version, never a Retail or Classic file. Each <b>Download</b> button opens CurseForge's download page for exactly that file, and the download starts there by itself after about 5 seconds (CurseForge doesn't let other sites start its files directly). Our own addon downloads straight from this page. To grab several, tick them and press the gold button at the bottom once per addon.</p>
   <p class="checked" id="versions-checked">Versions checked on CurseForge: <b>Oct 5, 2026</b></p>
 
   <h2>Our own addon</h2>
@@ -154,7 +155,7 @@ h2:first-of-type{margin-top:0}
     </div>
     <div class="note">Library book tracker built into the Professions window: which books you've turned in, which are in your bags or bank, where the missing ones are, and the rewards. Pairs well with our <a href="library-books.html">Library Books</a> route. Use this Forever version; the older "Archivist" on CurseForge is an unrelated Retail addon.</div>
   </div>
-  <div class="card dl-card" data-slug="atlasloot-continued" data-file="AtlasLootClassic-Continued_12482.zip" data-project="1270310">
+  <div class="card dl-card" data-slug="atlasloot-continued" data-project="1270310">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/atlasloot-continued/files/9066285" target="_blank" rel="noopener">AtlasLootClassic Continued</a>
     <div class="ver" data-addon="atlasloot-continued">Forever version <b>12482</b> · Oct 5, 2026</div>
     <div class="dl-row">
@@ -215,7 +216,7 @@ h2:first-of-type{margin-top:0}
     </div>
     <div class="note">Modular quality-of-life addon — quest automation, auto-sell/repair at merchants, buff tracking, an info bar, and a customizable tooltip system. Everything toggles individually and profiles can be shared between characters.</div>
   </div>
-  <div class="card dl-card" data-slug="leatrix-maps" data-file="Leatrix_Maps-1.60.12-forever.zip" data-project="298842">
+  <div class="card dl-card" data-slug="leatrix-maps" data-project="298842">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-maps/files/9067996" target="_blank" rel="noopener">Leatrix Maps</a>
     <div class="ver" data-addon="leatrix-maps">Forever version <b>1.60.12-forever</b> · Oct 5, 2026</div>
     <div class="dl-row">
@@ -224,7 +225,7 @@ h2:first-of-type{margin-top:0}
     </div>
     <div class="note">World map quality-of-life — reveals the map, shows dungeon icons and coordinates, lets you scale/reposition the map, removes the border, and stops zoom from resetting. Configurable via <code>/ltm</code>.</div>
   </div>
-  <div class="card dl-card" data-slug="leatrix-plus" data-file="Leatrix_Plus-1.60.11-forever.zip" data-project="94855">
+  <div class="card dl-card" data-slug="leatrix-plus" data-project="94855">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-plus/files/9040264" target="_blank" rel="noopener">Leatrix Plus</a>
     <div class="ver" data-addon="leatrix-plus">Forever version <b>1.60.11-forever</b> · Oct 2, 2026</div>
     <div class="dl-row">
@@ -233,7 +234,7 @@ h2:first-of-type{margin-top:0}
     </div>
     <div class="note">Modular UI quality-of-life addon — quest/repair automation, social and chat tweaks, minimap and tooltip improvements, frame management, and a few system optimizations. Enable only the pieces you want.</div>
   </div>
-  <div class="card dl-card" data-slug="prat-3-0" data-file="Prat-3.0-3.9.112.zip" data-project="7473">
+  <div class="card dl-card" data-slug="prat-3-0" data-project="7473">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/prat-3-0/files/9033507" target="_blank" rel="noopener">Prat 3.0</a>
     <div class="ver" data-addon="prat-3-0">Forever version <b>3.9.112</b> · Oct 2, 2026</div>
     <div class="dl-row">
@@ -242,7 +243,7 @@ h2:first-of-type{margin-top:0}
     </div>
     <div class="note">Chat upgrades: timestamps, class-colored names, message filters and copying text out of chat. One download covers every game version, WoW Forever included.</div>
   </div>
-  <div class="card dl-card" data-slug="questie" data-file="Questie-v12.0.3+v1.0.4.zip" data-project="334372">
+  <div class="card dl-card" data-slug="questie" data-project="334372">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/questie/files/9015800" target="_blank" rel="noopener">Questie</a>
     <div class="ver" data-addon="questie">Forever version <b>v12.0.3+v1.0.4</b> · Sep 30, 2026</div>
     <div class="dl-row">
@@ -260,7 +261,7 @@ h2:first-of-type{margin-top:0}
     </div>
     <div class="note">A threat meter styled after the game's built-in Damage Meter. Shows threat standing against the current target and warns both DPS and tanks when aggro is about to switch. <strong class="warn">Slash command conflict:</strong> claims <code>/tm</code> for itself, which is also the shorthand for WoW's built-in <code>/targetmarker</code> command — if you have a raid-mark macro using <code>/tm</code> (like our own mark macros used to), it'll silently call ThreatMaster instead of marking your target. Fixed on our macros page by switching to the full <code>/targetmarker</code> name — do the same for any of your own macros using <code>/tm</code>.</div>
   </div>
-  <div class="card dl-card" data-slug="tomtom" data-file="TomTom-v4.3.11-release.zip" data-project="18808">
+  <div class="card dl-card" data-slug="tomtom" data-project="18808">
     <a class="addon-btn" href="https://www.curseforge.com/wow/addons/tomtom/files/8954093" target="_blank" rel="noopener">TomTom</a>
     <div class="ver" data-addon="tomtom">Forever version <b>v4.3.11-release</b> · Sep 23, 2026</div>
     <div class="dl-row">
@@ -284,19 +285,17 @@ h2:first-of-type{margin-top:0}
     <button type="button" id="sel-all">Select all</button>
     <button type="button" id="sel-none">Clear</button>
     <button type="button" class="primary" id="sel-dl" disabled>Download selected</button>
-    <p class="cf-list" id="cf-list" hidden></p>
-    <p class="status" id="dl-status">Unzip each file into the <code>Interface/AddOns/</code> folder of your WoW Forever install. Your browser may ask once to allow multiple downloads; say Allow.</p>
+    <p class="status" id="dl-status">Each press of the gold button opens the next addon's download. Unzip each file into the <code>Interface/AddOns/</code> folder of your WoW Forever install.</p>
   </div>
 </div>
 <script>
 (function () {
   // How each card downloads (built from the card's own links, so the daily version
-  // check only has to keep the .addon-btn href and data-file current):
-  //  - data-file set  -> direct file from CurseForge's file server (edge.forgecdn.net).
-  //    Only works for addons whose authors allow downloads outside CurseForge.
-  //  - CurseForge, no data-file -> the author only allows downloads on CurseForge, so we
-  //    open CurseForge's download page (it starts the file itself) in a new tab.
-  //  - Road to Forever -> the zip on our own GitHub release.
+  // check only has to keep the .addon-btn href current):
+  //  - CurseForge addon -> CurseForge's download page for that exact Forever file,
+  //    in a new tab; it starts the file after ~5 seconds. CurseForge doesn't let
+  //    other sites start its files directly (tested 2026-10-05: forgecdn answers 503).
+  //  - Road to Forever -> the zip on our own GitHub release, downloaded right here.
   const KEY = "wf-addons-selected-v1";
   const cards = [...document.querySelectorAll(".dl-card")];
 
@@ -304,19 +303,12 @@ h2:first-of-type{margin-top:0}
     const href = card.querySelector(".addon-btn").getAttribute("href");
     const name = card.querySelector(".addon-btn").textContent.trim();
     const cf = href.match(/curseforge\.com\/wow\/addons\/([^/]+)\/files\/(\d+)/);
-    if (cf && card.dataset.file) {
-      const id = +cf[2];
-      return { name, direct: true,
-        url: "https://edge.forgecdn.net/files/" + Math.floor(id / 1000) + "/" + (id % 1000) + "/" + encodeURIComponent(card.dataset.file) };
-    }
     if (cf) return { name, direct: false, url: "https://www.curseforge.com/wow/addons/" + cf[1] + "/download/" + cf[2] };
     const gh = href.match(/^(https:\/\/github\.com\/[^/]+\/[^/]+)\/releases\/tag\/r2f-v(.+)$/);
     if (gh) return { name, direct: true, url: gh[1] + "/releases/download/r2f-v" + gh[2] + "/RoadToForever-" + gh[2] + ".zip" };
     return { name, direct: false, url: href };
   }
 
-  // Start a download without leaving the page: the file server answers with a zip,
-  // so the browser saves it instead of navigating.
   function startDownload(url) {
     const a = document.createElement("a");
     a.href = url;
@@ -328,35 +320,32 @@ h2:first-of-type{margin-top:0}
 
   function loadSel() { try { return new Set(JSON.parse(localStorage.getItem(KEY) || "[]")); } catch (e) { return new Set(); } }
   function saveSel(set) { try { localStorage.setItem(KEY, JSON.stringify([...set])); } catch (e) {} }
-  function esc(t) { return t.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
   const sel = loadSel();
   const countEl = document.getElementById("sel-count");
   const dlBtn = document.getElementById("sel-dl");
   const statusEl = document.getElementById("dl-status");
-  const cfList = document.getElementById("cf-list");
+  // Browsers only let one click open one new tab, so "Download selected" walks the
+  // list: each press opens the next addon's download (the label says which).
+  let queue = null, pos = 0;
+
+  function selectedInfos() { return cards.filter(c => sel.has(c.dataset.slug)).map(info); }
 
   function render() {
-    let direct = 0, cf = [];
     cards.forEach(card => {
       const on = sel.has(card.dataset.slug);
       card.querySelector(".pick-box").checked = on;
       card.classList.toggle("selected", on);
-      if (!on) return;
-      const i = info(card);
-      i.direct ? direct++ : cf.push(i);
     });
-    const n = direct + cf.length;
-    countEl.textContent = n + " selected";
-    dlBtn.disabled = direct === 0;
-    dlBtn.textContent = direct ? "Download " + direct + (direct === 1 ? " addon" : " addons") : "Download selected";
-    if (cf.length) {
-      cfList.hidden = false;
-      cfList.innerHTML = "<span>Only on CurseForge, one click each:</span> " +
-        cf.map(i => '<a class="cf-chip" href="' + i.url + '" target="_blank" rel="noopener">' + esc(i.name) + " ↗</a>").join(" ");
+    const n = sel.size && cards.filter(c => sel.has(c.dataset.slug)).length;
+    countEl.textContent = (n || 0) + " selected";
+    if (queue && pos < queue.length) {
+      dlBtn.disabled = false;
+      dlBtn.textContent = "Next: " + queue[pos].name + " (" + (pos + 1) + " of " + queue.length + ")";
     } else {
-      cfList.hidden = true;
-      cfList.innerHTML = "";
+      queue = null; pos = 0;
+      dlBtn.disabled = !n;
+      dlBtn.textContent = n ? "Download " + n + (n === 1 ? " addon" : " addons") : "Download selected";
     }
   }
 
@@ -364,53 +353,49 @@ h2:first-of-type{margin-top:0}
     const i = info(card);
     card.querySelector(".pick-box").addEventListener("change", e => {
       e.target.checked ? sel.add(card.dataset.slug) : sel.delete(card.dataset.slug);
-      saveSel(sel); render();
+      queue = null; saveSel(sel); render();
     });
     const one = card.querySelector(".dl-btn");
     one.href = i.url;
-    const tag = document.createElement("span");
-    tag.className = "dl-tag" + (i.direct ? "" : " cf");
     if (i.direct) {
-      tag.textContent = "Direct download";
       one.addEventListener("click", e => {
         e.preventDefault();
         startDownload(i.url);
         statusEl.textContent = "Downloading " + i.name + "…";
       });
     } else {
-      one.textContent = "Download on CurseForge";
-      one.classList.add("cf");
       one.target = "_blank";
       one.rel = "noopener";
-      tag.textContent = "Only downloads on CurseForge";
+      one.classList.add("ext");
+      one.addEventListener("click", () => {
+        statusEl.textContent = i.name + " opened on CurseForge; the download starts there in about 5 seconds.";
+      });
     }
-    one.after(tag);
   });
 
   document.getElementById("sel-all").addEventListener("click", () => {
-    cards.forEach(c => sel.add(c.dataset.slug)); saveSel(sel); render();
+    cards.forEach(c => sel.add(c.dataset.slug)); queue = null; saveSel(sel); render();
   });
   document.getElementById("sel-none").addEventListener("click", () => {
-    sel.clear(); saveSel(sel); render();
+    sel.clear(); queue = null; saveSel(sel); render();
   });
 
   dlBtn.addEventListener("click", () => {
-    const list = cards.filter(c => sel.has(c.dataset.slug)).map(info).filter(i => i.direct);
-    if (!list.length) return;
-    dlBtn.disabled = true;
-    let k = 0;
-    (function next() {
-      if (k >= list.length) {
-        statusEl.textContent = "Started " + list.length + (list.length === 1 ? " download" : " downloads") +
-          ". Unzip each into Interface/AddOns/. Missing some? Your browser may have blocked multiple downloads; allow them and try again.";
-        render();
-        return;
-      }
-      const i = list[k++];
-      statusEl.textContent = "Downloading " + k + " of " + list.length + ": " + i.name + "…";
+    if (!queue) { queue = selectedInfos(); pos = 0; }
+    if (!queue.length) { queue = null; render(); return; }
+    const i = queue[pos++];
+    if (i.direct) {
       startDownload(i.url);
-      setTimeout(next, 900);  // browsers drop downloads fired in the same instant
-    })();
+      statusEl.textContent = "Downloading " + i.name + "…";
+    } else {
+      window.open(i.url, "_blank", "noopener");
+      statusEl.textContent = i.name + " opened on CurseForge; the download starts there in about 5 seconds.";
+    }
+    if (pos >= queue.length) {
+      statusEl.textContent += " That was the last one. Unzip each file into Interface/AddOns/.";
+      queue = null;
+    }
+    render();
   });
 
   render();

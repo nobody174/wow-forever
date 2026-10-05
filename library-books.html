@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Library Books — WoW Forever</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1428; --panel:#161E38; --edge:#3A4468; --gold:#FFD100;
+  --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100; --warn:#E8A33D;
+  --done:#6FCF97; --done-soft:rgba(111,207,151,.12); --hard:#E8826B; --hard-soft:rgba(232,130,107,.14);
+  --serif:"Marcellus","Palatino Linotype",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
+.topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
+.topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
+@media (max-width:820px){
+  .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .topbar .site-title{justify-self:center}
+}
+.topbar nav a{
+  font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;
+  color:var(--gold);text-decoration:none;padding:10px 16px;border-radius:6px;
+  background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);
+  border:1px solid var(--edge);border-top-color:#4A5688;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.35);
+  transition:transform .08s ease, box-shadow .08s ease, border-color .08s ease;
+}
+.topbar nav a:hover{
+  border-color:var(--gold);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 0 10px rgba(255,209,0,.35), 0 2px 4px rgba(0,0,0,.35);
+  transform:translateY(-1px);
+}
+.topbar nav a:active{transform:translateY(0);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
+.topbar nav a[aria-current="page"]{
+  color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);
+  border-color:#FFE566;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(255,209,0,.5);
+}
+@media (prefers-reduced-motion:reduce){.topbar nav a{transition:none}}
+.wrap{max-width:860px;margin:0 auto;padding:36px 20px 80px;display:flex;flex-direction:column;gap:26px}
+h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6px;letter-spacing:.01em}
+.lede{color:var(--muted);margin:0;max-width:62ch}
+.lede code,.mono{font-family:var(--mono);font-size:.9em}
+
+.shelf{background:var(--panel);border:1px solid var(--edge);border-top-color:#4A5688;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 4px 14px rgba(0,0,0,.35)}
+.count{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.count b{font:600 38px/1 var(--mono);color:var(--gold);font-variant-numeric:tabular-nums}
+.count span{color:var(--muted)}
+.bar{position:relative;height:12px;background:#0A0F1F;border:1px solid var(--edge);border-radius:6px;margin:4px 0 26px}
+.fill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#C79C00,var(--gold));border-radius:5px;transition:width .3s ease}
+.mark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--muted)}
+.mark span{position:absolute;top:22px;left:50%;transform:translateX(-50%);font:500 12px/1 var(--mono);color:var(--muted)}
+.mark.hit{background:var(--done)} .mark.hit span{color:var(--done)}
+.rewards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.reward{border:1px solid var(--edge);border-radius:6px;padding:10px 12px;font-size:14px;color:var(--muted)}
+.reward strong{display:block;font:400 15px/1.3 var(--serif);color:var(--gold);margin-bottom:2px}
+.reward.hit{border-color:var(--done);background:var(--done-soft);color:var(--text)}
+.reward.hit strong{color:var(--done)}
+.turnin{font-size:14px;color:var(--muted);margin:0}
+.turnin b{color:var(--text);font-weight:600}
+
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:sticky;top:61px;z-index:10;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--edge)}
+@media (max-width:820px){.controls{position:static}}
+.seg{display:inline-flex;border:1px solid var(--edge);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:var(--panel);color:var(--gold);font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;padding:10px 14px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--edge)}
+.seg button[aria-pressed="true"]{color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%)}
+.spacer{flex:1}
+.btn{border:1px solid var(--edge);background:var(--panel);color:var(--text);font:600 13px/1 var(--sans);padding:10px 14px;border-radius:6px;cursor:pointer}
+.btn:hover{border-color:var(--gold)}
+.btn.danger{color:var(--hard)}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--hard)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.trip{display:flex;flex-direction:column;gap:10px}
+.trip-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:6px;border-bottom:2px solid var(--gold)}
+.trip-letter{font:400 30px/1 var(--serif);color:var(--gold)}
+.trip h2{font:400 22px/1.2 var(--serif);color:var(--gold);margin:0;text-transform:uppercase;letter-spacing:.01em}
+.trip-meta{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.trip-meta .tally{color:var(--text);font-weight:600}
+.trip.complete .trip-head{border-color:var(--done)}
+.trip.complete .trip-letter,.trip.complete h2{color:var(--done)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.travel{color:var(--muted);font-size:14px;padding-left:34px;position:relative}
+.travel::before{content:"\2192";position:absolute;left:10px;color:var(--gold)}
+.book{display:grid;grid-template-columns:24px 1fr;gap:12px;background:var(--panel);border:1px solid var(--edge);border-radius:6px;padding:12px 14px}
+.book.done{background:var(--done-soft);border-color:rgba(111,207,151,.35)}
+.book.done .name{text-decoration:line-through;text-decoration-color:var(--done);color:var(--muted)}
+.book input{width:20px;height:20px;margin:3px 0 0;accent-color:var(--done);cursor:pointer}
+.body{min-width:0;display:flex;flex-direction:column;gap:4px}
+.top{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.name{font:400 17px/1.3 var(--serif);color:var(--gold);cursor:pointer}
+.zone{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.where{font-size:14.5px;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.way{font:500 12px/1.4 var(--mono);border:1px dashed var(--edge);background:transparent;color:var(--text);border-radius:5px;padding:3px 8px;cursor:pointer;font-variant-numeric:tabular-nums}
+.way:hover{border-color:var(--gold);color:var(--gold)}
+.way.copied{border-style:solid;border-color:var(--done);color:var(--done)}
+.tag{font:600 11.5px/1.4 var(--sans);letter-spacing:.03em;padding:2px 8px;border-radius:99px;border:1px solid var(--edge);color:var(--muted)}
+.tag.hard{background:var(--hard-soft);color:var(--hard);border-color:transparent}
+.tag.l60{background:rgba(255,209,0,.12);color:var(--gold);border-color:transparent}
+.tag.ally{background:rgba(110,150,255,.14);color:#9DB6FF;border-color:transparent}
+.skip .book{opacity:.7}
+.note{font-size:14px;color:var(--muted);margin:0}
+footer{font-size:13.5px;color:var(--muted);border-top:1px solid var(--edge);padding-top:14px;display:flex;flex-direction:column;gap:6px}
+footer a{color:var(--text)}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="site-title" href="index.html">Road to Forever</a>
+  <nav aria-label="Site">
+    <a href="macros.html">Macros</a>
+    <a href="builds.html">Builds</a>
+    <a href="addons.html">Addons</a>
+    <a href="launch-plan.html">Launch Plan</a>
+    <a href="talents.html">Talent Calc</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <header>
+    <h1>Library Books</h1>
+    <p class="lede">All 40 WoW Forever library books, in route order from Stormwind for an Alliance character. Tick each one as you pick it up; your ticks stay in this browser. Click a <span class="mono">/way</span> chip to copy it for TomTom. Coordinates are the Forever spots from the beta (checked Oct 5, 2026).</p>
+  </header>
+
+  <section class="shelf" aria-label="Progress">
+    <div class="count"><b id="doneCount">0</b><span>of <span id="goalCount">36</span> books Alliance can turn in</span></div>
+    <div class="bar" aria-hidden="true"><div class="fill" id="fill"></div></div>
+    <div class="rewards" id="rewards"></div>
+    <p class="turnin"><b>Turn in:</b> Garion Wendell, Mage Quarter, Stormwind (37.6, 80.8; alt spawn 49.0, 86.4 in the Mage Tower). <b>L60 books</b> go to Jennea Cannon, the mage trainer (38.6, 79.6). Each book is its own quest and only shows while you carry it.</p>
+  </section>
+
+  <div class="controls" role="toolbar" aria-label="Filter">
+    <div class="seg" id="filter">
+      <button type="button" data-f="all" aria-pressed="true">All</button>
+      <button type="button" data-f="todo" aria-pressed="false">To do</button>
+      <button type="button" data-f="done" aria-pressed="false">Done</button>
+    </div>
+    <span class="spacer"></span>
+    <span id="resetWrap"><button type="button" class="btn danger" id="resetBtn">Reset all</button></span>
+  </div>
+
+  <main id="trips" style="display:flex;flex-direction:column;gap:30px"></main>
+
+  <footer>
+    <span>Open questions: the eight L60 books may not count toward 10/20/25. Ataeric and The Liminal and the Arcane may turn up at new spots by launch. If the L60 books don't count, grab Venomous Journeys early to reach 25.</span>
+    <span>Loot through walls: <span class="mono">/console cameraDistanceMaxZoomFactor 4</span> (Defensive Magics 101, Undead Potatoes, A Web of Lies).</span>
+    <span>Sources: <a href="https://www.zockify.com/forever/library-books/" target="_blank" rel="noopener">Zockify</a> · <a href="https://wowsod.pro/articles/wow-forever-library-books-friend-of-the-library" target="_blank" rel="noopener">WoWSoD Pro</a> · <a href="https://www.wowhead.com/forever/news/everyone-can-collect-books-for-rewards-in-wow-forever-383141" target="_blank" rel="noopener">Wowhead</a> · <a href="https://foreverchanges.pro/library-books" target="_blank" rel="noopener">ForeverChanges</a></span>
+  </footer>
+</div>
+
+<script>
+// Book data: id, name, zone (TomTom zone name), x, y, where, tags
+const BOOKS = {
+  theo:  { n: "Archmage Theocritus' Research Journal", z: "Elwynn Forest", c: [65.4, 70.1], w: "Tower of Azora, on a table partway up the tower." },
+  rumi:  { n: "Rumi of Gnomeregan: The Collected Works", z: "Westfall", c: [52.7, 53.8], w: "Sentinel Hill inn, table behind the innkeeper. Alt copy: Thelsamar inn, Loch Modan 35.6, 48.9.", t: ["ally"] },
+  bewi:  { n: "Bewitchments and Glamours", z: "Westfall", c: [45.4, 70.5], w: "Moonbrook, first house on the left, bottom shelf of the right wall." },
+  anto:  { n: "Archmage Antonidas: The Unabridged Autobiography", z: "Ironforge", c: [76.3, 10.8], w: "Hall of Explorers, centre table.", t: ["ally"] },
+  runes: { n: "Runes of the Sorcerer-Kings", z: "Loch Modan", c: [77.5, 14.1], w: "Mo'grosh Stronghold cave (entrance 74.5, 19.6). Keep left into the northern fork. Elite ogres.", t: ["group"] },
+  goaz:  { n: "Goaz Scrolls", z: "Wetlands", c: [33.6, 47.9], w: "Whelgar's Excavation Site, tipped urn on the lowest level past the second bridge." },
+  nar:   { n: "Nar'thalas Almanac, Vol. 74", z: "Darkshore", c: [59.6, 22.2], w: "Ruins of Mathystra, around the third landing going down." },
+  arca:  { n: "Arcanic Systems Manual", z: "The Barrens", c: [56.3, 8.8], w: "Sludge Fen oil rig, chair in the top control room. Elite goblin in the room." },
+  fury:  { n: "Fury of the Land", z: "Stonetalon Mountains", c: [74.4, 85.7], w: "Grimtotem Post, on a barrel in the smaller hut." },
+  dream: { n: "Secrets of the Dreamers", z: "The Barrens", c: [46.0, 36.5], w: "Cave entrance at Lushwater Oasis. Outer cave by the Wailing Caverns portal, between the pillars at the back. Not in the instance." },
+  baxt:  { n: "Baxtan: On Destructive Magics", z: "The Barrens", c: [62.7, 36.3], w: "Ratchet, upstairs in the engineering hut next to Gazlowe." },
+  crime: { n: "Crimes Against Anatomy", z: "Duskwood", c: [16.7, 28.5], w: "Underground lab on the west edge, on the floor among undead. Rez by the wooden operating table." },
+  basi:  { n: "Basilisks: Should Petrification be Feared?", z: "Stranglethorn Vale", c: [41.5, 50.8], w: "Crystalvein Mine, wooden platform right of the entrance, outside.", t: ["hard"] },
+  geo:   { n: "Geomancy: The Stone-Cold Truth", z: "Thousand Needles", c: [34.0, 40.0], w: "Darkcloud Pinnacle, inside the largest hut. Path up starts near 31, 37.", t: ["group"] },
+  demon: { n: "Demons and You", z: "Desolace", c: [55.1, 26.2], w: "Thunder Axe Fortress, on a bench in the big building.", t: ["group"] },
+  def:   { n: "Defensive Magics 101", z: "Alterac Mountains", c: [48.5, 57.6], w: "Gallows' Corner, first ogre tower north of Tarren Mill. Loot over the broken wall from outside." },
+  dala:  { n: "The Dalaran Digest, Vol. 23", z: "Silverpine Forest", c: [63.5, 63.1], w: "Ambermill town hall, corner shelf. Horde zone, no mobs near the book." },
+  web:   { n: "A Web of Lies: Debunking Myths and Legends", z: "Arathi Highlands", c: [73.6, 65.2], w: "Witherbark Village, outside a tent (some find it at 76.0, 65.0 by the easternmost tent).", t: ["hard"] },
+  ludd:  { n: "A Luddite's Guide to Caring for Your Demonic Pet", z: "Swamp of Sorrows", c: [61.0, 22.0], w: "Fallow Sanctuary, in a cage. Try clicking through the bars; else farm the Rusted Cage Key from Lost Ones. May be unlootable.", t: ["bonus"] },
+  sang:  { n: "Sanguine Sorcery", z: "Swamp of Sorrows", c: [70.0, 51.0], w: "Top walkway of the Temple of Atal'Hakkar, outside the dungeon (you stand around 56.3, 76.2)." },
+  conj:  { n: "Conjurer's Codex", z: "Blasted Lands", c: [55.3, 32.2], w: "Burned-out building. Pull the boars into a corner." },
+  stone: { n: "Stonewrought Design", z: "Blackrock Mountain", c: [48.6, 64.2], w: "Franclorn Forgewright's tomb by the summoning stone (Blackrock Mountain map). Moved out of BRD." },
+  magma: { n: "Magma or Lava?", z: "Blackrock Mountain", c: [48.4, 63.6], w: "Mine passage toward BRD, past Lothos Riftwaker, on a platform. Not in the instance.", t: ["l60"] },
+  mind:  { n: "A Mind of Metal", z: "Searing Gorge", c: [37.8, 49.6], w: "Table under a tent near the Cauldron. A Dark Iron spawns on it.", t: ["group"] },
+  mumm:  { n: "Mummies: A Guide to the Unsavory Undead", z: "Badlands", c: [56.7, 39.9], w: "Small crypt on the central mesa. Path up starts near 56, 45." },
+  rwl:   { n: "RwlRwlRwlRwl!", z: "Dustwallow Marsh", c: [57.0, 21.0], w: "Witch Hill murloc camp, on the ground at the east edge.", t: ["group"] },
+  tide:  { n: "Legends of the Tidesages", z: "Tanaris", c: [72.6, 47.8], w: "Lost Rigger Cove, bookshelf in the middle building. About ten ranged pirates.", t: ["hard"] },
+  etiq:  { n: "Everyday Etiquette", z: "Azshara", c: [20.7, 62.0], w: "Haldarr Encampment, on a crate beside a hut." },
+  north: { n: "Northern Kalimdor - A Comprehensive Guide", z: "Felwood", c: [65.2, 3.2], w: "Timbermaw Hold tunnel, by the bridge above the rep vendor.", t: ["hard", "l60"] },
+  boom:  { n: "Ka-Boom!", z: "Winterspring", c: [60.7, 37.7], w: "Everlook alchemy building, shelf behind the vendor. Neutral town.", t: ["l60"] },
+  venom: { n: "Venomous Journeys", z: "The Hinterlands", c: [36.0, 72.7], w: "Shadra'Alor, behind a wall near the easternmost temple. A troll aggros through it.", t: ["hard"] },
+  pota:  { n: "Undead Potatoes", z: "Western Plaguelands", c: [38.3, 54.6], w: "Felstone Field farmhouse, upstairs past the ghoul. Loot through the wall.", t: ["l60"] },
+  necro: { n: "Necromancy 101", z: "Western Plaguelands", c: [69.4, 72.8], w: "Caer Darrow, Scholomance building: right, up the stairs and ramp, table in a nook. Not the dungeon.", t: ["l60"] },
+  knight:{ n: "The Knight and the Lady", z: "Eastern Plaguelands", c: [47.3, 42.2], w: "Burned house by the lake. Moved from SoD's 54.5, 50.8.", t: ["l60"] },
+  scour: { n: "Scourge: Undead Menace or Misunderstood?", z: "Eastern Plaguelands", c: [26.6, 14.9], w: "Table before the Stratholme bridge, outside the instance. Two Crypt Walkers nearby.", t: ["l60"] },
+  light: { n: "A Study of the Light", z: "Eastern Plaguelands", c: [71.8, 48.2], w: "Inside Light's Hope Chapel. Moved from SoD's 81.7, 57.8.", t: ["l60"] },
+  apoth: { n: "The Apothecary's Metaphysical Primer", z: "Tirisfal Glades", c: [59.4, 52.3], w: "Brill apothecary shop. Horde-only turn-in.", skip: true },
+  tazo:  { n: "The Lessons of Ta'zo", z: "Orgrimmar", c: [38.7, 78.4], w: "Valley of Spirits tablet. Horde-only turn-in.", skip: true },
+  ataer: { n: "Ataeric: On Arcane Curiosities", z: "Silverpine Forest", c: null, w: "Not found in Forever yet (SoD spot was the Sepulcher, 43.4, 41.2).", skip: true },
+  limin: { n: "The Liminal and the Arcane", z: "Feralas", c: null, w: "Not found in Forever yet (SoD spot was south of Jademir Lake, 50.6, 15.7).", skip: true }
+};
+
+const TRIPS = [
+  { k: "A", title: "Home loop", lvl: "Level 5–12", steps: [
+    "Leave Stormwind east into Elwynn Forest.", "theo",
+    "West into Westfall; grab the Sentinel Hill flight path.", "rumi", "bewi",
+    "Fly back to Stormwind and turn in." ] },
+  { k: "B", title: "Dwarves and the Barrens", lvl: "Level 18–25 · necklace after this trip", steps: [
+    "Deeprun Tram to Ironforge.", "anto",
+    "Ride into Loch Modan. Bring the group for the ogre cave.", "runes",
+    "North into the Wetlands.", "goaz",
+    "Menethil boat to Auberdine.", "nar",
+    "Fly to Astranaar, ride south into the Barrens. Avoid the Crossroads.", "arca",
+    "Cross west to the Stonetalon road.", "fury",
+    "Back east to Lushwater Oasis.", "dream", "baxt",
+    "Ratchet boat to Booty Bay, fly to Stormwind, turn in. Take the necklace at 10." ] },
+  { k: "C", title: "Duskwood to Desolace", lvl: "Level 28–36", steps: [
+    "Ride to western Duskwood.", "crime",
+    "South into Stranglethorn.", "basi",
+    "Booty Bay boat to Ratchet, south through the Barrens to Thousand Needles.", "geo",
+    "North through the Barrens and Stonetalon into Desolace.", "demon",
+    "Fly Nijel's Point → Auberdine, boat to Menethil, home. Turn in." ] },
+  { k: "D", title: "Alterac, Silverpine, Arathi", lvl: "Level 32–40", steps: [
+    "Fly to Southshore, ride north past Tarren Mill.", "def",
+    "Take the road west out of Hillsbrad into Silverpine.", "dala",
+    "Back east into Arathi Highlands.", "web",
+    "Fly home from Refuge Point. Turn in." ] },
+  { k: "E", title: "Swamp and Blasted Lands", lvl: "Level 40–48 · ring after this trip", steps: [
+    "Ride through Duskwood and Deadwind Pass into Swamp of Sorrows.", "ludd", "sang",
+    "South into the Blasted Lands.", "conj",
+    "Fly from Nethergarde. Turn in. You have 20 even if the Luddite book failed." ] },
+  { k: "F", title: "Blackrock Mountain and Badlands", lvl: "Level 40–50 · bow/shield/off-hand after this trip", steps: [
+    "Fly to Lakeshire, ride into Burning Steppes, grab Morgan's Vigil, enter Blackrock Mountain.", "stone", "magma",
+    "Exit into Searing Gorge.", "mind",
+    "Grab Thorium Point, fly to Ironforge, ride through Loch Modan into the Badlands.", "mumm",
+    "Home. Magma or Lava? goes to Jennea, the rest to Garion." ] },
+  { k: "G", title: "Kalimdor high end", lvl: "Level 45–55", steps: [
+    "Menethil boat to Theramore, north into the marsh.", "rwl",
+    "Fly to Gadgetzan.", "tide",
+    "Fly toward Talrendis Point, Azshara.", "etiq",
+    "Into Felwood's north edge.", "north",
+    "Through the tunnel to Winterspring.", "boom",
+    "Fly out of Everlook, boat home. Two books go to Jennea." ] },
+  { k: "H", title: "Hinterlands and Plaguelands", lvl: "Level 50–60", steps: [
+    "Fly to Aerie Peak.", "venom",
+    "Fly to Chillwind Camp.", "pota", "necro",
+    "East into Eastern Plaguelands.", "knight", "scour", "light",
+    "Take Light's Hope flight path home. All but Venomous Journeys go to Jennea." ] },
+  { k: "—", title: "Not collectable for Alliance", lvl: "Horde-only turn-ins or missing in Forever", skip: true, steps: ["apoth", "tazo", "ataer", "limin"] }
+];
+
+const TAGS = { ally: ["Alliance-only turn-in", "ally"], group: ["Group", "hard"], hard: ["Hard solo", "hard"], l60: ["L60 · Jennea", "l60"], bonus: ["Bonus", ""] };
+const GOAL_IDS = Object.keys(BOOKS).filter(id => !BOOKS[id].skip);
+const MILESTONES = [
+  { at: 10, name: "Friend of the Library", what: "Scholarly Pendant or Erudite's Amulet" },
+  { at: 20, name: "Greater Friend · lvl 20", what: "Philanthropist's Ring or Field Researcher's Loop" },
+  { at: 25, name: "25 books · lvl 30", what: "Truthseeker's Bow, Crest of Elucidation or Researcher's Night Light" }
+];
+
+let done = {};
+let filter = "all";
+const LS_KEY = "wf-library-books-v1";
+
+function lsRead() { try { return JSON.parse(localStorage.getItem(LS_KEY) || "{}") || {}; } catch { return {}; } }
+function lsWrite() { try { localStorage.setItem(LS_KEY, JSON.stringify(done)); } catch {} }
+
+function wayText(b) { return b.c ? `/way ${b.z} ${b.c[0].toFixed(1)} ${b.c[1].toFixed(1)} ${b.n}` : ""; }
+
+function renderBook(id, skip) {
+  const b = BOOKS[id];
+  const isDone = !!done[id];
+  if ((filter === "todo" && isDone) || (filter === "done" && !isDone)) return "";
+  const tags = (b.t || []).map(t => `<span class="tag ${TAGS[t][1]}">${TAGS[t][0]}</span>`).join("");
+  const way = b.c ? `<button type="button" class="way" data-way="${id}" title="Copy TomTom waypoint">/way ${b.c[0].toFixed(1)}, ${b.c[1].toFixed(1)}</button>` : "";
+  return `<li class="book${isDone ? " done" : ""}">
+    <input type="checkbox" id="cb-${id}" data-id="${id}" ${isDone ? "checked" : ""} aria-label="${esc(b.n)} collected">
+    <div class="body">
+      <div class="top"><label class="name" for="cb-${id}">${esc(b.n)}</label><span class="zone">${esc(b.z)}</span></div>
+      <p class="where">${esc(b.w)}</p>
+      <div class="meta">${way}${tags}</div>
+    </div></li>`;
+}
+function esc(s) { return s.replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch])); }
+
+function render() {
+  const total = GOAL_IDS.length;
+  const n = GOAL_IDS.filter(id => done[id]).length;
+  document.getElementById("doneCount").textContent = n;
+  document.getElementById("goalCount").textContent = total;
+  document.getElementById("fill").style.width = (n / total * 100) + "%";
+  const bar = document.querySelector(".bar");
+  bar.querySelectorAll(".mark").forEach(m => m.remove());
+  MILESTONES.forEach(m => {
+    const el = document.createElement("div");
+    el.className = "mark" + (n >= m.at ? " hit" : "");
+    el.style.left = (m.at / total * 100) + "%";
+    el.innerHTML = `<span>${m.at}</span>`;
+    bar.appendChild(el);
+  });
+  document.getElementById("rewards").innerHTML = MILESTONES.map(m =>
+    `<div class="reward${n >= m.at ? " hit" : ""}"><strong>${n >= m.at ? "✓ " : ""}${m.at} books — ${esc(m.name)}</strong>${esc(m.what)}</div>`).join("");
+
+  let running = 0;
+  document.getElementById("trips").innerHTML = TRIPS.map(trip => {
+    const ids = trip.steps.filter(s => BOOKS[s]);
+    const got = ids.filter(id => done[id]).length;
+    if (!trip.skip) running += ids.length;
+    const items = trip.steps.map(s => BOOKS[s] ? renderBook(s, trip.skip)
+      : (filter === "all" ? `<li class="travel">${esc(s)}</li>` : "")).join("");
+    if (!items.replace(/\s/g, "")) return "";
+    const complete = !trip.skip && got === ids.length;
+    return `<section class="trip${complete ? " complete" : ""}${trip.skip ? " skip" : ""}">
+      <div class="trip-head"><span class="trip-letter">${trip.k}</span><h2>${esc(trip.title)}</h2>
+      <span class="trip-meta"><span class="tally">${got}/${ids.length}</span> · ${esc(trip.lvl)}${trip.skip ? "" : ` · route total ${running}`}</span></div>
+      <ul class="steps">${items}</ul></section>`;
+  }).join("") || `<p class="note">Nothing here for this filter.</p>`;
+}
+
+function persist() { lsWrite(); }
+
+document.addEventListener("change", e => {
+  const id = e.target.dataset && e.target.dataset.id;
+  if (!id) return;
+  if (e.target.checked) done[id] = true; else delete done[id];
+  render(); persist();
+});
+
+document.addEventListener("click", e => {
+  const f = e.target.closest("[data-f]");
+  if (f) {
+    filter = f.dataset.f;
+    document.querySelectorAll("#filter button").forEach(b => b.setAttribute("aria-pressed", b === f ? "true" : "false"));
+    render(); return;
+  }
+  const w = e.target.closest("[data-way]");
+  if (w) {
+    const text = wayText(BOOKS[w.dataset.way]);
+    const ok = () => { w.classList.add("copied"); const old = w.textContent; w.textContent = "Copied"; setTimeout(() => { w.textContent = old; w.classList.remove("copied"); }, 1200); };
+    try { navigator.clipboard.writeText(text).then(ok, () => fallbackCopy(text, ok)); } catch { fallbackCopy(text, ok); }
+    return;
+  }
+  if (e.target.id === "resetBtn") {
+    document.getElementById("resetWrap").innerHTML = `<span class="confirm">Clear all checkmarks? <button type="button" class="btn danger" id="resetYes">Clear</button><button type="button" class="btn" id="resetNo">Keep</button></span>`;
+    return;
+  }
+  if (e.target.id === "resetYes" || e.target.id === "resetNo") {
+    if (e.target.id === "resetYes") { done = {}; render(); persist(); }
+    document.getElementById("resetWrap").innerHTML = `<button type="button" class="btn danger" id="resetBtn">Reset all</button>`;
+  }
+});
+
+function fallbackCopy(text, ok) {
+  const ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); ok(); } catch {}
+  ta.remove();
+}
+
+done = lsRead();
+render();
+</script>
+</body>
+</html>

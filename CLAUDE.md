@@ -33,7 +33,8 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - `index.html` — hand-written landing page. Hero background (`assets/hero.webp`),
   title, countdown to the WoW Forever launch, and the visitor's local launch time via
   `Intl.DateTimeFormat`. Countdown target: `2026-11-04T23:00:00Z`. Left-side overlay
-  (`.side-links`) has a featured Cozy Sleeping Bag card on top, then two side-by-side
+  (`.side-links`) has a `.plaque-row` on top with two featured cards side by side
+  (Cozy Sleeping Bag, external; Library Books, links to `library-books.html`), then two side-by-side
   boxed columns (`.link-cols`): "General Resources" (Zockify, Wowhead, Icy Veins,
   Warcraft Tavern, Mobalytics, ForeverChanges) and "Tools" (talent calculators,
   Legacy Calculator, Best-in-Slot Gear, Dungeon Loot Tables, Hunter Pet Database).
@@ -41,6 +42,12 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   only — no per-link description. New tool/resource links go in whichever column
   fits; keep favicons via `google.com/s2/favicons?domain=...` and verify with curl
   before adding. Hand-edit directly.
+- `library-books.html` — hand-written library-book checklist + Alliance route
+  from Stormwind. Not in the top-bar nav (linked from the index plaque), but it
+  carries the shared top bar CSS like every other page. Book data is the `BOOKS`
+  object (id → name, zone, coords, where, tags) and the route is `TRIPS` (steps
+  are either a book id or a travel line). Checkboxes persist in localStorage
+  `wf-library-books-v1`, keyed by book id — keep ids stable. Hand-edit directly.
 - `builds.html` — hand-written, JS-rendered page. A class-icon roster (same pattern
   as `macros.html`) picks one class at a time; classes with more than one build
   (Mage: Arcane/Frost Ice Lance/Frost Piercing Ice/Fire; Paladin: Retribution/

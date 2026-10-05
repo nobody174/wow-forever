@@ -154,6 +154,8 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
   overflow-y:auto;
   padding-right:4px;
 }
+.plaque-row{display:flex;gap:14px;align-items:stretch}
+.plaque-row .plaque{flex:1;min-width:0}
 .link-cols{display:flex;gap:14px;align-items:flex-start}
 .link-cols .link-group{flex:1;min-width:0}
 .side-links::-webkit-scrollbar{width:6px}
@@ -248,6 +250,7 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 @media (max-width:760px){
   .side-links{position:static;width:100%;max-width:420px;margin:0 auto 28px;padding:0 4px;max-height:none;overflow:visible}
   .link-cols{flex-direction:column}
+  .plaque-row{flex-direction:column}
   .plaque-solo{max-width:none}
   .hero{padding-top:20px}
 }
@@ -279,13 +282,22 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
   <div class="beta-ribbon"><span>BETA</span></div>
   <!-- BETA-RIBBON:END -->
   <div class="side-links">
-    <a class="plaque plaque-solo" href="https://foreverchanges.pro/cozy-sleeping-bag" target="_blank" rel="noopener">
-      <div class="plaque-title">
-        <span class="icon"><img src="assets/sleepingbag.webp" alt="" loading="lazy"></span>
-        Cozy Sleeping Bag
-      </div>
-      <p class="plaque-desc">Rested-XP buff quest chain, start to finish.</p>
-    </a>
+    <div class="plaque-row">
+      <a class="plaque plaque-solo" href="https://foreverchanges.pro/cozy-sleeping-bag" target="_blank" rel="noopener">
+        <div class="plaque-title">
+          <span class="icon"><img src="assets/sleepingbag.webp" alt="" loading="lazy"></span>
+          Cozy Sleeping Bag
+        </div>
+        <p class="plaque-desc">Rested-XP buff quest chain, start to finish.</p>
+      </a>
+      <a class="plaque plaque-solo" href="library-books.html">
+        <div class="plaque-title">
+          <span class="icon"><img src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_book_09.jpg" alt="" loading="lazy"></span>
+          Library Books
+        </div>
+        <p class="plaque-desc">All 40 books, Alliance route and checklist.</p>
+      </a>
+    </div>
 
     <div class="link-cols">
       <div class="link-group">

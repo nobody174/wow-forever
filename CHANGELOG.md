@@ -4,6 +4,22 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-05 (Library Books checklist page)
+
+- **New page `library-books.html`:** all 40 WoW Forever library books in an
+  8-trip Alliance route from Stormwind (A–H, plus a "not collectable for
+  Alliance" group: 2 Horde-only turn-ins, 2 books missing in Forever). Each book
+  has a checkbox, location note, a `/way` chip that copies a TomTom command, and
+  tags (Alliance-only turn-in, Group, Hard solo, L60 → Jennea Cannon). Progress
+  bar marks the 10/20/25 reward tiers. Ticks persist per browser in localStorage
+  `wf-library-books-v1` (keyed by book id; keep ids stable). Filter All / To do /
+  Done, Reset all with an in-page confirm. Data is the `BOOKS` + `TRIPS` objects
+  in the page script. Coordinates are the Forever beta spots (Zockify, WoWSoD
+  Pro/Wowhead data, ForeverChanges), checked 2026-10-05.
+- **Landing page:** the Cozy Sleeping Bag plaque now sits in a `.plaque-row`
+  beside a new "Library Books" plaque (stacks on narrow screens). Book icon is
+  hotlinked from `wow.zamimg.com` like the class icons.
+
 ## 2026-10-03 (Warrior macro additions, BACKLOG fix, WeakAuras recommendation)
 
 - **New Warrior (General) macros:** a stance toggle (click swaps Battle <>

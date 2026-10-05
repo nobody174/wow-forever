@@ -122,6 +122,10 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   4. If a project page 404s, retry once, then check `/files/all` — WeakAuras
      Forever's project page 404'd on 2026-10-05 while its files list worked.
      If both fail, leave the card unchanged and mention it in the commit message.
+     WebFetch can serve cached CurseForge pages: WeakAuras Forever was really
+     gone on 2026-10-05 (404 in a real browser) while WebFetch still showed its
+     files. Its card is now `.card.unavailable` (no Download/Select, "Removed
+     from CurseForge"); skip it in the check until it's replaced.
   5. The shell can't reach CurseForge (proxy blocks it); use WebFetch only.
   6. Always commit and push to `main`, even when only the date changed: a
      date-only bump gets its own commit ("Addon versions checked <date>, no changes"), so the

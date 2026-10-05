@@ -11,6 +11,11 @@ user-facing release notes.
   release), plus a Select checkbox. A bar at the bottom downloads every ticked
   addon in one go (one after another; the browser may ask once to allow
   multiple downloads). The addon name still opens its CurseForge page.
+- Verified in a real browser: all 12 CurseForge download links resolve to the
+  right Forever file (1.60.1) and the Road to Forever 0.11.0 release zip exists.
+- **WeakAuras Forever was removed from CurseForge** (project and files 404 in a
+  real browser; WebFetch had served a cached copy). Its card is greyed out with
+  no download until we pick a replacement (ForeverAuras, EverAuras).
 
 ## 2026-10-05 (Six more addons on the Addons page)
 

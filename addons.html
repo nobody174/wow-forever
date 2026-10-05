@@ -101,6 +101,9 @@ h2:first-of-type{margin-top:0}
 .tray button:disabled{opacity:.45;cursor:not-allowed}
 .tray .status{flex-basis:100%;color:var(--muted);font-size:13px;margin:0}
 .wrap{padding-bottom:150px}
+.card.unavailable{border-left-color:var(--muted);opacity:.75}
+.card.unavailable .addon-btn{color:var(--muted);cursor:default}
+.card .ver.gone{color:var(--warn)}
 .card .unlinked{color:var(--muted);font-size:13px;font-style:italic}
 </style>
 </head>
@@ -242,13 +245,9 @@ h2:first-of-type{margin-top:0}
     </div>
     <div class="note">Set waypoints by command or by clicking the map, then follow a floating arrow to get there. Shows your coordinates and can bulk-import waypoint lists for questing.</div>
   </div>
-  <div class="card dl-card" data-slug="weakauras-forever" data-project="1713094">
-    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/weakauras-forever/files/9021901" target="_blank" rel="noopener">WeakAuras Forever</a>
-    <div class="ver" data-addon="weakauras-forever">Forever version <b>1.3.0</b> · Sep 30, 2026</div>
-    <div class="dl-row">
-      <label class="pick"><input type="checkbox" class="pick-box" id="pick-weakauras-forever" value="weakauras-forever"> Select</label>
-      <a class="dl-btn" href="#" data-dl="weakauras-forever">Download</a>
-    </div>
+  <div class="card unavailable">
+    <span class="addon-btn" aria-disabled="true">WeakAuras Forever</span>
+    <div class="ver gone" data-addon="weakauras-forever">Removed from CurseForge · last seen 1.3.0 (Sep 30, 2026)</div>
     <div class="note">The WeakAuras you know, ported for WoW Forever's client (1.60.1). Same saved auras and slash commands — imported auras from other games may need small adjustments.</div>
     <div class="note">Recommended aura: <a href="https://wago.io/MtMe4SbEJ" target="_blank" rel="noopener">Battle Shout reminder (Warrior)</a>.
       <ol>

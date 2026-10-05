@@ -88,8 +88,8 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
      Forever's project page 404'd on 2026-10-05 while its files list worked.
      If both fail, leave the card unchanged and mention it in the commit message.
   5. The shell can't reach CurseForge (proxy blocks it); use WebFetch only.
-  6. Commit only if something changed besides nothing at all: a date-only bump
-     still gets a commit ("Addon versions checked <date>, no changes"), so the
+  6. Always commit and push to `main`, even when only the date changed: a
+     date-only bump gets its own commit ("Addon versions checked <date>, no changes"), so the
      page shows the check is alive. Add version bumps to CHANGELOG.md.
 - `launch-plan.html` — hand-written launch plan with three group plans plus Compare:
   2 Hunters · Warrior · Druid (`hwd`), 3 Hunters · Druid (`h3d`) — both Skyborne,

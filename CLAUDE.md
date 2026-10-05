@@ -65,8 +65,9 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Forever, `data-addon="roadtoforever"`, links to its GitHub release, not
   CurseForge), then "What we use": Archivist for Forever, AtlasLootClassic
   Continued, Forever Bag Mover, Forever Bestiary, ForeverLayers, ForeverPlus,
-  Leatrix Maps, Leatrix Plus, Prat 3.0, Questie, ThreatMaster, TomTom, WeakAuras
-  Forever — all CurseForge links, sorted alphabetically (case-insensitive) —
+  ForeverAuras (replaced WeakAuras Forever, which CurseForge pulled on
+  2026-10-05), Leatrix Maps, Leatrix Plus, Prat 3.0, Questie, ThreatMaster,
+  TomTom — all CurseForge links, sorted alphabetically (case-insensitive) —
   plus a link to wow4ever.quest's addon compatibility tracker.
   Each card is a single framed nav-style button (`.addon-btn`) with the addon
   name linking to CurseForge, description below — not a separate name+link pair.
@@ -124,8 +125,12 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
      If both fail, leave the card unchanged and mention it in the commit message.
      WebFetch can serve cached CurseForge pages: WeakAuras Forever was really
      gone on 2026-10-05 (404 in a real browser) while WebFetch still showed its
-     files. Its card is now `.card.unavailable` (no Download/Select, "Removed
-     from CurseForge"); skip it in the check until it's replaced.
+     files. It was replaced by ForeverAuras. If an addon disappears again, grey
+     its card out with `.card.unavailable` (drop the `dl-card` class and the
+     download row, `.ver.gone` line "Removed from CurseForge") and tell the user.
+     In a real browser on curseforge.com, `fetch('/api/v1/mods/<id>/files?pageIndex=0&pageSize=10&sort=dateCreated&sortDescending=true')`
+     returns the true file list as JSON (`fileName`, `gameVersions`, `releaseType`
+     1 = release); use it when the browser tools are available.
   5. The shell can't reach CurseForge (proxy blocks it); use WebFetch only.
   6. Always commit and push to `main`, even when only the date changed: a
      date-only bump gets its own commit ("Addon versions checked <date>, no changes"), so the

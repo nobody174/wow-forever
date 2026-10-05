@@ -14,8 +14,9 @@ user-facing release notes.
 - Verified in a real browser: all 12 CurseForge download links resolve to the
   right Forever file (1.60.1) and the Road to Forever 0.11.0 release zip exists.
 - **WeakAuras Forever was removed from CurseForge** (project and files 404 in a
-  real browser; WebFetch had served a cached copy). Its card is greyed out with
-  no download until we pick a replacement (ForeverAuras, EverAuras).
+  real browser; WebFetch had served a cached copy). Replaced with
+  **ForeverAuras** 0.50.6-BETA.1 (WeakAuras fork for Forever, `/fa`); the
+  Battle Shout aura recommendation moved to its card with `/fa` import steps.
 
 ## 2026-10-05 (Six more addons on the Addons page)
 

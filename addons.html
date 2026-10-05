@@ -71,6 +71,10 @@ h2:first-of-type{margin-top:0}
 .card .note a{color:var(--text)}
 .card .note strong.warn{color:var(--warn)}
 @media (prefers-reduced-motion:reduce){.card .addon-btn{transition:none}}
+.card .ver{color:var(--muted);font-size:13px;margin-top:8px}
+.card .ver b{color:var(--text);font-weight:600;font-family:"IBM Plex Mono",Consolas,monospace;font-size:12.5px}
+.checked{color:var(--muted);font-size:13px;margin:-20px 0 30px}
+.checked b{color:var(--text);font-weight:600}
 .card .unlinked{color:var(--muted);font-size:13px;font-style:italic}
 </style>
 </head>
@@ -87,39 +91,48 @@ h2:first-of-type{margin-top:0}
 </div>
 <div class="wrap">
   <h1>Addons</h1>
-  <p class="lede">The addons we're actually running for WoW Forever right now.</p>
+  <p class="lede">The addons we're actually running for WoW Forever right now. Each button opens the WoW Forever download on CurseForge, not the Retail or Classic one.</p>
+  <p class="checked" id="versions-checked">Versions checked on CurseForge: <b>Oct 5, 2026</b></p>
 
   <h2>What we use</h2>
   <div class="card">
-    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/forever-bag-mover" target="_blank" rel="noopener">Forever Bag Mover</a>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/forever-bag-mover/files/9014303" target="_blank" rel="noopener">Forever Bag Mover</a>
+    <div class="ver" data-addon="forever-bag-mover">Forever version <b>0.5.0</b> · Sep 29, 2026</div>
     <div class="note">Unlock your backpack, drag it wherever you want, lock it back in place. Remembers the position per character and locks movement during combat. Works on the standard backpack and the combined-bag window.</div>
   </div>
   <div class="card">
-    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/foreverlayers" target="_blank" rel="noopener">ForeverLayers</a>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/foreverlayers/files/9069955" target="_blank" rel="noopener">ForeverLayers</a>
+    <div class="ver" data-addon="foreverlayers">Forever version <b>1.1.1</b> · Oct 5, 2026</div>
     <div class="note">Find other players in your current zone and switch layers to group up with them. Both sides need the addon installed, and it works through simple invite requests.</div>
   </div>
   <div class="card">
-    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/foreverplus" target="_blank" rel="noopener">ForeverPlus</a>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/foreverplus/files/9069723" target="_blank" rel="noopener">ForeverPlus</a>
+    <div class="ver" data-addon="foreverplus">Forever version <b>0.8.6</b> · Oct 5, 2026</div>
     <div class="note">Modular quality-of-life addon — quest automation, auto-sell/repair at merchants, buff tracking, an info bar, and a customizable tooltip system. Everything toggles individually and profiles can be shared between characters.</div>
   </div>
   <div class="card">
-    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-maps/files/8959146" target="_blank" rel="noopener">Leatrix Maps</a>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-maps/files/9067996" target="_blank" rel="noopener">Leatrix Maps</a>
+    <div class="ver" data-addon="leatrix-maps">Forever version <b>1.60.12-forever</b> · Oct 5, 2026</div>
     <div class="note">World map quality-of-life — reveals the map, shows dungeon icons and coordinates, lets you scale/reposition the map, removes the border, and stops zoom from resetting. Configurable via <code>/ltm</code>.</div>
   </div>
   <div class="card">
-    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-plus" target="_blank" rel="noopener">Leatrix Plus</a>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/leatrix-plus/files/9040264" target="_blank" rel="noopener">Leatrix Plus</a>
+    <div class="ver" data-addon="leatrix-plus">Forever version <b>1.60.11-forever</b> · Oct 2, 2026</div>
     <div class="note">Modular UI quality-of-life addon — quest/repair automation, social and chat tweaks, minimap and tooltip improvements, frame management, and a few system optimizations. Enable only the pieces you want.</div>
   </div>
   <div class="card">
-    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/threatmaster" target="_blank" rel="noopener">ThreatMaster</a>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/threatmaster/files/8998130" target="_blank" rel="noopener">ThreatMaster</a>
+    <div class="ver" data-addon="threatmaster">Forever version <b>0.4.0</b> · Sep 28, 2026</div>
     <div class="note">A threat meter styled after the game's built-in Damage Meter. Shows threat standing against the current target and warns both DPS and tanks when aggro is about to switch. <strong class="warn">Slash command conflict:</strong> claims <code>/tm</code> for itself, which is also the shorthand for WoW's built-in <code>/targetmarker</code> command — if you have a raid-mark macro using <code>/tm</code> (like our own mark macros used to), it'll silently call ThreatMaster instead of marking your target. Fixed on our macros page by switching to the full <code>/targetmarker</code> name — do the same for any of your own macros using <code>/tm</code>.</div>
   </div>
   <div class="card">
-    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/tomtom" target="_blank" rel="noopener">TomTom</a>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/tomtom/files/8954093" target="_blank" rel="noopener">TomTom</a>
+    <div class="ver" data-addon="tomtom">Forever version <b>v4.3.11-release</b> · Sep 23, 2026</div>
     <div class="note">Set waypoints by command or by clicking the map, then follow a floating arrow to get there. Shows your coordinates and can bulk-import waypoint lists for questing.</div>
   </div>
   <div class="card">
-    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/weakauras-forever" target="_blank" rel="noopener">WeakAuras Forever</a>
+    <a class="addon-btn" href="https://www.curseforge.com/wow/addons/weakauras-forever/files/9021901" target="_blank" rel="noopener">WeakAuras Forever</a>
+    <div class="ver" data-addon="weakauras-forever">Forever version <b>1.3.0</b> · Sep 30, 2026</div>
     <div class="note">The WeakAuras you know, ported for WoW Forever's client (1.60.1). Same saved auras and slash commands — imported auras from other games may need small adjustments.</div>
     <div class="note">Recommended aura: <a href="https://wago.io/MtMe4SbEJ" target="_blank" rel="noopener">Battle Shout reminder (Warrior)</a>.
       <ol>

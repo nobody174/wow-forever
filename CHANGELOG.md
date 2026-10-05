@@ -4,6 +4,19 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-05 (Addon versions from CurseForge)
+
+- **Addons page:** every addon card now shows its latest WoW Forever version and
+  upload date, and its button links straight to that Forever file on CurseForge
+  (not the project page, so nobody grabs a Retail/Classic build). A "Versions
+  checked on CurseForge" date sits under the lede. Checked today: Forever Bag
+  Mover 0.5.0, ForeverLayers 1.1.1, ForeverPlus 0.8.6, Leatrix Maps
+  1.60.12-forever (link was pinned to old 1.60.03), Leatrix Plus
+  1.60.11-forever, ThreatMaster 0.4.0, TomTom v4.3.11 (multi-flavor file incl.
+  Forever), WeakAuras Forever 1.3.0.
+- **Daily version check:** a scheduled task re-runs the check every morning and
+  pushes updates; procedure documented in CLAUDE.md under `addons.html`.
+
 ## 2026-10-05 (Library Books checklist page)
 
 - **New page `library-books.html`:** all 40 WoW Forever library books in an

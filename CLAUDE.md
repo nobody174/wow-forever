@@ -67,7 +67,30 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   alphabetically) plus a link to wow4ever.quest's addon compatibility tracker.
   Each card is a single framed nav-style button (`.addon-btn`) with the addon
   name linking to CurseForge, description below — not a separate name+link pair.
-  Hand-edit directly.
+  The button links to the addon's **WoW Forever file page**
+  (`/wow/addons/<slug>/files/<fileId>`), not the project page, and under it a
+  `<div class="ver" data-addon="<slug>">` line shows `Forever version <b>X</b> ·
+  <upload date>`. The lede's `#versions-checked` line holds the date of the last
+  check. Hand-edit directly.
+  **Addon version check (run daily by a scheduled task, or on request):**
+  1. For each `data-addon` slug, WebFetch
+     `https://www.curseforge.com/wow/addons/<slug>/files/all` and take the newest
+     file whose flavor is **Forever** (game version 1.60.x). Use the files list,
+     not the project page's "Recent Files" sidebar — the sidebar lags behind
+     (on 2026-10-05 it showed Leatrix Maps 1.60.11 while 1.60.12 was out).
+     Multi-flavor files count only if Forever is in their flavor list (TomTom
+     ships one file for every flavor; open the file page to confirm).
+     Never pick a Retail/Classic/MoP/TBC/Titan file. Release type R preferred;
+     only use a beta/alpha file if no R exists for Forever.
+  2. If newer: update that card's link file id, version and date.
+  3. Always set `#versions-checked` to today's date (e.g. `Oct 6, 2026`).
+  4. If a project page 404s, retry once, then check `/files/all` — WeakAuras
+     Forever's project page 404'd on 2026-10-05 while its files list worked.
+     If both fail, leave the card unchanged and mention it in the commit message.
+  5. The shell can't reach CurseForge (proxy blocks it); use WebFetch only.
+  6. Commit only if something changed besides nothing at all: a date-only bump
+     still gets a commit ("Addon versions checked <date>, no changes"), so the
+     page shows the check is alive. Add version bumps to CHANGELOG.md.
 - `launch-plan.html` — hand-written launch plan with three group plans plus Compare:
   2 Hunters · Warrior · Druid (`hwd`), 3 Hunters · Druid (`h3d`) — both Skyborne,
   Zephras Isle start — and Paladin · Hunter · Shaman (`trio`, Dwarves starting in

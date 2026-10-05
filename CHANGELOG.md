@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-05 (Compact addon cards)
+
+- Addons page is much shorter: each card is now one compact row with the
+  Select checkbox in a strip on the left, the addon name on the left and the
+  Download button on the right of the same line, the version underneath, and
+  the description/notes folded behind a small "Details" toggle.
+
 ## 2026-10-05 (Downloads without leaving the page)
 
 - CurseForge **Download** buttons now open CurseForge's download page in a

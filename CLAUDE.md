@@ -69,8 +69,13 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   2026-10-05), Leatrix Maps, Leatrix Plus, Prat 3.0, Questie, ThreatMaster,
   TomTom — all CurseForge links, sorted alphabetically (case-insensitive) —
   plus a link to wow4ever.quest's addon compatibility tracker.
-  Each card is a single framed nav-style button (`.addon-btn`) with the addon
-  name linking to CurseForge, description below — not a separate name+link pair.
+  Compact card layout (2026-10-05): a `.pick` column on the left holding the
+  Select checkbox (the whole strip is the click target), then `.card-main` with
+  a `.card-head` row — the addon name button (`.addon-btn`, links to CurseForge)
+  left-aligned and the gold `.dl-btn` Download right-aligned on the same row —
+  then the `.ver` line, then all description/notes inside
+  `<details class="more"><summary>Details</summary>…</details>` (collapsed by
+  default). New cards must follow this markup.
   The button links to the addon's **WoW Forever file page**
   (`/wow/addons/<slug>/files/<fileId>`), not the project page, and under it a
   `<div class="ver" data-addon="<slug>">` line shows `Forever version <b>X</b> ·

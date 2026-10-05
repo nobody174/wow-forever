@@ -45,6 +45,7 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 @media (prefers-reduced-motion:reduce){.topbar nav a{transition:none}}
 .wrap{max-width:760px;margin:0 auto;padding:36px 20px 80px}
 h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6px;letter-spacing:.01em}
+.lede code{overflow-wrap:anywhere}
 .lede{color:var(--muted);margin:0 0 30px;max-width:62ch}
 h2{font:400 22px/1.2 var(--serif);color:var(--accent);margin:34px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--edge)}
 h2:first-of-type{margin-top:0}
@@ -144,7 +145,7 @@ h2:first-of-type{margin-top:0}
 </div>
 <div class="wrap">
   <h1>Addons</h1>
-  <p class="lede">The addons we're actually running for WoW Forever right now, always the WoW Forever version, never a Retail or Classic file. Press <b>Download</b> and the file lands in your Downloads folder while you stay on this page. For CurseForge addons a small CurseForge window pops up for a few seconds to hand over the file (CurseForge doesn't let other sites start its files directly) and closes by itself. Our own addon downloads straight from this page. To grab several, tick them and press the gold button at the bottom once per addon.</p>
+  <p class="lede">These addons are tested and working for WoW Forever. Download, extract, and copy each addon folder to <code>World of Warcraft\_classic_beta_\Interface\AddOns</code>.</p>
   <p class="checked" id="versions-checked">Versions checked on CurseForge: <b>Oct 5, 2026</b></p>
 
   <h2>Our own addon</h2>
@@ -370,7 +371,7 @@ h2:first-of-type{margin-top:0}
     <button type="button" id="sel-all">Select all</button>
     <button type="button" id="sel-none">Clear</button>
     <button type="button" class="primary" id="sel-dl" disabled>Download selected</button>
-    <p class="status" id="dl-status">Each press of the gold button downloads the next ticked addon. Unzip each file into the <code>Interface/AddOns/</code> folder of your WoW Forever install.</p>
+    <p class="status" id="dl-status">Each press downloads the next ticked addon.</p>
   </div>
 </div>
 <script>

@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Professions: one section per gear piece)
+
+- Gear is split into Neck, Back, Chest, Wrist, Hands, Legs and Feet (weapons into
+  One-hand, Two-hand, Ranged), on every Professions view. Armor kits show under both
+  Hands and Legs. BiS view has jump links to each piece; the class filter hides pieces
+  and links with nothing for that class.
+
 ## 2026-10-07 (Professions rework: stand-ins, our crafters, compact lists)
 
 - BiS enchants is now the main view: one compact row per BiS enchant, grouped Gear /

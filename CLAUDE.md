@@ -49,8 +49,11 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - `professions.html` — hand-written page with a four-way switch (`.pf-mode`): **BiS enchants**
   (default), **Our crafts**, **Enchanting costs**, **Leatherworking costs**. Hash links:
   `#bis`, `#bis/<class>` (class filter; builds.html links there), `#ours`, `#enchanting`,
-  `#leatherworking`. Layout everywhere: sections Gear (neck → feet) / Weapons / Shield,
-  one compact row per item (`details.row`, `data-k` = recipe name, kept open across
+  `#leatherworking`. Layout everywhere: groups Gear / Weapons / Shield, each split into
+  pieces (`SECTIONS[].pieces`: Neck, Back, Chest, Wrist, Hands, Legs, Feet; One-hand,
+  Two-hand, Ranged; Shield) with the piece as heading (rows inside drop their slot column;
+  "Hands, Legs" armor kits show under both). BiS view has jump links to each piece
+  (`#p-<id>`, offset by the measured top bar height `--topbar-h`). One compact row per item (`details.row`, `data-k` = recipe name, kept open across
   re-renders), click to expand. Ranking uses coin metals: gold medal = BiS, silver = 2nd
   best, copper = 3rd best, green "+" = stronger than the list's pick, "=" = same bonus but
   easier to get. Design: site tokens (navy/gold, Marcellus + Plex), sentence case, sources

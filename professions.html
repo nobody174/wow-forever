@@ -88,7 +88,20 @@ a{color:var(--gold)}
 /* Sections and rows */
 .sec{margin:0 0 18px}
 .sec h2{font:400 21px/1.2 var(--serif);color:var(--gold);margin:0 0 6px;padding:0 0 6px;border-bottom:2px solid var(--gold)}
-.sec[hidden],.row[hidden]{display:none}
+.sec[hidden],.row[hidden],.piece[hidden],.jump[hidden]{display:none}
+.piece{margin:0 0 12px;scroll-margin-top:calc(var(--topbar-h,64px) + 12px)}
+.piece:last-child{margin-bottom:0}
+.piece h3{font:400 16px/1.2 var(--serif);color:var(--text);margin:12px 0 6px}
+.sec h2 + .piece h3{margin-top:4px}
+/* Inside a piece the slot is the heading, so rows drop their slot column. */
+.piece .g-bis .slot,.piece .g-cost .slot{display:none}
+.piece .g-bis > summary{grid-template-columns:minmax(0,1fr) 190px 112px 76px 14px}
+.piece .g-cost > summary{grid-template-columns:minmax(0,1fr) 170px 76px 14px}
+.piece .open{padding-left:28px}
+.jumps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.jump{font:600 13px/1 var(--sans);color:var(--gold);text-decoration:none;border:1px solid var(--edge);border-radius:5px;padding:6px 10px;background:#0A0F1F}
+.jump:hover{border-color:var(--gold)}
+.jump:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .list{background:var(--panel);border:1px solid var(--edge);border-radius:8px;overflow:hidden}
 .row{border-top:1px solid rgba(58,68,104,.55)}
 .row:first-child{border-top:0}
@@ -188,7 +201,8 @@ a{color:var(--gold)}
 .msg.err{border-color:var(--warn);color:var(--warn)}
 
 @media (max-width:820px){
-  .g-bis > summary,.g-cost > summary,.g-our > summary{grid-template-columns:minmax(0,1fr) auto 14px;gap:4px 10px}
+  .g-bis > summary,.g-cost > summary,.g-our > summary,.piece .g-bis > summary,.piece .g-cost > summary{grid-template-columns:minmax(0,1fr) auto 14px;gap:4px 10px}
+  .piece .open{padding-left:14px}
   .row > summary .slot{grid-column:1 / -1;font-size:12px}
   .g-bis > summary .dots{display:none}
   .g-bis > summary .cover,.g-our > summary .cover{grid-column:1 / 2;grid-row:3}
@@ -490,15 +504,18 @@ a{color:var(--gold)}
   }
 
   // ==== Layout: gear, then weapons, then shield =======================================
+  // Each piece lists the slots it shows; armor kits ("Hands, Legs") show under both.
   var SECTIONS = [
-    { t: "Gear", slots: ["Neck", "Back", "Chest", "Wrist", "Hands", "Hands, Legs", "Legs", "Feet"] },
-    { t: "Weapons", slots: ["Weapon", "2H Weapon", "Ranged"] },
-    { t: "Shield", slots: ["Shield"] }
+    { t: "Gear", pieces: [
+      { id: "neck", t: "Neck", slots: ["Neck"] }, { id: "back", t: "Back", slots: ["Back"] }, { id: "chest", t: "Chest", slots: ["Chest"] },
+      { id: "wrist", t: "Wrist", slots: ["Wrist"] }, { id: "hands", t: "Hands", slots: ["Hands", "Hands, Legs"] },
+      { id: "legs", t: "Legs", slots: ["Legs", "Hands, Legs"] }, { id: "feet", t: "Feet", slots: ["Feet"] }] },
+    { t: "Weapons", pieces: [
+      { id: "onehand", t: "One-hand", slots: ["Weapon"] }, { id: "twohand", t: "Two-hand", slots: ["2H Weapon"] }, { id: "ranged", t: "Ranged", slots: ["Ranged"] }] },
+    { t: "Shield", pieces: [{ id: "shield", t: "Shield", slots: ["Shield"] }] }
   ];
   var SLOT_LABEL = { "Weapon": "One-hand", "2H Weapon": "Two-hand", "Hands, Legs": "Hands or legs" };
   function slotLabel(s) { return SLOT_LABEL[s] || s; }
-  function slotIdx(s) { for (var i = 0; i < SECTIONS.length; i++) { var j = SECTIONS[i].slots.indexOf(s); if (j !== -1) return [i, j]; } return [9, 9]; }
-  function bySlot(a, b, sa, sb) { var x = slotIdx(sa), y = slotIdx(sb); return x[0] - y[0] || x[1] - y[1]; }
 
   // ==== Prices ======================================================================
   var site = { prices: {}, updated: "2026-10-06", by: "" };
@@ -574,28 +591,44 @@ a{color:var(--gold)}
       '<span class="cost">' + costHTML(n.key) + '</span><span class="chev" aria-hidden="true">›</span></summary>' +
       '<div class="open"><div class="ladder">' + ladder + '</div><p class="for">Recommended for <span class="specs">' + specs + "</span></p></div></details>";
   }
-  function sectioned(items, slotOf, rowFn, cls) {
-    return SECTIONS.map(function (sec) {
-      var list = items.filter(function (it) { return sec.slots.indexOf(slotOf(it)) !== -1; });
-      if (!list.length) return "";
-      list.sort(function (a, b) { return bySlot(a, b, slotOf(a), slotOf(b)) || String(a.key || a).localeCompare(String(b.key || b)); });
-      return '<section class="sec"><h2>' + esc(sec.t) + '</h2><div class="list">' + list.map(rowFn).join("") + "</div></section>";
+  // Group (Gear / Weapons / Shield) -> one block per piece. `jump` adds the piece links.
+  function sectioned(items, slotOf, rowFn, jump) {
+    var nav = [];
+    var html = SECTIONS.map(function (sec) {
+      var pieces = sec.pieces.map(function (pc) {
+        var list = items.filter(function (it) { return pc.slots.indexOf(slotOf(it)) !== -1; });
+        if (!list.length) return "";
+        list.sort(function (a, b) { return pc.slots.indexOf(slotOf(a)) - pc.slots.indexOf(slotOf(b)) || String(a.key || a).localeCompare(String(b.key || b)); });
+        if (jump) nav.push('<a class="jump" href="#" data-jump="' + pc.id + '">' + esc(pc.t) + "</a>");
+        var solo = sec.pieces.length === 1;
+        return '<div class="piece" id="' + (jump ? "p-" + pc.id : "") + '">' + (solo ? "" : "<h3>" + esc(pc.t) + "</h3>") + '<div class="list">' + list.map(rowFn).join("") + "</div></div>";
+      }).join("");
+      return pieces ? '<section class="sec"><h2>' + esc(sec.t) + "</h2>" + pieces + "</section>" : "";
     }).join("");
+    return (jump ? '<nav class="jumps" aria-label="Jump to slot">' + nav.join("") + "</nav>" : "") + html;
   }
   function renderBis() {
     var open = keepOpen("#bis-list");
-    $("bis-list").innerHTML = sectioned(NEEDS, function (n) { return n.slot; }, needRow);
+    $("bis-list").innerHTML = sectioned(NEEDS, function (n) { return n.slot; }, needRow, true);
     restoreOpen("#bis-list", open);
     applyFilter();
   }
   function applyFilter() {
     document.querySelectorAll("#classes .chip").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.c === cls)); });
-    document.querySelectorAll("#bis-list .sec").forEach(function (sec) {
+    document.querySelectorAll("#bis-list .piece").forEach(function (pc) {
       var shown = 0;
-      sec.querySelectorAll(".row").forEach(function (r) { var ok = !cls || r.dataset.classes.split(" ").indexOf(cls) !== -1; r.hidden = !ok; if (ok) shown++; });
-      sec.hidden = !shown;
+      pc.querySelectorAll(".row").forEach(function (r) { var ok = !cls || r.dataset.classes.split(" ").indexOf(cls) !== -1; r.hidden = !ok; if (ok) shown++; });
+      pc.hidden = !shown;
+      var j = document.querySelector('#bis-list [data-jump="' + pc.id.replace("p-", "") + '"]'); if (j) j.hidden = !shown;
     });
+    document.querySelectorAll("#bis-list .sec").forEach(function (sec) { sec.hidden = !sec.querySelector(".piece:not([hidden])"); });
   }
+  $("bis-list").addEventListener("click", function (e) {
+    var j = e.target.closest("[data-jump]");
+    if (!j) return;
+    e.preventDefault();
+    var t = $("p-" + j.dataset.jump); if (t) t.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  });
   $("classes").innerHTML = '<button type="button" class="chip" data-c="">All classes</button>' + CLASS_ORDER.map(function (c) {
     return '<button type="button" class="chip" data-c="' + c + '" style="--c:' + CLASS_COLORS[c] + '">' + c + "</button>";
   }).join("");
@@ -859,6 +892,11 @@ a{color:var(--gold)}
     showView(b.dataset.view);
   });
   window.addEventListener("hashchange", fromHash);
+
+  // Jump targets clear the sticky top bar (taller when it stacks on small screens).
+  function topbarH() { var t = document.querySelector(".topbar"); if (t) document.documentElement.style.setProperty("--topbar-h", t.offsetHeight + "px"); }
+  window.addEventListener("resize", topbarH);
+  topbarH();
 
   function renderAll() { renderBis(); renderOurs(); renderCosts(); }
   renderAll();

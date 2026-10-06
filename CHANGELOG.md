@@ -4,6 +4,15 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-06 (Index Tools column trimmed)
+
+- Removed the two external talent calculator links (Zockify, ForeverChanges)
+  from the index Tools column; our own Talent Calc in the top bar replaces them.
+- Removed Wowhead's "DPS Tier List (Beta, Lvl 20)": still level-20 only
+  (last updated 2026-09-24) and no level-30 PvE DPS list exists yet
+  (Mobalytics' is 1–20 leveling, SeeMeta's is theory-crafted raid tiers).
+  Re-add if Wowhead or another source publishes a level-30 one.
+
 ## 2026-10-05 (Addons in a 2–3 column grid)
 
 - Addon cards now sit side by side: 3 per row on wide screens, 2 on laptops,

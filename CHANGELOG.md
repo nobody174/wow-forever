@@ -4,6 +4,22 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-06 (Our own Legacy calculator)
+
+- New **Legacy calculator** on the Talent Calc page, our own code instead of linking
+  to Wowhead's. A Talents / Legacy switch under the title swaps between the two;
+  links are `talents.html#legacy/...`. Three trees (Professions, Adventure,
+  Resourcefulness), 16 points, the 5/10-point gates, linked perks, "not in the game
+  yet" slots, cast/cooldown on Dedicated Study, tooltips, touch +/− sheet, Copy link.
+  Rules copied from testing Wowhead's calculator click by click.
+- Always up to date: like the talent calc, it loads Wowhead's live Forever Legacy
+  data (`nether.wowhead.com/forever/data/legacy-calculator`), and the credit line
+  shows the game build the data is from.
+- Top bar tab renamed "Talent / Legacy Calc" on every page. Index Tools "Legacy
+  Calculator" and the Launch Plan's Legacy section now open ours.
+- New file `legacycalc.js`; Legacy styles appended to `talentcalc.css` (`lc-`);
+  cache-bust bumped to `?v=20261006a` on talents.html and builds.html.
+
 ## 2026-10-06 (Tools column wider)
 
 - Index Tools column is now wider than General Resources (same total panel

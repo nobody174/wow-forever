@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Talent Calculator — WoW Forever</title>
+<title>Talent &amp; Legacy Calculator — WoW Forever</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -70,13 +70,13 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
 .roster button .class-icon{flex:none;width:26px;height:26px;border-radius:5px;border:1px solid rgba(0,0,0,.3);object-fit:cover}
 @media (prefers-reduced-motion:reduce){.roster button{transition:none}}
 
-#calc{margin-top:22px}
+#calc,#lcalc{margin-top:22px}
 .status{color:var(--muted);margin:40px 0}
 .status.err{color:var(--warn)}
 .credit{color:var(--muted);font-size:12.5px;margin-top:36px}
 .credit a{color:var(--muted)}
 </style>
-<link rel="stylesheet" href="talentcalc.css?v=20261002a">
+<link rel="stylesheet" href="talentcalc.css?v=20261006a">
 </head>
 <body>
 <div class="topbar">
@@ -86,29 +86,78 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
     <a href="builds.html">Builds</a>
     <a href="addons.html">Addons</a>
     <a href="launch-plan.html">Launch Plan</a>
-    <a href="talents.html" aria-current="page">Talent Calc</a>
+    <a href="talents.html" aria-current="page">Talent / Legacy Calc</a>
   </nav>
 </div>
 <div class="wrap">
-  <h1>Talent Calculator</h1>
-  <p class="lede">WoW Forever talent trees for every class. Spend 51 points, then copy the link or save the build to your sidebar list.</p>
+  <h1 id="title">Talent Calculator</h1>
+  <p class="lede" id="lede-talents">WoW Forever talent trees for every class. Spend 51 points, then copy the link or save the build to your sidebar list.</p>
+  <p class="lede" id="lede-legacy" hidden>Legacy perks for your whole account. Spend up to 16 Legacy points across Professions, Adventure and Resourcefulness, then copy the link to share it.</p>
 
-  <nav class="roster" id="roster" aria-label="Class"></nav>
+  <div class="lc-mode" role="group" aria-label="Calculator">
+    <button type="button" data-mode="talents" aria-pressed="true">Talents</button>
+    <button type="button" data-mode="legacy" aria-pressed="false">Legacy</button>
+  </div>
 
-  <div id="calc" hidden></div>
-  <p class="status" id="status">Loading the Forever talent data…</p>
+  <div id="talent-view">
+    <nav class="roster" id="roster" aria-label="Class"></nav>
+    <div id="calc" hidden></div>
+    <p class="status" id="status">Loading the Forever talent data…</p>
+    <p class="credit">Talent data: <a href="https://www.wowhead.com/forever/talent-calc" target="_blank" rel="noopener">Wowhead's Forever talent calculator</a>, loaded live, so it updates when they do. Icons © Blizzard Entertainment.</p>
+  </div>
 
-  <p class="credit">Talent data: <a href="https://www.wowhead.com/forever/talent-calc" target="_blank" rel="noopener">Wowhead's Forever talent calculator</a>, loaded live, so it updates when they do. Icons © Blizzard Entertainment.</p>
+  <div id="legacy-view" hidden>
+    <div id="lcalc" hidden></div>
+    <p class="status" id="lstatus">Loading the Forever Legacy data…</p>
+    <p class="credit">Legacy data: <a href="https://www.wowhead.com/forever/legacy-calculator" target="_blank" rel="noopener">Wowhead's Forever Legacy calculator</a>, loaded live, so new perks show up as soon as Wowhead adds them<span id="lbuild"></span>. Icons © Blizzard Entertainment.</p>
+  </div>
 </div>
 
-<script src="talentcalc.js?v=20261002a"></script>
-<script src="talentsaved.js?v=20261002a"></script>
+<script src="talentcalc.js?v=20261006a"></script>
+<script src="talentsaved.js?v=20261006a"></script>
+<script src="legacycalc.js?v=20261006a"></script>
 <script>
 (function () {
   "use strict";
   var TC = window.TalentCalc;
   var $ = function (id) { return document.getElementById(id); };
   var raw = null, calc = null;
+  var LC = window.LegacyCalc, ldata = null, lcalc = null, lloading = false, mode = "talents", lastTalentHash = "";
+
+  function setHash(h) { try { history.replaceState(null, "", "#" + h); } catch (e) { location.hash = h; } }
+  function setMode(m) {
+    mode = m;
+    var leg = m === "legacy";
+    document.querySelectorAll(".lc-mode button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.mode === m)); });
+    $("talent-view").hidden = leg;
+    $("legacy-view").hidden = !leg;
+    $("lede-talents").hidden = leg;
+    $("lede-legacy").hidden = !leg;
+    $("title").textContent = leg ? "Legacy Calculator" : "Talent Calculator";
+    document.title = (leg ? "Legacy" : "Talent") + " Calculator — WoW Forever";
+    document.body.classList.toggle("lc-on", leg);
+    LC.hideTip();
+  }
+  function showLegacy(code) {
+    setMode("legacy");
+    if (ldata) { if (lcalc) lcalc.setCode(code); else mountLegacy(code); return; }
+    if (lloading) return;
+    lloading = true;
+    LC.load().then(function (d) {
+      ldata = d;
+      $("lstatus").hidden = true;
+      $("lcalc").hidden = false;
+      if (d.build) $("lbuild").textContent = " (game build " + d.build + ")";
+      mountLegacy(location.hash.indexOf("#legacy") === 0 ? legacyCode() : code);
+    }, function () {
+      $("lstatus").className = "status err";
+      $("lstatus").innerHTML = 'Couldn\'t load the Legacy data from Wowhead right now. Try again in a minute, or use <a href="https://www.wowhead.com/forever/legacy-calculator" target="_blank" rel="noopener">Wowhead\'s calculator</a>.';
+    });
+  }
+  function mountLegacy(code) {
+    lcalc = LC.mountSync($("lcalc"), ldata, { code: code, onChange: function (inst) { setHash(inst.link()); } });
+  }
+  function legacyCode() { var h = decodeURIComponent(location.hash.slice(1)), i = h.indexOf("/"); return i === -1 ? "" : h.slice(i + 1); }
 
   function renderRoster(active) {
     $("roster").innerHTML = TC.CLASSES.map(function (c) {
@@ -128,6 +177,9 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
   // (it's for the Road to Forever addon, ADDON_PLAN.md 13.3).
   function fromHash() {
     var h = decodeURIComponent(location.hash.slice(1)), slash = h.indexOf("/");
+    if (h === "legacy" || h.indexOf("legacy/") === 0) { showLegacy(legacyCode()); return; }
+    setMode("talents");
+    if (!raw) return;
     var id = slash === -1 ? h : h.slice(0, slash), code = slash === -1 ? "" : TC.cleanCode(h.slice(slash + 1));
     if (!TC.classById(id)) { id = calc ? calc.cls.id : "hunter"; code = ""; }
     show(id, code);
@@ -139,14 +191,27 @@ p.lede{color:var(--muted);max-width:60ch;margin:0 auto}
     show(b.dataset.c, "");
     try { history.replaceState(null, "", "#" + b.dataset.c); } catch (err) { location.hash = b.dataset.c; }
   });
-  window.addEventListener("hashchange", function () { if (raw) fromHash(); });
+  window.addEventListener("hashchange", fromHash);
+  document.querySelector(".lc-mode").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-mode]");
+    if (!b || b.dataset.mode === mode) return;
+    if (b.dataset.mode === "legacy") {
+      lastTalentHash = location.hash.slice(1);
+      setHash(lcalc ? lcalc.link() : "legacy");
+      if (lcalc) setMode("legacy"); else showLegacy("");
+    } else {
+      setHash(lastTalentHash || (calc ? calc.link() : "hunter"));
+      fromHash();
+    }
+  });
 
   renderRoster(null);
+  if (/^#legacy/.test(location.hash)) fromHash();
   TC.load().then(function (data) {
     raw = data;
     $("status").hidden = true;
     $("calc").hidden = false;
-    fromHash();
+    if (mode === "talents") fromHash();
   }, function () {
     $("status").className = "status err";
     $("status").innerHTML = 'Couldn\'t load the talent data from Wowhead right now. Try again in a minute, or use <a href="https://www.wowhead.com/forever/talent-calc" target="_blank" rel="noopener">Wowhead\'s calculator</a>.';

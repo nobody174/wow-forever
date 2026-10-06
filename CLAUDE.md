@@ -5,8 +5,9 @@ Live site: GitHub Pages from `main` / root → https://nobody174.github.io/wow-f
 
 Small multi-page site: `index.html` is the countdown/landing page ("Road to Forever"), `macros.html` is the macro cheatsheet, `builds.html` lists talent
 builds per class, `addons.html` lists addons, `launch-plan.html` is the launch-week
-leveling plan, `talents.html` is our own talent calculator. All six share a top bar
-(site title, Macros / Builds / Addons / Launch Plan / Talent Calc links, current page
+leveling plan, `talents.html` is our own talent calculator plus Legacy calculator
+(Talents / Legacy switch). All six share a top bar
+(site title, Macros / Builds / Addons / Launch Plan / Talent / Legacy Calc links, current page
 highlighted).
 
 Class roster order on both `macros.html` and `builds.html` follows armor type,
@@ -36,11 +37,11 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   (`.side-links`) has a `.plaque-row` on top with two featured cards side by side
   (Cozy Sleeping Bag, external; Library Books, links to `library-books.html`), then two side-by-side
   boxed columns (`.link-cols`): "General Resources" (Zockify, Wowhead, Icy Veins,
-  Warcraft Tavern, Mobalytics, ForeverChanges) and "Tools" (Legacy Calculator,
+  Warcraft Tavern, Mobalytics, ForeverChanges) and "Tools" (Legacy Calculator = our own `talents.html#legacy`,
   Best-in-Slot Gear, Dungeon Loot Tables, Hunter Pet Database, DPS Tier List (Lvl 60) = MythicSim).
   The Tools column is `.link-group.tools` (`flex:1.3`, wider than General
   Resources) so every title fits on one line; keep titles short enough for that.
-  No external talent calculators here — our own `talents.html` (top bar) replaces them.
+  No external talent or Legacy calculators here — our own `talents.html` (top bar) replaces them.
   Each link is its own compact icon+title card (`.mini-plaque`/`.mini-icon`), title
   only — no per-link description. New tool/resource links go in whichever column
   fits; keep favicons via `google.com/s2/favicons?domain=...` and verify with curl
@@ -214,12 +215,35 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   everyone in ~1 minute. Never put a token in the repo. The token sits in the same
   page as Wowhead's data script, which is why it must stay scoped to this one repo.
   Editing `group-builds.json` by hand still works. `#saved` in the URL opens the drawer.
-  Pages load `talentcalc.js`, `talentcalc.css` and `talentsaved.js` with a `?v=` query
-  string; bump it on both pages whenever any of the three changes, or browsers
+  Pages load `talentcalc.js`, `talentcalc.css`, `talentsaved.js` (and talents.html also
+  `legacycalc.js`) with a `?v=` query
+  string; bump it on both pages whenever any of them changes, or browsers
   can mix a cached old engine with a new sidebar (happened on 2026-10-01).
 - `group-builds.json` — Group picks data (see `talentsaved.js`). Written by the site's
   owner login; hand edits are fine, keep it valid JSON.
-- `talents.html` — hand-written talent calculator page (roster + full-mode mount + saved-builds sidebar). Talent data is NOT
+- `legacycalc.js` — Legacy calculator engine (`window.LegacyCalc`: `load()`,
+  `mountSync(el, data, {code, onChange})`, `hideTip()`), shown in the Legacy mode of
+  `talents.html`. Like the talent calc, data is NOT in the repo: it loads Wowhead's
+  public script `https://nether.wowhead.com/forever/data/legacy-calculator`, which calls
+  `WH.setPageData("wow.legacyCalculator.classicplus.calc", {build, cap, trees})`, so new
+  perks appear when Wowhead adds them. Tree: `{name, art, blurb, nodes, edges}`; node:
+  `{id, x, y, name, icon, maxRanks, locked, requiredSpent, castMs, cdMs, ranks[text]}`;
+  x/y are canvas coords, turned into a grid from their distinct values. Rules, checked
+  click-for-click against Wowhead's calculator on 2026-10-06: `cap` (16) points total;
+  a perk with requiredSpent R needs R points in that tree's perks whose requiredSpent
+  is lower than R (gates act like tiers); edge from→to = "to" needs 1 rank in "from";
+  a removal is blocked if it breaks any taken perk; `locked` perks ("Unknown", not in
+  game) can't be taken and render dashed. Link: `talents.html#legacy/<t1>-<t2>-<t3>`,
+  one digit per perk in grid order (row, then column), locked perks included so codes
+  don't shift when they're filled in; invalid codes reset to empty. Tree art and icons
+  hotlinked from `wow.zamimg.com`. Styles are the `lc-` block at the end of
+  `talentcalc.css` (it reuses `.tc-bar`, `.tc-tree`, `.tc-tip`). Test locally by
+  routing the Wowhead URL to a `WH.setPageData(...)` fixture (cloud can't reach it).
+- `talents.html` — hand-written talent + Legacy calculator page. A Talents / Legacy
+  switch (`.lc-mode`) under the title swaps between the class roster + talent calc and
+  the Legacy calc; `#legacy...` hashes open Legacy mode, every other hash is a talent
+  link. Legacy data only loads the first time Legacy mode opens. The Saved builds
+  button is hidden in Legacy mode (`body.lc-on`). Talent part: roster + full-mode mount + saved-builds sidebar. Talent data is NOT
   stored in the repo: the page loads Wowhead's public Forever data script
   (`https://nether.wowhead.com/forever/data/talents-classic`) with a `<script>` tag and a
   tiny `WH.setPageData` shim, so it always shows Wowhead's latest beta trees. Data shape

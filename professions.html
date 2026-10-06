@@ -170,6 +170,15 @@ a{color:var(--gold)}
 .mat.changed{border-color:var(--gold)}
 .mat.empty{border-style:dashed}
 .mat-name{font-size:13.5px;line-height:1.3}
+.mtag{display:block;min-height:1px;color:var(--muted);font-size:11.5px;line-height:1.2}
+.mat.changed .mtag{color:var(--gold)}
+.srcbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 12px}
+.srcbar label{font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.srcbar select{background:#0A0F1F;color:var(--text);border:1px solid var(--edge);border-radius:6px;padding:5px 8px;font:inherit;font-size:13.5px}
+.srcbar .hint{color:var(--muted);font-size:12.5px}
+.srcbar a,.credit a{color:var(--gold)}
+.prices .src .own{color:var(--gold)}
+.credit{color:var(--muted);font-size:12.5px;margin:18px 0 0}
 .inputs{display:flex;gap:4px;flex:none}
 .inputs label{display:flex;align-items:center;gap:2px;font:600 11px var(--mono)}
 .inputs input{width:40px;font:500 13.5px/1 var(--mono);text-align:right;color:var(--text);background:var(--panel);border:1px solid var(--edge);border-radius:4px;padding:5px 4px}
@@ -256,6 +265,7 @@ a{color:var(--gold)}
   <section class="view" id="view-leatherworking" data-costs="leatherworking" hidden></section>
 
   <div class="ownerbox" id="ownerbox" hidden></div>
+  <p class="credit" id="ahl-credit" hidden>Material costs use live auction house prices. <a href="https://ahledger.com" target="_blank" rel="noopener">Prices from AHledger</a>.</p>
 </div>
 
 <script>
@@ -278,25 +288,28 @@ a{color:var(--gold)}
       "Heavy Armor Kit", "Forceful Heavy Armor Kit", "Mystic Heavy Armor Kit"] }
   ];
 
-  // ==== Materials (copper; null = no price yet). prices.json overrides `price`. ========
+  // ==== Materials: [id, name, profession, fallback copper (null = none), WoW item id] =====
+  // prices.json overrides the fallback; live AHledger prices override both (see Prices).
+  // Vendor-bought materials always use their vendor price.
+  var VENDOR = { thread: 100, wood: 38 };
   var MATS = [
-    ["dust", "Strange Dust", "enchanting", 235], ["lme", "Lesser Magic Essence", "enchanting", 45], ["gme", "Greater Magic Essence", "enchanting", 90],
-    ["lae", "Lesser Astral Essence", "enchanting", 498], ["gae", "Greater Astral Essence", "enchanting", null],
-    ["lmyst", "Lesser Mystic Essence", "enchanting", null], ["gmyst", "Greater Mystic Essence", "enchanting", null],
-    ["lneth", "Lesser Nether Essence", "enchanting", null], ["gneth", "Greater Nether Essence", "enchanting", null],
-    ["soul", "Soul Dust", "both", 798], ["vision", "Vision Dust", "enchanting", null], ["dream", "Dream Dust", "enchanting", null],
-    ["sgs", "Small Glimmering Shard", "enchanting", 98], ["lgs", "Large Glimmering Shard", "enchanting", 3400],
-    ["sglow", "Small Glowing Shard", "enchanting", null], ["lglow", "Large Glowing Shard", "enchanting", null],
-    ["srad", "Small Radiant Shard", "enchanting", null], ["lrad", "Large Radiant Shard", "enchanting", null],
-    ["aqua", "Aquamarine", "enchanting", null], ["acid", "Sulfuric Acid", "enchanting", null], ["magenta", "Magenta Dye", "enchanting", null],
-    ["cerulean", "Cerulean Dye", "enchanting", null], ["bauxite", "Bauxite", "enchanting", null], ["pyrite", "Pyrite", "enchanting", null],
-    ["rosecap", "Rosecap", "enchanting", null], ["silver", "Silver Ore", "enchanting", null], ["lichen", "Frilled Lichen", "enchanting", null],
-    ["wood", "Simple Wood", "enchanting", 38], ["oil", "Fire Oil", "enchanting", 22],
-    ["hleather", "Heavy Leather", "leatherworking", 989], ["thread", "Fine Thread", "leatherworking", 100],
-    ["hak", "Heavy Armor Kit", "leatherworking", 2840], ["lmp", "Lesser Mana Potion", "leatherworking", 344],
-    ["giant", "Elixir of Giant Growth", "leatherworking", 3198], ["tleather", "Thick Leather", "leatherworking", null],
-    ["sthread", "Silken Thread", "leatherworking", null]
-  ].map(function (m) { return { id: m[0], name: m[1], prof: m[2], price: m[3] }; });
+    ["dust", "Strange Dust", "enchanting", 235, 10940], ["lme", "Lesser Magic Essence", "enchanting", 45, 10938], ["gme", "Greater Magic Essence", "enchanting", 90, 10939],
+    ["lae", "Lesser Astral Essence", "enchanting", 498, 10998], ["gae", "Greater Astral Essence", "enchanting", null, 11082],
+    ["lmyst", "Lesser Mystic Essence", "enchanting", null, 11134], ["gmyst", "Greater Mystic Essence", "enchanting", null, 11135],
+    ["lneth", "Lesser Nether Essence", "enchanting", null, 11174], ["gneth", "Greater Nether Essence", "enchanting", null, 11175],
+    ["soul", "Soul Dust", "both", 798, 11083], ["vision", "Vision Dust", "enchanting", null, 11137], ["dream", "Dream Dust", "enchanting", null, 11176],
+    ["sgs", "Small Glimmering Shard", "enchanting", 98, 10978], ["lgs", "Large Glimmering Shard", "enchanting", 3400, 11084],
+    ["sglow", "Small Glowing Shard", "enchanting", null, 11138], ["lglow", "Large Glowing Shard", "enchanting", null, 11139],
+    ["srad", "Small Radiant Shard", "enchanting", null, 11177], ["lrad", "Large Radiant Shard", "enchanting", null, 11178],
+    ["aqua", "Aquamarine", "enchanting", null, 7909], ["acid", "Sulfuric Acid", "enchanting", null, 249410], ["magenta", "Magenta Dye", "enchanting", null, 249430],
+    ["cerulean", "Cerulean Dye", "enchanting", null, 249409], ["bauxite", "Bauxite", "enchanting", null, 249425], ["pyrite", "Pyrite", "enchanting", null, 249391],
+    ["rosecap", "Rosecap", "enchanting", null, 249424], ["silver", "Silver Ore", "enchanting", null, 2775], ["lichen", "Frilled Lichen", "enchanting", null, 249399],
+    ["wood", "Simple Wood", "enchanting", 38, 4470], ["oil", "Fire Oil", "enchanting", 22, 6371],
+    ["hleather", "Heavy Leather", "leatherworking", 989, 4234], ["thread", "Fine Thread", "leatherworking", 100, 2321],
+    ["hak", "Heavy Armor Kit", "leatherworking", 2840, 4265], ["lmp", "Lesser Mana Potion", "leatherworking", 344, 3385],
+    ["giant", "Elixir of Giant Growth", "leatherworking", 3198, 6662], ["tleather", "Thick Leather", "leatherworking", null, 4304],
+    ["sthread", "Silken Thread", "leatherworking", null, 4291]
+  ].map(function (m) { return { id: m[0], name: m[1], prof: m[2], price: m[3], item: m[4], vendor: VENDOR[m[0]] }; });
   var MAT_BY_NAME = {}, MAT_BY_ID = {};
   MATS.forEach(function (m) { MAT_BY_NAME[m.name] = m; MAT_BY_ID[m.id] = m; });
 
@@ -521,8 +534,25 @@ a{color:var(--gold)}
   var site = { prices: {}, updated: "2026-10-06", by: "" };
   MATS.forEach(function (m) { site.prices[m.id] = m.price; });
   var mine = lget(MY_PRICES, {}); if (!mine || typeof mine !== "object") mine = {};
-  function priceOf(id) { return id in mine ? mine[id] : site.prices[id]; }
-  function changedCount() { return Object.keys(mine).filter(function (k) { return mine[k] !== site.prices[k]; }).length; }
+  // Live AH prices from AHledger (https://ahledger.com). Attribution is required wherever
+  // they show. One request for every material (tooltip endpoint, max 100 ids), cached in
+  // the browser for LIVE_TTL so page loads are instant and we stay far below the rate limit.
+  var AHL = "https://api.ahledger.com/v1", MARKET_KEY = "wf-prof-market", LIVE_KEY = "wf-prof-live-v1", LIVE_TTL = 10 * 60 * 1000;
+  var DEFAULT_MARKET = "forever.normal.alliance.us";
+  var MARKETS = [
+    { id: "forever.normal.alliance.us", label: "Normal Alliance", region: "us" }, { id: "forever.normal.horde.us", label: "Normal Horde", region: "us" },
+    { id: "forever.pvp.alliance.us", label: "PvP Alliance", region: "us" }, { id: "forever.pvp.horde.us", label: "PvP Horde", region: "us" }
+  ];
+  var market = lget(MARKET_KEY, DEFAULT_MARKET) || DEFAULT_MARKET; // "site" = owner's prices only
+  var live = { market: null, at: null, fetched: 0, prices: {}, qty: {}, state: "idle" };
+  (function () { var c = lget(LIVE_KEY, null); if (c && c.market === market && c.prices) { live = c; live.state = "cached"; } })();
+  function liveOn() { return market !== "site"; }
+  function livePrice(id) { var m = MAT_BY_ID[id]; return liveOn() && live.market === market && m && live.prices[m.item] != null ? live.prices[m.item] : null; }
+  // base = what a price is when the visitor hasn't typed one: vendor > live AH > site prices.
+  function base(id) { var m = MAT_BY_ID[id]; if (m && m.vendor != null) return m.vendor; var l = livePrice(id); return l != null ? l : site.prices[id]; }
+  function baseSrc(id) { var m = MAT_BY_ID[id]; return m && m.vendor != null ? "vendor" : livePrice(id) != null ? "live" : site.prices[id] != null ? "site" : "none"; }
+  function priceOf(id) { return id in mine ? mine[id] : base(id); }
+  function changedCount() { return Object.keys(mine).filter(function (k) { return mine[k] !== base(k); }).length; }
   // cost(recipe) -> {total, missing: [mat names without a price], ok}
   function cost(name) {
     var r = REC[name], total = 0, missing = [];
@@ -674,17 +704,42 @@ a{color:var(--gold)}
     Object.keys(REC).forEach(function (k) { var r = REC[k]; if (r.prof.toLowerCase() === prof) r.mats.forEach(function (m) { names[m[0]] = 1; }); });
     return MATS.filter(function (m) { return names[m.name]; });
   }
+  function ago(iso) {
+    var m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (!(m >= 0)) return "";
+    if (m < 2) return "just now";
+    if (m < 60) return m + " min ago";
+    var h = Math.round(m / 60); if (h < 48) return h + (h === 1 ? " hour ago" : " hours ago");
+    return Math.round(h / 24) + " days ago";
+  }
+  function marketLabel(id) { var m = MARKETS.filter(function (x) { return x.id === id; })[0]; return m ? m.label + " (" + m.region.toUpperCase() + ")" : id; }
+  function liveUsed() { return liveOn() && live.market === market && Object.keys(live.prices).length > 0; }
   function srcLine() {
-    var n = changedCount();
-    return n ? '<span class="src own">Your own prices (' + n + " changed)</span>"
-      : '<span class="src">Site prices from ' + esc(fmtDate(site.updated)) + (site.by ? ", set by " + esc(site.by) : "") + "</span>";
+    var n = changedCount(), own = n ? ' <span class="own">· ' + n + " typed by you</span>" : "";
+    if (liveUsed()) return '<span class="src">Live AH, ' + esc(marketLabel(market)) + (live.at ? ", scanned " + esc(ago(live.at)) : "") + own + "</span>";
+    if (liveOn() && live.state === "loading") return '<span class="src">Loading live AH prices…' + own + "</span>";
+    var why = liveOn() && live.state === "error" ? "Live AH prices unavailable · " : "";
+    return '<span class="src">' + why + "Site prices from " + esc(fmtDate(site.updated)) + (site.by ? ", set by " + esc(site.by) : "") + own + "</span>";
+  }
+  function matTag(m) {
+    if (m.id in mine && mine[m.id] !== base(m.id)) return "your price";
+    var bs = baseSrc(m.id);
+    return bs === "live" ? "AH" + (live.qty[m.item] ? " · " + live.qty[m.item].toLocaleString("en-US") + " up" : "") : bs === "vendor" ? "vendor"
+      : bs === "site" ? (liveOn() ? "site · not on AH" : "") : liveOn() ? "not on AH" : "";
+  }
+  function sourceBar() {
+    var opts = MARKETS.map(function (m) { return '<option value="' + esc(m.id) + '"' + (m.id === market ? " selected" : "") + ">Live AH · " + esc(m.label + " (" + m.region.toUpperCase() + ")") + "</option>"; }).join("") +
+      '<option value="site"' + (market === "site" ? " selected" : "") + ">Site prices (set by the owner)</option>";
+    return '<div class="srcbar"><label>Prices from <select data-act="market" aria-label="Price source">' + opts + "</select></label>" +
+      (liveOn() ? '<span class="hint">Cheapest AH listing per item from <a href="https://ahledger.com" target="_blank" rel="noopener">AHledger</a>. Vendor items use the vendor price. Type a price to use your own.</span>'
+        : '<span class="hint">The prices the site owner saved last. Type a price to use your own.</span>') + "</div>";
   }
   function priceEditor(prof, open) {
     var mats = matsUsed(prof), set = mats.filter(function (m) { return priceOf(m.id) != null; }).length;
     var rows = mats.map(function (m) {
-      var p = priceOf(m.id), ch = m.id in mine && mine[m.id] !== site.prices[m.id];
+      var p = priceOf(m.id), ch = m.id in mine && mine[m.id] !== base(m.id), tag = matTag(m);
       var v = function (x) { return p == null ? "" : x; };
-      return '<div class="mat' + (ch ? " changed" : "") + (p == null ? " empty" : "") + '" data-mat="' + m.id + '"><div class="mat-name">' + esc(m.name) + "</div>" +
+      return '<div class="mat' + (ch ? " changed" : "") + (p == null ? " empty" : "") + '" data-mat="' + m.id + '"><div class="mat-name">' + esc(m.name) + '<small class="mtag">' + esc(tag) + "</small></div>" +
         '<div class="inputs">' +
         '<label><input type="number" min="0" inputmode="numeric" data-part="g" aria-label="' + esc(m.name) + ' gold" placeholder="–" value="' + v(Math.floor(p / 10000)) + '"><span class="lg">g</span></label>' +
         '<label><input type="number" min="0" max="99" inputmode="numeric" data-part="s" aria-label="' + esc(m.name) + ' silver" placeholder="–" value="' + v(Math.floor(p % 10000 / 100)) + '"><span class="ls">s</span></label>' +
@@ -693,10 +748,10 @@ a{color:var(--gold)}
     }).join("");
     return '<details class="prices"' + (open ? " open" : "") + '><summary><b>Material prices</b>' + srcLine() +
       '<span class="count' + (set < mats.length ? " warn" : "") + '">' + set + " of " + mats.length + " priced · click to edit</span></summary>" +
-      '<div class="prices-body"><div class="matgrid">' + rows + "</div>" +
-      '<div class="tools"><button type="button" class="btn" data-act="site"' + (changedCount() ? "" : " disabled") + ">Use site prices</button>" +
-      (owner ? '<button type="button" class="btn owner" data-act="publish"' + (changedCount() && !busy ? "" : " disabled") + ">Save as site prices</button>" : "") +
-      '<span class="hint">Every cost updates as you type. Your changes stay in this browser.</span></div></div></details>';
+      '<div class="prices-body">' + sourceBar() + '<div class="matgrid">' + rows + "</div>" +
+      '<div class="tools"><button type="button" class="btn" data-act="site"' + (changedCount() ? "" : " disabled") + ">Clear my prices</button>" +
+      (owner ? '<button type="button" class="btn owner" data-act="publish"' + ((changedCount() || liveUsed()) && !busy ? "" : " disabled") + ">Save as site prices</button>" : "") +
+      '<span class="hint">Every cost updates as you type. Your prices stay in this browser.</span></div></div></details>';
   }
   function costRow(name) {
     var r = REC[name];
@@ -738,9 +793,9 @@ a{color:var(--gold)}
       el.querySelector(".prices > summary .src").outerHTML = srcLine();
       var mats = matsUsed(prof), set = mats.filter(function (m) { return priceOf(m.id) != null; }).length, cnt = el.querySelector(".prices .count");
       cnt.textContent = set + " of " + mats.length + " priced · click to edit"; cnt.classList.toggle("warn", set < mats.length);
-      el.querySelectorAll(".mat").forEach(function (m) { var id = m.dataset.mat; m.classList.toggle("changed", id in mine && mine[id] !== site.prices[id]); m.classList.toggle("empty", priceOf(id) == null); });
+      el.querySelectorAll(".mat").forEach(function (m) { var id = m.dataset.mat; m.classList.toggle("changed", id in mine && mine[id] !== base(id)); m.querySelector(".mtag").textContent = matTag(MAT_BY_ID[id]); m.classList.toggle("empty", priceOf(id) == null); });
       var b = el.querySelector('[data-act="site"]'); if (b) b.disabled = !changedCount();
-      var pb = el.querySelector('[data-act="publish"]'); if (pb) pb.disabled = !changedCount() || busy;
+      var pb = el.querySelector('[data-act="publish"]'); if (pb) pb.disabled = !(changedCount() || liveUsed()) || busy;
     });
     renderBis(); renderOurs();
   }
@@ -755,7 +810,7 @@ a{color:var(--gold)}
         var n = function (x, max) { var i = parseInt(x, 10); return isNaN(i) || i < 0 ? 0 : Math.min(i, max); };
         v = n(parts[0], 99999) * 10000 + n(parts[1], 99) * 100 + n(parts[2], 99);
       }
-      if (v === site.prices[id]) delete mine[id]; else mine[id] = v;
+      if (v === base(id)) delete mine[id]; else mine[id] = v;
       lset(MY_PRICES, mine);
       document.querySelectorAll('.mat[data-mat="' + id + '"]').forEach(function (m) {
         if (m === row) return;
@@ -765,9 +820,15 @@ a{color:var(--gold)}
       });
       refreshAfterPrice();
     });
+    el.addEventListener("change", function (e) {
+      if (!e.target.matches('select[data-act="market"]')) return;
+      market = e.target.value; lset(MARKET_KEY, market);
+      if (liveOn() && live.market !== market) live = { market: null, at: null, fetched: 0, prices: {}, qty: {}, state: "idle" };
+      renderAll(); if (liveOn()) loadLive(true);
+    });
     el.addEventListener("click", function (e) {
       var b = e.target.closest("[data-act]");
-      if (!b) return;
+      if (!b || b.tagName === "SELECT") return;
       if (b.dataset.act === "site") { mine = {}; lset(MY_PRICES, mine); renderAll(); }
       else if (b.dataset.act === "sort") { lset(SORT_KEY, !lget(SORT_KEY, false)); renderCosts(); }
       else if (b.dataset.act === "publish") publish();
@@ -778,11 +839,46 @@ a{color:var(--gold)}
       if (j && j.prices) {
         Object.keys(j.prices).forEach(function (k) { if (k in site.prices && (typeof j.prices[k] === "number" || j.prices[k] === null)) site.prices[k] = j.prices[k]; });
         site.updated = j.updated || site.updated; site.by = j.by || "";
-        Object.keys(mine).forEach(function (k) { if (mine[k] === site.prices[k]) delete mine[k]; });
+        Object.keys(mine).forEach(function (k) { if (mine[k] === base(k)) delete mine[k]; });
         lset(MY_PRICES, mine);
       }
     }).catch(function () { /* keep the built-in prices */ }).then(renderAll);
   }
+  // Live prices: cheapest listing (min buyout), median if there is none. Errors keep the
+  // fallback (cache or site prices) and say so in the source line.
+  function loadLive(force) {
+    if (!liveOn()) return;
+    if (!force && live.market === market && Date.now() - live.fetched < LIVE_TTL) return;
+    var want = market, ids = MATS.filter(function (m) { return m.vendor == null; }).map(function (m) { return m.item; });
+    if (live.market !== want) { live.state = "loading"; renderAll(); }
+    fetch(AHL + "/tooltip/" + encodeURIComponent(want) + "?items=" + ids.join(","), { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error(r.status); return r.json();
+    }).then(function (j) {
+      if (want !== market) return;
+      var prices = {}, qty = {}, at = null;
+      (j.items || []).forEach(function (it) {
+        var v = it.minBuyout != null ? it.minBuyout : it.median;
+        if (typeof v === "number" && v > 0 && it.quantity !== 0) { prices[it.id] = v; qty[it.id] = it.quantity || 0; }
+        if (it.observedAt && (!at || it.observedAt > at)) at = it.observedAt;
+      });
+      live = { market: want, at: at, fetched: Date.now(), prices: prices, qty: qty, state: "ok" };
+      lset(LIVE_KEY, live);
+      Object.keys(mine).forEach(function (k) { if (mine[k] === base(k)) delete mine[k]; });
+      lset(MY_PRICES, mine);
+    }).catch(function () { if (want === market && live.market !== want) live.state = "error"; }).then(function () { if (want === market) renderAll(); });
+  }
+  function loadMarkets() {
+    fetch(AHL + "/markets").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      var list = j && (j.markets || []).filter(function (m) { return m.game === "forever" && m.id && m.label; });
+      if (!list || !list.length) return;
+      MARKETS = list.map(function (m) { return { id: m.id, label: m.label, region: m.region || "" }; });
+      renderCosts();
+    }).catch(function () { /* keep the built-in list */ });
+  }
+  function renderCredit() {
+    $("ahl-credit").hidden = !liveUsed();
+  }
+
   // Keep rows open across re-renders (keyed by their visible text).
   function keepOpen(sel) { var o = {}; document.querySelectorAll(sel + " details.row[open]").forEach(function (d) { o[d.dataset.k] = 1; }); return o; }
   function restoreOpen(sel, o) { document.querySelectorAll(sel + " details.row").forEach(function (d) { if (o[d.dataset.k]) d.open = true; }); }
@@ -811,7 +907,7 @@ a{color:var(--gold)}
   function b64encode(s) { return btoa(unescape(encodeURIComponent(s))); }
   function ownerHTML() {
     var m = msg ? '<div class="msg ' + msg.kind + '">' + esc(msg.text) + "</div>" : "";
-    if (owner) return '<div class="ownerbar">Signed in as <b>' + esc(owner.login) + "</b>. Change prices, then press <b>Save as site prices</b> to update them for everyone. " +
+    if (owner) return '<div class="ownerbar">Signed in as <b>' + esc(owner.login) + "</b>. <b>Save as site prices</b> stores the prices shown now (live AH plus anything you typed) as the fallback everyone sees when live prices can't load. " +
       '<button type="button" class="link" data-act="logout">Sign out</button></div>' + m;
     if (!loginOpen) return "<p>Site prices are set by the site owner. <button type=\"button\" class=\"link\" data-act=\"login-open\">Owner login</button></p>" + m;
     return '<form class="login"><h3>Owner login</h3><p>Paste your GitHub fine-grained token (the same one as for Group picks on the Talent page). It stays in this browser only. ' +
@@ -898,11 +994,14 @@ a{color:var(--gold)}
   window.addEventListener("resize", topbarH);
   topbarH();
 
-  function renderAll() { renderBis(); renderOurs(); renderCosts(); }
+  function renderAll() { renderBis(); renderOurs(); renderCosts(); renderCredit(); }
   renderAll();
   renderOwner();
   fromHash();
   loadSitePrices();
+  loadLive(false);
+  loadMarkets();
+  setInterval(function () { if (!document.hidden) loadLive(false); }, LIVE_TTL);
 })();
 </script>
 </body>

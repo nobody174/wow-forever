@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Professions: live AH prices)
+- Professions: material costs now use live auction house prices from AHledger (cheapest
+  listing per item, refreshed every 10 minutes). Market picker (Normal/PvP, Alliance/Horde;
+  EU shows up automatically once AHledger has it) or "Site prices". Each material shows
+  where its price comes from (AH with stock count, vendor, site, your price). Owner's saved
+  prices stay as the fallback; "Prices from AHledger" credit added.
+
 ## 2026-10-07 (Professions: one section per gear piece)
 
 - Gear is split into Neck, Back, Chest, Wrist, Hands, Legs and Feet (weapons into

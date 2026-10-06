@@ -76,6 +76,18 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
     (Enchanting) and the armor kits (Leatherworking). A recipe with an unpriced material
     shows a muted "—" with the missing names in its title. The price editor is a collapsed
     `details.prices` ("N of M priced"); Soul Dust shows in both professions and stays in sync.
+  - Live prices: on load the cost views fetch AHledger's free API
+    (`https://api.ahledger.com/v1/tooltip/<market>?items=<ids>`, ≤100 ids, no key, CORS ok;
+    `/v1/markets` fills the market picker, so EU markets appear by themselves when AHledger
+    adds them). Price per material = visitor's typed price > vendor price (`VENDOR`: Fine
+    Thread, Simple Wood) > live min buyout (median if none; quantity 0 = not on AH) >
+    `prices.json`. Every `MATS` entry carries its WoW item id (5th field; Forever-only mats
+    have 2494xx ids, checked against AHledger names 2026-10-07). Market in localStorage
+    `wf-prof-market` (default `forever.normal.alliance.us`, `"site"` = owner prices only),
+    last response cached in `wf-prof-live-v1`, refetched every 10 min. AHledger's terms
+    REQUIRE the "Prices from AHledger" link wherever their prices show (`#ahl-credit` +
+    the price editor hint) — never remove it. The shell can't reach AHledger; test with a
+    Playwright route fixture, verify live in Chrome.
   - Prices: site-wide prices in `prices.json` (`{updated, by, prices: {matId: copper|null}}`),
     fetched no-store; `MATS` prices are only the fallback. Visitors' own edits are per
     browser (localStorage `wf-prof-prices-v1`) with "Use site prices". The owner signs in

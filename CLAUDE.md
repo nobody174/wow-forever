@@ -37,7 +37,9 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   (Cozy Sleeping Bag, external; Library Books, links to `library-books.html`), then two side-by-side
   boxed columns (`.link-cols`): "General Resources" (Zockify, Wowhead, Icy Veins,
   Warcraft Tavern, Mobalytics, ForeverChanges) and "Tools" (Legacy Calculator,
-  Best-in-Slot Gear, Dungeon Loot Tables, Hunter Pet Database, DPS Sim Tier List).
+  Best-in-Slot Gear, Dungeon Loot Tables, Hunter Pet Database, DPS Tier List (Lvl 60) = MythicSim).
+  The Tools column is `.link-group.tools` (`flex:1.3`, wider than General
+  Resources) so every title fits on one line; keep titles short enough for that.
   No external talent calculators here — our own `talents.html` (top bar) replaces them.
   Each link is its own compact icon+title card (`.mini-plaque`/`.mini-icon`), title
   only — no per-link description. New tool/resource links go in whichever column

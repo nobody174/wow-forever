@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-06 (Tools column wider)
+
+- Index Tools column is now wider than General Resources (same total panel
+  width, so it doesn't push further into the countdown), and "Dungeon Loot
+  Tables" fits on one line. MythicSim link renamed "DPS Sim Tier List (Lvl 60,
+  predicted)" -> "DPS Tier List (Lvl 60)" so it fits on one line too.
+
 ## 2026-10-06 (Index Tools column trimmed)
 
 - Removed the two external talent calculator links (Zockify, ForeverChanges)

@@ -4,6 +4,22 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Professions rework: stand-ins, our crafters, compact lists)
+
+- BiS enchants is now the main view: one compact row per BiS enchant, grouped Gear /
+  Weapons / Shield; open a row for BiS → 2nd best → 3rd best (gold/silver/copper medals)
+  with materials, cost, who can make it and where to get it (muted, inside the row).
+  Stand-ins researched in Wowhead's Forever data, e.g. Chest Minor Stats (skill 150, city
+  trainer) is listed with the same +2 all stats as BiS Lesser Stats; Cloak Defense gives
+  the same +60 armor as Greater Defense at skill 155; Bracer Lesser Agility (+4, Desolace)
+  beats the list's Minor Agility (+3).
+- New **Our crafts** view: recipes someone in the group makes that are BiS or a stand-in,
+  tagged with the crafter (Venom), what each is used for and its cost. Junk enchants
+  (Chest Lesser Absorption etc.) are no longer listed anywhere.
+- Enchanting costs now list only BiS enchants; material price editor folded into one
+  "N of M priced" bar; unpriced recipes show a quiet "—". Leatherworking costs use the
+  same compact rows and include Thick Armor Kit.
+
 ## 2026-10-06 (Where each missing recipe comes from)
 
 - BiS enchants: every recipe's source checked against Wowhead's WoW Forever data and

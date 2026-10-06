@@ -6,8 +6,8 @@ Live site: GitHub Pages from `main` / root → https://nobody174.github.io/wow-f
 Small multi-page site: `index.html` is the countdown/landing page ("Road to Forever"), `macros.html` is the macro cheatsheet, `builds.html` lists talent
 builds per class, `addons.html` lists addons, `launch-plan.html` is the launch-week
 leveling plan, `talents.html` is our own talent calculator plus Legacy calculator
-(Talents / Legacy switch), `professions.html` holds profession costs and the BiS
-enchant checklist. All seven share a top bar
+(Talents / Legacy switch), `professions.html` holds BiS enchants with stand-ins, our crafters
+and profession costs. All seven share a top bar
 (site title, Macros / Builds / Addons / Professions / Launch Plan / Talent / Legacy Calc
 links, current page highlighted).
 
@@ -46,46 +46,46 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   only — no per-link description. New tool/resource links go in whichever column
   fits; keep favicons via `google.com/s2/favicons?domain=...` and verify with curl
   before adding. Hand-edit directly.
-- `professions.html` — hand-written page with a three-way switch (`.pf-mode`, same look
-  as the Talents / Legacy switch): **Enchanting costs**, **Leatherworking costs** and
-  **BiS enchants**. Hash links: `#enchanting`, `#leatherworking`, `#bis`, `#bis/<class>`
-  (e.g. `#bis/hunter` opens the BiS list filtered to that class; builds.html links there).
-  - Cost views: one shared `MATS` list (copper; `prof` = enchanting / leatherworking /
-    both; Soul Dust is "both" and its inputs stay in sync across views) and `COSTS`
-    (per profession: slots with `col` 1 or 2 and `[name, {matId: qty}]` recipes; a
-    profession with only col-1 slots renders full width). One line per recipe, green dot =
-    cheapest in its group, "Sort all by cost" toggle. Heavy Armor Kit shows a "cheaper to
-    buy" hint when the AH kit (`hak`) costs less than crafting it. Recipes are the owner's
-    in-game ones (Forever differs from Classic, e.g. Lesser Striking = 1 Soul Dust + 1
-    Large Glimmering Shard) — don't "fix" them from Classic data.
-  - Prices: site-wide prices live in `prices.json` (`{updated, by, prices: {matId: copper}}`),
-    fetched with no-store; `MATS[].price` is only the fallback. A visitor's own edits are
-    kept per browser (localStorage `wf-prof-prices-v1`, only changed materials) with "Use
-    site prices" to drop them. The owner signs in at the bottom of the cost views with the
-    SAME GitHub token and browser key as Group picks (`wf-owner-gh`; signed in on one page
-    = signed in on both) and presses **Save as site prices**, which PUTs `prices.json`
-    through the GitHub contents API (one retry on a sha conflict) — everyone sees it after
-    Pages redeploys (~1 min). New material: add it to `MATS` and `prices.json`.
-  - BiS enchants: `DATA` = every enchant ForeverChanges' level-30 BiS pages recommend
-    (all 36 class/spec pages under foreverchanges.pro/bis, read 2026-10-06 from each page's
-    `section.bis-enchants`), merged per recipe: name, prof, skill, slot, effect, mats,
-    how to get it, `formula` (vendor/rep formula vs trainer), `specs`, optional `note`
-    (a lower rank the owner knows) and `have: true` (the owner's known recipes, the
-    default for "I can do"). Visitors click a status to toggle it; ticks, the class
-    filter and "My Enchanting skill" are per browser (localStorage `wf-bis-enchants-v1`).
-    Each entry has `src` (shown as a badge on missing rows): `trainer` (city Expert
-    trainers), `artisan` (in Forever NOT taught by city trainers, only Kitta Firewind /
-    Elwynn, Vanessa Sellers / Alterac, Melanie Sable / Riverglades, Annora / Uldaman,
-    Horde Hgarth / Stonetalon), `favor` (Merchant's Favor formula at Alynsia / Redridge or
-    Beneris / Barrens), `vendor`, `rep` (quest or centaur-totem quartermaster in Desolace),
-    `drop`. `how` names the NPCs and costs. Sources were checked 2026-10-06 against
-    Wowhead's Forever data: the Enchanting skill page's `recipes` listview (`source` 6 =
-    trainer, 5 = vendor, 4 = quest, 2 = drop; `trainingcost` in copper), each recipe
-    spell's `taught-by-npc` list and each formula item's `sold-by` / `dropped-by` /
-    `reward-from-q` lists (read in a real browser on wowhead.com; the cloud can't reach it).
-    Groups: I can do / Missing: city trainer / Missing: Artisan trainer only /
-    Missing: get the formula / Missing: other professions.
-    To refresh: re-read each spec page's enchant section and rebuild `DATA`.
+- `professions.html` — hand-written page with a four-way switch (`.pf-mode`): **BiS enchants**
+  (default), **Our crafts**, **Enchanting costs**, **Leatherworking costs**. Hash links:
+  `#bis`, `#bis/<class>` (class filter; builds.html links there), `#ours`, `#enchanting`,
+  `#leatherworking`. Layout everywhere: sections Gear (neck → feet) / Weapons / Shield,
+  one compact row per item (`details.row`, `data-k` = recipe name, kept open across
+  re-renders), click to expand. Ranking uses coin metals: gold medal = BiS, silver = 2nd
+  best, copper = 3rd best, green "+" = stronger than the list's pick, "=" = same bonus but
+  easier to get. Design: site tokens (navy/gold, Marcellus + Plex), sentence case, sources
+  shown only inside expanded rows in muted text.
+  - Data: `DATA` = every enchant ForeverChanges' level-30 BiS pages recommend (36 spec
+    pages, 2026-10-06; fields name, prof, skill, slot, eff, mats, specs, src, how).
+    `ALT` = stand-in recipes (Wowhead Forever data 2026-10-07: skill, eff, mats, src, how).
+    `LADDER[bisName]` = `{alts: [2nd, 3rd], up: [stronger], same: [equal-bonus alts],
+    none: "why there is no stand-in"}`. Only stand-ins reachable by about level 30 are
+    listed (Shield Stamina +7 and Cloak Lesser Agility drop from level 38+ mobs; Bracer
+    Agility, 2H Lesser Agility/Strength have no source in Forever yet — left out).
+    Forever values differ from Classic (e.g. Bracer Minor/Lesser Stamina +3/+4, Chest Minor
+    Stats listed as +2 all stats) — take values from Wowhead's Forever spell pages, never
+    from Classic. `CRAFTERS` = `[{name, color, knows: [recipe names]}]`: who in the group
+    makes what (Venom = the owner). Edit it when someone learns a recipe; "Our crafts"
+    lists only known recipes that appear in some ladder (BiS or stand-in), so junk like
+    Chest Lesser Absorption never shows. BiS rows show the best tier our crafters cover.
+  - Costs: one `MATS` list (`[id, name, prof, price]`, copper, `null` = no price yet);
+    recipes reference materials by full name. Cost views list BiS enchants only
+    (Enchanting) and the armor kits (Leatherworking). A recipe with an unpriced material
+    shows a muted "—" with the missing names in its title. The price editor is a collapsed
+    `details.prices` ("N of M priced"); Soul Dust shows in both professions and stays in sync.
+  - Prices: site-wide prices in `prices.json` (`{updated, by, prices: {matId: copper|null}}`),
+    fetched no-store; `MATS` prices are only the fallback. Visitors' own edits are per
+    browser (localStorage `wf-prof-prices-v1`) with "Use site prices". The owner signs in
+    at the bottom of the cost views with the SAME GitHub token/key as Group picks
+    (`wf-owner-gh`) and presses **Save as site prices** (PUT `prices.json` via the contents
+    API, one retry on a sha conflict). New material: add it to `MATS` (and prices.json).
+    Class filter persists in localStorage `wf-prof-class`, sort toggle in `wf-prof-sorted`.
+  - Sources were checked against Wowhead's Forever data in a real browser (the cloud can't
+    reach Wowhead): Enchanting skill page `recipes` listview (`source` 6 = trainer,
+    5 = vendor, 4 = quest, 2 = drop; `trainingcost` in copper; effects from each spell
+    page's meta description), each spell's `taught-by-npc` (city Expert trainers vs only
+    Kitta Firewind / Vanessa Sellers / Melanie Sable / Annora / Hgarth), and each formula
+    item's `sold-by` / `dropped-by` / `reward-from-q` lists.
 - `prices.json` — site-wide AH prices for professions.html (written by the owner from the
   site; hand edits fine, keep valid JSON and copper integers).
 - `library-books.html` — hand-written library-book checklist + Alliance route

@@ -17,6 +17,8 @@ user-facing release notes.
   shows the game build the data is from.
 - Top bar tab renamed "Talent / Legacy Calc" on every page. Index Tools "Legacy
   Calculator" and the Launch Plan's Legacy section now open ours.
+- Top bar now stacks (title above the buttons) at 960px wide and below instead of
+  820px, so "Road to Forever" doesn't wrap next to the longer tab name.
 - New file `legacycalc.js`; Legacy styles appended to `talentcalc.css` (`lc-`);
   cache-bust bumped to `?v=20261006a` on talents.html and builds.html.
 

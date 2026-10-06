@@ -37,8 +37,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   (`.side-links`) has a `.plaque-row` on top with two featured cards side by side
   (Cozy Sleeping Bag, external; Library Books, links to `library-books.html`), then two side-by-side
   boxed columns (`.link-cols`): "General Resources" (Zockify, Wowhead, Icy Veins,
-  Warcraft Tavern, Mobalytics, ForeverChanges) and "Tools" (Legacy Calculator = our own `talents.html#legacy`,
-  Best-in-Slot Gear, Dungeon Loot Tables, Hunter Pet Database, DPS Tier List (Lvl 60) = MythicSim).
+  Warcraft Tavern, Mobalytics, ForeverChanges) and "Tools" (Best-in-Slot Gear, Dungeon Loot Tables, Hunter Pet Database, DPS Tier List (Lvl 60) = MythicSim).
   The Tools column is `.link-group.tools` (`flex:1.3`, wider than General
   Resources) so every title fits on one line; keep titles short enough for that.
   No external talent or Legacy calculators here — our own `talents.html` (top bar) replaces them.

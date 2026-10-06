@@ -4,6 +4,11 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-06 (Legacy link removed from index Tools)
+
+- Removed "Legacy Calculator" from the index Tools column: it's in the top bar
+  now (Talent / Legacy Calc).
+
 ## 2026-10-06 (Our own Legacy calculator)
 
 - New **Legacy calculator** on the Talent Calc page, our own code instead of linking

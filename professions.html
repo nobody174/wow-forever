@@ -157,6 +157,8 @@ p.lede{color:var(--muted);max-width:66ch;margin:0 auto;text-align:center}
 .st.miss{color:var(--miss);border-color:var(--miss)}
 .name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .name .prof{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.srcb{display:inline-block;margin-left:8px;font:600 10px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;border-radius:3px;padding:3px 5px;vertical-align:2px;border:1px solid;background:#0A0F1F}
+.srcb.trainer{color:#9FD6A6;border-color:#4C7A55}.srcb.artisan{color:#E8C46A;border-color:#8A7333}.srcb.favor{color:#7FC3F0;border-color:#3D6E8F}.srcb.vendor{color:#C9B6F2;border-color:#6A5A93}.srcb.rep{color:#F0A57F;border-color:#8F5A3D}.srcb.drop{color:#F07F8C;border-color:#8F3D47}
 .name .lower{display:block;font-weight:400;font-size:12px;color:var(--warn);white-space:normal}
 .bslot{color:var(--muted);font-size:13px}
 .eff{font-size:13.5px}
@@ -230,7 +232,7 @@ details[open] .chev{transform:rotate(90deg)}
       <div class="classes" id="classes" role="group" aria-label="Show enchants for"></div>
     </div>
     <div id="groups"></div>
-    <p class="note">Every enchant <a href="https://foreverchanges.pro/bis" target="_blank" rel="noopener">ForeverChanges' level 30 BiS lists</a> recommend, from all 36 class and spec pages (DPS, tank, healer, PvE and PvP), checked October 6, 2026. Click a status to mark a recipe learned (kept in this browser), click a row for materials and sources. Faded spec tags are PvP lists.</p>
+    <p class="note">Every enchant <a href="https://foreverchanges.pro/bis" target="_blank" rel="noopener">ForeverChanges' level 30 BiS lists</a> recommend, from all 36 class and spec pages (DPS, tank, healer, PvE and PvP), checked October 6, 2026. Where each recipe comes from is checked against Wowhead’s WoW Forever database (beta data, same day). Click a status to mark a recipe learned (kept in this browser), click a row for materials and sources. Faded spec tags are PvP lists.</p>
   </section>
 
   <div class="ownerbox" id="ownerbox"></div>
@@ -506,7 +508,6 @@ details[open] .chev{transform:rotate(90deg)}
   var CLASS_COLORS = { Warrior: "#C69B6D", Paladin: "#F48CBA", Hunter: "#AAD372", Rogue: "#FFF468", Priest: "#FFFFFF", Shaman: "#0070DD", Mage: "#3FC7EB", Warlock: "#8788EE", Druid: "#FF7C0A" };
   var CLASS_ORDER = ["Priest", "Warlock", "Mage", "Rogue", "Druid", "Shaman", "Hunter", "Paladin", "Warrior"];
   var FC = "https://foreverchanges.pro";
-  var MF = "Formula sold by Alynsia in Redridge Mountains and Beneris in The Barrens for ";
 
   // Spec groups used below, to keep the data short.
   var AGI_MELEE = ["Hunter PvE", "Hunter PvP", "Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Druid Feral PvE"];
@@ -516,115 +517,115 @@ details[open] .chev{transform:rotate(90deg)}
   // have: true = the owner knows it (default for "I can do"). note: lower rank the owner knows.
   var DATA = [
     { name: "Enchant Necklace - Agility", prof: "Enchanting", skill: 210, slot: "Neck", eff: "Agility +5", item: "/item/249504",
-      how: MF + "120 Merchant’s Favor.", formula: true,
+      src: "favor", how: "Formula sold by Alynsia in Redridge Mountains (Alliance) and Beneris in The Barrens (Horde) for 120 Merchant’s Favor. Merchant’s Favor comes from turning in crates to the Azeroth Commerce Authority (Alliance) or Durotar Supply and Logistics (Horde).", formula: true,
       mats: [["Greater Nether Essence", 2], ["Large Radiant Shard", 8], ["Dream Dust", 6], ["Sulfuric Acid", 4], ["Magenta Dye", 4]],
       specs: ["Hunter PvE", "Hunter PvP", "Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Druid Feral PvE", "Druid Feral PvP"] },
     { name: "Enchant Necklace - Strength", prof: "Enchanting", skill: 210, slot: "Neck", eff: "Strength +5", item: "/item/249496",
-      how: MF + "120 Merchant’s Favor.", formula: true,
+      src: "favor", how: "Formula sold by Alynsia in Redridge Mountains (Alliance) and Beneris in The Barrens (Horde) for 120 Merchant’s Favor. Merchant’s Favor comes from turning in crates to the Azeroth Commerce Authority (Alliance) or Durotar Supply and Logistics (Horde).", formula: true,
       mats: [["Greater Nether Essence", 4], ["Large Radiant Shard", 4], ["Dream Dust", 10], ["Sulfuric Acid", 4], ["Bauxite", 4]],
       specs: ["Warrior Arms PvE", "Warrior PvP", "Paladin Retribution PvE", "Paladin Retribution PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP"] },
     { name: "Enchant Necklace - Spell Power", prof: "Enchanting", skill: 210, slot: "Neck", eff: "+6 Spell Power", item: "/item/249502",
-      how: MF + "120 Merchant’s Favor.", formula: true,
+      src: "favor", how: "Formula sold by Alynsia in Redridge Mountains (Alliance) and Beneris in The Barrens (Horde) for 120 Merchant’s Favor. Merchant’s Favor comes from turning in crates to the Azeroth Commerce Authority (Alliance) or Durotar Supply and Logistics (Horde).", formula: true,
       mats: [["Greater Nether Essence", 5], ["Large Radiant Shard", 3], ["Dream Dust", 8], ["Cerulean Dye", 4], ["Magenta Dye", 4]],
       specs: CASTERS_PVE.concat(["Priest Shadow PvP", "Druid Balance PvP", "Shaman Elemental PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP", "Paladin Shockadin PvP", "Paladin Tank"]) },
     { name: "Enchant Necklace - Healing Power", prof: "Enchanting", skill: 210, slot: "Neck", eff: "Healing +11, Damage Spells +4", item: "/item/249503",
-      how: MF + "120 Merchant’s Favor.", formula: true,
+      src: "favor", how: "Formula sold by Alynsia in Redridge Mountains (Alliance) and Beneris in The Barrens (Horde) for 120 Merchant’s Favor. Merchant’s Favor comes from turning in crates to the Azeroth Commerce Authority (Alliance) or Durotar Supply and Logistics (Horde).", formula: true,
       mats: [["Greater Nether Essence", 3], ["Large Radiant Shard", 5], ["Dream Dust", 4], ["Pyrite", 4], ["Rosecap", 4]],
       specs: ["Priest Holy", "Priest Discipline PvP", "Shaman Restoration", "Paladin Holy PvE", "Paladin Holy PvP", "Druid Restoration"] },
     { name: "Enchant Necklace - Deflection", prof: "Enchanting", skill: 210, slot: "Neck", eff: "Defense +5", item: "/item/249505",
-      how: MF + "120 Merchant’s Favor.", formula: true,
+      src: "favor", how: "Formula sold by Alynsia in Redridge Mountains (Alliance) and Beneris in The Barrens (Horde) for 120 Merchant’s Favor. Merchant’s Favor comes from turning in crates to the Azeroth Commerce Authority (Alliance) or Durotar Supply and Logistics (Horde).", formula: true,
       mats: [["Greater Nether Essence", 8], ["Large Radiant Shard", 2], ["Dream Dust", 2], ["Cerulean Dye", 4], ["Magenta Dye", 4]],
       specs: ["Warrior Tank", "Druid Tank"] },
     { name: "Enchant Cloak - Minor Agility", prof: "Enchanting", skill: 110, slot: "Back", eff: "Agility +3", item: "/item/11039",
-      how: "Formula sold by Dalria in Ashenvale and Kulwia in Stonetalon Mountains.", formula: true,
+      src: "vendor", how: "Formula sold by Dalria in Ashenvale (Alliance, about 8s 42c, unlimited) and Kulwia in Stonetalon Mountains (Horde, limited stock). Also a rare world drop from about 200 level 15–30 mobs (Duskwood skeletons, Redridge gnolls and orcs, Westfall), so it can show up on the AH.", formula: true,
       mats: [["Lesser Astral Essence", 1]],
       specs: ["Hunter PvE", "Hunter PvP", "Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Druid Feral PvE", "Druid Feral PvP", "Warrior Arms PvE", "Warrior PvP", "Paladin Retribution PvE", "Paladin Retribution PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP"] },
     { name: "Enchant Cloak - Greater Defense", prof: "Enchanting", skill: 205, slot: "Back", eff: "Armor +60",
-      how: "Taught by the trainer.", mats: [["Vision Dust", 1]],
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 42s.", mats: [["Vision Dust", 1]],
       specs: CASTERS_PVE.concat(["Priest Holy", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Restoration", "Shaman Elemental PvP", "Paladin Holy PvE", "Paladin Holy PvP", "Paladin Shockadin PvP", "Paladin Tank", "Druid Restoration", "Druid Balance PvP", "Druid Tank", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP", "Warrior Tank"]) },
     { name: "Enchant Chest - Lesser Stats", prof: "Enchanting", skill: 200, slot: "Chest", eff: "All Stats +2",
-      how: "Taught by the trainer.", mats: [["Greater Mystic Essence", 1], ["Vision Dust", 1], ["Large Glowing Shard", 1]],
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 40s.", mats: [["Greater Mystic Essence", 1], ["Vision Dust", 1], ["Large Glowing Shard", 1]],
       specs: CASTERS_PVE.concat(["Hunter PvE", "Hunter PvP", "Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Druid Feral PvE", "Druid Restoration", "Priest Holy", "Shaman Restoration", "Shaman Enhancement PvE", "Paladin Holy PvE", "Paladin Retribution PvE", "Warrior Arms PvE", "Warrior PvP"]) },
     { name: "Enchant Chest - Superior Stamina", prof: "Enchanting", skill: 220, slot: "Chest", eff: "Stamina +8",
-      how: "Taught by the trainer.", mats: [["Vision Dust", 3]], note: "Stamina",
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 48s.", mats: [["Vision Dust", 3]], note: "Stamina",
       specs: ["Warrior Tank", "Paladin Tank", "Druid Tank", "Druid Feral PvP", "Druid Balance PvP", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Elemental PvP", "Shaman Enhancement PvP", "Paladin Holy PvP", "Paladin Retribution PvP", "Paladin Shockadin PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP"] },
     { name: "Enchant Bracer - Minor Agility", prof: "Enchanting", skill: 80, slot: "Wrist", eff: "Agility +3", have: true,
-      how: "Taught by the trainer.", mats: [["Strange Dust", 1], ["Lesser Magic Essence", 2]],
+      src: "trainer", how: "Taught by any Enchanting trainer.", mats: [["Strange Dust", 1], ["Lesser Magic Essence", 2]],
       specs: AGI_MELEE },
     { name: "Enchant Bracer - Lesser Intellect", prof: "Enchanting", skill: 150, slot: "Wrist", eff: "Intellect +5",
-      how: "Taught by the trainer.", mats: [["Greater Astral Essence", 1]],
+      src: "trainer", how: "Taught by the Expert Enchanters in the capitals: Gimble Thistlefuzz (Ironforge), Lucan Cordell (Stormwind), Taladan (Darnassus), Xylinnia Starshine (Feralas); Horde: Godan (Orgrimmar), Teg Dawnstrider (Thunder Bluff), Lavinia Crowe (Undercity). The Artisan trainers teach it too. Training cost 25s.", mats: [["Greater Astral Essence", 1]],
       specs: CASTERS_PVE },
     { name: "Enchant Bracer - Stamina", prof: "Enchanting", skill: 170, slot: "Wrist", eff: "Stamina +5",
-      how: "Taught by the trainer.", mats: [["Soul Dust", 3]], note: "Lesser Stamina",
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 28s.", mats: [["Soul Dust", 3]], note: "Lesser Stamina",
       specs: ["Warrior Tank", "Paladin Tank", "Druid Tank", "Druid Feral PvP", "Druid Balance PvP", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Elemental PvP", "Shaman Enhancement PvP", "Paladin Holy PvP", "Paladin Retribution PvP", "Paladin Shockadin PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP"] },
     { name: "Enchant Bracer - Strength", prof: "Enchanting", skill: 180, slot: "Wrist", eff: "Strength +5",
-      how: "Taught by the trainer.", mats: [["Vision Dust", 1]],
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 36s.", mats: [["Vision Dust", 1]],
       specs: ["Warrior Arms PvE", "Warrior PvP", "Paladin Retribution PvE", "Shaman Enhancement PvE"] },
     { name: "Enchant Bracer - Lesser Healing Power", prof: "Enchanting", skill: 205, slot: "Wrist", eff: "Healing +16, Damage Spells +6", item: "/item/249489",
-      how: "Formula sold by Gorhak in Desolace for 60 Carved Centaur Totem.", formula: true,
+      src: "rep", how: "Three ways, all in Desolace: reward from the quest “Mysterious Mysticism” (level 35, needs level 30), or buy it from Molkar, Gelkis Clan Quartermaster (15 Carved Centaur Totems) or Gorhak, Magram Clan Quartermaster (60 Carved Centaur Totems). Totems drop from the Kolkar, Magram, Gelkis and Maraudine centaurs (level 30–40).", formula: true,
       mats: [["Lesser Mystic Essence", 2]],
       specs: ["Priest Holy", "Shaman Restoration", "Paladin Holy PvE", "Druid Restoration"] },
     { name: "Enchant Gloves - Agility", prof: "Enchanting", skill: 210, slot: "Hands", eff: "Agility +7",
-      how: "Taught by the trainer.", mats: [["Vision Dust", 1]],
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 44s.", mats: [["Vision Dust", 1]],
       specs: ["Hunter PvE", "Hunter PvP", "Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Druid Feral PvE", "Druid Feral PvP", "Druid Tank", "Warrior Tank"] },
     { name: "Enchant Gloves - Strength", prof: "Enchanting", skill: 225, slot: "Hands", eff: "Strength +7",
-      how: "Taught by the trainer.", mats: [["Lesser Nether Essence", 1], ["Vision Dust", 2]],
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 50s.", mats: [["Lesser Nether Essence", 1], ["Vision Dust", 2]],
       specs: ["Warrior Arms PvE", "Warrior PvP", "Paladin Retribution PvE", "Paladin Retribution PvP", "Paladin Shockadin PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP"] },
     { name: "Enchant Boots - Lesser Agility", prof: "Enchanting", skill: 160, slot: "Feet", eff: "Agility +4",
-      how: "Taught by the trainer.", mats: [["Soul Dust", 1]],
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 28s.", mats: [["Soul Dust", 1]],
       specs: ["Hunter PvE", "Rogue Combat PvE", "Rogue Assassination PvE", "Warrior Arms PvE", "Paladin Retribution PvE"] },
     { name: "Enchant Boots - Stamina", prof: "Enchanting", skill: 215, slot: "Feet", eff: "Stamina +5",
-      how: "Taught by the trainer.", mats: [["Vision Dust", 2]], note: "Minor Stamina",
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 46s.", mats: [["Vision Dust", 2]], note: "Minor Stamina",
       specs: ["Warrior Tank", "Paladin Tank", "Druid Tank", "Paladin Retribution PvP", "Mage Frost PvE", "Mage Fire PvE", "Mage Arcane PvE", "Warlock PvE"] },
     { name: "Enchant Boots - Minor Speed", prof: "Enchanting", skill: 225, slot: "Feet", eff: "Minor Speed Increase",
-      how: "Taught by the trainer.", mats: [["Small Radiant Shard", 1], ["Aquamarine", 1], ["Lesser Nether Essence", 1]],
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 50s.", mats: [["Small Radiant Shard", 1], ["Aquamarine", 1], ["Lesser Nether Essence", 1]],
       specs: ["Priest Shadow PvE", "Priest Holy", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Elemental PvE", "Shaman Elemental PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP", "Shaman Restoration", "Druid Balance PvE", "Druid Balance PvP", "Druid Feral PvE", "Druid Feral PvP", "Druid Restoration", "Paladin Holy PvE", "Paladin Holy PvP", "Paladin Shockadin PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP", "Hunter PvP", "Rogue Subtlety PvP", "Warrior PvP"] },
     { name: "Enchant Shield - Lesser Stamina", prof: "Enchanting", skill: 155, slot: "Shield", eff: "Stamina +5",
-      how: "Taught by the trainer.", mats: [["Lesser Mystic Essence", 1]], note: "Minor Stamina",
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 26s.", mats: [["Lesser Mystic Essence", 1]], note: "Minor Stamina",
       specs: ["Shaman Elemental PvE", "Shaman Elemental PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP", "Paladin Holy PvE", "Paladin Holy PvP", "Paladin Shockadin PvP"] },
     { name: "Enchant Shield - Spirit", prof: "Enchanting", skill: 180, slot: "Shield", eff: "Spirit +5",
-      how: "Taught by the trainer.", mats: [["Lesser Mystic Essence", 1], ["Vision Dust", 1]], note: "Lesser Spirit",
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 32s.", mats: [["Lesser Mystic Essence", 1], ["Vision Dust", 1]], note: "Lesser Spirit",
       specs: ["Shaman Restoration"] },
     { name: "Enchant Weapon - Striking", prof: "Enchanting", skill: 195, slot: "Weapon", eff: "Weapon Damage +3",
-      how: "Taught by the trainer.", mats: [["Greater Mystic Essence", 1], ["Large Glowing Shard", 1]], note: "Lesser Striking",
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 40s.", mats: [["Greater Mystic Essence", 1], ["Large Glowing Shard", 1]], note: "Lesser Striking",
       specs: ["Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP", "Paladin Shockadin PvP"] },
     { name: "Enchant Weapon - Revelation", prof: "Enchanting", skill: 140, slot: "Weapon", eff: "Revelation (proc)", item: "/item/249481",
-      how: MF + "45 Merchant’s Favor. Its proc rate isn't known yet; it's listed because a one-hand caster weapon has nothing else at this skill.", formula: true,
+      src: "favor", how: "Formula sold by Alynsia in Redridge Mountains (Alliance) and Beneris in The Barrens (Horde) for 45 Merchant’s Favor. Merchant’s Favor comes from turning in crates to the Azeroth Commerce Authority (Alliance) or Durotar Supply and Logistics (Horde). Its proc rate isn't known yet; it's listed because a one-hand caster weapon has nothing else at this skill.", formula: true,
       mats: [["Soul Dust", 8], ["Large Glimmering Shard", 6], ["Greater Astral Essence", 2], ["Cerulean Dye", 4], ["Sulfuric Acid", 4]],
       specs: CASTERS_PVE.concat(["Priest Holy", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Restoration", "Shaman Elemental PvP", "Druid Restoration", "Druid Balance PvP", "Paladin Holy PvE", "Paladin Holy PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP"]) },
     { name: "Enchant Weapon - Recovery", prof: "Enchanting", skill: 140, slot: "Weapon", eff: "Recovery (proc)", item: "/item/249480",
-      how: MF + "45 Merchant’s Favor.", formula: true,
+      src: "favor", how: "Formula sold by Alynsia in Redridge Mountains (Alliance) and Beneris in The Barrens (Horde) for 45 Merchant’s Favor. Merchant’s Favor comes from turning in crates to the Azeroth Commerce Authority (Alliance) or Durotar Supply and Logistics (Horde).", formula: true,
       mats: [["Soul Dust", 6], ["Large Glimmering Shard", 4], ["Greater Astral Essence", 6], ["Pyrite", 4], ["Silver Ore", 4]],
       specs: ["Warrior Tank", "Paladin Tank"] },
     { name: "Enchant 2H Weapon - Lesser Intellect", prof: "Enchanting", skill: 100, slot: "2H Weapon", eff: "Intellect +5", item: "/item/6349",
-      how: "Formula sold by Tilli Thistlefuzz in Dun Morogh, Kithas in Orgrimmar and Leo Sarn in Silverpine Forest.", formula: true,
+      src: "vendor", how: "Formula sold by Tilli Thistlefuzz in Ironforge (Alliance, about 5s); Horde: Kithas (Orgrimmar), Nata Dawnstrider (Thunder Bluff), Leo Sarn (Silverpine Forest).", formula: true,
       mats: [["Lesser Magic Essence", 4]],
       specs: CASTERS_PVE.concat(["Priest Holy", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Restoration", "Shaman Elemental PvP", "Druid Restoration", "Druid Balance PvP", "Paladin Holy PvE", "Paladin Holy PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP", "Hunter PvE", "Hunter PvP"]) },
     { name: "Enchant 2H Weapon - Impact", prof: "Enchanting", skill: 200, slot: "2H Weapon", eff: "Weapon Damage +6",
-      how: "Taught by the trainer.", mats: [["Vision Dust", 2], ["Large Glowing Shard", 1]], note: "Minor Impact",
+      src: "artisan", how: "Not taught by the city trainers in Forever. Only the Artisan/Master trainers teach it: Kitta Firewind (Elwynn Forest, Alliance), Vanessa Sellers (Alterac Mountains, Alliance), Melanie Sable (Riverglades, both factions), Annora (Uldaman, both factions); Horde: Hgarth (Stonetalon Mountains). Training cost 40s.", mats: [["Vision Dust", 2], ["Large Glowing Shard", 1]], note: "Minor Impact",
       specs: ["Warrior Arms PvE", "Warrior PvP", "Paladin Retribution PvE", "Paladin Retribution PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP", "Druid Feral PvE", "Druid Feral PvP", "Druid Tank"] },
 
     // Not Enchanting
     { name: "Forceful Heavy Armor Kit", prof: "Leatherworking", skill: 135, have: true, slot: "Legs", eff: "Attack Power +6, Armor +24", item: "/item/252812",
-      how: "Pattern sold by Saenorion in Darnassus and Mahu in Thunder Bluff.",
+      src: "vendor", how: "Pattern sold by Saenorion in Darnassus and Mahu in Thunder Bluff.",
       mats: [["Heavy Armor Kit", 1], ["Soul Dust", 2], ["Elixir of Giant Growth", 2]],
       specs: ["Hunter PvE", "Rogue Combat PvE", "Rogue Assassination PvE", "Druid Feral PvE", "Warrior Arms PvE", "Paladin Retribution PvE", "Shaman Enhancement PvE"] },
     { name: "Mystic Heavy Armor Kit", prof: "Leatherworking", skill: 135, have: true, slot: "Hands, Legs", eff: "Spell Power +4, Armor +24", item: "/item/252811",
-      how: "Pattern sold by Saenorion in Darnassus and Mahu in Thunder Bluff.",
+      src: "vendor", how: "Pattern sold by Saenorion in Darnassus and Mahu in Thunder Bluff.",
       mats: [["Heavy Armor Kit", 1], ["Soul Dust", 2], ["Lesser Mana Potion", 2]],
       specs: CASTERS_PVE.concat(["Priest Holy", "Shaman Restoration", "Paladin Holy PvE", "Druid Restoration"]) },
     { name: "Heavy Armor Kit", prof: "Leatherworking", skill: 150, have: true, slot: "Hands, Legs", eff: "Stamina +3, Armor +24",
-      how: "Taught by the trainer.", mats: [["Heavy Leather", 5], ["Fine Thread", 1]],
+      src: "trainer", how: "Taught by the Leatherworking trainer at 150 (7s 50c).", mats: [["Heavy Leather", 5], ["Fine Thread", 1]],
       specs: ["Paladin Tank", "Priest Shadow PvP", "Priest Discipline PvP", "Paladin Holy PvP", "Druid Balance PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP"] },
     { name: "Thick Armor Kit", prof: "Leatherworking", skill: 200, slot: "Hands, Legs", eff: "Stamina +4, Armor +32",
-      how: "Taught by the trainer.", mats: [["Thick Leather", 5], ["Silken Thread", 1]],
+      src: "trainer", how: "Taught by the Leatherworking trainer at 200 (18s).", mats: [["Thick Leather", 5], ["Silken Thread", 1]],
       specs: ["Warrior Tank", "Paladin Tank", "Druid Tank", "Warrior PvP", "Rogue Subtlety PvP", "Hunter PvP", "Druid Feral PvP", "Druid Balance PvP", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Elemental PvP", "Shaman Enhancement PvP", "Paladin Retribution PvP", "Paladin Shockadin PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP"] },
     { name: "Deadly Scope", prof: "Engineering", skill: 210, slot: "Ranged", eff: "Scope +5 Damage", item: "/item/10602",
-      how: "Schematic sold by Yuka Screwspigot in Burning Steppes and Knaz Blunderflame in Stranglethorn Vale.",
+      src: "vendor", how: "Schematic sold by Knaz Blunderflame in Stranglethorn Vale (30s) and Yuka Screwspigot in Burning Steppes (31s 57c), both limited stock.",
       mats: [["Mithril Tube", 1], ["Aquamarine", 2], ["Thick Leather", 2]],
       specs: ["Hunter PvE", "Hunter PvP"] },
     { name: "Iron Shield Spike", prof: "Blacksmithing", skill: 125, slot: "Shield", eff: "Iron Spike (8-12 damage)", item: "/item/6044",
-      how: "Plans drop from Sentinel Amarassan in Stonetalon Mountains and Dark Iron Demolitionist in Wetlands (not checked in the beta).",
+      src: "drop", how: "Plans are not sold anywhere. Rare drop from about 200 mobs: dungeons Blackfathom Deeps, Razorfen Kraul, Scarlet Monastery and Shadowfang Keep (Baron Silverlaine), plus world mobs in Duskwood, Wetlands, Hillsbrad, Ashenvale and Thousand Needles. Under 0.4% each; watch the AH.",
       mats: [["Iron Bar", 6], ["Coarse Grinding Stone", 4]],
       specs: ["Warrior Tank", "Paladin Tank"] }
   ];
@@ -635,11 +636,13 @@ details[open] .chev{transform:rotate(90deg)}
   function isEnch(d) { return d.prof === "Enchanting"; }
   function has(d) { return d.name in bis.have ? bis.have[d.name] : !!d.have; }
   function classes(d) { var out = []; d.specs.forEach(function (s) { var c = clsOf(s); if (out.indexOf(c) === -1) out.push(c); }); return CLASS_ORDER.filter(function (c) { return out.indexOf(c) !== -1; }); }
+  var SRC = { trainer: "City trainer", artisan: "Artisan trainer", favor: "Merchant’s Favor", vendor: "Vendor", rep: "Quest / centaurs", drop: "Rare drop" };
+  function srcBadge(d) { return d.src ? '<span class="srcb ' + d.src + '">' + SRC[d.src] + "</span>" : ""; }
   function rowHTML(d, i) {
     var sk = +bis.skill, ready = isEnch(d) && !has(d) && sk && sk >= d.skill, cs = classes(d);
     return '<details class="row" data-i="' + i + '" data-classes="' + cs.join(" ") + '"><summary class="line">' +
       '<span class="st ' + (has(d) ? "have" : "miss") + '" role="button" tabindex="0" data-toggle="' + i + '" title="Click to change">' + (has(d) ? "✓ I can do" : "✗ Missing") + "</span>" +
-      '<span class="name" title="' + esc(d.name) + '">' + esc(d.name.replace(/^Enchant /, "")) +
+      '<span class="name" title="' + esc(d.name) + '">' + esc(d.name.replace(/^Enchant /, "")) + (has(d) ? "" : srcBadge(d)) +
       (d.note && !has(d) ? '<span class="lower">Lower rank known: ' + esc(d.note) + "</span>" : "") + (!isEnch(d) ? '<span class="prof">' + esc(d.prof) + "</span>" : "") + "</span>" +
       '<span class="bslot">' + esc(d.slot) + '</span><span class="eff">' + esc(d.eff) + "</span>" +
       '<span class="lvl' + (ready ? " ready" : "") + '" title="' + (ready ? "You can learn this now" : "Skill needed") + '">' + d.skill + "</span>" +
@@ -659,8 +662,9 @@ details[open] .chev{transform:rotate(90deg)}
     var bySkill = function (a, b) { return DATA[a].skill - DATA[b].skill || DATA[a].name.localeCompare(DATA[b].name); };
     var groups = [
       { t: "I can do", sub: "recipes you already know", list: idx.filter(function (i) { return has(DATA[i]); }) },
-      { t: "Missing: learn from the trainer", sub: "sorted by skill needed", list: idx.filter(function (i) { return isEnch(DATA[i]) && !has(DATA[i]) && !DATA[i].formula; }) },
-      { t: "Missing: buy the formula", sub: "vendor or reputation formula", list: idx.filter(function (i) { return isEnch(DATA[i]) && !has(DATA[i]) && DATA[i].formula; }) },
+      { t: "Missing: city trainer", sub: "any Expert Enchanter in a capital", list: idx.filter(function (i) { return isEnch(DATA[i]) && !has(DATA[i]) && DATA[i].src === "trainer"; }) },
+      { t: "Missing: Artisan trainer only", sub: "not at city trainers in Forever: Kitta Firewind (Elwynn), Vanessa Sellers (Alterac), Melanie Sable (Riverglades), Annora (Uldaman)", list: idx.filter(function (i) { return isEnch(DATA[i]) && !has(DATA[i]) && DATA[i].src === "artisan"; }) },
+      { t: "Missing: get the formula", sub: "Merchant’s Favor, vendor or quest", list: idx.filter(function (i) { return isEnch(DATA[i]) && !has(DATA[i]) && DATA[i].src !== "trainer" && DATA[i].src !== "artisan"; }) },
       { t: "Missing: other professions", sub: "armor kits, scope and shield spike: not enchants", list: idx.filter(function (i) { return !isEnch(DATA[i]) && !has(DATA[i]); }) }
     ];
     $("groups").innerHTML = groups.filter(function (g) { return g.list.length; }).map(function (g) {

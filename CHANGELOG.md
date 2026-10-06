@@ -4,6 +4,19 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-06 (Where each missing recipe comes from)
+
+- BiS enchants: every recipe's source checked against Wowhead's WoW Forever data and
+  shown as a badge (City trainer, Artisan trainer, Merchant's Favor, Vendor, Quest /
+  centaurs, Rare drop), with the NPCs, zones and costs in the row details.
+- Big Forever difference: 14 of the 15 trainer recipes (Enchanting 155–225) are not
+  taught by city trainers, only by Kitta Firewind (Elwynn), Vanessa Sellers (Alterac),
+  Melanie Sable (Riverglades) and Annora (Uldaman); Horde Hgarth. They get their own group.
+- Corrections vs ForeverChanges: Bracer Lesser Healing Power also comes from the quest
+  "Mysterious Mysticism" and from Molkar (Gelkis) for 15 totems, not only Gorhak for 60;
+  Cloak Minor Agility is also a world drop; Iron Shield Spike plans drop in BFD, RFK,
+  SM and SFK, not from the two mobs ForeverChanges named.
+
 ## 2026-10-06 (Professions page)
 
 - New **Professions** tab (`professions.html`) with three views: **Enchanting costs**

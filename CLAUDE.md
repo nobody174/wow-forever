@@ -73,7 +73,18 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
     (a lower rank the owner knows) and `have: true` (the owner's known recipes, the
     default for "I can do"). Visitors click a status to toggle it; ticks, the class
     filter and "My Enchanting skill" are per browser (localStorage `wf-bis-enchants-v1`).
-    Groups: I can do / Missing: trainer / Missing: formula / Missing: other professions.
+    Each entry has `src` (shown as a badge on missing rows): `trainer` (city Expert
+    trainers), `artisan` (in Forever NOT taught by city trainers, only Kitta Firewind /
+    Elwynn, Vanessa Sellers / Alterac, Melanie Sable / Riverglades, Annora / Uldaman,
+    Horde Hgarth / Stonetalon), `favor` (Merchant's Favor formula at Alynsia / Redridge or
+    Beneris / Barrens), `vendor`, `rep` (quest or centaur-totem quartermaster in Desolace),
+    `drop`. `how` names the NPCs and costs. Sources were checked 2026-10-06 against
+    Wowhead's Forever data: the Enchanting skill page's `recipes` listview (`source` 6 =
+    trainer, 5 = vendor, 4 = quest, 2 = drop; `trainingcost` in copper), each recipe
+    spell's `taught-by-npc` list and each formula item's `sold-by` / `dropped-by` /
+    `reward-from-q` lists (read in a real browser on wowhead.com; the cloud can't reach it).
+    Groups: I can do / Missing: city trainer / Missing: Artisan trainer only /
+    Missing: get the formula / Missing: other professions.
     To refresh: re-read each spec page's enchant section and rebuild `DATA`.
 - `prices.json` — site-wide AH prices for professions.html (written by the owner from the
   site; hand edits fine, keep valid JSON and copper integers).

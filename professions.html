@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Professions — WoW Forever</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1428; --panel:#161E38; --edge:#3A4468; --gold:#FFD100;
+  --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100; --ok:#6FCF7F; --warn:#E8A33D; --miss:#E86B5E;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --serif:"Marcellus","Palatino Linotype",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+a{color:var(--gold)}
+.topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
+.topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
+.topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
+@media (max-width:1180px){
+  .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .topbar .site-title{justify-self:center}
+}
+.topbar nav a{
+  font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;
+  color:var(--gold);text-decoration:none;padding:10px 16px;border-radius:6px;
+  background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);
+  border:1px solid var(--edge);border-top-color:#4A5688;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.35);
+  transition:transform .08s ease, box-shadow .08s ease, border-color .08s ease;
+}
+.topbar nav a:hover{
+  border-color:var(--gold);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 0 10px rgba(255,209,0,.35), 0 2px 4px rgba(0,0,0,.35);
+  transform:translateY(-1px);
+}
+.topbar nav a:active{transform:translateY(0);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
+.topbar nav a[aria-current="page"]{
+  color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);
+  border-color:#FFE566;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(255,209,0,.5);
+}
+@media (prefers-reduced-motion:reduce){.topbar nav a{transition:none}}
+
+.wrap{max-width:1180px;margin:0 auto;padding:40px 16px 70px}
+h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 10px;letter-spacing:.01em;text-align:center}
+p.lede{color:var(--muted);max-width:66ch;margin:0 auto;text-align:center}
+.coin{font:500 14px/1 var(--mono);white-space:nowrap}
+.coin span{margin-right:4px}
+.coin span:last-child{margin-right:0}
+.coin .g{color:#FFD100} .coin .s{color:#C8CCD6} .coin .c{color:#D08A4E}
+.coin i{font-style:normal;font-size:.8em;opacity:.85}
+
+/* View switch (same look as the Talents / Legacy switch) */
+.pf-modes{display:flex;justify-content:center;margin:22px 0 20px}
+.pf-mode{display:inline-flex;flex-wrap:wrap;justify-content:center;background:#0A0F20;border:1px solid var(--edge);border-radius:8px;padding:3px;gap:3px}
+.pf-mode button{font:600 14px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:6px;padding:10px 16px;cursor:pointer}
+.pf-mode button:hover{color:var(--text)}
+.pf-mode button[aria-pressed="true"]{color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border-color:#FFE566}
+.view[hidden]{display:none}
+
+/* Material prices */
+.prices{background:var(--panel);border:1px solid var(--edge);border-top:3px solid var(--gold);border-radius:8px;padding:14px 16px;margin-bottom:18px}
+.prices-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;margin-bottom:10px}
+.prices-head h2{font:400 20px/1.2 var(--serif);color:var(--gold);margin:0;text-transform:uppercase;letter-spacing:.02em}
+.src{margin:0;color:var(--muted);font-size:13px}
+.src b{color:var(--text)}
+.src.own b{color:var(--gold)}
+.mats{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:8px}
+.mat{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#0A0F1F;border:1px solid var(--edge);border-radius:6px;padding:6px 10px}
+.mat.changed{border-color:var(--gold)}
+.mat-name{font-size:14px;line-height:1.3}
+.mat-name small{display:block;color:var(--muted);font-size:11.5px}
+.inputs{display:flex;gap:4px;flex:none}
+.inputs label{display:flex;align-items:center;gap:2px;font:600 11px var(--mono)}
+.inputs input{width:42px;font:500 14px/1 var(--mono);text-align:right;color:var(--text);background:var(--panel);border:1px solid var(--edge);border-radius:4px;padding:5px 4px}
+.inputs input:focus{outline:none;border-color:var(--gold)}
+.inputs .lg{color:#FFD100} .inputs .ls{color:#C8CCD6} .inputs .lc{color:#D08A4E}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.btn{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--gold);background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);border:1px solid var(--edge);border-top-color:#4A5688;border-radius:6px;padding:9px 12px;cursor:pointer;text-decoration:none}
+.btn:hover{border-color:var(--gold)}
+.btn[disabled]{opacity:.5;cursor:default}
+.btn.primary{color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border-color:#FFE566}
+.btn.owner{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,var(--edge))}
+.btn[aria-pressed="true"]{color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border-color:#FFE566}
+.tools .hint{color:var(--muted);font-size:12.5px}
+
+/* Cost lists: two columns, one line per recipe */
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.slots.one{grid-template-columns:1fr}
+.slots.one .ench{grid-template-columns:240px 1fr auto}
+.slot{background:var(--panel);border:1px solid var(--edge);border-radius:8px;padding:10px 14px 6px}
+.slot h2{display:flex;align-items:center;gap:8px;font:400 17px/1.2 var(--serif);color:var(--gold);text-transform:uppercase;letter-spacing:.02em;margin:0 0 2px;padding-bottom:6px;border-bottom:2px solid var(--gold)}
+.ench{display:grid;grid-template-columns:168px 1fr auto;align-items:baseline;gap:12px;padding:6px 0;border-bottom:1px solid rgba(58,68,104,.6)}
+.ench:last-child{border-bottom:0}
+.ench-name{font-weight:600;font-size:14.5px;white-space:nowrap}
+.reagents{color:var(--muted);font-size:13px;line-height:1.35}
+.reagents b{color:var(--text);font-weight:600}
+.reagents abbr{text-decoration:none}
+.reagents .plus{opacity:.6;margin:0 3px}
+.ench .total{text-align:right}
+.ench .tip{grid-column:1 / -1;margin:-2px 0 0;font-size:12.5px;color:var(--warn)}
+.cheap .ench-name::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:7px;vertical-align:2px}
+.sorted .slots{display:none}
+.list{display:none;background:var(--panel);border:1px solid var(--edge);border-radius:8px;overflow:hidden}
+.sorted .list{display:block}
+.list table{width:100%;border-collapse:collapse}
+.list th,.list td{text-align:left;padding:8px 12px;border-bottom:1px solid rgba(58,68,104,.6);font-size:14px}
+.list th{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:#10162E}
+.list td.num{text-align:right}
+.list tr:last-child td{border-bottom:0}
+.note{color:var(--muted);font-size:12.5px;text-align:center;margin:16px 0 0}
+
+/* Owner bar */
+.ownerbox{margin-top:26px;text-align:center;color:var(--muted);font-size:13px}
+.ownerbox .link{font:inherit;color:var(--gold);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
+.login{max-width:520px;margin:12px auto 0;text-align:left;background:var(--panel);border:1px solid var(--edge);border-radius:8px;padding:14px}
+.login h3{font:400 18px/1.2 var(--serif);color:var(--gold);margin:0 0 6px}
+.login p{margin:0 0 8px}
+.login input[type=password]{display:block;width:100%;margin-top:4px;font:15px/1.4 var(--sans);color:var(--text);background:#0A0F20;border:1px solid var(--edge);border-radius:5px;padding:8px 10px}
+.login label{display:block;font-size:13px}
+.login .chk{display:flex;align-items:center;gap:8px;margin-top:10px}
+.login .chk input{accent-color:var(--gold)}
+.ownerbar{display:inline-flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:center;border:1px solid color-mix(in srgb,var(--ok) 45%,var(--edge));border-radius:6px;padding:8px 12px}
+.ownerbar b{color:var(--ok)}
+.msg{margin:10px auto 0;max-width:620px;padding:8px 12px;border-radius:5px;font-size:13.5px;border:1px solid var(--edge);background:var(--panel)}
+.msg.ok{border-color:var(--ok);color:var(--ok)}
+.msg.err{border-color:var(--warn);color:var(--warn)}
+
+/* BiS enchants */
+.bar{background:var(--panel);border:1px solid var(--edge);border-top:3px solid var(--gold);border-radius:8px;padding:12px 14px;margin-bottom:16px;display:flex;flex-direction:column;gap:10px}
+.stats{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:14px;color:var(--muted)}
+.stats b{font:600 17px var(--sans)}
+.stats .s-have b{color:var(--ok)} .stats .s-miss b{color:var(--miss)} .stats .s-other b{color:var(--muted)}
+.skill{display:flex;align-items:center;gap:6px;margin-left:auto}
+.skill input{width:62px;font:500 14px var(--mono);text-align:right;color:var(--text);background:#0A0F1F;border:1px solid var(--edge);border-radius:4px;padding:5px 6px}
+.skill input:focus{outline:none;border-color:var(--gold)}
+.classes{display:flex;flex-wrap:wrap;gap:6px}
+.classes button{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--c,var(--gold));background:#0A0F1F;border:1px solid var(--edge);border-radius:5px;padding:7px 10px;cursor:pointer}
+.classes button:hover{border-color:var(--c,var(--gold))}
+.classes button[aria-pressed="true"]{color:#0E1428;background:var(--c,var(--gold));border-color:var(--c,var(--gold))}
+.group{background:var(--panel);border:1px solid var(--edge);border-radius:8px;padding:8px 14px 4px;margin-bottom:14px}
+.group h2{display:flex;align-items:baseline;gap:10px;font:400 18px/1.2 var(--serif);color:var(--gold);margin:4px 0 2px;padding-bottom:6px;border-bottom:2px solid var(--gold)}
+.group h2 small{font:400 13px var(--sans);color:var(--muted)}
+.row{border-bottom:1px solid rgba(58,68,104,.6)}
+.row:last-child{border-bottom:0}
+.row[hidden]{display:none}
+.line{display:grid;grid-template-columns:96px minmax(220px,1.4fr) 92px minmax(150px,1fr) 48px 168px 20px;align-items:center;gap:12px;padding:7px 0;cursor:pointer;list-style:none}
+.line::-webkit-details-marker{display:none}
+.st{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;border-radius:4px;padding:5px 0;text-align:center;border:1px solid;background:#0A0F1F;cursor:pointer}
+.st.have{color:var(--ok);border-color:var(--ok)}
+.st.miss{color:var(--miss);border-color:var(--miss)}
+.name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.name .prof{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.name .lower{display:block;font-weight:400;font-size:12px;color:var(--warn);white-space:normal}
+.bslot{color:var(--muted);font-size:13px}
+.eff{font-size:13.5px}
+.lvl{font:500 13px var(--mono);text-align:right;color:var(--muted)}
+.lvl.ready{color:var(--ok)}
+.uses{font-size:12.5px;color:var(--muted);display:flex;gap:3px;align-items:center;white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--c);display:inline-block}
+.uses span.n{margin-left:4px}
+.chev{color:var(--muted);transition:transform .15s}
+details[open] .chev{transform:rotate(90deg)}
+.more{padding:2px 0 12px 108px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px 24px;font-size:13.5px}
+.more h3{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:6px 0 5px}
+.more p{margin:0}
+.bmats{display:flex;flex-wrap:wrap;gap:4px}
+.bmat{background:#0A0F1F;border:1px solid var(--edge);border-radius:4px;padding:1px 7px;font-size:12.5px}
+.bmat b{color:var(--gold)}
+.specs{display:flex;flex-wrap:wrap;gap:4px}
+.spec{font-size:12px;border:1px solid var(--edge);border-left:3px solid var(--c);border-radius:4px;padding:1px 6px}
+.spec.pvp{opacity:.65}
+.empty{color:var(--muted);padding:10px 0 12px;font-size:14px}
+
+@media (max-width:900px){
+  .line{grid-template-columns:86px 1fr auto 18px;gap:4px 10px}
+  .bslot,.uses{display:none}
+  .eff{grid-column:2 / 3;grid-row:2;color:var(--muted)}
+  .lvl{grid-column:3;grid-row:1}
+  .chev{grid-column:4;grid-row:1}
+  .more{padding-left:0}
+}
+@media (max-width:820px){ .slots{grid-template-columns:1fr} }
+@media (max-width:520px){
+  .ench{grid-template-columns:1fr auto;gap:2px 10px}
+  .ench .reagents{grid-column:1 / -1;grid-row:2}
+  .pf-mode button{padding:9px 11px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="site-title" href="index.html">Road to Forever</a>
+  <nav aria-label="Site">
+    <a href="macros.html">Macros</a>
+    <a href="builds.html">Builds</a>
+    <a href="addons.html">Addons</a>
+    <a href="professions.html" aria-current="page">Professions</a>
+    <a href="launch-plan.html">Launch Plan</a>
+    <a href="talents.html">Talent / Legacy Calc</a>
+  </nav>
+</div>
+<div class="wrap">
+  <h1>Professions</h1>
+  <p class="lede">What our crafts cost to make at today's Auction House prices, and which enchants the level 30 BiS lists want.</p>
+
+  <div class="pf-modes"><div class="pf-mode" role="group" aria-label="View">
+    <button type="button" data-view="enchanting" aria-pressed="true">Enchanting costs</button>
+    <button type="button" data-view="leatherworking" aria-pressed="false">Leatherworking costs</button>
+    <button type="button" data-view="bis" aria-pressed="false">BiS enchants</button>
+  </div></div>
+
+  <section class="view" id="view-enchanting" data-costs="enchanting"></section>
+  <section class="view" id="view-leatherworking" data-costs="leatherworking" hidden></section>
+
+  <section class="view" id="view-bis" hidden>
+    <div class="bar">
+      <div class="stats">
+        <span class="s-have"><b id="n-have">0</b> I can do</span>
+        <span class="s-miss"><b id="n-miss">0</b> enchants missing</span>
+        <span class="s-other"><b id="n-other">0</b> other-profession recipes missing</span>
+        <label class="skill">My Enchanting skill <input type="number" id="skill" min="0" max="300" inputmode="numeric" placeholder="—"></label>
+      </div>
+      <div class="classes" id="classes" role="group" aria-label="Show enchants for"></div>
+    </div>
+    <div id="groups"></div>
+    <p class="note">Every enchant <a href="https://foreverchanges.pro/bis" target="_blank" rel="noopener">ForeverChanges' level 30 BiS lists</a> recommend, from all 36 class and spec pages (DPS, tank, healer, PvE and PvP), checked October 6, 2026. Click a status to mark a recipe learned (kept in this browser), click a row for materials and sources. Faded spec tags are PvP lists.</p>
+  </section>
+
+  <div class="ownerbox" id="ownerbox"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var REPO = "nobody174/wow-forever", BRANCH = "main", FILE = "prices.json", API = "https://api.github.com";
+  var OWNER_KEY = "wf-owner-gh", MY_PRICES = "wf-prof-prices-v1", BIS_KEY = "wf-bis-enchants-v1", SORT_KEY = "wf-prof-sorted";
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function lget(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
+  function lset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* blocked */ } }
+
+  // ==== Materials (prices in copper; 1g = 100s = 10000c) ===========================
+  // `price` is the built-in fallback; prices.json (saved by the owner) overrides it.
+  var MATS = [
+    { id: "dust",  prof: "enchanting", short: "Dust",          name: "Strange Dust",           price: 235 },
+    { id: "lme",   prof: "enchanting", short: "Lesser Ess.",   name: "Lesser Magic Essence",   price: 45 },
+    { id: "gme",   prof: "enchanting", short: "Greater Ess.",  name: "Greater Magic Essence",  price: 90, unused: true },
+    { id: "lae",   prof: "enchanting", short: "Lesser Astral", name: "Lesser Astral Essence",  price: 498 },
+    { id: "soul",  prof: "both",       short: "Soul Dust",     name: "Soul Dust",              price: 798 },
+    { id: "sgs",   prof: "enchanting", short: "Small Shard",   name: "Small Glimmering Shard", price: 98 },
+    { id: "lgs",   prof: "enchanting", short: "Large Shard",   name: "Large Glimmering Shard", price: 3400 },
+    { id: "wood",  prof: "enchanting", short: "Wood",          name: "Simple Wood",            price: 38 },
+    { id: "oil",   prof: "enchanting", short: "Fire Oil",      name: "Fire Oil",               price: 22 },
+    { id: "hleather", prof: "leatherworking", short: "Heavy Leather", name: "Heavy Leather",   price: 989 },
+    { id: "thread",   prof: "leatherworking", short: "Fine Thread",   name: "Fine Thread",     price: 100, note: "vendor" },
+    { id: "hak",      prof: "leatherworking", short: "Heavy Armor Kit", name: "Heavy Armor Kit", price: 2840, note: "AH price" },
+    { id: "lmp",      prof: "leatherworking", short: "Lesser Mana Pot.", name: "Lesser Mana Potion", price: 344 },
+    { id: "giant",    prof: "leatherworking", short: "Giant Growth",  name: "Elixir of Giant Growth", price: 3198 }
+  ];
+  var BYID = {}; MATS.forEach(function (m) { BYID[m.id] = m; });
+
+  // ==== Recipes per profession, two columns ======================================
+  var COSTS = {
+    enchanting: { title: "Enchanting", slots: [
+      { name: "Chest", col: 1, icon: "🧥", list: [
+        ["Minor Absorption", { lme: 1 }], ["Minor Intellect", { lme: 1 }], ["Lesser Stamina", { dust: 1, lme: 1 }],
+        ["Stamina", { dust: 2, lae: 1 }], ["Lesser Absorption", { dust: 1, lae: 1, lgs: 1 }]] },
+      { name: "Bracers", col: 1, icon: "🦾", list: [
+        ["Minor Stamina", { dust: 2 }], ["Minor Deflect", { lme: 1 }], ["Minor Agility", { dust: 1, lme: 2 }], ["Lesser Stamina", { soul: 1 }]] },
+      { name: "Boots", col: 1, icon: "🧦", list: [["Minor Stamina", { dust: 4 }]] },
+      { name: "Cloaks", col: 1, icon: "🧣", list: [
+        ["Minor Protection", { dust: 2 }], ["Minor Resistance", { lme: 1, dust: 1 }], ["Lesser Protection", { dust: 3, sgs: 2 }], ["Lesser Fire Resistance", { oil: 1, lae: 1 }]] },
+      { name: "Weapons (1H)", col: 2, icon: "⚔️", list: [["Minor Striking", { dust: 1, lme: 1, sgs: 1 }], ["Lesser Striking", { soul: 1, lgs: 1 }]] },
+      { name: "2H Weapons", col: 2, icon: "🪓", list: [["Minor Impact", { dust: 1, sgs: 1 }]] },
+      { name: "Shield", col: 2, icon: "🛡️", list: [["Minor Stamina", { lae: 1, dust: 1 }], ["Lesser Spirit", { lae: 1, dust: 2 }]] },
+      { name: "Wands", col: 2, icon: "🎯", list: [["Greater Magic Wand", { lme: 2, wood: 1 }]] }
+    ]},
+    leatherworking: { title: "Leatherworking", slots: [
+      { name: "Armor kits", col: 1, icon: "🧰", list: [
+        ["Heavy Armor Kit", { hleather: 5, thread: 1 }, "buyHak"],
+        ["Forceful Heavy Armor Kit", { hak: 1, soul: 2, giant: 2 }],
+        ["Mystic Heavy Armor Kit", { hak: 1, soul: 2, lmp: 2 }]] }
+    ]}
+  };
+
+  // ==== Prices: site prices (prices.json) + this visitor's own changes =============
+  var site = { prices: {}, updated: "", by: "" };
+  MATS.forEach(function (m) { site.prices[m.id] = m.price; });
+  site.updated = "2026-10-06";
+  var mine = lget(MY_PRICES, {});                 // only the materials this visitor changed
+  if (!mine || typeof mine !== "object") mine = {};
+  function price(id) { return id in mine ? mine[id] : site.prices[id]; }
+  function changedCount() { return Object.keys(mine).filter(function (k) { return mine[k] !== site.prices[k]; }).length; }
+
+  function coin(cp) {
+    cp = Math.round(cp);
+    var g = Math.floor(cp / 10000), s = Math.floor(cp % 10000 / 100), c = cp % 100, out = "";
+    if (g) out += '<span class="g">' + g + "<i>g</i></span>";
+    if (s || g) out += '<span class="s">' + s + "<i>s</i></span>";
+    out += '<span class="c">' + (s || g ? String(c).padStart(2, "0") : c) + "<i>c</i></span>";
+    return '<span class="coin">' + out + "</span>";
+  }
+  function cost(r) { return Object.keys(r).reduce(function (a, k) { return a + r[k] * price(k); }, 0); }
+  function reagents(r) {
+    return Object.keys(r).map(function (k) { return "<b>" + r[k] + '</b> <abbr title="' + esc(BYID[k].name) + '">' + esc(BYID[k].short) + "</abbr>"; }).join('<span class="plus">+</span>');
+  }
+  function fmtDate(d) { try { return new Date(d + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); } catch (e) { return d; } }
+
+  function matsFor(prof) { return MATS.filter(function (m) { return m.prof === prof || m.prof === "both"; }); }
+  function srcHTML() {
+    var n = changedCount();
+    return n ? '<p class="src own">Using <b>your own prices</b> (' + n + " changed). Site prices from " + esc(fmtDate(site.updated)) + ".</p>"
+      : '<p class="src">Site prices from <b>' + esc(fmtDate(site.updated)) + "</b>" + (site.by ? " · set by " + esc(site.by) : "") + ".</p>";
+  }
+  function costsView(prof) {
+    var C = COSTS[prof], sorted = !!lget(SORT_KEY, false);
+    var mats = matsFor(prof).map(function (m) {
+      var p = price(m.id), ch = m.id in mine && mine[m.id] !== site.prices[m.id];
+      var sub = m.unused ? "not used below" : m.prof === "both" ? "also used by " + (prof === "enchanting" ? "Leatherworking" : "Enchanting") : m.note || "";
+      return '<div class="mat' + (ch ? " changed" : "") + '" data-mat="' + m.id + '"><div class="mat-name">' + esc(m.name) + "<small>" + esc(sub) + "</small></div>" +
+        '<div class="inputs">' +
+        '<label><input type="number" min="0" inputmode="numeric" data-part="g" aria-label="' + esc(m.name) + ' gold" value="' + Math.floor(p / 10000) + '"><span class="lg">g</span></label>' +
+        '<label><input type="number" min="0" max="99" inputmode="numeric" data-part="s" aria-label="' + esc(m.name) + ' silver" value="' + Math.floor(p % 10000 / 100) + '"><span class="ls">s</span></label>' +
+        '<label><input type="number" min="0" max="99" inputmode="numeric" data-part="c" aria-label="' + esc(m.name) + ' copper" value="' + p % 100 + '"><span class="lc">c</span></label>' +
+        "</div></div>";
+    }).join("");
+    var tools = '<div class="tools">' +
+      '<button type="button" class="btn" data-act="site"' + (changedCount() ? "" : " disabled") + ">Use site prices</button>" +
+      '<button type="button" class="btn" data-act="sort" aria-pressed="' + sorted + '">' + (sorted ? "Show by slot" : "Sort all by cost") + "</button>" +
+      (owner ? '<button type="button" class="btn owner" data-act="publish"' + (changedCount() && !busy ? "" : " disabled") + ">Save as site prices</button>" : "") +
+      '<span class="hint">Change a price and every cost updates. Your changes stay in this browser.</span></div>';
+    var html = '<div class="prices"><div class="prices-head"><h2>' + esc(C.title) + " materials</h2>" + srcHTML() + "</div>" +
+      '<div class="mats">' + mats + "</div>" + tools + "</div>";
+    var one = !C.slots.some(function (sl) { return sl.col === 2; });
+    html += '<div class="' + (sorted ? "sorted" : "") + '"><div class="slots' + (one ? " one" : "") + '">' + colsHTML(C) + "</div>" + listHTML(C) + "</div>";
+    html += '<p class="note">Costs are materials only, at the prices above. A green dot marks the cheapest recipe in each group. Hover a material for its full name.</p>';
+    return html;
+  }
+  function colsHTML(C) {
+    return [1, 2].map(function (c) { return C.slots.filter(function (sl) { return sl.col === c; }); })
+      .filter(function (list) { return list.length; })
+      .map(function (list) { return '<div class="col">' + list.map(slotHTML).join("") + "</div>"; }).join("");
+  }
+  function slotHTML(sl) {
+    var costs = sl.list.map(function (e) { return cost(e[1]); }), min = Math.min.apply(null, costs);
+    return '<section class="slot"><h2><span aria-hidden="true">' + sl.icon + "</span>" + esc(sl.name) + "</h2>" + sl.list.map(function (e, i) {
+      var tip = "";
+      if (e[2] === "buyHak" && price("hak") < costs[i]) tip = '<p class="tip">Cheaper to buy: Heavy Armor Kit is ' + coin(price("hak")).replace('class="coin"', 'class="coin" style="font-size:12.5px"') + " on the AH.</p>";
+      return '<div class="ench' + (sl.list.length > 1 && costs[i] === min ? " cheap" : "") + '"><span class="ench-name">' + esc(e[0]) + '</span><span class="reagents">' + reagents(e[1]) +
+        '</span><span class="total">' + coin(costs[i]) + "</span>" + tip + "</div>";
+    }).join("") + "</section>";
+  }
+  function listHTML(C) {
+    var all = [];
+    C.slots.forEach(function (sl) { sl.list.forEach(function (e) { all.push({ slot: sl.name, name: e[0], r: e[1], c: cost(e[1]) }); }); });
+    all.sort(function (a, b) { return a.c - b.c; });
+    return '<div class="list"><table><thead><tr><th>Recipe</th><th>Group</th><th>Materials</th><th class="num">Cost</th></tr></thead><tbody>' +
+      all.map(function (x) { return "<tr><td>" + esc(x.name) + "</td><td>" + esc(x.slot) + '</td><td class="reagents">' + reagents(x.r) + '</td><td class="num">' + coin(x.c) + "</td></tr>"; }).join("") +
+      "</tbody></table></div>";
+  }
+  function renderCosts() {
+    ["enchanting", "leatherworking"].forEach(function (p) {
+      var el = $("view-" + p), f = document.activeElement, keep = null;
+      if (f && el.contains(f) && f.dataset.part) keep = { mat: f.closest(".mat").dataset.mat, part: f.dataset.part, pos: f.selectionStart };
+      el.innerHTML = costsView(p);
+      if (keep) { var i = el.querySelector('.mat[data-mat="' + keep.mat + '"] input[data-part="' + keep.part + '"]'); if (i) i.focus(); }
+    });
+  }
+  // Typing updates totals without redrawing the inputs being typed in.
+  function refreshTotals() {
+    ["enchanting", "leatherworking"].forEach(function (p) {
+      var el = $("view-" + p);
+      el.querySelector(".slots").innerHTML = colsHTML(COSTS[p]);
+      var list = el.querySelector(".list"); if (list) list.outerHTML = listHTML(COSTS[p]);
+      el.querySelector(".src").outerHTML = srcHTML();
+      el.querySelectorAll(".mat").forEach(function (m) { var id = m.dataset.mat; m.classList.toggle("changed", id in mine && mine[id] !== site.prices[id]); });
+      var b = el.querySelector('[data-act="site"]'); if (b) b.disabled = !changedCount();
+      var pb = el.querySelector('[data-act="publish"]'); if (pb) pb.disabled = !changedCount() || busy;
+    });
+  }
+  document.querySelectorAll("[data-costs]").forEach(function (el) {
+    el.addEventListener("input", function (e) {
+      var row = e.target.closest(".mat");
+      if (!row) return;
+      var get = function (p) { var v = parseInt(row.querySelector('[data-part="' + p + '"]').value, 10); return isNaN(v) || v < 0 ? 0 : v; };
+      var v = get("g") * 10000 + Math.min(get("s"), 99) * 100 + Math.min(get("c"), 99), id = row.dataset.mat;
+      if (v === site.prices[id]) delete mine[id]; else mine[id] = v;
+      lset(MY_PRICES, mine);
+      // Soul Dust is on both views: keep the other view's inputs in step.
+      document.querySelectorAll('.mat[data-mat="' + id + '"]').forEach(function (m) {
+        if (m === row) return;
+        m.querySelector('[data-part="g"]').value = Math.floor(v / 10000);
+        m.querySelector('[data-part="s"]').value = Math.floor(v % 10000 / 100);
+        m.querySelector('[data-part="c"]').value = v % 100;
+      });
+      refreshTotals();
+    });
+    el.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-act]");
+      if (!b) return;
+      if (b.dataset.act === "site") { mine = {}; lset(MY_PRICES, mine); renderCosts(); }
+      else if (b.dataset.act === "sort") { lset(SORT_KEY, !lget(SORT_KEY, false)); renderCosts(); }
+      else if (b.dataset.act === "publish") publish();
+    });
+  });
+  function loadSitePrices() {
+    return fetch(FILE + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (j) {
+      if (j && j.prices) {
+        Object.keys(j.prices).forEach(function (k) { if (k in site.prices && typeof j.prices[k] === "number") site.prices[k] = j.prices[k]; });
+        site.updated = j.updated || site.updated; site.by = j.by || "";
+        Object.keys(mine).forEach(function (k) { if (mine[k] === site.prices[k]) delete mine[k]; });
+        lset(MY_PRICES, mine);
+      }
+    }).catch(function () { /* keep the built-in prices */ }).then(renderCosts);
+  }
+
+  // ==== Owner login (same token + browser key as the Saved builds sidebar) ========
+  var owner = readOwner(), loginOpen = false, busy = false, msg = null;
+  function readOwner() {
+    var raw = null;
+    try { raw = sessionStorage.getItem(OWNER_KEY); } catch (e) { /* blocked */ }
+    if (!raw) try { raw = localStorage.getItem(OWNER_KEY); } catch (e) { raw = null; }
+    try { var o = JSON.parse(raw); return o && o.token && o.login ? o : null; } catch (e) { return null; }
+  }
+  function storeOwner(o, remember) {
+    try { localStorage.removeItem(OWNER_KEY); sessionStorage.removeItem(OWNER_KEY); } catch (e) { /* blocked */ }
+    if (!o) return;
+    try { (remember ? localStorage : sessionStorage).setItem(OWNER_KEY, JSON.stringify(o)); } catch (e) { /* blocked */ }
+  }
+  function gh(path, opts, token) {
+    opts = opts || {};
+    var headers = { "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "Authorization": "Bearer " + (token || owner.token) };
+    if (opts.body) headers["Content-Type"] = "application/json";
+    return fetch(API + path, { method: opts.method || "GET", headers: headers, body: opts.body, cache: "no-store" }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.message || ("GitHub said " + r.status)); e.status = r.status; throw e; } return j; });
+    });
+  }
+  function b64encode(s) { return btoa(unescape(encodeURIComponent(s))); }
+  function ownerHTML() {
+    var m = msg ? '<div class="msg ' + msg.kind + '">' + esc(msg.text) + "</div>" : "";
+    if (owner) return '<div class="ownerbar">Signed in as <b>' + esc(owner.login) + "</b>. Change prices, then press <b>Save as site prices</b> to update them for everyone. " +
+      '<button type="button" class="link" data-act="logout">Sign out</button></div>' + m;
+    if (!loginOpen) return "<p>Site prices are set by the site owner. <button type=\"button\" class=\"link\" data-act=\"login-open\">Owner login</button></p>" + m;
+    return '<form class="login"><h3>Owner login</h3><p>Paste your GitHub fine-grained token (the same one as for Group picks on the Talent page). It stays in this browser only. ' +
+      '<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create one</a>: Only select repositories → <b>wow-forever</b>; Contents → <b>Read and write</b>.</p>' +
+      '<label>Token<input type="password" name="token" autocomplete="off" spellcheck="false" required placeholder="github_pat_…"></label>' +
+      '<label class="chk"><input type="checkbox" name="remember"> Remember on this device</label>' +
+      '<div class="tools"><button type="submit" class="btn primary"' + (busy ? " disabled" : "") + '>Sign in</button><button type="button" class="btn" data-act="login-cancel">Cancel</button></div></form>' + m;
+  }
+  function renderOwner() { $("ownerbox").innerHTML = ownerHTML(); }
+  $("ownerbox").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act]");
+    if (!b) return;
+    if (b.dataset.act === "login-open") { loginOpen = true; msg = null; renderOwner(); var t = $("ownerbox").querySelector("input[name=token]"); if (t) t.focus(); }
+    else if (b.dataset.act === "login-cancel") { loginOpen = false; renderOwner(); }
+    else if (b.dataset.act === "logout") { owner = null; storeOwner(null); msg = { kind: "ok", text: "Signed out. The token was removed from this browser." }; renderOwner(); renderCosts(); }
+  });
+  $("ownerbox").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var f = e.target, token = f.token.value.trim(), remember = f.remember.checked, login;
+    if (!token) return;
+    busy = true; msg = { kind: "ok", text: "Checking the token with GitHub…" }; renderOwner();
+    gh("/user", {}, token).then(function (u) { login = u.login; return gh("/repos/" + REPO, {}, token); }).then(function (repo) {
+      var p = repo.permissions || {};
+      if (!(p.push || p.admin || p.maintain)) throw Object.assign(new Error("no access"), { status: 403 });
+      owner = { token: token, login: login }; storeOwner(owner, remember);
+      busy = false; loginOpen = false; msg = { kind: "ok", text: "Signed in as " + login + "." };
+      renderOwner(); renderCosts();
+    }).catch(function (err) {
+      busy = false;
+      msg = { kind: "err", text: err.status === 401 ? "GitHub doesn't accept that token." : err.status === 403 || err.status === 404 ? "That token doesn't have access to " + REPO + "." : "Couldn't reach GitHub: " + err.message };
+      renderOwner();
+    });
+  });
+  // Commit this browser's prices as prices.json. One retry on a sha conflict.
+  function publish(tries) {
+    var all = {}; MATS.forEach(function (m) { all[m.id] = price(m.id); });
+    var today = new Date(), d = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
+    var body = { updated: d, by: owner.login, prices: all };
+    busy = true; msg = { kind: "ok", text: "Saving to GitHub…" }; renderOwner(); refreshTotals();
+    gh("/repos/" + REPO + "/contents/" + FILE + "?ref=" + BRANCH).catch(function (e) { if (e.status === 404) return {}; throw e; }).then(function (f) {
+      var req = { message: "Update AH prices (" + d + ")", content: b64encode(JSON.stringify(body, null, 2) + "\n"), branch: BRANCH };
+      if (f.sha) req.sha = f.sha;
+      return gh("/repos/" + REPO + "/contents/" + FILE, { method: "PUT", body: JSON.stringify(req) });
+    }).then(function () {
+      site.prices = all; site.updated = d; site.by = owner.login; mine = {}; lset(MY_PRICES, mine);
+      busy = false; msg = { kind: "ok", text: "Saved. Everyone sees the new prices in about a minute (when GitHub Pages updates)." };
+      renderOwner(); renderCosts();
+    }, function (e) {
+      if ((e.status === 409 || e.status === 422) && !tries) return publish(1);
+      busy = false;
+      if (e.status === 401) { owner = null; storeOwner(null); }
+      msg = { kind: "err", text: e.status === 401 ? "GitHub rejected the token (expired or revoked). Log in again." : e.status === 403 || e.status === 404 ? "This token can't write to " + REPO + "." : "Couldn't save: " + e.message };
+      renderOwner(); renderCosts();
+    });
+  }
+
+  // ==== BiS enchants =================================================================
+  var CLASS_COLORS = { Warrior: "#C69B6D", Paladin: "#F48CBA", Hunter: "#AAD372", Rogue: "#FFF468", Priest: "#FFFFFF", Shaman: "#0070DD", Mage: "#3FC7EB", Warlock: "#8788EE", Druid: "#FF7C0A" };
+  var CLASS_ORDER = ["Priest", "Warlock", "Mage", "Rogue", "Druid", "Shaman", "Hunter", "Paladin", "Warrior"];
+  var FC = "https://foreverchanges.pro";
+  var MF = "Formula sold by Alynsia in Redridge Mountains and Beneris in The Barrens for ";
+
+  // Spec groups used below, to keep the data short.
+  var AGI_MELEE = ["Hunter PvE", "Hunter PvP", "Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Druid Feral PvE"];
+  var CASTERS_PVE = ["Priest Shadow PvE", "Shaman Elemental PvE", "Druid Balance PvE", "Mage Frost PvE", "Mage Fire PvE", "Mage Arcane PvE", "Warlock PvE"];
+
+  // BiS enchants from foreverchanges.pro/bis (all 36 spec pages, 2026-10-06).
+  // have: true = the owner knows it (default for "I can do"). note: lower rank the owner knows.
+  var DATA = [
+    { name: "Enchant Necklace - Agility", prof: "Enchanting", skill: 210, slot: "Neck", eff: "Agility +5", item: "/item/249504",
+      how: MF + "120 Merchant’s Favor.", formula: true,
+      mats: [["Greater Nether Essence", 2], ["Large Radiant Shard", 8], ["Dream Dust", 6], ["Sulfuric Acid", 4], ["Magenta Dye", 4]],
+      specs: ["Hunter PvE", "Hunter PvP", "Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Druid Feral PvE", "Druid Feral PvP"] },
+    { name: "Enchant Necklace - Strength", prof: "Enchanting", skill: 210, slot: "Neck", eff: "Strength +5", item: "/item/249496",
+      how: MF + "120 Merchant’s Favor.", formula: true,
+      mats: [["Greater Nether Essence", 4], ["Large Radiant Shard", 4], ["Dream Dust", 10], ["Sulfuric Acid", 4], ["Bauxite", 4]],
+      specs: ["Warrior Arms PvE", "Warrior PvP", "Paladin Retribution PvE", "Paladin Retribution PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP"] },
+    { name: "Enchant Necklace - Spell Power", prof: "Enchanting", skill: 210, slot: "Neck", eff: "+6 Spell Power", item: "/item/249502",
+      how: MF + "120 Merchant’s Favor.", formula: true,
+      mats: [["Greater Nether Essence", 5], ["Large Radiant Shard", 3], ["Dream Dust", 8], ["Cerulean Dye", 4], ["Magenta Dye", 4]],
+      specs: CASTERS_PVE.concat(["Priest Shadow PvP", "Druid Balance PvP", "Shaman Elemental PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP", "Paladin Shockadin PvP", "Paladin Tank"]) },
+    { name: "Enchant Necklace - Healing Power", prof: "Enchanting", skill: 210, slot: "Neck", eff: "Healing +11, Damage Spells +4", item: "/item/249503",
+      how: MF + "120 Merchant’s Favor.", formula: true,
+      mats: [["Greater Nether Essence", 3], ["Large Radiant Shard", 5], ["Dream Dust", 4], ["Pyrite", 4], ["Rosecap", 4]],
+      specs: ["Priest Holy", "Priest Discipline PvP", "Shaman Restoration", "Paladin Holy PvE", "Paladin Holy PvP", "Druid Restoration"] },
+    { name: "Enchant Necklace - Deflection", prof: "Enchanting", skill: 210, slot: "Neck", eff: "Defense +5", item: "/item/249505",
+      how: MF + "120 Merchant’s Favor.", formula: true,
+      mats: [["Greater Nether Essence", 8], ["Large Radiant Shard", 2], ["Dream Dust", 2], ["Cerulean Dye", 4], ["Magenta Dye", 4]],
+      specs: ["Warrior Tank", "Druid Tank"] },
+    { name: "Enchant Cloak - Minor Agility", prof: "Enchanting", skill: 110, slot: "Back", eff: "Agility +3", item: "/item/11039",
+      how: "Formula sold by Dalria in Ashenvale and Kulwia in Stonetalon Mountains.", formula: true,
+      mats: [["Lesser Astral Essence", 1]],
+      specs: ["Hunter PvE", "Hunter PvP", "Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Druid Feral PvE", "Druid Feral PvP", "Warrior Arms PvE", "Warrior PvP", "Paladin Retribution PvE", "Paladin Retribution PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP"] },
+    { name: "Enchant Cloak - Greater Defense", prof: "Enchanting", skill: 205, slot: "Back", eff: "Armor +60",
+      how: "Taught by the trainer.", mats: [["Vision Dust", 1]],
+      specs: CASTERS_PVE.concat(["Priest Holy", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Restoration", "Shaman Elemental PvP", "Paladin Holy PvE", "Paladin Holy PvP", "Paladin Shockadin PvP", "Paladin Tank", "Druid Restoration", "Druid Balance PvP", "Druid Tank", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP", "Warrior Tank"]) },
+    { name: "Enchant Chest - Lesser Stats", prof: "Enchanting", skill: 200, slot: "Chest", eff: "All Stats +2",
+      how: "Taught by the trainer.", mats: [["Greater Mystic Essence", 1], ["Vision Dust", 1], ["Large Glowing Shard", 1]],
+      specs: CASTERS_PVE.concat(["Hunter PvE", "Hunter PvP", "Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Druid Feral PvE", "Druid Restoration", "Priest Holy", "Shaman Restoration", "Shaman Enhancement PvE", "Paladin Holy PvE", "Paladin Retribution PvE", "Warrior Arms PvE", "Warrior PvP"]) },
+    { name: "Enchant Chest - Superior Stamina", prof: "Enchanting", skill: 220, slot: "Chest", eff: "Stamina +8",
+      how: "Taught by the trainer.", mats: [["Vision Dust", 3]], note: "Stamina",
+      specs: ["Warrior Tank", "Paladin Tank", "Druid Tank", "Druid Feral PvP", "Druid Balance PvP", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Elemental PvP", "Shaman Enhancement PvP", "Paladin Holy PvP", "Paladin Retribution PvP", "Paladin Shockadin PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP"] },
+    { name: "Enchant Bracer - Minor Agility", prof: "Enchanting", skill: 80, slot: "Wrist", eff: "Agility +3", have: true,
+      how: "Taught by the trainer.", mats: [["Strange Dust", 1], ["Lesser Magic Essence", 2]],
+      specs: AGI_MELEE },
+    { name: "Enchant Bracer - Lesser Intellect", prof: "Enchanting", skill: 150, slot: "Wrist", eff: "Intellect +5",
+      how: "Taught by the trainer.", mats: [["Greater Astral Essence", 1]],
+      specs: CASTERS_PVE },
+    { name: "Enchant Bracer - Stamina", prof: "Enchanting", skill: 170, slot: "Wrist", eff: "Stamina +5",
+      how: "Taught by the trainer.", mats: [["Soul Dust", 3]], note: "Lesser Stamina",
+      specs: ["Warrior Tank", "Paladin Tank", "Druid Tank", "Druid Feral PvP", "Druid Balance PvP", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Elemental PvP", "Shaman Enhancement PvP", "Paladin Holy PvP", "Paladin Retribution PvP", "Paladin Shockadin PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP"] },
+    { name: "Enchant Bracer - Strength", prof: "Enchanting", skill: 180, slot: "Wrist", eff: "Strength +5",
+      how: "Taught by the trainer.", mats: [["Vision Dust", 1]],
+      specs: ["Warrior Arms PvE", "Warrior PvP", "Paladin Retribution PvE", "Shaman Enhancement PvE"] },
+    { name: "Enchant Bracer - Lesser Healing Power", prof: "Enchanting", skill: 205, slot: "Wrist", eff: "Healing +16, Damage Spells +6", item: "/item/249489",
+      how: "Formula sold by Gorhak in Desolace for 60 Carved Centaur Totem.", formula: true,
+      mats: [["Lesser Mystic Essence", 2]],
+      specs: ["Priest Holy", "Shaman Restoration", "Paladin Holy PvE", "Druid Restoration"] },
+    { name: "Enchant Gloves - Agility", prof: "Enchanting", skill: 210, slot: "Hands", eff: "Agility +7",
+      how: "Taught by the trainer.", mats: [["Vision Dust", 1]],
+      specs: ["Hunter PvE", "Hunter PvP", "Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Druid Feral PvE", "Druid Feral PvP", "Druid Tank", "Warrior Tank"] },
+    { name: "Enchant Gloves - Strength", prof: "Enchanting", skill: 225, slot: "Hands", eff: "Strength +7",
+      how: "Taught by the trainer.", mats: [["Lesser Nether Essence", 1], ["Vision Dust", 2]],
+      specs: ["Warrior Arms PvE", "Warrior PvP", "Paladin Retribution PvE", "Paladin Retribution PvP", "Paladin Shockadin PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP"] },
+    { name: "Enchant Boots - Lesser Agility", prof: "Enchanting", skill: 160, slot: "Feet", eff: "Agility +4",
+      how: "Taught by the trainer.", mats: [["Soul Dust", 1]],
+      specs: ["Hunter PvE", "Rogue Combat PvE", "Rogue Assassination PvE", "Warrior Arms PvE", "Paladin Retribution PvE"] },
+    { name: "Enchant Boots - Stamina", prof: "Enchanting", skill: 215, slot: "Feet", eff: "Stamina +5",
+      how: "Taught by the trainer.", mats: [["Vision Dust", 2]], note: "Minor Stamina",
+      specs: ["Warrior Tank", "Paladin Tank", "Druid Tank", "Paladin Retribution PvP", "Mage Frost PvE", "Mage Fire PvE", "Mage Arcane PvE", "Warlock PvE"] },
+    { name: "Enchant Boots - Minor Speed", prof: "Enchanting", skill: 225, slot: "Feet", eff: "Minor Speed Increase",
+      how: "Taught by the trainer.", mats: [["Small Radiant Shard", 1], ["Aquamarine", 1], ["Lesser Nether Essence", 1]],
+      specs: ["Priest Shadow PvE", "Priest Holy", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Elemental PvE", "Shaman Elemental PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP", "Shaman Restoration", "Druid Balance PvE", "Druid Balance PvP", "Druid Feral PvE", "Druid Feral PvP", "Druid Restoration", "Paladin Holy PvE", "Paladin Holy PvP", "Paladin Shockadin PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP", "Hunter PvP", "Rogue Subtlety PvP", "Warrior PvP"] },
+    { name: "Enchant Shield - Lesser Stamina", prof: "Enchanting", skill: 155, slot: "Shield", eff: "Stamina +5",
+      how: "Taught by the trainer.", mats: [["Lesser Mystic Essence", 1]], note: "Minor Stamina",
+      specs: ["Shaman Elemental PvE", "Shaman Elemental PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP", "Paladin Holy PvE", "Paladin Holy PvP", "Paladin Shockadin PvP"] },
+    { name: "Enchant Shield - Spirit", prof: "Enchanting", skill: 180, slot: "Shield", eff: "Spirit +5",
+      how: "Taught by the trainer.", mats: [["Lesser Mystic Essence", 1], ["Vision Dust", 1]], note: "Lesser Spirit",
+      specs: ["Shaman Restoration"] },
+    { name: "Enchant Weapon - Striking", prof: "Enchanting", skill: 195, slot: "Weapon", eff: "Weapon Damage +3",
+      how: "Taught by the trainer.", mats: [["Greater Mystic Essence", 1], ["Large Glowing Shard", 1]], note: "Lesser Striking",
+      specs: ["Rogue Combat PvE", "Rogue Assassination PvE", "Rogue Subtlety PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP", "Paladin Shockadin PvP"] },
+    { name: "Enchant Weapon - Revelation", prof: "Enchanting", skill: 140, slot: "Weapon", eff: "Revelation (proc)", item: "/item/249481",
+      how: MF + "45 Merchant’s Favor. Its proc rate isn't known yet; it's listed because a one-hand caster weapon has nothing else at this skill.", formula: true,
+      mats: [["Soul Dust", 8], ["Large Glimmering Shard", 6], ["Greater Astral Essence", 2], ["Cerulean Dye", 4], ["Sulfuric Acid", 4]],
+      specs: CASTERS_PVE.concat(["Priest Holy", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Restoration", "Shaman Elemental PvP", "Druid Restoration", "Druid Balance PvP", "Paladin Holy PvE", "Paladin Holy PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP"]) },
+    { name: "Enchant Weapon - Recovery", prof: "Enchanting", skill: 140, slot: "Weapon", eff: "Recovery (proc)", item: "/item/249480",
+      how: MF + "45 Merchant’s Favor.", formula: true,
+      mats: [["Soul Dust", 6], ["Large Glimmering Shard", 4], ["Greater Astral Essence", 6], ["Pyrite", 4], ["Silver Ore", 4]],
+      specs: ["Warrior Tank", "Paladin Tank"] },
+    { name: "Enchant 2H Weapon - Lesser Intellect", prof: "Enchanting", skill: 100, slot: "2H Weapon", eff: "Intellect +5", item: "/item/6349",
+      how: "Formula sold by Tilli Thistlefuzz in Dun Morogh, Kithas in Orgrimmar and Leo Sarn in Silverpine Forest.", formula: true,
+      mats: [["Lesser Magic Essence", 4]],
+      specs: CASTERS_PVE.concat(["Priest Holy", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Restoration", "Shaman Elemental PvP", "Druid Restoration", "Druid Balance PvP", "Paladin Holy PvE", "Paladin Holy PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP", "Hunter PvE", "Hunter PvP"]) },
+    { name: "Enchant 2H Weapon - Impact", prof: "Enchanting", skill: 200, slot: "2H Weapon", eff: "Weapon Damage +6",
+      how: "Taught by the trainer.", mats: [["Vision Dust", 2], ["Large Glowing Shard", 1]], note: "Minor Impact",
+      specs: ["Warrior Arms PvE", "Warrior PvP", "Paladin Retribution PvE", "Paladin Retribution PvP", "Shaman Enhancement PvE", "Shaman Enhancement PvP", "Druid Feral PvE", "Druid Feral PvP", "Druid Tank"] },
+
+    // Not Enchanting
+    { name: "Forceful Heavy Armor Kit", prof: "Leatherworking", skill: 135, have: true, slot: "Legs", eff: "Attack Power +6, Armor +24", item: "/item/252812",
+      how: "Pattern sold by Saenorion in Darnassus and Mahu in Thunder Bluff.",
+      mats: [["Heavy Armor Kit", 1], ["Soul Dust", 2], ["Elixir of Giant Growth", 2]],
+      specs: ["Hunter PvE", "Rogue Combat PvE", "Rogue Assassination PvE", "Druid Feral PvE", "Warrior Arms PvE", "Paladin Retribution PvE", "Shaman Enhancement PvE"] },
+    { name: "Mystic Heavy Armor Kit", prof: "Leatherworking", skill: 135, have: true, slot: "Hands, Legs", eff: "Spell Power +4, Armor +24", item: "/item/252811",
+      how: "Pattern sold by Saenorion in Darnassus and Mahu in Thunder Bluff.",
+      mats: [["Heavy Armor Kit", 1], ["Soul Dust", 2], ["Lesser Mana Potion", 2]],
+      specs: CASTERS_PVE.concat(["Priest Holy", "Shaman Restoration", "Paladin Holy PvE", "Druid Restoration"]) },
+    { name: "Heavy Armor Kit", prof: "Leatherworking", skill: 150, have: true, slot: "Hands, Legs", eff: "Stamina +3, Armor +24",
+      how: "Taught by the trainer.", mats: [["Heavy Leather", 5], ["Fine Thread", 1]],
+      specs: ["Paladin Tank", "Priest Shadow PvP", "Priest Discipline PvP", "Paladin Holy PvP", "Druid Balance PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP"] },
+    { name: "Thick Armor Kit", prof: "Leatherworking", skill: 200, slot: "Hands, Legs", eff: "Stamina +4, Armor +32",
+      how: "Taught by the trainer.", mats: [["Thick Leather", 5], ["Silken Thread", 1]],
+      specs: ["Warrior Tank", "Paladin Tank", "Druid Tank", "Warrior PvP", "Rogue Subtlety PvP", "Hunter PvP", "Druid Feral PvP", "Druid Balance PvP", "Priest Shadow PvP", "Priest Discipline PvP", "Shaman Elemental PvP", "Shaman Enhancement PvP", "Paladin Retribution PvP", "Paladin Shockadin PvP", "Mage Frost PvP", "Mage Fire PvP", "Warlock PvP"] },
+    { name: "Deadly Scope", prof: "Engineering", skill: 210, slot: "Ranged", eff: "Scope +5 Damage", item: "/item/10602",
+      how: "Schematic sold by Yuka Screwspigot in Burning Steppes and Knaz Blunderflame in Stranglethorn Vale.",
+      mats: [["Mithril Tube", 1], ["Aquamarine", 2], ["Thick Leather", 2]],
+      specs: ["Hunter PvE", "Hunter PvP"] },
+    { name: "Iron Shield Spike", prof: "Blacksmithing", skill: 125, slot: "Shield", eff: "Iron Spike (8-12 damage)", item: "/item/6044",
+      how: "Plans drop from Sentinel Amarassan in Stonetalon Mountains and Dark Iron Demolitionist in Wetlands (not checked in the beta).",
+      mats: [["Iron Bar", 6], ["Coarse Grinding Stone", 4]],
+      specs: ["Warrior Tank", "Paladin Tank"] }
+  ];
+
+  var bis = Object.assign({ have: {}, skill: "", cls: "" }, lget(BIS_KEY, {}) || {});
+  function saveBis() { lset(BIS_KEY, bis); }
+  function clsOf(spec) { return spec.split(" ")[0]; }
+  function isEnch(d) { return d.prof === "Enchanting"; }
+  function has(d) { return d.name in bis.have ? bis.have[d.name] : !!d.have; }
+  function classes(d) { var out = []; d.specs.forEach(function (s) { var c = clsOf(s); if (out.indexOf(c) === -1) out.push(c); }); return CLASS_ORDER.filter(function (c) { return out.indexOf(c) !== -1; }); }
+  function rowHTML(d, i) {
+    var sk = +bis.skill, ready = isEnch(d) && !has(d) && sk && sk >= d.skill, cs = classes(d);
+    return '<details class="row" data-i="' + i + '" data-classes="' + cs.join(" ") + '"><summary class="line">' +
+      '<span class="st ' + (has(d) ? "have" : "miss") + '" role="button" tabindex="0" data-toggle="' + i + '" title="Click to change">' + (has(d) ? "✓ I can do" : "✗ Missing") + "</span>" +
+      '<span class="name" title="' + esc(d.name) + '">' + esc(d.name.replace(/^Enchant /, "")) +
+      (d.note && !has(d) ? '<span class="lower">Lower rank known: ' + esc(d.note) + "</span>" : "") + (!isEnch(d) ? '<span class="prof">' + esc(d.prof) + "</span>" : "") + "</span>" +
+      '<span class="bslot">' + esc(d.slot) + '</span><span class="eff">' + esc(d.eff) + "</span>" +
+      '<span class="lvl' + (ready ? " ready" : "") + '" title="' + (ready ? "You can learn this now" : "Skill needed") + '">' + d.skill + "</span>" +
+      '<span class="uses" title="' + esc(cs.join(", ")) + '">' + cs.map(function (c) { return '<span class="dot" style="--c:' + CLASS_COLORS[c] + '"></span>'; }).join("") +
+      '<span class="n">' + d.specs.length + (d.specs.length === 1 ? " spec" : " specs") + "</span></span>" +
+      '<span class="chev" aria-hidden="true">›</span></summary>' +
+      '<div class="more"><div><h3>Materials</h3><div class="bmats">' + d.mats.map(function (m) { return '<span class="bmat"><b>' + m[1] + "×</b> " + esc(m[0]) + "</span>"; }).join("") + "</div>" +
+      "<h3>How to get it</h3><p>" + esc(d.prof) + " " + d.skill + ". " + esc(d.how) + (d.item ? ' <a href="' + FC + d.item + '" target="_blank" rel="noopener">Item page</a>' : "") + "</p></div>" +
+      '<div><h3>Recommended for</h3><div class="specs">' + d.specs.slice().sort(function (a, b) { return CLASS_ORDER.indexOf(clsOf(a)) - CLASS_ORDER.indexOf(clsOf(b)) || a.localeCompare(b); }).map(function (s) {
+        return '<span class="spec' + (/PvP/.test(s) ? " pvp" : "") + '" style="--c:' + CLASS_COLORS[clsOf(s)] + '">' + esc(s) + "</span>";
+      }).join("") + "</div></div></div></details>";
+  }
+  function renderBis() {
+    var open = {};
+    document.querySelectorAll("details.row[open]").forEach(function (d) { open[d.dataset.i] = true; });
+    var idx = DATA.map(function (d, i) { return i; });
+    var bySkill = function (a, b) { return DATA[a].skill - DATA[b].skill || DATA[a].name.localeCompare(DATA[b].name); };
+    var groups = [
+      { t: "I can do", sub: "recipes you already know", list: idx.filter(function (i) { return has(DATA[i]); }) },
+      { t: "Missing: learn from the trainer", sub: "sorted by skill needed", list: idx.filter(function (i) { return isEnch(DATA[i]) && !has(DATA[i]) && !DATA[i].formula; }) },
+      { t: "Missing: buy the formula", sub: "vendor or reputation formula", list: idx.filter(function (i) { return isEnch(DATA[i]) && !has(DATA[i]) && DATA[i].formula; }) },
+      { t: "Missing: other professions", sub: "armor kits, scope and shield spike: not enchants", list: idx.filter(function (i) { return !isEnch(DATA[i]) && !has(DATA[i]); }) }
+    ];
+    $("groups").innerHTML = groups.filter(function (g) { return g.list.length; }).map(function (g) {
+      g.list.sort(bySkill);
+      return '<section class="group"><h2>' + esc(g.t) + " <small>" + esc(g.sub) + "</small></h2>" + g.list.map(function (i) { return rowHTML(DATA[i], i); }).join("") +
+        '<p class="empty" hidden>Nothing here for this class.</p></section>';
+    }).join("");
+    document.querySelectorAll("details.row").forEach(function (d) { if (open[d.dataset.i]) d.open = true; });
+    applyFilter();
+    var n = { have: 0, miss: 0, other: 0 };
+    DATA.forEach(function (d) { if (has(d)) n.have++; else if (isEnch(d)) n.miss++; else n.other++; });
+    $("n-have").textContent = n.have; $("n-miss").textContent = n.miss; $("n-other").textContent = n.other;
+  }
+  function applyFilter() {
+    document.querySelectorAll(".classes button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.c === bis.cls)); });
+    document.querySelectorAll(".group").forEach(function (g) {
+      var shown = 0;
+      g.querySelectorAll("details.row").forEach(function (r) { var ok = !bis.cls || r.dataset.classes.split(" ").indexOf(bis.cls) !== -1; r.hidden = !ok; if (ok) shown++; });
+      g.querySelector(".empty").hidden = shown > 0;
+    });
+  }
+  $("classes").innerHTML = '<button type="button" data-c="">All classes</button>' + CLASS_ORDER.map(function (c) {
+    return '<button type="button" data-c="' + c + '" style="--c:' + CLASS_COLORS[c] + '">' + c + "</button>";
+  }).join("");
+  $("classes").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-c]");
+    if (!b) return;
+    bis.cls = b.dataset.c; saveBis(); applyFilter();
+    setHash("bis" + (bis.cls ? "/" + bis.cls.toLowerCase() : ""));
+  });
+  function toggle(el) { var d = DATA[+el.dataset.toggle]; bis.have[d.name] = !has(d); saveBis(); renderBis(); }
+  $("groups").addEventListener("click", function (e) { var t = e.target.closest("[data-toggle]"); if (t) { e.preventDefault(); toggle(t); } });
+  $("groups").addEventListener("keydown", function (e) { var t = e.target.closest("[data-toggle]"); if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(t); } });
+  $("skill").value = bis.skill;
+  $("skill").addEventListener("input", function () { bis.skill = this.value; saveBis(); renderBis(); });
+
+  // ==== Views + links: #enchanting, #leatherworking, #bis, #bis/<class> =============
+  var VIEWS = ["enchanting", "leatherworking", "bis"];
+  function setHash(h) { try { history.replaceState(null, "", "#" + h); } catch (e) { location.hash = h; } }
+  function showView(v) {
+    VIEWS.forEach(function (x) { $("view-" + x).hidden = x !== v; });
+    document.querySelectorAll(".pf-mode button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.view === v)); });
+    $("ownerbox").hidden = v === "bis";
+  }
+  function fromHash() {
+    var h = decodeURIComponent(location.hash.slice(1)).toLowerCase().split("/");
+    var v = VIEWS.indexOf(h[0]) !== -1 ? h[0] : "enchanting";
+    if (v === "bis" && h[1]) {
+      var c = CLASS_ORDER.filter(function (x) { return x.toLowerCase() === h[1]; })[0];
+      if (c) { bis.cls = c; saveBis(); applyFilter(); }
+    }
+    showView(v);
+  }
+  document.querySelector(".pf-mode").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-view]");
+    if (!b) return;
+    setHash(b.dataset.view + (b.dataset.view === "bis" && bis.cls ? "/" + bis.cls.toLowerCase() : ""));
+    showView(b.dataset.view);
+  });
+  window.addEventListener("hashchange", fromHash);
+
+  renderCosts();
+  renderBis();
+  renderOwner();
+  fromHash();
+  loadSitePrices();
+})();
+</script>
+</body>
+</html>

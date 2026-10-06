@@ -4,6 +4,22 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-06 (Professions page)
+
+- New **Professions** tab (`professions.html`) with three views: **Enchanting costs**
+  (the owner's 20 known enchants at AH prices), **Leatherworking costs** (Heavy,
+  Forceful and Mystic Heavy Armor Kits; shows when buying a Heavy Armor Kit on the AH
+  beats crafting it) and **BiS enchants** (every enchant ForeverChanges' level-30 BiS
+  lists recommend across all 36 class/spec pages, marked "I can do" / "Missing", with
+  class filter, skill box and per-recipe materials, sources and specs).
+- Prices: one shared material list (Soul Dust used by both professions). Site-wide
+  prices in `prices.json`, which the owner updates from the page via the same GitHub
+  owner login as Group picks; visitors can try their own prices (kept per browser).
+- Builds page: every build card links "Enchants for <Class>" to the BiS list filtered to
+  that class. Index Tools: "BiS Enchants" link.
+- Top bar: new Professions tab on every page; the bar now stacks at 1180px (was 960px)
+  so "Road to Forever" doesn't wrap beside six tabs.
+
 ## 2026-10-06 (Legacy link removed from index Tools)
 
 - Removed "Legacy Calculator" from the index Tools column: it's in the top bar

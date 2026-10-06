@@ -6,9 +6,10 @@ Live site: GitHub Pages from `main` / root → https://nobody174.github.io/wow-f
 Small multi-page site: `index.html` is the countdown/landing page ("Road to Forever"), `macros.html` is the macro cheatsheet, `builds.html` lists talent
 builds per class, `addons.html` lists addons, `launch-plan.html` is the launch-week
 leveling plan, `talents.html` is our own talent calculator plus Legacy calculator
-(Talents / Legacy switch). All six share a top bar
-(site title, Macros / Builds / Addons / Launch Plan / Talent / Legacy Calc links, current page
-highlighted).
+(Talents / Legacy switch), `professions.html` holds profession costs and the BiS
+enchant checklist. All seven share a top bar
+(site title, Macros / Builds / Addons / Professions / Launch Plan / Talent / Legacy Calc
+links, current page highlighted).
 
 Class roster order on both `macros.html` and `builds.html` follows armor type,
 Cloth → Leather → Mail → Plate: Priest, Warlock, Mage, Rogue, Shaman, Hunter,
@@ -37,7 +38,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   (`.side-links`) has a `.plaque-row` on top with two featured cards side by side
   (Cozy Sleeping Bag, external; Library Books, links to `library-books.html`), then two side-by-side
   boxed columns (`.link-cols`): "General Resources" (Zockify, Wowhead, Icy Veins,
-  Warcraft Tavern, Mobalytics, ForeverChanges) and "Tools" (Best-in-Slot Gear, Dungeon Loot Tables, Hunter Pet Database, DPS Tier List (Lvl 60) = MythicSim).
+  Warcraft Tavern, Mobalytics, ForeverChanges) and "Tools" (BiS Enchants = our own `professions.html#bis`, Best-in-Slot Gear, Dungeon Loot Tables, Hunter Pet Database, DPS Tier List (Lvl 60) = MythicSim).
   The Tools column is `.link-group.tools` (`flex:1.3`, wider than General
   Resources) so every title fits on one line; keep titles short enough for that.
   No external talent or Legacy calculators here — our own `talents.html` (top bar) replaces them.
@@ -45,13 +46,45 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   only — no per-link description. New tool/resource links go in whichever column
   fits; keep favicons via `google.com/s2/favicons?domain=...` and verify with curl
   before adding. Hand-edit directly.
+- `professions.html` — hand-written page with a three-way switch (`.pf-mode`, same look
+  as the Talents / Legacy switch): **Enchanting costs**, **Leatherworking costs** and
+  **BiS enchants**. Hash links: `#enchanting`, `#leatherworking`, `#bis`, `#bis/<class>`
+  (e.g. `#bis/hunter` opens the BiS list filtered to that class; builds.html links there).
+  - Cost views: one shared `MATS` list (copper; `prof` = enchanting / leatherworking /
+    both; Soul Dust is "both" and its inputs stay in sync across views) and `COSTS`
+    (per profession: slots with `col` 1 or 2 and `[name, {matId: qty}]` recipes; a
+    profession with only col-1 slots renders full width). One line per recipe, green dot =
+    cheapest in its group, "Sort all by cost" toggle. Heavy Armor Kit shows a "cheaper to
+    buy" hint when the AH kit (`hak`) costs less than crafting it. Recipes are the owner's
+    in-game ones (Forever differs from Classic, e.g. Lesser Striking = 1 Soul Dust + 1
+    Large Glimmering Shard) — don't "fix" them from Classic data.
+  - Prices: site-wide prices live in `prices.json` (`{updated, by, prices: {matId: copper}}`),
+    fetched with no-store; `MATS[].price` is only the fallback. A visitor's own edits are
+    kept per browser (localStorage `wf-prof-prices-v1`, only changed materials) with "Use
+    site prices" to drop them. The owner signs in at the bottom of the cost views with the
+    SAME GitHub token and browser key as Group picks (`wf-owner-gh`; signed in on one page
+    = signed in on both) and presses **Save as site prices**, which PUTs `prices.json`
+    through the GitHub contents API (one retry on a sha conflict) — everyone sees it after
+    Pages redeploys (~1 min). New material: add it to `MATS` and `prices.json`.
+  - BiS enchants: `DATA` = every enchant ForeverChanges' level-30 BiS pages recommend
+    (all 36 class/spec pages under foreverchanges.pro/bis, read 2026-10-06 from each page's
+    `section.bis-enchants`), merged per recipe: name, prof, skill, slot, effect, mats,
+    how to get it, `formula` (vendor/rep formula vs trainer), `specs`, optional `note`
+    (a lower rank the owner knows) and `have: true` (the owner's known recipes, the
+    default for "I can do"). Visitors click a status to toggle it; ticks, the class
+    filter and "My Enchanting skill" are per browser (localStorage `wf-bis-enchants-v1`).
+    Groups: I can do / Missing: trainer / Missing: formula / Missing: other professions.
+    To refresh: re-read each spec page's enchant section and rebuild `DATA`.
+- `prices.json` — site-wide AH prices for professions.html (written by the owner from the
+  site; hand edits fine, keep valid JSON and copper integers).
 - `library-books.html` — hand-written library-book checklist + Alliance route
   from Stormwind. Not in the top-bar nav (linked from the index plaque), but it
   carries the shared top bar CSS like every other page. Book data is the `BOOKS`
   object (id → name, zone, coords, where, tags) and the route is `TRIPS` (steps
   are either a book id or a travel line). Checkboxes persist in localStorage
   `wf-library-books-v1`, keyed by book id — keep ids stable. Hand-edit directly.
-- `builds.html` — hand-written, JS-rendered page. A class-icon roster (same pattern
+- `builds.html` — hand-written, JS-rendered page. Each build card's header has an
+  "Enchants for <Class> →" link to `professions.html#bis/<class>`. A class-icon roster (same pattern
   as `macros.html`) picks one class at a time; classes with more than one build
   (Mage: Arcane/Frost Ice Lance/Frost Piercing Ice/Fire; Paladin: Retribution/
   Protection; Warrior: Tank/Fury) get a second spec-picker row. All build+talent+
@@ -279,8 +312,9 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
    changes), then run `python build.py`.
    The top bar CSS (3-column grid: title left / nav centered / optional right-side
    item like index.html's mute button; stacks into one centered column at
-   max-width 960px so the title never wraps next to the nav) must stay identical across all 6 pages —
-   `index.html`, `builds.html`, `addons.html`, `launch-plan.html`, `talents.html` are
+   max-width 1180px so the title never wraps next to the 6-tab nav) must stay identical across all pages —
+   `index.html`, `builds.html`, `addons.html`, `launch-plan.html`, `talents.html`,
+   `library-books.html`, `professions.html` are
    hand-written and each carry their own copy, while `macros.html` gets its copy from
    `template.html`. A hand-edit to one page's topbar CSS needs to be repeated in the others, or they
    drift out of sync (this happened once already — see CHANGELOG 2026-09-27).

@@ -4,6 +4,15 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Crafters: by slot, highest level first)
+- Each profession tab lists recipes in collapsible slot sections (Head, Neck, Shoulders,
+  Cloak, Chest, Shirt, Bracers, Hands, Belt, Legs, Boots, Rings, Trinkets, Weapons,
+  Shields & off-hands, Ranged, then Bags & quivers, Armor kits, Consumables, Materials &
+  other), highest required level first; open/closed state remembered. Slot and level come
+  from Wowhead's Forever tooltip data per item (cached per browser, `wf-item-meta-v1`);
+  enchants are slotted by name and keep the game's strongest-first order.
+- "By slot / A–Z" switch on the card. Alt character names no longer shown, class only.
+
 ## 2026-10-07 (Crafters: grouped by player, hunter Falseaim, no gathering professions)
 - `crafters.json`: third export, Falseaim (Hunter): Cooking 193, First Aid 77,
   Leatherworking 152 (64 recipes, incl. Forceful/Mystic Heavy and Medium Armor Kits).

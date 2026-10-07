@@ -222,7 +222,19 @@ a{color:var(--gold)}
 .clss{display:inline-flex;gap:4px;margin-left:8px;vertical-align:1px}
 .cls{font:600 11px/1 var(--sans);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);border-radius:4px;padding:2px 5px}
 .cr-head .meta .cls{margin-right:4px}
-.cr-head .meta .alt{color:var(--muted);font-size:12px;margin:0 10px 0 0}
+.cr-sort{margin-left:auto;display:inline-flex;background:#0A0F20;border:1px solid var(--edge);border-radius:6px;padding:2px;gap:2px}
+.cr-sort button{font:600 12px/1 var(--sans);color:var(--muted);background:transparent;border:1px solid transparent;border-radius:4px;padding:6px 9px;cursor:pointer}
+.cr-sort button[aria-pressed="true"]{color:var(--text);border-color:var(--gold)}
+.cr-sec{border-top:1px solid rgba(58,68,104,.6)}
+.cr-sec:first-of-type{border-top:0}
+.cr-sec > summary{list-style:none;cursor:pointer;padding:9px 0;font:400 17px/1.2 var(--serif);color:var(--gold);display:flex;align-items:baseline;gap:8px}
+.cr-sec > summary::-webkit-details-marker{display:none}
+.cr-sec > summary::before{content:"›";display:inline-block;width:12px;color:var(--muted);transition:transform .15s}
+.cr-sec[open] > summary::before{transform:rotate(90deg)}
+.cr-sec > summary small{font:500 12px var(--sans);color:var(--muted)}
+.cr-sec .cr-r{padding-left:20px}
+.cr-wait{color:var(--muted);font-size:13px;margin:6px 0}
+@media (prefers-reduced-motion:reduce){.cr-sec > summary::before{transition:none}}
 .cr-empty{color:var(--muted);margin:10px 0 18px}
 .cr-import{background:var(--panel);border:1px solid var(--edge);border-radius:8px;margin:20px 0 0}
 .cr-import > summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:12px 14px}
@@ -1214,7 +1226,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
         (pf.recipes || []).forEach(function (r) {
           // Keyed by name + id: Forever has a few recipes sharing a name (two "Dark Leather Boots").
           var key = r.n + "|" + (r.id || 0), e = gp.recipes[key];
-          if (!e) { e = gp.recipes[key] = { r: r, classes: [] }; gp.list.push(e); }
+          if (!e) { e = gp.recipes[key] = { r: r, classes: [], idx: gp.list.length }; gp.list.push(e); }
           if (e.classes.indexOf(ch.cls) === -1) e.classes.push(ch.cls);
         });
       });
@@ -1241,24 +1253,98 @@ body.list-open .list-drawer{transform:none;visibility:visible}
       if (!g.profs[sel]) sel = g.profOrder[0];
       var gp = g.profs[sel], multi = g.chars.length > 1;
       var list = gp ? gp.list.slice().sort(function (a, b) { return a.r.n.localeCompare(b.r.n); }) : [];
+      var body = crSort === "slot" && gp ? slotSections(g.name, sel, gp.list, multi) : list.map(function (e) { return recipeRow(e.r, null, multi ? e.classes : null); }).join("");
       var color = multi ? "var(--gold)" : (CLASS_COLOR_BY_TOKEN[g.chars[0].cls] || "var(--gold)");
       return '<section class="cr-char" style="--cc:' + color + '"><div class="cr-head"><b>' + esc(g.name) + "</b>" +
-        '<span class="meta">' + g.chars.map(function (c) { return classTag(c.cls, c.name) + (c.name !== g.name ? '<span class="alt">' + esc(c.name) + "</span>" : ""); }).join("") + (g.updated ? " updated " + esc(fmtDate(g.updated)) : "") + "</span></div>" +
+        '<span class="meta">' + g.chars.map(function (c) { return classTag(c.cls); }).join("") + (g.updated ? " updated " + esc(fmtDate(g.updated)) : "") + "</span>" +
+        '<span class="cr-sort" role="group" aria-label="Sort"><button type="button" data-sort="slot" aria-pressed="' + (crSort === "slot") + '">By slot</button><button type="button" data-sort="az" aria-pressed="' + (crSort === "az") + '">A–Z</button></span></div>' +
         '<div class="cr-profs" role="group" aria-label="Professions">' + g.profOrder.map(function (pn) {
           var p = g.profs[pn], best = p.ranks.reduce(function (a, b) { return b.rank > a.rank ? b : a; });
-          var tip = p.ranks.map(function (x) { return cap(x.cls) + (x.who !== g.name ? " (" + x.who + ")" : "") + " " + x.rank + (x.max ? "/" + x.max : ""); }).join(", ");
+          var tip = p.ranks.map(function (x) { return cap(x.cls) + " " + x.rank + (x.max ? "/" + x.max : ""); }).join(", ");
           return '<button type="button" class="cr-prof" data-gi="' + gi + '" data-prof="' + esc(pn) + '" aria-pressed="' + (pn === sel) + '" title="' + esc(tip) + '">' + esc(pn) +
             "<small>" + best.rank + (best.max ? "/" + best.max : "") + " · " + p.list.length + "</small></button>";
         }).join("") + "</div>" +
-        '<div class="cr-recipes">' + list.map(function (e) { return recipeRow(e.r, null, multi ? e.classes : null); }).join("") + "</div></section>";
+        '<div class="cr-recipes">' + body + "</div></section>";
     }).join("");
     refreshTooltips();
+  }
+  // ---- By slot: gear slot from Wowhead's tooltip data (cached per browser), enchants
+  // from their name, then the rest. Inside a slot: highest required level first.
+  var crSort = lget("wf-prof-crafter-sort", "slot") === "az" ? "az" : "slot";
+  var crOpen = lget("wf-prof-crafter-open", {}) || {};
+  var META_KEY = "wf-item-meta-v1", itemMeta = lget(META_KEY, {}) || {}, metaQueue = [], metaBusy = 0, metaTimer = null;
+  var SLOT_ORDER = ["Head", "Neck", "Shoulders", "Cloak", "Chest", "Shirt", "Bracers", "Hands", "Belt", "Legs", "Boots", "Rings", "Trinkets",
+    "Weapons", "Shields & off-hands", "Ranged", "Bags & quivers", "Armor kits", "Consumables", "Materials & other"];
+  var SLOT_MAP = { Head: "Head", Neck: "Neck", Shoulder: "Shoulders", Back: "Cloak", Chest: "Chest", Robe: "Chest", Shirt: "Shirt", Tabard: "Shirt",
+    Wrist: "Bracers", Hands: "Hands", Waist: "Belt", Legs: "Legs", Feet: "Boots", Finger: "Rings", Trinket: "Trinkets",
+    "One-Hand": "Weapons", "Two-Hand": "Weapons", "Main Hand": "Weapons", "Off Hand": "Shields & off-hands", "Held In Off-hand": "Shields & off-hands",
+    Ranged: "Ranged", Thrown: "Ranged", Relic: "Ranged" };
+  var ENCHANT_SLOT = [[/^Enchant Necklace/, "Neck"], [/^Enchant Cloak/, "Cloak"], [/^Enchant Chest/, "Chest"], [/^Enchant Bracer/, "Bracers"],
+    [/^Enchant Gloves/, "Hands"], [/^Enchant Boots/, "Boots"], [/^Enchant (2H )?Weapon/, "Weapons"], [/^Enchant Shield/, "Shields & off-hands"]];
+  function slotOf(r) {
+    if (r.k !== "i") {
+      for (var i = 0; i < ENCHANT_SLOT.length; i++) if (ENCHANT_SLOT[i][0].test(r.n)) return ENCHANT_SLOT[i][1];
+      return "Materials & other";
+    }
+    if (/Armor Kit$/.test(r.n)) return "Armor kits";
+    var m = itemMeta[r.id];
+    if (!m) return null;
+    if (m.b) return "Bags & quivers";
+    if (m.s && SLOT_MAP[m.s]) return SLOT_MAP[m.s];
+    return m.u ? "Consumables" : "Materials & other";
+  }
+  function reqLevel(e) { var m = e.r.k === "i" && itemMeta[e.r.id]; return m ? (m.r || m.i || 0) : 0; }
+  function slotSections(owner, prof, entries, multi) {
+    var groups = {}, waiting = 0;
+    entries.forEach(function (e) {
+      var sl = slotOf(e.r);
+      if (sl == null) { waiting++; queueMeta(e.r.id); sl = "Materials & other"; }
+      (groups[sl] = groups[sl] || []).push(e);
+    });
+    return (waiting ? '<p class="cr-wait">Sorting by slot… (' + waiting + " items to look up)</p>" : "") + SLOT_ORDER.filter(function (sl) { return groups[sl]; }).map(function (sl) {
+      // Highest required level first; enchants (no level) keep the game's order, which is
+      // already strongest first within a slot.
+      var list = groups[sl].sort(function (a, b) { return reqLevel(b) - reqLevel(a) || a.idx - b.idx; });
+      var k = owner + "|" + prof + "|" + sl;
+      return '<details class="cr-sec" data-open="' + esc(k) + '"' + (crOpen[k] ? " open" : "") + '><summary>' + esc(sl) + "<small>" + list.length + "</small></summary>" +
+        list.map(function (e) { var lv = reqLevel(e); return recipeRow(e.r, lv ? "level " + lv : null, multi ? e.classes : null); }).join("") + "</details>";
+    }).join("");
+  }
+  function queueMeta(id) {
+    if (!id || itemMeta[id] || metaQueue.indexOf(id) !== -1) return;
+    metaQueue.push(id);
+    pumpMeta();
+  }
+  function pumpMeta() {
+    while (metaBusy < 4 && metaQueue.length) {
+      var id = metaQueue.shift(); metaBusy++;
+      fetch("https://nether.wowhead.com/forever/tooltip/item/" + id).then(function (r) { return r.ok ? r.json() : null; }).then((function (id) {
+        return function (j) {
+          var t = (j && j.tooltip) || "";
+          var slot = /<table width="100%"><tr><td>([^<]+)<\/td>/.exec(t);
+          itemMeta[id] = { s: slot ? slot[1] : "", b: /\d+ Slot (Bag|Quiver|Ammo Pouch)/.test(t) ? 1 : 0, u: /Use: /.test(t) ? 1 : 0,
+            i: Number((/<!--ilvl-->(\d+)/.exec(t) || [])[1]) || 0, r: Number((/<!--rlvl-->(\d+)/.exec(t) || [])[1]) || 0 };
+        };
+      })(id)).catch((function (id) { return function () { itemMeta[id] = { s: "", b: 0, u: 0, i: 0, r: 0, x: 1 }; }; })(id)).then(function () {
+        metaBusy--;
+        if (!metaQueue.length && !metaBusy) { lset(META_KEY, itemMeta); }
+        clearTimeout(metaTimer); metaTimer = setTimeout(function () { if (!$("view-crafters").hidden) renderCrafters(); }, 250);
+        pumpMeta();
+      });
+    }
   }
   function refreshTooltips() {
     try { if (window.$WowheadPower && window.$WowheadPower.refreshLinks) window.$WowheadPower.refreshLinks(); } catch (e) { /* tooltips are optional */ }
   }
   function cap(t) { t = String(t || "").toLowerCase(); return t.charAt(0).toUpperCase() + t.slice(1); }
+  $("cr-list").addEventListener("toggle", function (e) {
+    var d = e.target; if (!d.matches || !d.matches("details.cr-sec")) return;
+    if (d.open) crOpen[d.dataset.open] = 1; else delete crOpen[d.dataset.open];
+    lset("wf-prof-crafter-open", crOpen);
+  }, true);
   $("cr-list").addEventListener("click", function (e) {
+    var so = e.target.closest("[data-sort]");
+    if (so) { crSort = so.dataset.sort; lset("wf-prof-crafter-sort", crSort); renderCrafters(); return; }
     var b = e.target.closest(".cr-prof"); if (!b) return;
     var g = groupCrafters()[Number(b.dataset.gi)]; if (!g) return;
     crSel[g.name] = b.dataset.prof; lset("wf-prof-crafter-sel", crSel); renderCrafters();

@@ -334,8 +334,8 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   scenes, made by the owner with free outside image tools, not Claude). `index.html`'s inline
   script right after `<div class="hero" id="hero">` rotates them every 2 days (UTC day / 2,
   same picture for everyone), each with its own `background-position` so the party and gate
-  stay in view; `?bg=1..4` previews one. CSS default is hero-1. They came in small
-  (1024–1248 px wide) and were upscaled; send higher-res originals to replace them in place.
+  stay in view; `?bg=1..4` previews one. CSS default is hero-1. Sources are the owner's
+  downloaded files (1584×672 for hero-1, 1248×832 for the rest), upscaled to 2560/1920 wide.
   `assets/og.jpg` is built from hero-1.
 - `assets/sleepingbag.webp` — small icon (256×256) for the Cozy Sleeping Bag overlay
   plaque on `index.html`. Generated via local ComfyUI (SDXL base txt2img), finalized

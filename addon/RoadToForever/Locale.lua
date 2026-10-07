@@ -285,6 +285,7 @@ R2F.L = {
     "/r2f import  paste an import string",
     "/r2f copybuild  copy your talents as a site link (also a button on the Talents tab)",
     "/r2f profs  copy your professions for the site (open each profession window once first)",
+    "/r2f profdebug  show what the addon can see of your profession windows",
     "/r2f help  this list",
   },
   UNKNOWN_COMMAND = "unknown command \"%s\". Type /r2f help for the list.",

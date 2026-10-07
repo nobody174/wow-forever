@@ -2756,6 +2756,12 @@ the group can see who makes what.
 - Read-only: no protected calls, works in combat. Export button = our own plain button
   parented to `TradeSkillFrame` / `CraftFrame`, anchored left of their close button.
 
+- v0.12.1: 0.12.0 showed nothing in game, so a third reader uses the modern
+  `C_TradeSkillUI` (GetBaseProfessionInfo / GetAllRecipeIDs / GetRecipeInfo(learned) /
+  GetRecipeSchematic basic reagents, or GetRecipeNumReagents/ReagentInfo on older modern
+  clients) when the legacy readers find nothing; Export button also on `ProfessionsFrame`;
+  `/r2f profdebug` prints what the client has.
+
 ### 14.2 Export string
 `R2FP1:` + base64 of tab-separated lines (`\n` between lines):
 ```

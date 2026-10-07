@@ -3,6 +3,18 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.12.1 (2026-10-07): profession export on modern profession windows
+
+- 0.12.0 showed no Export button and no "saved N recipes" line in game: WoW Forever runs
+  on a modern client, so the Classic profession functions are probably missing. Now also
+  reads the modern profession window (`C_TradeSkillUI`: recipe ids, `GetRecipeInfo`,
+  `GetRecipeSchematic` basic reagents), listens to `TRADE_SKILL_LIST_UPDATE` /
+  `TRADE_SKILL_DATA_SOURCE_CHANGED`, and puts the Export button on `ProfessionsFrame` too.
+- `/r2f profs` reads the open window itself if nothing was saved yet.
+- New `/r2f profdebug`: one chat block showing which profession functions and windows this
+  client has, how many rows the open window has, and what's saved. Paste it to us if the
+  export still doesn't work.
+
 ## 0.12.0 (2026-10-07): export your professions for the site
 
 **Never run in game yet: TESTING.md 21.**

@@ -89,6 +89,9 @@ handlers.TRADE_SKILL_SHOW = function() R2F.Professions.OnShow("trade") end
 handlers.TRADE_SKILL_UPDATE = function() R2F.Professions.OnUpdate("trade") end
 handlers.CRAFT_SHOW = function() R2F.Professions.OnShow("craft") end
 handlers.CRAFT_UPDATE = function() R2F.Professions.OnUpdate("craft") end
+-- Modern clients (v0.12.1): the recipe list arrives with these instead.
+handlers.TRADE_SKILL_LIST_UPDATE = function() R2F.Professions.OnUpdate("trade") end
+handlers.TRADE_SKILL_DATA_SOURCE_CHANGED = function() R2F.Professions.OnUpdate("trade") end
 -- A CVar changed (/console, Blizzard's options, another addon, or our own
 -- Quick settings): redraw Home's boxes from the live values (12.4.1). They
 -- are also re-read every time the Home tab opens, so a client without this
@@ -152,6 +155,7 @@ local COMMANDS = {
   -- Professions export (14, v0.12.0). Read-only, works in combat.
   profs = function() R2F.Professions.Export() end,
   professions = function() R2F.Professions.Export() end,
+  profdebug = function() R2F.Professions.Debug() end,
 }
 R2F.COMMANDS = COMMANDS
 

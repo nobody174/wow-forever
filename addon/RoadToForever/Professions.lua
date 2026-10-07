@@ -113,6 +113,75 @@ local function read(api)
   return profName, entry
 end
 
+-- Modern profession window (v0.12.1): newer clients drop GetNumTradeSkills & co.
+-- and use C_TradeSkillUI with recipe ids (WoW Forever runs on a modern client:
+-- talents are C_Traits there, 13.10). Recipe info and its materials come from
+-- GetRecipeInfo + GetRecipeSchematic (basic reagents only), or the older
+-- GetRecipeNumReagents / GetRecipeReagentInfo pair when there is no schematic.
+local function readModern()
+  local T = C_TradeSkillUI
+  if not (T and T.GetAllRecipeIDs and T.GetRecipeInfo) then return nil end
+  local profName, rank, max
+  if T.GetBaseProfessionInfo then
+    local info = T.GetBaseProfessionInfo()
+    if type(info) == "table" then profName, rank, max = info.professionName, info.skillLevel, info.maxSkillLevel end
+  end
+  if (not profName or profName == "") and T.GetChildProfessionInfo then
+    local info = T.GetChildProfessionInfo()
+    if type(info) == "table" then profName, rank, max = info.parentProfessionName or info.professionName, info.skillLevel, info.maxSkillLevel end
+  end
+  if (not profName or profName == "") and T.GetTradeSkillLine then
+    local _, n, r, m = T.GetTradeSkillLine()
+    profName, rank, max = n, r, m
+  end
+  if not profName or profName == "" then return nil end
+  local recipes = {}
+  for _, recipeID in ipairs(T.GetAllRecipeIDs() or {}) do
+    local info = T.GetRecipeInfo(recipeID)
+    if type(info) == "table" and info.learned and not info.isRecraft and info.name then
+      local mats, itemId = {}, nil
+      local sch = T.GetRecipeSchematic and T.GetRecipeSchematic(recipeID, false)
+      if type(sch) == "table" then
+        itemId = sch.outputItemID
+        for _, slot in ipairs(sch.reagentSlotSchematics or {}) do
+          -- reagentType 1 = basic (required); 0 = optional/modifying: skipped.
+          if slot.reagentType == nil or slot.reagentType == 1 then
+            local first = slot.reagents and slot.reagents[1]
+            if first and first.itemID then
+              local nm = GetItemInfo and GetItemInfo(first.itemID)
+              mats[#mats + 1] = { id = first.itemID, count = slot.quantityRequired or 1, name = nm }
+            end
+          end
+        end
+      elseif T.GetRecipeNumReagents then
+        for r = 1, T.GetRecipeNumReagents(recipeID) or 0 do
+          local mName, _, count = T.GetRecipeReagentInfo(recipeID, r)
+          local link = T.GetRecipeReagentItemLink and T.GetRecipeReagentItemLink(recipeID, r)
+          mats[#mats + 1] = { id = idFromLink(link, "item"), count = count or 1, name = mName }
+        end
+        if T.GetRecipeItemLink then itemId = idFromLink(T.GetRecipeItemLink(recipeID), "item") end
+      end
+      recipes[#recipes + 1] = { name = info.name, kind = itemId and "i" or "s", id = itemId or recipeID, mats = mats }
+    end
+  end
+  if #recipes == 0 then return nil end
+  local entry = { rank = rank or 0, max = max or 0, api = "modern", ts = time(), recipes = recipes }
+  R2F.Library.cdb.professions[profName] = entry
+  return profName, entry
+end
+
+-- Legacy first; the modern reader when the legacy one finds nothing.
+local function readAny(api)
+  local ok, profName, entry = pcall(read, api)
+  if ok and profName then return profName, entry end
+  if api == "trade" then
+    ok, profName, entry = pcall(readModern)
+    if ok and profName then return profName, entry end
+  end
+  return nil
+end
+Professions.ReadAny = readAny
+
 -- Re-read shortly after the last update event: the window fires a burst of
 -- them while it fills, and item links can arrive a moment later.
 local function schedule(api, announce)
@@ -120,8 +189,8 @@ local function schedule(api, announce)
   pending[api] = true
   local run = function()
     pending[api] = nil
-    local ok, profName, entry = pcall(read, api)
-    if ok and profName and announce then
+    local profName, entry = readAny(api)
+    if profName and announce then
       local before = Professions.lastCount and Professions.lastCount[profName]
       Professions.lastCount = Professions.lastCount or {}
       if before ~= #entry.recipes then
@@ -138,11 +207,11 @@ end
 local buttons = {}
 local function addButton(api)
   if buttons[api] then return end
-  local parent = api == "craft" and _G.CraftFrame or _G.TradeSkillFrame
+  local parent = api == "craft" and _G.CraftFrame or _G.TradeSkillFrame or _G.ProfessionsFrame
   if not parent then return end
   local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
   b:SetSize(70, 20)
-  local close = api == "craft" and _G.CraftFrameCloseButton or _G.TradeSkillFrameCloseButton
+  local close = api == "craft" and _G.CraftFrameCloseButton or _G.TradeSkillFrameCloseButton or parent.CloseButton
   if close then
     b:SetPoint("RIGHT", close, "LEFT", -2, 0)
   else
@@ -151,7 +220,7 @@ local function addButton(api)
   b:SetText(L.PROF_BUTTON)
   b:SetFrameLevel(parent:GetFrameLevel() + 5)
   b:SetScript("OnClick", function()
-    pcall(read, api)
+    readAny(api)
     Professions.Export()
   end)
   b:SetScript("OnEnter", function(self)
@@ -218,6 +287,8 @@ function Professions.ExportString()
 end
 
 function Professions.Export()
+  -- Nothing saved yet but a window is open right now: read it first.
+  if not next(R2F.Library.cdb.professions) then readAny("trade"); readAny("craft") end
   local s = Professions.ExportString()
   if not s then
     R2F.Print(L.PROF_NONE)
@@ -225,4 +296,23 @@ function Professions.Export()
   end
   R2F.UI.ShowCopy(s, L.PROF_COPY_HINT)
   return s
+end
+
+-- /r2f profdebug (v0.12.1): what this client offers, so a silent profession
+-- window can be diagnosed from one chat paste. Read-only.
+function Professions.Debug()
+  local T = C_TradeSkillUI
+  local function has(x) return x and "yes" or "no" end
+  R2F.Print("profdebug: GetNumTradeSkills=" .. has(GetNumTradeSkills) .. ", GetNumCrafts=" .. has(GetNumCrafts) ..
+    ", C_TradeSkillUI=" .. has(T) .. ", GetAllRecipeIDs=" .. has(T and T.GetAllRecipeIDs) ..
+    ", GetRecipeSchematic=" .. has(T and T.GetRecipeSchematic) .. ", GetBaseProfessionInfo=" .. has(T and T.GetBaseProfessionInfo))
+  R2F.Print("profdebug: frames TradeSkillFrame=" .. has(_G.TradeSkillFrame) .. ", CraftFrame=" .. has(_G.CraftFrame) ..
+    ", ProfessionsFrame=" .. has(_G.ProfessionsFrame))
+  local n1 = GetNumTradeSkills and GetNumTradeSkills() or "-"
+  local n2 = GetNumCrafts and GetNumCrafts() or "-"
+  local n3 = T and T.GetAllRecipeIDs and #(T.GetAllRecipeIDs() or {}) or "-"
+  R2F.Print("profdebug: open window rows trade=" .. tostring(n1) .. ", craft=" .. tostring(n2) .. ", recipeIDs=" .. tostring(n3))
+  local saved = {}
+  for name, e in pairs(R2F.Library.cdb.professions) do saved[#saved + 1] = name .. " " .. #(e.recipes or {}) .. " (" .. (e.api or "?") .. ")" end
+  R2F.Print("profdebug: saved " .. (#saved > 0 and table.concat(saved, ", ") or "none"))
 end

@@ -857,7 +857,9 @@ nothing pending in Blizzard's window:
    named "n:...", the game hadn't cached that item yet: hover a few recipes in the
    window, reopen it, export again.
 5. `/reload`, then `/r2f profs` without opening any window: the same string (saved).
-6. If chat says nothing when you open a profession, note which profession and whether
+6. Type `/r2f profdebug` with the profession window open and paste the three
+   `profdebug:` chat lines to us (shows which game functions exist).
+7. If chat says nothing when you open a profession, note which profession and whether
    it's the "craft" style window (Enchanting in Classic) and tell us: the API names
    are guesses until this test.
 

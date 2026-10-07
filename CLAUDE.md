@@ -122,7 +122,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   player", defaults to the character name) or else the name. One card per player
   (`groupCrafters`): professions merged, recipe list = union, each recipe tagged with the
   classes that know it, profession chip shows the best skill (title lists each class).
-  Gathering professions (Mining, Herbalism, Skinning, Fishing; `HIDE_PROFS`) aren't shown.
+  Gathering professions and First Aid (Mining, Herbalism, Skinning, Fishing, First Aid; `HIDE_PROFS`) aren't shown.
   Card body default "By slot" (`slotSections`): collapsible `details.cr-sec` per slot
   (`SLOT_ORDER`), open state in `wf-prof-crafter-open`, sort switch in
   `wf-prof-crafter-sort`. Item slot/levels come from

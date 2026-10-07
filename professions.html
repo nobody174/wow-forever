@@ -1225,7 +1225,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   // One card per name: every character with that name merged. Each profession lists the
   // union of their recipes; a recipe shows which of them (by class) can make it.
   // Gathering professions only list smelting & co., nothing anyone asks a crafter for.
-  var HIDE_PROFS = ["Mining", "Herbalism", "Skinning", "Fishing"];
+  var HIDE_PROFS = ["Mining", "Herbalism", "Skinning", "Fishing", "First Aid"];
   function ownerOf(ch) { return ch.owner || ch.name; }
   function groupCrafters() {
     var byName = {}, order = [];

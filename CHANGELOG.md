@@ -25,7 +25,7 @@ user-facing release notes.
   All three characters carry `owner: "Venom"`, so they show as one Venom card.
 - Import preview has "Show under player" (owner); cards group by owner, class tags show
   which character makes what (hover shows the character name).
-- Mining, Herbalism, Skinning and Fishing are hidden. Same-name recipes are kept apart
+- Mining, Herbalism, Skinning and Fishing are hidden (First Aid too, later the same day). Same-name recipes are kept apart
   by id (two "Dark Leather Boots").
 
 ## 2026-10-07 (Crafters: one card per name, Wowhead tooltips)

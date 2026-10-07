@@ -7,7 +7,8 @@ user-facing release notes.
 ## 2026-10-07 (Crafters: profession export from the addon, addon v0.12.0)
 - Addon 0.12.0: reads every recipe from open profession windows (trade + Classic craft
   window), Export button on the profession window and `/r2f profs` give an `R2FP1:`
-  string (ADDON_PLAN 14, TESTING.md 21; never run in game yet).
+  string (ADDON_PLAN 14, TESTING.md 21; never run in game yet). Tag `r2f-v0.12.0` not
+  pushed yet: this session's proxy refuses tag pushes, so addons.html still shows 0.11.0.
 - professions.html: new **Crafters** view: per character, profession tabs with skill and
   every recipe with material cost at live AH prices; "Who can make…?" search; paste an
   export to preview, owner saves it to `crafters.json` for everyone. Imported characters

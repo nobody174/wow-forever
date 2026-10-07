@@ -118,9 +118,11 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Material prices by item id: MATS rules first, else live AHledger (crafter mat ids are
   added to the live fetch, batched 100 per call; names come from AHledger too).
   "Who can make…?" search filters recipes and material names across everyone.
-  Characters with the same name (the owner names alts alike) show as ONE card
+  Characters are grouped by player: `owner` field (set in the import preview, "Show under
+  player", defaults to the character name) or else the name. One card per player
   (`groupCrafters`): professions merged, recipe list = union, each recipe tagged with the
   classes that know it, profession chip shows the best skill (title lists each class).
+  Gathering professions (Mining, Herbalism, Skinning, Fishing; `HIDE_PROFS`) aren't shown.
   Recipe names are Wowhead links (`/forever/item=` for k "i", `/forever/spell=` for k "s",
   `data-wowhead="...&domain=forever"`); Wowhead's `tooltips.js` (zamimg) gives hover
   tooltips with icon and stats; `refreshTooltips()` re-scans after each render.

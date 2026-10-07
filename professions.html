@@ -222,6 +222,7 @@ a{color:var(--gold)}
 .clss{display:inline-flex;gap:4px;margin-left:8px;vertical-align:1px}
 .cls{font:600 11px/1 var(--sans);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);border-radius:4px;padding:2px 5px}
 .cr-head .meta .cls{margin-right:4px}
+.cr-head .meta .alt{color:var(--muted);font-size:12px;margin:0 10px 0 0}
 .cr-empty{color:var(--muted);margin:10px 0 18px}
 .cr-import{background:var(--panel);border:1px solid var(--edge);border-radius:8px;margin:20px 0 0}
 .cr-import > summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:12px 14px}
@@ -235,6 +236,8 @@ a{color:var(--gold)}
 .cr-prev{margin-top:12px;font-size:14px}
 .cr-prev .err{color:var(--warn)}
 .cr-prev ul{margin:6px 0 10px;padding-left:20px;color:var(--muted)}
+.cr-owner{font-size:14px;color:var(--muted)}
+.cr-owner input{background:#0A0F1F;color:var(--text);border:1px solid var(--edge);border-radius:5px;padding:5px 8px;font:inherit;margin-left:6px;width:150px}
 /* Shopping list */
 .add-btn{font:600 12.5px/1 var(--sans);color:var(--gold);background:transparent;border:1px dashed color-mix(in srgb,var(--gold) 55%,var(--edge));border-radius:5px;padding:6px 9px;cursor:pointer;margin-top:10px}
 .add-btn:hover{border-style:solid;background:rgba(255,209,0,.06)}
@@ -642,8 +645,9 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   function mergeCrafters(chars) {
     CRAFTERS = BASE_CRAFTERS.map(function (c) { return { name: c.name, color: c.color, knows: c.knows.slice() }; });
     (chars || []).forEach(function (ch) {
-      var c = CRAFTERS.filter(function (x) { return x.name === ch.name; })[0];
-      if (!c) { c = { name: ch.name, color: CLASS_COLOR_BY_TOKEN[ch.cls] || "#FFD100", knows: [] }; CRAFTERS.push(c); }
+      var who = ch.owner || ch.name;
+      var c = CRAFTERS.filter(function (x) { return x.name === who; })[0];
+      if (!c) { c = { name: who, color: CLASS_COLOR_BY_TOKEN[ch.cls] || "#FFD100", knows: [] }; CRAFTERS.push(c); }
       (ch.profs || []).forEach(function (pf) { (pf.recipes || []).forEach(function (r) { if (c.knows.indexOf(r.n) === -1) c.knows.push(r.n); }); });
     });
   }
@@ -1180,8 +1184,8 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     var t = r.k === "i" ? "item" : "spell";
     return '<a class="wh" href="https://www.wowhead.com/forever/' + t + "=" + r.id + '" target="_blank" rel="noopener" data-wowhead="' + t + "=" + r.id + '&domain=forever">' + esc(r.n) + "</a>";
   }
-  function classTag(c) {
-    return '<span class="cls" style="--c:' + (CLASS_COLOR_BY_TOKEN[c] || "var(--muted)") + '">' + esc(cap(c)) + "</span>";
+  function classTag(c, who) {
+    return '<span class="cls" style="--c:' + (CLASS_COLOR_BY_TOKEN[c] || "var(--muted)") + '"' + (who ? ' title="' + esc(who) + '"' : "") + ">" + esc(cap(c)) + "</span>";
   }
   function recipeRow(r, who, classes) {
     var c = recipeCost(r);
@@ -1192,20 +1196,25 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   }
   // One card per name: every character with that name merged. Each profession lists the
   // union of their recipes; a recipe shows which of them (by class) can make it.
+  // Gathering professions only list smelting & co., nothing anyone asks a crafter for.
+  var HIDE_PROFS = ["Mining", "Herbalism", "Skinning", "Fishing"];
+  function ownerOf(ch) { return ch.owner || ch.name; }
   function groupCrafters() {
     var byName = {}, order = [];
     (crafterData.chars || []).forEach(function (ch) {
-      var g = byName[ch.name];
-      if (!g) { g = byName[ch.name] = { name: ch.name, chars: [], profs: {}, profOrder: [], updated: "" }; order.push(ch.name); }
+      var key = ownerOf(ch), g = byName[key];
+      if (!g) { g = byName[key] = { name: key, chars: [], profs: {}, profOrder: [], updated: "" }; order.push(key); }
       g.chars.push(ch);
       if ((ch.updated || "") > g.updated) g.updated = ch.updated || "";
       (ch.profs || []).forEach(function (pf) {
+        if (HIDE_PROFS.indexOf(pf.name) !== -1) return;
         var gp = g.profs[pf.name];
         if (!gp) { gp = g.profs[pf.name] = { name: pf.name, ranks: [], recipes: {}, list: [] }; g.profOrder.push(pf.name); }
-        gp.ranks.push({ cls: ch.cls, rank: pf.rank, max: pf.max });
+        gp.ranks.push({ cls: ch.cls, who: ch.name, rank: pf.rank, max: pf.max });
         (pf.recipes || []).forEach(function (r) {
-          var e = gp.recipes[r.n];
-          if (!e) { e = gp.recipes[r.n] = { r: r, classes: [] }; gp.list.push(e); }
+          // Keyed by name + id: Forever has a few recipes sharing a name (two "Dark Leather Boots").
+          var key = r.n + "|" + (r.id || 0), e = gp.recipes[key];
+          if (!e) { e = gp.recipes[key] = { r: r, classes: [] }; gp.list.push(e); }
           if (e.classes.indexOf(ch.cls) === -1) e.classes.push(ch.cls);
         });
       });
@@ -1234,10 +1243,10 @@ body.list-open .list-drawer{transform:none;visibility:visible}
       var list = gp ? gp.list.slice().sort(function (a, b) { return a.r.n.localeCompare(b.r.n); }) : [];
       var color = multi ? "var(--gold)" : (CLASS_COLOR_BY_TOKEN[g.chars[0].cls] || "var(--gold)");
       return '<section class="cr-char" style="--cc:' + color + '"><div class="cr-head"><b>' + esc(g.name) + "</b>" +
-        '<span class="meta">' + g.chars.map(function (c) { return classTag(c.cls); }).join("") + (g.updated ? " updated " + esc(fmtDate(g.updated)) : "") + "</span></div>" +
+        '<span class="meta">' + g.chars.map(function (c) { return classTag(c.cls, c.name) + (c.name !== g.name ? '<span class="alt">' + esc(c.name) + "</span>" : ""); }).join("") + (g.updated ? " updated " + esc(fmtDate(g.updated)) : "") + "</span></div>" +
         '<div class="cr-profs" role="group" aria-label="Professions">' + g.profOrder.map(function (pn) {
           var p = g.profs[pn], best = p.ranks.reduce(function (a, b) { return b.rank > a.rank ? b : a; });
-          var tip = p.ranks.map(function (x) { return cap(x.cls) + " " + x.rank + (x.max ? "/" + x.max : ""); }).join(", ");
+          var tip = p.ranks.map(function (x) { return cap(x.cls) + (x.who !== g.name ? " (" + x.who + ")" : "") + " " + x.rank + (x.max ? "/" + x.max : ""); }).join(", ");
           return '<button type="button" class="cr-prof" data-gi="' + gi + '" data-prof="' + esc(pn) + '" aria-pressed="' + (pn === sel) + '" title="' + esc(tip) + '">' + esc(pn) +
             "<small>" + best.rank + (best.max ? "/" + best.max : "") + " · " + p.list.length + "</small></button>";
         }).join("") + "</div>" +
@@ -1298,7 +1307,11 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     if (err) { el.innerHTML = '<div class="cr-prev"><p class="err">' + esc(err) + "</p></div>"; return; }
     if (!preview) { el.innerHTML = ""; return; }
     var nomats = 0; preview.profs.forEach(function (p) { p.recipes.forEach(function (r) { if (!r.m.length) nomats++; }); });
-    el.innerHTML = '<div class="cr-prev"><p><b>' + esc(preview.name) + "</b> (" + esc(cap(preview.cls)) + (preview.realm ? ", " + esc(preview.realm) : "") + ")</p><ul>" +
+    var known = (crafterData.chars || []).filter(function (c) { return c.name === preview.name && (c.realm || "") === (preview.realm || ""); })[0];
+    if (!preview.owner) preview.owner = known ? ownerOf(known) : preview.name;
+    el.innerHTML = '<div class="cr-prev"><p><b>' + esc(preview.name) + "</b> (" + esc(cap(preview.cls)) + (preview.realm ? ", " + esc(preview.realm) : "") + ")</p>" +
+      '<label class="cr-owner">Show under player <input type="text" data-cr="owner" value="' + esc(preview.owner) + '" maxlength="24"></label>' +
+      '<span class="hint"> Alts with the same player name share one card.</span><ul>' +
       preview.profs.map(function (p) { return "<li>" + esc(p.name) + " " + p.rank + (p.max ? "/" + p.max : "") + ": " + p.recipes.length + " recipes</li>"; }).join("") + "</ul>" +
       (nomats ? '<p class="err">' + nomats + " recipe(s) came without materials. Hover a few recipes in game, reopen the window and export again.</p>" : "") +
       (owner ? '<button type="button" class="btn primary" data-cr="save"' + (busy ? " disabled" : "") + ">Save " + esc(preview.name) + " for everyone</button>"
@@ -1308,6 +1321,9 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     var v = this.value.trim();
     if (!v) { preview = null; renderPreview(); return; }
     try { preview = parseExport(v); renderPreview(); } catch (e) { preview = null; renderPreview(e.message); }
+  });
+  $("cr-preview").addEventListener("input", function (e) {
+    if (e.target.dataset.cr === "owner" && preview) preview.owner = e.target.value.trim() || preview.name;
   });
   $("cr-preview").addEventListener("click", function (e) {
     var b = e.target.closest("[data-cr]"); if (!b) return;

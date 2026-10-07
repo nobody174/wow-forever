@@ -4,6 +4,15 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Crafters: grouped by player, hunter Falseaim, no gathering professions)
+- `crafters.json`: third export, Falseaim (Hunter): Cooking 193, First Aid 77,
+  Leatherworking 152 (64 recipes, incl. Forceful/Mystic Heavy and Medium Armor Kits).
+  All three characters carry `owner: "Venom"`, so they show as one Venom card.
+- Import preview has "Show under player" (owner); cards group by owner, class tags show
+  which character makes what (hover shows the character name).
+- Mining, Herbalism, Skinning and Fishing are hidden. Same-name recipes are kept apart
+  by id (two "Dark Leather Boots").
+
 ## 2026-10-07 (Crafters: one card per name, Wowhead tooltips)
 - Same-name characters merge into one card: professions combined (Cooking from both
   Venoms = 30 recipes), class tags (Priest / Paladin) on each recipe, best skill on the chip.

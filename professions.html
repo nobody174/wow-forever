@@ -198,6 +198,37 @@ a{color:var(--gold)}
 .cob.bad{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
 .cobline{margin:10px 0 0;font-size:13px;max-width:75ch}
 .cobline .coin{font-size:13px}
+/* Crafters */
+.cr-tools{margin:0 0 14px}
+.cr-tools input{width:100%;max-width:520px;background:#0A0F1F;color:var(--text);border:1px solid var(--edge);border-radius:6px;padding:10px 12px;font:inherit;font-size:15px}
+.cr-tools input:focus{outline:none;border-color:var(--gold)}
+.cr-char{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--cc,var(--gold));border-radius:8px;margin:0 0 14px}
+.cr-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:12px 14px;border-bottom:1px solid var(--edge)}
+.cr-head b{font:400 22px/1.2 var(--serif);color:var(--cc,var(--gold))}
+.cr-head .meta{color:var(--muted);font-size:13px}
+.cr-profs{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 0}
+.cr-prof{font:600 13px/1 var(--sans);color:var(--muted);background:#0A0F1F;border:1px solid var(--edge);border-radius:999px;padding:7px 12px;cursor:pointer}
+.cr-prof[aria-pressed="true"]{color:var(--text);border-color:var(--gold)}
+.cr-prof small{font-weight:400;margin-left:6px;color:var(--muted)}
+.cr-recipes{padding:6px 14px 12px}
+.cr-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 14px;padding:7px 0;border-top:1px dashed rgba(58,68,104,.6);align-items:baseline}
+.cr-r:first-child{border-top:0}
+.cr-r b{font-weight:600}
+.cr-r .m{grid-column:1 / -1;color:var(--muted);font-size:12.5px}
+.cr-r .who{color:var(--muted);font-size:13px;margin-left:8px}
+.cr-empty{color:var(--muted);margin:10px 0 18px}
+.cr-import{background:var(--panel);border:1px solid var(--edge);border-radius:8px;margin:20px 0 0}
+.cr-import > summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:12px 14px}
+.cr-import > summary::-webkit-details-marker{display:none}
+.cr-import > summary b{font:400 18px/1.2 var(--serif);color:var(--gold);font-weight:400}
+.cr-import > summary span{color:var(--muted);font-size:13px}
+.cr-import-body{padding:0 14px 14px}
+.cr-steps{color:var(--muted);font-size:14px;margin:0 0 12px;padding-left:20px}
+.cr-steps code{font:500 13px var(--mono);color:var(--text)}
+#cr-paste{width:100%;background:#0A0F1F;color:var(--text);border:1px solid var(--edge);border-radius:6px;padding:10px;font:500 12.5px/1.4 var(--mono);resize:vertical}
+.cr-prev{margin-top:12px;font-size:14px}
+.cr-prev .err{color:var(--warn)}
+.cr-prev ul{margin:6px 0 10px;padding-left:20px;color:var(--muted)}
 /* Shopping list */
 .add-btn{font:600 12.5px/1 var(--sans);color:var(--gold);background:transparent;border:1px dashed color-mix(in srgb,var(--gold) 55%,var(--edge));border-radius:5px;padding:6px 9px;cursor:pointer;margin-top:10px}
 .add-btn:hover{border-style:solid;background:rgba(255,209,0,.06)}
@@ -303,6 +334,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     <button type="button" data-view="ours" aria-pressed="false">Our crafts</button>
     <button type="button" data-view="enchanting" aria-pressed="false">Enchanting costs</button>
     <button type="button" data-view="leatherworking" aria-pressed="false">Leatherworking costs</button>
+    <button type="button" data-view="crafters" aria-pressed="false">Crafters</button>
   </div></div>
 
   <section class="view" id="view-bis">
@@ -318,6 +350,26 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   <section class="view" id="view-ours" hidden>
     <p class="intro">Enchants and kits someone in our group can make that are BiS or a good stand-in. Whisper the crafter in game; bring the materials or pay their cost.</p>
     <div id="ours-list"></div>
+  </section>
+
+  <section class="view" id="view-crafters" hidden>
+    <p class="intro">Every recipe each of us knows, read straight from the game by our Road to Forever addon, with what the materials cost on the AH right now.</p>
+    <div class="cr-tools">
+      <input type="search" id="cr-search" placeholder="Who can make…? Type a recipe or material" aria-label="Search recipes">
+    </div>
+    <div id="cr-list"></div>
+    <details class="cr-import" id="cr-import">
+      <summary><b>Add or update a crafter</b><span>Paste the string from the addon</span></summary>
+      <div class="cr-import-body">
+        <ol class="cr-steps">
+          <li>Install <a href="addons.html">Road to Forever</a> (0.12.0 or newer) and log in on the character.</li>
+          <li>Open each profession window once (Enchanting, Leatherworking…). Chat says “saved N recipes”.</li>
+          <li>Press <b>Export</b> on the profession window (or type <code>/r2f profs</code>), Ctrl+C, and paste it here.</li>
+        </ol>
+        <textarea id="cr-paste" rows="3" placeholder="R2FP1:…" spellcheck="false"></textarea>
+        <div id="cr-preview"></div>
+      </div>
+    </details>
   </section>
 
   <section class="view" id="view-enchanting" data-costs="enchanting" hidden></section>
@@ -577,6 +629,18 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   ALT.forEach(function (a) { if (!REC[a.name]) REC[a.name] = Object.assign({ prof: "Enchanting" }, a); });
   function short(n) { return n.replace(/^Enchant /, ""); }
   function crafters(name) { return CRAFTERS.filter(function (c) { return c.knows.indexOf(name) !== -1; }); }
+  // Imported characters (crafters.json, from the addon) join CRAFTERS by name, so the
+  // BiS, Our crafts and cost views pick up whatever they know.
+  var CLASS_COLOR_BY_TOKEN = { WARRIOR: "#C69B6D", PALADIN: "#F48CBA", HUNTER: "#AAD372", ROGUE: "#FFF468", PRIEST: "#FFFFFF", SHAMAN: "#0070DD", MAGE: "#3FC7EB", WARLOCK: "#8788EE", DRUID: "#FF7C0A" };
+  var BASE_CRAFTERS = CRAFTERS.map(function (c) { return { name: c.name, color: c.color, knows: c.knows.slice() }; });
+  function mergeCrafters(chars) {
+    CRAFTERS = BASE_CRAFTERS.map(function (c) { return { name: c.name, color: c.color, knows: c.knows.slice() }; });
+    (chars || []).forEach(function (ch) {
+      var c = CRAFTERS.filter(function (x) { return x.name === ch.name; })[0];
+      if (!c) { c = { name: ch.name, color: CLASS_COLOR_BY_TOKEN[ch.cls] || "#FFD100", knows: [] }; CRAFTERS.push(c); }
+      (ch.profs || []).forEach(function (pf) { (pf.recipes || []).forEach(function (r) { if (c.knows.indexOf(r.n) === -1) c.knows.push(r.n); }); });
+    });
+  }
   function crafterHTML(list) { return list.map(function (c) { return '<span class="crafter" style="--tc:' + c.color + '">' + esc(c.name) + "</span>"; }).join(" "); }
 
   // A need = one BiS recipe and its ladder of stand-ins.
@@ -955,20 +1019,29 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     if (!force && live.market === market && Date.now() - live.fetched < LIVE_TTL) return;
     var want = market, ids = MATS.filter(function (m) { return m.vendor == null; }).map(function (m) { return m.item; });
     Object.keys(PRODUCT_ITEM).forEach(function (k) { if (ids.indexOf(PRODUCT_ITEM[k]) === -1) ids.push(PRODUCT_ITEM[k]); });
+    crafterItemIds().forEach(function (id) { if (ids.indexOf(id) === -1) ids.push(id); });
     if (live.market !== want) { live.state = "loading"; renderAll(); }
-    fetch(AHL + "/tooltip/" + encodeURIComponent(want) + "?items=" + ids.join(","), { cache: "no-store" }).then(function (r) {
-      if (!r.ok) throw new Error(r.status); return r.json();
-    }).then(function (j) {
+    // The tooltip endpoint takes at most 100 ids per call.
+    var calls = [];
+    for (var i = 0; i < ids.length; i += 100) {
+      calls.push(fetch(AHL + "/tooltip/" + encodeURIComponent(want) + "?items=" + ids.slice(i, i + 100).join(","), { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error(r.status); return r.json();
+      }));
+    }
+    Promise.all(calls).then(function (parts) {
       if (want !== market) return;
-      var prices = {}, qty = {}, at = null;
-      (j.items || []).forEach(function (it) {
+      var j = { items: [] };
+      parts.forEach(function (pt) { j.items = j.items.concat(pt.items || []); });
+      var prices = {}, qty = {}, names = {}, at = null;
+      j.items.forEach(function (it) {
+        if (it.name) names[it.id] = it.name;
         // Few listings: one odd cheap listing can sell any minute, so use the middle price.
         var few = (it.quantity || 0) < FEW_LISTED && it.median != null;
         var v = few ? it.median : it.minBuyout != null ? it.minBuyout : it.median;
         if (typeof v === "number" && v > 0 && it.quantity !== 0) { prices[it.id] = v; qty[it.id] = it.quantity || 0; }
         if (it.observedAt && (!at || it.observedAt > at)) at = it.observedAt;
       });
-      live = { market: want, at: at, fetched: Date.now(), prices: prices, qty: qty, state: "ok" };
+      live = { market: want, at: at, fetched: Date.now(), prices: prices, qty: qty, names: names, state: "ok" };
       lset(LIVE_KEY, live);
       Object.keys(mine).forEach(function (k) { if (mine[k] === base(k)) delete mine[k]; });
       lset(MY_PRICES, mine);
@@ -1068,6 +1141,161 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     }
   });
 
+  // ==== Crafters (crafters.json, imported from the addon's R2FP1 export) =============
+  var CRAFTERS_FILE = "crafters.json";
+  var crafterData = { chars: [] }, crSel = lget("wf-prof-crafter-sel", {}) || {}, preview = null;
+  function crafterItemIds() {
+    var ids = [];
+    (crafterData.chars || []).forEach(function (ch) { (ch.profs || []).forEach(function (pf) { (pf.recipes || []).forEach(function (r) {
+      (r.m || []).forEach(function (m) { if (typeof m[0] === "number" && ids.indexOf(m[0]) === -1) ids.push(m[0]); });
+    }); }); });
+    return ids;
+  }
+  var MAT_BY_ITEM = {}; MATS.forEach(function (m) { MAT_BY_ITEM[m.item] = m; });
+  // Price of one material by item id: our MATS rules (typed > vendor > live > site),
+  // else the live AH price.
+  function itemPrice(id) {
+    if (MAT_BY_ITEM[id]) return priceOf(MAT_BY_ITEM[id].id);
+    return liveOn() && live.market === market && live.prices[id] != null ? live.prices[id] : null;
+  }
+  function itemName(m) {
+    if (typeof m[0] !== "number") return String(m[0]).replace(/^n:/, "");
+    return MAT_BY_ITEM[m[0]] ? MAT_BY_ITEM[m[0]].name : (live.names && live.names[m[0]]) || ("item " + m[0]);
+  }
+  function recipeCost(r) {
+    var total = 0, missing = 0;
+    (r.m || []).forEach(function (m) { var p = typeof m[0] === "number" ? itemPrice(m[0]) : null; if (p == null) missing++; else total += p * m[1]; });
+    return { total: total, missing: missing };
+  }
+  function recipeRow(r, who) {
+    var c = recipeCost(r);
+    var cost = !(r.m || []).length ? "" : c.missing ? '<span class="nocost" title="' + c.missing + ' material(s) without an AH price">—</span>' : coin(c.total);
+    return '<div class="cr-r"><span><b>' + esc(r.n) + "</b>" + (who ? '<span class="who">' + who + "</span>" : "") + "</span><span>" + cost + "</span>" +
+      '<span class="m">' + esc((r.m || []).map(function (m) { return m[1] + "× " + itemName(m); }).join(", ")) + "</span></div>";
+  }
+  function renderCrafters() {
+    var el = $("cr-list"); if (!el) return;
+    var q = ($("cr-search").value || "").trim().toLowerCase();
+    var chars = crafterData.chars || [];
+    if (!chars.length) { el.innerHTML = '<p class="cr-empty">No crafters imported yet. Use “Add or update a crafter” below.</p>'; return; }
+    if (q) {
+      var hits = [];
+      chars.forEach(function (ch) { (ch.profs || []).forEach(function (pf) { (pf.recipes || []).forEach(function (r) {
+        var hay = (r.n + " " + (r.m || []).map(itemName).join(" ")).toLowerCase();
+        if (hay.indexOf(q) !== -1) hits.push(recipeRow(r, '<span style="color:' + (CLASS_COLOR_BY_TOKEN[ch.cls] || "inherit") + '">' + esc(ch.name) + "</span> · " + esc(pf.name)));
+      }); }); });
+      el.innerHTML = hits.length ? '<div class="cr-char"><div class="cr-recipes">' + hits.join("") + "</div></div>" : '<p class="cr-empty">Nobody in the group knows a recipe matching “' + esc(q) + "”.</p>";
+      return;
+    }
+    el.innerHTML = chars.map(function (ch, ci) {
+      var profs = ch.profs || [], sel = crSel[ch.name];
+      if (!profs.some(function (p) { return p.name === sel; })) sel = profs[0] && profs[0].name;
+      var pf = profs.filter(function (p) { return p.name === sel; })[0];
+      var list = pf ? pf.recipes.slice().sort(function (a, b) { return a.n.localeCompare(b.n); }) : [];
+      return '<section class="cr-char" style="--cc:' + (CLASS_COLOR_BY_TOKEN[ch.cls] || "var(--gold)") + '"><div class="cr-head"><b>' + esc(ch.name) + "</b>" +
+        '<span class="meta">' + esc(cap(ch.cls)) + (ch.updated ? " · updated " + esc(fmtDate(ch.updated)) : "") + "</span></div>" +
+        '<div class="cr-profs" role="group" aria-label="Professions">' + profs.map(function (p) {
+          return '<button type="button" class="cr-prof" data-ci="' + ci + '" data-prof="' + esc(p.name) + '" aria-pressed="' + (p.name === sel) + '">' + esc(p.name) + "<small>" + p.rank + (p.max ? "/" + p.max : "") + " · " + p.recipes.length + "</small></button>";
+        }).join("") + "</div>" +
+        '<div class="cr-recipes">' + list.map(function (r) { return recipeRow(r); }).join("") + "</div></section>";
+    }).join("");
+  }
+  function cap(t) { t = String(t || "").toLowerCase(); return t.charAt(0).toUpperCase() + t.slice(1); }
+  $("cr-list").addEventListener("click", function (e) {
+    var b = e.target.closest(".cr-prof"); if (!b) return;
+    var ch = crafterData.chars[Number(b.dataset.ci)]; if (!ch) return;
+    crSel[ch.name] = b.dataset.prof; lset("wf-prof-crafter-sel", crSel); renderCrafters();
+  });
+  $("cr-search").addEventListener("input", renderCrafters);
+  function loadCrafters() {
+    return fetch(CRAFTERS_FILE + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (j && Array.isArray(j.chars)) { crafterData = j; mergeCrafters(j.chars); }
+    }).catch(function () { /* none yet */ }).then(function () {
+      renderAll();
+      var have = live.names || {}, missing = crafterItemIds().some(function (id) { return !(id in have) && !MAT_BY_ITEM[id]; });
+      if (missing) loadLive(true);
+    });
+  }
+
+  // Parse the addon's export: "R2FP1:" + base64 of tab-separated lines (ADDON_PLAN 14.2).
+  function parseExport(text) {
+    var m = String(text || "").replace(/\s+/g, "").match(/^R2FP1:([A-Za-z0-9+\/=]+)$/);
+    if (!m) throw new Error("That isn’t a Road to Forever profession export (it should start with R2FP1:).");
+    var bin = atob(m[1]), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var txt = new TextDecoder("utf-8").decode(bytes);
+    var ch = null, pf = null;
+    txt.split("\n").forEach(function (line) {
+      var f = line.split("\t");
+      if (f[0] === "C") ch = { name: f[1], realm: f[2] || "", cls: f[3] || "", faction: f[4] || "", ts: Number(f[5]) || 0, profs: [] };
+      else if (f[0] === "P" && ch) { pf = { name: f[1], rank: Number(f[2]) || 0, max: Number(f[3]) || 0, recipes: [] }; ch.profs.push(pf); }
+      else if (f[0] === "R" && pf) {
+        var idm = /^([is])(\d+)$/.exec(f[2] || "");
+        pf.recipes.push({ n: f[1], k: idm ? idm[1] : "s", id: idm ? Number(idm[2]) : 0,
+          m: (f[3] || "").split(",").filter(Boolean).map(function (x) {
+            var p = x.split(":");
+            if (p[0] === "n") return [p.slice(1, -1).join(":"), Number(p[p.length - 1]) || 1];
+            return [Number(p[0]), Number(p[1]) || 1];
+          }) });
+      }
+    });
+    if (!ch || !ch.name || !ch.profs.length) throw new Error("The export has no professions in it. Open a profession window in game first.");
+    var d = ch.ts ? new Date(ch.ts * 1000) : new Date();
+    ch.updated = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    delete ch.ts;
+    return ch;
+  }
+  function renderPreview(err) {
+    var el = $("cr-preview");
+    if (err) { el.innerHTML = '<div class="cr-prev"><p class="err">' + esc(err) + "</p></div>"; return; }
+    if (!preview) { el.innerHTML = ""; return; }
+    var nomats = 0; preview.profs.forEach(function (p) { p.recipes.forEach(function (r) { if (!r.m.length) nomats++; }); });
+    el.innerHTML = '<div class="cr-prev"><p><b>' + esc(preview.name) + "</b> (" + esc(cap(preview.cls)) + (preview.realm ? ", " + esc(preview.realm) : "") + ")</p><ul>" +
+      preview.profs.map(function (p) { return "<li>" + esc(p.name) + " " + p.rank + (p.max ? "/" + p.max : "") + ": " + p.recipes.length + " recipes</li>"; }).join("") + "</ul>" +
+      (nomats ? '<p class="err">' + nomats + " recipe(s) came without materials. Hover a few recipes in game, reopen the window and export again.</p>" : "") +
+      (owner ? '<button type="button" class="btn primary" data-cr="save"' + (busy ? " disabled" : "") + ">Save " + esc(preview.name) + " for everyone</button>"
+        : '<p class="hint">Looks good. Post the string in our Discord (#r2f-feedback) and the site owner adds it, or <button type="button" class="link" data-cr="login">sign in as owner</button>.</p>') + "</div>";
+  }
+  $("cr-paste").addEventListener("input", function () {
+    var v = this.value.trim();
+    if (!v) { preview = null; renderPreview(); return; }
+    try { preview = parseExport(v); renderPreview(); } catch (e) { preview = null; renderPreview(e.message); }
+  });
+  $("cr-preview").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cr]"); if (!b) return;
+    if (b.dataset.cr === "login") { loginOpen = true; renderOwner(); $("ownerbox").scrollIntoView({ block: "center" }); }
+    else if (b.dataset.cr === "save") saveCrafter(preview);
+  });
+  // Commit crafters.json with this character replaced (same name + realm). One retry on a sha conflict.
+  function saveCrafter(ch, tries) {
+    if (!ch || !owner) return;
+    busy = true; msg = { kind: "ok", text: "Saving " + ch.name + " to GitHub…" }; renderOwner(); renderPreview();
+    gh("/repos/" + REPO + "/contents/" + CRAFTERS_FILE + "?ref=" + BRANCH).catch(function (e) { if (e.status === 404) return {}; throw e; }).then(function (f) {
+      var cur = { chars: [] };
+      if (f.content) { try { cur = JSON.parse(decodeURIComponent(escape(atob(f.content.replace(/\n/g, ""))))); } catch (e) { cur = { chars: [] }; } }
+      if (!Array.isArray(cur.chars)) cur.chars = [];
+      cur.chars = cur.chars.filter(function (c) { return !(c.name === ch.name && (c.realm || "") === (ch.realm || "")); });
+      cur.chars.push(ch);
+      cur.chars.sort(function (a, b) { return a.name.localeCompare(b.name); });
+      cur.updated = ch.updated;
+      var req = { message: "Crafters: " + ch.name + " (" + ch.profs.map(function (p) { return p.name + " " + p.rank; }).join(", ") + ")",
+        content: b64encode(JSON.stringify(cur) + "\n"), branch: BRANCH };
+      if (f.sha) req.sha = f.sha;
+      return gh("/repos/" + REPO + "/contents/" + CRAFTERS_FILE, { method: "PUT", body: JSON.stringify(req) }).then(function () { return cur; });
+    }).then(function (cur) {
+      crafterData = cur; mergeCrafters(cur.chars);
+      busy = false; preview = null; $("cr-paste").value = "";
+      msg = { kind: "ok", text: "Saved " + ch.name + ". Everyone sees it in about a minute." };
+      renderOwner(); renderPreview(); renderAll(); loadLive(true);
+    }, function (e) {
+      if ((e.status === 409 || e.status === 422) && !tries) return saveCrafter(ch, 1);
+      busy = false;
+      if (e.status === 401) { owner = null; storeOwner(null); }
+      msg = { kind: "err", text: e.status === 401 ? "GitHub rejected the token (expired or revoked). Log in again." : "Couldn't save: " + e.message };
+      renderOwner(); renderPreview();
+    });
+  }
+
   // Keep rows open across re-renders (keyed by their visible text).
   function keepOpen(sel) { var o = {}; document.querySelectorAll(sel + " details.row[open]").forEach(function (d) { o[d.dataset.k] = 1; }); return o; }
   function restoreOpen(sel, o) { document.querySelectorAll(sel + " details.row").forEach(function (d) { if (o[d.dataset.k]) d.open = true; }); }
@@ -1096,7 +1324,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   function b64encode(s) { return btoa(unescape(encodeURIComponent(s))); }
   function ownerHTML() {
     var m = msg ? '<div class="msg ' + msg.kind + '">' + esc(msg.text) + "</div>" : "";
-    if (owner) return '<div class="ownerbar">Signed in as <b>' + esc(owner.login) + "</b>. <b>Save as site prices</b> stores the prices shown now (live AH plus anything you typed) as the fallback everyone sees when live prices can't load. " +
+    if (owner) return '<div class="ownerbar">Signed in as <b>' + esc(owner.login) + "</b>. <b>Save as site prices</b> stores the prices shown now (live AH plus anything you typed) as the fallback everyone sees when live prices can't load. On Crafters, paste an addon string to add or update someone. " +
       '<button type="button" class="link" data-act="logout">Sign out</button></div>' + m;
     if (!loginOpen) return "<p>Site prices are set by the site owner. <button type=\"button\" class=\"link\" data-act=\"login-open\">Owner login</button></p>" + m;
     return '<form class="login"><h3>Owner login</h3><p>Paste your GitHub fine-grained token (the same one as for Group picks on the Talent page). It stays in this browser only. ' +
@@ -1111,7 +1339,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     if (!b) return;
     if (b.dataset.act === "login-open") { loginOpen = true; msg = null; renderOwner(); var t = $("ownerbox").querySelector("input[name=token]"); if (t) t.focus(); }
     else if (b.dataset.act === "login-cancel") { loginOpen = false; renderOwner(); }
-    else if (b.dataset.act === "logout") { owner = null; storeOwner(null); msg = { kind: "ok", text: "Signed out. The token was removed from this browser." }; renderOwner(); renderCosts(); }
+    else if (b.dataset.act === "logout") { owner = null; storeOwner(null); msg = { kind: "ok", text: "Signed out. The token was removed from this browser." }; renderOwner(); renderCosts(); renderPreview(); }
   });
   $("ownerbox").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -1123,7 +1351,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
       if (!(p.push || p.admin || p.maintain)) throw Object.assign(new Error("no access"), { status: 403 });
       owner = { token: token, login: login }; storeOwner(owner, remember);
       busy = false; loginOpen = false; msg = { kind: "ok", text: "Signed in as " + login + "." };
-      renderOwner(); renderCosts();
+      renderOwner(); renderCosts(); renderPreview();
     }).catch(function (err) {
       busy = false;
       msg = { kind: "err", text: err.status === 401 ? "GitHub doesn't accept that token." : err.status === 403 || err.status === 404 ? "That token doesn't have access to " + REPO + "." : "Couldn't reach GitHub: " + err.message };
@@ -1149,17 +1377,17 @@ body.list-open .list-drawer{transform:none;visibility:visible}
       busy = false;
       if (e.status === 401) { owner = null; storeOwner(null); }
       msg = { kind: "err", text: e.status === 401 ? "GitHub rejected the token (expired or revoked). Log in again." : e.status === 403 || e.status === 404 ? "This token can't write to " + REPO + "." : "Couldn't save: " + e.message };
-      renderOwner(); renderCosts();
+      renderOwner(); renderCosts(); renderPreview();
     });
   }
 
   // ==== Views + links: #bis, #bis/<class>, #ours, #enchanting, #leatherworking ======
-  var VIEWS = ["bis", "ours", "enchanting", "leatherworking"];
+  var VIEWS = ["bis", "ours", "enchanting", "leatherworking", "crafters"];
   function setHash(h) { try { history.replaceState(null, "", "#" + h); } catch (e) { location.hash = h; } }
   function showView(v) {
     VIEWS.forEach(function (x) { $("view-" + x).hidden = x !== v; });
     document.querySelectorAll(".pf-mode button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.view === v)); });
-    $("ownerbox").hidden = !(v === "enchanting" || v === "leatherworking");
+    $("ownerbox").hidden = !(v === "enchanting" || v === "leatherworking" || v === "crafters");
   }
   function fromHash() {
     var h = decodeURIComponent(location.hash.slice(1)).toLowerCase().split("/");
@@ -1183,12 +1411,13 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   window.addEventListener("resize", topbarH);
   topbarH();
 
-  function renderAll() { renderBis(); renderOurs(); renderCosts(); renderCredit(); renderList(); }
+  function renderAll() { renderBis(); renderOurs(); renderCosts(); renderCredit(); renderList(); renderCrafters(); }
   renderAll();
   renderOwner();
   fromHash();
   if (location.hash === "#list") openList(true);
   loadSitePrices();
+  loadCrafters();
   loadLive(false);
   loadMarkets();
   setInterval(function () { if (!document.hidden) loadLive(false); }, LIVE_TTL);

@@ -1,4 +1,4 @@
--- Base64.lua: decode only (ADDON_PLAN.md 6.1, 7).
+-- Base64.lua: decode (ADDON_PLAN.md 6.1, 7) and encode (profession export, 14).
 --
 -- The site encodes with btoa(unescape(encodeURIComponent(text))): the text is
 -- turned into its UTF-8 bytes first, then standard base64 (A-Z a-z 0-9 + /,
@@ -46,6 +46,23 @@ function Base64.Decode(input)
     else
       out[n] = char(floor(bits / 65536))
     end
+  end
+  return concat(out)
+end
+
+-- Encode (profession export, ADDON_PLAN 14): standard base64 with "=" padding,
+-- so the site can read it with atob(). Output is plain A-Z a-z 0-9 + / =, which
+-- an EditBox shows as-is (no "|" escape codes) and chat/Discord won't mangle.
+function Base64.Encode(input)
+  local out, n = {}, 0
+  for i = 1, #input, 3 do
+    local a, b, c = byte(input, i, i + 2)
+    local bits = a * 65536 + (b or 0) * 256 + (c or 0)
+    local i1, i2 = floor(bits / 262144), floor(bits / 4096) % 64
+    local i3, i4 = floor(bits / 64) % 64, bits % 64
+    n = n + 1
+    out[n] = ALPHABET:sub(i1 + 1, i1 + 1) .. ALPHABET:sub(i2 + 1, i2 + 1) ..
+      (b and ALPHABET:sub(i3 + 1, i3 + 1) or "=") .. (c and ALPHABET:sub(i4 + 1, i4 + 1) or "=")
   end
   return concat(out)
 end

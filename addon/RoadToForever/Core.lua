@@ -82,6 +82,13 @@ handlers.CONFIG_COMMIT_FAILED = function(configID)
   R2F.MainWindow.RequestRefresh()
 end
 handlers.PLAYER_LEVEL_UP = function() R2F.MainWindow.RequestRefresh() end
+-- Professions (14): the game only lists recipes while a profession window
+-- is open. Most professions use the trade skill window; Enchanting (and Beast
+-- Training) used the older "craft" window in Classic. Both are read.
+handlers.TRADE_SKILL_SHOW = function() R2F.Professions.OnShow("trade") end
+handlers.TRADE_SKILL_UPDATE = function() R2F.Professions.OnUpdate("trade") end
+handlers.CRAFT_SHOW = function() R2F.Professions.OnShow("craft") end
+handlers.CRAFT_UPDATE = function() R2F.Professions.OnUpdate("craft") end
 -- A CVar changed (/console, Blizzard's options, another addon, or our own
 -- Quick settings): redraw Home's boxes from the live values (12.4.1). They
 -- are also re-read every time the Home tab opens, so a client without this
@@ -142,6 +149,9 @@ local COMMANDS = {
   -- tab; the command stays as a shortcut (ADDON_PLAN 13.7). Read-only, so no
   -- combat check.
   copybuild = function() R2F.Talents.CopyMyBuild() end,
+  -- Professions export (14, v0.12.0). Read-only, works in combat.
+  profs = function() R2F.Professions.Export() end,
+  professions = function() R2F.Professions.Export() end,
 }
 R2F.COMMANDS = COMMANDS
 

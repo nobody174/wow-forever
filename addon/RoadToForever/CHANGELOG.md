@@ -3,6 +3,20 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.12.0 (2026-10-07): export your professions for the site
+
+**Never run in game yet: TESTING.md 21.**
+
+- **New: profession export** (ADDON_PLAN 14). Open a profession window (Enchanting,
+  Leatherworking, Tailoring, First Aid, ...) and the addon saves every recipe this
+  character knows, with skill level and each recipe's materials (item ids + counts).
+  Chat says "saved N Enchanting recipes". An **Export** button sits on the profession
+  window next to its close button; `/r2f profs` does the same. Both show one
+  `R2FP1:` string to copy, for the site's Professions page (Crafters).
+- Reads both the trade skill window and Classic's craft window (Enchanting); opens all
+  headers and clears "Have materials" first so the list is complete.
+- Base64 encoding added (the export string is plain base64, safe in chat and Discord).
+
 ## 0.11.0 (2026-10-03): free talent points on WoW Forever + one-click learning through C_Traits
 
 **The new learning path has never run against a real WoW Forever server. Test it with

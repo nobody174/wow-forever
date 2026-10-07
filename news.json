@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-07",
+      "title": "Crafters: see every recipe we know",
+      "text": "Our Road to Forever addon (0.12.0) can now export your professions. Paste the string on the new Crafters tab and everyone can see what you make, what it costs, and search “who can make…?”.",
+      "link": "professions.html#crafters"
+    },
+    {
+      "date": "2026-10-07",
       "title": "Venom can make more enchants",
       "text": "Bracer Strength, Bracer Lesser Intellect (BiS), Chest Minor Stats (same bonus as BiS), 2H Weapon Lesser Intellect (BiS), Lesser Spirit and Lesser Impact are now on Our crafts. Whisper Venom in game.",
       "link": "professions.html#ours"

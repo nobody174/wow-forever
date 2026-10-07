@@ -107,6 +107,17 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
     page's meta description), each spell's `taught-by-npc` (city Expert trainers vs only
     Kitta Firewind / Vanessa Sellers / Melanie Sable / Annora / Hgarth), and each formula
     item's `sold-by` / `dropped-by` / `reward-from-q` lists.
+- **Crafters** (5th professions.html view, `#crafters`): characters imported from the
+  addon's profession export (`R2FP1:` string, addon v0.12.0, ADDON_PLAN 14) and kept in
+  `crafters.json` (`{updated, chars: [{name, realm, cls, faction, updated, profs: [{name,
+  rank, max, recipes: [{n, k: "i"|"s", id, m: [[itemId|"name", count]]}]}]}]}`). Anyone can
+  paste a string and see the preview; only the owner (same `wf-owner-gh` login) saves it
+  (PUT crafters.json, replaces the same name+realm, one sha retry). Imported characters
+  merge into `CRAFTERS` by name (`mergeCrafters`), so BiS / Our crafts / costs use them;
+  the hand-typed `CRAFTERS` list stays as the base until real exports replace it.
+  Material prices by item id: MATS rules first, else live AHledger (crafter mat ids are
+  added to the live fetch, batched 100 per call; names come from AHledger too).
+  "Who can make…?" search filters recipes and material names across everyone.
 - `news.html` + `news.json` + `footer.js` — **What's new** page (latest changes, Coming
   next, Discord ideas button) rendered from `news.json` (`{discord, news: [{date, title,
   text, link}], next: [{title, text}]}`, newest news first). `footer.js` (loaded with

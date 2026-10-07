@@ -118,6 +118,9 @@ function Library.Init()
   -- Talents tab (6.3, step 9): the last link previewed on this character,
   -- put back in the link box. Per character because a link is per class.
   if type(cdb.lastTalentLink) ~= "string" then cdb.lastTalentLink = nil end
+  -- Professions (14, v0.12.0): what Professions.lua read from the profession
+  -- windows, keyed by profession name. Rebuilt each time a window opens.
+  if type(cdb.professions) ~= "table" then cdb.professions = {} end
   _G.R2FCharDB = cdb
 
   Library.db, Library.cdb = db, cdb

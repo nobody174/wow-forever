@@ -841,3 +841,23 @@ nothing pending in Blizzard's window:
   changes too (v0.1.0 didn't store the icon; ADDON_PLAN 6.8).
 - ~~Other classes' macros have no tabs~~: since v0.10.0 the class picker shows them
   read-only (section 17).
+
+## 21. Profession export (v0.12.0)
+
+1. Log in on a character with professions. Open **Enchanting** (or any profession).
+   - Chat: `Road to Forever: saved N Enchanting recipes (skill X)...` with N = the
+     number of recipes in the window (headers don't count). Note it.
+   - An **Export** button shows left of the window's close (X) button.
+2. Close and open the window again: no second chat line unless the count changed.
+3. Open your other professions too (Leatherworking, First Aid, Cooking...). One chat
+   line each.
+4. Click **Export** (or type `/r2f profs`): a box with a long `R2FP1:...` string.
+   Ctrl+C, paste it on the site (Professions > Crafters > Import) or send it to the
+   site owner. If the preview there shows recipes with **no materials** or a material
+   named "n:...", the game hadn't cached that item yet: hover a few recipes in the
+   window, reopen it, export again.
+5. `/reload`, then `/r2f profs` without opening any window: the same string (saved).
+6. If chat says nothing when you open a profession, note which profession and whether
+   it's the "craft" style window (Enchanting in Classic) and tell us: the API names
+   are guesses until this test.
+

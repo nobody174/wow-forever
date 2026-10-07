@@ -2735,3 +2735,43 @@ trees gives the same answer either way. The per-id key is kept as belt and brace
 
 **Start with ONE point on a disposable character** (TESTING.md 20 B), never with a main
 character's real build.
+
+## 14. Profession export (v0.12.0, 2026-10-07)
+
+Goal (owner's request): read the recipes a character knows and show them on the site's
+Professions page under the character's name, per profession, with material costs, so
+the group can see who makes what.
+
+### 14.1 In game (`Professions.lua`)
+- The game only lists recipes while a profession window is open, so we read on
+  `TRADE_SKILL_SHOW` / `CRAFT_SHOW` and re-read (0.4 s debounce) on the UPDATE events.
+- Both APIs: trade (`GetTradeSkillLine`, `GetNumTradeSkills`, `GetTradeSkillInfo`,
+  `GetTradeSkillItemLink`, `GetTradeSkillReagentInfo`/`ItemLink`) and Classic's craft
+  window used by Enchanting (`GetCraftDisplaySkillLine`, `GetNumCrafts`, `GetCraftInfo`,
+  `GetCraftItemLink`, `GetCraftReagentInfo`/`ItemLink`). Each call is checked at runtime.
+- On show: `ExpandTradeSkillSubClass(0)` / `ExpandCraftSkillLine(0)` and clear the
+  "Have materials" / name filters, so collapsed headers can't hide recipes.
+- Saved per character in `R2FCharDB.professions[<profession>] = {rank, max, api, ts,
+  recipes = {{name, kind = "i"|"s", id, mats = {{id, count, name}}}}}`.
+- Read-only: no protected calls, works in combat. Export button = our own plain button
+  parented to `TradeSkillFrame` / `CraftFrame`, anchored left of their close button.
+
+### 14.2 Export string
+`R2FP1:` + base64 of tab-separated lines (`\n` between lines):
+```
+C  <name>  <realm>  <CLASS>  <faction>  <unix time>
+P  <profession>  <rank>  <max>  <trade|craft>
+R  <recipe name>  <i|s><id>  <matId>:<count>,<matId>:<count>
+```
+`i` = crafted item id, `s` = enchant/spell id; a material without a cached item link
+is `n:<name>:<count>`. Base64 because an EditBox treats `|` as an escape code and chat
+can mangle tabs.
+
+### 14.3 Site
+`professions.html` Crafters view reads `crafters.json`; the owner imports strings
+(same owner login as prices / Group picks). See the root CLAUDE.md.
+
+### 14.4 Not verified (TESTING.md 21)
+Whether Forever's Enchanting still uses the craft window; `GetCraftDisplaySkillLine`'s
+returns; whether `ExpandCraftSkillLine` exists; Export button placement on both frames.
+

@@ -284,9 +284,16 @@ R2F.L = {
     "/r2f minimap  show or hide the minimap button",
     "/r2f import  paste an import string",
     "/r2f copybuild  copy your talents as a site link (also a button on the Talents tab)",
+    "/r2f profs  copy your professions for the site (open each profession window once first)",
     "/r2f help  this list",
   },
   UNKNOWN_COMMAND = "unknown command \"%s\". Type /r2f help for the list.",
+  -- Professions export (14, v0.12.0)
+  PROF_SAVED = "saved %d %s recipes (skill %d). Type /r2f profs to copy them for the site.",
+  PROF_NONE = "no professions saved yet. Open each profession window once (e.g. Enchanting), then type /r2f profs.",
+  PROF_COPY_HINT = "Press Ctrl+C, then paste it on the site or in Discord.",
+  PROF_BUTTON = "Export",
+  PROF_BUTTON_TIP = "Road to Forever: copy your professions for the Professions page of the site.",
 }
 
 -- Key Bindings menu labels (Bindings.xml). The client looks these up as

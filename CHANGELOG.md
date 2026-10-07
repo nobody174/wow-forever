@@ -6,8 +6,8 @@ user-facing release notes.
 
 ## 2026-10-07 (Venom learned 8 more enchants)
 - `CRAFTERS`: Bracer Lesser/Minor Strength, 2H Lesser Intellect (BiS), 2H Lesser Spirit,
-  Bracer Minor/Lesser Spirit, Shield Lesser Protection, Weapon Minor Beastslayer. The last
-  four aren't BiS or a stand-in, so Our crafts doesn't list them.
+  Bracer Minor/Lesser Spirit, Shield Lesser Protection, Weapon Minor Beastslayer, Gloves
+  Mining. The last five aren't BiS or a stand-in, so Our crafts doesn't list them.
 
 ## 2026-10-07 (Live prices: middle price for scarce items)
 - Owner's in-game check vs AHledger (scan ~1 h earlier): 15 of 20 materials within ~5%.

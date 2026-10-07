@@ -358,6 +358,8 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   // prices.json overrides the fallback; live AHledger prices override both (see Prices).
   // Vendor-bought materials always use their vendor price.
   var VENDOR = { thread: 100, wood: 38 };
+  // Materials whose AHledger price doesn't match the game: always use the site price.
+  var LIVE_OFF = { acid: "AHledger shows about 3s, the game 19s 90c each (checked in game 7 Oct 2026)" };
   var MATS = [
     ["dust", "Strange Dust", "enchanting", 235, 10940], ["lme", "Lesser Magic Essence", "enchanting", 45, 10938], ["gme", "Greater Magic Essence", "enchanting", 90, 10939],
     ["lae", "Lesser Astral Essence", "enchanting", 498, 10998], ["gae", "Greater Astral Essence", "enchanting", null, 11082],
@@ -616,7 +618,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   // Finished items we can also buy on the AH (craft or buy). Enchants can't be sold, kits can.
   var PRODUCT_ITEM = { "Heavy Armor Kit": 4265, "Forceful Heavy Armor Kit": 252453, "Mystic Heavy Armor Kit": 252452, "Thick Armor Kit": 8173 };
   function liveOn() { return market !== "site"; }
-  function livePrice(id) { var m = MAT_BY_ID[id]; return liveOn() && live.market === market && m && live.prices[m.item] != null ? live.prices[m.item] : null; }
+  function livePrice(id) { var m = MAT_BY_ID[id]; return !LIVE_OFF[id] && liveOn() && live.market === market && m && live.prices[m.item] != null ? live.prices[m.item] : null; }
   // base = what a price is when the visitor hasn't typed one: vendor > live AH > site prices.
   function base(id) { var m = MAT_BY_ID[id]; if (m && m.vendor != null) return m.vendor; var l = livePrice(id); return l != null ? l : site.prices[id]; }
   function baseSrc(id) { var m = MAT_BY_ID[id]; return m && m.vendor != null ? "vendor" : livePrice(id) != null ? "live" : site.prices[id] != null ? "site" : "none"; }
@@ -816,7 +818,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     if (m.id in mine && mine[m.id] !== base(m.id)) return "your price";
     var bs = baseSrc(m.id);
     return bs === "live" ? "AH" + (live.qty[m.item] ? " · " + live.qty[m.item].toLocaleString("en-US") + " up" : "") : bs === "vendor" ? "vendor"
-      : bs === "site" ? (liveOn() ? "site · not on AH" : "") : liveOn() ? "not on AH" : "";
+      : bs === "site" ? (liveOn() ? (LIVE_OFF[m.id] ? "site price · AH data off" : "site · not on AH") : "") : liveOn() ? "not on AH" : "";
   }
   function sourceBar() {
     var opts = MARKETS.map(function (m) { return '<option value="' + esc(m.id) + '"' + (m.id === market ? " selected" : "") + ">Live AH · " + esc(m.label + " (" + m.region.toUpperCase() + ")") + "</option>"; }).join("") +

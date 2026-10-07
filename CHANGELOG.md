@@ -4,6 +4,12 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Live prices: middle price for scarce items)
+- Owner's in-game check vs AHledger (scan ~1 h earlier): 15 of 20 materials within ~5%.
+  Greater Nether Essence showed 3g (one cheap listing of 6) vs 9g in game, so items with
+  fewer than 10 listed now use the median instead of the cheapest listing.
+- Owner's in-game prices saved to prices.json as the site fallback (adds Bauxite).
+
 ## 2026-10-07 (Front page: small Beta corner ribbon)
 - The big red rotated "BETA" stamp (it covered the adventurers in every background) is now
   a small red corner ribbon in the hero's top right (`.beta-ribbon`, index.html).

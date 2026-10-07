@@ -80,7 +80,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
     (`https://api.ahledger.com/v1/tooltip/<market>?items=<ids>`, ≤100 ids, no key, CORS ok;
     `/v1/markets` fills the market picker, so EU markets appear by themselves when AHledger
     adds them). Price per material = visitor's typed price > vendor price (`VENDOR`: Fine
-    Thread, Simple Wood) > live min buyout (median if none; quantity 0 = not on AH) >
+    Thread, Simple Wood) > live min buyout (median if none or if fewer than `FEW_LISTED` = 10 are listed, since one odd cheap listing sells fast — seen with Greater Nether Essence 2026-10-07; quantity 0 = not on AH) >
     `prices.json`. Every `MATS` entry carries its WoW item id (5th field; Forever-only mats
     have 2494xx ids, checked against AHledger names 2026-10-07). Market in localStorage
     `wf-prof-market` (default `forever.normal.alliance.us`, `"site"` = owner prices only),

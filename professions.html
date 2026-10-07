@@ -605,6 +605,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   // the browser for LIVE_TTL so page loads are instant and we stay far below the rate limit.
   var AHL = "https://api.ahledger.com/v1", MARKET_KEY = "wf-prof-market", LIVE_KEY = "wf-prof-live-v1", LIVE_TTL = 10 * 60 * 1000;
   var DEFAULT_MARKET = "forever.normal.alliance.us";
+  var FEW_LISTED = 10; // fewer listed than this -> median instead of cheapest
   var MARKETS = [
     { id: "forever.normal.alliance.us", label: "Normal Alliance", region: "us" }, { id: "forever.normal.horde.us", label: "Normal Horde", region: "us" },
     { id: "forever.pvp.alliance.us", label: "PvP Alliance", region: "us" }, { id: "forever.pvp.horde.us", label: "PvP Horde", region: "us" }
@@ -821,7 +822,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     var opts = MARKETS.map(function (m) { return '<option value="' + esc(m.id) + '"' + (m.id === market ? " selected" : "") + ">Live AH · " + esc(m.label + " (" + m.region.toUpperCase() + ")") + "</option>"; }).join("") +
       '<option value="site"' + (market === "site" ? " selected" : "") + ">Site prices (set by the owner)</option>";
     return '<div class="srcbar"><label>Prices from <select data-act="market" aria-label="Price source">' + opts + "</select></label>" +
-      (liveOn() ? '<span class="hint">Cheapest AH listing per item from <a href="https://ahledger.com" target="_blank" rel="noopener">AHledger</a>. Vendor items use the vendor price. Type a price to use your own.</span>'
+      (liveOn() ? '<span class="hint">Cheapest AH listing per item (middle price when fewer than 10 are listed) from <a href="https://ahledger.com" target="_blank" rel="noopener">AHledger</a>. Vendor items use the vendor price. Type a price to use your own.</span>'
         : '<span class="hint">The prices the site owner saved last. Type a price to use your own.</span>') + "</div>";
   }
   function priceEditor(prof, open) {
@@ -948,7 +949,9 @@ body.list-open .list-drawer{transform:none;visibility:visible}
       if (want !== market) return;
       var prices = {}, qty = {}, at = null;
       (j.items || []).forEach(function (it) {
-        var v = it.minBuyout != null ? it.minBuyout : it.median;
+        // Few listings: one odd cheap listing can sell any minute, so use the middle price.
+        var few = (it.quantity || 0) < FEW_LISTED && it.median != null;
+        var v = few ? it.median : it.minBuyout != null ? it.minBuyout : it.median;
         if (typeof v === "number" && v > 0 && it.quantity !== 0) { prices[it.id] = v; qty[it.id] = it.quantity || 0; }
         if (it.observedAt && (!at || it.observedAt > at)) at = it.observedAt;
       });

@@ -4,6 +4,10 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Crafters: recipe names in item quality colours)
+- Crafted items show in their WoW quality colour (grey, white, green, blue, purple, orange),
+  from Wowhead's tooltip data (cache bumped to `wf-item-meta-v2`). Enchants stay white.
+
 ## 2026-10-07 (Vendor prices for 22 materials)
 - `VENDOR_ITEM`: vendor prices the owner checked in game (threads, dyes, spices, flux, vials,
   Simple Wood, Copper Rod, Star Wood, Maple Seed, Salt, milk, water...). A vendor item now

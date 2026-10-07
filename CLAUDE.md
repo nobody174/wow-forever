@@ -128,7 +128,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   `wf-prof-crafter-sort`. Item slot/levels come from
   `https://nether.wowhead.com/forever/tooltip/item/<id>` (CORS ok from the site; parsed:
   first `<table width="100%"><tr><td>SLOT`, `<!--ilvl-->`, `<!--rlvl-->`, "N Slot
-  Bag/Quiver", "Use:"), 4 at a time, cached in localStorage `wf-item-meta-v1`. Enchants
+  Bag/Quiver", "Use:"), 4 at a time, cached in localStorage `wf-item-meta-v2`; also `quality` → recipe names coloured like in game (`.q0`–`.q5`). Enchants
   (k "s") get their slot from the name (`ENCHANT_SLOT`) and keep export order.
   Recipe names are Wowhead links (`/forever/item=` for k "i", `/forever/spell=` for k "s",
   `data-wowhead="...&domain=forever"`); Wowhead's `tooltips.js` (zamimg) gives hover

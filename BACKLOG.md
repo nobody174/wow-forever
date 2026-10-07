@@ -5,6 +5,21 @@ everything not shipped yet lives here, whether started or not. The moment
 something ships, it moves to [CHANGELOG.md](CHANGELOG.md), not left here as a
 stale checkmark.
 
+## Launch-day refresh (WoW Forever launches 2026-11-04)
+
+Beta data on the site is level-30 data. Redo these once the live game is up:
+
+- [ ] **Professions BiS list:** re-scrape ForeverChanges' BiS pages (level 60 lists
+      will differ), re-check stand-ins (`ALT`/`LADDER`) and recipe sources against
+      Wowhead's Forever data, update the "checked" dates in the page note.
+- [ ] **AH market:** when AHledger lists EU markets (`/v1/markets`), switch
+      `DEFAULT_MARKET` in professions.html to our realm's market (EU, ruleset +
+      faction we actually play) and save fresh site prices as the fallback.
+- [ ] **Builds and launch plan:** re-check builds (talents/rotations) and the
+      `unverified` steps past level 30 in launch-plan.html.
+- [ ] **Mark beta data:** until the above is done, label level-30 beta data as such
+      on Professions and Builds.
+
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 
 Full spec: [ADDON_PLAN.md](ADDON_PLAN.md). Read it before starting any step.

@@ -4,6 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Professions — WoW Forever</title>
+<meta name="description" content="BiS enchants with cheaper stand-ins, what our crafters make, and enchant costs at live AH prices.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Road to Forever">
+<meta property="og:title" content="Professions — Road to Forever">
+<meta property="og:description" content="BiS enchants with cheaper stand-ins, what our crafters make, and enchant costs at live AH prices.">
+<meta property="og:url" content="https://nobody174.github.io/wow-forever/professions.html">
+<meta property="og:image" content="https://nobody174.github.io/wow-forever/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B1124">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
@@ -179,6 +192,52 @@ a{color:var(--gold)}
 .srcbar a,.credit a{color:var(--gold)}
 .prices .src .own{color:var(--gold)}
 .credit{color:var(--muted);font-size:12.5px;margin:18px 0 0}
+/* Craft or buy (armor kits) */
+.cob{display:inline-block;font:600 11.5px/1 var(--sans);border-radius:4px;padding:3px 6px;margin-left:8px;vertical-align:1px;border:1px solid}
+.cob.good{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+.cob.bad{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+.cobline{margin:10px 0 0;font-size:13px;max-width:75ch}
+.cobline .coin{font-size:13px}
+/* Shopping list */
+.add-btn{font:600 12.5px/1 var(--sans);color:var(--gold);background:transparent;border:1px dashed color-mix(in srgb,var(--gold) 55%,var(--edge));border-radius:5px;padding:6px 9px;cursor:pointer;margin-top:10px}
+.add-btn:hover{border-style:solid;background:rgba(255,209,0,.06)}
+.add-btn.in{border-style:solid}
+.opt .add-btn{margin-top:6px;padding:4px 8px;font-size:12px}
+.list-fab{position:fixed;right:18px;top:calc(var(--topbar-h,64px) + 14px);z-index:30;display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--sans);color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border:1px solid #FFE566;border-radius:999px;padding:12px 16px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.list-fab:hover{filter:brightness(1.06)}
+.list-fab .count{background:#0E1428;color:var(--gold);border-radius:999px;padding:3px 7px;font-size:12px}
+.list-overlay{position:fixed;inset:0;z-index:40;background:rgba(4,7,18,.6);opacity:0;pointer-events:none;transition:opacity .15s ease}
+.list-drawer{position:fixed;top:0;right:0;bottom:0;z-index:41;width:min(460px,100vw);background:var(--bg);border-left:1px solid var(--edge);box-shadow:-8px 0 24px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .2s ease;display:flex;flex-direction:column;visibility:hidden}
+body.list-open .list-overlay{opacity:1;pointer-events:auto}
+body.list-open .list-drawer{transform:none;visibility:visible}
+@media (prefers-reduced-motion:reduce){.list-drawer,.list-overlay{transition:none}}
+.list-head{padding:16px 18px 12px;border-bottom:1px solid var(--edge);background:var(--panel)}
+.list-head .r{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.list-head h3{margin:0;font:400 22px/1.2 var(--serif);color:var(--gold)}
+.list-head p{margin:8px 0 0;color:var(--muted);font-size:13px}
+.list-close{font:600 20px/1 var(--sans);background:transparent;border:1px solid var(--edge);color:var(--muted);width:36px;height:36px;border-radius:6px;cursor:pointer}
+.list-close:hover{color:var(--text);border-color:var(--gold)}
+.list-body{flex:1;overflow-y:auto;padding:4px 18px 40px}
+.list-body h4{font:600 12px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--gold);margin:18px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--edge)}
+.li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:8px 0;border-top:1px dashed rgba(58,68,104,.6)}
+.li:first-of-type{border-top:0}
+.li .n b{font-weight:600}
+.li .n small{display:block;color:var(--muted);font-size:12.5px}
+.qty{display:inline-flex;align-items:center;gap:4px}
+.qty button{font:600 15px/1 var(--sans);width:28px;height:28px;border-radius:5px;background:#0A0F1F;color:var(--text);border:1px solid var(--edge);cursor:pointer}
+.qty button:hover{border-color:var(--gold)}
+.qty span{min-width:22px;text-align:center;font:600 14px var(--mono)}
+.buyrow{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:8px;padding:6px 0;border-top:1px dashed rgba(58,68,104,.6);font-size:13.5px;align-items:baseline}
+.buyrow:first-of-type{border-top:0}
+.buyrow .q{color:var(--gold);font-weight:600}
+.buyrow small{color:var(--muted);font-size:12px;margin-left:6px}
+.buyrow .unpriced{color:var(--warn);font-size:12.5px}
+.list-total{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;padding-top:10px;border-top:1px solid var(--edge);font-weight:600}
+.list-total .coin{font-size:16px}
+.list-note{color:var(--muted);font-size:12.5px;margin:8px 0 0}
+.list-empty{color:var(--muted);font-size:14px;margin:18px 0}
+.list-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+@media (max-width:560px){.list-fab{right:12px;top:auto;bottom:16px;padding:10px 13px}}
 .inputs{display:flex;gap:4px;flex:none}
 .inputs label{display:flex;align-items:center;gap:2px;font:600 11px var(--mono)}
 .inputs input{width:40px;font:500 13.5px/1 var(--mono);text-align:right;color:var(--text);background:var(--panel);border:1px solid var(--edge);border-radius:4px;padding:5px 4px}
@@ -265,6 +324,13 @@ a{color:var(--gold)}
   <section class="view" id="view-leatherworking" data-costs="leatherworking" hidden></section>
 
   <div class="ownerbox" id="ownerbox" hidden></div>
+  <button type="button" class="list-fab" id="list-fab" aria-controls="list-drawer" aria-expanded="false">Shopping list <span class="count" id="list-count">0</span></button>
+  <div class="list-overlay" id="list-overlay"></div>
+  <aside class="list-drawer" id="list-drawer" aria-label="Shopping list">
+    <div class="list-head"><div class="r"><h3>Shopping list</h3><button type="button" class="list-close" id="list-close" aria-label="Close">×</button></div>
+      <p>Add enchants and kits with <b>+ Shopping list</b> in any open row. The materials add up below at the prices on this page.</p></div>
+    <div class="list-body" id="list-body"></div>
+  </aside>
   <p class="credit" id="ahl-credit" hidden>Material costs use live auction house prices. <a href="https://ahledger.com" target="_blank" rel="noopener">Prices from AHledger</a>.</p>
 </div>
 
@@ -546,6 +612,8 @@ a{color:var(--gold)}
   var market = lget(MARKET_KEY, DEFAULT_MARKET) || DEFAULT_MARKET; // "site" = owner's prices only
   var live = { market: null, at: null, fetched: 0, prices: {}, qty: {}, state: "idle" };
   (function () { var c = lget(LIVE_KEY, null); if (c && c.market === market && c.prices) { live = c; live.state = "cached"; } })();
+  // Finished items we can also buy on the AH (craft or buy). Enchants can't be sold, kits can.
+  var PRODUCT_ITEM = { "Heavy Armor Kit": 4265, "Forceful Heavy Armor Kit": 252453, "Mystic Heavy Armor Kit": 252452, "Thick Armor Kit": 8173 };
   function liveOn() { return market !== "site"; }
   function livePrice(id) { var m = MAT_BY_ID[id]; return liveOn() && live.market === market && m && live.prices[m.item] != null ? live.prices[m.item] : null; }
   // base = what a price is when the visitor hasn't typed one: vendor > live AH > site prices.
@@ -573,6 +641,28 @@ a{color:var(--gold)}
     if (!c) return "";
     if (c.missing.length) return '<span class="nocost" title="Needs an AH price for: ' + esc(c.missing.join(", ")) + ' (set it under Enchanting costs)">—</span>';
     return coin(c.total);
+  }
+  function coinText(cp) {
+    cp = Math.round(cp); var g = Math.floor(cp / 10000), s = Math.floor(cp % 10000 / 100), c = cp % 100;
+    return (g ? g + "g " : "") + (g || s ? s + "s " : "") + c + "c";
+  }
+  // Craft or buy: craft cost vs the finished item's live AH price (kits only).
+  function craftOrBuy(name) {
+    var item = PRODUCT_ITEM[name], c = cost(name);
+    if (!item || !c || c.missing.length || !liveOn() || live.market !== market || live.prices[item] == null) return null;
+    return { craft: c.total, ah: live.prices[item], qty: live.qty[item] || 0, diff: live.prices[item] - c.total };
+  }
+  function cobTag(name) {
+    var x = craftOrBuy(name);
+    if (!x || Math.abs(x.diff) < 50) return "";
+    return x.diff > 0 ? '<span class="cob good" title="Crafting is cheaper than buying it on the AH">craft saves ' + esc(coinText(x.diff)) + "</span>"
+      : '<span class="cob bad" title="Buying it on the AH is cheaper than crafting">AH ' + esc(coinText(-x.diff)) + " cheaper</span>";
+  }
+  function cobLine(name) {
+    var x = craftOrBuy(name);
+    if (!x) return "";
+    return '<p class="cobline">On the AH: ' + coin(x.ah) + " (" + x.qty.toLocaleString("en-US") + " listed). Crafting: " + coin(x.craft) + ". " +
+      (Math.abs(x.diff) < 50 ? "About the same either way." : x.diff > 0 ? "Crafting saves " + coin(x.diff) + "." : "Buying saves " + coin(-x.diff) + ".") + "</p>";
   }
   function fmtDate(d) { try { return new Date(d + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); } catch (e) { return d; } }
 
@@ -609,7 +699,7 @@ a{color:var(--gold)}
       return '<div class="opt">' + medal(o.tier) + '<div class="on"><b>' + esc(short(rr.name)) + '</b><span class="eff">' + esc(rr.eff) + "</span>" +
         (o.tier === "up" ? '<span class="flag">stronger than the list’s pick</span>' : o.tier === "same" ? '<span class="flag">same bonus, easier to get</span>' : "") + "</div>" +
         '<div class="who">' + (who.length ? crafterHTML(who) : "") + '</div><div class="cost">' + costHTML(o.r) + "</div>" +
-        '<div class="sub">' + esc(rr.mats.map(function (m) { return m[1] + " " + m[0]; }).join(", ")) + "<br>" + esc(whereLine(rr)) + "</div></div>";
+        '<div class="sub">' + esc(rr.mats.map(function (m) { return m[1] + " " + m[0]; }).join(", ")) + "<br>" + esc(whereLine(rr)) + "<br>" + addBtn(o.r) + "</div></div>";
     }).join("") + (n.none ? '<p class="nothing">' + esc(n.none) + "</p>" : "");
     var specs = n.specs.slice().sort(function (a, b) { return CLASS_ORDER.indexOf(clsOf(a)) - CLASS_ORDER.indexOf(clsOf(b)) || a.localeCompare(b); }).map(function (s) {
       return '<span class="spec' + (/PvP/.test(s) ? " pvp" : "") + '" style="--c:' + CLASS_COLORS[clsOf(s)] + '">' + esc(s) + "</span>";
@@ -684,10 +774,10 @@ a{color:var(--gold)}
       var r = REC[name], uses = usesOf(name), best = uses[0];
       var useText = uses.map(function (u) { return tierWord(u.tier) + " for " + short(REC[u.n.key].name) + " (" + REC[u.n.key].eff + ")"; });
       return '<details class="row g-our" data-k="' + esc(name) + '"><summary><span class="slot">' + crafterHTML(crafters(name)) + "</span>" +
-        '<span class="what"><b>' + esc(short(name)) + '</b><span class="eff">' + esc(r.eff) + "</span></span>" +
+        '<span class="what"><b>' + esc(short(name)) + '</b><span class="eff">' + esc(r.eff) + "</span>" + cobTag(name) + "</span>" +
         '<span class="cover">' + medal(best.tier) + '<span class="who">' + esc(tierWord(best.tier)) + (uses.length > 1 ? " (+" + (uses.length - 1) + (uses.length > 2 ? " more uses)" : " more use)") : "") + "</span></span>" +
         '<span class="cost">' + costHTML(name) + '</span><span class="chev" aria-hidden="true">›</span></summary>' +
-        '<div class="open">' + matsTable(name) + '<p class="where">Used as ' + esc(useText.join("; ")) + ".</p></div></details>";
+        '<div class="open">' + matsTable(name) + cobLine(name) + '<p class="where">Used as ' + esc(useText.join("; ")) + ".</p>" + addBtn(name) + "</div></details>";
     });
     restoreOpen("#ours-list", open);
   }
@@ -756,10 +846,10 @@ a{color:var(--gold)}
   function costRow(name) {
     var r = REC[name];
     return '<details class="row g-cost" data-k="' + esc(name) + '"><summary><span class="slot">' + esc(slotLabel(r.slot)) + "</span>" +
-      '<span class="what"><b>' + esc(short(name)) + '</b><span class="eff">' + esc(r.eff) + "</span></span>" +
+      '<span class="what"><b>' + esc(short(name)) + '</b><span class="eff">' + esc(r.eff) + "</span>" + cobTag(name) + "</span>" +
       '<span class="cover">' + (crafters(name).length ? crafterHTML(crafters(name)) : "") + "</span>" +
       '<span class="cost">' + costHTML(name) + '</span><span class="chev" aria-hidden="true">›</span></summary>' +
-      '<div class="open">' + matsTable(name) + '<p class="where">' + esc(whereLine(r)) + "</p></div></details>";
+      '<div class="open">' + matsTable(name) + cobLine(name) + '<p class="where">' + esc(whereLine(r)) + "</p>" + addBtn(name) + "</div></details>";
   }
   function costList(prof) {
     var names = COST_VIEWS[prof].list(), sorted = !!lget(SORT_KEY, false);
@@ -797,7 +887,7 @@ a{color:var(--gold)}
       var b = el.querySelector('[data-act="site"]'); if (b) b.disabled = !changedCount();
       var pb = el.querySelector('[data-act="publish"]'); if (pb) pb.disabled = !(changedCount() || liveUsed()) || busy;
     });
-    renderBis(); renderOurs();
+    renderBis(); renderOurs(); renderList();
   }
   document.querySelectorAll("[data-costs]").forEach(function (el) {
     el.addEventListener("input", function (e) {
@@ -850,6 +940,7 @@ a{color:var(--gold)}
     if (!liveOn()) return;
     if (!force && live.market === market && Date.now() - live.fetched < LIVE_TTL) return;
     var want = market, ids = MATS.filter(function (m) { return m.vendor == null; }).map(function (m) { return m.item; });
+    Object.keys(PRODUCT_ITEM).forEach(function (k) { if (ids.indexOf(PRODUCT_ITEM[k]) === -1) ids.push(PRODUCT_ITEM[k]); });
     if (live.market !== want) { live.state = "loading"; renderAll(); }
     fetch(AHL + "/tooltip/" + encodeURIComponent(want) + "?items=" + ids.join(","), { cache: "no-store" }).then(function (r) {
       if (!r.ok) throw new Error(r.status); return r.json();
@@ -878,6 +969,88 @@ a{color:var(--gold)}
   function renderCredit() {
     $("ahl-credit").hidden = !liveUsed();
   }
+
+  // ==== Shopping list (per browser) ==================================================
+  var LIST_KEY = "wf-prof-list-v1";
+  var list = lget(LIST_KEY, {}); if (!list || typeof list !== "object") list = {};
+  Object.keys(list).forEach(function (k) { if (!REC[k] || !(list[k] > 0)) delete list[k]; });
+  function addBtn(name) {
+    var n = list[name] || 0;
+    return '<button type="button" class="add-btn' + (n ? " in" : "") + '" data-add="' + esc(name) + '">' + (n ? "In shopping list (" + n + ") · add one more" : "+ Shopping list") + "</button>";
+  }
+  function setQty(name, q) {
+    if (q > 0) list[name] = Math.min(q, 99); else delete list[name];
+    lset(LIST_KEY, list);
+    document.querySelectorAll(".add-btn").forEach(function (b) { if (b.dataset.add === name) b.outerHTML = addBtn(name); });
+    renderList();
+  }
+  function listNames() { return Object.keys(list).sort(function (a, b) { return short(a).localeCompare(short(b)); }); }
+  function shopping() {
+    var need = {}, order = [];
+    listNames().forEach(function (name) {
+      REC[name].mats.forEach(function (m) { if (!(m[0] in need)) { need[m[0]] = 0; order.push(m[0]); } need[m[0]] += m[1] * list[name]; });
+    });
+    var total = 0, missing = [];
+    var rows = order.map(function (nm) {
+      var mat = MAT_BY_NAME[nm], p = mat ? priceOf(mat.id) : null;
+      if (p == null) missing.push(nm); else total += p * need[nm];
+      return { name: nm, qty: need[nm], each: p, vendor: mat && baseSrc(mat.id) === "vendor" && !(mat.id in mine) };
+    });
+    return { rows: rows, total: total, missing: missing };
+  }
+  function renderList() {
+    var names = listNames(), count = names.reduce(function (a, n) { return a + list[n]; }, 0);
+    $("list-count").textContent = count;
+    if (!names.length) { $("list-body").innerHTML = '<p class="list-empty">Nothing here yet. Open any enchant or kit and press <b>+ Shopping list</b>.</p>'; return; }
+    var sh = shopping();
+    var items = names.map(function (name) {
+      var r = REC[name], c = cost(name);
+      return '<div class="li"><div class="n"><b>' + esc(short(name)) + "</b><small>" + esc(r.eff) + (c && !c.missing.length ? " · " + coinText(c.total) + " each" : "") + "</small></div>" +
+        '<div class="qty"><button type="button" data-q="-1" data-n="' + esc(name) + '" aria-label="One less">−</button><span>' + list[name] +
+        '</span><button type="button" data-q="1" data-n="' + esc(name) + '" aria-label="One more">+</button></div></div>';
+    }).join("");
+    var buy = sh.rows.map(function (m) {
+      return '<div class="buyrow"><span class="q">' + m.qty + '×</span><span>' + esc(m.name) + (m.each != null ? "<small>" + esc(coinText(m.each)) + (m.vendor ? " · vendor" : "") + "</small>" : "") +
+        '</span><span>' + (m.each == null ? '<span class="unpriced">no price</span>' : coin(m.each * m.qty)) + "</span></div>";
+    }).join("");
+    $("list-body").innerHTML = "<h4>To make</h4>" + items + "<h4>Materials to buy</h4>" + buy +
+      '<div class="list-total"><span>Total' + (sh.missing.length ? " (without " + sh.missing.length + " unpriced)" : "") + "</span>" + coin(sh.total) + "</div>" +
+      '<p class="list-note">' + (liveUsed() ? 'Live AH prices, <a href="https://ahledger.com" target="_blank" rel="noopener">from AHledger</a>, plus any prices you typed.' : "Site prices plus any prices you typed.") + "</p>" +
+      '<div class="list-tools"><button type="button" class="btn primary" data-list="copy">Copy list</button><button type="button" class="btn" data-list="clear">Clear list</button></div>';
+  }
+  function listText() {
+    var sh = shopping(), out = ["Shopping list (Road to Forever)"];
+    listNames().forEach(function (n) { out.push(list[n] + "x " + short(n)); });
+    out.push("", "Materials:");
+    sh.rows.forEach(function (m) { out.push(m.qty + "x " + m.name + (m.each != null ? " (" + coinText(m.each * m.qty) + ")" : "")); });
+    out.push("", "Total: " + coinText(sh.total) + (sh.missing.length ? " + " + sh.missing.join(", ") : ""));
+    return out.join("\n");
+  }
+  function openList(on) {
+    document.body.classList.toggle("list-open", on);
+    $("list-fab").setAttribute("aria-expanded", String(on));
+    if (on) $("list-close").focus(); else $("list-fab").focus({ preventScroll: true });
+  }
+  $("list-fab").addEventListener("click", function () { openList(true); });
+  $("list-close").addEventListener("click", function () { openList(false); });
+  $("list-overlay").addEventListener("click", function () { openList(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && document.body.classList.contains("list-open")) openList(false); });
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("[data-add]");
+    if (a) { setQty(a.dataset.add, (list[a.dataset.add] || 0) + 1); return; }
+  });
+  $("list-body").addEventListener("click", function (e) {
+    var q = e.target.closest("[data-q]");
+    if (q) { setQty(q.dataset.n, (list[q.dataset.n] || 0) + Number(q.dataset.q)); return; }
+    var t = e.target.closest("[data-list]");
+    if (!t) return;
+    if (t.dataset.list === "clear") { list = {}; lset(LIST_KEY, list); renderAll(); }
+    else if (t.dataset.list === "copy") {
+      var txt = listText(), done = function () { t.textContent = "Copied"; setTimeout(function () { t.textContent = "Copy list"; }, 1500); };
+      if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done, function () { window.prompt("Copy the list:", txt); });
+      else window.prompt("Copy the list:", txt);
+    }
+  });
 
   // Keep rows open across re-renders (keyed by their visible text).
   function keepOpen(sel) { var o = {}; document.querySelectorAll(sel + " details.row[open]").forEach(function (d) { o[d.dataset.k] = 1; }); return o; }
@@ -994,10 +1167,11 @@ a{color:var(--gold)}
   window.addEventListener("resize", topbarH);
   topbarH();
 
-  function renderAll() { renderBis(); renderOurs(); renderCosts(); renderCredit(); }
+  function renderAll() { renderBis(); renderOurs(); renderCosts(); renderCredit(); renderList(); }
   renderAll();
   renderOwner();
   fromHash();
+  if (location.hash === "#list") openList(true);
   loadSitePrices();
   loadLive(false);
   loadMarkets();

@@ -4,6 +4,18 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Professions: shopping list, craft or buy; link previews)
+- Professions: **Shopping list** drawer (gold button under the top bar, bottom right on
+  phones, `#list` opens it). "+ Shopping list" in every open row (BiS ladder, Our crafts,
+  cost views) adds an enchant or kit; the drawer totals the materials at the page's
+  prices, with −/+ per item, "Copy list" as plain text and "Clear list". Per browser
+  (localStorage `wf-prof-list-v1`).
+- Professions: **craft or buy** for armor kits. Live AH price of the finished kit next
+  to its craft cost ("craft saves 11s" / "AH 22s cheaper"); details in the open row.
+  Right now buying a Heavy Armor Kit is cheaper than crafting it.
+- All pages: tab icon (`assets/favicon.png`, `assets/icon-180.png`), page description
+  and link-preview tags (Discord etc.) with `assets/og.jpg` (hero crop + title).
+
 ## 2026-10-07 (Professions: live AH prices)
 - Professions: material costs now use live auction house prices from AHledger (cheapest
   listing per item, refreshed every 10 minutes). Market picker (Normal/PvP, Alliance/Horde;

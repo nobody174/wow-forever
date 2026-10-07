@@ -88,6 +88,12 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
     REQUIRE the "Prices from AHledger" link wherever their prices show (`#ahl-credit` +
     the price editor hint) — never remove it. The shell can't reach AHledger; test with a
     Playwright route fixture, verify live in Chrome.
+  - Craft or buy: `PRODUCT_ITEM` maps kits to their WoW item ids (Heavy 4265, Forceful
+    252453, Mystic 252452, Thick 8173); the live fetch includes them and kit rows show
+    craft cost vs AH price (`cobTag`/`cobLine`). Enchants can't be sold, so kits only.
+  - Shopping list: `list` = `{recipeName: qty}` in localStorage `wf-prof-list-v1`;
+    `addBtn(name)` in every open row, drawer `#list-drawer` (same look as launch-plan's
+    Buyable quests), `#list` hash opens it.
   - Prices: site-wide prices in `prices.json` (`{updated, by, prices: {matId: copper|null}}`),
     fetched no-store; `MATS` prices are only the fallback. Visitors' own edits are per
     browser (localStorage `wf-prof-prices-v1`) with "Use site prices". The owner signs in
@@ -330,6 +336,10 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - `ADDON_PLAN.md` — plan for the "Road to Forever" in-game addon (macro import,
   talent import/export, minimap button; not built yet). Read it before touching
   anything addon-related, the `short`/`icon` macro fields, or the talent link format.
+- `assets/og.jpg` (1200×630 link-preview image, hero crop + "Road to Forever" in
+  Marcellus), `assets/favicon.png` + `assets/icon-180.png` (gold "R" tab icon). Every
+  page's `<head>` has description, `og:*`/`twitter:card` tags and the icons — new pages
+  need the same block (macros.html gets it from template.html).
 - `assets/drafts/` — gitignored scratch folder for image-generation drafts/
   intermediates (hero and icon art both land here). Not part of the deployed site.
 

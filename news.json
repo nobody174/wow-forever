@@ -1,0 +1,19 @@
+{
+  "discord": "https://discord.gg/Yh2sTMZksq",
+  "news": [
+    { "date": "2026-10-07", "title": "New front page pictures and an ideas channel", "text": "The front page now has four new paintings that take turns every two days. Got an idea, a tip or found a bug? Post it in #r2f-feedback on our Discord (link at the bottom of every page).", "link": "index.html" },
+    { "date": "2026-10-07", "title": "Professions: shopping list and craft or buy", "text": "Press “+ Shopping list” on any enchant or kit and the list adds up every material you need, with the total cost. Armor kits now say whether crafting or buying on the AH is cheaper.", "link": "professions.html#list" },
+    { "date": "2026-10-07", "title": "Live auction house prices", "text": "Enchant and kit costs now use live AH prices (from AHledger), refreshed every 10 minutes. Pick your market; you can still type your own prices.", "link": "professions.html#enchanting" },
+    { "date": "2026-10-06", "title": "Professions page", "text": "Every enchant the level-30 BiS lists recommend, cheaper stand-ins you can use until then, what our crafters can make, and what it all costs.", "link": "professions.html" },
+    { "date": "2026-10-06", "title": "Our own Legacy calculator", "text": "The Talent Calc page now has a Legacy mode. It loads Wowhead's latest data, so new perks show up by themselves.", "link": "talents.html#legacy" },
+    { "date": "2026-10-05", "title": "Download addons from the Addons page", "text": "Tick the addons you want and download them one after another without leaving the page. Each card shows the latest Forever version, checked every day.", "link": "addons.html" },
+    { "date": "2026-10-05", "title": "Library Books checklist", "text": "All 40 library books with a route from Stormwind and checkboxes that remember your progress.", "link": "library-books.html" },
+    { "date": "2026-10-02", "title": "Road to Forever addon (pre-release)", "text": "Our own in-game addon: import macros from the Macros page and talent builds from the Talent Calc. Still a test version until it has been through the beta.", "link": "addons.html" }
+  ],
+  "next": [
+    { "title": "Launch-day refresh", "text": "Level 60 BiS enchants, EU auction house prices and a fresh look at builds once the live game is up." },
+    { "title": "Road to Forever addon, tested in game", "text": "A full test pass in the beta before we call it version 1.0." },
+    { "title": "Price trends", "text": "A small 7-day price line for each material, so you can see if now is a good time to buy." },
+    { "title": "More crafters in Our crafts", "text": "Add what the rest of the group can make, so you know who to whisper." }
+  ]
+}

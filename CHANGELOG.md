@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (New front page backgrounds, What's new page, Discord feedback)
+- Front page: four new painted backgrounds (made by the owner outside Claude) rotate every
+  2 days; old `hero.webp` removed. Link-preview image rebuilt from the first one.
+- New `news.html` (What's new, Coming next, "Send an idea on Discord") fed by `news.json`.
+- Shared footer on every page via `footer.js`: What's new with a "new" dot, Coming next,
+  and the Discord #r2f-feedback invite; stays above the Addons/Macros bottom trays.
+
 ## 2026-10-07 (Professions: shopping list, craft or buy; link previews)
 - Professions: **Shopping list** drawer (gold button under the top bar, bottom right on
   phones, `#list` opens it). "+ Shopping list" in every open row (BiS ladder, Our crafts,

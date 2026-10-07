@@ -96,9 +96,10 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
   align-items:center;
   justify-content:flex-start;
   padding:8vh 20px 6vh;
-  background-image:url("assets/hero.webp");
+  background-image:url("assets/hero-1.webp");
   background-size:cover;
-  background-position:center bottom;
+  background-position:70% 100%;
+  background-color:#0B1124;
   overflow:hidden;
 }
 .hero::before{
@@ -292,7 +293,18 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 
 <div id="yt-player" style="position:fixed;bottom:0;right:0;width:2px;height:2px;overflow:hidden;opacity:0;pointer-events:none;"></div>
 
-<div class="hero">
+<div class="hero" id="hero">
+<script>
+// Background rotates every 2 days (same picture for everyone that day). ?bg=1..4 previews one.
+(function () {
+  var H = [["hero-1", "70% 100%"], ["hero-2", "57% 62%"], ["hero-3", "62% 62%"], ["hero-4", "55% 62%"]];
+  var i = Math.floor(Date.now() / (2 * 864e5)) % H.length, q = location.search.match(/[?&]bg=(\d)/);
+  if (q) i = (Number(q[1]) - 1 + H.length) % H.length;
+  var h = document.getElementById("hero");
+  h.style.backgroundImage = 'url("assets/' + H[i][0] + '.webp")';
+  h.style.backgroundPosition = H[i][1];
+})();
+</script>
   <!-- BETA-RIBBON:START — remove this block once the countdown hits zero / WoW Forever launches -->
   <div class="beta-ribbon"><span>BETA</span></div>
   <!-- BETA-RIBBON:END -->
@@ -451,5 +463,6 @@ const ytScript = document.createElement("script");
 ytScript.src = "https://www.youtube.com/iframe_api";
 document.head.appendChild(ytScript);
 </script>
+<script src="footer.js" defer></script>
 </body>
 </html>

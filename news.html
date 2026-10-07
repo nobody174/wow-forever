@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What’s new — WoW Forever</title>
+<meta name="description" content="What changed on Road to Forever, what we build next, and where to send ideas.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Road to Forever">
+<meta property="og:title" content="What’s new — Road to Forever">
+<meta property="og:description" content="What changed on Road to Forever, what we build next, and where to send ideas.">
+<meta property="og:url" content="https://nobody174.github.io/wow-forever/news.html">
+<meta property="og:image" content="https://nobody174.github.io/wow-forever/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B1124">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1428; --panel:#161E38; --edge:#3A4468; --gold:#FFD100;
+  --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100; --ok:#6FCF7F; --warn:#E8A33D;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --serif:"Marcellus","Palatino Linotype",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+a{color:var(--gold)}
+.topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
+.topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
+.topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
+@media (max-width:1180px){
+  .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .topbar .site-title{justify-self:center}
+}
+.topbar nav a{
+  font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;
+  color:var(--gold);text-decoration:none;padding:10px 16px;border-radius:6px;
+  background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);
+  border:1px solid var(--edge);border-top-color:#4A5688;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.35);
+  transition:transform .08s ease, box-shadow .08s ease, border-color .08s ease;
+}
+.topbar nav a:hover{
+  border-color:var(--gold);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 0 10px rgba(255,209,0,.35), 0 2px 4px rgba(0,0,0,.35);
+  transform:translateY(-1px);
+}
+.topbar nav a:active{transform:translateY(0);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
+.topbar nav a[aria-current="page"]{
+  color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);
+  border-color:#FFE566;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(255,209,0,.5);
+}
+@media (prefers-reduced-motion:reduce){.topbar nav a{transition:none}}
+
+.wrap{max-width:760px;margin:0 auto;padding:40px 16px 70px}
+h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 10px;letter-spacing:.01em;text-align:center}
+p.lede{color:var(--muted);max-width:62ch;margin:0 auto 28px;text-align:center}
+h2{font:400 26px/1.2 var(--serif);color:var(--gold);margin:36px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--edge);scroll-margin-top:calc(var(--topbar-h,70px) + 12px)}
+.item{display:grid;grid-template-columns:96px minmax(0,1fr);gap:4px 16px;padding:14px 0;border-top:1px dashed rgba(58,68,104,.6)}
+.item:first-of-type{border-top:0}
+.item time{color:var(--muted);font-size:13px;padding-top:3px}
+.item h3{margin:0;font:600 16px/1.35 var(--sans)}
+.item h3 a{color:var(--text);text-decoration:none;border-bottom:1px dotted var(--edge)}
+.item h3 a:hover{color:var(--gold);border-color:var(--gold)}
+.item p{margin:4px 0 0;color:var(--muted);font-size:14.5px}
+.item.fresh h3::after{content:"New";font:600 11px/1 var(--sans);color:#0E1428;background:var(--gold);border-radius:4px;padding:3px 6px;margin-left:8px;vertical-align:2px}
+.next{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.next div{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--gold);border-radius:6px;padding:12px 14px}
+.next b{display:block;font-weight:600;margin-bottom:4px}
+.next span{color:var(--muted);font-size:14px}
+.idea{margin-top:36px;background:var(--panel);border:1px solid var(--edge);border-radius:8px;padding:18px 20px;text-align:center}
+.idea p{margin:0 0 14px;color:var(--muted)}
+.btn{display:inline-block;font:600 14px/1 var(--sans);color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border:1px solid #FFE566;border-radius:6px;padding:12px 18px;text-decoration:none}
+.btn:hover{filter:brightness(1.06)}
+@media (max-width:560px){.item{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="site-title" href="index.html">Road to Forever</a>
+  <nav aria-label="Site">
+    <a href="macros.html">Macros</a>
+    <a href="builds.html">Builds</a>
+    <a href="addons.html">Addons</a>
+    <a href="professions.html">Professions</a>
+    <a href="launch-plan.html">Launch Plan</a>
+    <a href="talents.html">Talent / Legacy Calc</a>
+  </nav>
+</div>
+<main class="wrap">
+  <h1>What’s new</h1>
+  <p class="lede">What changed on the site lately, what we build next, and where to send your ideas.</p>
+  <section aria-labelledby="h-new"><h2 id="h-new">Latest changes</h2><div id="news"><p class="item">Loading…</p></div></section>
+  <section aria-labelledby="next"><h2 id="next">Coming next</h2><div class="next" id="next-list"></div></section>
+  <div class="idea">
+    <p>Missing something, found a mistake, or have a tip? Post it in <b>#r2f-feedback</b> on our Discord. One post per idea; react 👍 to vote for others’ ideas.</p>
+    <a class="btn" id="idea-btn" href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Send an idea on Discord</a>
+  </div>
+</main>
+<script>
+(function () {
+  "use strict";
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function fmt(d) { try { return new Date(d + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); } catch (e) { return d; } }
+  var seen = null; try { seen = localStorage.getItem("wf-news-seen"); } catch (e) { /* blocked */ }
+  function topbarH() { var t = document.querySelector(".topbar"); if (t) document.documentElement.style.setProperty("--topbar-h", t.offsetHeight + "px"); }
+  topbarH(); window.addEventListener("resize", topbarH);
+  fetch("news.json", { cache: "no-cache" }).then(function (r) { return r.json(); }).then(function (j) {
+    document.getElementById("news").innerHTML = j.news.map(function (n) {
+      var fresh = seen && n.date > seen;
+      return '<article class="item' + (fresh ? " fresh" : "") + '"><time datetime="' + esc(n.date) + '">' + esc(fmt(n.date)) + "</time><div><h3>" +
+        (n.link ? '<a href="' + esc(n.link) + '">' + esc(n.title) + "</a>" : esc(n.title)) + "</h3><p>" + esc(n.text) + "</p></div></article>";
+    }).join("");
+    document.getElementById("next-list").innerHTML = j.next.map(function (n) { return "<div><b>" + esc(n.title) + "</b><span>" + esc(n.text) + "</span></div>"; }).join("");
+    if (j.discord) document.getElementById("idea-btn").href = j.discord;
+    try { localStorage.setItem("wf-news-seen", j.news[0].date); } catch (e) { /* blocked */ }
+    if (location.hash === "#next") document.getElementById("next").scrollIntoView();
+  }).catch(function () { document.getElementById("news").innerHTML = '<p class="item">Couldn’t load the news right now.</p>'; });
+})();
+</script>
+<script src="footer.js" defer></script>
+</body>
+</html>

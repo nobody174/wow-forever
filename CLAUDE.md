@@ -32,7 +32,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   `template.html`.
 - `macros.html`, `wow-forever-macros.md` — generated output. Never hand-edit; run
   `python build.py`.
-- `index.html` — hand-written landing page. Hero background (`assets/hero.webp`),
+- `index.html` — hand-written landing page. Rotating hero backgrounds (`assets/hero-1..4.webp`),
   title, countdown to the WoW Forever launch, and the visitor's local launch time via
   `Intl.DateTimeFormat`. Countdown target: `2026-11-04T23:00:00Z`. Left-side overlay
   (`.side-links`) has a `.plaque-row` on top with two featured cards side by side
@@ -107,6 +107,15 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
     page's meta description), each spell's `taught-by-npc` (city Expert trainers vs only
     Kitta Firewind / Vanessa Sellers / Melanie Sable / Annora / Hgarth), and each formula
     item's `sold-by` / `dropped-by` / `reward-from-q` lists.
+- `news.html` + `news.json` + `footer.js` — **What's new** page (latest changes, Coming
+  next, Discord ideas button) rendered from `news.json` (`{discord, news: [{date, title,
+  text, link}], next: [{title, text}]}`, newest news first). `footer.js` (loaded with
+  `defer` on every page, incl. template.html) injects the shared footer: What's new (red dot
+  when `news[0].date` differs from localStorage `wf-news-seen`, which news.html sets),
+  Coming next, and "Send an idea" = the Discord invite to the #r2f-feedback forum
+  (`https://discord.gg/Yh2sTMZksq`). It lifts itself above fixed bottom trays (`.tray`,
+  `.xtray`). When something visitor-facing ships, add a plain-words entry at the top of
+  `news.json` (and keep `next` in step with BACKLOG) — that's what lights the dot.
 - `prices.json` — site-wide AH prices for professions.html (written by the owner from the
   site; hand edits fine, keep valid JSON and copper integers).
 - `library-books.html` — hand-written library-book checklist + Alliance route
@@ -321,10 +330,13 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   click +1, right-click −1, Shift = max, hover tooltip; touch: tap opens a bottom
   sheet with −/+/Close. Test locally by routing the Wowhead URL to a fixture in the
   same `WH.setPageData(...)` format (the cloud session can't reach Wowhead).
-- `assets/hero.webp` — landing page hero background (dwarf/gnome group in front of
-  Frostforge Pass gate, nameplates "Venom" and "Trollmann" over the two dwarves).
-  Generated via local ComfyUI (SDXL base + inpainting), finalized with Pillow
-  (crop/resize to 2560×1080, nameplate overlay in Cinzel, exported as WebP < 500KB).
+- `assets/hero-1.webp` … `hero-4.webp` — landing page backgrounds (painted road-to-a-gate
+  scenes, made by the owner with free outside image tools, not Claude). `index.html`'s inline
+  script right after `<div class="hero" id="hero">` rotates them every 2 days (UTC day / 2,
+  same picture for everyone), each with its own `background-position` so the party and gate
+  stay in view; `?bg=1..4` previews one. CSS default is hero-1. They came in small
+  (1024–1248 px wide) and were upscaled; send higher-res originals to replace them in place.
+  `assets/og.jpg` is built from hero-1.
 - `assets/sleepingbag.webp` — small icon (256×256) for the Cozy Sleeping Bag overlay
   plaque on `index.html`. Generated via local ComfyUI (SDXL base txt2img), finalized
   with Pillow (resize, exported as WebP).

@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (First real profession export: Venom)
+- First in-game export from addon 0.12.x works (modern profession window, `api` =
+  "modern"): Venom (Priest, Falselight) with Cooking 150 (20), Enchanting 170 (51) and
+  Tailoring 150 (73), every recipe with materials. Saved to `crafters.json`.
+- All 24 enchants that are both in the page data and the export have the same materials
+  in game; every hand-listed Venom recipe is in the export. Venom's colour is Priest white.
+
 ## 2026-10-07 (Addon 0.12.1: export on modern profession windows)
 - 0.12.0 showed no Export button in game. 0.12.1 also reads the modern profession window
   (`C_TradeSkillUI`), and adds `/r2f profdebug` for diagnosis. Released as r2f-v0.12.1.

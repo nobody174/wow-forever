@@ -118,6 +118,12 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Material prices by item id: MATS rules first, else live AHledger (crafter mat ids are
   added to the live fetch, batched 100 per call; names come from AHledger too).
   "Who can make…?" search filters recipes and material names across everyone.
+  Characters with the same name (the owner names alts alike) show as ONE card
+  (`groupCrafters`): professions merged, recipe list = union, each recipe tagged with the
+  classes that know it, profession chip shows the best skill (title lists each class).
+  Recipe names are Wowhead links (`/forever/item=` for k "i", `/forever/spell=` for k "s",
+  `data-wowhead="...&domain=forever"`); Wowhead's `tooltips.js` (zamimg) gives hover
+  tooltips with icon and stats; `refreshTooltips()` re-scans after each render.
 - `news.html` + `news.json` + `footer.js` — **What's new** page (latest changes, Coming
   next, Discord ideas button) rendered from `news.json` (`{discord, news: [{date, title,
   text, link}], next: [{title, text}]}`, newest news first). `footer.js` (loaded with

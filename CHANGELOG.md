@@ -4,6 +4,12 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Crafters: one card per name, Wowhead tooltips)
+- Same-name characters merge into one card: professions combined (Cooking from both
+  Venoms = 30 recipes), class tags (Priest / Paladin) on each recipe, best skill on the chip.
+- Recipe names link to Wowhead Forever with hover tooltips (icon + stats) via Wowhead's
+  tooltips.js.
+
 ## 2026-10-07 (Crafters: Venom the Paladin; addon 0.12.2 Home button)
 - `crafters.json`: second export, Venom (Paladin, Oathbreaker): Blacksmithing 110 (50),
   Cooking 188 (28), First Aid 75 (5), Mining 95 (5). Same name as the Priest on

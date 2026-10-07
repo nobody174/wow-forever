@@ -216,6 +216,12 @@ a{color:var(--gold)}
 .cr-r b{font-weight:600}
 .cr-r .m{grid-column:1 / -1;color:var(--muted);font-size:12.5px}
 .cr-r .who{color:var(--muted);font-size:13px;margin-left:8px}
+.cr-r a.wh{color:var(--text);font-weight:600;text-decoration:none;border-bottom:1px dotted var(--edge)}
+.cr-r a.wh:hover{color:var(--gold);border-color:var(--gold)}
+.cr-r a.wh img,.cr-r a.wh ins{vertical-align:-3px}
+.clss{display:inline-flex;gap:4px;margin-left:8px;vertical-align:1px}
+.cls{font:600 11px/1 var(--sans);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);border-radius:4px;padding:2px 5px}
+.cr-head .meta .cls{margin-right:4px}
 .cr-empty{color:var(--muted);margin:10px 0 18px}
 .cr-import{background:var(--panel);border:1px solid var(--edge);border-radius:8px;margin:20px 0 0}
 .cr-import > summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:12px 14px}
@@ -1167,44 +1173,86 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     (r.m || []).forEach(function (m) { var p = typeof m[0] === "number" ? itemPrice(m[0]) : null; if (p == null) missing++; else total += p * m[1]; });
     return { total: total, missing: missing };
   }
-  function recipeRow(r, who) {
+  // Wowhead link for a recipe: crafted item (k "i") or the enchant/recipe spell (k "s").
+  // Wowhead's tooltips.js (loaded below) turns these into hover tooltips with icon + stats.
+  function whLink(r) {
+    if (!r.id) return "<b>" + esc(r.n) + "</b>";
+    var t = r.k === "i" ? "item" : "spell";
+    return '<a class="wh" href="https://www.wowhead.com/forever/' + t + "=" + r.id + '" target="_blank" rel="noopener" data-wowhead="' + t + "=" + r.id + '&domain=forever">' + esc(r.n) + "</a>";
+  }
+  function classTag(c) {
+    return '<span class="cls" style="--c:' + (CLASS_COLOR_BY_TOKEN[c] || "var(--muted)") + '">' + esc(cap(c)) + "</span>";
+  }
+  function recipeRow(r, who, classes) {
     var c = recipeCost(r);
     var cost = !(r.m || []).length ? "" : c.missing ? '<span class="nocost" title="' + c.missing + ' material(s) without an AH price">—</span>' : coin(c.total);
-    return '<div class="cr-r"><span><b>' + esc(r.n) + "</b>" + (who ? '<span class="who">' + who + "</span>" : "") + "</span><span>" + cost + "</span>" +
+    return '<div class="cr-r"><span>' + whLink(r) + (who ? '<span class="who">' + who + "</span>" : "") +
+      (classes && classes.length ? '<span class="clss">' + classes.map(classTag).join("") + "</span>" : "") + "</span><span>" + cost + "</span>" +
       '<span class="m">' + esc((r.m || []).map(function (m) { return m[1] + "× " + itemName(m); }).join(", ")) + "</span></div>";
+  }
+  // One card per name: every character with that name merged. Each profession lists the
+  // union of their recipes; a recipe shows which of them (by class) can make it.
+  function groupCrafters() {
+    var byName = {}, order = [];
+    (crafterData.chars || []).forEach(function (ch) {
+      var g = byName[ch.name];
+      if (!g) { g = byName[ch.name] = { name: ch.name, chars: [], profs: {}, profOrder: [], updated: "" }; order.push(ch.name); }
+      g.chars.push(ch);
+      if ((ch.updated || "") > g.updated) g.updated = ch.updated || "";
+      (ch.profs || []).forEach(function (pf) {
+        var gp = g.profs[pf.name];
+        if (!gp) { gp = g.profs[pf.name] = { name: pf.name, ranks: [], recipes: {}, list: [] }; g.profOrder.push(pf.name); }
+        gp.ranks.push({ cls: ch.cls, rank: pf.rank, max: pf.max });
+        (pf.recipes || []).forEach(function (r) {
+          var e = gp.recipes[r.n];
+          if (!e) { e = gp.recipes[r.n] = { r: r, classes: [] }; gp.list.push(e); }
+          if (e.classes.indexOf(ch.cls) === -1) e.classes.push(ch.cls);
+        });
+      });
+    });
+    return order.map(function (n) { var g = byName[n]; g.profOrder.sort(); return g; });
   }
   function renderCrafters() {
     var el = $("cr-list"); if (!el) return;
     var q = ($("cr-search").value || "").trim().toLowerCase();
-    var chars = crafterData.chars || [];
-    if (!chars.length) { el.innerHTML = '<p class="cr-empty">No crafters imported yet. Use “Add or update a crafter” below.</p>'; return; }
+    var groups = groupCrafters();
+    if (!groups.length) { el.innerHTML = '<p class="cr-empty">No crafters imported yet. Use “Add or update a crafter” below.</p>'; return; }
     if (q) {
       var hits = [];
-      chars.forEach(function (ch) { (ch.profs || []).forEach(function (pf) { (pf.recipes || []).forEach(function (r) {
-        var hay = (r.n + " " + (r.m || []).map(itemName).join(" ")).toLowerCase();
-        if (hay.indexOf(q) !== -1) hits.push(recipeRow(r, '<span style="color:' + (CLASS_COLOR_BY_TOKEN[ch.cls] || "inherit") + '">' + esc(ch.name) + "</span> · " + esc(pf.name)));
+      groups.forEach(function (g) { g.profOrder.forEach(function (pn) { g.profs[pn].list.forEach(function (e) {
+        var hay = (e.r.n + " " + (e.r.m || []).map(itemName).join(" ")).toLowerCase();
+        if (hay.indexOf(q) !== -1) hits.push(recipeRow(e.r, esc(g.name) + " · " + esc(pn), g.chars.length > 1 ? e.classes : null));
       }); }); });
       el.innerHTML = hits.length ? '<div class="cr-char"><div class="cr-recipes">' + hits.join("") + "</div></div>" : '<p class="cr-empty">Nobody in the group knows a recipe matching “' + esc(q) + "”.</p>";
+      refreshTooltips();
       return;
     }
-    el.innerHTML = chars.map(function (ch, ci) {
-      var profs = ch.profs || [], sel = crSel[ch.name];
-      if (!profs.some(function (p) { return p.name === sel; })) sel = profs[0] && profs[0].name;
-      var pf = profs.filter(function (p) { return p.name === sel; })[0];
-      var list = pf ? pf.recipes.slice().sort(function (a, b) { return a.n.localeCompare(b.n); }) : [];
-      return '<section class="cr-char" style="--cc:' + (CLASS_COLOR_BY_TOKEN[ch.cls] || "var(--gold)") + '"><div class="cr-head"><b>' + esc(ch.name) + "</b>" +
-        '<span class="meta">' + esc(cap(ch.cls)) + (ch.updated ? " · updated " + esc(fmtDate(ch.updated)) : "") + "</span></div>" +
-        '<div class="cr-profs" role="group" aria-label="Professions">' + profs.map(function (p) {
-          return '<button type="button" class="cr-prof" data-ci="' + ci + '" data-prof="' + esc(p.name) + '" aria-pressed="' + (p.name === sel) + '">' + esc(p.name) + "<small>" + p.rank + (p.max ? "/" + p.max : "") + " · " + p.recipes.length + "</small></button>";
+    el.innerHTML = groups.map(function (g, gi) {
+      var sel = crSel[g.name];
+      if (!g.profs[sel]) sel = g.profOrder[0];
+      var gp = g.profs[sel], multi = g.chars.length > 1;
+      var list = gp ? gp.list.slice().sort(function (a, b) { return a.r.n.localeCompare(b.r.n); }) : [];
+      var color = multi ? "var(--gold)" : (CLASS_COLOR_BY_TOKEN[g.chars[0].cls] || "var(--gold)");
+      return '<section class="cr-char" style="--cc:' + color + '"><div class="cr-head"><b>' + esc(g.name) + "</b>" +
+        '<span class="meta">' + g.chars.map(function (c) { return classTag(c.cls); }).join("") + (g.updated ? " updated " + esc(fmtDate(g.updated)) : "") + "</span></div>" +
+        '<div class="cr-profs" role="group" aria-label="Professions">' + g.profOrder.map(function (pn) {
+          var p = g.profs[pn], best = p.ranks.reduce(function (a, b) { return b.rank > a.rank ? b : a; });
+          var tip = p.ranks.map(function (x) { return cap(x.cls) + " " + x.rank + (x.max ? "/" + x.max : ""); }).join(", ");
+          return '<button type="button" class="cr-prof" data-gi="' + gi + '" data-prof="' + esc(pn) + '" aria-pressed="' + (pn === sel) + '" title="' + esc(tip) + '">' + esc(pn) +
+            "<small>" + best.rank + (best.max ? "/" + best.max : "") + " · " + p.list.length + "</small></button>";
         }).join("") + "</div>" +
-        '<div class="cr-recipes">' + list.map(function (r) { return recipeRow(r); }).join("") + "</div></section>";
+        '<div class="cr-recipes">' + list.map(function (e) { return recipeRow(e.r, null, multi ? e.classes : null); }).join("") + "</div></section>";
     }).join("");
+    refreshTooltips();
+  }
+  function refreshTooltips() {
+    try { if (window.$WowheadPower && window.$WowheadPower.refreshLinks) window.$WowheadPower.refreshLinks(); } catch (e) { /* tooltips are optional */ }
   }
   function cap(t) { t = String(t || "").toLowerCase(); return t.charAt(0).toUpperCase() + t.slice(1); }
   $("cr-list").addEventListener("click", function (e) {
     var b = e.target.closest(".cr-prof"); if (!b) return;
-    var ch = crafterData.chars[Number(b.dataset.ci)]; if (!ch) return;
-    crSel[ch.name] = b.dataset.prof; lset("wf-prof-crafter-sel", crSel); renderCrafters();
+    var g = groupCrafters()[Number(b.dataset.gi)]; if (!g) return;
+    crSel[g.name] = b.dataset.prof; lset("wf-prof-crafter-sel", crSel); renderCrafters();
   });
   $("cr-search").addEventListener("input", renderCrafters);
   function loadCrafters() {
@@ -1423,6 +1471,8 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   setInterval(function () { if (!document.hidden) loadLive(false); }, LIVE_TTL);
 })();
 </script>
+<script>window.whTooltips = { colorLinks: false, iconizeLinks: true, renameLinks: false, iconSize: "small" };</script>
+<script src="https://wow.zamimg.com/js/tooltips.js" defer></script>
 <script src="footer.js" defer></script>
 </body>
 </html>

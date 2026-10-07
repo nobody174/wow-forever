@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-06",
+  "updated": "2026-10-07",
   "by": "nobody174",
   "prices": {
     "dust": 235,
@@ -8,13 +8,32 @@
     "lae": 498,
     "soul": 798,
     "sgs": 98,
-    "lgs": 3400,
+    "lgs": 3200,
     "wood": 38,
     "oil": 22,
     "hleather": 989,
     "thread": 100,
     "hak": 2840,
     "lmp": 344,
-    "giant": 3198
+    "giant": 3198,
+    "gae": 3000,
+    "vision": 3800,
+    "srad": 60000,
+    "acid": 1900,
+    "bauxite": 998,
+    "silver": 1600,
+    "lmyst": 1100,
+    "gneth": 90000,
+    "dream": 1985,
+    "sglow": 1700,
+    "lrad": 149979,
+    "magenta": 9012,
+    "pyrite": 115,
+    "lichen": 6658,
+    "gmyst": 3900,
+    "lglow": 39900,
+    "aqua": 17599,
+    "cerulean": 14399,
+    "rosecap": 3911
   }
 }

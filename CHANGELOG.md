@@ -4,6 +4,12 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Vendor prices for 22 materials)
+- `VENDOR_ITEM`: vendor prices the owner checked in game (threads, dyes, spices, flux, vials,
+  Simple Wood, Copper Rod, Star Wood, Maple Seed, Salt, milk, water...). A vendor item now
+  costs the cheaper of vendor and live AH (AH water was 10c vs 23c at the vendor), on the
+  cost views, shopping list and Crafters. Fine Thread 1s -> 90c, Simple Wood 38c -> 35c.
+
 ## 2026-10-07 (Crafters: by slot, highest level first)
 - Each profession tab lists recipes in collapsible slot sections (Head, Neck, Shoulders,
   Cloak, Chest, Shirt, Bracers, Hands, Belt, Legs, Boots, Rings, Trinkets, Weapons,

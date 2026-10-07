@@ -441,7 +441,13 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   // ==== Materials: [id, name, profession, fallback copper (null = none), WoW item id] =====
   // prices.json overrides the fallback; live AHledger prices override both (see Prices).
   // Vendor-bought materials always use their vendor price.
-  var VENDOR = { thread: 100, wood: 38 };
+  // Vendor prices by WoW item id (copper), checked at the vendors in game by the owner on
+  // 7 Oct 2026. A vendor item costs whichever is cheaper: the vendor or the live AH.
+  var VENDOR_ITEM = {
+    159: 23, 1179: 113, 2320: 9, 2321: 90, 4291: 450, 8343: 1800, 2324: 23, 2604: 45, 2605: 90, 6260: 45,
+    4340: 315, 2678: 9, 2692: 36, 4289: 45, 2894: 50, 2880: 90, 3466: 1800, 3371: 18, 4470: 35, 6217: 112,
+    11291: 4050, 17034: 180
+  };
   // Materials whose AHledger price doesn't match the game: always use the site price.
   var LIVE_OFF = { acid: "AHledger shows about 3s, the game 19s 90c each (checked in game 7 Oct 2026)" };
   var MATS = [
@@ -461,7 +467,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     ["hak", "Heavy Armor Kit", "leatherworking", 2840, 4265], ["lmp", "Lesser Mana Potion", "leatherworking", 344, 3385],
     ["giant", "Elixir of Giant Growth", "leatherworking", 3198, 6662], ["tleather", "Thick Leather", "leatherworking", null, 4304],
     ["sthread", "Silken Thread", "leatherworking", null, 4291]
-  ].map(function (m) { return { id: m[0], name: m[1], prof: m[2], price: m[3], item: m[4], vendor: VENDOR[m[0]] }; });
+  ].map(function (m) { return { id: m[0], name: m[1], prof: m[2], price: m[3], item: m[4], vendor: VENDOR_ITEM[m[4]] }; });
   var MAT_BY_NAME = {}, MAT_BY_ID = {};
   MATS.forEach(function (m) { MAT_BY_NAME[m.name] = m; MAT_BY_ID[m.id] = m; });
 
@@ -717,8 +723,16 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   function liveOn() { return market !== "site"; }
   function livePrice(id) { var m = MAT_BY_ID[id]; return !LIVE_OFF[id] && liveOn() && live.market === market && m && live.prices[m.item] != null ? live.prices[m.item] : null; }
   // base = what a price is when the visitor hasn't typed one: vendor > live AH > site prices.
-  function base(id) { var m = MAT_BY_ID[id]; if (m && m.vendor != null) return m.vendor; var l = livePrice(id); return l != null ? l : site.prices[id]; }
-  function baseSrc(id) { var m = MAT_BY_ID[id]; return m && m.vendor != null ? "vendor" : livePrice(id) != null ? "live" : site.prices[id] != null ? "site" : "none"; }
+  function base(id) {
+    var m = MAT_BY_ID[id], l = livePrice(id);
+    if (m && m.vendor != null) return l != null && l < m.vendor ? l : m.vendor;
+    return l != null ? l : site.prices[id];
+  }
+  function baseSrc(id) {
+    var m = MAT_BY_ID[id], l = livePrice(id);
+    if (m && m.vendor != null) return l != null && l < m.vendor ? "live" : "vendor";
+    return l != null ? "live" : site.prices[id] != null ? "site" : "none";
+  }
   function priceOf(id) { return id in mine ? mine[id] : base(id); }
   function changedCount() { return Object.keys(mine).filter(function (k) { return mine[k] !== base(k); }).length; }
   // cost(recipe) -> {total, missing: [mat names without a price], ok}
@@ -1039,7 +1053,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   function loadLive(force) {
     if (!liveOn()) return;
     if (!force && live.market === market && Date.now() - live.fetched < LIVE_TTL) return;
-    var want = market, ids = MATS.filter(function (m) { return m.vendor == null; }).map(function (m) { return m.item; });
+    var want = market, ids = MATS.map(function (m) { return m.item; });
     Object.keys(PRODUCT_ITEM).forEach(function (k) { if (ids.indexOf(PRODUCT_ITEM[k]) === -1) ids.push(PRODUCT_ITEM[k]); });
     crafterItemIds().forEach(function (id) { if (ids.indexOf(id) === -1) ids.push(id); });
     if (live.market !== want) { live.state = "loading"; renderAll(); }
@@ -1178,7 +1192,9 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   // else the live AH price.
   function itemPrice(id) {
     if (MAT_BY_ITEM[id]) return priceOf(MAT_BY_ITEM[id].id);
-    return liveOn() && live.market === market && live.prices[id] != null ? live.prices[id] : null;
+    var l = liveOn() && live.market === market && live.prices[id] != null ? live.prices[id] : null, v = VENDOR_ITEM[id];
+    if (v != null) return l != null && l < v ? l : v;
+    return l;
   }
   function itemName(m) {
     if (typeof m[0] !== "number") return String(m[0]).replace(/^n:/, "");

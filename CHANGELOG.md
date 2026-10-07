@@ -4,6 +4,9 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Venom: Cloak Defense, Shield Lesser Stamina, Chest Greater Stamina, Boots Lesser Agility)
+- `CRAFTERS`: + those four (all BiS or a stand-in) and Lesser Mystic Wand (not shown).
+
 ## 2026-10-07 (Venom: five more from the trainer)
 - `CRAFTERS`: 2H Lesser Impact, Bracer Lesser Intellect (BiS), Chest Minor Stats (same bonus
   as BiS Lesser Stats), Chest Intellect and Runed Golden Rod (neither in any ladder, not shown).

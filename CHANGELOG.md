@@ -4,6 +4,10 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Venom: five more from the trainer)
+- `CRAFTERS`: 2H Lesser Impact, Bracer Lesser Intellect (BiS), Chest Minor Stats (same bonus
+  as BiS Lesser Stats), Chest Intellect and Runed Golden Rod (neither in any ladder, not shown).
+
 ## 2026-10-07 (Venom learned 8 more enchants)
 - `CRAFTERS`: Bracer Lesser/Minor Strength, 2H Lesser Intellect (BiS), 2H Lesser Spirit,
   Bracer Minor/Lesser Spirit, Shield Lesser Protection, Weapon Minor Beastslayer, Gloves

@@ -6,8 +6,7 @@ user-facing release notes.
 
 ## 2026-10-07 (Addon 0.12.1: export on modern profession windows)
 - 0.12.0 showed no Export button in game. 0.12.1 also reads the modern profession window
-  (`C_TradeSkillUI`), and adds `/r2f profdebug` for diagnosis. Needs tagging as
-  `r2f-v0.12.1` from a machine that can push tags.
+  (`C_TradeSkillUI`), and adds `/r2f profdebug` for diagnosis. Released as r2f-v0.12.1.
 
 ## 2026-10-07 (Crafters: profession export from the addon, addon v0.12.0)
 - Addon 0.12.0: reads every recipe from open profession windows (trade + Classic craft

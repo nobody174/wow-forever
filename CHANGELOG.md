@@ -4,6 +4,10 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-07 (Front page: small Beta corner ribbon)
+- The big red rotated "BETA" stamp (it covered the adventurers in every background) is now
+  a small red corner ribbon in the hero's top right (`.beta-ribbon`, index.html).
+
 ## 2026-10-07 (New front page backgrounds, What's new page, Discord feedback)
 - Front page: four new painted backgrounds (made by the owner outside Claude) rotate every
   2 days; old `hero.webp` removed. Link-preview image rebuilt from the first one.

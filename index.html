@@ -109,28 +109,23 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
   background:linear-gradient(to bottom, rgba(6,9,20,.88) 0%, rgba(6,9,20,.55) 28%, rgba(6,9,20,.05) 55%, rgba(6,9,20,0) 70%);
   pointer-events:none;
 }
+/* Small "Beta" corner ribbon (top right of the hero) */
 .beta-ribbon{
-  position:absolute;
-  z-index:2;
-  top:50%;
-  right:2%;
-  transform:translateY(-50%) rotate(-22deg);
-  transform-origin:center;
-  pointer-events:none;
-  line-height:0.85;
+  position:absolute;z-index:2;top:34px;right:-54px;width:210px;
+  transform:rotate(45deg);pointer-events:none;text-align:center;
+  background:linear-gradient(180deg,#EA4434 0%,#C42A1E 100%);
+  border-top:1px solid rgba(255,255,255,.35);border-bottom:1px solid rgba(0,0,0,.4);
+  box-shadow:0 4px 12px rgba(0,0,0,.55);
 }
 .beta-ribbon span{
-  display:block;
-  font:900 clamp(64px,13vw,180px)/0.85 var(--sans);
-  letter-spacing:.03em;
-  color:#E5382B;
-  -webkit-text-stroke:3px rgba(0,0,0,.55);
-  text-shadow:0 6px 22px rgba(0,0,0,.6);
-  opacity:.9;
+  display:block;margin:3px 0;padding:6px 0 6px .3em;
+  border-top:1px dashed rgba(255,255,255,.45);border-bottom:1px dashed rgba(255,255,255,.45);
+  font:700 14px/1 var(--sans);letter-spacing:.3em;text-transform:uppercase;color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.45);
 }
 @media (max-width:760px){
-  .beta-ribbon{right:-4%}
-  .beta-ribbon span{font-size:clamp(48px,20vw,110px)}
+  .beta-ribbon{top:26px;right:-58px;width:190px}
+  .beta-ribbon span{font-size:12px;padding:5px 0 5px .3em}
 }
 .hero-content{position:relative;z-index:1;text-align:center;max-width:900px}
 .hero h1{
@@ -306,7 +301,7 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 })();
 </script>
   <!-- BETA-RIBBON:START — remove this block once the countdown hits zero / WoW Forever launches -->
-  <div class="beta-ribbon"><span>BETA</span></div>
+  <div class="beta-ribbon" aria-label="Beta"><span>Beta</span></div>
   <!-- BETA-RIBBON:END -->
   <div class="side-links">
     <div class="plaque-row">

@@ -5,7 +5,8 @@ history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
 ## 2026-10-07 (Venom: Cloak Defense, Shield Lesser Stamina, Chest Greater Stamina, Boots Lesser Agility)
-- `CRAFTERS`: + those four (all BiS or a stand-in) and Lesser Mystic Wand (not shown).
+- `CRAFTERS`: + those four (all BiS or a stand-in) and Lesser Mystic Wand (not shown);
+  later Bracer Stamina (BiS), Boots Lesser Stamina, Bracer Spirit.
 
 ## 2026-10-07 (Venom: five more from the trainer)
 - `CRAFTERS`: 2H Lesser Impact, Bracer Lesser Intellect (BiS), Chest Minor Stats (same bonus

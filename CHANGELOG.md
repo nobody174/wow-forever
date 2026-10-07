@@ -23,8 +23,7 @@ user-facing release notes.
 - `crafters.json`: second export, Venom (Paladin, Oathbreaker): Blacksmithing 110 (50),
   Cooking 188 (28), First Aid 75 (5), Mining 95 (5). Same name as the Priest on
   Falselight, so they're two cards told apart by class.
-- Addon 0.12.2: **Export professions** button on the Home tab. Needs tagging
-  `r2f-v0.12.2` from a machine that can push tags.
+- Addon 0.12.2: **Export professions** button on the Home tab. Released as r2f-v0.12.2.
 
 ## 2026-10-07 (First real profession export: Venom)
 - First in-game export from addon 0.12.x works (modern profession window, `api` =

@@ -294,6 +294,8 @@ R2F.L = {
   PROF_NONE = "no professions saved yet. Open each profession window once (e.g. Enchanting), then type /r2f profs.",
   PROF_COPY_HINT = "Press Ctrl+C, then paste it on the site or in Discord.",
   PROF_BUTTON = "Export",
+  HOME_PROFS = "Export professions",
+  HOME_PROFS_TIP = "Copy your professions and recipes for the Crafters page on the Road to Forever site. Open each profession window once first so the addon can read it (chat says \"saved N recipes\").",
   PROF_BUTTON_TIP = "Road to Forever: copy your professions for the Professions page of the site.",
 }
 

@@ -851,7 +851,8 @@ nothing pending in Blizzard's window:
 2. Close and open the window again: no second chat line unless the count changed.
 3. Open your other professions too (Leatherworking, First Aid, Cooking...). One chat
    line each.
-4. Click **Export** (or type `/r2f profs`): a box with a long `R2FP1:...` string.
+4. Click **Export** on the profession window, or **Export professions** on the addon's
+   Home tab (or type `/r2f profs`): a box with a long `R2FP1:...` string.
    Ctrl+C, paste it on the site (Professions > Crafters > Import) or send it to the
    site owner. If the preview there shows recipes with **no materials** or a material
    named "n:...", the game hadn't cached that item yet: hover a few recipes in the

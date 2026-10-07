@@ -3,6 +3,12 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.12.2 (2026-10-07): Export professions button on Home
+
+- **Export professions** button on the Home tab, next to Import (same as `/r2f profs`
+  and the Export button on the profession window). Owner's request after the first real
+  exports worked: a button in the addon window instead of typing a command.
+
 ## 0.12.1 (2026-10-07): profession export on modern profession windows
 
 - 0.12.0 showed no Export button and no "saved N recipes" line in game: WoW Forever runs

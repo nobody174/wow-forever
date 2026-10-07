@@ -161,8 +161,23 @@ local function build(f)
   ui.hint:SetTextColor(0.7, 0.7, 0.7)
   ui.hint:SetText(L.HOME_IMPORT_HINT)
 
+  -- Export professions (v0.12.2): same as /r2f profs and the profession
+  -- window's Export button. Read-only, so it stays enabled in combat.
+  ui.profs = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+  ui.profs:SetSize(160, 24)
+  ui.profs:SetPoint("LEFT", ui.import, "RIGHT", 10, 0)
+  ui.profs:SetText(L.HOME_PROFS)
+  ui.profs:SetScript("OnClick", function() R2F.Professions.Export() end)
+  ui.profs:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetText(L.HOME_PROFS, 1, 1, 1)
+    GameTooltip:AddLine(L.HOME_PROFS_TIP, nil, nil, nil, true)
+    GameTooltip:Show()
+  end)
+  ui.profs:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
   ui.combat = f:CreateFontString(nil, "ARTWORK", "GameFontRed")
-  ui.combat:SetPoint("LEFT", ui.import, "RIGHT", 12, 0)
+  ui.combat:SetPoint("LEFT", ui.profs, "RIGHT", 12, 0)
   ui.combat:SetText(L.IN_COMBAT)
 
   buildQuickSettings(f)

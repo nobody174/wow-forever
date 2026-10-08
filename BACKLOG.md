@@ -16,7 +16,10 @@ Beta data on the site is level-30 data. Redo these once the live game is up:
       `DEFAULT_MARKET` in professions.html to our realm's market (EU, ruleset +
       faction we actually play) and save fresh site prices as the fallback.
 - [ ] **Builds and launch plan:** re-check builds (talents/rotations) and the
-      `unverified` steps past level 30 in launch-plan.html.
+      `unverified` steps past level 30 in launch-plan.html. The Level 60 builds
+      (added 2026-10-08) are our own proposals from Wowhead's trees: compare them
+      with the first real Forever level-60 guides (Mobalytics, Icy Veins, wow.gg)
+      and swap in better ones.
 - [ ] **Mark beta data:** until the above is done, label level-30 beta data as such
       on Professions and Builds.
 
@@ -116,13 +119,12 @@ sections; Warrior Arms + Fury stay merged in DPS.
   Rogue Venom name (replaced Envenom?), Survival melee button (does Raptor
   Strike still queue off the GCD?).
 
-## Hero image replacement (in progress)
+## Seen in the beta, not reproduced
 
-- New `assets/hero.webp`: four Skyborne (mixed male/female) — one Warrior, one Druid
-  healer, two Hunters with pets — on Zephras Isle, no nameplates. Generated in the
-  user's local ComfyUI (can't run from the cloud session); then crop/resize to
-  2560×1080, export WebP < 500KB, keep the upper-middle clear for the title and the
-  right side calm for the beta ribbon. Update CLAUDE.md's hero description after.
+- **Macros missing from bars after a relog (2026-10-07, owner):** sometimes a Road to
+  Forever macro had to be dragged out again (or clicked in the book) after logging in.
+  Didn't happen on the next test. If it comes back: check `/macro` first (macro gone =
+  the game didn't save it, e.g. after Alt+F4; macro there but bar slot empty = ours).
 
 ## Ideas not yet built
 
@@ -134,9 +136,3 @@ sections; Warrior Arms + Fury stay merged in DPS.
 
 - Addons page: expand beyond the current 4-addon list as we adopt
   more addons for launch.
-- Builds page: still a coming-soon placeholder — needs actual talent build
-  content once specs are locked in closer to November 4.
-- Consider whether `assets/hero.webp`'s six-hero composite is worth another
-  refinement pass (spell-effect colors read as mostly torch-glow rather than
-  distinct lightning/ice/shield colors) — parked because the current version
-  was accepted as good enough, not because it's blocked.

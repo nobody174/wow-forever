@@ -566,29 +566,30 @@ const DATA = {
 
   Warrior: [
     {
-      spec: "Tank",
-      title: "Warrior — Level 20 Tank",
+      spec: "Protection",
+      title: "Warrior — Level 20 Protection (Tank)",
       talents: [
-        {name:"Improved Rend", icon:"ability_gouge", rank:"3/3", desc:"Increases the damage done by your Rend, keeping a solid bleed ticking on your target while you focus on threat and mitigation."},
-        {name:"Deflection", icon:"ability_parry", rank:"2/5", desc:"Increases your chance to parry incoming melee attacks — direct survivability for tanking."},
-        {name:"Improved Tactical Mastery", icon:"spell_nature_enchantarmor", rank:"5/5", desc:"Raises how much rage you retain when switching stances, letting you swap into Defensive without losing your rage bar."},
-        {name:"Anger Management", icon:"spell_holy_blessingofstamina", rank:"1/1", desc:"Generates a trickle of extra rage over time, smoothing out rage starvation during long tanking fights."},
+        {name:"Shield Specialization", icon:"inv_shield_06", rank:"5/5", desc:"More block chance and rage when you block: more blocks also mean more Revenge procs."},
+        {name:"Improved Bloodrage", icon:"ability_racial_bloodrage", rank:"2/2", desc:"More rage from Bloodrage, so you can open a pull with threat right away."},
+        {name:"Improved Thunder Clap", icon:"ability_thunderclap", rank:"3/3", desc:"Cheaper, stronger Thunder Clap: your AoE threat (usable in Defensive Stance in Forever)."},
+        {name:"Improved Revenge", icon:"ability_warrior_revenge", rank:"1/3", desc:"More Revenge damage and threat. The last two ranks come at level 22 and 24."},
       ],
       rotation: {
-        confidence: "medium",
-        note: "A reactive priority list, reasoned from ability-level-gating since no build-matched guide was found — Shield Slam is NOT available yet at level 20, so this is a pre-Shield-Slam, Rend-centric kit. Double-check against the live beta client.",
+        confidence: "high",
+        note: "Mobalytics' Forever order: respec to Protection at 16 when you get Shield Block, then Shield Specialization, Improved Thunder Clap, Improved Bloodrage and Improved Revenge. Vanguard (Charge in Defensive Stance) needs 15 points in Protection, so it comes at level 25 — until then our Charge macro swaps to Battle Stance for you.",
         single: [
-          {name:"Charge", icon:"ability_warrior_charge", note:"Opener — free rage and closes the gap."},
-          {name:"Rend", icon:"ability_gouge", note:"Apply first, boosted by Improved Rend — keeps ticking while you build threat elsewhere."},
-          {name:"Sunder Armor", icon:"ability_warrior_sunder", note:"Stack to 5 for both threat and reduced incoming damage."},
-          {name:"Revenge", icon:"ability_warrior_revenge", note:"Use whenever it's available — strong threat when it procs."},
-          {name:"Heroic Strike", icon:"ability_rogue_ambush", note:"Rage dump — Anger Management keeps rage flowing to spend on it."},
+          {name:"Charge", icon:"ability_warrior_charge", note:"Opener (our Charge macro swaps stance for you until Vanguard)."},
+          {name:"Shield Block", icon:"ability_defend", note:"Right before the hits land: more blocks = more Revenge."},
+          {name:"Revenge", icon:"ability_warrior_revenge", note:"Every time it lights up: best threat per rage."},
+          {name:"Sunder Armor", icon:"ability_warrior_sunder", note:"Filler; stack to 5 on elites."},
+          {name:"Victory Rush", icon:"ability_warrior_devastate", note:"After kills (level 20). Our VR > Revenge > Sunder macro does all three."},
         ],
         aoe: [
-          {name:"Demoralizing Shout", icon:"ability_warrior_warcry", note:"Opens AoE threat on a pack."},
-          {name:"Sunder Armor (cycle)", icon:"ability_warrior_sunder", note:"Cycle through the pack after the shout."},
+          {name:"Thunder Clap", icon:"ability_thunderclap", note:"Battle or Defensive Stance in Forever: your AoE threat."},
+          {name:"Demoralizing Shout", icon:"ability_warrior_warcry", note:"Every pack."},
+          {name:"Cleave", icon:"ability_warrior_cleave", note:"Rage dump on packs."},
         ],
-        aoeNote: "Thunder Clap adds a slow + more AoE threat once you have rage to spare.",
+        aoeNote: "Shield Bash interrupts casters (our Kick macro). Last Stand comes with more points at level 25+.",
       },
     },
     {
@@ -764,7 +765,7 @@ const DATA30 = {
   ],
   Warrior: [
     {
-      spec: "Tank", title: "Warrior — Level 30 Protection (Tank)", code: "--250033120131", meta: "From Mobalytics' Forever leveling guide.",
+      spec: "Protection", title: "Warrior — Level 30 Protection (Tank)", code: "--250033120131", meta: "From Mobalytics' Forever leveling guide.",
       talents: t30([["Improved Bloodrage","2","ability_racial_bloodrage"], ["Shield Specialization","5","inv_shield_06"], ["Improved Revenge","3","ability_warrior_revenge"], ["Improved Thunder Clap","3","ability_thunderclap"], ["Last Stand","1","spell_holy_ashestoashes"], ["Master of Defense","2","ability_warrior_shieldguard"], ["Defiance","1","ability_warrior_innerrage"], ["Improved Sunder Armor","3","ability_warrior_sunder"], ["Vanguard","1","ability_warrior_shieldcharge"]]),
       rotation: {"confidence": "high", "note": "Mobalytics' Forever 1-30 tank build (their Bastion point needs 25 points in the tree, so it went into Defiance). Spam button: our Victory Rush > Revenge > Sunder macro; Shield Block version on big pulls.", "single": [{"name": "Charge", "icon": "ability_warrior_charge", "note": "Vanguard lets you Charge in Defensive Stance: no stance swap."}, {"name": "Shield Block", "icon": "ability_defend", "note": "Right before the hits land: more blocks = more Revenge."}, {"name": "Revenge", "icon": "ability_warrior_revenge", "note": "Whenever it lights up: best threat per rage."}, {"name": "Sunder Armor", "icon": "ability_warrior_sunder", "note": "Filler; stack to 5 on elites and bosses (cheaper with Improved Sunder Armor)."}, {"name": "Heroic Strike", "icon": "ability_rogue_ambush", "note": "Only with spare rage."}], "aoe": [{"name": "Thunder Clap", "icon": "ability_thunderclap", "note": "Battle or Defensive Stance in Forever: your AoE threat."}, {"name": "Demoralizing Shout", "icon": "ability_warrior_warcry", "note": "Every pack, and every hard single mob."}, {"name": "Revenge", "icon": "ability_warrior_revenge", "note": "Still on every proc; Sunder the loose ones."}, {"name": "Cleave", "icon": "ability_warrior_cleave", "note": "Rage dump on packs (Shift on the HS/Cleave macro)."}], "aoeNote": "Last Stand is the panic button. Shield Bash interrupts (our Kick macro)."},
     },
@@ -891,7 +892,7 @@ const DATA60 = {
   ],
   Warrior: [
     {
-      spec: "Tank", title: "Warrior — Level 60 Protection (Tank)", code: "35003--250533120331021351", meta: "Our proposal from the live Forever talent trees (no guide has a Forever build for this yet): re-check it after launch.",
+      spec: "Protection", title: "Warrior — Level 60 Protection (Tank)", code: "35003--250533120331021351", meta: "Our proposal from the live Forever talent trees (no guide has a Forever build for this yet): re-check it after launch.",
       talents: tN([["Improved Heroic Strike","3","ability_rogue_ambush"], ["Deflection","5","ability_parry"], ["Improved Tactical Mastery","3","spell_nature_enchantarmor"], ["Improved Bloodrage","2","ability_racial_bloodrage"], ["Shield Specialization","5","inv_shield_06"], ["Anticipation","5","spell_nature_mirrorimage"], ["Improved Revenge","3","ability_warrior_revenge"], ["Improved Thunder Clap","3","ability_thunderclap"], ["Last Stand","1","spell_holy_ashestoashes"], ["Master of Defense","2","ability_warrior_shieldguard"], ["Defiance","3","ability_warrior_innerrage"], ["Improved Sunder Armor","3","ability_warrior_sunder"], ["Vanguard","1","ability_warrior_shieldcharge"], ["Improved Shield Wall","2","ability_warrior_shieldwall"], ["Concussion Blow","1","ability_thunderbolt"], ["Focused Rage","3","ability_warrior_focusedrage"], ["Bastion","5","inv_shield_04"], ["Shield Slam","1","inv_shield_05"]]),
       rotation: {"confidence": "medium", "note": "Our proposal from the live Forever trees (no level-60 guide published yet). Deep Protection for Shield Slam and Bastion; Deflection for more parries (= Revenge); Tactical Mastery keeps rage on stance swaps.", "single": [{"name": "Shield Slam", "icon": "inv_shield_05", "note": "On cooldown (6 sec): your biggest threat hit."}, {"name": "Revenge", "icon": "ability_warrior_revenge", "note": "Every proc."}, {"name": "Shield Block", "icon": "ability_defend", "note": "Keep rage for it on bosses and heavy pulls."}, {"name": "Sunder Armor", "icon": "ability_warrior_sunder", "note": "Filler and 5 stacks on the boss."}, {"name": "Heroic Strike", "icon": "ability_rogue_ambush", "note": "Rage dump only."}], "aoe": [{"name": "Thunder Clap", "icon": "ability_thunderclap", "note": "Spread threat, keep the slow up."}, {"name": "Demoralizing Shout", "icon": "ability_warrior_warcry", "note": "Up on every pack."}, {"name": "Shield Slam", "icon": "inv_shield_05", "note": "Keep it on the main target."}, {"name": "Cleave", "icon": "ability_warrior_cleave", "note": "Rage dump; mind crowd-controlled mobs."}], "aoeNote": "Concussion Blow stuns a caster; Last Stand and Shield Wall (our Stance cooldown macro) for emergencies."},
     },

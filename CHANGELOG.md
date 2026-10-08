@@ -4,6 +4,14 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-08 (Warrior Protection at every level; ForeverLayers removed)
+- Builds: the Level 20 Warrior "Tank" build was all Arms talents. Replaced with a real
+  Protection build (Shield Specialization 5, Improved Bloodrage 2, Improved Thunder Clap 3,
+  Improved Revenge 1), Mobalytics' Forever order, with a Shield Block / Revenge rotation.
+  Vanguard needs 15 points in Protection, so it arrives at level 25 (in the Level 30 build).
+- Warrior spec buttons read "Protection" instead of "Tank" on Level 20, 30 and 60.
+- Addons: ForeverLayers removed (owner's request); CLAUDE.md list updated.
+
 ## 2026-10-08 (Builds: Level 60 tab, Druid, tank/healer/DPS builds with rotations)
 - New **Level 60** tab (51 points): Warrior Tank + Fury, Paladin Protection + Holy + Retribution,
   Druid Bear + Restoration, Shaman Restoration + Enhancement + Elemental, Priest Holy + Shadow,

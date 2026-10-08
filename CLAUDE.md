@@ -167,7 +167,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - `addons.html` — hand-written page. An "Our own addon" section on top (Road to
   Forever, `data-addon="roadtoforever"`, links to its GitHub release, not
   CurseForge), then "What we use": Archivist for Forever, AtlasLootClassic
-  Continued, Forever Bag Mover, Forever Bestiary, ForeverLayers, ForeverPlus,
+  Continued, Forever Bag Mover, Forever Bestiary, ForeverPlus,
   ForeverAuras (replaced WeakAuras Forever, which CurseForge pulled on
   2026-10-05), Leatrix Maps, Leatrix Plus, Prat 3.0, Questie, ThreatMaster,
   TomTom — all CurseForge links, sorted alphabetically (case-insensitive) —

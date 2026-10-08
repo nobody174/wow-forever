@@ -23,6 +23,23 @@ Beta data on the site is level-30 data. Redo these once the live game is up:
 - [ ] **Mark beta data:** until the above is done, label level-30 beta data as such
       on Professions and Builds.
 
+## Next up: addon round 2 (agreed 2026-10-08, spec: ADDON_PLAN.md section 15)
+
+Build in this order; each step is its own release.
+- [ ] **1. Import replaces, not only adds** (15.1): site adds `K <CLASS> ids` lines to the
+      import string; addon drops library entries the site removed, deletes unedited
+      unused game macros made from them, keeps edited/on-bar ones. Fixes "207 macros".
+- [ ] **2. Settings tab + fixes** (15.2): 4th tab instead of the Settings button; Quick
+      settings move there; talent tree names instead of "Tree 1/2/3"; fix the two black
+      squares in the Macro Book (class circle, Universal tab); Home as "what's next".
+- [ ] **3. Movable bags** (15.3): Quick setting replacing the Forever Bag Mover addon
+      (then remove Forever Bag Mover from addons.html).
+- [ ] **4. Reminders tab** (15.4): stance icon moves here; owner picks the first new
+      reminders (hunter ammo/pet, Warrior Revenge/Overpower flash, repair...). No buff
+      reminders (ForeverPlus does those).
+- [ ] **5. Launch Plan in game + TomTom** (15.5): checklist tab from the site's plan data,
+      waypoint buttons via TomTom. Needs coordinates researched for the steps.
+
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 
 Full spec: [ADDON_PLAN.md](ADDON_PLAN.md). Read it before starting any step.

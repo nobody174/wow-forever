@@ -2781,3 +2781,76 @@ can mangle tabs.
 Whether Forever's Enchanting still uses the craft window; `GetCraftDisplaySkillLine`'s
 returns; whether `ExpandCraftSkillLine` exists; Export button placement on both frames.
 
+
+## 15. Next round (owner + design review, 2026-10-08, after v0.13.0)
+
+Agreed with the owner after a design/gamer review of in-game screenshots (Home,
+Macros, Talents, Settings, stance icon). Build in this order; each step ships alone.
+The logo stays as it is (owner: readable on the minimap and in the window).
+
+### 15.1 Import replaces, not only adds (top priority)
+Problem seen in game: "207 macros in your library", Warrior book on 4 pages. Import only
+ever adds/updates, so macros removed on the site (2026-10-08 cleanup: ~240 removed)
+live on in the library forever.
+- **Site:** the import string gets one extra line per class it carries: the full list of
+  ids that class has on the site right now (`K <CLASS> id,id,...`), whatever was picked.
+  Older strings without `K` lines keep today's add-only behaviour.
+- **Addon:** on import, every library entry of a carried class whose id is not in that
+  class's `K` list is gone from the site -> removed from the library. Macros the user just
+  didn't pick are NOT touched (they're still in `K`).
+- Preview line: `12 macros were removed from the site and leave your library.` plus how
+  many of them exist as game macros.
+- Game macros made from removed entries: unedited and not on a bar -> deleted (same rules
+  as Tidy up); on a bar or edited -> kept, listed in chat ("kept, still on your bars: ...").
+  Combat: queued like Tidy up.
+- Optional checkbox in the Import window: **Replace my library for these classes** =
+  remove everything of the carried classes that isn't in this string (for a clean slate).
+- Tests: old string (no `K`) unchanged; removed id leaves library; unpicked id stays;
+  edited/on-bar game macro kept; combat queue.
+
+### 15.2 Settings as a 4th tab + small fixes
+- Tabs: Home / Macros / Talents / **Settings** (later Reminders, Plan). The Settings
+  button leaves the Macro Book; the floating Settings panel becomes the tab's content.
+- Settings sections: Macros (slot preference, Remove all), Minimap (show/lock),
+  Quick settings (moved from Home: camera zoom, guild names, PvP titles, + 15.3).
+  Stance icon options move to Reminders (15.4).
+- **Talent tree names:** the Talents tab shows `Tree 1 / Tree 2 / Tree 3` (C_Traits gives
+  no names). Ship the names per class in tab order, same as talentcalc.js `CLASSES`
+  (e.g. Warrior: Arms, Fury, Protection).
+- **Black squares:** in the Macro Book the selected class circle (picker row) and the first
+  side tab (Universal) render as plain black squares = missing texture. Find the texture
+  paths, fall back to a known icon (e.g. `Interface\Icons\INV_Misc_Book_09` for Universal).
+- Home becomes a short "what's next" list (free talent points, site updates waiting,
+  library/slot counts) once Quick settings move out.
+
+### 15.3 Movable bags (replaces Forever Bag Mover)
+A Quick setting: **Movable bags** (checkbox) + **Lock bags**. Unlocked: drag the backpack
+(and the bag column) anywhere; position saved per character; movement blocked in combat.
+Owner wants to drop the Forever Bag Mover addon for this.
+- Unverified: whether Forever uses Classic container frames (`ContainerFrame1..N`,
+  `UpdateContainerFrameAnchors`) or the modern combined bag (`ContainerFrameCombinedBags`).
+  Detect both; re-apply the position after the game re-anchors bags (hook the anchor
+  update), never during combat (`InCombatLockdown`).
+- Test: open/close bags, reload, relog, bank open, combat.
+
+### 15.4 Reminders tab (new section)
+Home of the stance icon (0.13.0) and future at-a-glance alerts. **Not buff reminders**:
+ForeverPlus already tracks buffs, so nothing here duplicates it.
+- Moves here: stance icon + its Show / Lock / Size settings.
+- Candidates (owner picks which, per class, each with on/off):
+  - Hunter: ammo low (count threshold), pet missing / dead / unhappy, pet food low.
+  - Warrior: Revenge / Overpower usable flash next to the stance icon.
+  - Everyone: repair needed (durability under X%), bags almost full, rested-XP state.
+- One shared look: same framed icon as the stance icon, draggable, lockable, size slider.
+
+### 15.5 Launch Plan checklist in game (+ TomTom waypoints)
+- The site's Launch Plan (`launch-plan.html` PHASES, per group plan: hwd / hunter / h3d /
+  trio) exported to the addon as generated Lua data (build step, like the macro data),
+  so it works offline in game.
+- New tab **Plan**: pick your group plan, steps grouped by phase, tick boxes saved per
+  character, a "next step" line on Home.
+- Waypoints: steps get optional coordinates `{mapID, x, y}` (to be researched; the site has
+  none yet). With TomTom loaded: a **Waypoint** button per step calls
+  `TomTom:AddWaypoint(mapID, x/100, y/100, {title = ...})`; without TomTom: print the
+  `/way` line. Same mechanism later for the library-book route.
+- Ticks are separate from the site's (browser) ticks; syncing them is out of scope.

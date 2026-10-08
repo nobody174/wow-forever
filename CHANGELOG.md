@@ -4,6 +4,22 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-08 (Builds: Level 60 tab, Druid, tank/healer/DPS builds with rotations)
+- New **Level 60** tab (51 points): Warrior Tank + Fury, Paladin Protection + Holy + Retribution,
+  Druid Bear + Restoration, Shaman Restoration + Enhancement + Elemental, Priest Holy + Shadow,
+  Hunter Beast Mastery + Marksmanship, Rogue Combat, Mage Frost + Fire, Warlock Affliction +
+  Destruction. No guide has Forever level-60 builds yet (Mobalytics: "full talent trees will come
+  with launch"), so these are our proposals from Wowhead's live Forever trees, marked as such.
+- Level 30: Warrior Tank and Paladin Retribution replaced with Mobalytics' Forever 1-30 builds
+  (the tank's Bastion point moved to Defiance: Bastion needs 25 points in the tree); new Paladin
+  Holy, Priest Holy, Shaman Restoration + Elemental, Druid Feral (Mobalytics) + Restoration.
+- **Druid** added to the Builds roster (Level 30 and 60; no level-20 build).
+- Every build at every level now has a rotation (single target / AoE, tank, healer or DPS);
+  the 11 older level-30 builds got theirs too.
+- Validation: each new build was checked in the browser against Wowhead's live Forever data
+  (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
+  share code generated there; every rotation icon was checked on wow.zamimg.com.
+
 ## 2026-10-08 (Macro cleanup for every class, Warrior rules)
 - Same rules as the Warrior pass: removed plain casts (`/cast X`, `/cast [harm] X`: same as
   dragging the spell from the spellbook), duplicates covered by a smarter macro, "No dispel"

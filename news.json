@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-10-08",
+      "title": "Warrior stance icon in the addon",
+      "text": "Road to Forever 0.13.0 adds a small stance icon for Warriors: blue Battle, green Defensive, red Berserker. Drag it where you like, lock it and resize it in Settings.",
+      "link": "addons.html"
+    },
+    {
       "date": "2026-10-07",
       "title": "Crafters: see every recipe we know",
       "text": "Our Road to Forever addon (0.12.0) can now export your professions. Paste the string on the new Crafters tab and everyone can see what you make, what it costs, and search “who can make…?”.",

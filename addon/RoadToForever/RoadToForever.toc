@@ -2,7 +2,7 @@
 ## Title: |cffffd100Road to Forever|r
 ## Notes: Import macros and talent builds from the Road to Forever site, export your professions to it.
 ## Author: nobody174
-## Version: 0.15.0
+## Version: 0.16.0
 ## SavedVariables: R2FDB
 ## SavedVariablesPerCharacter: R2FCharDB
 
@@ -24,6 +24,7 @@ Talents.lua
 Professions.lua
 QuickSettings.lua
 Stance.lua
+Bags.lua
 UI\Widgets.lua
 UI\ImportFrame.lua
 UI\Settings.lua

@@ -34,6 +34,13 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-08 (Addon 0.16.0: movable bags; Forever Bag Mover removed from the list)
+- ADDON_PLAN 15.3, step 3 of addon round 2: Movable bags + Lock bags on the Settings tab
+  (`Bags.lua`), per character, classic `ContainerFrame1..N` and the combined bag
+  `ContainerFrameCombinedBags` detected at run time, re-applied after the game re-anchors,
+  nothing moves in combat. Forever Bag Mover is gone from addons.html and CLAUDE.md since
+  the addon replaces it. Never run in game yet (TESTING.md 24). Not released yet.
+
 ## 2026-10-08 (Addon 0.15.0: Settings tab, tree names, Home "what's next")
 - ADDON_PLAN 15.2, step 2 of addon round 2: Settings as the 4th tab (Quick settings moved
   there from Home, floating panel and Macro Book button removed), real talent tree names per

@@ -3,6 +3,26 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.16.0 (2026-10-08): movable bags (ADDON_PLAN 15.3)
+
+**Never run in game yet: TESTING.md 24.** Which bag windows WoW Forever uses is
+unconfirmed, so both kinds are handled and `/r2f bags` says what was found.
+
+- **New: Movable bags / Lock bags** (`Bags.lua`), two more Quick settings on the Settings
+  tab. Movable: drag the backpack and bags anywhere (grab the title or background, not an
+  item). The position is saved per character (`R2FCharDB.bags`) and re-applied right after
+  the game re-anchors the bags (`hooksecurefunc` on `UpdateContainerFrameAnchors`, plus
+  `OnShow` on every window). Lock: keeps the spot, stops dragging. Replaces the Forever Bag
+  Mover addon.
+- Works with the classic bag windows (`ContainerFrame1..N`, saved per bag id so the
+  backpack keeps its spot) and the modern combined bag (`ContainerFrameCombinedBags`),
+  whichever the client has, or both.
+- Nothing is moved, hooked or dragged in combat (bag windows hold protected item buttons);
+  what was skipped runs when combat ends. The two boxes grey out in combat and when no bag
+  window is found. Turning Movable off lets the game re-stack the bags; saved spots are
+  kept for the next time.
+- New `/r2f bags`: which bag windows were found and the movable / lock state.
+
 ## 0.15.0 (2026-10-08): Settings tab, tree names, Home as "what's next" (ADDON_PLAN 15.2)
 
 **Never run in game yet: TESTING.md 23.**

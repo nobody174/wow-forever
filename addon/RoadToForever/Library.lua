@@ -129,6 +129,13 @@ function Library.Init()
   -- Professions (14, v0.12.0): what Professions.lua read from the profession
   -- windows, keyed by profession name. Rebuilt each time a window opens.
   if type(cdb.professions) ~= "table" then cdb.professions = {} end
+  -- Movable bags (Bags.lua, v0.16.0): per character, because the bag windows
+  -- are placed on THIS character's screen layout.
+  if type(cdb.bags) ~= "table" then cdb.bags = {} end
+  if type(cdb.bags.movable) ~= "boolean" then cdb.bags.movable = false end
+  if type(cdb.bags.lock) ~= "boolean" then cdb.bags.lock = false end
+  if type(cdb.bags.bags) ~= "table" then cdb.bags.bags = {} end
+  if type(cdb.bags.combined) ~= "table" then cdb.bags.combined = nil end
   _G.R2FCharDB = cdb
 
   Library.db, Library.cdb = db, cdb

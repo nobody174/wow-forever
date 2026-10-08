@@ -571,6 +571,19 @@ function SetCVar(name, value)
 end
 
 function InCombatLockdown() return T.combat end
+-- hooksecurefunc(name, fn) / (table, name, fn): replace the function with one that
+-- calls the original, then fn (what the real one does, minus the taint tracking).
+function hooksecurefunc(a, b, c)
+  local tbl, name, fn = _G, a, b
+  if type(a) == "table" then tbl, name, fn = a, b, c end
+  local orig = tbl[name]
+  if type(orig) ~= "function" then return end
+  tbl[name] = function(...)
+    local r = { orig(...) }
+    fn(...)
+    return unpack(r)
+  end
+end
 function GetSpellTexture(name) return T.knownSpells[name] end
 function GetItemInfo() return nil end
 function GetShapeshiftForm() return T.stanceIndex or 0 end

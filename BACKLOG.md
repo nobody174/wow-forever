@@ -25,11 +25,9 @@ Beta data on the site is level-30 data. Redo these once the live game is up:
 
 ## Next up: addon round 2 (agreed 2026-10-08, spec: ADDON_PLAN.md section 15)
 
-Build in this order; each step is its own release. Steps 1 (import replaces, 0.14.0) and 2 (Settings tab, 0.15.0) are built, see
-CHANGELOG.md; their in-game checks are TESTING.md 22 and 23. Step 4's
+Build in this order; each step is its own release. Steps 1 (import replaces, 0.14.0), 2 (Settings tab, 0.15.0) and 3 (movable bags, 0.16.0) are built, see
+CHANGELOG.md; their in-game checks are TESTING.md 22, 23 and 24. Step 4's
 stance icon settings move from the Settings tab to Reminders.
-- [ ] **3. Movable bags** (15.3): Quick setting replacing the Forever Bag Mover addon
-      (then remove Forever Bag Mover from addons.html).
 - [ ] **4. Reminders tab** (15.4): stance icon moves here; owner picks the first new
       reminder: Hunter ammo low (picked 2026-10-08). Revenge flash dropped (the macro
       handles it). No buff reminders (ForeverPlus does those).

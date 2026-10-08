@@ -27,6 +27,7 @@ handlers.PLAYER_LOGIN = function()
   -- LibDBIcon (ADDON_PLAN 6.10).
   R2F.Minimap.Init()
   R2F.Stance.Init()
+  R2F.Bags.Init()
 end
 
 -- Combat: grey out the Import / Tidy up buttons, show "In combat" (drags are
@@ -47,6 +48,7 @@ end
 handlers.PLAYER_REGEN_ENABLED = function()
   R2F.inCombat = false
   R2F.Macros.RunQueue()
+  R2F.Bags.OnRegen()
   R2F.MainWindow.SetCombat()
   R2F.ImportFrame.SetCombat(false)
   R2F.Settings.SetCombat()
@@ -144,6 +146,7 @@ local COMMANDS = {
   macros = function() R2F.MainWindow.Show("macros") end,
   talents = function() R2F.MainWindow.Show("talents") end,
   settings = function() R2F.MainWindow.Show("settings") end,
+  bags = function() R2F.Bags.Report() end,
   minimap = function() R2F.Minimap.ToggleHidden() end,
   stance = function() R2F.Stance.ToggleShown() end,
   ["stance lock"] = function() R2F.Stance.ToggleLock() end,

@@ -2831,7 +2831,10 @@ The stance icon options sit on the Settings tab until step 4.)
 - Home becomes a short "what's next" list (free talent points, site updates waiting,
   library/slot counts) once Quick settings move out.
 
-### 15.3 Movable bags (replaces Forever Bag Mover)
+### 15.3 Movable bags (replaces Forever Bag Mover) -- built as v0.16.0, 2026-10-08
+(As built: `Bags.lua`; classic windows saved per bag id, combined bag under `combined`;
+re-applied through `hooksecurefunc("UpdateContainerFrameAnchors")` + `OnShow`; the "Unverified"
+question below is answered in game by TESTING.md 24 and `/r2f bags`.)
 A Quick setting: **Movable bags** (checkbox) + **Lock bags**. Unlocked: drag the backpack
 (and the bag column) anywhere; position saved per character; movement blocked in combat.
 Owner wants to drop the Forever Bag Mover addon for this.

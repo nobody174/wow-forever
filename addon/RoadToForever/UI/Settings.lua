@@ -14,6 +14,7 @@
 --                     call Settings.Refresh.
 --   right  Quick settings (moved from Home in 0.15.0, 12.4.1) -> check boxes that
 --                     change game settings with SetCVar (QuickSettings.lua)
+--          Movable bags / Lock bags (Bags.lua, 0.16.0)
 --          Stance icon (Warriors only, 0.13.0; moves to Reminders in step 4)
 --
 -- Only Remove all and the Quick settings boxes are greyed out in combat
@@ -57,6 +58,13 @@ local function refresh()
     b:SetEnabled(enabled)
     if enabled then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
   end
+  local bagsOk = R2F.Bags.Available() and not combat
+  for _, b in ipairs({ ui.bagMove, ui.bagLock }) do
+    b:SetEnabled(bagsOk)
+    if bagsOk then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
+  end
+  ui.bagMove:SetChecked(R2F.Bags.IsMovable())
+  ui.bagLock:SetChecked(R2F.Bags.IsLocked())
   if ui.stShow then
     local st = Library.db.stance
     ui.stShow:SetChecked(st.shown)
@@ -216,22 +224,50 @@ local function buildQuick(f)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
     ui.quick[i] = b
   end
+
+  -- Movable bags / Lock bags (Bags.lua, v0.16.0): not CVars, so not in
+  -- QuickSettings.ITEMS; same look and the same combat rule.
+  local n = #R2F.QuickSettings.ITEMS
+  local function bagBox(label, tip, y, onClick)
+    local b = UI.CheckButton(f, label)
+    b:SetPoint("TOPLEFT", RIGHT + 4, y)
+    b.bagTip = tip
+    if b.SetMotionScriptsWhileDisabled then b:SetMotionScriptsWhileDisabled(true) end
+    b:SetScript("OnClick", onClick)
+    b:SetScript("OnEnter", function(self)
+      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      GameTooltip:AddLine(label, 1, 1, 1)
+      GameTooltip:AddLine(tip, 1, 0.82, 0, true)
+      if not R2F.Bags.Available() then
+        GameTooltip:AddLine(L.BAGS_UNAVAILABLE, 1, 0.1, 0.1, true)
+      elseif R2F.InCombat() then
+        GameTooltip:AddLine(L.QS_TIP_COMBAT, 1, 0.1, 0.1, true)
+      end
+      GameTooltip:Show()
+    end)
+    b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    return b
+  end
+  ui.bagMove = bagBox(L.BAGS_MOVABLE, L.BAGS_MOVABLE_TIP, -124 - n * 26,
+    function() R2F.Bags.SetMovable(not R2F.Bags.IsMovable()); refresh() end)
+  ui.bagLock = bagBox(L.BAGS_LOCK, L.BAGS_LOCK_TIP, -124 - (n + 1) * 26,
+    function() R2F.Bags.SetLock(not R2F.Bags.IsLocked()); refresh() end)
 end
 
 -- Warrior stance icon (Stance.lua): show, lock, size.
 local function buildStance(f)
-  heading(f, RIGHT, -226, L.SETTINGS_STANCE)
+  heading(f, RIGHT, -292, L.SETTINGS_STANCE)
   local St = R2F.Stance
   ui.stShow = UI.CheckButton(f, L.SETTINGS_STANCE_SHOW)
-  ui.stShow:SetPoint("TOPLEFT", RIGHT + 4, -254)
+  ui.stShow:SetPoint("TOPLEFT", RIGHT + 4, -320)
   ui.stShow:SetScript("OnClick", function() St.SetShown(not Library.db.stance.shown) end)
   ui.stLock = UI.CheckButton(f, L.SETTINGS_STANCE_LOCK)
-  ui.stLock:SetPoint("TOPLEFT", RIGHT + 4, -280)
+  ui.stLock:SetPoint("TOPLEFT", RIGHT + 4, -346)
   ui.stLock:SetScript("OnClick", function() St.SetLock(not Library.db.stance.lock) end)
   ui.stScaleText = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-  ui.stScaleText:SetPoint("TOPLEFT", RIGHT + 8, -314)
+  ui.stScaleText:SetPoint("TOPLEFT", RIGHT + 8, -380)
   local sl = CreateFrame("Slider", "R2FStanceScale", f, "OptionsSliderTemplate")
-  sl:SetPoint("TOPLEFT", RIGHT + 10, -340)
+  sl:SetPoint("TOPLEFT", RIGHT + 10, -406)
   sl:SetWidth(220)
   sl:SetMinMaxValues(St.MIN_SCALE * 100, St.MAX_SCALE * 100)
   sl:SetValueStep(5)

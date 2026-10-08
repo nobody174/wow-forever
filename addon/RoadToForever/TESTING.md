@@ -920,3 +920,32 @@ Needs a fresh import string copied from the site AFTER this version is deployed
    show a gold square glow over the icon, never a black square. If a black square is still
    there, note which one and take a screenshot.
 7. `/reload`, then `/r2f`: the window opens on the tab used last (including Settings).
+
+## 24. Movable bags (v0.16.0, ADDON_PLAN 15.3)
+
+Do not trust the first result blindly: which bag windows WoW Forever has is a guess.
+
+1. **Find out what the client has.** Type these in chat and write down the answers:
+   - `/dump ContainerFrameCombinedBags ~= nil`
+   - `/dump ContainerFrame1 ~= nil`
+   - `/r2f bags` (the addon's own report: `bag windows found: combined / classic / both`).
+   If both dumps say `false`, tell us: the bag windows have other names and the addon needs
+   an update.
+2. **Settings tab** (`/r2f settings`): under Quick settings there are two more boxes, **Movable
+   bags** and **Lock bags**. They are greyed out in combat (and if no bag window was found).
+3. Tick **Movable bags**, open your bags (B). Drag the backpack by its title or the empty
+   background (not by an item): it follows the mouse and stays where you drop it.
+   - Close and reopen the bags: same spot.
+   - Open a second bag, then close it: the backpack does not jump back.
+   - Open all bags (Shift-B / the bag bar): bags you never moved sit where the game puts them.
+   - With the combined bag (if you have it): drag it too; the spot is separate from the others.
+4. Tick **Lock bags**: dragging does nothing now, the bags still open at your spot. Untick: dragging works.
+5. `/reload` and relog: the bags open at the saved spot. Log in on another character: it has
+   its own setting and position (default off).
+6. Combat: with a bag open, get into a fight. Dragging does nothing, the bag does not jump when
+   another bag opens or closes, the two boxes are greyed out. After the fight the bag goes to
+   your spot (no `Interface action failed because of an AddOn` message at any point).
+7. Untick **Movable bags**: the game re-stacks the bags in its normal place. Tick it again: your
+   saved spot is back.
+8. Bank / mail / vendor open at the same time as your bags: the bags still open where you put them
+   and nothing overlaps wrongly. Note anything odd.

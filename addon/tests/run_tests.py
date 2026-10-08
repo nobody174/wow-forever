@@ -855,6 +855,216 @@ def test_tree_names():
           "15.2 TREE_NAMES has exactly the nine classes")
 
 
+BAG_FRAMES_LUA = """
+  local function mk(name, id)
+    local f = CreateFrame('Frame', name, UIParent)
+    f:SetID(id)
+    f.__shown = false
+    return f
+  end
+  NUM_CONTAINER_FRAMES = 3
+  STYLE_CLASSIC, STYLE_COMBINED = %s, %s
+  if STYLE_CLASSIC then
+    mk('ContainerFrame1', 0) mk('ContainerFrame2', 1) mk('ContainerFrame3', 2)
+  end
+  if STYLE_COMBINED then mk('ContainerFrameCombinedBags', 0) end
+  -- The game's own stacking: every open window sits at its default spot.
+  ANCHOR_CALLS = 0
+  function UpdateContainerFrameAnchors()
+    ANCHOR_CALLS = ANCHOR_CALLS + 1
+    for _, name in ipairs({ 'ContainerFrame1', 'ContainerFrame2', 'ContainerFrame3', 'ContainerFrameCombinedBags' }) do
+      local f = _G[name]
+      if f and f:IsShown() then
+        f:ClearAllPoints()
+        f:SetPoint('BOTTOMRIGHT', UIParent, 'BOTTOMRIGHT', -10, 100)
+      end
+    end
+  end
+  MOVES = 0
+  for _, name in ipairs({ 'ContainerFrame1', 'ContainerFrame2', 'ContainerFrame3', 'ContainerFrameCombinedBags' }) do
+    local f = _G[name]
+    if f then f.StartMoving = function() MOVES = MOVES + 1 end end
+  end
+"""
+
+
+def bag_runtime(classic, combined, saved=None):
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    lua.execute(BAG_FRAMES_LUA % ("true" if classic else "false", "true" if combined else "false"))
+    if saved:
+        lua.execute("R2FCharDB = %s" % saved)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    return lua, T
+
+
+def bag_point(lua, name):
+    return lua.eval("(function() local p = %s.__point return p and table.concat({ tostring(p[1]), tostring(p[2] == UIParent and 'UIParent' or p[2]), "
+                    "tostring(p[3]), tostring(p[4]), tostring(p[5]) }, ',') end)()" % name)
+
+
+def bag_drag(lua, name, point, x, y):
+    """Simulate a drag: the game reports `point` for the frame after StopMovingOrSizing."""
+    lua.execute("%s.GetPoint = function() return %r, UIParent, %r, %d, %d end" % (name, point, point, x, y))
+    lua.execute("%s:Fire('OnDragStart') %s:Fire('OnDragStop')" % (name, name))
+
+
+def test_bags():
+    """ADDON_PLAN 15.3: movable bags for classic ContainerFrameN and the combined bag."""
+    # --- Detection at run time ----------------------------------------------------
+    for classic, combined, want in ((True, False, "classic"), (False, True, "combined"), (True, True, "both"), (False, False, None)):
+        lua, T = bag_runtime(classic, combined)
+        check(lua.eval("R2F.Bags.Style()") == want, "15.3 detects the bag style: %s" % want)
+        check(lua.eval("R2F.Bags.Available()") is (want is not None), "15.3 Available() for %s" % want)
+    lua, T = bag_runtime(False, False)
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("bags")')
+    check(any("no bag windows found" in c for c in lua_table_to_list(lua.eval("TEST.chat"))), "15.3 /r2f bags says when nothing is found")
+    check(lua.eval("R2F.Bags.SetMovable(true)") is True and lua.eval("R2FCharDB.bags.movable") is True,
+          "15.3 enabling with no bag windows is harmless")
+    lua, T = bag_runtime(True, True)
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("bags")')
+    check(any("bag windows found: both" in c for c in lua_table_to_list(lua.eval("TEST.chat"))), "15.3 /r2f bags reports both styles")
+
+    # --- Defaults: off, per character, nothing touched ---------------------------------
+    lua, T = bag_runtime(True, False)
+    check(lua.eval("R2FCharDB.bags.movable") is False and lua.eval("R2FCharDB.bags.lock") is False
+          and lua.eval("R2FDB.bags == nil"), "15.3 off by default, stored per character (R2FCharDB.bags)")
+    lua.execute("ContainerFrame1:Show() UpdateContainerFrameAnchors()")
+    bag_drag(lua, "ContainerFrame1", "BOTTOMLEFT", 300, 400)
+    check(lua.eval("MOVES") == 0 and lua.eval("R2FCharDB.bags.bags[0] == nil"), "15.3 not movable: dragging does nothing and saves nothing")
+    check(bag_point(lua, "ContainerFrame1") == "BOTTOMRIGHT,UIParent,BOTTOMRIGHT,-10,100", "15.3 not movable: the game's position stays")
+
+    # --- Classic windows: drag, save, re-apply after the game re-anchors ------------------
+    lua.execute("R2F.Bags.SetMovable(true)")
+    check(lua.eval("R2F.Bags.IsMovable()") is True, "15.3 Movable bags on")
+    bag_drag(lua, "ContainerFrame1", "BOTTOMLEFT", 300, 400)
+    check(lua.eval("MOVES") == 1, "15.3 unlocked + movable: a drag starts moving the backpack window")
+    check(lua.eval("R2FCharDB.bags.bags[0][1]") == "BOTTOMLEFT" and lua.eval("R2FCharDB.bags.bags[0][3]") == 300
+          and lua.eval("R2FCharDB.bags.bags[0][4]") == 400, "15.3 position saved under bag id 0 (the backpack)")
+    lua.execute("UpdateContainerFrameAnchors()")
+    check(bag_point(lua, "ContainerFrame1") == "BOTTOMLEFT,UIParent,BOTTOMLEFT,300,400",
+          "15.3 re-applied right after the game re-anchors: %s" % bag_point(lua, "ContainerFrame1"))
+    lua.execute("ContainerFrame1:Hide() ContainerFrame1:Show()")
+    check(bag_point(lua, "ContainerFrame1") == "BOTTOMLEFT,UIParent,BOTTOMLEFT,300,400", "15.3 re-applied when the window is shown again")
+    # Another bag keeps the game's spot until it is dragged; keyed by bag id, not stack order.
+    lua.execute("ContainerFrame2:Show() UpdateContainerFrameAnchors()")
+    check(bag_point(lua, "ContainerFrame2") == "BOTTOMRIGHT,UIParent,BOTTOMRIGHT,-10,100",
+          "15.3 a bag that was never moved keeps the game's position")
+    bag_drag(lua, "ContainerFrame2", "TOPLEFT", 50, -60)
+    lua.execute("UpdateContainerFrameAnchors()")
+    check(bag_point(lua, "ContainerFrame2") == "TOPLEFT,UIParent,TOPLEFT,50,-60" and
+          bag_point(lua, "ContainerFrame1") == "BOTTOMLEFT,UIParent,BOTTOMLEFT,300,400", "15.3 each bag has its own saved spot")
+
+    # --- Lock: position kept, dragging refused ----------------------------------------------
+    lua.execute("MOVES = 0 R2F.Bags.SetLock(true)")
+    bag_drag(lua, "ContainerFrame1", "CENTER", 1, 2)
+    check(lua.eval("MOVES") == 0 and lua.eval("R2FCharDB.bags.bags[0][3]") == 300, "15.3 locked: no drag, saved position unchanged")
+    lua.execute("UpdateContainerFrameAnchors()")
+    check(bag_point(lua, "ContainerFrame1") == "BOTTOMLEFT,UIParent,BOTTOMLEFT,300,400", "15.3 locked bags still sit at the saved spot")
+    lua.execute("R2F.Bags.SetLock(false)")
+    bag_drag(lua, "ContainerFrame1", "CENTER", 1, 2)
+    check(lua.eval("MOVES") == 1, "15.3 unlocking allows dragging again")
+
+    # --- Combat: nothing moves, hooks wait, applied afterwards -------------------------------------
+    lua, T = bag_runtime(True, False)
+    lua.execute("R2F.Bags.SetMovable(true) ContainerFrame1:Show() UpdateContainerFrameAnchors()")
+    bag_drag(lua, "ContainerFrame1", "BOTTOMLEFT", 300, 400)
+    lua.execute("MOVES = 0")
+    T.combat = True
+    bag_drag(lua, "ContainerFrame1", "CENTER", 9, 9)
+    check(lua.eval("MOVES") == 0 and lua.eval("R2FCharDB.bags.bags[0][3]") == 300, "15.3 combat: a drag does not start and saves nothing")
+    lua.execute("UpdateContainerFrameAnchors()")
+    check(bag_point(lua, "ContainerFrame1") == "BOTTOMRIGHT,UIParent,BOTTOMRIGHT,-10,100",
+          "15.3 combat: the game's re-anchor is not overridden (no SetPoint from us)")
+    lua.execute("ContainerFrame1:Hide() ContainerFrame1:Show()")
+    check(bag_point(lua, "ContainerFrame1") == "BOTTOMRIGHT,UIParent,BOTTOMRIGHT,-10,100", "15.3 combat: OnShow does not move the bag either")
+    T.errors = lua.table()
+    check(lua.eval("R2F.Bags.SetMovable(false)") is False and lua.eval("R2F.Bags.IsMovable()") is True
+          and lua.eval("TEST.errors[1]") == lua.eval("R2F.L.QS_COMBAT"), "15.3 combat: the Movable setting cannot be changed")
+    T.combat = False
+    T.fire("PLAYER_REGEN_ENABLED")
+    check(bag_point(lua, "ContainerFrame1") == "BOTTOMLEFT,UIParent,BOTTOMLEFT,300,400", "15.3 after combat the saved position is applied")
+
+    # --- Turning it off hands the bags back to the game, saved spots are kept --------------------------
+    anchors = lua.eval("ANCHOR_CALLS")
+    lua.execute("R2F.Bags.SetMovable(false)")
+    check(lua.eval("ANCHOR_CALLS") == anchors + 1 and bag_point(lua, "ContainerFrame1") == "BOTTOMRIGHT,UIParent,BOTTOMRIGHT,-10,100",
+          "15.3 Movable off: the game re-stacks the bags")
+    lua.execute("MOVES = 0")
+    bag_drag(lua, "ContainerFrame1", "CENTER", 5, 5)
+    lua.execute("UpdateContainerFrameAnchors()")
+    check(lua.eval("MOVES") == 0 and bag_point(lua, "ContainerFrame1") == "BOTTOMRIGHT,UIParent,BOTTOMRIGHT,-10,100"
+          and lua.eval("R2FCharDB.bags.bags[0][3]") == 300, "15.3 Movable off: hooks are inert, saved spot kept")
+    lua.execute("R2F.Bags.SetMovable(true) UpdateContainerFrameAnchors()")
+    check(bag_point(lua, "ContainerFrame1") == "BOTTOMLEFT,UIParent,BOTTOMLEFT,300,400", "15.3 switching it on again restores the saved spot")
+
+    # --- Relog: saved position comes back from R2FCharDB ----------------------------------------------------
+    saved = "{ bags = { movable = true, lock = false, bags = { [0] = { 'TOPRIGHT', 'TOPRIGHT', -40, -80 } } } }"
+    lua, T = bag_runtime(True, False, saved)
+    lua.execute("ContainerFrame1:Show()")
+    check(bag_point(lua, "ContainerFrame1") == "TOPRIGHT,UIParent,TOPRIGHT,-40,-80", "15.3 relog: saved position applied when the bag opens")
+    check(lua.eval("R2FCharDB.bags.movable") is True, "15.3 relog: setting persisted")
+
+    # --- Combined bag ---------------------------------------------------------------------------------------------
+    lua, T = bag_runtime(False, True)
+    lua.execute("R2F.Bags.SetMovable(true) ContainerFrameCombinedBags:Show() UpdateContainerFrameAnchors()")
+    bag_drag(lua, "ContainerFrameCombinedBags", "CENTER", 12, 34)
+    check(lua.eval("MOVES") == 1 and lua.eval("R2FCharDB.bags.combined[3]") == 12 and lua.eval("R2FCharDB.bags.combined[4]") == 34,
+          "15.3 combined bag: dragged and saved under 'combined'")
+    lua.execute("UpdateContainerFrameAnchors()")
+    check(bag_point(lua, "ContainerFrameCombinedBags") == "CENTER,UIParent,CENTER,12,34", "15.3 combined bag: re-applied after the game re-anchors")
+    T.combat = True
+    lua.execute("UpdateContainerFrameAnchors()")
+    check(bag_point(lua, "ContainerFrameCombinedBags") == "BOTTOMRIGHT,UIParent,BOTTOMRIGHT,-10,100", "15.3 combined bag: combat blocks it too")
+    T.combat = False
+    T.fire("PLAYER_REGEN_ENABLED")
+    check(bag_point(lua, "ContainerFrameCombinedBags") == "CENTER,UIParent,CENTER,12,34", "15.3 combined bag: applied after combat")
+
+    # --- Both styles at once ------------------------------------------------------------------------------------
+    lua, T = bag_runtime(True, True)
+    lua.execute("R2F.Bags.SetMovable(true) ContainerFrame1:Show() ContainerFrameCombinedBags:Show()")
+    bag_drag(lua, "ContainerFrame1", "LEFT", 1, 2)
+    bag_drag(lua, "ContainerFrameCombinedBags", "RIGHT", 3, 4)
+    lua.execute("UpdateContainerFrameAnchors()")
+    check(bag_point(lua, "ContainerFrame1") == "LEFT,UIParent,LEFT,1,2" and bag_point(lua, "ContainerFrameCombinedBags") == "RIGHT,UIParent,RIGHT,3,4",
+          "15.3 both styles present: each keeps its own spot")
+
+    # --- A bag anchored to another frame is saved as an absolute spot --------------------------------------------
+    lua, T = bag_runtime(True, False)
+    lua.execute("R2F.Bags.SetMovable(true) ContainerFrame1:Show()")
+    lua.execute("ContainerFrame1.GetPoint = function() return 'TOPRIGHT', ContainerFrame2, 'TOPLEFT', 0, 0 end"
+                " ContainerFrame1.GetLeft = function() return 111 end ContainerFrame1.GetBottom = function() return 222 end"
+                " ContainerFrame1:Fire('OnDragStart') ContainerFrame1:Fire('OnDragStop')")
+    check(lua.eval("R2FCharDB.bags.bags[0][1]") == "BOTTOMLEFT" and lua.eval("R2FCharDB.bags.bags[0][3]") == 111
+          and lua.eval("R2FCharDB.bags.bags[0][4]") == 222, "15.3 relative anchor -> saved as absolute BOTTOMLEFT")
+
+    # --- Settings tab boxes ----------------------------------------------------------------------------------------
+    lua, T = bag_runtime(True, False)
+    lua.execute("R2F.MainWindow.Show('settings')")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.BAGS_MOVABLE", "BM")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.BAGS_LOCK", "BL")
+    check(lua.eval("#BM") == 1 and lua.eval("#BL") == 1 and lua.eval("BM[1]:IsVisible()") is True,
+          "15.3 Settings tab has Movable bags + Lock bags")
+    lua.execute("BM[1]:Click()")
+    check(lua.eval("R2FCharDB.bags.movable") is True and lua.eval("BM[1]:GetChecked()") is True, "15.3 clicking Movable bags turns it on")
+    lua.execute("BL[1]:Click()")
+    check(lua.eval("R2FCharDB.bags.lock") is True and lua.eval("BL[1]:GetChecked()") is True, "15.3 clicking Lock bags locks")
+    T.combat = True
+    T.fire("PLAYER_REGEN_DISABLED")
+    check(lua.eval("BM[1]:IsEnabled()") is False and lua.eval("BL[1]:IsEnabled()") is False, "15.3 the two boxes grey out in combat")
+    T.combat = False
+    T.fire("PLAYER_REGEN_ENABLED")
+    check(lua.eval("BM[1]:IsEnabled()") is True, "15.3 and come back after combat")
+    lua, T = bag_runtime(False, False)
+    lua.execute("R2F.MainWindow.Show('settings')")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.BAGS_MOVABLE", "BM")
+    check(lua.eval("BM[1]:IsEnabled()") is False, "15.3 no bag windows found: the boxes are greyed out")
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -4763,6 +4973,7 @@ def main():
     test_settings_tab(True, fx)
     test_settings_tab(False, fx)
     test_tree_names()
+    test_bags()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

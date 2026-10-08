@@ -25,11 +25,9 @@ Beta data on the site is level-30 data. Redo these once the live game is up:
 
 ## Next up: addon round 2 (agreed 2026-10-08, spec: ADDON_PLAN.md section 15)
 
-Build in this order; each step is its own release. Step 1 (import replaces) shipped as 0.14.0, see
-CHANGELOG.md; its in-game check is TESTING.md 22.
-- [ ] **2. Settings tab + fixes** (15.2): 4th tab instead of the Settings button; Quick
-      settings move there; talent tree names instead of "Tree 1/2/3"; fix the two black
-      squares in the Macro Book (class circle, Universal tab); Home as "what's next".
+Build in this order; each step is its own release. Steps 1 (import replaces, 0.14.0) and 2 (Settings tab, 0.15.0) are built, see
+CHANGELOG.md; their in-game checks are TESTING.md 22 and 23. Step 4's
+stance icon settings move from the Settings tab to Reminders.
 - [ ] **3. Movable bags** (15.3): Quick setting replacing the Forever Bag Mover addon
       (then remove Forever Bag Mover from addons.html).
 - [ ] **4. Reminders tab** (15.4): stance icon moves here; owner picks the first new

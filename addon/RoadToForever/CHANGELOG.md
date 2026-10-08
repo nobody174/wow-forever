@@ -3,6 +3,29 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.15.0 (2026-10-08): Settings tab, tree names, Home as "what's next" (ADDON_PLAN 15.2)
+
+**Never run in game yet: TESTING.md 23.**
+
+- **Settings is the 4th tab** (Home / Macros / Talents / Settings). The Settings button
+  left the Macro Book and the floating panel is gone; `/r2f settings` opens the tab.
+  Left column: Macros (slots first, Remove all) and Minimap (show, lock). Right column:
+  **Quick settings** (moved from Home: max camera zoom, hide guild names, hide PvP
+  titles) and, for Warriors, the stance icon options (Show, Lock, size; they move to
+  Reminders in step 4).
+- **Home is a short "what's next" list:** free talent points, macros in the library and on
+  your bars, and macro slot use (`7 of 30 character slots, 12 of 120 account slots used`),
+  plus the Import / Export professions buttons.
+- **Talents tab shows real tree names** (Arms / Fury / Protection ...) instead of
+  "Tree 1 / 2 / 3": the same names and order as the site's talent calculator, for all nine
+  classes. Names the game itself gives still win.
+- **Black squares fixed (best guess, check in game):** the selected class circle and the
+  selected side tab (Universal) were drawn with `SetCheckedTexture(..., "ADD")`, but the
+  second argument only works for highlight textures, so the glow texture was drawn with
+  normal blending as a black square. Selected state is now the same square glow as the
+  hover highlight, blended additively (`UI.CheckedGlow`); icons that can't be named fall
+  back to the question-mark icon (`UI.SetNormalIcon`).
+
 ## 0.14.0 (2026-10-08): import replaces, not only adds (ADDON_PLAN 15.1)
 
 **Never run in game yet: TESTING.md 22.**

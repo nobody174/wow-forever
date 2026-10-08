@@ -36,6 +36,36 @@ function UI.TryTemplate(frameType, name, parent, template, check)
   return nil
 end
 
+-- Checked state of a CheckButton drawn as a gold glow over the icon.
+-- SetCheckedTexture("...CheckButtonHilight", "ADD") rendered a black square on
+-- the selected class circle and the Universal side tab in game (0.14.0 feedback):
+-- the second argument is only a blend mode for SetHighlightTexture, so the
+-- checked texture was drawn with normal blending. This sets the blend mode on
+-- the texture itself and uses the same square glow as the highlight; if the
+-- texture object is missing, a plain translucent gold colour is used so the
+-- selection can never turn into a black box.
+function UI.CheckedGlow(button)
+  button:SetCheckedTexture("Interface\\Buttons\\ButtonHilight-Square")
+  local tex = button.GetCheckedTexture and button:GetCheckedTexture()
+  if tex then
+    tex:SetBlendMode("ADD")
+    tex:SetVertexColor(1, 0.82, 0)
+    tex:SetAllPoints(button)
+  end
+end
+
+-- SetNormalTexture(path) with a known-good icon when `path` is empty, so an
+-- icon that cannot be named never draws as a black square (setTabIcon /
+-- setPickIcon use it).
+UI.FALLBACK_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
+function UI.SetNormalIcon(button, path)
+  if type(path) ~= "string" or path == "" then path = UI.FALLBACK_ICON end
+  button:SetNormalTexture(path)
+  local tex = button:GetNormalTexture()
+  if tex then tex:SetTexCoord(0, 1, 0, 1) end
+  return tex
+end
+
 function UI.PlaySound(key)
   if SOUNDKIT and SOUNDKIT[key] and PlaySound then PlaySound(SOUNDKIT[key]) end
 end

@@ -2,13 +2,15 @@
 --
 -- PortraitFrameTemplate shell (UI.Window: same template checks and
 -- fallbacks the Macro Book used since step 3), portrait = our logo, and
--- three bottom tabs in the character frame's style: Home / Macros / Talents.
+-- four bottom tabs in the character frame's style: Home / Macros / Talents / Settings.
 -- Each tab is a page frame filling the window; the window shows one page at
 -- a time:
 --   Home    -> UI/Home.lua builds into it
 --   Macros  -> UI/MacroBook.lua builds into it (the step-3 book, reparented)
 --   Talents -> UI/TalentPanel.lua builds into it (step 9: link, preview,
 --              Copy my build; step 10: Learn talents)
+--   Settings-> UI/Settings.lua builds into it (15.2, v0.15.0: slots, minimap,
+--              Quick settings, stance icon; was a floating panel)
 --
 -- Saved in R2FDB.settings: windowPos (by UI.Window when dragged) and
 -- lastTab. The size is fixed (540 x 500, the book's size): the book's grid is
@@ -22,10 +24,10 @@ local UI = R2F.UI
 local MainWindow = {}
 R2F.MainWindow = MainWindow
 
-MainWindow.TABS = { "home", "macros", "talents" }
-local TAB_INDEX = { home = 1, macros = 2, talents = 3 }
-local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS" }
-local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS" }
+MainWindow.TABS = { "home", "macros", "talents", "settings" }
+local TAB_INDEX = { home = 1, macros = 2, talents = 3, settings = 4 }
+local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", settings = "TITLE_SETTINGS" }
+local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", settings = "TAB_SETTINGS" }
 local LOGO = "Interface\\AddOns\\RoadToForever\\media\\logo128"
 
 local frame
@@ -42,6 +44,8 @@ local function refreshPage(key)
     R2F.MacroBook.Refresh()
   elseif key == "talents" then
     R2F.TalentPanel.Refresh()
+  elseif key == "settings" then
+    R2F.Settings.Refresh()
   end
 end
 
@@ -129,6 +133,7 @@ local function build()
   R2F.Home.Build(pages.home)
   R2F.MacroBook.Build(pages.macros)
   R2F.TalentPanel.Build(pages.talents)
+  R2F.Settings.Build(pages.settings)
 
   for i, key in ipairs(MainWindow.TABS) do tabButtons[i] = buildTab(f, i, key) end
   f.Tabs = tabButtons
@@ -209,11 +214,12 @@ function MainWindow.Frame() return frame end
 
 -- UPDATE_MACROS / ACTIONBAR_SLOT_CHANGED / LEARNED_SPELL_IN_TAB /
 -- CHARACTER_POINTS_CHANGED / PLAYER_LEVEL_UP: redraw the visible page (all
--- three are throttled and no-ops while hidden).
+-- all are throttled and no-ops while hidden).
 function MainWindow.RequestRefresh()
   R2F.MacroBook.RequestRefresh()
   R2F.Home.RequestRefresh()
   R2F.TalentPanel.RequestRefresh()
+  R2F.Settings.RequestRefresh()
 end
 
 -- PLAYER_REGEN_DISABLED / ENABLED.
@@ -221,4 +227,5 @@ function MainWindow.SetCombat()
   R2F.MacroBook.SetCombat()
   R2F.Home.SetCombat()
   R2F.TalentPanel.SetCombat()
+  R2F.Settings.SetCombat()
 end

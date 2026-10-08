@@ -746,6 +746,115 @@ def test_import_replaces(fx):
     check(lua.eval("R2F.Library.Count()") == 2 + len(anyc), "15.1 replace with a K string: unpicked Warrior macros go too")
 
 
+def test_settings_tab(templates, fx):
+    """ADDON_PLAN 15.2: Settings tab, Home as 'what's next', tree names, checked-glow fix."""
+    lua = new_runtime(templates)
+    tag = "templates" if templates else "fallbacks"
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    L = lua.eval("R2F.L")
+    MW = lua.eval("R2F.MainWindow")
+    res = lua.eval("function(s) local a, b = R2F.Import.Parse(s) return a, b end")(fx["warriorUniversal"]["string"])[0]
+    lua.eval("R2F.Library.Apply")(res.records, 1)
+
+    # --- Fourth tab, slash command, title -----------------------------------------
+    lua.execute('SlashCmdList.R2F("settings")')
+    check(MW.IsShown() is True and MW.CurrentTab() == "settings", "%s: /r2f settings opens the Settings tab" % tag)
+    win = "R2FMain" if templates else "R2FMainPlain"
+    title = lua.eval("%s.__title" % win) if templates else lua.eval("%s.r2fTitle.__text" % win)
+    check(title == "Road to Forever: Settings", "%s: Settings title: %r" % (tag, title))
+    check(lua.eval("R2FDB.settings.lastTab") == "settings", "Settings can be the remembered last tab")
+    lua.execute("R2F.MainWindow.SelectTab('macros')")
+    check(lua.eval("R2F.Settings.IsShown()") is False, "Settings.IsShown() false on another tab")
+
+    # --- Home is a short 'what's next' list; Quick settings are not on it -----------
+    lua.execute("R2F.MainWindow.SelectTab('home')")
+    find_frames(lua, "f.__kind == 'Button' and f.tab ~= nil and f.sub ~= nil", "HOME")
+    check(lua.eval("#HOME") == 3, "%s: Home has three entries" % tag)
+    check(font_text(lua, "^What's next$") == "What's next", "Home heading")
+    acc_n, acc_max, char_n, char_max = lua.eval("R2F.Macros.Counts()")
+    check(lua.eval("HOME[3].sub.__text") == "%d of %d character slots, %d of %d account slots used" % (char_n, char_max, acc_n, acc_max),
+          "Home slot line: %r" % lua.eval("HOME[3].sub.__text"))
+    lua.execute('TEST.addMacro("Mine", "/dance", true) R2F.Home.Refresh()')
+    check(lua.eval("HOME[3].sub.__text").startswith("%d of %d character slots" % (char_n + 1, char_max)),
+          "Home slot line follows the live macro count")
+    find_frames(lua, "f.qsItem ~= nil", "QSB")
+    check(lua.eval("#QSB") == 3 and lua.eval("QSB[1]:IsVisible()") is False,
+          "Quick settings boxes exist but are not on the Home page")
+
+    # --- Settings page content ----------------------------------------------------
+    lua.execute("R2F.MainWindow.SelectTab('settings')")
+    for key in ("SETTINGS_MACROS", "SETTINGS_MINIMAP", "QS_TITLE"):
+        check(font_text(lua, "^" + lua.eval("R2F.L.%s" % key) + "$") is not None, "Settings tab has the %s heading" % key)
+    check(lua.eval("QSB[1]:IsVisible()") is True, "%s: Quick settings boxes visible on the Settings tab" % tag)
+    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.BTN_REMOVE_ALL", "RM")
+    check(lua.eval("#RM") == 1 and lua.eval("RM[1]:IsVisible()") is True, "Remove all is on the Settings tab")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel", "CBS")
+    labels = {lua.eval("CBS[%d].r2fLabel.__text" % i) for i in range(1, lua.eval("#CBS") + 1)}
+    for key in ("SETTINGS_SLOTS_CHAR", "SETTINGS_SLOTS_ACC", "SETTINGS_MINIMAP_SHOW", "SETTINGS_MINIMAP_LOCK",
+                "SETTINGS_STANCE_SHOW", "SETTINGS_STANCE_LOCK", "QS_ZOOM", "QS_GUILD", "QS_PVP"):
+        check(lua.eval("R2F.L.%s" % key) in labels, "Settings tab has the %s control" % key)
+    check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "stance size slider still on Settings (Warrior)")
+    # Combat greys Remove all and the Quick settings boxes through the tab.
+    T.combat = True
+    T.fire("PLAYER_REGEN_DISABLED")
+    check(lua.eval("RM[1]:IsEnabled()") is False and lua.eval("QSB[1]:IsEnabled()") is False, "combat greys Remove all + Quick settings")
+    T.combat = False
+    T.fire("PLAYER_REGEN_ENABLED")
+    check(lua.eval("RM[1]:IsEnabled()") is True and lua.eval("QSB[1]:IsEnabled()") is True, "after combat both are enabled again")
+    # The old floating panel and its button are gone.
+    check(lua.eval("R2FSettings == nil"), "no floating Settings panel")
+    check("R2FSettings" not in lua_table_to_list(lua.eval("UISpecialFrames")), "R2FSettings not in UISpecialFrames")
+
+    # --- Black squares: checked glow + icon fallback --------------------------------
+    lua.execute("R2F.MainWindow.SelectTab('macros') R2F.MacroBook.Refresh()")
+    check(lua.eval("R2F.UI.FALLBACK_ICON") == "Interface\\Icons\\INV_Misc_QuestionMark", "fallback icon is a standard icon")
+    lua.execute("""
+      GLOWS, BADGLOWS = 0, 0
+      for _, f in ipairs(TEST.allFrames) do
+        if f.__kind == 'CheckButton' and f.__checked_tex_marker == nil then
+          local c = f.GetCheckedTexture and f:GetCheckedTexture()
+          if c and c.__tex ~= 'Interface\\\\Buttons\\\\UI-CheckBox-Check' then
+            GLOWS = GLOWS + 1
+            if c.__blend ~= 'ADD' or c.__tex ~= 'Interface\\\\Buttons\\\\ButtonHilight-Square' then BADGLOWS = BADGLOWS + 1 end
+          end
+        end
+      end""")
+    check(lua.eval("GLOWS") >= 3 and lua.eval("BADGLOWS") == 0,
+          "%s: every class circle and side tab draws its selected state as an ADD-blended glow (%s, %s bad)"
+          % (tag, lua.eval("GLOWS"), lua.eval("BADGLOWS")))
+    check(lua.eval("""(function()
+        for _, f in ipairs(TEST.allFrames) do
+          if f.__kind == 'CheckButton' and f.GetCheckedTexture and f:GetCheckedTexture() then
+            if f:GetCheckedTexture().__tex == 'Interface\\\\Buttons\\\\CheckButtonHilight' then return false end
+          end
+        end
+        return true end)()"""), "the black-square texture (CheckButtonHilight) is no longer used for checked states")
+    lua.execute("""
+      local b = CreateFrame('CheckButton', nil, UIParent)
+      R2F.UI.SetNormalIcon(b, nil)
+      NORM1 = b:GetNormalTexture().__tex
+      R2F.UI.SetNormalIcon(b, 'Interface\\\\Icons\\\\INV_Misc_Book_09')
+      NORM2 = b:GetNormalTexture().__tex""")
+    check(lua.eval("NORM1") == "Interface\\Icons\\INV_Misc_QuestionMark" and lua.eval("NORM2") == "Interface\\Icons\\INV_Misc_Book_09",
+          "SetNormalIcon falls back to the question mark for an empty path")
+
+
+def test_tree_names():
+    """15.2: the Talents tab's tree names = talentcalc.js CLASSES (same names, same order)."""
+    js = open(os.path.join(ROOT, "talentcalc.js"), encoding="utf-8").read()
+    classes = re.findall(r'\{ id: "(\w+)",\s+name: "\w+",\s+color: "#\w+", trees: \[\[\d+, "([^"]+)"\], \[\d+, "([^"]+)"\], \[\d+, "([^"]+)"\]\] \}', js)
+    check(len(classes) == 9, "15.2 talentcalc.js CLASSES parsed: %d classes" % len(classes))
+    lua = new_runtime()
+    lua.execute("GetTalentTabInfo = nil")
+    for cid, a, b, c in classes:
+        got = [lua.eval("R2F.Talents.TreeName(%d, %r)" % (i, cid.upper())) for i in (1, 2, 3)]
+        check(got == [a, b, c], "15.2 tree names for %s: %s" % (cid, got))
+    check(lua.eval("(function() local n = 0 for _ in pairs(R2F.Talents.TREE_NAMES) do n = n + 1 end return n end)()") == 9,
+          "15.2 TREE_NAMES has exactly the nine classes")
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -1137,14 +1246,16 @@ def test_step5_ui(templates, fx):
     for g in BINDING_GLOBALS:
         check(isinstance(lua.eval(g), str) and lua.eval(g) != "", "binding label global %s is set" % g)
 
-    # Settings button opens the panel (no longer disabled).
+    # 15.2: the Macro Book has no Settings button any more; Settings is the 4th tab.
     lua.execute("""
+      SETBTN = nil
       for _, f in ipairs(TEST.allFrames) do
-        if f.__kind == 'Button' and f.__text == R2F.L.BTN_SETTINGS then SETBTN = f end
+        if f.__kind == 'Button' and f.__text == R2F.L.BTN_SETTINGS and not f.r2fKey then SETBTN = f end
       end""")
-    check(lua.eval("SETBTN.__enabled") is True, "%s: Settings button is enabled" % tag)
-    lua.execute("SETBTN:Click()")
-    check(lua.eval("R2FSettings and R2FSettings:IsShown()") is True, "%s: Settings button opens the Settings panel" % tag)
+    check(lua.eval("SETBTN == nil"), "%s: no Settings button in the Macro Book (15.2)" % tag)
+    lua.execute("R2F.Settings.Show()")
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "settings" and lua.eval("R2F.Settings.IsShown()") is True
+          and lua.eval("R2FSettings == nil"), "%s: Settings opens as a tab of the main window" % tag)
     lua.execute("""
       CHECKS = {}
       for _, f in ipairs(TEST.allFrames) do
@@ -1184,8 +1295,7 @@ def test_step5_ui(templates, fx):
     # Combat: Remove all greyed out, Settings button still usable.
     T.fire("PLAYER_REGEN_DISABLED")
     T.combat = True
-    check(lua.eval("REMOVEALL.__enabled") is False and lua.eval("SETBTN.__enabled") is True,
-          "combat greys out Remove all (Settings button stays usable)")
+    check(lua.eval("REMOVEALL.__enabled") is False, "combat greys out Remove all")
     T.combat = False
     T.fire("PLAYER_REGEN_ENABLED")
     check(lua.eval("REMOVEALL.__enabled") is True, "combat end re-enables Remove all")
@@ -1214,7 +1324,8 @@ def test_step5_ui(templates, fx):
     check(any(lua.eval("R2F.L.REMOVE_ALL_NONE") in c for c in chat_lines(lua)), "Remove all with nothing to remove just says so")
 
     # Esc closes the panel; one-global audit with Settings built.
-    check("R2FSettings" in lua_table_to_list(lua.eval("UISpecialFrames")), "Settings panel closes with Esc")
+    check("R2FMain" in lua_table_to_list(lua.eval("UISpecialFrames")) or "R2FMainPlain" in lua_table_to_list(lua.eval("UISpecialFrames")),
+          "Settings tab closes with Esc (it is part of the main window)")
     new_globals = lua.eval("""(function()
       local out = {}
       for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
@@ -1408,12 +1519,12 @@ def test_step6_ui(templates, fx):
 
     # ---- Main window tabs ----------------------------------------------------
     n = find_frames(lua, "f.r2fKey ~= nil", "MTABS")
-    check(n == 3, "three bottom tabs")
-    keys = [lua.eval("MTABS[%d].r2fKey" % i) for i in range(1, 4)]
-    names = [lua.eval("MTABS[%d]:GetName()" % i) for i in range(1, 4)]
-    labels = [lua.eval("MTABS[%d].__text" % i) for i in range(1, 4)]
-    check(keys == ["home", "macros", "talents"] and labels == ["Home", "Macros", "Talents"]
-          and names == [win + "Tab%d" % i for i in range(1, 4)], "tabs Home / Macros / Talents, named %s" % names)
+    check(n == 4, "four bottom tabs (15.2)")
+    keys = [lua.eval("MTABS[%d].r2fKey" % i) for i in range(1, 5)]
+    names = [lua.eval("MTABS[%d]:GetName()" % i) for i in range(1, 5)]
+    labels = [lua.eval("MTABS[%d].__text" % i) for i in range(1, 5)]
+    check(keys == ["home", "macros", "talents", "settings"] and labels == ["Home", "Macros", "Talents", "Settings"]
+          and names == [win + "Tab%d" % i for i in range(1, 5)], "tabs Home / Macros / Talents / Settings, named %s" % names)
     tpl = lua.eval("MTABS[1].r2fTemplate")
     check(tpl == ("CharacterFrameTabButtonTemplate" if templates else "UIPanelButtonTemplate"),
           "%s: tab template chain picked %s" % (tag, tpl))
@@ -1452,7 +1563,7 @@ def test_step6_ui(templates, fx):
     check((inlib, onbars) == (total, 2), "Home counts: whole library, our macros on bars only (%s, %s)" % (inlib, onbars))
     lua.execute("R2F.MainWindow.Show('home')")
     find_frames(lua, "f.__kind == 'Button' and f.tab ~= nil and f.sub ~= nil", "HOME")
-    check(lua.eval("#HOME") == 2, "Home has two big entries")
+    check(lua.eval("#HOME") == 3, "Home has three entries: Macro Book, Talents, macro slots (15.2)")
     check(lua.eval("HOME[1].sub.__text") == "%d macros in your library, 2 on your bars" % total,
           "Home Macro Book line: %r" % lua.eval("HOME[1].sub.__text"))
     # Step 9: 12.4's free-points line instead of the step-6 placeholder.
@@ -2086,10 +2197,11 @@ def test_talent_preview(templates):
     T.tabInfoShape = "new"
     check(names() == ["Arms", "Fury", "Protection"], "%s: tree names, id-first shape" % tag)
     T.tabInfoShape = "error"
-    check(names() == ["Tree 1", "Tree 2", "Tree 3"], "%s: GetTalentTabInfo error -> Tree N" % tag)
+    check(names() == ["Arms", "Fury", "Protection"], "%s: GetTalentTabInfo error -> our own tree names (15.2)" % tag)
     T.tabInfoShape = None
     lua.execute("R2F_G = GetTalentTabInfo GetTalentTabInfo = nil")
-    check(names() == ["Tree 1", "Tree 2", "Tree 3"], "%s: no GetTalentTabInfo -> Tree N" % tag)
+    check(names() == ["Arms", "Fury", "Protection"], "%s: no GetTalentTabInfo -> our own tree names (15.2)" % tag)
+    check(lua.eval("R2F.Talents.TreeName(1, 'NOPE')") == "Tree 1", "%s: unknown class -> Tree N" % tag)
     lua.execute("GetTalentTabInfo = R2F_G R2F_G = nil")
 
     # ---- The Talents tab ------------------------------------------------------------
@@ -3041,8 +3153,8 @@ def test_talent_traits(templates):
     res = fv.eval("R2F.Talents.Preview(%s)" % lua_literal(link))
     check(res.plan is not None and res.plan.learnable is True and res.error is None,
           "%s: Forever client: Preview works and the plan is learnable" % tag)
-    check(fv.eval("R2F.Talents.TreeName(1)") == fv.eval("R2F.L.TALENT_TREE_N:format(1)"),
-          "%s: Forever client: no GetTalentTabInfo -> 'Tree 1' header" % tag)
+    check(fv.eval("R2F.Talents.TreeName(1)") == "Arms",
+          "%s: Forever client: no GetTalentTabInfo -> our own tree name (15.2)" % tag)
     check(fv.eval("R2F.Talents.LearnMode()") == "guided",
           "%s: Forever client without C_Traits writes (13.12 adds them): learning is guided" % tag)
     # Even if a LearnTalent (and a switched-on preview API) existed there: no
@@ -4010,33 +4122,33 @@ def test_quick_settings(templates, fx):
     # ---- Home opens: the boxes show the LIVE values ----------------------------
     # Set by "someone else" (a /console, another addon) before Home is opened.
     lua.execute("TEST.cvars.UnitNamePlayerGuild = '0' TEST.cvars.cameraDistanceMaxZoomFactor = '4.000000'")
-    lua.execute('SlashCmdList.R2F("")')
-    check(lua.eval("R2F.MainWindow.CurrentTab()") == "home", "%s: Home first" % tag)
+    lua.execute('SlashCmdList.R2F("settings")')
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "settings", "%s: /r2f settings opens the Settings tab" % tag)
     n = find_frames(lua, "f.qsItem ~= nil", "QSB")
-    check(n == 3, "%s: three Quick settings boxes on Home (%d)" % (tag, n))
+    check(n == 3, "%s: three Quick settings boxes on the Settings tab (%d)" % (tag, n))
     check([lua.eval("QSB[%d].qsItem.key" % i) for i in (1, 2, 3)] == ["zoom", "guild", "pvp"], "boxes in item order")
     check([lua.eval("QSB[%d].r2fLabel.__text" % i) for i in (1, 2, 3)] == [L.QS_ZOOM, L.QS_GUILD, L.QS_PVP],
           "box labels: %s / %s / %s" % (L.QS_ZOOM, L.QS_GUILD, L.QS_PVP))
-    check(lua.eval("QSB[1]:IsVisible() and QSB[3]:IsVisible()") is True, "boxes live on the visible Home page")
+    check(lua.eval("QSB[1]:IsVisible() and QSB[3]:IsVisible()") is True, "boxes live on the visible Settings page")
     checked = lambda: [lua.eval("QSB[%d]:GetChecked()" % i) is True for i in (1, 2, 3)]
     enabled = lambda: [lua.eval("QSB[%d]:IsEnabled()" % i) is True for i in (1, 2, 3)]
-    check(checked() == [True, True, False], "Home open reads GetCVar: zoom 4.000000 + guild 0 set elsewhere -> ticked; "
+    check(checked() == [True, True, False], "Settings open reads GetCVar: zoom 4.000000 + guild 0 set elsewhere -> ticked; "
           "pvp 1 -> unticked: %s" % checked())
-    check(writes() == [], "opening Home writes no CVar")
+    check(writes() == [], "opening Settings writes no CVar")
     check(enabled() == [True, True, True], "boxes enabled out of combat")
     check(find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.QS_TITLE", "QT") == 1 and
           find_frames(lua, "f.__kind == 'FontString' and f.__text == R2F.L.QS_NOTE", "QN") == 1,
-          "Quick settings heading + note line on Home")
+          "Quick settings heading + note line on the Settings tab")
 
-    # Changed elsewhere while Home is showing: CVAR_UPDATE redraws (throttled).
+    # Changed elsewhere while Settings is showing: CVAR_UPDATE redraws (throttled).
     lua.execute("TEST.cvars.UnitNamePlayerPVPTitle = '0'")
     T.fire("CVAR_UPDATE", "UnitNamePlayerPVPTitle", "0")
     T.runTimers()
     check(checked() == [True, True, True], "CVAR_UPDATE from elsewhere ticks the pvp box")
     # Changed while another tab shows, no event: re-read when Home opens again.
     lua.execute("R2F.MainWindow.SelectTab('macros') TEST.cvars.UnitNamePlayerPVPTitle = '1' "
-                "TEST.cvars.cameraDistanceMaxZoomFactor = '2.2' R2F.MainWindow.SelectTab('home')")
-    check(checked() == [False, True, False], "switching back to Home re-reads every CVar (zoom 2.2 = not max)")
+                "TEST.cvars.cameraDistanceMaxZoomFactor = '2.2' R2F.MainWindow.SelectTab('settings')")
+    check(checked() == [False, True, False], "switching back to Settings re-reads every CVar (zoom 2.2 = not max)")
 
     # ---- Ticking / unticking writes exactly the right values -------------------
     clear()
@@ -4048,7 +4160,7 @@ def test_quick_settings(templates, fx):
           "untick zoom -> the GetCVarDefault value (1.7): %s" % writes())
     # A different default in another client: still read, never assumed.
     lua.execute("TEST.cvarDefaults.cameraDistanceMaxZoomFactor = '2.6' TEST.cvars.cameraDistanceMaxZoomFactor = '4'"
-                " R2F.Home.Refresh()")
+                " R2F.Settings.Refresh()")
     clear()
     lua.execute("QSB[1]:Click()")
     check(writes() == ["cameraDistanceMaxZoomFactor=2.6"], "untick zoom follows GetCVarDefault (2.6): %s" % writes())
@@ -4074,7 +4186,7 @@ def test_quick_settings(templates, fx):
 
     # No GetCVarDefault: zoom can't be unticked (no guessing); C_CVar fallback works.
     lua.execute("TEST.cvars.cameraDistanceMaxZoomFactor = '4' SAVED_DEF = GetCVarDefault GetCVarDefault = nil"
-                " R2F.Home.Refresh()")
+                " R2F.Settings.Refresh()")
     clear()
     lua.execute("QSB[1]:Click()")
     check(writes() == [] and errors() == [L.QS_NO_DEFAULT] and checked()[0],
@@ -4178,12 +4290,12 @@ def test_quick_settings(templates, fx):
     check(lua.eval("R2F.Library.Get('ANY/Zoom') ~= nil and R2F.Library.Get('ANY/HidePvP') ~= nil"),
           "the three stay in the library (only the grid hides them)")
     lua.execute("R2F.MainWindow.SelectTab('home')")
-    lua.execute("QHOME = nil for _, f in ipairs(TEST.allFrames) do if f.tab == 'macros' then QHOME = f end end")
+    lua.execute("QHOME = nil for _, f in ipairs(TEST.allFrames) do if f.tab == 'macros' and not QHOME then QHOME = f end end")
     check(lua.eval("QHOME.sub.__text").startswith("%d macros in your library" % (total + 3)),
           "Home's library count still counts the whole library")
 
     # A box that can't work keeps its macro visible.
-    lua.execute("TEST.cvars.UnitNamePlayerPVPTitle = nil R2F.Home.Refresh()")
+    lua.execute("R2F.MainWindow.SelectTab('settings') TEST.cvars.UnitNamePlayerPVPTitle = nil R2F.Settings.Refresh()")
     check(enabled() == [True, True, False] and checked()[2] is False, "unknown CVar: that box disabled + unticked")
     clear()
     lua.execute("QSB[3]:Fire('OnClick')")
@@ -4196,7 +4308,7 @@ def test_quick_settings(templates, fx):
     lua.execute("TEST.cvars.UnitNamePlayerPVPTitle = '1' SAVED_SET = SetCVar SetCVar = nil")
     shown = book_ids()
     check({"ANY/Zoom", "ANY/HideGuild", "ANY/HidePvP"} <= set(shown), "no SetCVar: all three macros show again")
-    lua.execute("R2F.MainWindow.SelectTab('home')")
+    lua.execute("R2F.MainWindow.SelectTab('settings')")
     check(enabled() == [False, False, False], "no SetCVar: every box disabled")
     lua.execute("C_CVar = { SetCVar = SAVED_SET }")
     check(QS.HidesMacro("ANY/Zoom") is True, "C_CVar.SetCVar counts as available")
@@ -4393,9 +4505,9 @@ def test_class_picker(templates, fx):
     check(font_text(lua, "You also have macros for") is None, "5.7's line is left out while previewing")
 
     # ---- Counters and gold checks = the character you're playing ----------------
-    check(font_text(lua, "^Character ") == "Character 1 / 30" and font_text(lua, "^Account ") == "Account 0 / 120",
+    check(font_text(lua, "^Character %d+ /") == "Character 1 / 30" and font_text(lua, "^Account %d+ /") == "Account 0 / 120",
           "slot counters count this character's real macros while previewing: %s / %s"
-          % (font_text(lua, "^Character "), font_text(lua, "^Account ")))
+          % (font_text(lua, "^Character %d+ /"), font_text(lua, "^Account %d+ /")))
     # An account-slot macro made from a Warrior entry on another character, and on
     # THIS character's bar: the check shows (real state), the others don't.
     hs = warrior_general[1]
@@ -4408,7 +4520,7 @@ def test_class_picker(templates, fx):
     check(lua.eval("BSLOTS[2].entry.id") == hs["id"] and lua.eval("BSLOTS[2].check.__shown") is True
           and lua.eval("BSLOTS[3].check.__shown") is False,
           "gold check in preview = on THIS character's bars (account macro on slot 7)")
-    check(font_text(lua, "^Account ") == "Account 1 / 120", "account counter follows the live macro list")
+    check(font_text(lua, "^Account %d+ /") == "Account 1 / 120", "account counter follows the live macro list")
     check(note is not None and font_text(lua, "^Previewing ") is not None, "class tab in preview carries the note too")
     lua.execute("TEST.actions[7] = nil")
     T.fire("ACTIONBAR_SLOT_CHANGED")
@@ -4648,6 +4760,9 @@ def main():
     test_ui_updates(fx)
     test_stance()
     test_import_replaces(fx)
+    test_settings_tab(True, fx)
+    test_settings_tab(False, fx)
+    test_tree_names()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

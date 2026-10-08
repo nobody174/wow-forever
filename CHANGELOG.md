@@ -34,6 +34,15 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-08 (Addon 0.15.0: Settings tab, tree names, Home "what's next")
+- ADDON_PLAN 15.2, step 2 of addon round 2: Settings as the 4th tab (Quick settings moved
+  there from Home, floating panel and Macro Book button removed), real talent tree names per
+  class (same as talentcalc.js CLASSES, checked by a test), the two black squares in the
+  Macro Book (selected class circle and Universal tab; cause: checked texture drawn without
+  additive blending) replaced by an additive glow with an icon fallback, Home reduced to
+  free talent points / library and bar counts / macro slot use. Never run in game yet
+  (TESTING.md 23). Not released yet.
+
 ## 2026-10-08 (Import replaces, not only adds: site K lines + addon 0.14.0)
 - ADDON_PLAN 15.1, step 1 of addon round 2. `template.html` importString() now appends one
   `K <CLASS> id,id,...` record per carried class (all ids that class has on the site; throws

@@ -1,12 +1,11 @@
 -- UI/Home.lua: the Home tab of the main window (ADDON_PLAN.md 12.4).
 --
--- Two large entries in spellbook-slot style (big icon in the quick-slot
--- border, gold name, white line under it): Macro Book with live counts, and
--- Talents with the free talent points (12.4). Clicking an entry switches
--- the main window to that tab. Below them: the Import macros button (opens
--- the existing Import window) and one line on how to get an import string.
--- Under that, Quick settings (12.4.1, step "Quick settings", v0.9.0): three
--- check boxes that change game settings with SetCVar (QuickSettings.lua).
+-- "What's next" (15.2, v0.15.0): three large entries in spellbook-slot style
+-- (big icon in the quick-slot border, gold name, white line under it): Talents
+-- with the free talent points, Macro Book with live counts, and the macro slot
+-- use (12.4). Clicking an entry switches the main window to that tab. Below
+-- them: the Import macros / Export professions buttons and one line on how to
+-- get an import string. Quick settings (12.4.1) moved to the Settings tab.
 -- At the very bottom, a version/author footer (12.4.2, added 2026-10-02 from
 -- real in-game feedback: there was no in-game way to see the addon's version
 -- or who made it short of opening the TOC file). Reads the TOC's own
@@ -38,6 +37,12 @@ function Home.Counts()
     if Macros.OnBars(id, names) then onBars = onBars + 1 end
   end
   return inLibrary, onBars
+end
+
+-- "Macro slots: 7 of 30 character, 12 of 120 account" (Macros.Counts).
+function Home.SlotLine()
+  local acc, maxAcc, char, maxChar = Macros.Counts()
+  return L.HOME_SLOTS_LINE:format(char, maxChar, acc, maxAcc)
 end
 
 function Home.MacroLine()
@@ -84,73 +89,19 @@ local function entry(parent, y, icon, title, tab)
   return b
 end
 
--- Quick settings (12.4.1): one check box per QuickSettings item, below the
--- import hint. UI.CheckButton = the same template + fallback chain as the
--- Settings panel (6.9). A click flips the LIVE value and the boxes are then
--- redrawn from the live value (refreshQuick), never from GetChecked, so a
--- refused change (combat, no default, game said no) snaps the box back.
-local function showQuickTip(b)
-  local item = b.qsItem
-  GameTooltip:SetOwner(b, "ANCHOR_RIGHT")
-  GameTooltip:AddLine(item.label, 1, 1, 1)
-  GameTooltip:AddLine(item.tip, 1, 0.82, 0, true)
-  if not R2F.QuickSettings.Available(item) then
-    GameTooltip:AddLine(L.QS_UNAVAILABLE, 1, 0.1, 0.1, true)
-  elseif R2F.InCombat() then
-    GameTooltip:AddLine(L.QS_TIP_COMBAT, 1, 0.1, 0.1, true)
-  end
-  GameTooltip:Show()
-end
-
-local function buildQuickSettings(f)
-  ui.qsTitle = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  ui.qsTitle:SetPoint("TOPLEFT", 52, -330)
-  ui.qsTitle:SetText(L.QS_TITLE)
-  ui.qsNote = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-  ui.qsNote:SetPoint("TOPLEFT", ui.qsTitle, "BOTTOMLEFT", 0, -4)
-  ui.qsNote:SetWidth(420)
-  ui.qsNote:SetJustifyH("LEFT")
-  ui.qsNote:SetTextColor(0.7, 0.7, 0.7)
-  ui.qsNote:SetText(L.QS_NOTE)
-
-  ui.quick = {}
-  for i, item in ipairs(R2F.QuickSettings.ITEMS) do
-    local b = UI.CheckButton(f, item.label)
-    b:SetPoint("TOPLEFT", 48, -366 - (i - 1) * 26)
-    b.qsItem = item
-    -- Tooltips still show while the box is greyed out (combat / missing),
-    -- so the player can see why.
-    if b.SetMotionScriptsWhileDisabled then b:SetMotionScriptsWhileDisabled(true) end
-    b:SetScript("OnClick", function(self)
-      R2F.QuickSettings.Toggle(self.qsItem)
-      Home.Refresh()
-    end)
-    b:SetScript("OnEnter", showQuickTip)
-    b:SetScript("OnLeave", function() GameTooltip:Hide() end)
-    ui.quick[i] = b
-  end
-end
-
--- Read every box from GetCVar each time the Home tab is drawn (tab opened,
--- combat change, CVAR_UPDATE), so a value set elsewhere (/console, Blizzard's
--- options, another addon) is what the box shows.
-local function refreshQuick(combat)
-  for _, b in ipairs(ui.quick) do
-    local available = R2F.QuickSettings.Available(b.qsItem)
-    b:SetChecked(available and R2F.QuickSettings.IsOn(b.qsItem))
-    local enabled = available and not combat
-    b:SetEnabled(enabled)
-    if enabled then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
-  end
-end
-
 local function build(f)
-  ui.macros = entry(f, -86, "INV_Misc_Book_09", L.HOME_MACROS, "macros")
-  ui.talents = entry(f, -156, "INV_Misc_Book_11", L.HOME_TALENTS, "talents")
+  -- 15.2: Home is a short "what's next" list: free talent points, library
+  -- and bar counts, macro slot use. Quick settings moved to the Settings tab.
+  ui.head = f:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+  ui.head:SetPoint("TOPLEFT", 52, -56)
+  ui.head:SetText(L.HOME_NEXT)
+  ui.macros = entry(f, -156, "INV_Misc_Book_09", L.HOME_MACROS, "macros")
+  ui.talents = entry(f, -86, "INV_Misc_Book_11", L.HOME_TALENTS, "talents")
+  ui.slots = entry(f, -226, "INV_Scroll_03", L.HOME_SLOTS, "macros")
 
   ui.import = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   ui.import:SetSize(160, 24)
-  ui.import:SetPoint("TOPLEFT", 52, -246)
+  ui.import:SetPoint("TOPLEFT", 52, -316)
   ui.import:SetText(L.HOME_IMPORT)
   ui.import:SetScript("OnClick", function() R2F.ImportFrame.Show() end)
 
@@ -180,7 +131,6 @@ local function build(f)
   ui.combat:SetPoint("LEFT", ui.profs, "RIGHT", 12, 0)
   ui.combat:SetText(L.IN_COMBAT)
 
-  buildQuickSettings(f)
   return f
 end
 
@@ -234,14 +184,12 @@ function Home.Refresh()
   if not page or not page:IsVisible() then return end
   ui.macros.sub:SetText(Home.MacroLine())
   ui.talents.sub:SetText(Home.TalentLine())
+  ui.slots.sub:SetText(Home.SlotLine())
   -- Import is greyed out in combat, like the book's Import button (6.7):
   -- every import button behaves the same.
   local combat = R2F.InCombat()
   ui.import:SetEnabled(not combat)
   ui.combat:SetShown(combat)
-  -- Quick settings grey out in combat too (12.4.1); QuickSettings.Set also
-  -- refuses then, in case a click lands between the event and this redraw.
-  refreshQuick(combat)
 end
 
 -- PLAYER_REGEN_DISABLED / ENABLED: redraw at once (the button must grey out

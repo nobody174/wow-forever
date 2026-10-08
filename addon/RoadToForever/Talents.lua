@@ -534,12 +534,29 @@ function Talents.FreePoints()
   return (Talents.FreePointsInfo()) or 0
 end
 
+-- Tree names per class in in-game tab order: the same names and order as
+-- talentcalc.js CLASSES (run_tests.py compares them), because WoW Forever's
+-- C_Traits gives no tree names (15.2). Keyed by class token.
+Talents.TREE_NAMES = {
+  PRIEST = { "Discipline", "Holy", "Shadow" },
+  WARLOCK = { "Affliction", "Demonology", "Destruction" },
+  MAGE = { "Arcane", "Fire", "Frost" },
+  ROGUE = { "Assassination", "Combat", "Subtlety" },
+  DRUID = { "Balance", "Feral Combat", "Restoration" },
+  SHAMAN = { "Elemental", "Enhancement", "Restoration" },
+  HUNTER = { "Beast Mastery", "Marksmanship", "Survival" },
+  PALADIN = { "Holy", "Protection", "Retribution" },
+  WARRIOR = { "Arms", "Fury", "Protection" },
+}
+
 -- Tree names for the mini-tree headers. GetTalentTabInfo's returns differ by
 -- client generation (13.6 avoided it for that reason): Classic-era clients
 -- return name first, newer ones id (a number) then name. Take whichever is
--- the first string; anything else (missing API, error, odd shape) falls back
--- to "Tree 1" etc. Only the header text depends on this, never the mapping.
-function Talents.TreeName(tab)
+-- the first string; without one (missing API, error, odd shape, or WoW
+-- Forever's C_Traits client) use our own list for `class` (default: the
+-- player's), and only for an unknown class fall back to "Tree 1" etc. Only
+-- the header text depends on this, never the mapping.
+function Talents.TreeName(tab, class)
   if GetTalentTabInfo then
     local ok, a, b = pcall(GetTalentTabInfo, tab)
     if ok then
@@ -547,6 +564,9 @@ function Talents.TreeName(tab)
       if type(b) == "string" and b ~= "" then return b end
     end
   end
+  class = class or R2F.playerClass or (UnitClass and select(2, UnitClass("player")))
+  local names = class and Talents.TREE_NAMES[class]
+  if names and names[tab] then return names[tab] end
   return L.TALENT_TREE_N:format(tab)
 end
 

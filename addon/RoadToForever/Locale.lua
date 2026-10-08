@@ -164,6 +164,14 @@ R2F.L = {
   REMOVE_ALL_DONE_KEPT = " Kept %d you edited as your own.",
 
   -- Home tab (12.4)
+  TITLE_SETTINGS = "Road to Forever: Settings",
+  TAB_SETTINGS = "Settings",
+  SETTINGS_MACROS = "Macros",
+  SETTINGS_MINIMAP = "Minimap",
+  SETTINGS_STANCE = "Stance icon",
+  HOME_NEXT = "What's next",
+  HOME_SLOTS = "Macro slots",
+  HOME_SLOTS_LINE = "%d of %d character slots, %d of %d account slots used",
   HOME_MACROS = "Macro Book",
   HOME_MACROS_COUNT = "%d macros in your library, %d on your bars",
   HOME_MACROS_COUNT_ONE = "1 macro in your library, %d on your bars",
@@ -304,6 +312,7 @@ R2F.L = {
     "/r2f  open Road to Forever (the tab you used last)",
     "/r2f macros  the Macros tab",
     "/r2ft or /r2f talents  the Talents tab",
+    "/r2f settings  the Settings tab",
     "/r2f minimap  show or hide the minimap button",
     "/r2f stance  show or hide the Warrior stance icon (/r2f stance lock locks it)",
     "/r2f import  paste an import string",

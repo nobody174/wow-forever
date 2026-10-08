@@ -303,9 +303,7 @@ local function setTabIcon(tab, sec)
   end
   -- Unknown section from a newer site: the book icon. Reset the tex coords
   -- in case this tab showed a class circle before.
-  tab:SetNormalTexture(ICONS .. (icon or "INV_Misc_Book_09"))
-  local tex = tab:GetNormalTexture()
-  if tex then tex:SetTexCoord(0, 1, 0, 1) end
+  UI.SetNormalIcon(tab, ICONS .. (icon or "INV_Misc_Book_09"))
 end
 
 -- Side tab, built from the spellbook's own skill-line textures rather than
@@ -321,7 +319,7 @@ local function buildTab(parent, i)
   bg:SetPoint("TOPLEFT", -3, 11)
   t:SetNormalTexture(ICONS .. "INV_Misc_Book_09")
   t:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
-  t:SetCheckedTexture("Interface\\Buttons\\CheckButtonHilight", "ADD")
+  UI.CheckedGlow(t)
   t:SetScript("OnClick", function(self)
     if self.sec then
       state.key, state.page = tabKey(self.sec), 1
@@ -367,7 +365,7 @@ local function buildPick(parent, i)
   local x = 70 + (i - 1) * PICK_STEP + (i > 1 and 8 or 0)
   p:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -46)
   p:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
-  p:SetCheckedTexture("Interface\\Buttons\\CheckButtonHilight", "ADD")
+  UI.CheckedGlow(p)
   p:SetScript("OnClick", function(self)
     if self.cls then
       UI.PlaySound("IG_ABILITY_PAGE_TURN")
@@ -399,9 +397,7 @@ local function setPickIcon(p, token)
     p:SetNormalTexture(CLASS_CIRCLES)
     p:GetNormalTexture():SetTexCoord(unpack(coords))
   else
-    p:SetNormalTexture(ICONS .. "INV_Misc_QuestionMark")
-    local tex = p:GetNormalTexture()
-    if tex then tex:SetTexCoord(0, 1, 0, 1) end
+    UI.SetNormalIcon(p, UI.FALLBACK_ICON)
   end
 end
 
@@ -508,11 +504,6 @@ local function build(f)
   if ui.tidy.SetMotionScriptsWhileDisabled then ui.tidy:SetMotionScriptsWhileDisabled(true) end
   ui.tidy:SetScript("OnEnter", showTidyTip)
   ui.tidy:SetScript("OnLeave", function() GameTooltip:Hide() end)
-  -- Settings panel (5.8, step 5). Stays enabled in combat: the panel greys
-  -- out its own Remove all button, and its other settings are safe anytime.
-  ui.settings = button(L.BTN_SETTINGS, 100)
-  ui.settings:SetPoint("BOTTOMRIGHT", -20, 16)
-  ui.settings:SetScript("OnClick", function() R2F.Settings.Toggle() end)
   return f
 end
 

@@ -97,7 +97,7 @@ handlers.TRADE_SKILL_DATA_SOURCE_CHANGED = function() R2F.Professions.OnUpdate("
 -- Quick settings): redraw Home's boxes from the live values (12.4.1). They
 -- are also re-read every time the Home tab opens, so a client without this
 -- event only loses the live update while Home is already showing.
-handlers.CVAR_UPDATE = function() R2F.Home.RequestRefresh() end
+handlers.CVAR_UPDATE = function() R2F.Settings.RequestRefresh() end
 -- The game refusing a protected call from an addon (args: addon name,
 -- function). Only ours matters; for LearnTalent it means guided mode (13.8).
 local function actionBlocked(addon, fn)
@@ -143,6 +143,7 @@ local COMMANDS = {
   [""] = function() R2F.MainWindow.Toggle() end,
   macros = function() R2F.MainWindow.Show("macros") end,
   talents = function() R2F.MainWindow.Show("talents") end,
+  settings = function() R2F.MainWindow.Show("settings") end,
   minimap = function() R2F.Minimap.ToggleHidden() end,
   stance = function() R2F.Stance.ToggleShown() end,
   ["stance lock"] = function() R2F.Stance.ToggleLock() end,

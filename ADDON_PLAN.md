@@ -2813,7 +2813,10 @@ live on in the library forever.
 - Tests: old string (no `K`) unchanged; removed id leaves library; unpicked id stays;
   edited/on-bar game macro kept; combat queue.
 
-### 15.2 Settings as a 4th tab + small fixes
+### 15.2 Settings as a 4th tab + small fixes -- built as v0.15.0, 2026-10-08
+(As built: the black squares were most likely the checked texture, drawn without additive
+blending, not the normal icons; fixed with `UI.CheckedGlow`, verify in game, TESTING.md 23.
+The stance icon options sit on the Settings tab until step 4.)
 - Tabs: Home / Macros / Talents / **Settings** (later Reminders, Plan). The Settings
   button leaves the Macro Book; the floating Settings panel becomes the tab's content.
 - Settings sections: Macros (slot preference, Remove all), Minimap (show/lock),

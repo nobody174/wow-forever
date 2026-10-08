@@ -894,3 +894,29 @@ Needs a fresh import string copied from the site AFTER this version is deployed
    classes in the string. Untick and reopen the window: the box starts unticked.
 8. `/reload` and relog: the library and bars are as left after the import.
 
+## 23. Settings tab, tree names, Home, black squares (v0.15.0, ADDON_PLAN 15.2)
+
+1. Open the window (`/r2f`). Four tabs at the bottom: Home, Macros, Talents, **Settings**.
+   `/r2f settings` opens the Settings tab directly; the title reads "Road to Forever:
+   Settings".
+2. **Macros tab:** no Settings button in the bottom row any more (Import and Tidy up only).
+3. **Settings tab** (nothing overlaps, everything readable at the window's size):
+   - Left: "New macros go to" (two radios + note), **Remove all Road to Forever macros**,
+     Minimap: Show minimap button / Lock minimap button. Toggle both and watch the minimap.
+   - Right: **Quick settings**: Max camera zoom, Hide guild names, Hide PvP titles. Tick one,
+     check the game setting changed (zoom out further / names gone); untick it, it goes back.
+     Hover a box for its tooltip. In combat the three boxes and Remove all are greyed out.
+   - Warrior only, below Quick settings: **Stance icon**: Show, Lock, size slider (the
+     0.13.0 test again: drag the icon, lock it, resize).
+4. **Home tab:** heading "What's next", then Talents (free talent points), Macro Book
+   (`N macros in your library, M on your bars`) and Macro slots (`x of 30 character slots,
+   y of 120 account slots used`). Create or delete a macro in `/macro`: the slot line follows.
+   Import macros / Export professions still work. No Quick settings on Home any more.
+5. **Talents tab:** paste a talent link of your class. The three trees are named (Warrior:
+   Arms, Fury, Protection; Hunter: Beast Mastery, Marksmanship, Survival...), not
+   "Tree 1/2/3". Check the order matches the in-game talent window's tabs.
+6. **Black squares (the thing most likely to still be wrong):** Macros tab, click each class
+   circle in the top row and each side tab, including **Universal**. The selected one should
+   show a gold square glow over the icon, never a black square. If a black square is still
+   there, note which one and take a screenshot.
+7. `/reload`, then `/r2f`: the window opens on the tab used last (including Settings).

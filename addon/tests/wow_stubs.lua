@@ -624,7 +624,7 @@ for _, name in ipairs({
   "SetMultiLine", "SetAutoFocus", "SetFontObject", "SetMaxLetters", "SetMaxBytes",
   "SetScrollChild", "SetFocus", "ClearFocus", "HighlightText",
   "SetMotionScriptsWhileDisabled", "SetHitRectInsets", "SetFrameLevel",
-  "SetBlendMode", "SetTextInsets", "SetScale", "SetColorTexture", "SetValueStep",
+  "SetTextInsets", "SetScale", "SetColorTexture", "SetValueStep",
   "SetMinMaxValues", "SetValue",
 }) do methods[name] = noop end
 local MT = { __index = methods }
@@ -693,6 +693,9 @@ function methods:IsMouseOver() return false end
 function methods:GetPoint() return "CENTER", nil, "CENTER", 10, 20 end
 function methods:SetNormalTexture(t) self.__normal = self.__normal or newObject("Texture"); self.__normal.__tex = t end
 function methods:GetNormalTexture() return self.__normal end
+function methods:SetCheckedTexture(t) self.__checkedTex = self.__checkedTex or newObject("Texture"); self.__checkedTex.__tex = t end
+function methods:GetCheckedTexture() return self.__checkedTex end
+function methods:SetBlendMode(m) self.__blend = m end
 function methods:SetTexture(t) self.__tex = t end
 function methods:SetDesaturated(v) self.__desat = v end
 function methods:SetTextColor(r, g, b) self.__color = { r, g, b } end

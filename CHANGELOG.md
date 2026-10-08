@@ -41,7 +41,7 @@ user-facing release notes.
   deletes the unedited unused game macros made from them (Tidy up rules, combat-queued),
   keeps and lists on-bar / edited ones, and has a "Replace my library for these classes"
   checkbox in the Import window. Old strings without K stay add-only. 228 new tests
-  (`test_import_replaces`). Never run in game yet (TESTING.md 22).
+  (`test_import_replaces`). Never run in game yet (TESTING.md 22). Released as r2f-v0.14.0; addons page points at it.
 
 ## 2026-10-08 (Addon 0.13.0: Warrior stance icon)
 - Road to Forever addon 0.13.0: a Warrior stance icon (blue Battle, green Defensive, red

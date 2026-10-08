@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-08",
+      "title": "Addon import now clears removed macros",
+      "text": "Road to Forever 0.14.0: when you import a fresh string from the macro page, macros we removed from the site leave your in-game library too. Copy a new string after this update.",
+      "link": "addons.html"
+    },
+    {
+      "date": "2026-10-08",
       "title": "Warrior stance icon in the addon",
       "text": "Road to Forever 0.13.0 adds a small stance icon for Warriors: blue Battle, green Defensive, red Berserker. Drag it where you like, lock it and resize it in Settings.",
       "link": "addons.html"

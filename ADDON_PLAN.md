@@ -2800,6 +2800,10 @@ live on in the library forever.
   didn't pick are NOT touched (they're still in `K`).
 - Preview line: `12 macros were removed from the site and leave your library.` plus how
   many of them exist as game macros.
+- Macros still on the site but changed there are NOT removed: they update in place as
+  today (v0.2.0 rules: unedited game macro -> EditMacro'd to the new body, stays on its bar
+  slot; one the user edited in /macro -> kept, marked, Replace offered on drag).
+  "Edited" always means edited in the game by the user, never "changed on the site".
 - Game macros made from removed entries: unedited and not on a bar -> deleted (same rules
   as Tidy up); on a bar or edited -> kept, listed in chat ("kept, still on your bars: ...").
   Combat: queued like Tidy up.
@@ -2837,10 +2841,12 @@ Owner wants to drop the Forever Bag Mover addon for this.
 Home of the stance icon (0.13.0) and future at-a-glance alerts. **Not buff reminders**:
 ForeverPlus already tracks buffs, so nothing here duplicates it.
 - Moves here: stance icon + its Show / Lock / Size settings.
-- Candidates (owner picks which, per class, each with on/off):
-  - Hunter: ammo low (count threshold), pet missing / dead / unhappy, pet food low.
-  - Warrior: Revenge / Overpower usable flash next to the stance icon.
-  - Everyone: repair needed (durability under X%), bags almost full, rested-XP state.
+- **Picked (2026-10-08): Hunter ammo low** (arrows/bullets in the quiver/pouch under a
+  threshold the user sets; icon + count, e.g. turns red under 200). First reminder to build.
+- Dropped: Warrior Revenge / Overpower flash (the Rev>Sund macro already picks Revenge
+  whenever it's usable).
+- Still candidates, not picked yet: pet missing / dead / unhappy, pet food low, repair
+  needed (durability under X%), bags almost full, rested-XP state.
 - One shared look: same framed icon as the stance icon, draggable, lockable, size slider.
 
 ### 15.5 Launch Plan checklist in game (+ TomTom waypoints)

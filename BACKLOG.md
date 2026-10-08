@@ -35,8 +35,8 @@ Build in this order; each step is its own release.
 - [ ] **3. Movable bags** (15.3): Quick setting replacing the Forever Bag Mover addon
       (then remove Forever Bag Mover from addons.html).
 - [ ] **4. Reminders tab** (15.4): stance icon moves here; owner picks the first new
-      reminders (hunter ammo/pet, Warrior Revenge/Overpower flash, repair...). No buff
-      reminders (ForeverPlus does those).
+      reminder: Hunter ammo low (picked 2026-10-08). Revenge flash dropped (the macro
+      handles it). No buff reminders (ForeverPlus does those).
 - [ ] **5. Launch Plan in game + TomTom** (15.5): checklist tab from the site's plan data,
       waypoint buttons via TomTom. Needs coordinates researched for the steps.
 

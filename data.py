@@ -1100,12 +1100,18 @@ CLASSES = [
                   "#showtooltip\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Sunder Armor",
                   BETA + "one spam button. Victory Rush fires when it's up after a kill, "
                   "otherwise you Sunder.", short="VR>Sunder"),
-                M("Shield Block + Sunder Armor",
-                  "#showtooltip Sunder Armor\n/startattack [harm]\n/cast Shield Block\n/cast [harm] Sunder Armor",
-                  BETA + "Shield Block has no global cooldown, so it fires with Sunder in one press "
-                  "whenever it's off cooldown (needs a shield and Defensive Stance). 10 + 15 rage: "
-                  "watch your rage.", short="SBlk+Sund"),
-                M("Revenge", melee("Revenge"), "Forever: much more damage, no stun.", short="Rev"),
+                M("Revenge > Sunder Armor",
+                  "#showtooltip\n/startattack [harm]\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
+                  "One spam button: Revenge whenever it's lit (after a block, dodge or parry; 5 rage, 5 sec "
+                  "cooldown), otherwise Sunder. Revenge is far more threat per rage than Sunder. The last line "
+                  "hides the \"not ready\" error.", short="Rev>Sund"),
+                M("Shield Block + Revenge > Sunder Armor",
+                  "#showtooltip\n/startattack [harm]\n/cast Shield Block\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
+                  BETA + "Shield Block has no global cooldown, so it fires with the next button whenever it's off "
+                  "cooldown (needs a shield and Defensive Stance). More blocks = more Revenge procs. Watch your "
+                  "rage: Shield Block 10, Sunder 15.", short="SBlk+Sund"),
+                M("Revenge", melee("Revenge"), "Defensive Stance, after a block, dodge or parry. 5 rage, 5 sec cooldown, "
+                  "a high amount of threat. Forever: much more damage, no stun.", short="Rev"),
                 M("Sunder + Heroic Strike",
                   "#showtooltip Sunder Armor\n/startattack [harm]\n/cast [harm] Heroic Strike\n/cast [harm] Sunder Armor",
                   "Heroic Strike has no global cooldown (it queues on your next swing), "

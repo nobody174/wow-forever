@@ -2665,15 +2665,26 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Sunder Armor
 ```
 
-**Shield Block + Sunder Armor** (`SBlk+Sund`) — Test in beta: Shield Block has no global cooldown, so it fires with Sunder in one press whenever it's off cooldown (needs a shield and Defensive Stance). 10 + 15 rage: watch your rage.
+**Revenge > Sunder Armor** (`Rev>Sund`) — One spam button: Revenge whenever it's lit (after a block, dodge or parry; 5 rage, 5 sec cooldown), otherwise Sunder. Revenge is far more threat per rage than Sunder. The last line hides the "not ready" error.
 ```
-#showtooltip Sunder Armor
+#showtooltip
 /startattack [harm]
-/cast Shield Block
+/cast [harm] Revenge
 /cast [harm] Sunder Armor
+/run UIErrorsFrame:Clear()
 ```
 
-**Revenge** (`Rev`) — Forever: much more damage, no stun.
+**Shield Block + Revenge > Sunder Armor** (`SBlk+Sund`) — Test in beta: Shield Block has no global cooldown, so it fires with the next button whenever it's off cooldown (needs a shield and Defensive Stance). More blocks = more Revenge procs. Watch your rage: Shield Block 10, Sunder 15.
+```
+#showtooltip
+/startattack [harm]
+/cast Shield Block
+/cast [harm] Revenge
+/cast [harm] Sunder Armor
+/run UIErrorsFrame:Clear()
+```
+
+**Revenge** (`Rev`) — Defensive Stance, after a block, dodge or parry. 5 rage, 5 sec cooldown, a high amount of threat. Forever: much more damage, no stun.
 ```
 #showtooltip Revenge
 /startattack [harm]

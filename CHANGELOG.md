@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-08 (Warrior tank: Revenge > Sunder)
+- New Tank macro "Revenge > Sunder Armor" (`Rev>Sund`): Revenge when it's usable, else Sunder;
+  `/run UIErrorsFrame:Clear()` hides the "not ready" error.
+- "Shield Block + Sunder Armor" (`SBlk+Sund`, same short name so the game macro updates) now
+  also tries Revenge before Sunder.
+- Revenge note: Defensive Stance, after block/dodge/parry, 5 rage, 5 sec cooldown (Wowhead Forever).
+
 ## 2026-10-08 (Launch Plan: hunter pet quest)
 - `h-pet`: location confirmed in beta by the owner (Zephras Isle). Now describes the chain:
   trainer at 10 -> three taming quests (one specific beast each, Taming Rod) -> Tame Beast.

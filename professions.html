@@ -216,6 +216,9 @@ a{color:var(--gold)}
 .cr-r b{font-weight:600}
 .cr-r .m{grid-column:1 / -1;color:var(--muted);font-size:12.5px}
 .cr-r .who{color:var(--muted);font-size:13px;margin-left:8px}
+.cr-r .de{grid-column:2;justify-self:end;font-size:12px;color:var(--muted);cursor:help;white-space:nowrap}
+.cr-r .de .coin{font-size:12px}
+.cr-r .de.win{color:#7fd88f}
 .cr-r a.wh{color:var(--text);font-weight:600;text-decoration:none;border-bottom:1px dotted var(--edge)}
 .cr-r a.wh:hover{border-color:currentColor;filter:brightness(1.15)}
 /* Item quality colours (WoW's, the blue and purple lightened a little for the dark background) */
@@ -1058,7 +1061,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     if (!force && live.market === market && Date.now() - live.fetched < LIVE_TTL) return;
     var want = market, ids = MATS.map(function (m) { return m.item; });
     Object.keys(PRODUCT_ITEM).forEach(function (k) { if (ids.indexOf(PRODUCT_ITEM[k]) === -1) ids.push(PRODUCT_ITEM[k]); });
-    crafterItemIds().forEach(function (id) { if (ids.indexOf(id) === -1) ids.push(id); });
+    crafterItemIds().concat(DE_IDS).forEach(function (id) { if (ids.indexOf(id) === -1) ids.push(id); });
     if (live.market !== want) { live.state = "loading"; renderAll(); }
     // The tooltip endpoint takes at most 100 ids per call.
     var calls = [];
@@ -1203,6 +1206,71 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     if (typeof m[0] !== "number") return String(m[0]).replace(/^n:/, "");
     return MAT_BY_ITEM[m[0]] ? MAT_BY_ITEM[m[0]].name : (live.names && live.names[m[0]]) || ("item " + m[0]);
   }
+  // ---- Disenchanting: expected value of what a crafted item disenchants into.
+  // Classic 1.12 table (Forever may differ: unverified). Only green (2), blue (3) and purple
+  // (4) armor and weapons can be disenchanted. Outcome: [chance, min, max, item id].
+  // Armor: mostly dust; weapons swap the dust and essence chances.
+  var DE_ITEM = { dust: 10940, soul: 11083, vision: 11137, dream: 11176, illusion: 16204,
+    lme: 10938, gme: 10939, lae: 10998, gae: 11082, lmyst: 11134, gmyst: 11135, lneth: 11174, gneth: 11175, leter: 16202, geter: 16203,
+    sgs: 10978, lgs: 11084, sglow: 11138, lglow: 11139, srad: 11177, lrad: 11178, sbril: 14343, lbril: 14344, nexus: 20725 };
+  var DE_NAME = { 16204: "Illusion Dust", 16202: "Lesser Eternal Essence", 16203: "Greater Eternal Essence",
+    14343: "Small Brilliant Shard", 14344: "Large Brilliant Shard", 20725: "Nexus Crystal" };
+  // [max ilvl, dust [min,max,key], essence [min,max,key], shard key]
+  var DE_GREEN = [
+    [15, [1, 2, "dust"], [1, 2, "lme"], null], [20, [2, 3, "dust"], [1, 2, "gme"], "sgs"], [25, [4, 6, "dust"], [1, 2, "lae"], "sgs"],
+    [30, [1, 2, "soul"], [1, 2, "gae"], "lgs"], [35, [2, 5, "soul"], [1, 2, "lmyst"], "sglow"], [40, [1, 2, "vision"], [1, 2, "gmyst"], "lglow"],
+    [45, [2, 5, "vision"], [1, 2, "lneth"], "srad"], [50, [1, 2, "dream"], [1, 2, "gneth"], "lrad"], [55, [2, 5, "dream"], [1, 2, "leter"], "sbril"],
+    [60, [1, 2, "illusion"], [1, 2, "geter"], "lbril"], [99, [2, 5, "illusion"], [2, 3, "geter"], "lbril"]];
+  var DE_BLUE = [[25, "sgs"], [30, "lgs"], [35, "sglow"], [40, "lglow"], [45, "srad"], [50, "lrad"], [55, "sbril"], [99, "lbril"]];
+  var DE_PURPLE = [[45, [2, 4, "srad"]], [50, [2, 4, "lrad"]], [55, [2, 4, "sbril"]], [60, [1, 1, "nexus"]], [99, [1, 2, "nexus"]]];
+  var DE_IDS = Object.keys(DE_ITEM).map(function (k) { return DE_ITEM[k]; });
+  var DE_GEAR = ["Head", "Neck", "Shoulders", "Cloak", "Chest", "Bracers", "Hands", "Belt", "Legs", "Boots", "Rings", "Trinkets",
+    "Weapons", "Shields & off-hands", "Ranged"];
+  function deOutcomes(r) {
+    if (r.k !== "i" || /Armor Kit$/.test(r.n)) return null;
+    var m = itemMeta[r.id];
+    if (!m || !m.i || m.q == null || m.q < 2 || m.q > 4 || m.b || DE_GEAR.indexOf(slotOf(r)) === -1) return null;
+    var il = m.i, row, i;
+    if (m.q === 2) {
+      for (i = 0; i < DE_GREEN.length && il > DE_GREEN[i][0]; i++);
+      row = DE_GREEN[Math.min(i, DE_GREEN.length - 1)];
+      var dust = m.w ? 0.2 : 0.75, ess = m.w ? 0.75 : 0.2, shard = row[3] ? 0.05 : 0;
+      if (!row[3]) { dust = m.w ? 0.2 : 0.8; ess = m.w ? 0.8 : 0.2; }
+      var out = [[dust, row[1][0], row[1][1], DE_ITEM[row[1][2]]], [ess, row[2][0], row[2][1], DE_ITEM[row[2][2]]]];
+      if (shard) out.push([shard, 1, 1, DE_ITEM[row[3]]]);
+      return out;
+    }
+    if (m.q === 3) {
+      if (il < 11) return null;
+      for (i = 0; i < DE_BLUE.length && il > DE_BLUE[i][0]; i++);
+      return [[1, 1, 1, DE_ITEM[DE_BLUE[Math.min(i, DE_BLUE.length - 1)][1]]]];
+    }
+    if (il < 40) return null;
+    for (i = 0; i < DE_PURPLE.length && il > DE_PURPLE[i][0]; i++);
+    row = DE_PURPLE[Math.min(i, DE_PURPLE.length - 1)][1];
+    return [[1, row[0], row[1], DE_ITEM[row[2]]]];
+  }
+  // -> null (can't be disenchanted / not looked up yet) or {value, missing, lines}
+  function deValue(r) {
+    var o = deOutcomes(r); if (!o) return null;
+    var value = 0, missing = [], lines = [];
+    o.forEach(function (x) {
+      var nm = MAT_BY_ITEM[x[3]] ? MAT_BY_ITEM[x[3]].name : DE_NAME[x[3]] || (live.names && live.names[x[3]]) || ("item " + x[3]);
+      var p = itemPrice(x[3]), avg = (x[1] + x[2]) / 2;
+      lines.push(Math.round(x[0] * 100) + "%: " + (x[1] === x[2] ? x[1] : x[1] + "-" + x[2]) + " " + nm);
+      if (p == null) missing.push(nm); else value += x[0] * avg * p;
+    });
+    return { value: value, missing: missing, lines: lines };
+  }
+  function deHTML(r, matCost) {
+    var d = deValue(r); if (!d) return "";
+    var tip = "Disenchants into (Classic odds, not checked in Forever):\n" + d.lines.join("\n") +
+      (d.missing.length ? "\nNo AH price for: " + d.missing.join(", ") : "\nValue = chance × average count × price on this page.");
+    if (d.missing.length === d.lines.length) return '<span class="de" title="' + esc(tip) + '">DE —</span>';
+    var win = matCost != null && d.value > matCost;
+    return '<span class="de' + (win ? " win" : "") + '" title="' + esc(tip + (win ? "\nWorth more disenchanted than the materials cost." : "")) + '">DE ≈ ' +
+      coin(d.value) + (d.missing.length ? "+" : "") + "</span>";
+  }
   function recipeCost(r) {
     var total = 0, missing = 0;
     (r.m || []).forEach(function (m) { var p = typeof m[0] === "number" ? itemPrice(m[0]) : null; if (p == null) missing++; else total += p * m[1]; });
@@ -1224,6 +1292,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     var cost = !(r.m || []).length ? "" : c.missing ? '<span class="nocost" title="' + c.missing + ' material(s) without an AH price">—</span>' : coin(c.total);
     return '<div class="cr-r"><span>' + whLink(r) + (who ? '<span class="who">' + who + "</span>" : "") +
       (classes && classes.length ? '<span class="clss">' + classes.map(classTag).join("") + "</span>" : "") + "</span><span>" + cost + "</span>" +
+      deHTML(r, (r.m || []).length && !c.missing ? c.total : null) +
       '<span class="m">' + esc((r.m || []).map(function (m) { return m[1] + "× " + itemName(m); }).join(", ")) + "</span></div>";
   }
   // One card per name: every character with that name merged. Each profession lists the
@@ -1292,7 +1361,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   // from their name, then the rest. Inside a slot: highest required level first.
   var crSort = lget("wf-prof-crafter-sort", "slot") === "az" ? "az" : "slot";
   var crOpen = lget("wf-prof-crafter-open", {}) || {};
-  var META_KEY = "wf-item-meta-v2", itemMeta = lget(META_KEY, {}) || {}, metaQueue = [], metaBusy = 0, metaTimer = null;
+  var META_KEY = "wf-item-meta-v3", itemMeta = lget(META_KEY, {}) || {}, metaQueue = [], metaBusy = 0, metaTimer = null;
   var SLOT_ORDER = ["Head", "Neck", "Shoulders", "Cloak", "Chest", "Shirt", "Bracers", "Hands", "Belt", "Legs", "Boots", "Rings", "Trinkets",
     "Weapons", "Shields & off-hands", "Ranged", "Bags & quivers", "Armor kits", "Consumables", "Materials & other"];
   var SLOT_MAP = { Head: "Head", Neck: "Neck", Shoulder: "Shoulders", Back: "Cloak", Chest: "Chest", Robe: "Chest", Shirt: "Shirt", Tabard: "Shirt",
@@ -1343,7 +1412,9 @@ body.list-open .list-drawer{transform:none;visibility:visible}
           var t = (j && j.tooltip) || "";
           var slot = /<table width="100%"><tr><td>([^<]+)<\/td>/.exec(t);
           itemMeta[id] = { q: j && typeof j.quality === "number" ? j.quality : null, s: slot ? slot[1] : "", b: /\d+ Slot (Bag|Quiver|Ammo Pouch)/.test(t) ? 1 : 0, u: /Use: /.test(t) ? 1 : 0,
-            i: Number((/<!--ilvl-->(\d+)/.exec(t) || [])[1]) || 0, r: Number((/<!--rlvl-->(\d+)/.exec(t) || [])[1]) || 0 };
+            i: Number((/<!--ilvl-->(\d+)/.exec(t) || [])[1]) || 0, r: Number((/<!--rlvl-->(\d+)/.exec(t) || [])[1]) || 0,
+            // Weapon (disenchants into more essence than dust): weapon slots, but not shields
+            w: slot && /^(One-Hand|Two-Hand|Main Hand|Off Hand|Ranged|Thrown)$/.test(slot[1]) && !/>Shield</.test(t) ? 1 : 0 };
         };
       })(id)).catch((function (id) { return function () { itemMeta[id] = { s: "", b: 0, u: 0, i: 0, r: 0, x: 1 }; }; })(id)).then(function () {
         metaBusy--;

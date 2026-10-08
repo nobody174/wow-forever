@@ -4,6 +4,17 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-08 (Crafters: disenchant value)
+- Every green, blue or purple armor/weapon recipe on Crafters shows `DE ≈ <value>` under its
+  material cost: the expected value of what it disenchants into (chance × average count ×
+  the price on this page). Hover lists the outcomes. Green text = worth more disenchanted
+  than the materials cost. Whites, bags, shirts, kits and consumables show nothing.
+- Uses the Classic 1.12 disenchant table (armor mostly dust, weapons mostly essence,
+  blues one shard, epics shards/Nexus) by item level: **not verified for Forever**.
+- Item metadata cache bumped to `wf-item-meta-v3` (new weapon flag `w`); live AH fetch
+  also asks for the disenchant materials not in MATS (Illusion Dust, Eternal Essences,
+  Brilliant Shards, Nexus Crystal).
+
 ## 2026-10-08 (Warrior macros: Thunder Clap, Shield Block + Sunder)
 - Thunder Clap: no stance swap any more (plain cast). In Forever it works in Battle and
   Defensive Stance; the old macro swapped out of Berserker.

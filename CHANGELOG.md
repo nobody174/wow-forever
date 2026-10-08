@@ -39,7 +39,7 @@ user-facing release notes.
   (`Bags.lua`), per character, classic `ContainerFrame1..N` and the combined bag
   `ContainerFrameCombinedBags` detected at run time, re-applied after the game re-anchors,
   nothing moves in combat. Forever Bag Mover is gone from addons.html and CLAUDE.md since
-  the addon replaces it. Never run in game yet (TESTING.md 24). Not released yet.
+  the addon replaces it. Never run in game yet (TESTING.md 24). Released as r2f-v0.16.0; addons page points at it.
 
 ## 2026-10-08 (Addon 0.15.0: Settings tab, tree names, Home "what's next")
 - ADDON_PLAN 15.2, step 2 of addon round 2: Settings as the 4th tab (Quick settings moved

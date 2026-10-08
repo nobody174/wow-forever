@@ -3,6 +3,27 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.14.0 (2026-10-08): import replaces, not only adds (ADDON_PLAN 15.1)
+
+**Never run in game yet: TESTING.md 22.**
+
+- The site's import string now ends with one `K <CLASS> id,id,...` record per class it
+  carries (every id that class has on the site, picked or not). On import, library
+  entries of a carried class that are not in that list are gone from the site and leave
+  your library. Macros you just didn't pick are in the list and stay. Fixes the
+  "207 macros in your library" pile-up after the site's 2026-10-08 macro cleanup.
+- Game macros made from removed entries follow Tidy up's rules: unedited and not on a bar
+  are deleted (queued until combat ends); on a bar, or edited by you, are kept and listed
+  in chat ("kept, still on your bars: ...", "kept, edited by you: ..."). Kept ones stay
+  tracked, so Tidy up can take them later. Macros still on the site but changed there
+  update in place, as before.
+- The preview says `12 macros were removed from the site and leave your library.` plus
+  how many of them exist as game macros.
+- Import window: new checkbox **Replace my library for these classes** (clean slate:
+  removes everything of the carried classes that is not in the pasted string).
+- Strings without `K` records (older site copies) keep the add-only behaviour. Older
+  addons skip the new records and show "1 skipped" (harmless).
+
 ## 0.13.0 (2026-10-08): Warrior stance icon
 
 **Tested in game by the owner (2026-10-08): works.**

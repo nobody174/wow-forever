@@ -25,10 +25,8 @@ Beta data on the site is level-30 data. Redo these once the live game is up:
 
 ## Next up: addon round 2 (agreed 2026-10-08, spec: ADDON_PLAN.md section 15)
 
-Build in this order; each step is its own release.
-- [ ] **1. Import replaces, not only adds** (15.1): site adds `K <CLASS> ids` lines to the
-      import string; addon drops library entries the site removed, deletes unedited
-      unused game macros made from them, keeps edited/on-bar ones. Fixes "207 macros".
+Build in this order; each step is its own release. Step 1 (import replaces) shipped as 0.14.0, see
+CHANGELOG.md; its in-game check is TESTING.md 22.
 - [ ] **2. Settings tab + fixes** (15.2): 4th tab instead of the Settings button; Quick
       settings move there; talent tree names instead of "Tree 1/2/3"; fix the two black
       squares in the Macro Book (class circle, Universal tab); Home as "what's next".

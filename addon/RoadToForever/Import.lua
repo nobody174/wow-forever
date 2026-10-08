@@ -6,6 +6,9 @@
 -- \30/\31 are the ASCII record/unit separators. They never occur in macro text,
 -- so bodies keep real newlines and nothing needs unescaping here. The site
 -- also strips them from every field before joining.
+-- K records (ADDON_PLAN 15.1, 0.14.0): "K" \31 class \31 id,id,... = every id that
+-- class has on the site now. They follow the macro records. Parse turns them into
+-- parsed.keep[class] = { id = true }; a string without any keeps add-only behaviour.
 -- The R2F1: prefix is the format version: a future R2F2: (e.g. compressed)
 -- must be rejected with "update the addon", not misread.
 
@@ -80,21 +83,58 @@ function Import.Parse(text)
   if not v then return nil, L.IMPORT_BAD end
   if v ~= "1" then return nil, L.IMPORT_NEWER end
 
-  local records, skipped, seen = {}, 0, {}
+  local records, skipped, seen, keep = {}, 0, {}, {}
   if rest ~= "" then
     for _, raw in ipairs(split(rest, RS)) do
-      local r = toRecord(split(raw, US))
-      if r and not seen[r.id] then
-        seen[r.id] = true
-        records[#records + 1] = r
+      local fields = split(raw, US)
+      if fields[1] == "K" then
+        -- Well-formed: K, a known class, an id list. Anything else is damaged.
+        if #fields == 3 and R2F.Library.KNOWN_CLASSES[fields[2]] then
+          local set = {}
+          if fields[3] ~= "" then
+            for _, id in ipairs(split(fields[3], ",")) do set[id] = true end
+          end
+          keep[fields[2]] = set
+        else
+          skipped = skipped + 1
+        end
       else
-        -- Invalid, or a duplicate id (the site never sends one; keep the first).
-        skipped = skipped + 1
+        local r = toRecord(fields)
+        if r and not seen[r.id] then
+          seen[r.id] = true
+          records[#records + 1] = r
+        else
+          -- Invalid, or a duplicate id (the site never sends one; keep the first).
+          skipped = skipped + 1
+        end
       end
     end
   end
   if #records == 0 then return nil, L.IMPORT_EMPTY end
-  return { records = records, skipped = skipped }
+  return { records = records, skipped = skipped, keep = keep }
+end
+
+-- Ids of library entries this import removes (see Diff).
+function Import.GoneIds(parsed, library, replace)
+  local inString, carried = {}, {}
+  for _, r in ipairs(parsed.records) do
+    inString[r.id] = true
+    carried[r.class] = true
+  end
+  local keep = parsed.keep or {}
+  local gone = {}
+  for id, e in pairs(library) do
+    local drop
+    if replace then
+      drop = carried[e.class] and not inString[id]
+    else
+      local k = keep[e.class]
+      drop = k ~= nil and not k[id]
+    end
+    if drop then gone[#gone + 1] = id end
+  end
+  table.sort(gone)
+  return gone
 end
 
 -- Fields that make an imported macro "updated" when they differ.
@@ -108,10 +148,19 @@ local COMPARE = { "class", "section", "group", "name", "short", "icon", "body", 
 -- `plan` (step 4) = real macros this import will rewrite, and ones the player
 -- edited that it will leave alone (Macros.PlanUpdates). Must be computed
 -- before Library.Apply, while `library` still holds the old versions.
-function Import.Diff(parsed, library, playerClass)
+--
+-- `opts.replace` (the Import window's "Replace my library for these classes"):
+-- every library entry of a class this string carries that is not in the string
+-- is gone. Without it, "gone" = entries of a class with a K list that are not
+-- in that list (removed from the site); picks the player left out are in the K
+-- list and stay. d.gone = ids sorted, d.goneGame = Macros.GonePlan(d.gone).
+function Import.Diff(parsed, library, playerClass, opts)
   local d = { total = #parsed.records, new = 0, updated = 0, unchanged = 0,
               otherClass = 0, skipped = parsed.skipped, status = {} }
   d.plan = R2F.Macros.PlanUpdates(parsed.records, library)
+  d.replace = opts and opts.replace or false
+  d.gone = Import.GoneIds(parsed, library, d.replace)
+  d.goneGame = R2F.Macros.GonePlan(d.gone)
   for _, r in ipairs(parsed.records) do
     local old = library[r.id]
     local status
@@ -164,6 +213,21 @@ function Import.PreviewText(d)
   if kept == 1 then parts[#parts + 1] = L.IMPORT_WILL_KEEP_ONE
   elseif kept > 1 then parts[#parts + 1] = L.IMPORT_WILL_KEEP:format(kept) end
   if #parts > 0 then s = s .. "\n" .. table.concat(parts, " ") end
+  -- 15.1: library entries this import removes.
+  local n = #d.gone
+  if n > 0 then
+    local line
+    if d.replace then
+      line = (n == 1 and L.IMPORT_GONE_REPLACE_ONE or L.IMPORT_GONE_REPLACE:format(n))
+    else
+      line = (n == 1 and L.IMPORT_GONE_ONE or L.IMPORT_GONE:format(n))
+    end
+    local g = d.goneGame
+    local made = #g.delete + #g.onBar + #g.edited
+    if made == 1 then line = line .. " " .. L.IMPORT_GONE_MADE_ONE
+    elseif made > 1 then line = line .. " " .. L.IMPORT_GONE_MADE:format(made) end
+    s = s .. "\n" .. line
+  end
   return s
 end
 
@@ -191,8 +255,8 @@ end
 -- out in combat, and if this ever runs in combat anyway, Macros.UpdateMany
 -- queues the EditMacro calls for PLAYER_REGEN_ENABLED instead of skipping them.
 -- Returns the diff, plus d.applied ("now"/"queued") and d.imported (count).
-function Import.Commit(parsed, playerClass, now)
-  local d = Import.Diff(parsed, R2F.Library.db.library, playerClass)
+function Import.Commit(parsed, playerClass, now, opts)
+  local d = Import.Diff(parsed, R2F.Library.db.library, playerClass, opts)
   d.imported = R2F.Library.Apply(parsed.records, now)
   R2F.Print(d.imported == 1 and L.IMPORT_DONE_ONE or L.IMPORT_DONE:format(d.imported))
 
@@ -210,6 +274,33 @@ function Import.Commit(parsed, playerClass, now)
     R2F.Print(L.KEPT_EDITED_ONE:format(shortNames(plan.edited)))
   elseif #plan.edited > 1 then
     R2F.Print(L.KEPT_EDITED:format(#plan.edited, shortNames(plan.edited)))
+  end
+
+  -- 15.1: entries the site no longer has leave the library. The real macros
+  -- made from them follow Tidy up's rules (Macros.RemoveGone): unedited and
+  -- not on a bar -> deleted (queued in combat); on a bar or edited -> kept
+  -- and listed in chat. Their "created" records stay, so a kept macro can be
+  -- tidied later once it is off the bars.
+  local gone = d.gone
+  if #gone > 0 then
+    for _, id in ipairs(gone) do R2F.Library.Remove(id) end
+    R2F.Print(#gone == 1 and L.GONE_DONE_ONE or L.GONE_DONE:format(#gone))
+    local g = d.goneGame
+    local function finish()
+      local deleted, plan2 = R2F.Macros.RemoveGone(gone)
+      if deleted > 0 then
+        R2F.Print(deleted == 1 and L.GONE_DELETED_ONE or L.GONE_DELETED:format(deleted))
+      end
+      if #plan2.onBar > 0 then R2F.Print(L.GONE_KEPT_BAR:format(R2F.UI.NameList(plan2.onBar))) end
+      if #plan2.edited > 0 then R2F.Print(L.GONE_KEPT_EDITED:format(R2F.UI.NameList(plan2.edited))) end
+      if R2F.MacroBook then R2F.MacroBook.Refresh() end
+    end
+    if #g.delete > 0 then
+      d.goneApplied = R2F.Macros.RunOrQueue(finish, L.GONE_QUEUED) and "now" or "queued"
+    else
+      finish()
+      d.goneApplied = "now"
+    end
   end
   return d
 end

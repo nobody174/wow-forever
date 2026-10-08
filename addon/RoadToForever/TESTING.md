@@ -864,3 +864,33 @@ nothing pending in Blizzard's window:
    it's the "craft" style window (Enchanting in Classic) and tell us: the API names
    are guesses until this test.
 
+## 22. Import replaces, not only adds (v0.14.0, ADDON_PLAN 15.1)
+
+Needs a fresh import string copied from the site AFTER this version is deployed
+(old copies have no `K` records and behave as before: step 1 checks that).
+
+1. Before importing, note the library count (Home) and how many Road to Forever macros
+   you have in `/macro`.
+2. Paste an OLD string (copied before 2026-10-08, or any without `K`): the preview has no
+   "removed from the site" line and nothing leaves the library after Import.
+3. Copy a NEW string from the site (pick only a few macros of one class) and paste it:
+   the preview shows `N macros were removed from the site and leave your library.` plus
+   `M of them exist as game macros.` Import.
+   - Library count drops by N; the Macro Book no longer lists them.
+   - Macros you did NOT pick but that are still on the site are still in the book.
+   - Other classes' entries are untouched.
+4. Game macros of removed entries:
+   - Unedited and not on a bar: gone from `/macro`, chat says `deleted K game macros...`.
+   - On a bar: still in `/macro` and on the bar, chat says `kept, still on your bars: ...`.
+   - One you edited in `/macro`: kept, chat says `kept, edited by you: ...`.
+   - Take a kept one off the bar, press Tidy up: it is offered and deleted.
+5. A macro that is still on the site but changed there: updates in place on its bar slot
+   (v0.2.0 rules), does not leave the library.
+6. Combat: paste a new string with the Import window open, start a fight; the Import button
+   greys out (unchanged). If an import runs in combat anyway, chat says the game macros
+   will be deleted when combat ends, and they go after the fight.
+7. Tick **Replace my library for these classes**: the preview changes to `N macros are not
+   in this string and leave your library.` Import: only the pasted macros remain for the
+   classes in the string. Untick and reopen the window: the box starts unticked.
+8. `/reload` and relog: the library and bars are as left after the import.
+

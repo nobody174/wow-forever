@@ -12,7 +12,7 @@ local UI = R2F.UI
 local ImportFrame = {}
 R2F.ImportFrame = ImportFrame
 
-local frame, edit, preview, importBtn
+local frame, edit, preview, importBtn, replaceBox
 local parsed -- last successful parse of the box's text, or nil
 
 local function playerClass()
@@ -35,7 +35,8 @@ local function refresh()
     return
   end
   parsed = result
-  local diff = R2F.Import.Diff(result, R2F.Library.db.library, playerClass())
+  local diff = R2F.Import.Diff(result, R2F.Library.db.library, playerClass(),
+    { replace = replaceBox:GetChecked() })
   preview:SetTextColor(1, 1, 1)
   preview:SetText(R2F.Import.PreviewText(diff))
   importBtn:SetEnabled(not R2F.InCombat())
@@ -44,7 +45,7 @@ end
 local function doImport()
   if not parsed or R2F.InCombat() then return end
   -- Library write + real-macro updates + chat summary (Import.Commit).
-  local diff = R2F.Import.Commit(parsed, playerClass(), time())
+  local diff = R2F.Import.Commit(parsed, playerClass(), time(), { replace = replaceBox:GetChecked() })
   frame:Hide()
   -- Jump to the first tab that got a new macro (5.6): a Universal / own-class
   -- one if any, else another class's, shown as a preview (5.10, v0.10.0).
@@ -56,7 +57,7 @@ local function build()
   local f = UI.DialogFrame("R2FImport", UIParent)
   -- 340 tall (was 320 in v0.1.0): the preview can now be two lines that
   -- each wrap (step 4's "will be updated / left as they are" line).
-  f:SetSize(460, 340)
+  f:SetSize(460, 380)
   f:SetPoint("CENTER", 0, 40)
   f:SetFrameStrata("DIALOG")
   f:SetToplevel(true)
@@ -91,6 +92,11 @@ local function build()
   preview:SetWidth(400)
   preview:SetJustifyH("LEFT")
 
+  -- 15.1: clean slate. Unchecked on every open; the preview line changes with it.
+  replaceBox = UI.CheckButton(f, L.IMPORT_REPLACE)
+  replaceBox:SetPoint("BOTTOMLEFT", 26, 46)
+  replaceBox:SetScript("OnClick", refresh)
+
   importBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   importBtn:SetSize(110, 22)
   importBtn:SetPoint("BOTTOMRIGHT", f, "BOTTOM", -6, 18)
@@ -123,6 +129,7 @@ local function build()
 
   f:SetScript("OnShow", function()
     edit:SetText("")
+    replaceBox:SetChecked(false)
     preview:SetText("")
     hint:Show()
     importBtn:Disable()

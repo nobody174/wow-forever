@@ -514,6 +514,53 @@ function Macros.Tidy(candidates)
 end
 
 -- ---------------------------------------------------------------------------
+-- Macros made from library entries the site removed (ADDON_PLAN 15.1)
+-- ---------------------------------------------------------------------------
+
+-- Read-only. For each id with a real macro of ours: delete = unedited and not
+-- on a bar (Tidy up's rule), onBar = unedited but on a bar, edited = changed by
+-- the player. The last two are lists of macro names, sorted; delete is
+-- { {id=, name=}, ... } sorted by name. Records whose macro is gone are skipped.
+function Macros.GonePlan(ids)
+  local plan = { delete = {}, onBar = {}, edited = {} }
+  local onBars = Macros.NamesOnBars()
+  for _, id in ipairs(ids) do
+    local rec = Library.Created(id)
+    if rec then
+      local idx, body = live(rec.name)
+      if idx > 0 then
+        if Library.Hash(body) ~= rec.hash then
+          plan.edited[#plan.edited + 1] = rec.name
+        elseif onBars[rec.name] then
+          plan.onBar[#plan.onBar + 1] = rec.name
+        else
+          plan.delete[#plan.delete + 1] = { id = id, name = rec.name }
+        end
+      end
+    end
+  end
+  table.sort(plan.delete, function(a, b) return a.name < b.name end)
+  table.sort(plan.onBar)
+  table.sort(plan.edited)
+  return plan
+end
+
+-- Delete the real macros GonePlan says can go (Macros.Tidy re-checks both
+-- rules right before each delete). Records whose macro is already gone are
+-- forgotten. Re-reads everything, so it can run from the combat queue.
+-- Returns deleted (count), plan (the fresh GonePlan, for the chat lines).
+function Macros.RemoveGone(ids)
+  local plan = Macros.GonePlan(ids)
+  local deleted = 0
+  if #plan.delete > 0 then deleted = Macros.Tidy(plan.delete) end
+  for _, id in ipairs(ids) do
+    local rec = Library.Created(id)
+    if rec and (GetMacroIndexByName(rec.name) or 0) == 0 then Library.SetCreated(id, nil) end
+  end
+  return deleted, plan
+end
+
+-- ---------------------------------------------------------------------------
 -- Remove all (Settings, 5.8; decisions in ADDON_PLAN 6.9)
 -- ---------------------------------------------------------------------------
 

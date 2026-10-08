@@ -587,6 +587,165 @@ def test_stance():
     check(lua.eval("R2FStanceScale == nil"), "stance: no Settings section for a Priest")
 
 
+def import_string_k(records, keep=None):
+    """import_string plus K records (ADDON_PLAN 15.1): keep = {CLASS: [every id on the site]}."""
+    parts = ["\x1f".join(r[k] for k in FIELDS) for r in records]
+    for cls, ids in (keep or {}).items():
+        parts.append("\x1f".join(["K", cls, ",".join(ids)]))
+    return "R2F1:" + base64.b64encode(("v=1\n" + "\x1e".join(parts)).encode("utf-8")).decode()
+
+
+def test_import_replaces(fx):
+    """ADDON_PLAN 15.1: the import string's K lines make an import remove what the site dropped."""
+    recs = {r["id"]: r for r in fx["warriorUniversal"]["records"]}
+    war = [i for i in recs if i.startswith("WARRIOR/")]
+    anyc = [i for i in recs if i.startswith("ANY/")]
+    HAM, SLAM, EXE, OP, KICK, DIS = ("WARRIOR/Ham", "WARRIOR/Slam", "WARRIOR/Exe",
+                                     "WARRIOR/OP", "WARRIOR/Kick", "WARRIOR/Disarm")
+    for i in (HAM, SLAM, EXE, OP, KICK, DIS):
+        check(i in recs, "15.1 fixture has " + i)
+
+    def fresh():
+        lua = new_runtime()
+        lua.execute("TEST.reset() R2FDB = nil R2FCharDB = nil R2F.Library.Init() R2F.playerClass = 'WARRIOR'")
+        lua.globals().S = import_string_k([recs[i] for i in recs])  # whole library, no K
+        lua.execute("R2F.Library.Apply(R2F.Import.Parse(S).records, 1)")
+        return lua, lua.eval("TEST")
+
+    def commit(lua, ids, keep, replace=False):
+        lua.globals().S = import_string_k([recs[i] for i in ids], keep)
+        lua.globals().REPLACE = replace
+        lua.execute("PARSED = R2F.Import.Parse(S) D = R2F.Import.Commit(PARSED, 'WARRIOR', 2, { replace = REPLACE })")
+
+    def has(lua, i):
+        return lua.eval('R2F.Library.Get("%s") ~= nil' % i)
+
+    def chat(lua):
+        return "\n".join(lua.eval("TEST.chat[%d]" % n) for n in range(1, lua.eval("#TEST.chat") + 1))
+
+    # --- Parse: K lines are read, not counted as skipped ---------------------
+    lua = new_runtime()
+    lua.globals().S = import_string_k([recs[HAM]], {"WARRIOR": [HAM, SLAM], "ANY": []})
+    check(lua.eval("R2F.Import.Parse(S).skipped") == 0 and lua.eval("#R2F.Import.Parse(S).records") == 1,
+          "15.1 parse: K lines are not records and not 'skipped'")
+    check(lua.eval("R2F.Import.Parse(S).keep.WARRIOR['%s']" % SLAM) is True
+          and lua.eval("R2F.Import.Parse(S).keep.WARRIOR['%s']" % OP) is None
+          and lua.eval("next(R2F.Import.Parse(S).keep.ANY)") is None, "15.1 parse: keep sets (and an empty one)")
+    lua.globals().S = import_string_k([recs[HAM]], {"NOPE": [HAM]})
+    check(lua.eval("R2F.Import.Parse(S).skipped") == 1 and lua.eval("next(R2F.Import.Parse(S).keep)") is None,
+          "15.1 parse: a K line for an unknown class is skipped as damaged")
+    # The real site string carries K lines listing every id of each carried class.
+    lua.globals().S = fx["warriorUniversal"]["string"]
+    every = {c: {r["id"] for r in fx["everything"]["records"] if r["class"] == c} for c in ("WARRIOR", "ANY")}
+    check(lua.eval("R2F.Import.Parse(S).skipped") == 0, "15.1 site string: nothing skipped")
+    for c, ids in every.items():
+        n = lua.eval("(function() local n = 0 for _ in pairs(R2F.Import.Parse(S).keep.%s) do n = n + 1 end return n end)()" % c)
+        check(n == len(ids), "15.1 site string: K %s lists all %d ids on the site (%d)" % (c, len(ids), n))
+
+    # --- Old string (no K lines): add-only, as before --------------------------
+    lua, T = fresh()
+    before = lua.eval("R2F.Library.Count()")
+    commit(lua, [HAM], None)
+    check(lua.eval("R2F.Library.Count()") == before and lua.eval("#D.gone") == 0
+          and "removed from the site" not in lua.eval("R2F.Import.PreviewText(D)"),
+          "15.1 old string without K: nothing removed, no removal line")
+
+    # --- Removed id leaves; unpicked id stays; other classes untouched ------------
+    lua, T = fresh()
+    keep_war = [i for i in war if i != SLAM]          # the site dropped Slam
+    commit(lua, [HAM], {"WARRIOR": keep_war})
+    check(not has(lua, SLAM), "15.1 an id missing from K leaves the library")
+    check(has(lua, HAM) and has(lua, EXE) and has(lua, OP), "15.1 macros the player didn't pick (still in K) stay")
+    check(all(has(lua, i) for i in anyc), "15.1 a class without a K line is not touched (Universal)")
+    check(lua.eval("#D.gone") == 1, "15.1 diff lists exactly the one removed id")
+    pv = lua.eval("R2F.Import.PreviewText(D)")
+    check("1 macro was removed from the site and leaves your library." in pv, "15.1 preview line (one): %r" % pv)
+    check(lua.eval("R2F.Library.Count()") == len(recs) - 1, "15.1 library count after")
+
+    # Plural wording + 'exist as game macros' count in the preview (before commit).
+    lua, T = fresh()
+    for i in (SLAM, EXE):
+        lua.execute('R2F.Macros.Ensure("%s")' % i)
+    lua.globals().S = import_string_k([recs[HAM]], {"WARRIOR": [i for i in war if i not in (SLAM, EXE, OP)]})
+    lua.execute("PARSED = R2F.Import.Parse(S) DD = R2F.Import.Diff(PARSED, R2F.Library.db.library, 'WARRIOR')")
+    pv = lua.eval("R2F.Import.PreviewText(DD)")
+    check("3 macros were removed from the site and leave your library. 2 of them exist as game macros." in pv,
+          "15.1 preview line (plural + game macros): %r" % pv)
+
+    # --- Game macros: unedited+unused deleted; on a bar / edited kept, listed ----
+    lua, T = fresh()
+    for i in (SLAM, EXE, OP, KICK, DIS):
+        lua.execute('R2F.Macros.Ensure("%s")' % i)
+    T.actions[5] = "Kick"                               # on a bar
+    lua.execute('TEST.setBody("OP", "/say mine")')      # edited by the player
+    T.addMacro("Mine", "/dance", True)                  # the player's own macro
+    T.chat = lua.table()
+    keep = [i for i in war if i not in (SLAM, EXE, OP, KICK, DIS)]
+    commit(lua, [HAM], {"WARRIOR": keep})
+    check(T.bodyOf("Slam") is None and T.bodyOf("Exe") is None and T.bodyOf("Disarm") is None,
+          "15.1 unedited, unused game macros of removed entries are deleted")
+    check(T.bodyOf("Kick") is not None and T.bodyOf("OP") == "/say mine" and T.bodyOf("Mine") == "/dance",
+          "15.1 on-bar and edited game macros (and the player's own) are kept")
+    txt = chat(lua)
+    check("deleted 3 game macros" in txt, "15.1 chat: deleted count: %r" % txt)
+    check("kept, still on your bars: Kick" in txt and "kept, edited by you: OP" in txt, "15.1 chat lists the kept ones")
+    check(not any(has(lua, i) for i in (SLAM, EXE, OP, KICK, DIS)), "15.1 all five left the library")
+    check(lua.eval('R2F.Library.Created("WARRIOR/Kick") ~= nil') and lua.eval('R2F.Library.Created("WARRIOR/Slam") == nil'),
+          "15.1 kept macros stay tracked (Tidy up can take them later); deleted ones are forgotten")
+    T.actions[5] = None   # Kick leaves the bar: Tidy up now offers it
+    check("Kick" in names_of(lua.eval("R2F.Macros.TidyCandidates()")), "15.1 a kept macro is Tidy-able once off the bars")
+
+    # --- Still on the site but changed: updates in place, not removed -------------
+    lua, T = fresh()
+    lua.execute('R2F.Macros.Ensure("%s")' % HAM)
+    T.actions[1] = "Ham"
+    changed = dict(recs[HAM])
+    changed["body"] = "#showtooltip\n/cast Hamstring (new)"
+    lua.globals().S = import_string_k([changed], {"WARRIOR": war})
+    lua.execute("PARSED = R2F.Import.Parse(S) D = R2F.Import.Commit(PARSED, 'WARRIOR', 2)")
+    check(has(lua, HAM) and T.bodyOf("Ham") == changed["body"] and lua.eval("#D.gone") == 0,
+          "15.1 changed-but-still-on-site macro updates in place and stays")
+
+    # --- Combat: library change now, game macro deletion queued -------------------
+    lua, T = fresh()
+    lua.execute('R2F.Macros.Ensure("%s")' % SLAM)
+    T.combat = True
+    T.calls = lua.table()
+    T.chat = lua.table()
+    commit(lua, [HAM], {"WARRIOR": [i for i in war if i != SLAM]})
+    check(not has(lua, SLAM) and T.bodyOf("Slam") is not None and lua.eval("R2F.Macros.QueueSize()") == 1,
+          "15.1 combat: library entry gone at once, game macro delete queued")
+    check("when combat ends" in chat(lua), "15.1 combat: queued message")
+    T.combat = False
+    lua.execute("R2F.Macros.RunQueue()")
+    check(T.bodyOf("Slam") is None and lua.eval("R2F.Macros.QueueSize()") == 0, "15.1 combat: deleted after combat")
+    # Combat with nothing to delete (only kept macros): no queue, lists printed.
+    lua, T = fresh()
+    lua.execute('R2F.Macros.Ensure("%s")' % KICK)
+    T.actions[3] = "Kick"
+    T.combat = True
+    T.chat = lua.table()
+    commit(lua, [HAM], {"WARRIOR": [i for i in war if i != KICK]})
+    check(lua.eval("R2F.Macros.QueueSize()") == 0 and T.bodyOf("Kick") is not None
+          and "kept, still on your bars: Kick" in chat(lua), "15.1 combat: nothing to delete -> nothing queued, kept listed")
+    T.combat = False
+
+    # --- Replace checkbox: everything of the carried classes not in the string -----
+    lua, T = fresh()
+    lua.execute('R2F.Macros.Ensure("%s")' % EXE)
+    lua.globals().S = import_string_k([recs[HAM]], None)          # old-style string, one macro
+    lua.execute("PARSED = R2F.Import.Parse(S) DD = R2F.Import.Diff(PARSED, R2F.Library.db.library, 'WARRIOR', { replace = true })")
+    check(lua.eval("#DD.gone") == len(war) - 1, "15.1 replace: diff = all other Warrior macros")
+    check("are not in this string and leave your library" in lua.eval("R2F.Import.PreviewText(DD)"), "15.1 replace: preview wording")
+    commit(lua, [HAM], None, replace=True)
+    check(has(lua, HAM) and not any(has(lua, i) for i in war if i != HAM), "15.1 replace: only the string's macros remain for the class")
+    check(all(has(lua, i) for i in anyc), "15.1 replace: classes the string doesn't carry are untouched")
+    check(T.bodyOf("Exe") is None, "15.1 replace: unedited unused game macro deleted too")
+    lua, T = fresh()
+    commit(lua, [HAM, SLAM], {"WARRIOR": war}, replace=True)
+    check(lua.eval("R2F.Library.Count()") == 2 + len(anyc), "15.1 replace with a K string: unpicked Warrior macros go too")
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -4488,6 +4647,7 @@ def main():
     test_updates(new_runtime(), fx)
     test_ui_updates(fx)
     test_stance()
+    test_import_replaces(fx)
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

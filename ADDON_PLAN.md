@@ -2788,7 +2788,7 @@ Agreed with the owner after a design/gamer review of in-game screenshots (Home,
 Macros, Talents, Settings, stance icon). Build in this order; each step ships alone.
 The logo stays as it is (owner: readable on the minimap and in the window).
 
-### 15.1 Import replaces, not only adds (top priority)
+### 15.1 Import replaces, not only adds (top priority) -- built as v0.14.0, 2026-10-08
 Problem seen in game: "207 macros in your library", Warrior book on 4 pages. Import only
 ever adds/updates, so macros removed on the site (2026-10-08 cleanup: ~240 removed)
 live on in the library forever.
@@ -2809,6 +2809,7 @@ live on in the library forever.
   Combat: queued like Tidy up.
 - Optional checkbox in the Import window: **Replace my library for these classes** =
   remove everything of the carried classes that isn't in this string (for a clean slate).
+- **As built:** the `K` line is a normal record in the string: `K`  `<CLASS>`  `id,id,...`, after the macro records (older addons skip it as damaged). The checkbox and the preview wording are as above; "Replace" works on any string, with or without `K`.
 - Tests: old string (no `K`) unchanged; removed id leaves library; unpicked id stays;
   edited/on-bar game macro kept; combat queue.
 

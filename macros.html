@@ -534,6 +534,11 @@ document.addEventListener("click",e=>{
 // so any change here needs a new version prefix (R2F2:) and a matching addon.
 //   R2F1:<base64("v=1\n" + records joined by \x1E)>
 //   record = id, class, section, group, name, short, icon, body, note joined by \x1F
+//   K record (ADDON_PLAN 15.1, addon 0.14.0) = "K", class, ids joined by "," -- one per class
+//   the string carries, placed after the macro records: EVERY id that class has on the site
+//   now, picked or not. The addon drops library entries of a carried class that are not in
+//   it (removed from the site). Ids never contain "," (checked below). Older addons skip K
+//   records as damaged ("1 skipped"); older strings without K keep add-only behaviour.
 // \x1E/\x1F are the ASCII record/unit separators: they never occur in macro
 // text, so bodies can keep real newlines and notes can hold any punctuation
 // without an escaping scheme the Lua side would have to mirror.
@@ -548,6 +553,12 @@ function importString(){
     const token = m.id.slice(0, m.id.indexOf("/"));
     recs.push([m.id, token, e.section, e.group, m.name, m.short, m.icon || "", m.code, m.note || ""]
       .map(strip).join("\x1F"));
+  }
+  const carried = [...new Set(recs.map(r => r.slice(r.indexOf("\x1F") + 1).split("\x1F")[0]))];
+  for(const tok of carried){
+    const ids = XINDEX.map(e => e.m.id).filter(id => id.slice(0, id.indexOf("/")) === tok);
+    if(ids.some(id => id.includes(","))) throw new Error("macro id with a comma: K records need another separator");
+    recs.push(["K", tok, ids.join(",")].map(strip).join("\x1F"));
   }
   const text = "v=1\n" + recs.join("\x1E");
   // btoa only takes Latin-1; encodeURIComponent + unescape turns the text into

@@ -34,6 +34,15 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-08 (Import replaces, not only adds: site K lines + addon 0.14.0)
+- ADDON_PLAN 15.1, step 1 of addon round 2. `template.html` importString() now appends one
+  `K <CLASS> id,id,...` record per carried class (all ids that class has on the site; throws
+  if an id ever contains a comma). Addon 0.14.0 removes library entries the site dropped,
+  deletes the unedited unused game macros made from them (Tidy up rules, combat-queued),
+  keeps and lists on-bar / edited ones, and has a "Replace my library for these classes"
+  checkbox in the Import window. Old strings without K stay add-only. 228 new tests
+  (`test_import_replaces`). Never run in game yet (TESTING.md 22).
+
 ## 2026-10-08 (Addon 0.13.0: Warrior stance icon)
 - Road to Forever addon 0.13.0: a Warrior stance icon (blue Battle, green Defensive, red
   Berserker frame), draggable, with Lock and a size slider in Settings, plus `/r2f stance`.

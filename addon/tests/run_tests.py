@@ -4103,6 +4103,7 @@ def test_class_picker(templates, fx):
     """v0.10.0 (ADDON_PLAN 5.10): browse any class in the library from the Macro Book,
     read-only for classes other than your own; counters/checks stay this character's."""
     WARRIOR_N = sum(1 for r in fx["warriorUniversal"]["records"] if r["id"].startswith("WARRIOR/"))
+    PALADIN_N = sum(1 for r in fx["everything"]["records"] if r["id"].startswith("PALADIN/"))
     tag = "templates" if templates else "fallbacks"
     lua, T = login(templates, "PALADIN")
     L = lua.eval("R2F.L")
@@ -4243,7 +4244,7 @@ def test_class_picker(templates, fx):
 
     # Picker tooltips.
     lua.execute("PICKS[1]:Fire('OnEnter')")
-    check(lua_table_to_list(lua.eval("GameTooltip.lines")) == ["Paladin", "53 macros", L.PICKER_TIP_YOURS],
+    check(lua_table_to_list(lua.eval("GameTooltip.lines")) == ["Paladin", "%d macros" % PALADIN_N, L.PICKER_TIP_YOURS],
           "own class button tooltip")
     lua.execute("PICKS[2]:Fire('OnEnter')")
     check(lua_table_to_list(lua.eval("GameTooltip.lines")) == ["Warrior", "%d macros" % WARRIOR_N,

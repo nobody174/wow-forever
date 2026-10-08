@@ -164,17 +164,6 @@ UNIVERSAL = [
           short="AssistFoc", icon="Ability_Warrior_Challange"),
     ]),
 
-    G(PANIC, [
-        M("Healing potion",
-          "/use Major Healing Potion",
-          "Swap the item name to the potion rank you carry.",
-          short="HPotion", icon="INV_Potion_54"),
-        M("Mana potion",
-          "/use Major Mana Potion",
-          "Swap the item name to the potion rank you carry.",
-          short="MPotion", icon="INV_Potion_24"),
-    ]),
-
     G(MISC, [
         M("Zoom out more",
           "/console cameraDistanceMaxZoomFactor 4",
@@ -228,7 +217,6 @@ CLASSES = [
                 M("Lesser Heal", heal("Lesser Heal"), short="LHeal"),
                 M("Renew", heal("Renew"), short="Renew"),
                 M("Power Word: Shield", heal("Power Word: Shield"), short="PWS"),
-                M("Prayer of Healing", plain("Prayer of Healing"), "Party-wide, no target needed.", short="PoH"),
                 M("Resurrection", heal("Resurrection"), short="Rez"),
             ]),
             G(CLEAN, [
@@ -241,14 +229,10 @@ CLASSES = [
                 M("Prayer of Fortitude", buff("Prayer of Fortitude"), short="PoFort"),
                 M("Shadow Protection", buff("Shadow Protection"), short="ShadowProt"),
                 M("Levitate", buff("Levitate"), short="Levitate"),
-                M("Inner Fire", plain("Inner Fire"), short="InnerFire"),
                 M("Fear Ward", buff("Fear Ward"), "Racial/availability may differ in Forever.", short="FearWard"),
             ]),
             G(PANIC, [
                 M("Shield self", me("Power Word: Shield"), short="PWS me"),
-                M("Psychic Scream", plain("Psychic Scream"), short="Scream"),
-                M("Fade", plain("Fade"), short="Fade"),
-                M("Desperate Prayer", plain("Desperate Prayer"), "Racial priest spell.", short="DesperatePr"),
             ]),
             G(FOCUS, [
                 M("Shackle Undead on focus", foc("Shackle Undead"), short="Shackle F"),
@@ -280,10 +264,8 @@ CLASSES = [
                 M("Inner Focus + Greater Heal",
                   "#showtooltip Greater Heal\n/cast Inner Focus\n/cast [@mouseover, help, exists][help][@player] Greater Heal",
                   short="IF+GHeal"),
-                M("Holy Nova", plain("Holy Nova"), short="HNova"),
                 M("Prayer of Mending", heal("Prayer of Mending"),
                   "New in Forever. Heals, then jumps to another group member when they take damage.", short="PoM"),
-                M("Lightwell", plain("Lightwell"), short="Lightwell"),
             ]),
         ]},
 
@@ -292,9 +274,6 @@ CLASSES = [
                 M("Power Infusion", heal("Power Infusion"), short="PowerInf"),
                 M("Penance (friend or foe)", util("Penance"),
                   "New in Forever. Heals a friendly mouseover/target, damages an enemy one.", short="Penance"),
-                M("Inner Focus + Greater Heal",
-                  "#showtooltip Greater Heal\n/cast Inner Focus\n/cast [@mouseover, help, exists][help][@player] Greater Heal",
-                  short="InnerFocus"),
             ]),
             G(BUFF, [
                 M("Divine Spirit", buff("Divine Spirit"), short="DivSpirit"),
@@ -318,28 +297,14 @@ CLASSES = [
                   "same press. Handy if you keep Firebolt autocast off to stop the Imp "
                   "pulling or burning mana. With any other demon the Firebolt line is skipped.",
                   short="ShadowBolt"),
-                M("Corruption", dpsHarm("Corruption"), short="Corrupt"),
-                M("Curse of Agony", dpsHarm("Curse of Agony"), short="CoAgony"),
-                M("Immolate", dpsHarm("Immolate"), short="Immolate"),
-                M("Searing Pain", dpsHarm("Searing Pain"), short="Searing"),
-                M("Soul Fire", dpsHarm("Soul Fire"), short="SoulFire"),
-                M("Death Coil", dpsHarm("Death Coil"), short="DeathCoil"),
                 M("Drain Life (spam-safe)", chan("Drain Life"), short="DrainLife"),
                 M("Drain Soul (spam-safe)", chan("Drain Soul"), short="DrainSoul"),
                 M("Drain Mana (spam-safe)", chan("Drain Mana"), short="DrainMana"),
-                M("Curse of the Elements", dpsHarm("Curse of the Elements"), short="CoElements"),
-                M("Curse of Shadow", dpsHarm("Curse of Shadow"), short="CoShadow"),
-                M("Curse of Recklessness", dpsHarm("Curse of Recklessness"), short="CoReck"),
-                M("Curse of Weakness", dpsHarm("Curse of Weakness"), short="CoWeak"),
-                M("Curse of Tongues", dpsHarm("Curse of Tongues"), short="CoTongues"),
-                M("Hellfire", plain("Hellfire"), short="Hellfire"),
-                M("Rain of Fire", plain("Rain of Fire"), short="RoF"),
             ]),
             G(AUTO, [
                 M("Wand (spam-safe)", WAND, short="Wand"),
             ]),
             G(HEAL, [
-                M("Health Funnel (pet)", plain("Health Funnel"), short="HFunnel"),
                 M("Unending Breath", buff("Unending Breath"), short="UnendBreath"),
                 M("Detect Invisibility", buff("Detect Invisibility"), short="DetectInv"),
                 M("Soulstone mouseover",
@@ -349,29 +314,8 @@ CLASSES = [
             G(CLEAN, [
                 M("Devour Magic (Felhunter)", heal("Devour Magic"), short="DevourMagic"),
             ]),
-            G(BUFF, [
-                M("Demon Armor", plain("Demon Armor"), short="DemonArmor"),
-                M("Shadow Ward", plain("Shadow Ward"), short="ShadowWard"),
-            ]),
-            G(PANIC, [
-                M("Healthstone", "/use Major Healthstone", "Swap item name to your healthstone rank.",
-                  short="Healthstone", icon="INV_Stone_04"),
-                M("Howl of Terror", plain("Howl of Terror"), short="HowlTerror"),
-                M("Fear", dpsHarm("Fear"), short="Fear"),
-                M("Sacrifice (Voidwalker)", plain("Sacrifice"), short="Sacrifice"),
-                M("Life Tap", plain("Life Tap"), short="LifeTap"),
-            ]),
             G(QOL, [
                 M("Pet attack TT / target", PETATK, short="PetAtk", icon="Ability_GhoulFrenzy"),
-                M("Pet follow", "/petfollow", short="PetFollow", icon="Ability_Hunter_BeastCall"),
-                M("Pet passive", "/petpassive", short="PetPassive", icon="Ability_Hunter_BeastSoothe"),
-                M("Pet defensive", "/petdefensive", short="PetDef", icon="Ability_Druid_Cower"),
-                M("Spell Lock (Felhunter)", dpsHarm("Spell Lock"), short="SpellLock"),
-                M("Torment (Voidwalker taunt)", dpsHarm("Torment"), short="Torment"),
-                M("Summon Felhunter", plain("Summon Felhunter"), short="SummonFH"),
-                M("Summon Voidwalker", plain("Summon Voidwalker"), short="SummonVW"),
-                M("Summon Succubus", plain("Summon Succubus"), short="SummonSucc"),
-                M("Summon Imp", plain("Summon Imp"), short="SummonImp"),
             ]),
             G(FOCUS, [
                 M("Fear focus", foc("Fear"), short="Fear F"),
@@ -387,8 +331,6 @@ CLASSES = [
 
         {"spec": "Affliction", "groups": [
             G(DPS, [
-                M("Siphon Life", dpsHarm("Siphon Life"), short="SiphonLife"),
-                M("Curse of Exhaustion", dpsHarm("Curse of Exhaustion"), short="CoExhaust"),
                 M("Wrack (spam-safe)", chan("Wrack"),
                   "New in Forever. Channeled drain that makes the target take more Shadow DoT damage.", short="Wrack"),
                 M("Amplify Curse + Agony",
@@ -398,10 +340,6 @@ CLASSES = [
                   "/castsequence [harm] reset=target Corruption, Curse of Agony, Siphon Life, Immolate",
                   short="DoTSeq"),
             ]),
-            G(PANIC, [
-                M("Dark Pact", plain("Dark Pact"),
-                  BETA + "not seen in the Forever beta talent tree, may be removed.", short="DarkPact"),
-            ]),
         ]},
 
         {"spec": "Demonology", "groups": [
@@ -410,17 +348,11 @@ CLASSES = [
                   "#showtooltip Summon Felhunter\n/cast Fel Domination\n/cast Summon Felhunter", short="FelDom+FH"),
                 M("Fel Domination + Voidwalker",
                   "#showtooltip Summon Voidwalker\n/cast Fel Domination\n/cast Summon Voidwalker", short="FelDom+VW"),
-                M("Soul Link", plain("Soul Link"), short="SoulLink"),
-                M("Demonic Sacrifice", plain("Demonic Sacrifice"), short="DemonicSac"),
             ]),
         ]},
 
         {"spec": "Destruction", "groups": [
             G(DPS, [
-                M("Conflagrate", dpsHarm("Conflagrate"), short="Conflag"),
-                M("Shadowburn", dpsHarm("Shadowburn"), short="Shadowburn"),
-                M("Incinerate", dpsHarm("Incinerate"),
-                  "New in Forever. Hits harder when Immolate is on the target.", short="Incinerate"),
                 M("Immolate > Conflagrate",
                   "#showtooltip Immolate\n"
                   "/castsequence [harm] reset=target/10 Immolate, Conflagrate", short="Immo>Conflag"),
@@ -435,18 +367,11 @@ CLASSES = [
 
         {"spec": "Shared", "groups": [
             G(DPS, [
-                M("Frostbolt", dpsHarm("Frostbolt"), short="Frostbolt"),
-                M("Fireball", dpsHarm("Fireball"), short="Fireball"),
                 M("Arcane Missiles (spam-safe)", chan("Arcane Missiles"), short="ArcMissiles"),
-                M("Arcane Explosion", plain("Arcane Explosion"), short="ArcExplosion"),
-                M("Fire Blast", dpsHarm("Fire Blast"), short="FireBlast"),
                 M("Frost Nova", "#showtooltip Frost Nova\n/stopcasting\n/cast [harm] Frost Nova",
                   "Clears your current cast first so the root fires instantly.", short="FrostNova"),
-                M("Cone of Cold", plain("Cone of Cold"), short="ConeOfCold"),
-                M("Scorch", dpsHarm("Scorch"), short="Scorch"),
                 M("Counterspell (interrupt)", "#showtooltip Counterspell\n/stopcasting\n/cast [harm] Counterspell",
                   "Clears your current cast first so the interrupt fires instantly.", short="CSpell"),
-                M("Polymorph", dpsHarm("Polymorph"), short="Polymorph"),
                 M("Polymorph + Diamond mark",
                   "#showtooltip Polymorph\n/targetmarker [harm] 3\n/cast [harm] Polymorph",
                   "Marks the sheep target with a diamond so the group knows not to break it. "
@@ -454,14 +379,8 @@ CLASSES = [
                   "/tm for itself, which silently breaks this macro if you use the short form.",
                   short="Poly+Mark"),
             ]),
-            G(HEAL, [
-                M("Mana Shield", plain("Mana Shield"), short="ManaShield"),
-            ]),
             G(BUFF, [
                 M("Arcane Intellect", buff("Arcane Intellect"), short="ArcInt"),
-                M("Frost Armor", plain("Frost Armor"), short="FrostArmor"),
-                M("Ice Armor", plain("Ice Armor"), short="IceArmor"),
-                M("Molten Armor", plain("Molten Armor"), short="MoltenArmor"),
                 M("Dampen Magic", buff("Dampen Magic"), short="DampenMagic"),
                 M("Amplify Magic", buff("Amplify Magic"), short="AmpMagic"),
             ]),
@@ -469,14 +388,6 @@ CLASSES = [
                 M("Ice Block (press again to cancel)",
                   "#showtooltip Ice Block\n/cancelaura Ice Block\n/cast Ice Block",
                   "First press casts Ice Block, second press cancels it early.", short="IceBlock"),
-                M("Blink", plain("Blink"), short="Blink"),
-                M("Evocation", plain("Evocation"), short="Evocation"),
-            ]),
-            G(QOL, [
-                M("Conjure Food", plain("Conjure Food"), short="ConjFood"),
-                M("Conjure Water", plain("Conjure Water"), short="ConjWater"),
-                M("Summon Water Elemental", plain("Summon Water Elemental"), short="SummonWE"),
-                M("Remove Curse", heal("Remove Curse"), short="RemoveCurse"),
             ]),
             G(CLEAN, [
                 M("Remove Curse (friend or foe)", util("Remove Curse"), short="RemCurse@"),
@@ -496,22 +407,6 @@ CLASSES = [
                   short="PoM+Frost"),
                 M("Presence of Mind + Pyroblast", "#showtooltip Pyroblast\n/cast Presence of Mind\n/cast [harm] Pyroblast",
                   "The classic burst combo for Arcane/Fire hybrids: instant Pyroblast.", short="PoM+Pyro"),
-                M("Arcane Blast", dpsHarm("Arcane Blast"),
-                  "New in Forever. Each cast in a row costs more and powers up your next other spell.", short="ArcBlast"),
-            ]),
-        ]},
-
-        {"spec": "Fire", "groups": [
-            G(DPS, [
-                M("Combustion", plain("Combustion"), short="Combustion"),
-                M("Pyroblast", dpsHarm("Pyroblast"), short="Pyroblast"),
-            ]),
-        ]},
-
-        {"spec": "Frost", "groups": [
-            G(DPS, [
-                M("Ice Lance", dpsHarm("Ice Lance"), short="IceLance"),
-                M("Cold Snap", plain("Cold Snap"), short="ColdSnap"),
             ]),
         ]},
     ]},
@@ -526,7 +421,6 @@ CLASSES = [
                 M("Sinister Strike", melee("Sinister Strike"), short="SinStrike"),
                 M("Backstab", melee("Backstab"), short="Backstab"),
                 M("Eviscerate", melee("Eviscerate"), short="Evisc"),
-                M("Gouge", dpsHarm("Gouge"), short="Gouge"),
                 M("Gouge (mouseover)", "#showtooltip Gouge\n/cast [@mouseover, harm, nodead][harm, nodead] Gouge",
                   short="Gouge@"),
                 M("Kidney Shot", melee("Kidney Shot"), short="KidneyShot"),
@@ -534,36 +428,22 @@ CLASSES = [
                 M("Garrote", melee("Garrote"), "Requires stealth.", short="Garrote"),
                 M("Ambush", melee("Ambush"), "Requires stealth.", short="Ambush"),
                 M("Cheap Shot", melee("Cheap Shot"), "Requires stealth. Classic stunlock opener.", short="CheapShot"),
-                M("Expose Armor", dpsHarm("Expose Armor"), short="ExposeArmor"),
-                M("Sap", dpsHarm("Sap"), "Only works on an out-of-combat target.", short="Sap"),
-                M("Kick (interrupt)", "#showtooltip Kick\n/stopcasting\n/cast [harm] Kick",
-                  "Clears your current cast first so the interrupt fires instantly.", short="Kick"),
                 M("Kick (mouseover)", "#showtooltip Kick\n/stopcasting\n/cast [@mouseover, harm, nodead][harm, nodead] Kick",
                   "Clears your current cast first so the interrupt fires instantly.", short="Kick@"),
             ]),
             G(AUTO, [
-                M("Auto-attack (spam-safe)", MELEE, short="Attack", icon="Ability_GhoulFrenzy"),
                 M("Ranged weapon (Bow/Gun/Crossbow/Thrown)",
                   "#showtooltip\n/cast [equipped:Bows] Shoot Bow; [equipped:Guns] Shoot Gun; "
                   "[equipped:Crossbows] Shoot Crossbow; [equipped:Thrown] Throw",
                   "One button for whatever ranged weapon you have equipped.", short="Ranged"),
             ]),
-            G(BUFF, [
-                M("Slice and Dice", plain("Slice and Dice"), short="SnD"),
-            ]),
             G(PANIC, [
-                M("Evasion", plain("Evasion"), short="Evasion"),
-                M("Vanish", plain("Vanish"), short="Vanish"),
-                M("Sprint", plain("Sprint"), short="Sprint"),
-                M("Blind", dpsHarm("Blind"), short="Blind"),
                 M("Blind (mouseover)", "#showtooltip Blind\n/cast [@mouseover, harm, nodead][harm, nodead] Blind",
                   short="Blind@"),
             ]),
             G(QOL, [
                 M("Stealth (no cancel)", "#showtooltip Stealth\n/cast [nostealth] Stealth", "Won't drop you out of stealth if pressed again.",
                   short="Stealth"),
-                M("Pick Lock", plain("Pick Lock"), short="PickLock"),
-                M("Pick Pocket", dpsHarm("Pick Pocket"), short="PickPocket"),
                 M("Pick Pocket (mouseover)", "#showtooltip Pick Pocket\n/cast [@mouseover, harm, nodead][harm, nodead] Pick Pocket",
                   short="PickPkt@"),
                 M("Pick Pocket + Sap",
@@ -574,7 +454,6 @@ CLASSES = [
                   "Change the poison name to the rank you have (e.g. Instant Poison II). The last line "
                   "confirms the \"replace enchant\" popup.", short="Poison", icon="INV_Potion_02"),
                 M("Distract", "#showtooltip Distract\n/cast [@cursor] Distract", short="Distract"),
-                M("Feint", dpsHarm("Feint"), short="Feint"),
                 M("Grenade at cursor", "#showtooltip Iron Grenade\n/use [@cursor] Iron Grenade",
                   "Swap the item name for the grenade you carry.", short="Grenade", icon="INV_Misc_Bomb_08"),
                 M("Sharpening stone (left = main, right = off hand)",
@@ -582,9 +461,6 @@ CLASSES = [
                   "/click StaticPopup1Button1",
                   "Swap the item name for the stone you carry. The last line confirms the \"replace enchant\" popup.",
                   short="Stone", icon="INV_Stone_02"),
-            ]),
-            G(CLEAN, [
-                M("No dispel", "", "Rogues have no dispel. Interrupt instead with Kick, or silence with Gouge/Kidney Shot/Blind."),
             ]),
             G(FOCUS, [
                 M("Kick focus", "#showtooltip Kick\n/stopcasting\n/cast [@focus, harm, exists][harm] Kick",
@@ -596,29 +472,15 @@ CLASSES = [
 
         {"spec": "Assassination", "groups": [
             G(DPS, [
-                M("Venom", dpsHarm("Venom"),
-                  "Forever's finisher (replaces Envenom): boosts poison damage and proc chance. "
-                  "Longer duration per combo point.", short="Venom"),
                 M("Mutilate", melee("Mutilate"), short="Mutilate"),
                 M("Cold Blood + Ambush", "#showtooltip Ambush\n/cast Cold Blood\n/cast [harm] Ambush", "Requires stealth.",
                   short="ColdBlood+Amb"),
             ]),
         ]},
 
-        {"spec": "Combat", "groups": [
-            G(DPS, [
-                M("Blade Flurry", plain("Blade Flurry"), short="BladeFlurry"),
-                M("Adrenaline Rush", plain("Adrenaline Rush"), short="AdrenRush"),
-            ]),
-        ]},
-
         {"spec": "Subtlety", "groups": [
             G(DPS, [
                 M("Hemorrhage", melee("Hemorrhage"), short="Hemo"),
-                M("Premeditation", plain("Premeditation"), "Requires stealth.", short="Premed"),
-            ]),
-            G(PANIC, [
-                M("Cloak of Shadows", plain("Cloak of Shadows"), short="CloakShadow"),
             ]),
         ]},
     ]},
@@ -630,16 +492,8 @@ CLASSES = [
 
         {"spec": "Shared", "groups": [
             G(DPS, [
-                M("Lightning Bolt", dpsHarm("Lightning Bolt"), short="LBolt"),
-                M("Chain Lightning", dpsHarm("Chain Lightning"), short="CLightning"),
                 M("Earth Shock (interrupt)", "#showtooltip Earth Shock\n/stopcasting\n/cast [harm] Earth Shock",
                   "Clears your current cast first so the interrupt fires instantly.", short="EShock"),
-                M("Flame Shock", dpsHarm("Flame Shock"), short="FlameShock"),
-                M("Frost Shock", dpsHarm("Frost Shock"), short="FrostShock"),
-                M("Purge (offensive dispel)", dpsHarm("Purge"), short="Purge"),
-            ]),
-            G(AUTO, [
-                M("Auto-attack (spam-safe)", MELEE, short="Attack", icon="Ability_GhoulFrenzy"),
             ]),
             G(HEAL, [
                 M("Healing Wave", heal("Healing Wave"), short="HWave"),
@@ -654,20 +508,11 @@ CLASSES = [
                 M("Cure Disease", heal("Cure Disease"), short="CureDisease"),
             ]),
             G(BUFF, [
-                M("Lightning Shield", plain("Lightning Shield"), short="LShield"),
-                M("Water Shield", plain("Water Shield"),
-                  "New in Forever. Mana back when you're hit or crit-heal. Replaces Lightning Shield for healers.",
-                  short="WShield"),
-                M("Rockbiter Weapon", plain("Rockbiter Weapon"), short="Rockbiter"),
-                M("Flametongue Weapon", plain("Flametongue Weapon"), short="Flametongue"),
-                M("Frostbrand Weapon", plain("Frostbrand Weapon"), short="Frostbrand"),
                 M("Water Walking", buff("Water Walking"), short="WaterWalk"),
                 M("Water Breathing", buff("Water Breathing"), short="WaterBreath"),
             ]),
             G(PANIC, [
                 M("Self Lesser Healing Wave", me("Lesser Healing Wave"), short="SelfLHWave"),
-                M("Stoneclaw Totem", plain("Stoneclaw Totem"), short="Stoneclaw"),
-                M("Grounding Totem", plain("Grounding Totem"), short="Grounding"),
                 M("Ghost Wolf (no cancel)", "#showtooltip Ghost Wolf\n/cast [noform] Ghost Wolf", short="GhostWolf"),
             ]),
             G(QOL, [
@@ -679,13 +524,6 @@ CLASSES = [
                   "#showtooltip Stoneskin Totem\n"
                   "/castsequence reset=combat Stoneskin Totem, Grace of Air Totem, Searing Totem, Mana Spring Totem",
                   "Swap Grace of Air for Tranquil Air if you prefer.", short="CasterTotems"),
-                M("Tremor Totem", plain("Tremor Totem"), short="Tremor"),
-                M("Poison Cleansing Totem", plain("Poison Cleansing Totem"), short="PoisonCleanse"),
-                M("Disease Cleansing Totem", plain("Disease Cleansing Totem"), short="DiseaseCleanse"),
-                M("Earthbind Totem", plain("Earthbind Totem"), short="Earthbind"),
-                M("Magma Totem", plain("Magma Totem"), short="Magma"),
-                M("Fire Nova Totem", plain("Fire Nova Totem"), short="FireNova"),
-                M("Healing Stream Totem", plain("Healing Stream Totem"), short="HealStream"),
             ]),
             G(FOCUS, [
                 M("Earth Shock interrupt on focus", "#showtooltip Earth Shock\n/stopcasting\n/cast [@focus, harm, exists][harm] Earth Shock",
@@ -696,8 +534,6 @@ CLASSES = [
 
         {"spec": "Elemental", "groups": [
             G(DPS, [
-                M("Lava Burst", dpsHarm("Lava Burst"),
-                  "New in Forever. Hits 20% harder with your Flame Shock on the target.", short="LavaBurst"),
                 M("Flame Shock > Lava Burst",
                   "#showtooltip Flame Shock\n/castsequence [harm] reset=target/12 Flame Shock, Lava Burst",
                   "Opener: Flame Shock, then the boosted Lava Burst.", short="Flame>Lava"),
@@ -712,12 +548,11 @@ CLASSES = [
 
         {"spec": "Enhancement", "groups": [
             G(DPS, [
-                M("Stormstrike", dpsHarm("Stormstrike"),
-                  "Also starts auto-attack. In Forever it boosts only your NEXT Lightning Bolt, "
+                M("Stormstrike", melee("Stormstrike"),
+                  "Starts auto-attack too. In Forever it boosts only your NEXT Lightning Bolt, "
                   "Chain Lightning or Earth Shock, so follow up with one.", short="Stormstrike"),
             ]),
             G(BUFF, [
-                M("Windfury Weapon", plain("Windfury Weapon"), short="Windfury"),
                 M("Windfury Weapon + Lightning Shield refresh",
                   "#showtooltip Lightning Shield\n/castsequence reset=2 Lightning Shield, Windfury Weapon",
                   "Press twice to reapply both buffs; resets after 2 sec so it doesn't get stuck mid-sequence.",
@@ -733,88 +568,43 @@ CLASSES = [
 
         {"spec": "Shared", "groups": [
             G(DPS, [
-                M("Hunter's Mark", dpsHarm("Hunter's Mark"), short="HMark"),
                 M("Hunter's Mark + send pet (opener)",
                   "#showtooltip Hunter's Mark\n/petattack [harm]\n/cast [harm] Hunter's Mark",
                   "One press marks the target and sends the pet in.", short="HMark+Pet"),
-                M("Serpent Sting", dpsHarm("Serpent Sting"), short="SerpentSting"),
-                M("Arcane Shot", dpsHarm("Arcane Shot"), short="ArcaneShot"),
-                M("Multi-Shot", dpsHarm("Multi-Shot"),
-                  "Forever: 0.5 sec cast, 6 sec cooldown. Stand still for it.", short="MultiShot"),
                 M("Volley at cursor", "#showtooltip Volley\n/cast [@cursor] Volley",
                   "Forever removed Volley's cooldown, so it's a real AoE button now. "
                   "Drops at your mouse cursor, no targeting circle.", short="Volley"),
-                M("Concussive Shot", dpsHarm("Concussive Shot"), short="ConcShot"),
-                M("Viper Sting", dpsHarm("Viper Sting"), short="ViperSting"),
-                M("Scorpid Sting", dpsHarm("Scorpid Sting"), short="ScorpidSting"),
                 M("Raptor Strike + Wing Clip",
-                  "#showtooltip Raptor Strike\n/cast [harm] Raptor Strike\n/cast [harm] Wing Clip", short="Raptor+Clip"),
-                M("Mongoose Bite", dpsHarm("Mongoose Bite"), short="Mongoose"),
-                M("Raptor Strike + Mongoose Bite + Wing Clip (test — GCD may skip some)",
-                  "#showtooltip Raptor Strike\n/cast [harm] Raptor Strike\n/cast [harm] Mongoose Bite\n/cast [harm] Wing Clip",
-                  "Experimental 3-in-1. Only the first ability that both fires and consumes the GCD will actually go off per press — likely to just spam Raptor Strike. Testing to see how WoW Forever's client handles the fallthrough.",
-                  short="Raptor3in1"),
-                M("Wing Clip", dpsHarm("Wing Clip"), short="WingClip"),
-                M("Distracting Shot", dpsHarm("Distracting Shot"), short="DistractShot"),
-                M("Tranquilizing Shot (enrage dispel)",
-                  dpsHarm("Tranquilizing Shot"),
-                  "Hunter's only dispel: removes Frenzy from enemies.", short="TranqShot"),
+                  "#showtooltip Raptor Strike\n/startattack [harm]\n/cast [harm] Raptor Strike\n/cast [harm] Wing Clip", short="Raptor+Clip"),
             ]),
             G(AUTO, [
                 M("Auto Shot (spam-safe)",
                   "#showtooltip Auto Shot\n/cast [@targettarget, harm, exists][harm] !Auto Shot",
                   "Hunter exception: ! stops Auto Shot toggling off. Unlike wand Shoot, it works here.",
                   short="AutoShot"),
-                M("Melee auto-attack", MELEE, short="Attack", icon="Ability_GhoulFrenzy"),
             ]),
             G(BUFF, [
                 M("Aspect: Hawk in combat, Cheetah out",
                   "#showtooltip Aspect of the Hawk\n/cast [combat] Aspect of the Hawk; Aspect of the Cheetah",
                   short="AspectHawk"),
-                M("Aspect toggle: Cheetah ↔ Hawk",
-                  "#showtooltip\n/castsequence reset=combat Aspect of the Cheetah, Aspect of the Hawk",
-                  "Each press swaps to the other aspect; the icon shows the next one. "
-                  "Resets after combat, so the first press after a fight is always Cheetah. "
-                  "Cheetah dazes you when hit, so press again before pulling.", short="AspectToggle"),
-                M("Aspect of the Hawk", plain("Aspect of the Hawk"), short="AspHawk"),
-                M("Aspect of the Monkey", plain("Aspect of the Monkey"), short="AspMonkey"),
-                M("Aspect of the Pack", plain("Aspect of the Pack"), short="AspPack"),
-                M("Aspect of the Wild", plain("Aspect of the Wild"), short="AspWild"),
             ]),
             G(PANIC, [
                 M("Feign Death (clean)",
                   "#showtooltip Feign Death\n/petfollow\n/stopattack\n/cast Feign Death",
                   "Calls the pet back and stops attacking first, so the pet doesn't keep mobs on you.", short="FeignDeath"),
-                M("Disengage", dpsHarm("Disengage"), short="Disengage"),
-                M("Freezing Trap", plain("Freezing Trap"), short="FreezeTrap"),
-                M("Frost Trap", plain("Frost Trap"), short="FrostTrap"),
-                M("Rapid Fire", plain("Rapid Fire"), short="RapidFire"),
             ]),
             G(QOL, [
-                M("Pet attack TT / target", PETATK, short="PetAtk", icon="Ability_GhoulFrenzy"),
-                M("Pet attack mouseover", PETATK_MO,
-                  "Attacks the enemy under your mouse, else your target. " + PET_ICON_NOTE,
-                  short="PetAtkMO", icon="Ability_GhoulFrenzy"),
                 M("Pet attack mouseover / TT", PETATK_MO_TT,
                   "Mouseover first, then your target's target, then your target. " + PET_ICON_NOTE,
                   short="PetAtkMOTT", icon="Ability_GhoulFrenzy"),
                 M("Pet attack / Shift = follow", PETATK_SHIFT,
                   "Press to send the pet (mouseover first); Shift+press calls it back. " + PET_ICON_NOTE,
                   short="PetAtkShift", icon="Ability_GhoulFrenzy"),
-                M("Pet follow", "/petfollow", short="PetFollow", icon="Ability_Hunter_BeastCall"),
-                M("Pet passive", "/petpassive", short="PetPassive", icon="Ability_Hunter_BeastSoothe"),
                 M("Call / Revive / Mend (one button)",
                   "#showtooltip Mend Pet\n/cast [nopet] Call Pet; [@pet, dead] Revive Pet; Mend Pet", short="PetMend"),
                 M("Feed Pet",
                   "#showtooltip Feed Pet\n/cast Feed Pet\n/use Tough Jerky",
                   "Swap food item for your pet's diet.", short="FeedPet"),
-                M("Flare", plain("Flare"), short="Flare"),
-                M("Explosive Trap", plain("Explosive Trap"), short="ExploTrap"),
-                M("Immolation Trap", plain("Immolation Trap"), short="ImmoTrap"),
-            ]),
-            G(CLEAN, [
-                M("No friendly dispel", "",
-                  "Hunters have no friendly cleanse. Use Tranquilizing Shot (Damage / offensive) instead."),
             ]),
             G(FOCUS, [
                 M("Hunter's Mark focus", foc("Hunter's Mark"), short="HMark F"),
@@ -833,13 +623,6 @@ CLASSES = [
         ]},
 
         {"spec": "Marksmanship", "groups": [
-            G(DPS, [
-                M("Aimed Shot", dpsHarm("Aimed Shot"), short="AimedShot"),
-                M("Scatter Shot", dpsHarm("Scatter Shot"), short="ScatterShot"),
-            ]),
-            G(BUFF, [
-                M("Trueshot Aura", plain("Trueshot Aura"), short="TrueshotAura"),
-            ]),
             G(FOCUS, [
                 M("Scatter Shot focus", foc("Scatter Shot"), short="ScatterShot F"),
             ]),
@@ -847,17 +630,11 @@ CLASSES = [
 
         {"spec": "Survival", "groups": [
             G(DPS, [
-                M("Counterattack", dpsHarm("Counterattack"), short="Counterattack"),
-                M("Strider Kick", dpsHarm("Strider Kick"),
-                  "New Survival talent in Forever: instant 100% weapon damage kick, 8 sec cooldown.", short="StriderKick"),
                 M("Survival melee button (Raptor + Mongoose + Strider Kick)",
                   "#showtooltip Raptor Strike\n/startattack [harm]\n/cast [harm] Raptor Strike\n"
                   "/cast [harm] Mongoose Bite\n/cast [harm] Strider Kick",
                   BETA + "Raptor Strike queues on your next swing (no global cooldown), then "
                   "Mongoose Bite if it's lit up, else Strider Kick. Spam it in melee.", short="SurvMelee"),
-            ]),
-            G(PANIC, [
-                M("Deterrence", plain("Deterrence"), short="Deterrence"),
             ]),
         ]},
     ]},
@@ -872,18 +649,9 @@ CLASSES = [
                 M("Holy Strike + auto-attack",
                   "#showtooltip Holy Strike\n/startattack [harm]\n/cast [harm] Holy Strike",
                   "New baseline strike in Forever (level 6, 12 sec cooldown).", short="HStrike"),
-                M("Judgement", dpsHarm("Judgement"),
-                  "Forever: Judgement no longer uses up your seal, so no reseal needed.", short="Judge"),
-                M("Hammer of Wrath", dpsHarm("Hammer of Wrath"), short="HoW"),
-                M("Exorcism", dpsHarm("Exorcism"), short="Exo"),
                 M("Hammer of Justice", dpsMO("Hammer of Justice"),
                   "Stuns whatever's under your mouse without changing your target; "
                   "falls back to your target if nothing's under the mouse.", short="HoJ"),
-                M("Consecration", plain("Consecration"), short="Consec"),
-                M("Holy Wrath", plain("Holy Wrath"), short="HWrath"),
-            ]),
-            G(AUTO, [
-                M("Auto-attack (spam-safe)", MELEE, short="Attack", icon="Ability_GhoulFrenzy"),
             ]),
             G(HEAL, [
                 M("Holy Light", heal("Holy Light"), short="HL"),
@@ -904,9 +672,6 @@ CLASSES = [
                 M("Blessing of Light", buff("Blessing of Light"), short="BoL"),
                 M("Greater Blessing of Might", buff("Greater Blessing of Might"), short="GBoM"),
                 M("Greater Blessing of Wisdom", buff("Greater Blessing of Wisdom"), short="GBoW"),
-                M("Devotion Aura", plain("Devotion Aura"), short="Devo"),
-                M("Retribution Aura", plain("Retribution Aura"), short="RetAura"),
-                M("Concentration Aura", plain("Concentration Aura"), short="Conc"),
                 M("Blessing of Kings", buff("Blessing of Kings"),
                   "Class spell at level 20 in Forever (was a Protection talent).", short="BoK"),
             ]),
@@ -914,20 +679,12 @@ CLASSES = [
                 M("Divine Shield (press again to cancel)",
                   "#showtooltip Divine Shield\n/cancelaura Divine Shield\n/cast Divine Shield",
                   "First press bubbles, second press cancels it early.", short="Bubble"),
-                M("Divine Protection", plain("Divine Protection"), short="DivProt"),
                 M("Lay on Hands self", me("Lay on Hands"), short="LoH me"),
                 M("Blessing of Protection self (press again to cancel)",
                   "#showtooltip Blessing of Protection\n/cancelaura Blessing of Protection\n/cast [@player] Blessing of Protection",
                   "BoP stops you from attacking, so the second press removes it.", short="BoP me"),
-                M("Voice of Truth", plain("Voice of Truth"),
-                  "New in Forever: 6 sec immunity to silence and interrupts. Use before a big heal/cast.", short="VoT"),
             ]),
             G(QOL, [
-                M("Seal of Righteousness", plain("Seal of Righteousness"), short="SoR"),
-                M("Seal of the Crusader", plain("Seal of the Crusader"), short="SoCru"),
-                M("Seal of Wisdom", plain("Seal of Wisdom"), short="SoW"),
-                M("Seal of Light", plain("Seal of Light"), short="SoL"),
-                M("Seal of Justice", plain("Seal of Justice"), short="SoJ"),
                 M("Divine Intervention", heal("Divine Intervention"), short="DI"),
                 M("Auras on one button",
                   "#showtooltip [mod:shift] Concentration Aura; [mod:ctrl] Retribution Aura; Devotion Aura\n"
@@ -942,23 +699,13 @@ CLASSES = [
 
         {"spec": "Tank", "groups": [
             G(DPS, [
-                M("Holy Shield", plain("Holy Shield"),
-                  "Forever: a 4-charge block buff. Keep it up while tanking.", short="HShield"),
                 M("Judgement taunt (mouseover)",
                   "#showtooltip Judgement\n/cast [@mouseover, harm, nodead][harm] Judgement",
                   "With Seal of Fury active, Judgement taunts (10 yd). Hover a loose mob to "
                   "pull it off the healer without changing target.", short="Judge@"),
             ]),
             G(BUFF, [
-                M("Seal of Fury", plain("Seal of Fury"),
-                  "New tank seal: Holy damage per hit + absorb shield with a shield equipped. "
-                  "Makes Judgement a taunt.", short="SoF"),
-                M("Righteous Fury", plain("Righteous Fury"), short="RFury"),
                 M("Blessing of Sanctuary", buff("Blessing of Sanctuary"), short="Sanc"),
-            ]),
-            G(PANIC, [
-                M("Templar's Bulwark", plain("Templar's Bulwark"),
-                  "Talent. Absorb shield equal to your max health for 8 sec (5 min cooldown).", short="Bulwark"),
             ]),
             G(FOCUS, [
                 M("Judgement taunt on focus", foc("Judgement"),
@@ -967,13 +714,6 @@ CLASSES = [
         ]},
 
         {"spec": "DPS", "groups": [
-            G(DPS, [
-                M("Repentance", dpsHarm("Repentance"), short="Repent"),
-            ]),
-            G(BUFF, [
-                M("Sanctity Aura", plain("Sanctity Aura"), short="SancAura"),
-                M("Seal of Command", plain("Seal of Command"), short="SoCmd"),
-            ]),
             G(QOL, [
                 M("Seal swap: Command <> Righteousness",
                   "#showtooltip\n/castsequence Seal of Command, Seal of Righteousness",

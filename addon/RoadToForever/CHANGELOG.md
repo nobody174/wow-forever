@@ -3,6 +3,12 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## Unreleased
+
+- Section order follows the site's macro cleanup (2026-10-08): Mage has no Fire/Frost
+  tabs and Rogue no Combat tab any more (all their macros were plain casts). Older
+  versions just keep the unused names in their order table; nothing breaks.
+
 ## 0.12.2 (2026-10-07): Export professions button on Home
 
 - **Export professions** button on the Home tab, next to Import (same as `/r2f profs`

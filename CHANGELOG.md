@@ -4,6 +4,20 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-08 (Macro cleanup for every class, Warrior rules)
+- Same rules as the Warrior pass: removed plain casts (`/cast X`, `/cast [harm] X`: same as
+  dragging the spell from the spellbook), duplicates covered by a smarter macro, "No dispel"
+  placeholders, spam auto-attack where melee macros already `/startattack`, and pet-bar
+  commands (follow / passive / defensive, the plain pet attack variants). Kept everything with
+  real logic: mouseover / target-of-target / focus targeting, /stopcasting interrupts,
+  spam-safe channels, no-cancel toggles, cancel-aura panic buttons, combos and sequences.
+- Counts: Priest 43 -> 35, Warlock 60 -> 22, Mage 36 -> 14, Rogue 44 -> 25, Shaman 43 -> 21,
+  Hunter 52 -> 16, Paladin 53 -> 30, Universal 15 -> 13 (potions: plain /use).
+- Stormstrike now starts auto-attack (melee); Raptor Strike + Wing Clip got `/startattack`.
+  Discipline's duplicate "Inner Focus + Greater Heal" removed (Holy keeps it).
+- Empty specs dropped: Mage Fire and Frost, Rogue Combat. Addon `Library.SECTION_ORDER`
+  updated to match (no release needed); tests derive the Paladin count from the fixture.
+
 ## 2026-10-08 (Warrior macro cleanup: 59 -> 28)
 - Owner review. Removed plain casts that add nothing over the spellbook (Thunder Clap, Demoralizing
   Shout, Battle Shout, Bloodrage, Challenging Shout, Last Stand, Piercing Howl, Death Wish) and

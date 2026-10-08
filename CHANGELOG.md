@@ -4,6 +4,14 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-08 (Launch Plan: "2 Hunters" plan back)
+- Fourth group option `hunter` ("2 Hunters", Alliance Skyborne): the Dual Hunter plan dropped on
+  2026-09-30, restored as an option next to 2 Hunters · Warrior · Druid (the default), 3 Hunters ·
+  Druid and Paladin · Hunter · Shaman. It is the existing `hunter` base the other plans inherit,
+  so its checklist needed no new items. Added: its Key differences column, the Hunter duo
+  tactics card (from commit 0ddddc0), a "Dungeons and the other two" card, and it shares the
+  Skyborne racials / Crowded camps / Professions & gold cards. Works in Compare.
+
 ## 2026-10-08 (Crafters: disenchant value)
 - Every green, blue or purple armor/weapon recipe on Crafters shows `DE ≈ <value>` under its
   material cost: the expected value of what it disenchants into (chance × average count ×

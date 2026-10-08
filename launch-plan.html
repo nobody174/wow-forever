@@ -269,7 +269,7 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
 </div>
 <div class="wrap">
   <h1>Launch Plan</h1>
-  <p class="lede">How we get ahead of the launch crowd: questing together off the busy human route, and clearing every new dungeon once for its first-clear quest XP. Pick a group: two Hunters with a Warrior tank and Druid healer, three Hunters with a Druid, or a Paladin, Hunter and Shaman. Or compare any two side by side.</p>
+  <p class="lede">How we get ahead of the launch crowd: questing together off the busy human route, and clearing every new dungeon once for its first-clear quest XP. Pick a group: two Hunters with a Warrior tank and Druid healer, just the two Hunters, three Hunters with a Druid, or a Paladin, Hunter and Shaman. Or compare any two side by side.</p>
   <div class="meta">
     <span class="chip gold">Alliance</span>
     <span class="chip" id="race-chip">Skyborne (High Order)</span>
@@ -282,6 +282,7 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     <span class="switch-label" id="switch-label">Plan</span>
     <div class="mode-switch" role="group" aria-labelledby="switch-label">
       <button type="button" data-mode="hwd" aria-pressed="true"><span class="dot" aria-hidden="true"></span>2 Hunters · Warrior · Druid</button>
+      <button type="button" data-mode="hunter" aria-pressed="false"><span class="dot" aria-hidden="true"></span>2 Hunters</button>
       <button type="button" data-mode="h3d" aria-pressed="false"><span class="dot" aria-hidden="true"></span>3 Hunters · Druid</button>
       <button type="button" data-mode="trio" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Paladin · Hunter · Shaman</button>
       <button type="button" data-mode="compare" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Compare</button>
@@ -465,12 +466,14 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
   var PLANS = {
     hwd:     { label: "2 Hunters · Warrior · Druid", short: "2× Hunter + Warrior + Druid", tag: "this group", css: "hwd", base: "hunter",
                race: "Skyborne (High Order)", extra: "Warrior tanks, Druid heals" },
+    hunter:  { label: "2 Hunters", short: "2× Hunter", tag: "this group", css: "hunter", base: null,
+               race: "Skyborne (High Order)", extra: "Venom + Trollmann; others join when they're on" },
     h3d:     { label: "3 Hunters · Druid", short: "3× Hunter + Druid", tag: "this group", css: "h3d", base: "hunter",
                race: "Skyborne (High Order)", extra: "Druid tanks or heals" },
     trio:    { label: "Paladin · Hunter · Shaman", short: "Paladin + Hunter + Shaman", tag: "this group", css: "trio", base: "hunter",
                race: "Dwarf", extra: "Own tank + healer" }
   };
-  var PLAN_IDS = ["hwd", "h3d", "trio"];
+  var PLAN_IDS = ["hwd", "hunter", "h3d", "trio"];
 
   // ---------------------------------------------------------------------------
   // Plan data. An item's own fields apply to every plan unless it has a key for
@@ -649,25 +652,25 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
   // Key differences table (compare view): one value per plan.
   var ZEPHRAS_ROUTE = "Zephras → Dalaran → Ironforge → Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon";
   var DIFFS = [
-    { topic: "Race & start", hwd: "Skyborne, Zephras Isle", h3d: "Skyborne, Zephras Isle",
+    { topic: "Race & start", hunter: "Skyborne, Zephras Isle", hwd: "Skyborne, Zephras Isle", h3d: "Skyborne, Zephras Isle",
       trio: "Dwarf, Coldridge Valley (Alliance Skyborne can't be Paladin or Shaman)" },
-    { topic: "Route", hwd: ZEPHRAS_ROUTE, h3d: ZEPHRAS_ROUTE,
+    { topic: "Route", hunter: ZEPHRAS_ROUTE, hwd: ZEPHRAS_ROUTE, h3d: ZEPHRAS_ROUTE,
       trio: "Coldridge → Dun Morogh → Ironforge, then the same: Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon" },
-    { topic: "Roles", hwd: "Warrior tank, Druid healer, 2 Hunters DPS", h3d: "Druid tanks or heals, 3 Hunters DPS",
+    { topic: "Roles", hunter: "2 Hunters DPS; pets tank (one tank pet, one damage pet)", hwd: "Warrior tank, Druid healer, 2 Hunters DPS", h3d: "Druid tanks or heals, 3 Hunters DPS",
       trio: "Paladin tank, Shaman healer, Hunter DPS" },
-    { topic: "Money", hwd: "Two sets of ammo and pet food, plus Warrior repairs", h3d: "Three sets of ammo and pet food",
+    { topic: "Money", hunter: "Expensive: ammo, pet food, own food and water, later a quiver", hwd: "Two sets of ammo and pet food, plus Warrior repairs", h3d: "Three sets of ammo and pet food",
       trio: "Middle. One hunter's ammo, plus food and water for three" },
-    { topic: "Travel", hwd: "Hearthstone and flight paths; Cheetah at 20, Druid Travel Form at 30, Warrior walks until 40",
+    { topic: "Travel", hunter: "Hearthstone and flight paths; Cheetah at 20", hwd: "Hearthstone and flight paths; Cheetah at 20, Druid Travel Form at 30, Warrior walks until 40",
       h3d: "Hearthstone and flight paths; Cheetah at 20, Druid Travel Form at 30",
       trio: "Hearthstone and flight paths; Cheetah and Ghost Wolf at 20, the Paladin walks until 40" },
-    { topic: "Killing", hwd: "Real tank and healer: big pulls and elite quests; Hunters pick off adds",
+    { topic: "Killing", hunter: "Single target, pets tank, kiting; elite quests doable as a duo", hwd: "Real tank and healer: big pulls and elite quests; Hunters pick off adds",
       h3d: "Tank pet + Druid heals: elites and group quests are easy",
       trio: "Real tank and healer: bigger pulls, elite quests, Consecration AoE from 20" },
-    { topic: "Level 10", hwd: "Pet quests, Druid Bear Form, Warrior Defensive Stance", h3d: "Pet quests, Druid Bear Form",
+    { topic: "Level 10", hunter: "Pet quest in the middle of Zephras", hwd: "Pet quests, Druid Bear Form, Warrior Defensive Stance", h3d: "Pet quests, Druid Bear Form",
       trio: "Pet quest (Kharanos), Seal of Fury, Shaman Fire totem quest" },
-    { topic: "Dungeons", hwd: "Own tank and healer; one DPS to find", h3d: "Druid covers tank or healer; find the other",
+    { topic: "Dungeons", hunter: "No AoE. Need a real tank <em>and</em> healer", hwd: "Own tank and healer; one DPS to find", h3d: "Druid covers tank or healer; find the other",
       trio: "Own tank and healer; only DPS to find" },
-    { topic: "Loot", hwd: "Hunters share ranged/agility; Warrior and Druid barely clash", h3d: "Three Hunters share everything ranged/agility — rotate",
+    { topic: "Loot", hunter: "Both want the same bows, guns, agility and mail. Agree on rules first", hwd: "Hunters share ranged/agility; Warrior and Druid barely clash", h3d: "Three Hunters share everything ranged/agility — rotate",
       trio: "Almost no clashes: agility to the Hunter, intellect to the Shaman, strength to the Paladin" }
   ];
 
@@ -679,6 +682,12 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
       "Druid heals from range and keeps Mark of the Wild and Thorns on the Warrior.",
       "One Hunter's Mark on the kill target; the other Hunter traps or slows runners.",
       "This is a real dungeon core — elite quests and first clears go fast."] },
+    { plans: ["hunter"], h: "Hunter duo tactics", ul: [
+      "One tank pet, one damage pet; let the pets hold aggro.",
+      "Tag instantly with Arcane Shot / Serpent Sting in contested camps.",
+      "Two pets can off-tank elites — elite quests become doable as a duo.",
+      "Kite when a pull goes bad instead of eating a death.",
+      "Keep pets fed and happy; an unhappy pet deals less damage."] },
     { plans: ["h3d"], h: "3 Hunters · Druid tactics", ul: [
       "Questing: tank pet holds the mob, Druid heals, three Hunters burn it down.",
       "Dungeons: Druid bear-tanks with a 5th player healing, or heals while the tank pet holds trash.",
@@ -691,7 +700,7 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
       "Shaman heals and drops totems for the Paladin (Stoneskin / Strength of Earth), Healing Stream between pulls from 20.",
       "Interrupts: Earth Shock from the Shaman; Concussive Shot or Wing Clip stops runners.",
       "Pull bigger than any duo can — this group's questing pace is limited by mana, not health."] },
-    { plans: ["hwd", "h3d"], h: "Skyborne racials", ul: [
+    { plans: ["hwd", "hunter", "h3d"], h: "Skyborne racials", ul: [
       "<strong>Read Ley Line</strong>: +100% health and mana regen — cuts how much food and water we buy.",
       "<strong>Walk on Air</strong>: glide off cliffs for shortcuts.",
       "<strong>Wind Blessed</strong>: +1% haste, which also speeds up Auto Shot and melee swings.",
@@ -701,7 +710,7 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
       "<strong>Stoneform</strong> (Classic): removes poison, disease and bleed and adds armor — a free panic button for the tank.",
       "<strong>Gun Specialization</strong> (Classic): extra crit with guns for the Hunter.",
       "Racials are the Classic versions; check what Forever changed in beta."] },
-    { plans: ["hwd", "h3d"], h: "Crowded camps", ul: [
+    { plans: ["hwd", "hunter", "h3d"], h: "Crowded camps", ul: [
       "Our strength: instant ranged tags beat almost every other class to the mob.",
       "Invite anyone fighting us for the same mobs — kill credit is shared in a group.",
       "Little AoE, so avoid dense packs; pick off singles at the edges.",
@@ -711,7 +720,7 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
       "Hunter's Arcane Shot tags first; Judgement and shocks are instant backups.",
       "From 20, Consecration lets us take the dense camps other groups avoid.",
       "Always carry a backup quest nearby so a packed camp never means waiting."] },
-    { plans: ["hwd", "h3d"], h: "Professions & gold", ul: [
+    { plans: ["hwd", "hunter", "h3d"], h: "Professions & gold", ul: [
       "Skinning is our main income — skin everything.",
       "Cooking covers campfire buffs, XP food and pet food.",
       "Buy ammo in bulk at every major stop; never run dry mid-zone.",
@@ -727,6 +736,7 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
       "Log out in inns or cities for rested XP.",
       "Don't let quests go gray — drop escorts and low-drop-rate quests."] },
     { plans: ["hwd"], h: "The fifth player", p: "Tank and healer are covered, so any <strong>DPS</strong> fills the last dungeon spot. A mage adds AoE and free food and water; a rogue or warlock adds crowd control." },
+    { plans: ["hunter"], h: "Dungeons and the other two", p: "Two Hunters can quest anything outdoors, but dungeons need a real <strong>tank and healer</strong>. When our Warrior and Druid are on, that's the 2 Hunters · Warrior · Druid plan; otherwise find a tank and a healer and we bring the DPS." },
     { plans: ["h3d"], h: "The fifth player", p: "Whichever role the Druid isn't doing: a <strong>healer</strong> (priest or shaman) if the Druid bear-tanks, or a <strong>tank</strong> (warrior or paladin) if the Druid heals." },
     { plans: ["trio"], h: "The last two spots", p: "Tank and healer are covered, so if dungeons are 5-man we only need <strong>2 DPS</strong> — the easiest players to find. A mage adds AoE and free food and water; a warlock adds healthstones and curses." }
   ];
@@ -855,7 +865,7 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     });
     var isCmp = mode === "compare";
     document.getElementById("toc-diff").style.display = isCmp ? "" : "none";
-    var chipCss = { hwd: "war", h3d: "dru", trio: "pal" };
+    var chipCss = { hwd: "war", hunter: "hunt", h3d: "dru", trio: "pal" };
     chip.className = "chip " + (isCmp ? "gold" : chipCss[PLANS[mode].css]);
     chip.textContent = isCmp ? PLANS[cmp.a].short + " vs " + PLANS[cmp.b].short : PLANS[mode].short;
     var races = isCmp ? [PLANS[cmp.a].race, PLANS[cmp.b].race] : [PLANS[mode].race];

@@ -31,7 +31,7 @@ user-facing release notes.
 ## 2026-10-08 (Addon 0.13.0: Warrior stance icon)
 - Road to Forever addon 0.13.0: a Warrior stance icon (blue Battle, green Defensive, red
   Berserker frame), draggable, with Lock and a size slider in Settings, plus `/r2f stance`.
-  Never run in game yet. Released as r2f-v0.13.0; addons page points at it.
+  Tested in game by the owner: works. Released as r2f-v0.13.0; addons page points at it.
 
 ## 2026-10-08 (Macro cleanup for every class, Warrior rules)
 - Same rules as the Warrior pass: removed plain casts (`/cast X`, `/cast [harm] X`: same as

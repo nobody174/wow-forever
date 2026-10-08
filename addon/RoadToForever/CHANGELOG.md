@@ -5,7 +5,7 @@ repo's root `CHANGELOG.md`.
 
 ## 0.13.0 (2026-10-08): Warrior stance icon
 
-**Never run in game yet.**
+**Tested in game by the owner (2026-10-08): works.**
 
 - **New: stance icon** (`Stance.lua`), Warriors only. One icon showing the current
   stance, with a coloured frame: Battle blue, Defensive green, Berserker red. Drag it

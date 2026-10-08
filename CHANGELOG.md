@@ -4,6 +4,14 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-08 (Warrior macros: Thunder Clap, Shield Block + Sunder)
+- Thunder Clap: no stance swap any more (plain cast). In Forever it works in Battle and
+  Defensive Stance; the old macro swapped out of Berserker.
+- New Tank macro "Shield Block + Sunder Armor" (`SBlk+Sund`): Shield Block (off the global
+  cooldown) fires with Sunder in one press. Marked "Test in beta".
+- Owner reviewed the remaining stance-swap macros; Charge keeps its swap until the Vanguard
+  talent is taken (the Tank section already has the no-swap Vanguard Charge).
+
 ## 2026-10-07 (Crafters: recipe names in item quality colours)
 - Crafted items show in their WoW quality colour (grey, white, green, blue, purple, orange),
   from Wowhead's tooltip data (cache bumped to `wf-item-meta-v2`). Enchants stay white.

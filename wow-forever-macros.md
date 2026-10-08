@@ -2480,10 +2480,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [nostance:1] Battle Stance; [@targettarget, harm, exists][harm] Overpower
 ```
 
-**Thunder Clap** (`TC`) — Forever: works in Battle AND Defensive Stance (6 sec cooldown). Only swaps from Berserker.
+**Thunder Clap** (`TC`) — Forever: works in Battle AND Defensive Stance (6 sec cooldown), so no stance swap.
 ```
 #showtooltip Thunder Clap
-/cast [stance:3] Battle Stance; Thunder Clap
+/cast Thunder Clap
 ```
 
 **Demoralizing Shout** (`Demo`)
@@ -2662,6 +2662,14 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 #showtooltip
 /startattack [harm]
 /cast [harm] Victory Rush
+/cast [harm] Sunder Armor
+```
+
+**Shield Block + Sunder Armor** (`SBlk+Sund`) — Test in beta: Shield Block has no global cooldown, so it fires with Sunder in one press whenever it's off cooldown (needs a shield and Defensive Stance). 10 + 15 rage: watch your rage.
+```
+#showtooltip Sunder Armor
+/startattack [harm]
+/cast Shield Block
 /cast [harm] Sunder Armor
 ```
 

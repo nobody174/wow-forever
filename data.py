@@ -1018,9 +1018,8 @@ CLASSES = [
                 M("Execute", melee("Execute"),
                   "Level 24. Target under 20% health; Battle or Berserker Stance.", short="Exe"),
                 M("Overpower (to Battle)", stance(1, "Battle Stance", "Overpower", attack=True), short="OP"),
-                M("Thunder Clap",
-                  "#showtooltip Thunder Clap\n/cast [stance:3] Battle Stance; Thunder Clap",
-                  "Forever: works in Battle AND Defensive Stance (6 sec cooldown). Only swaps from Berserker.",
+                M("Thunder Clap", plain("Thunder Clap"),
+                  "Forever: works in Battle AND Defensive Stance (6 sec cooldown), so no stance swap.",
                   short="TC"),
                 M("Demoralizing Shout", plain("Demoralizing Shout"), short="Demo"),
             ]),
@@ -1101,6 +1100,11 @@ CLASSES = [
                   "#showtooltip\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Sunder Armor",
                   BETA + "one spam button. Victory Rush fires when it's up after a kill, "
                   "otherwise you Sunder.", short="VR>Sunder"),
+                M("Shield Block + Sunder Armor",
+                  "#showtooltip Sunder Armor\n/startattack [harm]\n/cast Shield Block\n/cast [harm] Sunder Armor",
+                  BETA + "Shield Block has no global cooldown, so it fires with Sunder in one press "
+                  "whenever it's off cooldown (needs a shield and Defensive Stance). 10 + 15 rage: "
+                  "watch your rage.", short="SBlk+Sund"),
                 M("Revenge", melee("Revenge"), "Forever: much more damage, no stun.", short="Rev"),
                 M("Sunder + Heroic Strike",
                   "#showtooltip Sunder Armor\n/startattack [harm]\n/cast [harm] Heroic Strike\n/cast [harm] Sunder Armor",

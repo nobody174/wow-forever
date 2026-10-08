@@ -4,6 +4,11 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-08 (Launch Plan: hunter pet quest)
+- `h-pet`: location confirmed in beta by the owner (Zephras Isle). Now describes the chain:
+  trainer at 10 -> three taming quests (one specific beast each, Taming Rod) -> Tame Beast.
+  Still open: which three beasts (tag "which 3 beasts", test item `h-t-pet` reworded).
+
 ## 2026-10-08 (Launch Plan: "2 Hunters" plan back)
 - Fourth group option `hunter` ("2 Hunters", Alliance Skyborne): the Dual Hunter plan dropped on
   2026-09-30, restored as an option next to 2 Hunters · Warrior · Druid (the default), 3 Hunters ·

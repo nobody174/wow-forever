@@ -1488,7 +1488,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 **Victory Rush > Revenge > Sunder Armor** (`Rev>Sund`) — One tank spam button: Victory Rush when it's up after a kill, else Revenge when it's lit (after a block, dodge or parry), else Sunder. Use this on trash; the Shield Block version on bosses and big pulls. The last line hides the "not ready" error.
 ```
-#showtooltip
+#showtooltip Sunder Armor
 /startattack [harm]
 /cast [harm] Victory Rush
 /cast [harm] Revenge
@@ -1498,7 +1498,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 **Shield Block + Revenge > Sunder Armor** (`SBlk+Sund`) — Test in beta: Shield Block has no global cooldown, so it fires with the next button whenever it's off cooldown (needs a shield and Defensive Stance). More blocks = more Revenge procs. Watch your rage: Shield Block 10, Sunder 15.
 ```
-#showtooltip
+#showtooltip Shield Block
 /startattack [harm]
 /cast Shield Block
 /cast [harm] Revenge
@@ -1541,7 +1541,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 **Victory Rush > Heroic Strike** (`VR>HS`) — Test in beta: Victory Rush when it's up after a kill; Heroic Strike (no global cooldown) queues on your next swing either way. Watch your rage.
 ```
-#showtooltip
+#showtooltip Heroic Strike
 /startattack [harm]
 /cast [harm] Victory Rush
 /cast [harm] Heroic Strike

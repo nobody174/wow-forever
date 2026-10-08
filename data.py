@@ -810,12 +810,12 @@ CLASSES = [
         {"spec": "Tank", "groups": [
             G(DPS, [
                 M("Victory Rush > Revenge > Sunder Armor",
-                  "#showtooltip\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
+                  "#showtooltip Sunder Armor\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
                   "One tank spam button: Victory Rush when it's up after a kill, else Revenge when it's lit "
                   "(after a block, dodge or parry), else Sunder. Use this on trash; the Shield Block version "
                   "on bosses and big pulls. The last line hides the \"not ready\" error.", short="Rev>Sund"),
                 M("Shield Block + Revenge > Sunder Armor",
-                  "#showtooltip\n/startattack [harm]\n/cast Shield Block\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
+                  "#showtooltip Shield Block\n/startattack [harm]\n/cast Shield Block\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
                   BETA + "Shield Block has no global cooldown, so it fires with the next button whenever it's off "
                   "cooldown (needs a shield and Defensive Stance). More blocks = more Revenge procs. Watch your "
                   "rage: Shield Block 10, Sunder 15.", short="SBlk+Sund"),
@@ -836,7 +836,7 @@ CLASSES = [
         {"spec": "DPS", "groups": [
             G(DPS, [
                 M("Victory Rush > Heroic Strike",
-                  "#showtooltip\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Heroic Strike",
+                  "#showtooltip Heroic Strike\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Heroic Strike",
                   BETA + "Victory Rush when it's up after a kill; Heroic Strike (no global "
                   "cooldown) queues on your next swing either way. Watch your rage.", short="VR>HS"),
                 M("Sweeping Strikes (to Battle)", stance(1, "Battle Stance", "Sweeping Strikes", tt=False),

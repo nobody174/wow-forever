@@ -4,6 +4,12 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-08 (Warrior combo macros: fixed icon)
+- Rev>Sund, SBlk+Sund and VR>HS had a bare `#showtooltip`, so the game used the first spell
+  (Victory Rush) for icon and tooltip and showed a red "?" before level 20. Now
+  `#showtooltip Sunder Armor` / `Shield Block` / `Heroic Strike`. Same short names, so an
+  import updates the macros already on the bars.
+
 ## 2026-10-08 (Warrior Protection at every level; ForeverLayers removed)
 - Builds: the Level 20 Warrior "Tank" build was all Arms talents. Replaced with a real
   Protection build (Shield Specialization 5, Improved Bloodrage 2, Improved Thunder Clap 3,

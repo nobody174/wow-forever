@@ -41,7 +41,7 @@ user-facing release notes.
   Macro Book (selected class circle and Universal tab; cause: checked texture drawn without
   additive blending) replaced by an additive glow with an icon fallback, Home reduced to
   free talent points / library and bar counts / macro slot use. Never run in game yet
-  (TESTING.md 23). Not released yet.
+  (TESTING.md 23). Released as r2f-v0.15.0; addons page points at it.
 
 ## 2026-10-08 (Import replaces, not only adds: site K lines + addon 0.14.0)
 - ADDON_PLAN 15.1, step 1 of addon round 2. `template.html` importString() now appends one

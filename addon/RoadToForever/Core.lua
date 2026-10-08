@@ -26,6 +26,7 @@ handlers.PLAYER_LOGIN = function()
   -- addon has loaded, so Minimap.Init can see whether one of them brought
   -- LibDBIcon (ADDON_PLAN 6.10).
   R2F.Minimap.Init()
+  R2F.Stance.Init()
 end
 
 -- Combat: grey out the Import / Tidy up buttons, show "In combat" (drags are
@@ -143,6 +144,8 @@ local COMMANDS = {
   macros = function() R2F.MainWindow.Show("macros") end,
   talents = function() R2F.MainWindow.Show("talents") end,
   minimap = function() R2F.Minimap.ToggleHidden() end,
+  stance = function() R2F.Stance.ToggleShown() end,
+  ["stance lock"] = function() R2F.Stance.ToggleLock() end,
   help = printHelp,
   import = function()
     R2F.MainWindow.Show("macros")

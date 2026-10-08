@@ -22,7 +22,7 @@ T.templates = { PortraitFrameTemplate = true, InputScrollFrameTemplate = true,
                 UIPanelButtonTemplate = true, UIPanelCloseButton = true,
                 UIPanelScrollFrameTemplate = true, BackdropTemplate = true,
                 ButtonFrameTemplate = true, UICheckButtonTemplate = true,
-                UIRadioButtonTemplate = true,
+                UIRadioButtonTemplate = true, OptionsSliderTemplate = true,
                 -- Step 6: only the Classic tab template, so the main window's
                 -- PanelTabButtonTemplate -> CharacterFrameTabButtonTemplate
                 -- chain is exercised (the first one is "missing").
@@ -573,6 +573,7 @@ end
 function InCombatLockdown() return T.combat end
 function GetSpellTexture(name) return T.knownSpells[name] end
 function GetItemInfo() return nil end
+function GetShapeshiftForm() return T.stanceIndex or 0 end
 function UnitClass() return T.className or "Warrior", T.classToken or "WARRIOR", 1 end
 function IsShiftKeyDown() return T.shift or false end
 function GetCursorPosition() return T.cursorX or 500, T.cursorY or 400 end
@@ -623,7 +624,8 @@ for _, name in ipairs({
   "SetMultiLine", "SetAutoFocus", "SetFontObject", "SetMaxLetters", "SetMaxBytes",
   "SetScrollChild", "SetFocus", "ClearFocus", "HighlightText",
   "SetMotionScriptsWhileDisabled", "SetHitRectInsets", "SetFrameLevel",
-  "SetBlendMode", "SetTextInsets",
+  "SetBlendMode", "SetTextInsets", "SetScale", "SetColorTexture", "SetValueStep",
+  "SetMinMaxValues", "SetValue",
 }) do methods[name] = noop end
 local MT = { __index = methods }
 

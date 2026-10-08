@@ -3,8 +3,15 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
-## Unreleased
+## 0.13.0 (2026-10-08): Warrior stance icon
 
+**Never run in game yet.**
+
+- **New: stance icon** (`Stance.lua`), Warriors only. One icon showing the current
+  stance, with a coloured frame: Battle blue, Defensive green, Berserker red. Drag it
+  anywhere; Settings has Show, Lock and a size slider (50% to 300%). `/r2f stance`
+  shows or hides it, `/r2f stance lock` locks it. Unlocked, it also shows with no stance
+  so it can be placed before level 10.
 - Section order follows the site's macro cleanup (2026-10-08): Mage has no Fire/Frost
   tabs and Rogue no Combat tab any more (all their macros were plain casts). Older
   versions just keep the unused names in their order table; nothing breaks.

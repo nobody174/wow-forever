@@ -553,6 +553,40 @@ def test_updates(lua, fx):
           "Replace on an edited macro installs the new version and clears its flag")
 
 
+def test_stance():
+    """Warrior stance icon: shown per stance, lock, scale, slash commands, non-warriors."""
+    lua = new_runtime()
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    check(lua.eval("R2FStanceFrame ~= nil"), "stance: frame built for a Warrior")
+    st = "R2FDB.stance"
+    check(lua.eval(st + ".shown") is True and lua.eval(st + ".scale") == 1, "stance: defaults")
+    lua.execute("TEST.stanceIndex = 3 R2F.Stance.Update()")
+    check(lua.eval("R2FStanceFrame.border ~= nil"), "stance: border texture exists")
+    lua.execute('SlashCmdList.R2F("stance lock")')
+    check(lua.eval(st + ".lock") is True, "stance: /r2f stance lock locks")
+    lua.execute('SlashCmdList.R2F("stance")')
+    check(lua.eval(st + ".shown") is False, "stance: /r2f stance hides")
+    lua.execute("R2F.Stance.SetScale(9)")
+    check(lua.eval(st + ".scale") == 3, "stance: scale clamped to 3")
+    lua.execute("R2F.Stance.SetScale(0.1)")
+    check(lua.eval(st + ".scale") == 0.5, "stance: scale clamped to 0.5")
+    lua.execute("R2F.Settings.Show()")
+    check(lua.eval("R2FStanceScale ~= nil"), "stance: Settings has the size slider")
+    lua.execute('SlashCmdList.R2F("help")')
+    # Non-warrior: no frame, no Settings section, command only prints.
+    lua = new_runtime()
+    T = lua.eval("TEST")
+    T.classToken = "PRIEST"
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    check(lua.eval("R2FStanceFrame == nil"), "stance: no frame for a Priest")
+    lua.execute('SlashCmdList.R2F("stance")')
+    lua.execute("R2F.Settings.Show()")
+    check(lua.eval("R2FStanceScale == nil"), "stance: no Settings section for a Priest")
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -4453,6 +4487,7 @@ def main():
     test_macros(new_runtime(), fx)
     test_updates(new_runtime(), fx)
     test_ui_updates(fx)
+    test_stance()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

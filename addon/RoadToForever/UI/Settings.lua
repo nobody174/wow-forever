@@ -33,6 +33,13 @@ local function refresh()
   ui.show:SetChecked(not mm.hide)
   ui.lock:SetChecked(mm.lock == true)
   ui.removeAll:SetEnabled(not R2F.InCombat())
+  if ui.stShow then
+    local st = Library.db.stance
+    ui.stShow:SetChecked(st.shown)
+    ui.stLock:SetChecked(st.lock)
+    ui.stScale:SetValue(st.scale * 100)
+    ui.stScaleText:SetText(L.SETTINGS_STANCE_SIZE:format(st.scale * 100 + 0.5))
+  end
 end
 
 local function setSlots(value)
@@ -89,7 +96,8 @@ end
 
 local function build()
   local f = UI.DialogFrame("R2FSettings", UIParent)
-  f:SetSize(340, 300)
+  local warrior = R2F.Stance.IsWarrior()
+  f:SetSize(340, warrior and 390 or 300)
   f:SetPoint("CENTER", 0, 40)
   f:SetFrameStrata("DIALOG")
   f:SetToplevel(true)
@@ -145,6 +153,34 @@ local function build()
     refresh()
     applyMinimap()
   end)
+
+  -- Warrior stance icon (Stance.lua): show, lock, size.
+  if warrior then
+    local St = R2F.Stance
+    ui.stShow = UI.CheckButton(f, L.SETTINGS_STANCE_SHOW)
+    ui.stShow:SetPoint("TOPLEFT", 24, -210)
+    ui.stShow:SetScript("OnClick", function() St.SetShown(not Library.db.stance.shown) end)
+    ui.stLock = UI.CheckButton(f, L.SETTINGS_STANCE_LOCK)
+    ui.stLock:SetPoint("TOPLEFT", 24, -236)
+    ui.stLock:SetScript("OnClick", function() St.SetLock(not Library.db.stance.lock) end)
+    ui.stScaleText = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    ui.stScaleText:SetPoint("TOPLEFT", 32, -270)
+    local sl = CreateFrame("Slider", "R2FStanceScale", f, "OptionsSliderTemplate")
+    sl:SetPoint("TOPLEFT", 36, -296)
+    sl:SetWidth(260)
+    sl:SetMinMaxValues(St.MIN_SCALE * 100, St.MAX_SCALE * 100)
+    sl:SetValueStep(5)
+    if sl.SetObeyStepOnDrag then sl:SetObeyStepOnDrag(true) end
+    for _, part in ipairs({ "Low", "High", "Text" }) do
+      local fs = sl[part] or _G["R2FStanceScale" .. part]
+      if fs then fs:SetText("") end
+    end
+    sl:SetScript("OnValueChanged", function(_, v)
+      local scale = math.floor(v / 5 + 0.5) * 5 / 100
+      if math.abs(scale - Library.db.stance.scale) > 0.001 then St.SetScale(scale) end
+    end)
+    ui.stScale = sl
+  end
 
   ui.removeAll = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   ui.removeAll:SetSize(270, 22)

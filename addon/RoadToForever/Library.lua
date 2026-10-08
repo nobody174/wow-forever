@@ -102,6 +102,14 @@ function Library.Init()
   if type(mm.hide) ~= "boolean" then mm.hide = false end
   if type(mm.lock) ~= "boolean" then mm.lock = false end
   if type(mm.minimapPos) ~= "number" then mm.minimapPos = 220 end
+  -- Warrior stance indicator (Stance.lua, v0.13.0).
+  if type(db.stance) ~= "table" then db.stance = {} end
+  local st = db.stance
+  if type(st.shown) ~= "boolean" then st.shown = true end
+  if type(st.lock) ~= "boolean" then st.lock = false end
+  if type(st.scale) ~= "number" or st.scale < 0.5 or st.scale > 3 then st.scale = 1 end
+  if type(st.x) ~= "number" then st.x = 0 end
+  if type(st.y) ~= "number" then st.y = -150 end
   local s = db.settings
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
   -- Main window (12.4, step 6): the tab /r2f reopens. Home on first use.

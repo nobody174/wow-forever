@@ -4,6 +4,19 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-08 (Warrior macro cleanup: 59 -> 28)
+- Owner review. Removed plain casts that add nothing over the spellbook (Thunder Clap, Demoralizing
+  Shout, Battle Shout, Bloodrage, Challenging Shout, Last Stand, Piercing Howl, Death Wish) and
+  duplicates: Victory Rush, Heroic Strike, Cleave (kept HS/Cleave Shift), Rend (Charge + Rend covers
+  it), Sunder, Revenge, Shield Block, Sunder + HS, Auto-attack (every melee macro has /startattack),
+  Berserker Rage, Intimidating Shout, the three stance buttons (stance dance), Shield Wall /
+  Retaliation / Recklessness (Stance cooldown covers them), Taunt focus, Taunt + gear, "No dispel".
+- Merged: Victory Rush > Sunder into "Victory Rush > Revenge > Sunder Armor" (`Rev>Sund`, trash);
+  Shield Bash + Pummel into "Interrupt (Pummel / Shield Bash)" (`Kick`, by stance, no swap);
+  the two focus interrupts into "Interrupt focus" (`Kick F`).
+- Empty groups dropped. Addon tests now use surviving Warrior macros (Ham/OP/Mock/Disarm) and
+  derive the Warrior count from the fixture; also fixed the stale TOC-version check (all pass).
+
 ## 2026-10-08 (Warrior tank: Revenge > Sunder)
 - New Tank macro "Revenge > Sunder Armor" (`Rev>Sund`): Revenge when it's usable, else Sunder;
   `/run UIErrorsFrame:Clear()` hides the "not ready" error.

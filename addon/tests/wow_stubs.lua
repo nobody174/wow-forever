@@ -15,7 +15,9 @@ T.chat = {}           -- DEFAULT_CHAT_FRAME messages
 T.cursor = nil        -- name of the macro on the cursor
 T.actions = {}        -- slot -> macro name
 T.knownSpells = { ["Victory Rush"] = "Interface\\Icons\\Ability_Warrior_Devastate",
-                  ["Heroic Strike"] = "Interface\\Icons\\Ability_Rogue_Ambush" }
+                  ["Heroic Strike"] = "Interface\\Icons\\Ability_Rogue_Ambush",
+                  ["Hamstring"] = "Interface\\Icons\\Ability_Warrior_Devastate",
+                  ["Overpower"] = "Interface\\Icons\\Ability_Rogue_Ambush" }
 T.templates = { PortraitFrameTemplate = true, InputScrollFrameTemplate = true,
                 UIPanelButtonTemplate = true, UIPanelCloseButton = true,
                 UIPanelScrollFrameTemplate = true, BackdropTemplate = true,

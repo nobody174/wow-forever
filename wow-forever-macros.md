@@ -2410,20 +2410,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
-**Victory Rush** (`VR`) — New in Forever (level 20). Free, any stance, heals 10% of your max health. Only usable for 20 sec after a kill that gives XP; 30 sec cooldown. Smash it after every kill.
-```
-#showtooltip Victory Rush
-/startattack [harm]
-/cast [harm] Victory Rush
-```
-
-**Heroic Strike** (`HS`)
-```
-#showtooltip Heroic Strike
-/startattack [harm]
-/cast [harm] Heroic Strike
-```
-
 **Heroic Strike / Cleave (Shift)** (`HS/Cleave`) — Click: Heroic Strike. Shift-click: Cleave (level 20).
 ```
 #showtooltip [mod:shift] Cleave; Heroic Strike
@@ -2431,32 +2417,11 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [mod:shift, harm] Cleave; [harm] Heroic Strike
 ```
 
-**Cleave** (`Cleave`)
-```
-#showtooltip Cleave
-/startattack [harm]
-/cast [harm] Cleave
-```
-
-**Rend** (`Rend`)
-```
-#showtooltip Rend
-/startattack [harm]
-/cast [harm] Rend
-```
-
 **Hamstring** (`Ham`)
 ```
 #showtooltip Hamstring
 /startattack [harm]
 /cast [harm] Hamstring
-```
-
-**Sunder Armor** (`Sunder`)
-```
-#showtooltip Sunder Armor
-/startattack [harm]
-/cast [harm] Sunder Armor
 ```
 
 **Slam** (`Slam`) — Level 20 in Forever.
@@ -2480,28 +2445,14 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [nostance:1] Battle Stance; [@targettarget, harm, exists][harm] Overpower
 ```
 
-**Thunder Clap** (`TC`) — Forever: works in Battle AND Defensive Stance (6 sec cooldown), so no stance swap.
+**Interrupt (Pummel / Shield Bash)** (`Kick`) — Pummel in Berserker Stance (level 38), Shield Bash in Battle or Defensive (needs a shield). No stance swap: use the stance dance.
 ```
-#showtooltip Thunder Clap
-/cast Thunder Clap
+#showtooltip
+/startattack [harm]
+/cast [stance:3, harm] Pummel; [harm] Shield Bash
 ```
-
-**Demoralizing Shout** (`Demo`)
-```
-#showtooltip Demoralizing Shout
-/cast Demoralizing Shout
-```
-
-#### Cleanse / dispel
-
-*Warriors have no dispel. Interrupt instead with Pummel or Shield Bash.*
 
 #### Wand / auto-attack
-
-**Auto-attack (spam-safe)** (`Attack`)
-```
-/startattack [@targettarget, harm, exists][harm]
-```
 
 **Ranged weapon (Bow/Gun/Crossbow/Thrown)** (`Ranged`) — One button for whatever ranged weapon you have equipped.
 ```
@@ -2509,45 +2460,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [equipped:Thrown] Throw; [equipped:Bows] Shoot Bow; [equipped:Guns] Shoot Gun; [equipped:Crossbows] Shoot Crossbow
 ```
 
-#### Buffs
-
-**Battle Shout** (`BShout`)
-```
-#showtooltip Battle Shout
-/cast Battle Shout
-```
-
-**Bloodrage** (`BloodRage`)
-```
-#showtooltip Bloodrage
-/cast Bloodrage
-```
-
-**Berserker Rage (to Berserker)** (`BzRage`) — Level 32.
-```
-#showtooltip Berserker Rage
-/cast [nostance:3] Berserker Stance; Berserker Rage
-```
-
 #### Panic / defensive
-
-**Shield Wall (to Defensive)** (`SWall`) — Forever: 15 min cooldown, 60% less damage taken.
-```
-#showtooltip Shield Wall
-/cast [nostance:2] Defensive Stance; Shield Wall
-```
-
-**Retaliation (to Battle)** (`Retal`)
-```
-#showtooltip Retaliation
-/cast [nostance:1] Battle Stance; Retaliation
-```
-
-**Intimidating Shout** (`IShout`) — No auto-attack on purpose: hitting a feared mob breaks the fear.
-```
-#showtooltip Intimidating Shout
-/cast [harm] Intimidating Shout
-```
 
 **Disarm (to Defensive)** (`Disarm`)
 ```
@@ -2562,24 +2475,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 
 #### Class QoL
-
-**Battle Stance** (`Battle`)
-```
-#showtooltip Battle Stance
-/cast Battle Stance
-```
-
-**Defensive Stance** (`Def`)
-```
-#showtooltip Defensive Stance
-/cast Defensive Stance
-```
-
-**Berserker Stance** (`Berserk`) — Level 30.
-```
-#showtooltip Berserker Stance
-/cast Berserker Stance
-```
 
 **Charge / Intercept (one button)** (`Charge`) — Out of combat: Charge. In combat: Intercept (level 30). Tactical Mastery (now trained) keeps up to 10 rage on a stance swap.
 ```
@@ -2609,12 +2504,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [nostance:1] Battle Stance; [@targettarget, harm, exists][harm] Mocking Blow
 ```
 
-**Challenging Shout** (`CShout`)
-```
-#showtooltip Challenging Shout
-/cast Challenging Shout
-```
-
 **Stance dance (Battle -> Defensive -> Berserker)** (`Stances`) — One button cycles Battle -> Defensive -> Berserker -> Battle.
 ```
 #showtooltip Battle Stance
@@ -2635,40 +2524,21 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Focus
 
-**Pummel focus** (`Pummel F`)
+**Interrupt focus (Pummel / Shield Bash)** (`Kick F`) — Interrupts your focus (or your target if you have no focus): Pummel in Berserker Stance, Shield Bash in Battle or Defensive (needs a shield). No stance swap.
 ```
-#showtooltip Pummel
-/cast [nostance:3] Berserker Stance; [@focus, harm, exists][harm] Pummel
-```
-
-**Shield Bash focus** (`SBash F`)
-```
-#showtooltip Shield Bash
-/cast [@focus, harm, exists][harm] Shield Bash
-```
-
-**Taunt focus** (`Taunt F`)
-```
-#showtooltip Taunt
-/cast [@focus, harm, exists][harm] Taunt
+#showtooltip
+/cast [stance:3, @focus, harm, exists][stance:3, harm] Pummel; [@focus, harm, exists][harm] Shield Bash
 ```
 
 ### Warrior — Tank
 
 #### Damage / offensive
 
-**Victory Rush > Sunder Armor** (`VR>Sunder`) — Test in beta: one spam button. Victory Rush fires when it's up after a kill, otherwise you Sunder.
+**Victory Rush > Revenge > Sunder Armor** (`Rev>Sund`) — One tank spam button: Victory Rush when it's up after a kill, else Revenge when it's lit (after a block, dodge or parry), else Sunder. Use this on trash; the Shield Block version on bosses and big pulls. The last line hides the "not ready" error.
 ```
 #showtooltip
 /startattack [harm]
 /cast [harm] Victory Rush
-/cast [harm] Sunder Armor
-```
-
-**Revenge > Sunder Armor** (`Rev>Sund`) — One spam button: Revenge whenever it's lit (after a block, dodge or parry; 5 rage, 5 sec cooldown), otherwise Sunder. Revenge is far more threat per rage than Sunder. The last line hides the "not ready" error.
-```
-#showtooltip
-/startattack [harm]
 /cast [harm] Revenge
 /cast [harm] Sunder Armor
 /run UIErrorsFrame:Clear()
@@ -2682,28 +2552,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Revenge
 /cast [harm] Sunder Armor
 /run UIErrorsFrame:Clear()
-```
-
-**Revenge** (`Rev`) — Defensive Stance, after a block, dodge or parry. 5 rage, 5 sec cooldown, a high amount of threat. Forever: much more damage, no stun.
-```
-#showtooltip Revenge
-/startattack [harm]
-/cast [harm] Revenge
-```
-
-**Sunder + Heroic Strike** (`Sunder+HS`) — Heroic Strike has no global cooldown (it queues on your next swing), so it rides along with Sunder. Watch your rage.
-```
-#showtooltip Sunder Armor
-/startattack [harm]
-/cast [harm] Heroic Strike
-/cast [harm] Sunder Armor
-```
-
-**Shield Bash** (`SBash`)
-```
-#showtooltip Shield Bash
-/startattack [harm]
-/cast [harm] Shield Bash
 ```
 
 **Concussion Blow** (`Concuss`) — Talent (in our level-30 tank build).
@@ -2720,20 +2568,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Shield Slam
 ```
 
-#### Panic / defensive
-
-**Shield Block** (`SBlock`) — Forever: 7 sec, blocks up to 2 attacks.
-```
-#showtooltip Shield Block
-/cast Shield Block
-```
-
-**Last Stand** (`LStand`)
-```
-#showtooltip Last Stand
-/cast Last Stand
-```
-
 #### Class QoL
 
 **Charge (Vanguard, any stance)** (`VCharge`) — With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, so no stance swap.
@@ -2747,14 +2581,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Taunt
 /cast [@mouseover, harm, nodead][harm] Taunt
-```
-
-**Taunt + equip 1H and shield** (`TauntGear`) — Fill in your own one-hander and shield item names.
-```
-#showtooltip Taunt
-/equipslot 16 Your One-Hander
-/equipslot 17 Your Shield
-/cast [stance:2] Taunt; Defensive Stance
 ```
 
 ### Warrior — DPS
@@ -2793,31 +2619,4 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Whirlwind
 /cast [nostance:3] Berserker Stance; Whirlwind
-```
-
-**Pummel (to Berserker)** (`Pummel`) — Level 38.
-```
-#showtooltip Pummel
-/startattack [harm]
-/cast [nostance:3] Berserker Stance; [@targettarget, harm, exists][harm] Pummel
-```
-
-**Piercing Howl** (`Howl`) — Fury talent.
-```
-#showtooltip Piercing Howl
-/cast Piercing Howl
-```
-
-#### Buffs
-
-**Death Wish** (`DW`)
-```
-#showtooltip Death Wish
-/cast Death Wish
-```
-
-**Recklessness (to Berserker)** (`Reck`)
-```
-#showtooltip Recklessness
-/cast [nostance:3] Berserker Stance; Recklessness
 ```

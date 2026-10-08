@@ -1000,48 +1000,28 @@ CLASSES = [
 
         {"spec": "General", "groups": [
             G(DPS, [
-                M("Victory Rush", melee("Victory Rush"),
-                  "New in Forever (level 20). Free, any stance, heals 10% of your max health. "
-                  "Only usable for 20 sec after a kill that gives XP; 30 sec cooldown. Smash it after every kill.",
-                  short="VR"),
-                M("Heroic Strike", melee("Heroic Strike"), short="HS"),
                 M("Heroic Strike / Cleave (Shift)",
                   "#showtooltip [mod:shift] Cleave; Heroic Strike\n"
                   "/startattack [harm]\n"
                   "/cast [mod:shift, harm] Cleave; [harm] Heroic Strike",
                   "Click: Heroic Strike. Shift-click: Cleave (level 20).", short="HS/Cleave"),
-                M("Cleave", melee("Cleave"), short="Cleave"),
-                M("Rend", melee("Rend"), short="Rend"),
                 M("Hamstring", melee("Hamstring"), short="Ham"),
-                M("Sunder Armor", melee("Sunder Armor"), short="Sunder"),
                 M("Slam", melee("Slam"), "Level 20 in Forever.", short="Slam"),
                 M("Execute", melee("Execute"),
                   "Level 24. Target under 20% health; Battle or Berserker Stance.", short="Exe"),
                 M("Overpower (to Battle)", stance(1, "Battle Stance", "Overpower", attack=True), short="OP"),
-                M("Thunder Clap", plain("Thunder Clap"),
-                  "Forever: works in Battle AND Defensive Stance (6 sec cooldown), so no stance swap.",
-                  short="TC"),
-                M("Demoralizing Shout", plain("Demoralizing Shout"), short="Demo"),
+                M("Interrupt (Pummel / Shield Bash)",
+                  "#showtooltip\n/startattack [harm]\n/cast [stance:3, harm] Pummel; [harm] Shield Bash",
+                  "Pummel in Berserker Stance (level 38), Shield Bash in Battle or Defensive (needs a shield). "
+                  "No stance swap: use the stance dance.", short="Kick"),
             ]),
             G(AUTO, [
-                M("Auto-attack (spam-safe)", MELEE, short="Attack", icon="Ability_GhoulFrenzy"),
                 M("Ranged weapon (Bow/Gun/Crossbow/Thrown)",
                   "#showtooltip\n/cast [equipped:Thrown] Throw; [equipped:Bows] Shoot Bow; "
                   "[equipped:Guns] Shoot Gun; [equipped:Crossbows] Shoot Crossbow",
                   "One button for whatever ranged weapon you have equipped.", short="Ranged"),
             ]),
-            G(BUFF, [
-                M("Battle Shout", plain("Battle Shout"), short="BShout"),
-                M("Bloodrage", plain("Bloodrage"), short="BloodRage"),
-                M("Berserker Rage (to Berserker)", stance(3, "Berserker Stance", "Berserker Rage", tt=False),
-                  "Level 32.", short="BzRage"),
-            ]),
             G(PANIC, [
-                M("Shield Wall (to Defensive)", stance(2, "Defensive Stance", "Shield Wall", tt=False),
-                  "Forever: 15 min cooldown, 60% less damage taken.", short="SWall"),
-                M("Retaliation (to Battle)", stance(1, "Battle Stance", "Retaliation", tt=False), short="Retal"),
-                M("Intimidating Shout", dpsHarm("Intimidating Shout"),
-                  "No auto-attack on purpose: hitting a feared mob breaks the fear.", short="IShout"),
                 M("Disarm (to Defensive)", stance(2, "Defensive Stance", "Disarm"), short="Disarm"),
                 M("Stance cooldown (Retaliation/Shield Wall/Recklessness)",
                   "#showtooltip [stance:1] Retaliation; [stance:2] Shield Wall; [stance:3] Recklessness\n"
@@ -1049,9 +1029,6 @@ CLASSES = [
                   "Uses the big cooldown of the stance you're in.", short="StanceCD"),
             ]),
             G(QOL, [
-                M("Battle Stance", plain("Battle Stance"), short="Battle"),
-                M("Defensive Stance", plain("Defensive Stance"), short="Def"),
-                M("Berserker Stance", plain("Berserker Stance"), "Level 30.", short="Berserk"),
                 M("Charge / Intercept (one button)",
                   "#showtooltip Charge\n"
                   "/cast [nocombat, nostance:1] Battle Stance; "
@@ -1070,7 +1047,6 @@ CLASSES = [
                 M("Taunt (to Defensive)", stance(2, "Defensive Stance", "Taunt"), "Target the friend being hit: TT is the mob.",
                   short="Taunt"),
                 M("Mocking Blow (to Battle)", stance(1, "Battle Stance", "Mocking Blow", attack=True), short="Mock"),
-                M("Challenging Shout", plain("Challenging Shout"), short="CShout"),
                 M("Stance dance (Battle -> Defensive -> Berserker)",
                   "#showtooltip Battle Stance\n"
                   "/cast [stance:1] Defensive Stance; [stance:2] Berserker Stance; [stance:3] Battle Stance",
@@ -1083,46 +1059,28 @@ CLASSES = [
                   "/equipslot [noequipped:Shields] 17 Your Shield\n/equipslot [equipped:Shields] 17 Your Offhand",
                   "Fill in your own shield and off-hand item names.", short="OHSwap", icon="INV_Shield_06"),
             ]),
-            G(CLEAN, [
-                M("No dispel", "", "Warriors have no dispel. Interrupt instead with Pummel or Shield Bash."),
-            ]),
             G(FOCUS, [
-                M("Pummel focus", "#showtooltip Pummel\n/cast [nostance:3] Berserker Stance; [@focus, harm, exists][harm] Pummel",
-                  short="Pummel F"),
-                M("Shield Bash focus", foc("Shield Bash"), short="SBash F"),
-                M("Taunt focus", foc("Taunt"), short="Taunt F"),
+                M("Interrupt focus (Pummel / Shield Bash)",
+                  "#showtooltip\n/cast [stance:3, @focus, harm, exists][stance:3, harm] Pummel; [@focus, harm, exists][harm] Shield Bash",
+                  "Interrupts your focus (or your target if you have no focus): Pummel in Berserker Stance, "
+                  "Shield Bash in Battle or Defensive (needs a shield). No stance swap.", short="Kick F"),
             ]),
         ]},
 
         {"spec": "Tank", "groups": [
             G(DPS, [
-                M("Victory Rush > Sunder Armor",
-                  "#showtooltip\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Sunder Armor",
-                  BETA + "one spam button. Victory Rush fires when it's up after a kill, "
-                  "otherwise you Sunder.", short="VR>Sunder"),
-                M("Revenge > Sunder Armor",
-                  "#showtooltip\n/startattack [harm]\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
-                  "One spam button: Revenge whenever it's lit (after a block, dodge or parry; 5 rage, 5 sec "
-                  "cooldown), otherwise Sunder. Revenge is far more threat per rage than Sunder. The last line "
-                  "hides the \"not ready\" error.", short="Rev>Sund"),
+                M("Victory Rush > Revenge > Sunder Armor",
+                  "#showtooltip\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
+                  "One tank spam button: Victory Rush when it's up after a kill, else Revenge when it's lit "
+                  "(after a block, dodge or parry), else Sunder. Use this on trash; the Shield Block version "
+                  "on bosses and big pulls. The last line hides the \"not ready\" error.", short="Rev>Sund"),
                 M("Shield Block + Revenge > Sunder Armor",
                   "#showtooltip\n/startattack [harm]\n/cast Shield Block\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
                   BETA + "Shield Block has no global cooldown, so it fires with the next button whenever it's off "
                   "cooldown (needs a shield and Defensive Stance). More blocks = more Revenge procs. Watch your "
                   "rage: Shield Block 10, Sunder 15.", short="SBlk+Sund"),
-                M("Revenge", melee("Revenge"), "Defensive Stance, after a block, dodge or parry. 5 rage, 5 sec cooldown, "
-                  "a high amount of threat. Forever: much more damage, no stun.", short="Rev"),
-                M("Sunder + Heroic Strike",
-                  "#showtooltip Sunder Armor\n/startattack [harm]\n/cast [harm] Heroic Strike\n/cast [harm] Sunder Armor",
-                  "Heroic Strike has no global cooldown (it queues on your next swing), "
-                  "so it rides along with Sunder. Watch your rage.", short="Sunder+HS"),
-                M("Shield Bash", melee("Shield Bash"), short="SBash"),
                 M("Concussion Blow", melee("Concussion Blow"), "Talent (in our level-30 tank build).", short="Concuss"),
                 M("Shield Slam", melee("Shield Slam"), "Talent, level 40. Forever: about double the damage.", short="SSlam"),
-            ]),
-            G(PANIC, [
-                M("Shield Block", plain("Shield Block"), "Forever: 7 sec, blocks up to 2 attacks.", short="SBlock"),
-                M("Last Stand", plain("Last Stand"), short="LStand"),
             ]),
             G(QOL, [
                 M("Charge (Vanguard, any stance)",
@@ -1132,10 +1090,6 @@ CLASSES = [
                 M("Taunt (mouseover)",
                   "#showtooltip Taunt\n/cast [@mouseover, harm, nodead][harm] Taunt",
                   "Defensive Stance. Hover a loose mob to taunt it without changing target.", short="Taunt@"),
-                M("Taunt + equip 1H and shield",
-                  "#showtooltip Taunt\n/equipslot 16 Your One-Hander\n/equipslot 17 Your Shield\n"
-                  "/cast [stance:2] Taunt; Defensive Stance",
-                  "Fill in your own one-hander and shield item names.", short="TauntGear", icon="INV_Shield_06"),
             ]),
         ]},
 
@@ -1151,13 +1105,6 @@ CLASSES = [
                 M("Bloodthirst", melee("Bloodthirst"), "Fury talent, level 40.", short="BT"),
                 M("Whirlwind (to Berserker)", stance(3, "Berserker Stance", "Whirlwind", tt=False),
                   "Level 36.", short="WW"),
-                M("Pummel (to Berserker)", stance(3, "Berserker Stance", "Pummel", attack=True),
-                  "Level 38.", short="Pummel"),
-                M("Piercing Howl", plain("Piercing Howl"), "Fury talent.", short="Howl"),
-            ]),
-            G(BUFF, [
-                M("Death Wish", plain("Death Wish"), short="DW"),
-                M("Recklessness (to Berserker)", stance(3, "Berserker Stance", "Recklessness", tt=False), short="Reck"),
             ]),
         ]},
     ]},

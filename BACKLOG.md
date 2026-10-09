@@ -31,7 +31,9 @@ CHANGELOG.md; their in-game checks are TESTING.md 22, 23, 24 and 25.
       pet food low, repair needed (durability under X%), bags almost full, rested-XP state.
       The Reminders tab and `Reminders.Register` are ready; a new one is one module.
 - [ ] **5. Launch Plan in game + TomTom** (15.5): checklist tab from the site's plan data,
-      waypoint buttons via TomTom. Needs coordinates researched for the steps.
+      waypoint buttons via TomTom. Coordinates researched 2026-10-09:
+      `launch-plan-waypoints.json` (36/45 steps; 19 points still `check` = new Forever places,
+      fill them with `/r2f here` in the beta or at launch). Launch-day phases only.
 
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 

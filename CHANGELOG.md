@@ -4,6 +4,14 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-09 (Launch Plan waypoint data for the in-game Plan tab)
+- `launch-plan-waypoints.json`: map points for 36 of the 45 launch-day steps (58 points), per
+  group plan where they differ. Confidence per point: 4 exact (Forever sources: Hall of Thanes
+  entrance Ironforge 43.5, 52.0; Earthseer Farsen Dun Morogh 64.8, 58.5), 33 Classic positions,
+  2 approximate areas (Excavation Site, Alcaz Island), 19 to check in game (Zephras Isle,
+  Stormwind Harbor dock, Riverglades, Mount Hyjal, new dungeons). ADDON_PLAN 15.5 updated:
+  launch-day phases only, plan picker like the site, zone-name map resolution, `/r2f here`.
+
 ## 2026-10-08 (Warrior combo macros: fixed icon)
 - Rev>Sund, SBlk+Sund and VR>HS had a bare `#showtooltip`, so the game used the first spell
   (Victory Rush) for icon and tooltip and showed a red "?" before level 20. Now

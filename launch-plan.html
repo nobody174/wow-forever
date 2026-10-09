@@ -253,6 +253,13 @@ ul.check li.cls-hwd{border-left-color:var(--war)} ul.check li.cls-h3d{border-lef
 .cmp-cell.h3d{border-left:3px solid var(--dru)} .cmp-cell.h3d .lvl,.cmp-cell.h3d .who{color:var(--dru)}
 .card.cls-hwd{border-left-color:var(--war)} .card.cls-h3d{border-left-color:var(--dru)}
 th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
+.wps{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.wp{font:500 12.5px/1.3 var(--sans,inherit);color:var(--muted);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:3px 8px;cursor:pointer;text-align:left}
+.wp code{color:var(--text);font-size:12px}
+.wp:hover{border-color:var(--gold)}
+.wp.copied{border-color:var(--ok);color:var(--ok)}
+.wp.cap{cursor:help;border-style:dashed}
+.wp.cap em{color:var(--warn);font-style:normal;margin-left:4px}
 </style>
 </head>
 <body class="mode-hwd">
@@ -759,6 +766,56 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
   var mode = "hwd";
 
   // The override object for a plan: its own key first, then up its base chain.
+  // Waypoints per step (2026-10-08), for TomTom (/way) and the addon's Plan tab (ADDON_PLAN 15.5).
+  // Key: step id, or "id|plan" to override for one group plan. wp = [zone, x, y, label, source];
+  // cap = a Forever-only place no public source has coordinates for yet: capture it in game.
+  // Sources: pfQuest = Classic NPC spawn data (github.com/shagu/pfQuest), Questie = its meeting-stone
+  // list (stones sit at dungeon entrances), WCT = Warcraft Tavern's Hall of Thanes guide.
+  var WAYPOINTS = {
+    "n-zephras": { cap: ["Valanaar, the main town on Zephras Isle"] },
+    "tr-coldridge": { wp: [["Dun Morogh", 29.9, 71.2, "Anvilmar, Coldridge Valley (Sten Stoutarm)", "pfQuest"]] },
+    "tr-dunmorogh": { wp: [["Dun Morogh", 47.4, 52.5, "Kharanos inn (Innkeeper Belm)", "pfQuest"]] },
+    "h-pet": { cap: ["The Zephras Isle hunter trainer (Taming the Beast)", "The three taming beasts"] },
+    "h-pet|trio": { wp: [["Dun Morogh", 45.8, 53.0, "Grif Wildheart, hunter trainer, Kharanos", "pfQuest"]] },
+    "n-dalaran": { cap: ["Valanaar Skydocks (airship to Dalaran)", "Sky Enclave in Dalaran (turn-in + Stormwind portal)"] },
+    "n-if": { wp: [["Ironforge", 55.5, 47.7, "Gryth Thurden, flight master", "pfQuest"],
+                   ["Dun Morogh", 64.8, 58.5, "Earthseer Farsen (Hall of Thanes quests)", "WCT"]] },
+    "p1-filler": { wp: [["Loch Modan", 35.5, 48.4, "Thelsamar inn (Innkeeper Hearthstove)", "pfQuest"]] },
+    "p1-hot": { wp: [["Ironforge", 43.5, 52.0, "Hall of Thanes entrance, left of the High Seat", "WCT"]] },
+    "p1-boat": { wp: [["Darkshore", 37.0, 44.1, "Auberdine inn: set hearth (Innkeeper Shaussiy)", "pfQuest"]],
+                 cap: ["Stormwind Harbor dock, boat to Auberdine (new in Forever)"] },
+    "p1-darkshore": { wp: [["Darkshore", 36.3, 45.6, "Auberdine flight master (Caylais Moonfeather)", "pfQuest"]] },
+    "p1-ashen": { wp: [["Ashenvale", 37.0, 49.2, "Astranaar inn (Innkeeper Kimlya)", "pfQuest"],
+                       ["Ashenvale", 34.4, 48.0, "Astranaar flight master (Daelyshia)", "pfQuest"]] },
+    "p2-dm": { wp: [["Westfall", 41.6, 72.4, "The Deadmines (meeting stone)", "Questie"]] },
+    "p2-bfd": { wp: [["Ashenvale", 15.4, 15.6, "Blackfathom Deeps (meeting stone)", "Questie"]] },
+    "p2-wet": { wp: [["Wetlands", 10.7, 61.0, "Menethil inn (Innkeeper Helbrek)", "pfQuest"],
+                     ["Wetlands", 9.5, 59.7, "Menethil flight master (Shellei Brondir)", "pfQuest"]] },
+    "p2-exc": { cap: ["Excavation Site entrance, on top of Whelgar's Excavation Site (Wetlands)"] },
+    "p2-hills": { wp: [["Hillsbrad Foothills", 51.2, 58.9, "Southshore inn (Innkeeper Anderson)", "pfQuest"],
+                       ["Hillsbrad Foothills", 49.3, 52.3, "Southshore flight master (Darla Harris)", "pfQuest"]],
+                  cap: ["Menethil dock for the Southshore boat (new in Forever)"] },
+    "p2-dal": { cap: ["City of Dalaran dungeon entrance (Alterac Mountains)"] },
+    "p3-drowned": { cap: ["The Drowned City entrance, off the Stranglethorn coast"] },
+    "p3-river": { cap: ["Tanaris dock, ship to Powderfuse Port", "Powderfuse Port (Riverglades)"] },
+    "p3-krol": { cap: ["Krol'dok Stronghold (Riverglades)"] },
+    "p3-alcaz": { cap: ["Alcaz Prison entrance (Alcaz Island, Dustwallow Marsh)"] },
+    "p3-blackmaw": { cap: ["Blackmaw Hold, behind the Furbolg Gates (north Azshara)"] },
+    "p3-shaper": { cap: ["Shaper's Terrace entrance (Un'Goro Crater)"] }
+  };
+  function waypoints(id, plan) { return WAYPOINTS[id + "|" + plan] || WAYPOINTS[id] || null; }
+  function wpHTML(id, plan) {
+    var w = waypoints(id, plan); if (!w) return "";
+    var html = (w.wp || []).map(function (p) {
+      var cmd = "/way " + p[0] + " " + p[1] + " " + p[2] + " " + p[3];
+      return '<button type="button" class="wp" data-way="' + cmd.replace(/"/g, "&quot;") + '" title="Copy for TomTom (source: ' + p[4] + ')">\u{1F4CD} ' + p[3] + " <code>" + p[0] + " " + p[1] + ", " + p[2] + "</code></button>";
+    }).join("");
+    html += (w.cap || []).map(function (c) {
+      return '<span class="wp cap" title="No public coordinates yet: stand there in game and note them">\u{1F4CD} ' + c + " <em>capture in game</em></span>";
+    }).join("");
+    return html ? '<span class="wps">' + html + "</span>" : "";
+  }
+
   function override(item, plan) {
     for (var p = plan; p; p = PLANS[p] ? PLANS[p].base : null) {
       if (Object.prototype.hasOwnProperty.call(item, p)) return item[p];
@@ -785,7 +842,7 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     return html;
   }
   function textHTML(r, plan) {
-    return '<span class="t">' + r.t + tagsHTML(r, plan) + "</span>" + (r.n ? '<span class="n">' + r.n + "</span>" : "");
+    return '<span class="t">' + r.t + tagsHTML(r, plan) + "</span>" + (r.n ? '<span class="n">' + r.n + "</span>" : "") + (plan ? wpHTML(r.id, plan) : "");
   }
 
   function renderChecklist(el, items, plan) {

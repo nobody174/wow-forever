@@ -1,0 +1,106 @@
+{
+  "_about": "Waypoints for the in-game Launch Plan tab (ADDON_PLAN 15.5). Keyed by launch-plan.html item id; only launch-day phases (night, p1, p2, p3), not the pre-launch 'before' list or the 'beta' test list. Each step has a list of points (default) and optional per-plan lists (hwd / hunter / h3d / trio) that replace the default for that plan. A point: zone = English zone name (the addon resolves it to a uiMapID at runtime, mapHint is only a hint), x/y in map percent, label, conf: 'exact' (Forever source), 'classic' (Classic position of a place that still exists; may have moved in Forever), 'approx' (area only, a rough spot), 'check' (no position known: the addon shows the label and asks the player to note it). Researched 2026-10-09.",
+  "_sources": {
+    "wt-hot": "https://www.warcrafttavern.com/forever/news/how-to-find-the-hall-of-thanes-dungeon-quests/",
+    "wh-dungeons": "https://www.wowhead.com/forever/guide/dungeons-overview-locations-details",
+    "wt-dungeons": "https://www.warcrafttavern.com/forever/guides/dungeons/",
+    "iv-boats": "https://www.icy-veins.com/wow/news/here-is-how-to-skip-the-infamous-wetlands-death-run-in-wow-forever/",
+    "classic": "Classic (1.12) positions of towns, inns and dungeon entrances that exist in both games"
+  },
+  "steps": {
+    "n-zephras": { "default": [
+      { "zone": "Zephras Isle", "label": "Zephras Isle starting area", "conf": "check", "src": "new zone, no map data published" } ] },
+    "tr-coldridge": { "trio": [
+      { "zone": "Dun Morogh", "mapHint": 1426, "x": 28.8, "y": 67.6, "label": "Anvilmar, Coldridge Valley", "conf": "classic", "src": "classic" } ] },
+    "tr-dunmorogh": { "trio": [
+      { "zone": "Dun Morogh", "mapHint": 1426, "x": 47.4, "y": 52.5, "label": "Kharanos inn (Thunderbrew Distillery)", "conf": "classic", "src": "classic" } ] },
+    "h-pet": {
+      "default": [ { "zone": "Zephras Isle", "label": "Hunter trainer (taming quests)", "conf": "check", "src": "confirmed on Zephras by the owner, position unknown" } ],
+      "trio": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 45.8, "y": 53.0, "label": "Grif Wildheart, hunter trainer in Kharanos", "conf": "classic", "src": "classic" } ] },
+    "wd-bear": { "default": [
+      { "zone": "Zephras Isle", "label": "Druid trainer (Bear Form quest)", "conf": "check", "src": "not published" } ] },
+    "wd-def": { "default": [
+      { "zone": "Zephras Isle", "label": "Warrior trainer (Defensive Stance quest)", "conf": "check", "src": "not published" } ] },
+    "n-camp": { "default": [
+      { "zone": "Zephras Isle", "label": "The Great Outdoors quest giver", "conf": "check", "src": "new quest, not published" } ] },
+    "h-ammo": {
+      "default": [ { "zone": "Zephras Isle", "label": "Ammo and food vendor before the skycutter", "conf": "check", "src": "not published" } ],
+      "trio": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 47.4, "y": 52.5, "label": "Kharanos vendors", "conf": "classic", "src": "classic" } ] },
+    "n-dalaran": { "default": [
+      { "zone": "Zephras Isle", "label": "Skycutter to Dalaran", "conf": "check", "src": "not published" },
+      { "zone": "Dalaran", "label": "Skyborne portal to Stormwind", "conf": "check", "src": "not published" } ] },
+    "n-if": { "default": [
+      { "zone": "Ironforge", "mapHint": 1455, "x": 43.5, "y": 52.0, "label": "Hall of Thanes entrance (left of the High Seat)", "conf": "exact", "src": "wt-hot" },
+      { "zone": "Dun Morogh", "mapHint": 1426, "x": 64.8, "y": 58.5, "label": "Earthseer Farsen (Hall of Thanes quest chain)", "conf": "exact", "src": "wt-hot" } ] },
+    "p1-filler": { "default": [
+      { "zone": "Loch Modan", "mapHint": 1432, "x": 35.5, "y": 48.4, "label": "Thelsamar", "conf": "classic", "src": "classic" } ] },
+    "tr-rf": { "trio": [
+      { "zone": "Ironforge", "mapHint": 1455, "label": "Paladin trainer (Mystic Ward)", "conf": "check", "src": "trainer position not verified" } ] },
+    "p1-hot": { "default": [
+      { "zone": "Ironforge", "mapHint": 1455, "x": 43.5, "y": 52.0, "label": "Hall of Thanes entrance", "conf": "exact", "src": "wt-hot" },
+      { "zone": "Dun Morogh", "mapHint": 1426, "x": 64.8, "y": 58.5, "label": "Earthseer Farsen", "conf": "exact", "src": "wt-hot" } ] },
+    "p1-boat": { "default": [
+      { "zone": "Stormwind City", "mapHint": 1453, "label": "Stormwind Harbor, boat to Auberdine", "conf": "check", "src": "iv-boats (new dock, no position)" },
+      { "zone": "Darkshore", "mapHint": 1439, "x": 37.0, "y": 44.1, "label": "Auberdine inn (set hearth)", "conf": "classic", "src": "classic" } ] },
+    "p1-darkshore": { "default": [
+      { "zone": "Darkshore", "mapHint": 1439, "x": 37.0, "y": 44.1, "label": "Auberdine", "conf": "classic", "src": "classic" } ] },
+    "p1-ashen": { "default": [
+      { "zone": "Ashenvale", "mapHint": 1440, "x": 37.0, "y": 49.2, "label": "Astranaar", "conf": "classic", "src": "classic" } ] },
+    "p2-ashen": { "default": [
+      { "zone": "Ashenvale", "mapHint": 1440, "x": 37.0, "y": 49.2, "label": "Astranaar", "conf": "classic", "src": "classic" } ] },
+    "p2-dm": { "default": [
+      { "zone": "Westfall", "mapHint": 1436, "x": 56.3, "y": 47.5, "label": "Sentinel Hill (Defias chain)", "conf": "classic", "src": "classic" },
+      { "zone": "Westfall", "mapHint": 1436, "x": 42.5, "y": 71.8, "label": "Deadmines entrance (Moonbrook)", "conf": "classic", "src": "classic" } ] },
+    "p2-bfd": { "default": [
+      { "zone": "Ashenvale", "mapHint": 1440, "x": 14.4, "y": 14.0, "label": "Blackfathom Deeps entrance", "conf": "classic", "src": "classic" } ] },
+    "p2-wet": { "default": [
+      { "zone": "Wetlands", "mapHint": 1437, "x": 10.7, "y": 60.9, "label": "Menethil Harbor", "conf": "classic", "src": "classic" } ] },
+    "p2-exc": { "default": [
+      { "zone": "Wetlands", "mapHint": 1437, "x": 39.0, "y": 50.0, "label": "Whelgar's Excavation Site (dungeon on top of it)", "conf": "approx", "src": "wh-dungeons (area only)" } ] },
+    "p2-hills": { "default": [
+      { "zone": "Hillsbrad Foothills", "mapHint": 1424, "x": 51.2, "y": 58.7, "label": "Southshore", "conf": "classic", "src": "classic" } ] },
+    "p2-fill": { "default": [
+      { "zone": "Duskwood", "mapHint": 1431, "x": 73.8, "y": 44.4, "label": "Darkshire", "conf": "classic", "src": "classic" } ] },
+    "p2-dal": { "default": [
+      { "zone": "Alterac Mountains", "mapHint": 1416, "label": "City of Dalaran (through the sewers into the Underbelly)", "conf": "check", "src": "wt-dungeons (no position)" } ] },
+    "p3-stv": { "default": [
+      { "zone": "Stranglethorn Vale", "mapHint": 1434, "x": 35.6, "y": 10.6, "label": "Nesingwary's Expedition", "conf": "classic", "src": "classic" },
+      { "zone": "Arathi Highlands", "mapHint": 1417, "x": 45.8, "y": 46.1, "label": "Refuge Pointe", "conf": "classic", "src": "classic" },
+      { "zone": "Tirisfal Glades", "mapHint": 1420, "x": 82.6, "y": 33.8, "label": "Scarlet Monastery", "conf": "classic", "src": "classic" } ] },
+    "p3-drowned": { "default": [
+      { "zone": "Stranglethorn Vale", "mapHint": 1434, "label": "The Drowned City (off the coast, dive at Zin'aka)", "conf": "check", "src": "wt-dungeons (no position)" } ] },
+    "p3-deso": { "default": [
+      { "zone": "Desolace", "mapHint": 1443, "x": 66.2, "y": 6.6, "label": "Nijel's Point", "conf": "classic", "src": "classic" } ] },
+    "p3-river": { "default": [
+      { "zone": "Tanaris", "mapHint": 1446, "label": "Steamwheedle Port, boat to Powderfuse Port (Riverglades)", "conf": "check", "src": "iv-boats (no position)" },
+      { "zone": "Riverglades", "label": "Riverglades", "conf": "check", "src": "new zone" } ] },
+    "p3-krol": { "default": [
+      { "zone": "Riverglades", "label": "Krol'dok Stronghold", "conf": "check", "src": "wh-dungeons (no position)" } ] },
+    "p3-shen": { "default": [
+      { "zone": "Feralas", "mapHint": 1444, "label": "Shen'dralas", "conf": "check", "src": "not published" } ] },
+    "p3-mid": { "default": [
+      { "zone": "Tanaris", "mapHint": 1446, "x": 51.0, "y": 28.7, "label": "Gadgetzan", "conf": "classic", "src": "classic" },
+      { "zone": "Feralas", "mapHint": 1444, "x": 30.9, "y": 43.5, "label": "Feathermoon Stronghold", "conf": "classic", "src": "classic" },
+      { "zone": "The Hinterlands", "mapHint": 1425, "x": 14.2, "y": 45.8, "label": "Aerie Peak", "conf": "classic", "src": "classic" },
+      { "zone": "Dustwallow Marsh", "mapHint": 1445, "x": 66.4, "y": 45.2, "label": "Theramore Isle", "conf": "classic", "src": "classic" } ] },
+    "p3-alcaz": { "default": [
+      { "zone": "Dustwallow Marsh", "mapHint": 1445, "x": 75.0, "y": 18.0, "label": "Alcaz Island (prison dungeon)", "conf": "approx", "src": "wh-dungeons (far northeast, area only)" } ] },
+    "p3-50s": { "default": [
+      { "zone": "Un'Goro Crater", "mapHint": 1449, "x": 43.6, "y": 8.3, "label": "Marshal's Refuge", "conf": "classic", "src": "classic" },
+      { "zone": "Felwood", "mapHint": 1448, "x": 62.5, "y": 25.7, "label": "Talonbranch Glade", "conf": "classic", "src": "classic" },
+      { "zone": "Burning Steppes", "mapHint": 1428, "x": 84.6, "y": 68.7, "label": "Morgan's Vigil", "conf": "classic", "src": "classic" },
+      { "zone": "Swamp of Sorrows", "mapHint": 1435, "x": 69.6, "y": 53.5, "label": "Sunken Temple", "conf": "classic", "src": "classic" },
+      { "zone": "Burning Steppes", "mapHint": 1428, "x": 29.4, "y": 38.3, "label": "Blackrock Mountain (BRD quests)", "conf": "classic", "src": "classic" } ] },
+    "p3-hyjal": { "default": [
+      { "zone": "Mount Hyjal", "label": "Mount Hyjal", "conf": "check", "src": "new zone" },
+      { "zone": "Winterspring", "mapHint": 1452, "x": 61.3, "y": 38.9, "label": "Everlook", "conf": "classic", "src": "classic" },
+      { "zone": "Western Plaguelands", "mapHint": 1422, "x": 42.9, "y": 84.5, "label": "Chillwind Camp", "conf": "classic", "src": "classic" },
+      { "zone": "Eastern Plaguelands", "mapHint": 1423, "x": 75.7, "y": 53.8, "label": "Light's Hope Chapel", "conf": "classic", "src": "classic" } ] },
+    "p3-blackmaw": { "default": [
+      { "zone": "Azshara", "mapHint": 1447, "x": 11.9, "y": 77.6, "label": "Talrendis Point (Alliance camp)", "conf": "classic", "src": "classic" },
+      { "zone": "Azshara", "mapHint": 1447, "label": "Blackmaw Hold, behind the Furbolg Gates in the north", "conf": "check", "src": "wh-dungeons (area only)" } ] },
+    "p3-shaper": { "default": [
+      { "zone": "Un'Goro Crater", "mapHint": 1449, "x": 43.6, "y": 8.3, "label": "Marshal's Refuge (staging)", "conf": "classic", "src": "classic" },
+      { "zone": "Un'Goro Crater", "mapHint": 1449, "label": "Shaper's Terrace", "conf": "check", "src": "wh-dungeons (no position)" } ] }
+  }
+}

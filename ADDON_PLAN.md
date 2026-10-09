@@ -2865,8 +2865,26 @@ ForeverPlus already tracks buffs, so nothing here duplicates it.
   so it works offline in game.
 - New tab **Plan**: pick your group plan, steps grouped by phase, tick boxes saved per
   character, a "next step" line on Home.
-- Waypoints: steps get optional coordinates `{mapID, x, y}` (to be researched; the site has
-  none yet). With TomTom loaded: a **Waypoint** button per step calls
+- **Which steps:** only the launch-day phases (night, p1, p2, p3 = 45 steps). The pre-launch
+  list ("before": names, UI, addons, keybinds...) and the test-in-beta list are left out
+  (owner, 2026-10-09: they're done before launch day).
+- **Plan picker:** the same group plans as the site, 2 Hunters · Warrior · Druid (`hwd`),
+  2 Hunters (`hunter`), 3 Hunters · Druid (`h3d`), Paladin · Hunter · Shaman (`trio`), with the
+  site's rules: an item's per-plan override replaces its text, `false` hides it, `base`
+  inheritance as in launch-plan.html.
+- **Waypoint data (researched 2026-10-09): `launch-plan-waypoints.json`** in the repo root,
+  keyed by step id: 36 of the 45 steps, 58 points. Each point: `zone` (English name; the
+  addon resolves it to a uiMapID at runtime by walking `C_Map.GetMapChildrenInfo` under the
+  continents, `mapHint` is only a hint), `x`/`y` in percent, `label`, `conf`:
+  `exact` (Forever source, 4), `classic` (Classic position of a place that still exists,
+  may have moved, 33), `approx` (area only, 2), `check` (no position known, 19: new zones
+  and docks: Zephras, Stormwind Harbor, Riverglades, Mount Hyjal, the new dungeons).
+  Per-plan lists replace the default (e.g. the Dwarf trio's pet quest is in Kharanos).
+  The build step copies it into the addon's generated Lua data with the plan steps.
+- UI per point: `check` points show the label only (no Waypoint button) plus "position not
+  known yet"; `classic`/`approx` show a small "may have moved" note.
+- **`/r2f here`**: prints the current zone name, uiMapID and x/y (one decimal) so a `check`
+  point can be filled in from the beta (everything up to level 30) and sent to us. With TomTom loaded: a **Waypoint** button per step calls
   `TomTom:AddWaypoint(mapID, x/100, y/100, {title = ...})`; without TomTom: print the
   `/way` line. Same mechanism later for the library-book route.
 - Ticks are separate from the site's (browser) ticks; syncing them is out of scope.

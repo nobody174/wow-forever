@@ -66,7 +66,7 @@ user-facing release notes.
   ForeverPlus' own: a grip over the title while Shift is held. R2F's version now does the same
   (Movable bags + Lock bags, per character, classic and combined windows) and no longer calls
   `UpdateContainerFrameAnchors` (the taint ForeverPlus documented). The minimap button's right-click
-  menu got a Reload UI line. Not released yet.
+  menu got a Reload UI line. Released as r2f-v0.20.0; addons page points at it.
 
 ## 2026-10-09 (Addon 0.19.1 + Warrior tank macros: Charge + Rend for Vanguard, Shield Block + Revenge)
 - Owner test of 0.19.0: `/r2f ranks` didn't find the Charge rank the character has. 0.19.1 reads the

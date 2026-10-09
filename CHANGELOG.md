@@ -47,7 +47,7 @@ user-facing release notes.
   of Settings), the first new reminder Hunter ammo low (red under a user-set threshold, hidden
   when fine, draggable / lockable / sized like the stance icon), shared framed-icon code in
   `Reminders.lua`, each reminder only for its class. Never run in game yet (TESTING.md 25).
-  Not released yet.
+  Released as r2f-v0.17.0; addons page points at it.
 
 ## 2026-10-08 (Addon 0.16.0: movable bags; Forever Bag Mover removed from the list)
 - ADDON_PLAN 15.3, step 3 of addon round 2: Movable bags + Lock bags on the Settings tab

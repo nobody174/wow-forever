@@ -63,7 +63,7 @@ user-facing release notes.
 ## 2026-10-09 (Addon 0.19.1 + Warrior tank macros: Charge + Rend for Vanguard, Shield Block + Revenge)
 - Owner test of 0.19.0: `/r2f ranks` didn't find the Charge rank the character has. 0.19.1 reads the
   rank from the spellbook as well and tries every known-check; `/r2f rankdebug <spell>` shows what
-  the client answers. Not released yet.
+  the client answers. Released as r2f-v0.19.1; addons page points at it.
 - Warrior Tank, owner request: `VCharge` is now "Charge + Rend (Vanguard, any stance)": Charge when
   out of combat (no stance swap), then Rend on the next press, `/startattack` first. New test macro
   `SBlk+Rev` (Shield Block + Revenge on one button; Shield Block is first because a macro stops at

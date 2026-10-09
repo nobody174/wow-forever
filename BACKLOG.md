@@ -78,6 +78,18 @@ are built as well.
       `/dump GetCVar("floatingCombatTextReactives")`; then either hide it and add our own movable icon
       reminder (needs a test that spell usability can be read in combat), or move the game's text.
 
+- [ ] **Copy chat text, to drop Prat 3.0** (owner, 2026-10-09): he only turns Prat 3.0 on to copy
+      lines out of chat for feedback (chat text can't be selected normally). Build our own
+      "Copy chat" in R2F (Gameplay tab, Screen section): a small button on each chat frame that opens a
+      window with that frame's last N lines in a selectable multi-line edit box (Ctrl+A, Ctrl+C), plus
+      `/r2f copychat` for the main chat frame. How Prat does it (looked at 2026-10-09, `modules/CopyChat.lua`,
+      383 lines): a button per chat frame; on click it reads the frame's lines with
+      `frame:GetNumMessages()` / `frame:GetMessageInfo(i)` and puts them in a scrolling `EditBox`
+      in its own window. **Licence:** Prat is GPLv3, so we must NOT copy its code (our addon would have to
+      become GPL too); write it fresh from the idea above. Strip colour codes / hyperlink markup optionally
+      (a "plain text" tick) so pasted feedback is readable. Also covers `UrlCopy` (click a URL in chat to
+      copy it) if wanted.
+
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 
 Full spec: [ADDON_PLAN.md](ADDON_PLAN.md). Read it before starting any step.

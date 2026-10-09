@@ -2992,3 +2992,9 @@ in-game measurements of the gossip options on this build).
   notes say the client refuses aura reads in combat (and in battlegrounds before they start), so this needs
   a measured spike (what `C_UnitAuras` answers, when) before any design. Smaller first cut worth asking
   about: only the tracking reminder (is Find Herbs / Minerals active?), which needs no aura reading.
+
+### 17.2 Also to replace: Prat 3.0 (owner, 2026-10-09)
+The owner uses Prat 3.0 only to copy chat lines for feedback. Plan: a "Copy chat" feature (button on each
+chat frame -> window with the lines in a selectable edit box, `/r2f copychat`), written fresh. Prat is GPLv3:
+no code is copied. Details in BACKLOG ("Copy chat text, to drop Prat 3.0"). Fits the Gameplay tab, Screen section;
+when built, also remove Prat from `addons.html`.

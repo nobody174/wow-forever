@@ -3,6 +3,12 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.23.1 (2026-10-09): single quest rewards are taken
+
+- Owner test of 0.23.0: accept and hand in work, but a quest with exactly ONE reward stopped at the reward
+  window. With one reward there is nothing to choose, so it is now turned in; with two or more choices the
+  window still stays open and the addon never picks.
+
 ## 0.23.0 (2026-10-09): Gameplay step 3 (quest automation)
 
 **Never run in game yet: TESTING.md 31.** All three are OFF until ticked on the Gameplay tab. Hold

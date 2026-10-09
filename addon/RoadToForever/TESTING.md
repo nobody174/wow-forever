@@ -1101,8 +1101,7 @@ off first. **Hold Shift to pause** any of them while testing.
    with several quests, one after the other. Try an NPC with a gossip list first (talk option + quest) and one
    that goes straight to the quest list. An escort or group quest: does it accept without asking? (Tell us.)
 2. **Hand in quests:** tick it, complete a quest with NO reward choice and talk to the NPC: it is handed in.
-3. **The reward rule (important):** a quest with ONE or more reward items to choose from must NOT be turned
-   in by the addon: the reward window stays open and you pick. Check with a one-item reward and a 3-item one.
+3. **The reward rule (important):** a quest with TWO or more reward items to choose from must NOT be turned in by the addon: the reward window stays open and you pick. A quest with exactly ONE reward is turned in (0.23.1). Check with a one-item reward and a 3-item one.
 4. With both on at an NPC that has a finished quest and a new one: the finished one goes first.
 5. **Show reward sell prices:** on a quest with several rewards, each choice button shows its vendor price
    in the corner (green = best). If nothing shows up, tell us what the game's quest window looks like

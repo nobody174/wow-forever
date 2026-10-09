@@ -60,6 +60,12 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.23.1: single quest rewards are taken)
+- Owner test: auto turn-in stopped at a quest with exactly one reward. Now one (or no) reward is turned in,
+  two or more are left for the player. Also found: the "178" on the backpack button is the game's own
+  `MainMenuBarBackpackButtonCount` text (not from any addon); what it counts is still unknown. Released as
+  r2f-v0.23.1; addons page points at it.
+
 ## 2026-10-09 (Addon 0.23.0: Gameplay step 3, quest automation)
 - ADDON_PLAN 17 step 3: accept quests, hand in quests (never picks a reward; Shift pauses), reward sell
   prices. All off by default. Bag-slot number moved to the top of the backpack button. Never run in game

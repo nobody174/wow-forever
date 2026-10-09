@@ -1027,3 +1027,13 @@ wrong, like the level-18 Warrior and Charge. Do this on that character.
    does not say it raised anything.
 8. Tell us if any macro now stops working, if a ranked macro is reported as changed again and again,
    or if `/r2f ranks` lists a spell that works fine unranked.
+
+### 27b. If a macro is still not ranked (v0.19.1)
+
+1. Type `/r2f rankdebug Charge` (or the spell that fails). It prints a few lines: the spell id of the
+   plain name, of `(Rank 1)`, `(Rank 2)` ..., what each known-check says (`yes` / `no` / `-` = the
+   client has no such function), what the spellbook lists, and the rank the addon would use.
+2. Copy those lines to us. The rank the addon would use must be the highest rank you really have.
+3. `/r2f ranks` lists the spells it ranks in your macros; drag the macro again (or relearn / import)
+   and check it in `/macro`.
+

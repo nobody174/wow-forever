@@ -823,14 +823,22 @@ CLASSES = [
                   BETA + "Shield Block is off the global cooldown, so it fires with Sunder in one press. "
                   "Unknown on Forever: whether Sunder still goes out while Shield Block is on cooldown "
                   "(if not, use plain Sunder between blocks). Needs a shield and Defensive Stance.", short="SBlk+Sund"),
+                M("Shield Block + Revenge",
+                  "#showtooltip Shield Block\n/startattack [harm]\n/cast Shield Block\n/cast [harm] Revenge",
+                  BETA + "Shield Block is off the global cooldown, so it fires with Revenge in one press. "
+                  "Forever stops a macro at the first spell you know but can't use right now, so while Shield Block "
+                  "is on cooldown Revenge will not go out from this button: use the plain Revenge button then. "
+                  "Needs a shield and Defensive Stance.", short="SBlk+Rev"),
                 M("Concussion Blow", melee("Concussion Blow"), "Talent (in our level-30 tank build).", short="Concuss"),
                 M("Shield Slam", melee("Shield Slam"), "Talent, level 40. Forever: about double the damage.", short="SSlam"),
             ]),
             G(QOL, [
-                M("Charge (Vanguard, any stance)",
-                  "#showtooltip Charge(Rank 1)\n/startattack [harm]\n/cast [harm] Charge(Rank 1)",
+                M("Charge + Rend (Vanguard, any stance)",
+                  "#showtooltip Charge(Rank 1)\n/startattack [harm]\n"
+                  "/cast [nocombat, harm] Charge(Rank 1)\n/cast [harm] Rend",
                   "With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, "
-                  "so no stance swap. Rank 1 on purpose: on Forever an unranked \"Charge\" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).", short="VCharge"),
+                  "so no stance swap. Out of combat it charges, then press again for Rend (it fails while you are "
+                  "still out of range). Rank 1 on purpose: on Forever an unranked \"Charge\" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).", short="VCharge"),
                 M("Taunt (mouseover)",
                   "#showtooltip Taunt\n/cast [@mouseover, harm, nodead][harm] Taunt",
                   "Defensive Stance. Hover a loose mob to taunt it without changing target.", short="Taunt@"),

@@ -1512,6 +1512,9 @@ RANK_SPELLBOOK_LUA = """
   KNOWN = { [100] = true, [500] = true, [700] = true }
   C_Spell.GetSpellInfo = function(name)
     local id = SPELLS[name]
+    if not id then
+      for k, v in pairs(SPELLS) do if k:lower() == name:lower() then id = v name = k end end
+    end
     if id then return { name = name, spellID = id } end
   end
   IsPlayerSpell = function(id) return KNOWN[id] == true end
@@ -1705,6 +1708,59 @@ def test_ranks():
     lua.execute('SlashCmdList.R2F("ranks")')
     check("kept without ranks" in chat_all(lua) and "Longone" in chat_all(lua), "16 /r2f ranks names macros kept unranked because of the 255 limit")
     check(T.bodyOf("Longone") == "/cast Charge\n/say " + "x" * 235, "16 ... and that game macro really is the unranked text")
+
+    # --- Spellbook scan: the rank is found even when the spell-id checks all say "unknown" ------------------
+    lua, T = rank_runtime()
+    lua.execute("KNOWN = {}")   # IsPlayerSpell says no to everything, like a client whose rank ids differ
+    check(rewrite(lua, "/cast Charge") == "/cast Charge", "16.1 no id check and no spellbook: left alone")
+    lua.execute('''BOOK = { { name = 'Charge', subName = 'Rank 1', spellID = 555 }, { name = 'Rend', subName = 'Rank 1' },
+                    { name = 'Hamstring', subName = '' } }
+      C_SpellBook = {
+        GetNumSpellBookSkillLines = function() return 1 end,
+        GetSpellBookSkillLineInfo = function(i) return { itemIndexOffset = 0, numSpellBookItems = #BOOK } end,
+        GetSpellBookItemInfo = function(i, bank) return BOOK[i] end,
+      }''')
+    check(rewrite(lua, "#showtooltip Charge\n/cast Charge") == "#showtooltip Charge(Rank 1)\n/cast Charge(Rank 1)",
+          "16.1 modern spellbook lists Charge, Rank 1 -> Rank 1 even though every spell-id check says no")
+    lua.execute("BOOK[1].subName = 'Rank 2'")
+    check(rewrite(lua, "/cast Charge(Rank 1)") == "/cast Charge(Rank 2)", "16.1 the spellbook's higher rank raises a pinned Rank 1")
+    lua.execute("KNOWN[100] = true")   # id-based says Rank 1; the book says 2 -> the higher one wins
+    check(rewrite(lua, "/cast Charge") == "/cast Charge(Rank 2)", "16.1 the higher of the two answers wins")
+    lua.execute("BOOK[1].subName = ''")
+    check(rewrite(lua, "/cast Charge") == "/cast Charge(Rank 1)", "16.1 a book entry without a rank text falls back to the id answer")
+    # Classic tab functions instead of C_SpellBook.
+    lua.execute('''C_SpellBook = nil KNOWN = {}
+      BOOK2 = { { 'Charge', 'Rank 1' }, { 'Rend', 'Rank 1' } }
+      GetNumSpellTabs = function() return 1 end
+      GetSpellTabInfo = function(t) return 'General', nil, 0, #BOOK2 end
+      GetSpellBookItemName = function(i, kind) local e = BOOK2[i] if e then return e[1], e[2] end end''')
+    check(rewrite(lua, "/cast Charge") == "/cast Charge(Rank 1)", "16.1 classic spellbook tab functions work too")
+    lua.execute("GetNumSpellTabs, GetSpellTabInfo, GetSpellBookItemName = nil, nil, nil")
+    # /r2f ranks uses the book as well.
+    lua.execute('''BOOK = { { name = 'Charge', subName = 'Rank 1', spellID = 555 } }
+      C_SpellBook = {
+        GetNumSpellBookSkillLines = function() return 1 end,
+        GetSpellBookSkillLineInfo = function(i) return { itemIndexOffset = 0, numSpellBookItems = #BOOK } end,
+        GetSpellBookItemInfo = function(i, bank) return BOOK[i] end,
+      }''')
+    cid = rank_add(lua, "Charge", "/cast Charge")
+    lua.execute("R2F.Macros.Ensure(%r)" % cid)
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("ranks")')
+    check("Charge -> Charge(Rank 1)" in chat_all(lua), "16.1 /r2f ranks reports the rank found in the spellbook: %r" % chat_all(lua))
+
+    # --- /r2f rankdebug -------------------------------------------------------------------------------------------------
+    lua, T = rank_runtime()
+    lua.execute("KNOWN[100] = true")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("rankdebug charge")')
+    txt = chat_all(lua)
+    check("rankdebug Charge: plain name -> spellID 1240289" in txt and "IsPlayerSpell=no" in txt, "16.1 rankdebug shows the plain name's id and the known-checks: %r" % txt)
+    check("(Rank 1) -> spellID 100" in txt and "IsPlayerSpell=yes" in txt and "(Rank 2) -> spellID 101" in txt, "16.1 rankdebug lists the ranks with their ids")
+    check("spellbook: not listed under that name" in txt and "the addon would use: Charge(Rank 1)" in txt, "16.1 rankdebug: spellbook line and the rank the addon would use")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("rankdebug")')
+    check("usage: /r2f rankdebug Charge" in chat_all(lua), "16.1 rankdebug without a spell name prints the usage")
 
 
 def test_ui_updates(fx):

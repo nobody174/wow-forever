@@ -165,6 +165,7 @@ R2F.L = {
 
   -- Home tab (12.4)
   RANKS_NO_API = "this game has no C_Spell.GetSpellInfo, so spell ranks are not checked.",
+  RANKS_DEBUG_USAGE = "usage: /r2f rankdebug Charge",
   RANKS_NONE = "every spell in your Road to Forever macros resolves to a spell you know. Nothing is ranked.",
   RANKS_HEAD = "spells whose plain name is a spell you don't know (the macros use a rank you do know):",
   RANKS_LINE = "%s -> %s (in %s)",
@@ -362,6 +363,7 @@ R2F.L = {
     "/r2f settings  the Settings tab",
     "/r2f bags  which bag windows the addon found, and the movable / lock state",
     "/r2f minimap  show or hide the minimap button",
+    "/r2f rankdebug <spell>  what the game says about a spell's ranks (for bug reports)",
     "/r2f ranks  spells in your macros that use a lower rank than the plain name would give",
     "/r2f plan  the launch plan checklist (Plan tab)",
     "/r2f here  print your zone, uiMapID and x, y (to fill in a plan point that has no position yet)",

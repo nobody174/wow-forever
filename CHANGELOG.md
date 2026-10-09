@@ -60,6 +60,18 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.19.1 + Warrior tank macros: Charge + Rend for Vanguard, Shield Block + Revenge)
+- Owner test of 0.19.0: `/r2f ranks` didn't find the Charge rank the character has. 0.19.1 reads the
+  rank from the spellbook as well and tries every known-check; `/r2f rankdebug <spell>` shows what
+  the client answers. Not released yet.
+- Warrior Tank, owner request: `VCharge` is now "Charge + Rend (Vanguard, any stance)": Charge when
+  out of combat (no stance swap), then Rend on the next press, `/startattack` first. New test macro
+  `SBlk+Rev` (Shield Block + Revenge on one button; Shield Block is first because a macro stops at
+  the first spell you know but can't use, so Revenge only goes out while Shield Block is usable).
+  `/startattack` stays on the FIRST line of every melee macro on purpose: with the stop rule above a
+  `/startattack` placed after the spell would be skipped whenever the spell can't be used (no rage,
+  on cooldown), which is exactly when auto-attack must still start.
+
 ## 2026-10-09 (Addon 0.19.0: rank-aware macros)
 - ADDON_PLAN 16: found in game that on Forever an unranked name can resolve to a rank the character
   doesn't know (`Charge` at level 18). Addon 0.19.0 writes `Name(Rank K)` (highest known rank) into

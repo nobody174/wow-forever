@@ -1515,6 +1515,14 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Sunder Armor
 ```
 
+**Shield Block + Revenge** (`SBlk+Rev`) — Test in beta: Shield Block is off the global cooldown, so it fires with Revenge in one press. Forever stops a macro at the first spell you know but can't use right now, so while Shield Block is on cooldown Revenge will not go out from this button: use the plain Revenge button then. Needs a shield and Defensive Stance.
+```
+#showtooltip Shield Block
+/startattack [harm]
+/cast Shield Block
+/cast [harm] Revenge
+```
+
 **Concussion Blow** (`Concuss`) — Talent (in our level-30 tank build).
 ```
 #showtooltip Concussion Blow
@@ -1531,11 +1539,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Class QoL
 
-**Charge (Vanguard, any stance)** (`VCharge`) — With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, so no stance swap. Rank 1 on purpose: on Forever an unranked "Charge" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).
+**Charge + Rend (Vanguard, any stance)** (`VCharge`) — With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, so no stance swap. Out of combat it charges, then press again for Rend (it fails while you are still out of range). Rank 1 on purpose: on Forever an unranked "Charge" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).
 ```
 #showtooltip Charge(Rank 1)
 /startattack [harm]
-/cast [harm] Charge(Rank 1)
+/cast [nocombat, harm] Charge(Rank 1)
+/cast [harm] Rend
 ```
 
 **Taunt (mouseover)** (`Taunt@`) — Defensive Stance. Hover a loose mob to taunt it without changing target.

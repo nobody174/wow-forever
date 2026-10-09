@@ -3,6 +3,21 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.19.1 (2026-10-09): rank detection from the spellbook, /r2f rankdebug
+
+**Never run in game yet.**
+
+- Owner test of 0.19.0: `/r2f ranks` said "you know no rank of it yet" for Charge on a character
+  that has Charge Rank 1 (and `/cast Charge(Rank 1)` works), so the spell-id check missed it:
+  `C_Spell.GetSpellInfo("Charge(Rank 1)")` gives id 1240287, but `IsPlayerSpell` of it didn't say yes.
+- The highest known rank is now also read from the spellbook itself (the "Rank N" text of each
+  entry, modern `C_SpellBook` or the classic tab functions), and several "do I know this id"
+  checks are tried (`IsPlayerSpell`, `IsSpellKnown`, `C_SpellBook.IsSpellKnown`,
+  `C_SpellBook.IsSpellInSpellBook`, `IsSpellKnownOrOverridesKnown`). The higher answer wins.
+- New `/r2f rankdebug <spell>` (e.g. `/r2f rankdebug Charge`): prints the spell id of the plain
+  name and of each `(Rank N)`, what every known-check answers, what the spellbook lists, and the
+  rank the addon would use. Paste it to us if a macro still isn't ranked.
+
 ## 0.19.0 (2026-10-09): rank-aware macros (ADDON_PLAN 16)
 
 **Never run in game yet: TESTING.md 27.**

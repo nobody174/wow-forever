@@ -1463,7 +1463,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [nostance:1] Battle Stance; [@targettarget, harm, exists][harm] Mocking Blow
 ```
 
-**Stance swap (Battle <> Defensive)** (`Stances`) — One button swaps Battle <> Defensive (from Berserker or no stance it goes to Battle). The old three-stance cycle failed for you in Defensive Stance: its next step was Berserker Stance, which you don't have before level 30.
+**Stance swap (Battle <> Defensive)** (`Stances`) — One button swaps Battle <> Defensive (from Berserker or no stance it goes to Battle). Only two stances on purpose: a three-stance cycle gets stuck in Defensive Stance before level 30, because Berserker Stance isn't learned yet.
 ```
 #showtooltip [stance:1] Defensive Stance; Battle Stance
 /cast [stance:1] Defensive Stance; Battle Stance

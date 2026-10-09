@@ -795,8 +795,8 @@ CLASSES = [
                   "#showtooltip [stance:1] Defensive Stance; Battle Stance\n"
                   "/cast [stance:1] Defensive Stance; Battle Stance",
                   "One button swaps Battle <> Defensive (from Berserker or no stance it goes to Battle). "
-                  "The old three-stance cycle failed for you in Defensive Stance: its next step was Berserker "
-                  "Stance, which you don't have before level 30.", short="Stances"),
+                  "Only two stances on purpose: a three-stance cycle gets stuck in Defensive Stance before "
+                  "level 30, because Berserker Stance isn't learned yet.", short="Stances"),
                 M("Stance toggle (Battle <> Defensive, mods for others)",
                   "#showtooltip\n/cast [mod:ctrl, nostance:3] Berserker Stance; "
                   "[mod:alt, nostance:2] Defensive Stance; [stance:1] Defensive Stance; Battle Stance",

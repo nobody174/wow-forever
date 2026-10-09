@@ -159,6 +159,7 @@ local COMMANDS = {
   plan = function() R2F.MainWindow.Show("plan") end,
   here = function() R2F.Plan.Here() end,
   ranks = function() R2F.Ranks.Print() end,
+  copychat = function() R2F.CopyChat.Command() end,
   rankdebug = function() R2F.Ranks.Debug("") end,
   ammo = function() R2F.Ammo.ToggleShown() end,
   ["ammo lock"] = function() R2F.Ammo.ToggleLock() end,
@@ -191,7 +192,10 @@ SlashCmdList.R2F = function(msg)
   msg = (msg or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
   local fn = COMMANDS[msg]
   local debugArg = msg:match("^rankdebug%s+(.+)$")
-  if debugArg then
+  local chatArg = msg:match("^copychat%s+(%d+)$")
+  if chatArg then
+    R2F.CopyChat.Command(chatArg)
+  elseif debugArg then
     -- The line was lower-cased above; give the words capitals back (lookups ignore case anyway).
     R2F.Ranks.Debug((debugArg:gsub("(%a)([%w']*)", function(c, rest) return c:upper() .. rest end)))
   elseif fn then

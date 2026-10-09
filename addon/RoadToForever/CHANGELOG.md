@@ -3,6 +3,20 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.24.0 (2026-10-09): copy chat (replaces Prat 3.0 for copying)
+
+**Never run in game yet: TESTING.md 32.**
+
+- **`/r2f copychat`** opens a window with the newest 200 lines of your main chat window in a box you can
+  select and copy (Ctrl+A, Ctrl+C); **`/r2f copychat 3`** does it for chat window 3. Oldest line first.
+  A **Plain text** tick (on by default) strips colour codes, links and icons so pasted text is readable.
+- **Copy chat button** (Gameplay tab, Screen, off by default): a small C in the corner of every chat window;
+  click it for that window's text.
+- Read-only: only the chat windows' stored lines are read. Written from scratch (Prat 3.0 is GPLv3, none of
+  its code is used).
+- Backpack: still open whether the game's own "178" on the backpack button should be hidden while our free-slot
+  number is on (it is not the item total or the slot total).
+
 ## 0.23.2 (2026-10-09): mail uses the full character name
 
 - Owner test of 0.22.0: the mail button filled in a bare name ("Alice") and the mail didn't go: on this

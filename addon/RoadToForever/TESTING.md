@@ -1109,3 +1109,17 @@ off first. **Hold Shift to pause** any of them while testing.
 6. **Free bag slots:** the number is now at the top of the backpack button; no overlap with the game's own?
    What is the other number (178)? Hover it with `/fstack` and tell us the frame name.
 7. Anything that fails prints "gameplay feature X hit an error ..." once: send us that line.
+
+## 32. Copy chat (v0.24.0)
+
+Disable Prat 3.0 first (so you know it is ours).
+
+1. Type `/r2f copychat`: a window opens with your main chat window's last lines, already selected.
+   Press Ctrl+C, paste into a text editor: are the lines complete and in order (oldest first)?
+2. **Plain text** ticked: no colour codes (`|cff...`) or `[item]` link codes in what you pasted, but the
+   link names stay. Untick it: the raw codes appear.
+3. `/r2f copychat 3` (or another window number): that window's text; a number that doesn't exist falls back.
+4. Gameplay tab > Screen > **Copy chat button**: a small C appears in the top-right corner of each chat
+   window (faint, bright on hover); clicking it opens that window's text. Is it in a bad spot on your layout
+   (over the scroll bar or the tabs)? Tell us where it should go.
+5. Esc closes the window. Long chats (more than 200 lines): only the newest 200 show.

@@ -60,6 +60,11 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.24.0: copy chat, to drop Prat 3.0)
+- `/r2f copychat [window]` and an optional corner button on every chat window: the chat text in a box to
+  select and copy, plain text or raw. Prat 3.0 can go from the owner's addon list once he has tried it
+  (addons.html still lists it as an addon we use). Never run in game yet (TESTING.md 32).
+
 ## 2026-10-09 (Addon 0.23.2: mail uses Name-Realm)
 - Owner test: mail to an alt needs the full name on this client. The Gameplay mail button fills in
   `Name-Realm`. Backpack "178" is still unidentified (not the item total: that is 334). Released as

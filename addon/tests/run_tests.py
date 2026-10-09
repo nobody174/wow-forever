@@ -2254,6 +2254,78 @@ def test_gameplay_quests():
         check(lua3.eval("R2F.L.%s" % k) in labels, "17.3 the Gameplay tab has the %s box" % k)
 
 
+COPYCHAT_LUA = """
+  NUM_CHAT_WINDOWS = 3
+  local function mkchat(i, lines)
+    local f = CreateFrame('Frame', 'ChatFrame' .. i, UIParent)
+    f.GetNumMessages = function() return #lines end
+    f.GetMessageInfo = function(self, n) return lines[n] end
+    return f
+  end
+  CHAT1 = {}
+  for n = 1, 250 do CHAT1[n] = 'line ' .. n end
+  CHAT1[250] = '|cffff0000Red|r |Hitem:1234:0|h[Sword]|h and |TInterface\\\\Icons\\\\X:16|t done ||'
+  mkchat(1, CHAT1)
+  mkchat(3, { 'third window' })
+"""
+
+
+def copychat_runtime(chat=True):
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    if chat:
+        lua.execute(COPYCHAT_LUA)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    return lua, T
+
+
+def test_copychat():
+    """ADDON_PLAN 17.2: copy chat text (replaces Prat 3.0 for copying)."""
+    lua, T = copychat_runtime()
+    # --- plain text -----------------------------------------------------------------------------
+    plain = lua.eval("R2F.CopyChat.Plain(CHAT1[250])")
+    check(plain == "Red [Sword] and  done |", "17.2 plain text drops colours, links keep their text, textures go: %r" % plain)
+    # --- the window ----------------------------------------------------------------------------------
+    lua.execute('SlashCmdList.R2F("copychat")')
+    check(lua.eval("R2FCopyChat ~= nil and R2FCopyChat:IsShown()") is True, "17.2 /r2f copychat opens the window")
+    text = lua.eval("R2FCopyChatScroll.EditBox and R2FCopyChatScroll.EditBox:GetText() or ''")
+    lua.execute("""for _, f in ipairs(TEST.allFrames) do if f.__kind == 'EditBox' and f.__parent and f.__parent.__name == 'R2FCopyChatScroll' then CCE = f end end
+      if not CCE then for _, f in ipairs(TEST.allFrames) do if f.__kind == 'EditBox' and f.__text and f.__text:find('line 51') then CCE = f end end end""")
+    shown = lua.eval("CCE and CCE:GetText() or ''")
+    lines = shown.split("\n")
+    check(len(lines) == 200, "17.2 the newest 200 of the 250 lines are shown (%d)" % len(lines))
+    check(lines[0] == "line 51" and lines[-2] == "line 249", "17.2 oldest first, newest at the bottom: %r ... %r" % (lines[0], lines[-2]))
+    check(lines[-1] == "Red [Sword] and  done |", "17.2 plain text is on by default: %r" % lines[-1])
+    check(font_text(lua, "^200 lines$") == "200 lines", "17.2 the window says how many lines")
+    check("R2FCopyChat" in lua_table_to_list(lua.eval("UISpecialFrames")), "17.2 Esc closes it")
+    lua.execute("""for _, f in ipairs(TEST.allFrames) do if f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.CC_PLAIN then PB = f end end
+      PB:SetChecked(false) PB:Click()""")
+    raw = lua.eval("CCE:GetText()").split("\n")[-1]
+    check("|cffff0000Red|r" in raw, "17.2 plain text unticked: the raw line with its colour codes: %r" % raw)
+    lua.execute('R2FCopyChat:Hide() SlashCmdList.R2F("copychat 3")')
+    check(lua.eval("CCE:GetText()") == "third window", "17.2 /r2f copychat 3 shows chat window 3")
+    lua.execute('SlashCmdList.R2F("copychat 9")')
+    check(lua.eval("R2FCopyChat:IsShown()") is True, "17.2 an unknown window number falls back to a window that exists")
+    # --- the corner buttons ---------------------------------------------------------------------------------
+    check(lua.eval("R2FCopyChatButton1 == nil"), "17.2 button off: no corner buttons")
+    lua.execute("R2F.Gameplay.SetOn('copychat', true)")
+    check(lua.eval("R2FCopyChatButton1 ~= nil and R2FCopyChatButton1:IsShown()") is True and lua.eval("R2FCopyChatButton3 ~= nil"),
+          "17.2 button on: one in every chat window's corner")
+    lua.execute("R2FCopyChat:Hide() R2FCopyChatButton3:Click()")
+    check(lua.eval("R2FCopyChat:IsShown()") is True and lua.eval("CCE:GetText()") == "third window", "17.2 a corner button opens that window's text")
+    lua.execute("R2F.Gameplay.SetOn('copychat', false)")
+    check(lua.eval("R2FCopyChatButton1:IsShown()") is False, "17.2 off again: the buttons go")
+    # --- no readable chat -----------------------------------------------------------------------------------------------
+    lua2, T2 = copychat_runtime(chat=False)
+    lua2.execute("ChatFrame1 = nil ChatFrame2 = nil ChatFrame3 = nil")
+    T2.chat = lua2.table()
+    lua2.execute('SlashCmdList.R2F("copychat")')
+    check("no chat window whose text can be read" in chat_all(lua2), "17.2 no readable chat window: says so")
+    check(lua2.eval("R2F.Gameplay.SetOn('copychat', true)") is False, "17.2 ... and the button feature can't be switched on")
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -6175,6 +6247,7 @@ def main():
     test_gameplay()
     test_gameplay_extras()
     test_gameplay_quests()
+    test_copychat()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

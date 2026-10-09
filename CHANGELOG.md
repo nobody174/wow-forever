@@ -66,7 +66,7 @@ user-facing release notes.
   the game macros it creates / updates / replaces, raises ranks when a spell is learned (queued in
   combat), leaves edited macros alone, keeps library bodies as the site sends them, and adds
   `/r2f ranks`. The site's three Charge macros keep their `Charge(Rank 1)` stopgap, which the addon
-  raises. Never run in game yet (TESTING.md 27). Not released yet.
+  raises. Never run in game yet (TESTING.md 27). Released as r2f-v0.19.0; addons page points at it.
 
 ## 2026-10-09 (Addon 0.18.0: Launch Plan in game, TomTom waypoints)
 - ADDON_PLAN 15.5, step 5 of addon round 2: a Plan tab (four group plans, launch-day steps,

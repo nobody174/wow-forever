@@ -2,9 +2,9 @@
 --
 --   Accept quests    accepts a quest when its window opens, and picks the next available quest
 --                    at a quest giver (gossip list or quest greeting).
---   Hand in quests   completes finished quests and takes the reward ONLY when the quest has no
---                    reward choice. When there is a choice, the window stays open for you:
---                    the addon never picks a reward.
+--   Hand in quests   completes finished quests and takes the reward when there is nothing to choose
+--                    between (no reward, or exactly one). With two or more reward choices the window
+--                    stays open for you: the addon never picks between rewards.
 --   Reward values    shows what each reward choice sells for to a vendor, and marks the best.
 --
 -- All three are OFF until ticked. Holding Shift pauses the two that act, so you can read
@@ -122,9 +122,11 @@ Gameplay.Register({
     end,
     QUEST_COMPLETE = function()
       if paused() then return end
-      -- THE RULE: a quest with any reward choice is left for you.
-      local choices = GetNumQuestChoices and GetNumQuestChoices() or 1
-      if choices == 0 and GetQuestReward then GetQuestReward(1) end
+      -- THE RULE: the addon never picks between rewards. With no reward or exactly one there is
+      -- nothing to pick between, so the quest is turned in; with two or more it is left for you.
+      -- (Without the API it can't tell, so it does nothing.)
+      local choices = GetNumQuestChoices and GetNumQuestChoices()
+      if choices ~= nil and choices <= 1 and GetQuestReward then GetQuestReward(1) end
     end,
   },
 })

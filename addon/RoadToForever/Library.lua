@@ -145,6 +145,11 @@ function Library.Init()
   if type(cdb.bags.lock) ~= "boolean" then cdb.bags.lock = false end
   if type(cdb.bags.bags) ~= "table" then cdb.bags.bags = {} end
   if type(cdb.bags.combined) ~= "table" then cdb.bags.combined = nil end
+  -- Launch Plan tab (Plan.lua, v0.18.0): the chosen group plan and the ticked step ids.
+  -- Per character: ticks are about THIS character's progress.
+  if type(cdb.plan) ~= "table" then cdb.plan = {} end
+  if type(cdb.plan.done) ~= "table" then cdb.plan.done = {} end
+  if not (R2F.PlanData and R2F.PlanData.plans[cdb.plan.selected]) then cdb.plan.selected = "hwd" end
   _G.R2FCharDB = cdb
 
   Library.db, Library.cdb = db, cdb

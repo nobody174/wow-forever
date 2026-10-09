@@ -3,6 +3,27 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.18.0 (2026-10-09): Launch Plan in game, TomTom waypoints (ADDON_PLAN 15.5)
+
+**Never run in game yet: TESTING.md 26.**
+
+- **New tab: Plan** (Home / Macros / Talents / Plan / Reminders / Settings; `/r2f plan`). Pick
+  the group plan (2 Hunters · Warrior · Druid, 2 Hunters, 3 Hunters · Druid, Paladin · Hunter
+  · Shaman: the site's plans with the site's override / `base` rules), then tick off the
+  launch-day steps (launch night, phases 1 to 3). Ticks and the chosen plan are saved per
+  character. The pre-launch and beta lists are not included.
+- **Home shows the next step** ("Next: [12] Skycutter to Dalaran ...") and opens the tab.
+- **Waypoints:** each step with known places lists them. A **Waypoint** button sets a TomTom
+  waypoint (`TomTom:AddWaypoint`, zone names turned into uiMapIDs at run time); without TomTom
+  the button (**Show /way**) prints the `/way Zone x y label` line to chat. Points with no known
+  position yet show their label and "position not known yet" (no button); points taken from
+  Classic or only roughly known say "may have moved".
+- **`/r2f here`** prints your zone, uiMapID and x, y (and a `/way` line), so the missing
+  positions can be captured in the beta and sent to us.
+- The plan data (`PlanData.lua`) is generated from `launch-plan.html` and
+  `launch-plan-waypoints.json` by `python build.py` (needs node); a test fails if the checked-in
+  file is out of date or the addon's plan filtering differs from the site's own `resolve()`.
+
 ## 0.17.0 (2026-10-09): Reminders tab, Hunter ammo low (ADDON_PLAN 15.4)
 
 **Never run in game yet: TESTING.md 25.**

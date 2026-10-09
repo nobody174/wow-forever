@@ -2859,7 +2859,12 @@ ForeverPlus already tracks buffs, so nothing here duplicates it.
   needed (durability under X%), bags almost full, rested-XP state.
 - One shared look: same framed icon as the stance icon, draggable, lockable, size slider.
 
-### 15.5 Launch Plan checklist in game (+ TomTom waypoints)
+### 15.5 Launch Plan checklist in game (+ TomTom waypoints) -- built as v0.18.0, 2026-10-09
+(As built: `addon/tools/gen_plan_data.js` (run by `build.py`, needs node) evaluates the page's own
+`PLANS`, `PHASES`, `override()` and `resolve()` and writes `PlanData.lua`; `Plan.lua` re-implements
+the same rules (a test compares both for every plan); `UI/Plan.lua` is the tab. Tab order is Home /
+Macros / Talents / Plan / Reminders / Settings. A step's per-plan waypoint list replaces the default
+for that plan only (no base-chain lookup for waypoints). Without TomTom the button prints the /way line.)
 - The site's Launch Plan (`launch-plan.html` PHASES, per group plan: hwd / hunter / h3d /
   trio) exported to the addon as generated Lua data (build step, like the macro data),
   so it works offline in game.

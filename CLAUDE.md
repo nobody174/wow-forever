@@ -29,7 +29,11 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   export tray, `R2F1:` import string, selection in localStorage `wf-export-v1`);
   spec and build decisions in `ADDON_PLAN.md` sections 4 and 7.
 - `build.py` — generates `macros.html` and `wow-forever-macros.md` from `data.py` +
-  `template.html`.
+  `template.html`, then runs `addon/tools/gen_plan_data.js` (node) which writes the addon's
+  `addon/RoadToForever/PlanData.lua` from `launch-plan.html` (PLANS, PHASES) and
+  `launch-plan-waypoints.json` (waypoints for the in-game Plan tab, ADDON_PLAN 15.5). Never
+  hand-edit `PlanData.lua`; after changing launch-plan.html's PLANS/PHASES or the waypoints JSON,
+  run `python build.py` (the addon tests fail if it is stale).
 - `macros.html`, `wow-forever-macros.md` — generated output. Never hand-edit; run
   `python build.py`.
 - `index.html` — hand-written landing page. Rotating hero backgrounds (`assets/hero-1..4.webp`),

@@ -721,6 +721,9 @@ function methods:SetCheckedTexture(t) self.__checkedTex = self.__checkedTex or n
 function methods:GetCheckedTexture() return self.__checkedTex end
 function methods:SetBlendMode(m) self.__blend = m end
 function methods:SetScale(s) self.__scale = s end
+function methods:EnableMouseWheel() end
+function methods:SetVerticalScroll(v) self.__vscroll = v end
+function methods:GetVerticalScroll() return self.__vscroll or 0 end
 function methods:SetColorTexture(r, g, b, a) self.__ctex = { r, g, b, a } end
 function methods:SetTexture(t) self.__tex = t end
 function methods:SetDesaturated(v) self.__desat = v end

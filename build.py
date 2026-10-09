@@ -170,3 +170,18 @@ with open("macros.html", "w", encoding="utf-8") as f:
     f.write(html)
 
 print("built")
+
+
+# =============================================================================
+# Addon data (ADDON_PLAN 15.5): the in-game Launch Plan, generated from
+# launch-plan.html + launch-plan-waypoints.json into addon/RoadToForever/PlanData.lua.
+# Needs node (the page's own override()/resolve() code is evaluated, not re-implemented).
+# =============================================================================
+import shutil
+import subprocess
+
+_node = shutil.which("node")
+if _node:
+    subprocess.run([_node, "addon/tools/gen_plan_data.js"], check=True)
+else:
+    print("warning: node not found, addon/RoadToForever/PlanData.lua was not regenerated")

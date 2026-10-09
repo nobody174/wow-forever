@@ -1,6 +1,6 @@
 -- UI/Home.lua: the Home tab of the main window (ADDON_PLAN.md 12.4).
 --
--- "What's next" (15.2, v0.15.0): three large entries in spellbook-slot style
+-- "What's next" (15.2, v0.15.0; the launch plan's next step since v0.18.0): large entries in spellbook-slot style
 -- (big icon in the quick-slot border, gold name, white line under it): Talents
 -- with the free talent points, Macro Book with live counts, and the macro slot
 -- use (12.4). Clicking an entry switches the main window to that tab. Below
@@ -43,6 +43,13 @@ end
 function Home.SlotLine()
   local acc, maxAcc, char, maxChar = Macros.Counts()
   return L.HOME_SLOTS_LINE:format(char, maxChar, acc, maxAcc)
+end
+
+-- 15.5: the next unticked step of the chosen launch plan, "Next: [12] Skycutter to Dalaran".
+function Home.PlanLine()
+  local s = R2F.Plan.Next(R2F.Plan.Selected())
+  if not s then return L.HOME_PLAN_DONE end
+  return L.HOME_PLAN_NEXT:format(s.lvl and s.lvl ~= "" and ("[" .. s.lvl .. "] " .. s.t) or s.t)
 end
 
 function Home.MacroLine()
@@ -98,10 +105,11 @@ local function build(f)
   ui.macros = entry(f, -156, "INV_Misc_Book_09", L.HOME_MACROS, "macros")
   ui.talents = entry(f, -86, "INV_Misc_Book_11", L.HOME_TALENTS, "talents")
   ui.slots = entry(f, -226, "INV_Scroll_03", L.HOME_SLOTS, "macros")
+  ui.plan = entry(f, -296, "INV_Misc_Map_01", L.HOME_PLAN, "plan")
 
   ui.import = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   ui.import:SetSize(160, 24)
-  ui.import:SetPoint("TOPLEFT", 52, -316)
+  ui.import:SetPoint("TOPLEFT", 52, -382)
   ui.import:SetText(L.HOME_IMPORT)
   ui.import:SetScript("OnClick", function() R2F.ImportFrame.Show() end)
 
@@ -185,6 +193,7 @@ function Home.Refresh()
   ui.macros.sub:SetText(Home.MacroLine())
   ui.talents.sub:SetText(Home.TalentLine())
   ui.slots.sub:SetText(Home.SlotLine())
+  ui.plan.sub:SetText(Home.PlanLine())
   -- Import is greyed out in combat, like the book's Import button (6.7):
   -- every import button behaves the same.
   local combat = R2F.InCombat()

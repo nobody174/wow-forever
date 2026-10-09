@@ -2,13 +2,15 @@
 --
 -- PortraitFrameTemplate shell (UI.Window: same template checks and
 -- fallbacks the Macro Book used since step 3), portrait = our logo, and
--- five bottom tabs in the character frame's style: Home / Macros / Talents / Reminders / Settings.
+-- six bottom tabs in the character frame's style: Home / Macros / Talents / Plan / Reminders / Settings.
 -- Each tab is a page frame filling the window; the window shows one page at
 -- a time:
 --   Home    -> UI/Home.lua builds into it
 --   Macros  -> UI/MacroBook.lua builds into it (the step-3 book, reparented)
 --   Talents -> UI/TalentPanel.lua builds into it (step 9: link, preview,
 --              Copy my build; step 10: Learn talents)
+--   Plan    -> UI/Plan.lua builds into it (15.5, v0.18.0: the launch-day checklist
+--              per group plan, tick boxes, TomTom waypoints)
 --   Reminders-> UI/Reminders.lua builds into it (15.4, v0.17.0: the on-screen
 --              reminder icons' options: Warrior stance, Hunter ammo)
 --   Settings-> UI/Settings.lua builds into it (15.2, v0.15.0: slots, minimap,
@@ -26,10 +28,10 @@ local UI = R2F.UI
 local MainWindow = {}
 R2F.MainWindow = MainWindow
 
-MainWindow.TABS = { "home", "macros", "talents", "reminders", "settings" }
-local TAB_INDEX = { home = 1, macros = 2, talents = 3, reminders = 4, settings = 5 }
-local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", reminders = "TITLE_REMINDERS", settings = "TITLE_SETTINGS" }
-local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", reminders = "TAB_REMINDERS", settings = "TAB_SETTINGS" }
+MainWindow.TABS = { "home", "macros", "talents", "plan", "reminders", "settings" }
+local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, reminders = 5, settings = 6 }
+local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", plan = "TITLE_PLAN", reminders = "TITLE_REMINDERS", settings = "TITLE_SETTINGS" }
+local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", plan = "TAB_PLAN", reminders = "TAB_REMINDERS", settings = "TAB_SETTINGS" }
 local LOGO = "Interface\\AddOns\\RoadToForever\\media\\logo128"
 
 local frame
@@ -46,6 +48,8 @@ local function refreshPage(key)
     R2F.MacroBook.Refresh()
   elseif key == "talents" then
     R2F.TalentPanel.Refresh()
+  elseif key == "plan" then
+    R2F.PlanTab.Refresh()
   elseif key == "reminders" then
     R2F.RemindersTab.Refresh()
   elseif key == "settings" then
@@ -137,6 +141,7 @@ local function build()
   R2F.Home.Build(pages.home)
   R2F.MacroBook.Build(pages.macros)
   R2F.TalentPanel.Build(pages.talents)
+  R2F.PlanTab.Build(pages.plan)
   R2F.RemindersTab.Build(pages.reminders)
   R2F.Settings.Build(pages.settings)
 

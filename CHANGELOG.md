@@ -42,6 +42,14 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.18.0: Launch Plan in game, TomTom waypoints)
+- ADDON_PLAN 15.5, step 5 of addon round 2: a Plan tab (four group plans, launch-day steps,
+  per-character ticks, next step on Home), a Waypoint button per point (TomTom, or the `/way`
+  line in chat; zone names resolved to uiMapIDs at run time), `/r2f here` to capture the 19
+  `check` positions in the beta. `build.py` now also runs `addon/tools/gen_plan_data.js`
+  (node) to write `addon/RoadToForever/PlanData.lua` from `launch-plan.html` +
+  `launch-plan-waypoints.json`. Never run in game yet (TESTING.md 26). Not released yet.
+
 ## 2026-10-09 (Addon 0.17.0: Reminders tab, Hunter ammo low)
 - ADDON_PLAN 15.4, step 4 of addon round 2: a Reminders tab (stance icon + options moved out
   of Settings), the first new reminder Hunter ammo low (red under a user-set threshold, hidden

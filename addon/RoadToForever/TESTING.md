@@ -973,3 +973,32 @@ Do not trust the first result blindly: which bag windows WoW Forever has is a gu
 5. `/reload` and relog: positions, sizes, threshold, locks and on / off are kept.
 6. A Hunter without a ranged weapon will see the red 0: tick Show off for the ammo icon.
    (If that is annoying in practice, tell us: hiding it without a ranged weapon is easy.)
+
+## 26. Launch Plan in game, waypoints (v0.18.0, ADDON_PLAN 15.5)
+
+1. Six tabs now: Home, Macros, Talents, **Plan**, Reminders, Settings. Do they all fit on the
+   window's bottom edge without overlapping or running off? (Note it if not.) `/r2f plan` opens Plan.
+2. **Plan tab:** four group plans at the top (pick yours; it is remembered), "N of M launch-day
+   steps done", then the steps under Launch night / Phase 1 / 2 / 3. Scroll with the wheel.
+   - Switch between the four plans: the lists differ (e.g. the Paladin · Hunter · Shaman plan has
+     Coldridge Valley and no Dalaran portal; the Hunter-only plans have no tank/healer steps).
+   - Tick a step: the text greys out, the count goes up. `/reload`: still ticked. Other character:
+     its own ticks. A step ticked on one plan stays ticked on another that has the same step.
+3. **Home:** a "Launch plan" entry with "Next: [level] first unticked step"; it follows the ticks
+   and opens the Plan tab. When everything is ticked it says all done.
+4. **Waypoints** (steps with places): each place is one line.
+   - With **TomTom** installed (it is on the Addons page): the button says **Waypoint**. Click it:
+     TomTom puts an arrow on the right spot of the right zone. Check a few: Anvilmar (Dwarf plan),
+     Kharanos inn, Thelsamar inn, Auberdine, Astranaar, Menethil, Southshore, Ironforge's Hall of Thanes.
+   - **Without TomTom** (disable it and `/reload`): the button says **Show /way** and prints a
+     `/way Zone x y label` line in chat.
+   - Positions copied from Classic say "(may have moved)": walk there and tell us if one is off.
+   - Places we have no position for yet (Zephras Isle, Stormwind Harbor, Riverglades, new
+     dungeons ...) show the name and "(position not known yet)" with no button.
+   - If TomTom says nothing or the arrow is in the wrong place, type `/dump C_Map.GetBestMapForUnit("player")`
+     and tell us the zone and the number.
+5. **Capture the missing positions:** stand at each "position not known yet" place (everything up to
+   level 30 is in the beta) and type `/r2f here`. It prints `here: Zone (uiMapID N) x, y` and a `/way`
+   line. Send us those lines (or paste them into BACKLOG's "Fill in the check waypoints"). Try it
+   in a city and indoors too; if it says it can't read your position, note where.
+6. All of this works in combat (ticks, buttons).

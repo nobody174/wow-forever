@@ -63,9 +63,13 @@ are built as well.
       handles it, the three `Charge(Rank 1)` stopgap macros on the site could go back to plain
       `Charge` (players without the addon would then hit the problem again, so decide then).
 
-- [ ] **Replace ForeverPlus: Gameplay tab** (ADDON_PLAN 17, planned 2026-10-09): waiting for the
-      owner's yes on the tab layout (Gameplay replaces Reminders; Settings keeps the rest) and the
-      build order; ask which ForeverPlus buff placement he used, if any.
+- [ ] **Replace ForeverPlus, steps 2 to 5** (ADDON_PLAN 17; step 1 shipped as 0.21.0, TESTING.md 29):
+      2. MailAlts, BagSlots (free slots on the backpack), QuestZoneTracking, fast Looting.
+      3. Quest automation: QuestAutoAccept, QuestAutoTurnIn (never picks a reward), QuestRewardValue.
+      4. GossipAuto and greed rolls, after real measurements.
+      5. Buff reminders (owner's ForeverPlus "upper display"): buffs the group can give you with a
+         class-buff list to tick which to track, and Find Minerals / Herbs / Treasure. Needs a spike
+         first: ForeverPlus found that auras can't be read in combat on this client.
 
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 

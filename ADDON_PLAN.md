@@ -2980,3 +2980,15 @@ along the window's bottom edge.
 AutoSellGray (all easy, all useful at once). 2. MailAlts, BagSlots, QuestZoneTracking, Looting (fast loot only).
 3. Quest automation: QuestAutoAccept, QuestAutoTurnIn, QuestRewardValue. 4. GossipAuto, greed rolls (after real
 in-game measurements of the gossip options on this build).
+
+### 17.1 Decisions and progress (2026-10-09)
+* **Owner agreed** the tab layout (Gameplay replaces Reminders; Settings keeps the rest) and the build order.
+* **Step 1 built as v0.21.0** (`Gameplay.lua`, `UI/Gameplay.lua`; `UI/Reminders.lua` is now the reminder column):
+  repair, sell grey, block duels, error filter, XP bar text. All off by default. TESTING.md 29.
+* **Step 5 added: buff reminders.** What the owner used in ForeverPlus (its BuffExpiry module, the largest one
+  at 4000+ lines): an "upper display" icon row showing buffs the other group members (dungeon / raid) can
+  give him that he doesn't have, a list of every class's buffs with check boxes for which ones to track, and
+  a reminder for the minimap tracking spells Find Minerals / Find Herbs / Find Treasure. ForeverPlus' own
+  notes say the client refuses aura reads in combat (and in battlegrounds before they start), so this needs
+  a measured spike (what `C_UnitAuras` answers, when) before any design. Smaller first cut worth asking
+  about: only the tracking reminder (is Find Herbs / Minerals active?), which needs no aura reading.

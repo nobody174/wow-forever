@@ -28,6 +28,7 @@ handlers.PLAYER_LOGIN = function()
   R2F.Minimap.Init()
   R2F.Stance.Init()
   R2F.Ammo.Init()
+  R2F.Gameplay.Init()
   R2F.Bags.Init()
 end
 
@@ -152,7 +153,8 @@ local COMMANDS = {
   macros = function() R2F.MainWindow.Show("macros") end,
   talents = function() R2F.MainWindow.Show("talents") end,
   settings = function() R2F.MainWindow.Show("settings") end,
-  reminders = function() R2F.MainWindow.Show("reminders") end,
+  gameplay = function() R2F.MainWindow.Show("gameplay") end,
+  reminders = function() R2F.MainWindow.Show("gameplay") end,   -- the old tab name
   plan = function() R2F.MainWindow.Show("plan") end,
   here = function() R2F.Plan.Here() end,
   ranks = function() R2F.Ranks.Print() end,

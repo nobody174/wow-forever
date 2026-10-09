@@ -1052,3 +1052,26 @@ Test with ForeverPlus' Bag window module OFF (`/fplus`), or the two fight over t
 8. Untick **Movable bags**: the window goes back to where the game puts it. Use items from your bags
    afterwards (right-click a potion): no "blocked from an action" message anywhere.
 9. **Minimap button, right-click:** the last line is **Reload UI**; it reloads.
+
+## 29. Gameplay tab (v0.21.0, ADDON_PLAN 17 step 1)
+
+Everything is OFF until you tick it. Test with ForeverPlus' matching modules off (AutoRepair,
+AutoSellGray, Interruptions, ErrorFilter, XPBarText) or both addons do the job twice.
+
+1. Tabs: Home, Macros, Talents, Plan, **Gameplay**, Settings (no Reminders tab any more). `/r2f gameplay`
+   opens it. The right column is your class's reminders (stance / ammo): same options as before, same
+   saved positions.
+2. **Repair at vendors:** damage a piece of gear, tick it, open a vendor that repairs: everything is
+   repaired with your gold and chat says the cost. Open one with nothing damaged: nothing happens.
+   With too little gold: chat says so and nothing is repaired.
+3. **Sell grey items:** put a few grey items in your bags (and one white and one green), tick it, open
+   any vendor: only the greys sell, chat says how many and the total. Check the buy-back tab.
+   Do greys with no sell price stay? (They should.)
+4. **Block duels:** tick it, have a friend duel you: it is declined, the popup closes, chat says who.
+5. **Hide red error spam:** tick it, spam a spell with no rage / on cooldown / out of range: the red
+   lines don't appear; real messages (e.g. "You are in combat") still do. Untick: they come back.
+6. **XP bar text always shown:** tick it: the numbers on the experience bar stay visible. Untick: it goes
+   back to how it was before. (Greyed out? tell us: the game has no such setting.)
+7. `/reload` and relog: ticked features are still active without opening the tab.
+8. Combat: the tab's boxes work in combat, except XP bar text (a game setting): it refuses and says so.
+9. Anything that goes wrong prints "gameplay feature X hit an error ..." once: send us that line.

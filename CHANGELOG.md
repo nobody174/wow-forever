@@ -60,6 +60,12 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.21.0: Gameplay tab, first five ForeverPlus features)
+- ADDON_PLAN 17 step 1: the Reminders tab became the Gameplay tab (automatic features, screen features,
+  reminders); new features, all off by default: repair at vendors, sell grey items, block duels, hide
+  red error spam, XP bar text. Never run in game yet (TESTING.md 29). Buff reminders (group buffs
+  others can give you, Find Minerals / Herbs / Treasure) added to the plan as step 5.
+
 ## 2026-10-09 (Stance swap macro, addon list icon, ForeverPlus replacement plan)
 - Warrior `Stances` macro (was "Stance dance Battle -> Defensive -> Berserker"): owner test, it did
   nothing in Defensive Stance (the next step was Berserker Stance, not available before level 30).

@@ -3,6 +3,28 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.21.0 (2026-10-09): Gameplay tab, first five features (ADDON_PLAN 17 step 1)
+
+**Never run in game yet: TESTING.md 29.**
+
+- **The Reminders tab is now the Gameplay tab** (Home / Macros / Talents / Plan / Gameplay /
+  Settings). `/r2f gameplay` opens it (`/r2f reminders` still works and opens the same tab).
+  Left column: **Automatic** and **Screen** features; right column: **Reminders** (your class's
+  stance / ammo icons and their options, exactly as before).
+- **Everything ships OFF.** One check box per feature; each says in chat what it did.
+  - **Repair at vendors:** repairs everything with your own gold when you open a vendor that can
+    repair; says the cost; does nothing if you can't afford it.
+  - **Sell grey items:** at a vendor, sells grey (poor quality) items that have a vendor price.
+    Nothing else is ever sold; says the count and total.
+  - **Block duels:** declines every duel request, says who.
+  - **Hide red error spam:** hides "Not enough rage", "Ability is not ready yet", "Out of range",
+    wrong facing and similar lines above the action bar (matched against the client's own texts).
+  - **XP bar text always shown:** uses the game's own setting and puts your old value back when
+    you untick it (can't be changed in combat).
+- A feature the client can't do is greyed out with a tooltip; an error in one feature is reported
+  once and never stops the others.
+- Written from scratch; ForeverPlus was only used as a list of what these features do.
+
 ## 0.20.1 (2026-10-09): addon list icon
 
 - The addon list in the game's AddOns window showed a "?" icon: the TOC now has

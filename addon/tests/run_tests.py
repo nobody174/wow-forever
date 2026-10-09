@@ -1136,11 +1136,11 @@ def test_reminders():
     lua, T = reminder_runtime("WARRIOR")
     MW = lua.eval("R2F.MainWindow")
     keys = [lua.eval("R2F.MainWindow.TABS[%d]" % i) for i in range(1, 7)]
-    check(keys == ["home", "macros", "talents", "plan", "reminders", "settings"], "15.4/15.5 tab order: %s" % keys)
+    check(keys == ["home", "macros", "talents", "plan", "gameplay", "settings"], "15.4/15.5 tab order: %s" % keys)
     lua.execute('SlashCmdList.R2F("reminders")')
-    check(MW.CurrentTab() == "reminders", "15.4 /r2f reminders opens the Reminders tab")
+    check(MW.CurrentTab() == "gameplay", "15.4 /r2f reminders (the old name) opens the Gameplay tab")
     title = lua.eval("R2FMain.__title")
-    check(title == "Road to Forever: Reminders", "15.4 Reminders title: %r" % title)
+    check(title == "Road to Forever: Gameplay", "15.4 Reminders title: %r" % title)
     check(lua.eval("R2FStanceFrame ~= nil") and lua.eval("R2FAmmoFrame == nil") and lua.eval("R2FAmmoScale == nil"),
           "15.4 Warrior: stance frame only, no ammo frame or ammo controls")
     check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "15.4 stance size slider is on the Reminders tab")
@@ -1157,7 +1157,7 @@ def test_reminders():
     check(lua.eval("SS[1]:IsVisible()") is False and lua.eval("R2FStanceScale:IsVisible()") is False,
           "15.4 the stance options are no longer on the Settings tab")
     # Controls only write SavedVariables: still usable in combat.
-    lua.execute("R2F.MainWindow.SelectTab('reminders')")
+    lua.execute("R2F.MainWindow.SelectTab('gameplay')")
     T.combat = True
     T.fire("PLAYER_REGEN_DISABLED")
     check(lua.eval("SS[1]:IsEnabled()") is True and lua.eval("SL[1]:IsEnabled()") is True, "15.4 Reminders controls stay enabled in combat")
@@ -1167,12 +1167,12 @@ def test_reminders():
     lua, T = reminder_runtime("HUNTER")
     check(lua.eval("R2FAmmoFrame ~= nil") and lua.eval("R2FStanceFrame == nil") and lua.eval("R2FStanceScale == nil"),
           "15.4 Hunter: ammo frame only")
-    lua.execute("R2F.MainWindow.Show('reminders')")
+    lua.execute("R2F.MainWindow.Show('gameplay')")
     check(lua.eval("R2FAmmoScale:IsVisible() and R2FAmmoThreshold:IsVisible()") is True, "15.4 Hunter sees the ammo size + threshold sliders")
     lua, T = reminder_runtime("PRIEST")
     check(lua.eval("R2FAmmoFrame == nil and R2FStanceFrame == nil and R2FAmmoScale == nil and R2FStanceScale == nil"),
           "15.4 Priest: no reminder frames or controls")
-    lua.execute("R2F.MainWindow.Show('reminders')")
+    lua.execute("R2F.MainWindow.Show('gameplay')")
     check(font_text(lua, "^No reminders for your class") is not None, "15.4 a class without reminders sees the 'none yet' line")
     T.chat = lua.table()
     lua.execute('SlashCmdList.R2F("ammo")')
@@ -1222,7 +1222,7 @@ def test_reminders():
     check(lua.eval("R2FDB.ammo.threshold") == 50, "15.4 threshold minimum 50")
     lua.execute("R2F.Ammo.SetThreshold(99999)")
     check(lua.eval("R2FDB.ammo.threshold") == 1000, "15.4 threshold maximum 1000")
-    lua.execute("R2F.MainWindow.Show('reminders') R2FAmmoThreshold:Fire('OnValueChanged', 650)")
+    lua.execute("R2F.MainWindow.Show('gameplay') R2FAmmoThreshold:Fire('OnValueChanged', 650)")
     check(lua.eval("R2FDB.ammo.threshold") == 650, "15.4 the threshold slider sets it")
     check(font_text(lua, "^Turn red when under: 650$") is not None, "15.4 the slider label shows the value")
 
@@ -1286,265 +1286,265 @@ def test_reminders():
           "15.4 invalid saved ammo values fall back to the defaults")
 
 
-PLAN_MAPS_LUA = """
-  C_Map = {
-    GetMapChildrenInfo = function(root, mapType, all)
-      if root ~= 947 then return {} end
-      return {
-        { mapID = 1426, name = 'Dun Morogh', mapType = 3 },
-        { mapID = 9999, name = 'Dun Morogh', mapType = 4 },
-        { mapID = 1455, name = 'Ironforge', mapType = 3 },
-        { mapID = 1428, name = 'Burning Steppes', mapType = 3 },
-      }
-    end,
-    GetMapInfo = function(id)
-      local names = { [947] = 'Azeroth', [1426] = 'Dun Morogh', [9999] = 'Dun Morogh', [1455] = 'Ironforge' }
-      if names[id] then return { mapID = id, name = names[id], mapType = 3 } end
-    end,
-    GetBestMapForUnit = function() return TEST.hereMap end,
-    GetPlayerMapPosition = function(id, unit)
-      if TEST.herePos then return { GetXY = function() return TEST.herePos[1], TEST.herePos[2] end } end
-    end,
-  }
-"""
-
-PLAN_SEP = chr(30)
-
-
-def plan_runtime(templates=True, maps=True, tomtom=False, preset=None):
-    lua = new_runtime(templates)
-    lua.execute("TEST.reset()")
-    if not templates:
-        lua.execute("TEST.templates.UIPanelScrollFrameTemplate = nil")
-    if maps:
-        lua.execute(PLAN_MAPS_LUA)
-    lua.execute("TOMTOM_CALLS = {}")
-    if tomtom:
-        lua.execute("TomTom = { AddWaypoint = function(self, mapID, x, y, opts) table.insert(TOMTOM_CALLS, { mapID, x, y, opts.title }) end }")
-    if preset:
-        lua.execute("R2FCharDB = %s" % preset)
-    T = lua.eval("TEST")
-    T.fire("ADDON_LOADED", "RoadToForever")
-    T.fire("PLAYER_LOGIN")
-    lua.execute("""function DUMP(plan)
-      local o = {}
-      for i, s in ipairs(R2F.Plan.Steps(plan)) do
-        local tg = {}
-        for _, t in ipairs(s.tags) do tg[#tg + 1] = t[1] .. ':' .. t[2] end
-        o[i] = table.concat({ s.phase, s.id, s.lvl or '', s.t or '', s.n or '', table.concat(tg, '|') }, string.char(30))
-      end
-      return o
-    end""")
-    return lua, T
-
-
-def chat_all(lua):
-    return "\n".join(lua.eval("TEST.chat[%d]" % n) for n in range(1, lua.eval("#TEST.chat") + 1))
-
-
-def test_plan(templates=True):
-    """ADDON_PLAN 15.5: Launch Plan tab: plan filtering, ticks, map resolution, TomTom / no-TomTom."""
-    import subprocess
-    node_gen = os.path.join(ROOT, "addon", "tools", "gen_plan_data.js")
-    tag = "templates" if templates else "fallbacks"
-
-    if templates:
-        # --- Generated data is current; plan filtering equals the site's own resolve() ------------
-        r = subprocess.run(["node", node_gen, "--check"], capture_output=True, text=True)
-        check(r.returncode == 0, "15.5 PlanData.lua is up to date with launch-plan.html (run python build.py): %s" % r.stderr.strip())
-        exp = json.loads(subprocess.check_output(["node", node_gen, "--expected"]).decode("utf-8"))
-        lua, T = plan_runtime()
-        union = set()
-        for plan, steps in exp["plans"].items():
-            want = [PLAN_SEP.join([s["phase"], s["id"], s["lvl"], s["t"], s["n"], "|".join(k + ":" + v for k, v in s["tags"])]) for s in steps]
-            got = lua_table_to_list(lua.eval("DUMP(%r)" % plan))
-            check(got == want, "15.5 plan %s: the addon shows the same %d steps with the same texts as the site's resolve()" % (plan, len(want)))
-            if got != want:
-                for a, b in zip(got, want):
-                    if a != b:
-                        print("   first difference:", repr(a[:120]), "vs", repr(b[:120]))
-                        break
-            union |= {s["id"] for s in steps}
-        check(len(union) == 45, "15.5 45 launch-day steps over all plans (got %d)" % len(union))
-        check(not any(i.startswith("b-") or i.startswith("t-") for i in union) and "h-loot" not in union,
-              "15.5 the pre-launch and beta lists are not in the data")
-        check(exp["phases"] == ["night", "p1", "p2", "p3"], "15.5 only the launch-day phases")
-        # Spot checks of the rules, independent of the comparison above.
-        ids = lambda plan: [s.split(PLAN_SEP)[1] for s in lua_table_to_list(lua.eval("DUMP(%r)" % plan))]
-        check("n-dalaran" not in ids("trio") and "n-dalaran" in ids("hwd"), "15.5 a step hidden for one plan (false) stays for the others")
-        check("tr-coldridge" in ids("trio") and "tr-coldridge" not in ids("hunter") and "tr-coldridge" not in ids("hwd")
-              and "tr-coldridge" not in ids("h3d"), "15.5 hidden on `hunter` also hides on its base-inheriting plans (hwd, h3d)")
-        check("wd-bear" in ids("hwd") and "wd-bear" in ids("h3d") and "wd-bear" not in ids("hunter"),
-              "15.5 an empty override (hwd = {}) keeps the step visible, shadowing the base's false")
-        check(lua.eval("R2F.Plan.Resolve({ id = 'x', t = 'a', ov = { hunter = { t = 'b' } } }, 'h3d').t") == "b",
-              "15.5 base override applies through the chain (h3d -> hunter)")
-        check(lua.eval("R2F.Plan.Resolve({ id = 'x', t = 'a', ov = { hunter = { t = 'b' }, h3d = { t = 'c' } } }, 'h3d').t") == "c",
-              "15.5 the plan's own override beats the base's")
-        check(lua.eval("R2F.Plan.Resolve({ id = 'x', t = 'a', ov = { hunter = false, h3d = { n = 'z' } } }, 'h3d').t") == "a",
-              "15.5 own override shadows the base's `false`")
-
-        # --- Waypoint lists: plan list replaces the default ---------------------------------------
-        check(lua.eval("#R2F.Plan.Points('tr-coldridge', 'trio')") == 1 and lua.eval("#R2F.Plan.Points('tr-coldridge', 'hwd')") == 0,
-              "15.5 a step's per-plan points (trio) do not leak into other plans")
-        check(lua.eval("R2F.Plan.Points('h-pet', 'hwd')[1].conf") == "check" and lua.eval("R2F.Plan.Points('h-pet', 'trio')[1].zone") == "Dun Morogh",
-              "15.5 per-plan list replaces the default for that plan only")
-        check(lua.eval("#R2F.Plan.Points('nope', 'hwd')") == 0, "15.5 steps without points give an empty list")
-        wp = json.load(open(os.path.join(ROOT, "launch-plan-waypoints.json"), encoding="utf-8"))["steps"]
-        count = sum(len(pts) for st in wp.values() for pts in st.values())
-        got = lua.eval("""(function() local n = 0 for id, w in pairs(R2F.PlanData.waypoints) do
-          for _, pts in pairs(w) do n = n + #pts end end return n end)()""")
-        check(got == count, "15.5 every waypoint point from the JSON is in the addon data (%d)" % count)
-
-        # --- Ticks and saved state (per character) -------------------------------------------------
-        lua, T = plan_runtime()
-        check(lua.eval("R2F.Plan.Selected()") == "hwd" and lua.eval("R2FCharDB.plan ~= nil and R2FDB.plan == nil"),
-              "15.5 default plan hwd, stored per character")
-        done, total = lua.eval("R2F.Plan.Progress('hwd')")
-        check(done == 0 and total == len(exp["plans"]["hwd"]), "15.5 progress 0 of %d for hwd" % total)
-        first = lua.eval("R2F.Plan.Next('hwd').id")
-        lua.execute("R2F.Plan.SetDone(%r, true)" % first)
-        check(lua.eval("R2FCharDB.plan.done[%r]" % first) is True and lua.eval("R2F.Plan.IsDone(%r)" % first) is True, "15.5 a tick is saved")
-        check(lua.eval("R2F.Plan.Next('hwd').id") != first, "15.5 the next step moves on after a tick")
-        check(lua.eval("(R2F.Plan.Progress('hwd'))") == 1, "15.5 progress counts the tick")
+PLAN_MAPS_LUA = """
+  C_Map = {
+    GetMapChildrenInfo = function(root, mapType, all)
+      if root ~= 947 then return {} end
+      return {
+        { mapID = 1426, name = 'Dun Morogh', mapType = 3 },
+        { mapID = 9999, name = 'Dun Morogh', mapType = 4 },
+        { mapID = 1455, name = 'Ironforge', mapType = 3 },
+        { mapID = 1428, name = 'Burning Steppes', mapType = 3 },
+      }
+    end,
+    GetMapInfo = function(id)
+      local names = { [947] = 'Azeroth', [1426] = 'Dun Morogh', [9999] = 'Dun Morogh', [1455] = 'Ironforge' }
+      if names[id] then return { mapID = id, name = names[id], mapType = 3 } end
+    end,
+    GetBestMapForUnit = function() return TEST.hereMap end,
+    GetPlayerMapPosition = function(id, unit)
+      if TEST.herePos then return { GetXY = function() return TEST.herePos[1], TEST.herePos[2] end } end
+    end,
+  }
+"""
+
+PLAN_SEP = chr(30)
+
+
+def plan_runtime(templates=True, maps=True, tomtom=False, preset=None):
+    lua = new_runtime(templates)
+    lua.execute("TEST.reset()")
+    if not templates:
+        lua.execute("TEST.templates.UIPanelScrollFrameTemplate = nil")
+    if maps:
+        lua.execute(PLAN_MAPS_LUA)
+    lua.execute("TOMTOM_CALLS = {}")
+    if tomtom:
+        lua.execute("TomTom = { AddWaypoint = function(self, mapID, x, y, opts) table.insert(TOMTOM_CALLS, { mapID, x, y, opts.title }) end }")
+    if preset:
+        lua.execute("R2FCharDB = %s" % preset)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    lua.execute("""function DUMP(plan)
+      local o = {}
+      for i, s in ipairs(R2F.Plan.Steps(plan)) do
+        local tg = {}
+        for _, t in ipairs(s.tags) do tg[#tg + 1] = t[1] .. ':' .. t[2] end
+        o[i] = table.concat({ s.phase, s.id, s.lvl or '', s.t or '', s.n or '', table.concat(tg, '|') }, string.char(30))
+      end
+      return o
+    end""")
+    return lua, T
+
+
+def chat_all(lua):
+    return "\n".join(lua.eval("TEST.chat[%d]" % n) for n in range(1, lua.eval("#TEST.chat") + 1))
+
+
+def test_plan(templates=True):
+    """ADDON_PLAN 15.5: Launch Plan tab: plan filtering, ticks, map resolution, TomTom / no-TomTom."""
+    import subprocess
+    node_gen = os.path.join(ROOT, "addon", "tools", "gen_plan_data.js")
+    tag = "templates" if templates else "fallbacks"
+
+    if templates:
+        # --- Generated data is current; plan filtering equals the site's own resolve() ------------
+        r = subprocess.run(["node", node_gen, "--check"], capture_output=True, text=True)
+        check(r.returncode == 0, "15.5 PlanData.lua is up to date with launch-plan.html (run python build.py): %s" % r.stderr.strip())
+        exp = json.loads(subprocess.check_output(["node", node_gen, "--expected"]).decode("utf-8"))
+        lua, T = plan_runtime()
+        union = set()
+        for plan, steps in exp["plans"].items():
+            want = [PLAN_SEP.join([s["phase"], s["id"], s["lvl"], s["t"], s["n"], "|".join(k + ":" + v for k, v in s["tags"])]) for s in steps]
+            got = lua_table_to_list(lua.eval("DUMP(%r)" % plan))
+            check(got == want, "15.5 plan %s: the addon shows the same %d steps with the same texts as the site's resolve()" % (plan, len(want)))
+            if got != want:
+                for a, b in zip(got, want):
+                    if a != b:
+                        print("   first difference:", repr(a[:120]), "vs", repr(b[:120]))
+                        break
+            union |= {s["id"] for s in steps}
+        check(len(union) == 45, "15.5 45 launch-day steps over all plans (got %d)" % len(union))
+        check(not any(i.startswith("b-") or i.startswith("t-") for i in union) and "h-loot" not in union,
+              "15.5 the pre-launch and beta lists are not in the data")
+        check(exp["phases"] == ["night", "p1", "p2", "p3"], "15.5 only the launch-day phases")
+        # Spot checks of the rules, independent of the comparison above.
+        ids = lambda plan: [s.split(PLAN_SEP)[1] for s in lua_table_to_list(lua.eval("DUMP(%r)" % plan))]
+        check("n-dalaran" not in ids("trio") and "n-dalaran" in ids("hwd"), "15.5 a step hidden for one plan (false) stays for the others")
+        check("tr-coldridge" in ids("trio") and "tr-coldridge" not in ids("hunter") and "tr-coldridge" not in ids("hwd")
+              and "tr-coldridge" not in ids("h3d"), "15.5 hidden on `hunter` also hides on its base-inheriting plans (hwd, h3d)")
+        check("wd-bear" in ids("hwd") and "wd-bear" in ids("h3d") and "wd-bear" not in ids("hunter"),
+              "15.5 an empty override (hwd = {}) keeps the step visible, shadowing the base's false")
+        check(lua.eval("R2F.Plan.Resolve({ id = 'x', t = 'a', ov = { hunter = { t = 'b' } } }, 'h3d').t") == "b",
+              "15.5 base override applies through the chain (h3d -> hunter)")
+        check(lua.eval("R2F.Plan.Resolve({ id = 'x', t = 'a', ov = { hunter = { t = 'b' }, h3d = { t = 'c' } } }, 'h3d').t") == "c",
+              "15.5 the plan's own override beats the base's")
+        check(lua.eval("R2F.Plan.Resolve({ id = 'x', t = 'a', ov = { hunter = false, h3d = { n = 'z' } } }, 'h3d').t") == "a",
+              "15.5 own override shadows the base's `false`")
+
+        # --- Waypoint lists: plan list replaces the default ---------------------------------------
+        check(lua.eval("#R2F.Plan.Points('tr-coldridge', 'trio')") == 1 and lua.eval("#R2F.Plan.Points('tr-coldridge', 'hwd')") == 0,
+              "15.5 a step's per-plan points (trio) do not leak into other plans")
+        check(lua.eval("R2F.Plan.Points('h-pet', 'hwd')[1].conf") == "check" and lua.eval("R2F.Plan.Points('h-pet', 'trio')[1].zone") == "Dun Morogh",
+              "15.5 per-plan list replaces the default for that plan only")
+        check(lua.eval("#R2F.Plan.Points('nope', 'hwd')") == 0, "15.5 steps without points give an empty list")
+        wp = json.load(open(os.path.join(ROOT, "launch-plan-waypoints.json"), encoding="utf-8"))["steps"]
+        count = sum(len(pts) for st in wp.values() for pts in st.values())
+        got = lua.eval("""(function() local n = 0 for id, w in pairs(R2F.PlanData.waypoints) do
+          for _, pts in pairs(w) do n = n + #pts end end return n end)()""")
+        check(got == count, "15.5 every waypoint point from the JSON is in the addon data (%d)" % count)
+
+        # --- Ticks and saved state (per character) -------------------------------------------------
+        lua, T = plan_runtime()
+        check(lua.eval("R2F.Plan.Selected()") == "hwd" and lua.eval("R2FCharDB.plan ~= nil and R2FDB.plan == nil"),
+              "15.5 default plan hwd, stored per character")
+        done, total = lua.eval("R2F.Plan.Progress('hwd')")
+        check(done == 0 and total == len(exp["plans"]["hwd"]), "15.5 progress 0 of %d for hwd" % total)
+        first = lua.eval("R2F.Plan.Next('hwd').id")
+        lua.execute("R2F.Plan.SetDone(%r, true)" % first)
+        check(lua.eval("R2FCharDB.plan.done[%r]" % first) is True and lua.eval("R2F.Plan.IsDone(%r)" % first) is True, "15.5 a tick is saved")
+        check(lua.eval("R2F.Plan.Next('hwd').id") != first, "15.5 the next step moves on after a tick")
+        check(lua.eval("(R2F.Plan.Progress('hwd'))") == 1, "15.5 progress counts the tick")
         lua.execute("R2F.Plan.SetDone('n-camp', true)")
         check(lua.eval("(R2F.Plan.Progress('trio'))") == 1 and lua.eval("(R2F.Plan.Progress('hwd'))") == 2,
               "15.5 a tick is shared by every plan that has the step (n-camp is in hwd and trio)")
-        lua.execute("R2F.Plan.SetDone('n-camp', false)")
-        lua.execute("R2F.Plan.SetDone(%r, false)" % first)
-        check(lua.eval("R2FCharDB.plan.done[%r]" % first) is None, "15.5 unticking removes it")
-        check(lua.eval("R2F.Plan.Select('trio')") is True and lua.eval("R2FCharDB.plan.selected") == "trio", "15.5 the chosen plan is saved")
-        check(lua.eval("R2F.Plan.Select('nope')") is False and lua.eval("R2F.Plan.Selected()") == "trio", "15.5 an unknown plan is refused")
-        lua.execute("for _, s in ipairs(R2F.Plan.Steps('trio')) do R2F.Plan.SetDone(s.id, true) end")
-        check(lua.eval("R2F.Plan.Next('trio')") is None, "15.5 all done: no next step")
-        # Relog: ticks and the plan come back; a bad saved plan is repaired.
-        lua, T = plan_runtime(preset="{ plan = { selected = 'h3d', done = { ['n-zephras'] = true } } }")
-        check(lua.eval("R2F.Plan.Selected()") == "h3d" and lua.eval("R2F.Plan.IsDone('n-zephras')") is True, "15.5 relog: plan and ticks persisted")
-        lua, T = plan_runtime(preset="{ plan = { selected = 'bogus' } }")
-        check(lua.eval("R2F.Plan.Selected()") == "hwd" and lua.eval("type(R2FCharDB.plan.done)") == "table", "15.5 a bad saved plan falls back to hwd")
-
-        # --- Map resolution -------------------------------------------------------------------------------
-        lua, T = plan_runtime()
-        check(lua.eval("R2F.Plan.ResolveMap('Dun Morogh', 1426)") == 1426, "15.5 map hint used when its name matches")
-        check(lua.eval("R2F.Plan.ResolveMap('Dun Morogh', 555)") == 1426, "15.5 wrong hint ignored; name lookup prefers the zone map over the dungeon one")
-        check(lua.eval("R2F.Plan.ResolveMap('ironforge')") == 1455, "15.5 name lookup is case-insensitive")
-        check(lua.eval("R2F.Plan.ResolveMap('Zephras Isle')") is None, "15.5 a zone this client doesn't have resolves to nil")
-        check(lua.eval("R2F.Plan.ResolveMap(nil)") is None, "15.5 no zone name -> nil")
-        lua.execute("C_Map = nil R2F.Plan.ResetMapCache()")
-        check(lua.eval("R2F.Plan.ResolveMap('Dun Morogh')") is None, "15.5 no C_Map at all -> nil, no error")
-        lua.execute(PLAN_MAPS_LUA + " R2F.Plan.ResetMapCache()")
-        check(lua.eval("R2F.Plan.ResolveMap('Burning Steppes')") == 1428, "15.5 the map list is rebuilt when C_Map shows up later")
-
-        # --- Waypoint paths: TomTom, no TomTom, check points ------------------------------------------------
-        exact = "{ zone = 'Dun Morogh', mapHint = 1426, x = 29.9, y = 71.2, label = 'Anvilmar', conf = 'exact' }"
-        lua, T = plan_runtime(tomtom=True)
-        T.chat = lua.table()
-        lua.execute("R = R2F.Plan.Waypoint(%s)" % exact)
-        call = lua.eval("TOMTOM_CALLS[1]")
-        check(lua.eval("R") == "tomtom" and call is not None and call[1] == 1426 and abs(call[2] - 0.299) < 1e-9
-              and abs(call[3] - 0.712) < 1e-9 and call[4] == "Anvilmar", "15.5 TomTom: AddWaypoint(mapID, x/100, y/100, {title}) called")
-        check("waypoint set: Anvilmar" in chat_all(lua), "15.5 TomTom: chat confirms the waypoint")
-        T.chat = lua.table()
-        lua.execute("R = R2F.Plan.Waypoint({ zone = 'Zephras Isle', x = 10, y = 20, label = 'Valanaar', conf = 'approx' })")
-        check(lua.eval("R") == "line" and lua.eval("#TOMTOM_CALLS") == 1 and "/way Zephras Isle 10 20 Valanaar" in chat_all(lua)
-              and "no map called Zephras Isle" in chat_all(lua), "15.5 TomTom but unknown map: prints the /way line, sets nothing")
-        T.chat = lua.table()
-        lua.execute("R = R2F.Plan.Waypoint({ zone = 'Zephras Isle', label = 'Valanaar', conf = 'check' })")
-        check(lua.eval("R") is None and lua.eval("#TOMTOM_CALLS") == 1 and chat_all(lua) == "", "15.5 check points: no waypoint, nothing printed")
-        lua, T = plan_runtime(tomtom=False)
-        T.chat = lua.table()
-        lua.execute("R = R2F.Plan.Waypoint(%s)" % exact)
-        check(lua.eval("R") == "line" and "/way Dun Morogh 29.9 71.2 Anvilmar" in chat_all(lua), "15.5 no TomTom: the /way line is printed: %r" % chat_all(lua))
-        check(lua.eval("R2F.Plan.HasTomTom()") is False and lua.eval("R2F.Plan.HasPosition({ conf = 'check' })") is False
-              and lua.eval("R2F.Plan.HasPosition({ conf = 'exact', x = 1, y = 2 })") is True, "15.5 HasTomTom / HasPosition")
-        check(lua.eval("R2F.Plan.MayHaveMoved({ conf = 'classic' })") is True and lua.eval("R2F.Plan.MayHaveMoved({ conf = 'approx' })") is True
-              and lua.eval("R2F.Plan.MayHaveMoved({ conf = 'exact' })") is False, "15.5 classic / approx get the 'may have moved' note, exact does not")
-
-        # --- /r2f here ---------------------------------------------------------------------------------------------
-        lua, T = plan_runtime()
-        T.chat = lua.table()
-        lua.execute("TEST.hereMap = 1426 TEST.herePos = { 0.474, 0.525 }")
-        lua.execute('SlashCmdList.R2F("here")')
-        txt = chat_all(lua)
-        check("here: Dun Morogh (uiMapID 1426) 47.4, 52.5" in txt and "/way Dun Morogh 47.4 52.5" in txt, "15.5 /r2f here prints zone, uiMapID, x, y and a /way line: %r" % txt)
-        T.chat = lua.table()
-        lua.execute("TEST.hereMap = nil")
-        lua.execute('SlashCmdList.R2F("here")')
-        check("couldn't read your position" in chat_all(lua), "15.5 /r2f here without a map says so")
-        T.chat = lua.table()
-        lua.execute("TEST.hereMap = 1426 TEST.herePos = nil")
-        lua.execute('SlashCmdList.R2F("here")')
-        check("couldn't read your position" in chat_all(lua), "15.5 /r2f here without a position says so")
-        lua.execute('SlashCmdList.R2F("plan")')
-        check(lua.eval("R2F.MainWindow.CurrentTab()") == "plan", "15.5 /r2f plan opens the Plan tab")
-
-    # --- The Plan tab (both template chains) ------------------------------------------------------------------------
-    lua, T = plan_runtime(templates=templates, tomtom=False)
-    lua.execute("R2F.MainWindow.Show('plan')")
-    title = lua.eval("R2FMain.__title") if templates else lua.eval("R2FMainPlain.r2fTitle.__text")
-    check(title == "Road to Forever: Plan", "%s: Plan title: %r" % (tag, title))
-    check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 6, "%s: six tabs, Plan fourth" % tag)
-    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text ~= '' and f.stepId == nil", "PICKS")
-    labels = [lua.eval("PICKS[%d].r2fLabel.__text" % i) for i in range(1, lua.eval("#PICKS") + 1)]
-    wanted = [lua.eval("R2F.Plan.Label(%r)" % p) for p in ("hwd", "hunter", "h3d", "trio")]
-    check(all(w in labels for w in wanted), "%s: the picker has all four group plans" % tag)
-    n_hwd = lua.eval("#R2F.Plan.Steps('hwd')")
-    check(font_text(lua, "^0 of %d launch%%-day steps done$" % n_hwd) is not None, "%s: progress line" % tag)
-    find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "STEPS")
-    check(lua.eval("#STEPS") == n_hwd, "%s: one tick box per step of the plan (%s)" % (tag, lua.eval("#STEPS")))
-    lua.execute("STEPS[1]:Click()")
-    first = lua.eval("STEPS[1].stepId")
-    check(lua.eval("R2F.Plan.IsDone(%r)" % first) is True and font_text(lua, "^1 of %d launch" % n_hwd) is not None,
-          "%s: ticking a box saves it and updates the progress line" % tag)
-    # Switch plan: the list changes and ticks are kept per step id.
-    wanted_trio = lua.eval("#R2F.Plan.Steps('trio')")
-    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.Plan.Label('trio')", "TRIOBTN")
-    lua.execute("TRIOBTN[1]:Click()")
-    find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "STEPS")
-    check(lua.eval("R2F.Plan.Selected()") == "trio" and lua.eval("#STEPS") == wanted_trio,
-          "%s: picking Paladin · Hunter · Shaman shows its %d steps" % (tag, wanted_trio))
-    # Waypoint lines: the trio's Coldridge step has a classic point; the Zephras step a check point.
-    find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible()", "WPB")
-    check(lua.eval("#WPB") >= 1 and lua.eval("WPB[1].__text") == "Show /way", "%s: without TomTom the button says Show /way" % tag)
-    lua.execute("for _, b in ipairs(WPB) do if b.point.label:find('Anvilmar') then ANVIL = b end end")
-    T.chat = lua.table()
-    lua.execute("ANVIL:Click()")
-    check("/way Dun Morogh 28.8 67.6 Anvilmar, Coldridge Valley" in chat_all(lua), "%s: clicking prints the /way line: %r" % (tag, chat_all(lua)))
-    check(font_text(lua, "may have moved") is not None, "%s: a classic point shows the 'may have moved' note" % tag)
-    lua.execute("R2F.Plan.Select('hwd') R2F.PlanTab.Refresh()")
-    check(font_text(lua, "position not known yet") is not None, "%s: a check point shows its label with 'position not known yet'" % tag)
-    find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible() and f.point.conf == 'check'", "CHK")
-    check(lua.eval("#CHK") == 0, "%s: check points have no button" % tag)
-    # TomTom loaded: the button sets a waypoint.
-    lua.execute("TomTom = { AddWaypoint = function(self, m, x, y, o) table.insert(TOMTOM_CALLS, { m, x, y, o.title }) end }")
-    lua.execute("R2F.Plan.Select('trio') R2F.PlanTab.Refresh()")
-    find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible()", "WPB")
-    check(lua.eval("WPB[1].__text") == "Waypoint", "%s: with TomTom the button says Waypoint" % tag)
-    lua.execute("for _, b in ipairs(WPB) do if b.point.label:find('Anvilmar') then ANVIL = b end end ANVIL:Click()")
-    check(lua.eval("#TOMTOM_CALLS") == 1 and lua.eval("TOMTOM_CALLS[1][1]") == 1426, "%s: clicking Waypoint calls TomTom with the resolved map" % tag)
-    # Works in combat (no protected calls).
-    T.combat = True
-    T.fire("PLAYER_REGEN_DISABLED")
-    lua.execute("ANVIL:Click() STEPS[1]:Click()")
-    check(lua.eval("#TOMTOM_CALLS") == 2, "%s: waypoints and ticks work in combat" % tag)
-    T.combat = False
-    T.fire("PLAYER_REGEN_ENABLED")
-
-    # --- Home: next step ------------------------------------------------------------------------------------------------
-    lua, T = plan_runtime(templates=templates)
-    lua.execute("R2F.MainWindow.Show('home')")
-    find_frames(lua, "f.__kind == 'Button' and f.tab ~= nil and f.sub ~= nil", "HOME")
-    check(lua.eval("#HOME") == 4 and lua.eval("HOME[4].tab") == "plan", "%s: Home has the launch plan entry" % tag)
-    nxt = lua.eval("R2F.Plan.Next('hwd')")
-    check(lua.eval("HOME[4].sub.__text") == "Next: [%s] %s" % (nxt.lvl, nxt.t), "%s: Home next-step line: %r" % (tag, lua.eval("HOME[4].sub.__text")))
-    lua.execute("R2F.Plan.SetDone(R2F.Plan.Next('hwd').id, true) R2F.Home.Refresh()")
-    nxt2 = lua.eval("R2F.Plan.Next('hwd')")
-    check(lua.eval("HOME[4].sub.__text") == "Next: [%s] %s" % (nxt2.lvl, nxt2.t) and nxt2.id != nxt.id, "%s: the next-step line follows the ticks" % tag)
-    lua.execute("for _, s in ipairs(R2F.Plan.Steps('hwd')) do R2F.Plan.SetDone(s.id, true) end R2F.Home.Refresh()")
-    check(lua.eval("HOME[4].sub.__text") == "All launch-day steps done", "%s: Home says all done" % tag)
-    lua.execute("HOME[4]:Click()")
-    check(lua.eval("R2F.MainWindow.CurrentTab()") == "plan", "%s: clicking the Home entry opens the Plan tab" % tag)
-
-
+        lua.execute("R2F.Plan.SetDone('n-camp', false)")
+        lua.execute("R2F.Plan.SetDone(%r, false)" % first)
+        check(lua.eval("R2FCharDB.plan.done[%r]" % first) is None, "15.5 unticking removes it")
+        check(lua.eval("R2F.Plan.Select('trio')") is True and lua.eval("R2FCharDB.plan.selected") == "trio", "15.5 the chosen plan is saved")
+        check(lua.eval("R2F.Plan.Select('nope')") is False and lua.eval("R2F.Plan.Selected()") == "trio", "15.5 an unknown plan is refused")
+        lua.execute("for _, s in ipairs(R2F.Plan.Steps('trio')) do R2F.Plan.SetDone(s.id, true) end")
+        check(lua.eval("R2F.Plan.Next('trio')") is None, "15.5 all done: no next step")
+        # Relog: ticks and the plan come back; a bad saved plan is repaired.
+        lua, T = plan_runtime(preset="{ plan = { selected = 'h3d', done = { ['n-zephras'] = true } } }")
+        check(lua.eval("R2F.Plan.Selected()") == "h3d" and lua.eval("R2F.Plan.IsDone('n-zephras')") is True, "15.5 relog: plan and ticks persisted")
+        lua, T = plan_runtime(preset="{ plan = { selected = 'bogus' } }")
+        check(lua.eval("R2F.Plan.Selected()") == "hwd" and lua.eval("type(R2FCharDB.plan.done)") == "table", "15.5 a bad saved plan falls back to hwd")
+
+        # --- Map resolution -------------------------------------------------------------------------------
+        lua, T = plan_runtime()
+        check(lua.eval("R2F.Plan.ResolveMap('Dun Morogh', 1426)") == 1426, "15.5 map hint used when its name matches")
+        check(lua.eval("R2F.Plan.ResolveMap('Dun Morogh', 555)") == 1426, "15.5 wrong hint ignored; name lookup prefers the zone map over the dungeon one")
+        check(lua.eval("R2F.Plan.ResolveMap('ironforge')") == 1455, "15.5 name lookup is case-insensitive")
+        check(lua.eval("R2F.Plan.ResolveMap('Zephras Isle')") is None, "15.5 a zone this client doesn't have resolves to nil")
+        check(lua.eval("R2F.Plan.ResolveMap(nil)") is None, "15.5 no zone name -> nil")
+        lua.execute("C_Map = nil R2F.Plan.ResetMapCache()")
+        check(lua.eval("R2F.Plan.ResolveMap('Dun Morogh')") is None, "15.5 no C_Map at all -> nil, no error")
+        lua.execute(PLAN_MAPS_LUA + " R2F.Plan.ResetMapCache()")
+        check(lua.eval("R2F.Plan.ResolveMap('Burning Steppes')") == 1428, "15.5 the map list is rebuilt when C_Map shows up later")
+
+        # --- Waypoint paths: TomTom, no TomTom, check points ------------------------------------------------
+        exact = "{ zone = 'Dun Morogh', mapHint = 1426, x = 29.9, y = 71.2, label = 'Anvilmar', conf = 'exact' }"
+        lua, T = plan_runtime(tomtom=True)
+        T.chat = lua.table()
+        lua.execute("R = R2F.Plan.Waypoint(%s)" % exact)
+        call = lua.eval("TOMTOM_CALLS[1]")
+        check(lua.eval("R") == "tomtom" and call is not None and call[1] == 1426 and abs(call[2] - 0.299) < 1e-9
+              and abs(call[3] - 0.712) < 1e-9 and call[4] == "Anvilmar", "15.5 TomTom: AddWaypoint(mapID, x/100, y/100, {title}) called")
+        check("waypoint set: Anvilmar" in chat_all(lua), "15.5 TomTom: chat confirms the waypoint")
+        T.chat = lua.table()
+        lua.execute("R = R2F.Plan.Waypoint({ zone = 'Zephras Isle', x = 10, y = 20, label = 'Valanaar', conf = 'approx' })")
+        check(lua.eval("R") == "line" and lua.eval("#TOMTOM_CALLS") == 1 and "/way Zephras Isle 10 20 Valanaar" in chat_all(lua)
+              and "no map called Zephras Isle" in chat_all(lua), "15.5 TomTom but unknown map: prints the /way line, sets nothing")
+        T.chat = lua.table()
+        lua.execute("R = R2F.Plan.Waypoint({ zone = 'Zephras Isle', label = 'Valanaar', conf = 'check' })")
+        check(lua.eval("R") is None and lua.eval("#TOMTOM_CALLS") == 1 and chat_all(lua) == "", "15.5 check points: no waypoint, nothing printed")
+        lua, T = plan_runtime(tomtom=False)
+        T.chat = lua.table()
+        lua.execute("R = R2F.Plan.Waypoint(%s)" % exact)
+        check(lua.eval("R") == "line" and "/way Dun Morogh 29.9 71.2 Anvilmar" in chat_all(lua), "15.5 no TomTom: the /way line is printed: %r" % chat_all(lua))
+        check(lua.eval("R2F.Plan.HasTomTom()") is False and lua.eval("R2F.Plan.HasPosition({ conf = 'check' })") is False
+              and lua.eval("R2F.Plan.HasPosition({ conf = 'exact', x = 1, y = 2 })") is True, "15.5 HasTomTom / HasPosition")
+        check(lua.eval("R2F.Plan.MayHaveMoved({ conf = 'classic' })") is True and lua.eval("R2F.Plan.MayHaveMoved({ conf = 'approx' })") is True
+              and lua.eval("R2F.Plan.MayHaveMoved({ conf = 'exact' })") is False, "15.5 classic / approx get the 'may have moved' note, exact does not")
+
+        # --- /r2f here ---------------------------------------------------------------------------------------------
+        lua, T = plan_runtime()
+        T.chat = lua.table()
+        lua.execute("TEST.hereMap = 1426 TEST.herePos = { 0.474, 0.525 }")
+        lua.execute('SlashCmdList.R2F("here")')
+        txt = chat_all(lua)
+        check("here: Dun Morogh (uiMapID 1426) 47.4, 52.5" in txt and "/way Dun Morogh 47.4 52.5" in txt, "15.5 /r2f here prints zone, uiMapID, x, y and a /way line: %r" % txt)
+        T.chat = lua.table()
+        lua.execute("TEST.hereMap = nil")
+        lua.execute('SlashCmdList.R2F("here")')
+        check("couldn't read your position" in chat_all(lua), "15.5 /r2f here without a map says so")
+        T.chat = lua.table()
+        lua.execute("TEST.hereMap = 1426 TEST.herePos = nil")
+        lua.execute('SlashCmdList.R2F("here")')
+        check("couldn't read your position" in chat_all(lua), "15.5 /r2f here without a position says so")
+        lua.execute('SlashCmdList.R2F("plan")')
+        check(lua.eval("R2F.MainWindow.CurrentTab()") == "plan", "15.5 /r2f plan opens the Plan tab")
+
+    # --- The Plan tab (both template chains) ------------------------------------------------------------------------
+    lua, T = plan_runtime(templates=templates, tomtom=False)
+    lua.execute("R2F.MainWindow.Show('plan')")
+    title = lua.eval("R2FMain.__title") if templates else lua.eval("R2FMainPlain.r2fTitle.__text")
+    check(title == "Road to Forever: Plan", "%s: Plan title: %r" % (tag, title))
+    check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 6, "%s: six tabs, Plan fourth" % tag)
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text ~= '' and f.stepId == nil", "PICKS")
+    labels = [lua.eval("PICKS[%d].r2fLabel.__text" % i) for i in range(1, lua.eval("#PICKS") + 1)]
+    wanted = [lua.eval("R2F.Plan.Label(%r)" % p) for p in ("hwd", "hunter", "h3d", "trio")]
+    check(all(w in labels for w in wanted), "%s: the picker has all four group plans" % tag)
+    n_hwd = lua.eval("#R2F.Plan.Steps('hwd')")
+    check(font_text(lua, "^0 of %d launch%%-day steps done$" % n_hwd) is not None, "%s: progress line" % tag)
+    find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "STEPS")
+    check(lua.eval("#STEPS") == n_hwd, "%s: one tick box per step of the plan (%s)" % (tag, lua.eval("#STEPS")))
+    lua.execute("STEPS[1]:Click()")
+    first = lua.eval("STEPS[1].stepId")
+    check(lua.eval("R2F.Plan.IsDone(%r)" % first) is True and font_text(lua, "^1 of %d launch" % n_hwd) is not None,
+          "%s: ticking a box saves it and updates the progress line" % tag)
+    # Switch plan: the list changes and ticks are kept per step id.
+    wanted_trio = lua.eval("#R2F.Plan.Steps('trio')")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.Plan.Label('trio')", "TRIOBTN")
+    lua.execute("TRIOBTN[1]:Click()")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "STEPS")
+    check(lua.eval("R2F.Plan.Selected()") == "trio" and lua.eval("#STEPS") == wanted_trio,
+          "%s: picking Paladin · Hunter · Shaman shows its %d steps" % (tag, wanted_trio))
+    # Waypoint lines: the trio's Coldridge step has a classic point; the Zephras step a check point.
+    find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible()", "WPB")
+    check(lua.eval("#WPB") >= 1 and lua.eval("WPB[1].__text") == "Show /way", "%s: without TomTom the button says Show /way" % tag)
+    lua.execute("for _, b in ipairs(WPB) do if b.point.label:find('Anvilmar') then ANVIL = b end end")
+    T.chat = lua.table()
+    lua.execute("ANVIL:Click()")
+    check("/way Dun Morogh 28.8 67.6 Anvilmar, Coldridge Valley" in chat_all(lua), "%s: clicking prints the /way line: %r" % (tag, chat_all(lua)))
+    check(font_text(lua, "may have moved") is not None, "%s: a classic point shows the 'may have moved' note" % tag)
+    lua.execute("R2F.Plan.Select('hwd') R2F.PlanTab.Refresh()")
+    check(font_text(lua, "position not known yet") is not None, "%s: a check point shows its label with 'position not known yet'" % tag)
+    find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible() and f.point.conf == 'check'", "CHK")
+    check(lua.eval("#CHK") == 0, "%s: check points have no button" % tag)
+    # TomTom loaded: the button sets a waypoint.
+    lua.execute("TomTom = { AddWaypoint = function(self, m, x, y, o) table.insert(TOMTOM_CALLS, { m, x, y, o.title }) end }")
+    lua.execute("R2F.Plan.Select('trio') R2F.PlanTab.Refresh()")
+    find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible()", "WPB")
+    check(lua.eval("WPB[1].__text") == "Waypoint", "%s: with TomTom the button says Waypoint" % tag)
+    lua.execute("for _, b in ipairs(WPB) do if b.point.label:find('Anvilmar') then ANVIL = b end end ANVIL:Click()")
+    check(lua.eval("#TOMTOM_CALLS") == 1 and lua.eval("TOMTOM_CALLS[1][1]") == 1426, "%s: clicking Waypoint calls TomTom with the resolved map" % tag)
+    # Works in combat (no protected calls).
+    T.combat = True
+    T.fire("PLAYER_REGEN_DISABLED")
+    lua.execute("ANVIL:Click() STEPS[1]:Click()")
+    check(lua.eval("#TOMTOM_CALLS") == 2, "%s: waypoints and ticks work in combat" % tag)
+    T.combat = False
+    T.fire("PLAYER_REGEN_ENABLED")
+
+    # --- Home: next step ------------------------------------------------------------------------------------------------
+    lua, T = plan_runtime(templates=templates)
+    lua.execute("R2F.MainWindow.Show('home')")
+    find_frames(lua, "f.__kind == 'Button' and f.tab ~= nil and f.sub ~= nil", "HOME")
+    check(lua.eval("#HOME") == 4 and lua.eval("HOME[4].tab") == "plan", "%s: Home has the launch plan entry" % tag)
+    nxt = lua.eval("R2F.Plan.Next('hwd')")
+    check(lua.eval("HOME[4].sub.__text") == "Next: [%s] %s" % (nxt.lvl, nxt.t), "%s: Home next-step line: %r" % (tag, lua.eval("HOME[4].sub.__text")))
+    lua.execute("R2F.Plan.SetDone(R2F.Plan.Next('hwd').id, true) R2F.Home.Refresh()")
+    nxt2 = lua.eval("R2F.Plan.Next('hwd')")
+    check(lua.eval("HOME[4].sub.__text") == "Next: [%s] %s" % (nxt2.lvl, nxt2.t) and nxt2.id != nxt.id, "%s: the next-step line follows the ticks" % tag)
+    lua.execute("for _, s in ipairs(R2F.Plan.Steps('hwd')) do R2F.Plan.SetDone(s.id, true) end R2F.Home.Refresh()")
+    check(lua.eval("HOME[4].sub.__text") == "All launch-day steps done", "%s: Home says all done" % tag)
+    lua.execute("HOME[4]:Click()")
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "plan", "%s: clicking the Home entry opens the Plan tab" % tag)
+
+
 RANK_SPELLBOOK_LUA = """
   -- A fake spellbook for ADDON_PLAN 16. Unranked "Charge" is Forever's top rank (1240289),
   -- which a level-18 Warrior doesn't know; "Rend" resolves to a spell the Warrior knows.
@@ -1805,6 +1805,194 @@ def test_ranks():
     T.chat = lua.table()
     lua.execute('SlashCmdList.R2F("rankdebug")')
     check("usage: /r2f rankdebug Charge" in chat_all(lua), "16.1 rankdebug without a spell name prints the usage")
+
+
+GAMEPLAY_API_LUA = """
+  -- A fake vendor, bags, duel and error frame (ADDON_PLAN 17).
+  REPAIRS, SOLD, DUELS_CANCELED, POPUPS, MONEY = {}, {}, 0, {}, 100000
+  REPAIR_COST, CAN_REPAIR = 1250, true
+  CanMerchantRepair = function() return CAN_REPAIR end
+  GetRepairAllCost = function() return REPAIR_COST, REPAIR_COST > 0 end
+  GetMoney = function() return MONEY end
+  RepairAllItems = function(guild) table.insert(REPAIRS, guild == nil and 'own gold' or 'guild') end
+  BAGS = {
+    [0] = {
+      { quality = 0, hasNoValue = false, stackCount = 3, hyperlink = 'gray1' },    -- sells, 25c x 3
+      { quality = 1, hasNoValue = false, stackCount = 1, hyperlink = 'white' },    -- never
+      { quality = 0, hasNoValue = true,  stackCount = 1, hyperlink = 'novalue' },  -- never (no vendor value)
+      { quality = 0, hasNoValue = false, stackCount = 1, hyperlink = 'zero' },     -- price 0: skipped
+    },
+    [1] = { { quality = 0, hasNoValue = false, stackCount = 1, hyperlink = 'gray2' } },   -- sells, 100c
+  }
+  PRICES = { gray1 = 25, gray2 = 100, zero = 0, white = 50 }
+  C_Container = {
+    GetContainerNumSlots = function(bag) return BAGS[bag] and #BAGS[bag] or 0 end,
+    GetContainerItemInfo = function(bag, slot) return BAGS[bag] and BAGS[bag][slot] end,
+    UseContainerItem = function(bag, slot) table.insert(SOLD, bag .. ':' .. slot) end,
+  }
+  GetItemInfo = function(link)
+    if PRICES[link] ~= nil then return link, link, 0, 0, 0, '', '', 1, '', 0, PRICES[link] end
+  end
+  CancelDuel = function() DUELS_CANCELED = DUELS_CANCELED + 1 end
+  StaticPopup_Hide = function(which) table.insert(POPUPS, which) end
+  ERR_OUT_OF_RAGE = 'Not enough rage'
+  SPELL_FAILED_NOT_READY = 'Ability is not ready yet'
+  SHOWN = {}
+  UIErrorsFrame = CreateFrame('Frame', 'UIErrorsFrame', UIParent)
+  UIErrorsFrame.AddMessage = function(self, msg) table.insert(SHOWN, msg) end
+  TEST.cvars.xpBarText = '0'
+"""
+
+
+def gameplay_runtime(preset=None, token=None, api=True):
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    if token:
+        lua.execute("TEST.classToken = %r" % token)
+    lua.execute("TEST.cvars.xpBarText = nil")
+    if api:
+        lua.execute(GAMEPLAY_API_LUA)
+    else:
+        lua.execute("UIErrorsFrame = nil")
+    if preset:
+        lua.execute("R2FDB = %s" % preset)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    return lua, T
+
+
+def test_gameplay():
+    """ADDON_PLAN 17 step 1: Gameplay tab with repair, sell grey, block duels, error filter, XP bar text."""
+    lua, T = gameplay_runtime()
+    G = "R2FDB.gameplay."
+    # --- Defaults and the tab ---------------------------------------------------------------------
+    check(all(lua.eval(G + k) is False for k in ("repair", "sellgray", "duels", "errorfilter", "xpbar")),
+          "17 every gameplay feature ships OFF")
+    lua.execute('SlashCmdList.R2F("gameplay")')
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "gameplay" and lua.eval("R2FMain.__title") == "Road to Forever: Gameplay",
+          "17 /r2f gameplay opens the Gameplay tab")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel", "GB")
+    labels = {lua.eval("GB[%d].r2fLabel.__text" % i): i for i in range(1, lua.eval("#GB") + 1)}
+    wanted = [lua.eval("R2F.L.%s" % k) for k in ("GP_REPAIR", "GP_SELLGRAY", "GP_DUELS", "GP_ERRORFILTER", "GP_XPBAR")]
+    check(all(w in labels for w in wanted), "17 the tab has one box per feature")
+    check(font_text(lua, "^Automatic$") is not None and font_text(lua, "^Screen$") is not None and font_text(lua, "^Reminders$") is not None,
+          "17 headings: Automatic / Screen / Reminders")
+    check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "17 the Warrior's stance options sit in the Reminders column of the Gameplay tab")
+    box = lambda key: "GB[%d]" % labels[lua.eval("R2F.L.%s" % key)]
+    # --- Repair ---------------------------------------------------------------------------------------
+    T.fire("MERCHANT_SHOW")
+    check(lua.eval("#REPAIRS") == 0, "17 repair off: nothing happens at a vendor")
+    lua.execute(box("GP_REPAIR") + ":Click()")
+    check(lua.eval(G + "repair") is True, "17 ticking the box turns the feature on")
+    T.chat = lua.table()
+    T.fire("MERCHANT_SHOW")
+    check(lua.eval("#REPAIRS") == 1 and lua.eval("REPAIRS[1]") == "own gold", "17 repair on: repairs with your own gold (no guild bank)")
+    check("repaired your gear for 12s 50c." in chat_all(lua), "17 repair says the cost: %r" % chat_all(lua))
+    lua.execute("MONEY = 100 REPAIRS = {}")
+    T.chat = lua.table()
+    T.fire("MERCHANT_SHOW")
+    check(lua.eval("#REPAIRS") == 0 and "more than you have" in chat_all(lua), "17 can't afford it: nothing repaired, says so")
+    lua.execute("MONEY = 100000 REPAIR_COST = 0")
+    T.fire("MERCHANT_SHOW")
+    check(lua.eval("#REPAIRS") == 0, "17 nothing to repair: nothing done")
+    lua.execute("REPAIR_COST = 1250 CAN_REPAIR = false")
+    T.fire("MERCHANT_SHOW")
+    check(lua.eval("#REPAIRS") == 0, "17 a vendor that can't repair: nothing done")
+    lua.execute("CAN_REPAIR = true")
+    # --- Sell grey items --------------------------------------------------------------------------------------
+    lua.execute("SOLD = {}")
+    T.fire("MERCHANT_SHOW")
+    check(lua.eval("#SOLD") == 0, "17 sell grey off: nothing is sold")
+    lua.execute(box("GP_SELLGRAY") + ":Click()")
+    T.chat = lua.table()
+    lua.execute("REPAIRS = {}")
+    T.fire("MERCHANT_SHOW")
+    sold = lua_table_to_list(lua.eval("SOLD"))
+    check(sold == ["0:1", "1:1"], "17 sell grey: only grey items with a vendor price are sold (not white, not 'no value', not 0c): %s" % sold)
+    check("sold 2 grey items for 1g" not in chat_all(lua) and "sold 2 grey items for 1s 75c." in chat_all(lua), "17 sell grey says count and total (3 x 25c + 100c = 1s 75c): %r" % chat_all(lua))
+    check(lua.eval("#REPAIRS") == 1, "17 both features run on the same vendor visit")
+    lua.execute("SOLD = {}")
+    T.fire("MERCHANT_CLOSED")
+    lua.execute("BAGS[0][1].quality = 0")
+    T.fire("MERCHANT_SHOW")
+    check(lua.eval("#SOLD") == 2, "17 a second vendor visit sells again (state comes from the events)")
+    # --- Block duels -------------------------------------------------------------------------------------------
+    T.fire("DUEL_REQUESTED", "Bob")
+    check(lua.eval("DUELS_CANCELED") == 0, "17 block duels off: the request is left alone")
+    lua.execute(box("GP_DUELS") + ":Click()")
+    T.chat = lua.table()
+    T.fire("DUEL_REQUESTED", "Bob")
+    check(lua.eval("DUELS_CANCELED") == 1 and lua.eval("POPUPS[1]") == "DUEL_REQUESTED" and "declined a duel from Bob." in chat_all(lua),
+          "17 block duels on: declined, popup closed, says who")
+    # --- Error filter ---------------------------------------------------------------------------------------------
+    lua.execute("UIErrorsFrame:AddMessage('Not enough rage')")
+    check(lua_table_to_list(lua.eval("SHOWN")) == ["Not enough rage"], "17 error filter off: the message shows")
+    lua.execute("SHOWN = {}" + " " + box("GP_ERRORFILTER") + ":Click()")
+    lua.execute("UIErrorsFrame:AddMessage('Not enough rage') UIErrorsFrame:AddMessage('Ability is not ready yet') UIErrorsFrame:AddMessage('You are being attacked')")
+    check(lua_table_to_list(lua.eval("SHOWN")) == ["You are being attacked"], "17 error filter on: the spam is hidden, other messages pass: %s" % lua_table_to_list(lua.eval("SHOWN")))
+    lua.execute("SHOWN = {}" + " " + box("GP_ERRORFILTER") + ":Click() UIErrorsFrame:AddMessage('Not enough rage')")
+    check(lua_table_to_list(lua.eval("SHOWN")) == ["Not enough rage"], "17 error filter off again: shows again (the wrapper asks every time)")
+    # --- XP bar text ---------------------------------------------------------------------------------------------------
+    lua2, T2 = gameplay_runtime()
+    lua2.execute("TEST.cvars.xpBarText = '0'")
+    lua2.execute("R2F.Gameplay.SetOn('xpbar', true)")
+    check(lua2.eval("TEST.cvars.xpBarText") == "1" and lua2.eval("R2FDB.gameplayXpWas") == "0", "17 XP bar text on: the game's setting is set, the old value remembered")
+    lua2.execute("R2F.Gameplay.SetOn('xpbar', false)")
+    check(lua2.eval("TEST.cvars.xpBarText") == "0" and lua2.eval("R2FDB.gameplayXpWas") is None, "17 off: the player's old value is put back")
+    lua2.execute("TEST.cvars.xpBarText = '1' R2F.Gameplay.SetOn('xpbar', true) R2F.Gameplay.SetOn('xpbar', false)")
+    check(lua2.eval("TEST.cvars.xpBarText") == "1", "17 a player who already had it on keeps it on after unticking")
+    T2.combat = True
+    check(lua2.eval("R2F.Gameplay.SetOn('xpbar', true)") is False and lua2.eval("R2FDB.gameplay.xpbar") is False,
+          "17 XP bar text can't be changed in combat (a game setting)")
+    T2.combat = False
+
+    # --- Persistence across login: on-state is applied again -----------------------------------------------------------------
+    lua3, T3 = gameplay_runtime(preset="{ gameplay = { errorfilter = true, xpbar = true, repair = true }, gameplayXpWas = '0' }")
+    lua3.execute("UIErrorsFrame:AddMessage('Not enough rage')")
+    check(lua_table_to_list(lua3.eval("SHOWN")) == [], "17 relog: the error filter is active again without opening the tab")
+    check(lua3.eval("TEST.cvars.xpBarText") == "1", "17 relog: the XP bar setting is applied again")
+    check(lua3.eval("R2FDB.gameplay.sellgray") is False, "17 relog: missing flags are filled in as off")
+    lua4, T4 = gameplay_runtime(preset="{ gameplay = { repair = 'yes', duels = 5 } }")
+    check(lua4.eval("R2FDB.gameplay.repair") is False and lua4.eval("R2FDB.gameplay.duels") is False, "17 invalid saved values are repaired to off")
+
+    # --- Features the client can't do ----------------------------------------------------------------------------------------------
+    lua5, T5 = gameplay_runtime(api=False)
+    lua5.execute("R2F.MainWindow.Show('gameplay')")
+    check(lua5.eval("R2F.Gameplay.SetOn('errorfilter', true)") is False and lua5.eval("R2FDB.gameplay.errorfilter") is False,
+          "17 no UIErrorsFrame: the error filter can't be switched on")
+    check(lua5.eval("R2F.Gameplay.SetOn('xpbar', true)") is False, "17 no xpBarText setting: XP bar text can't be switched on")
+    find_frames(lua5, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.GP_XPBAR", "XB")
+    check(lua5.eval("XB[1]:IsEnabled()") is False, "17 ... and its box is greyed out")
+
+    # --- One feature failing never stops the others ------------------------------------------------------------------------------------
+    lua6, T6 = gameplay_runtime()
+    lua6.execute("R2F.Gameplay.SetOn('repair', true) R2F.Gameplay.SetOn('sellgray', true) CanMerchantRepair = function() error('boom') end")
+    T6.chat = lua6.table()
+    T6.fire("MERCHANT_SHOW")
+    check(lua6.eval("#SOLD") == 2 and "gameplay feature repair hit an error" in chat_all(lua6), "17 a failing feature is reported and the others still run")
+    T6.chat = lua6.table()
+    T6.fire("MERCHANT_SHOW")
+    check("hit an error" not in chat_all(lua6), "17 the error is reported once per session")
+
+    # --- Combat: the tab's boxes stay usable ------------------------------------------------------------------------------------------------
+    lua7, T7 = gameplay_runtime()
+    lua7.execute("R2F.MainWindow.Show('gameplay')")
+    T7.combat = True
+    T7.fire("PLAYER_REGEN_DISABLED")
+    find_frames(lua7, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.GP_REPAIR", "RB")
+    check(lua7.eval("RB[1]:IsEnabled()") is True, "17 the Automatic boxes stay enabled in combat")
+    T7.combat = False
+
+    # --- Money text ------------------------------------------------------------------------------------------------------------------------------
+    m = lambda c: lua.eval("R2F.Gameplay.Money(%d)" % c)
+    check([m(0), m(5), m(100), m(1250), m(10000), m(123456)] == ["0c", "5c", "1s", "12s 50c", "1g", "12g 34s 56c"], "17 money text")
+
+    # --- Other classes: no reminder column content for a Priest -------------------------------------------------------------------------------------
+    lua8, T8 = gameplay_runtime(token="PRIEST")
+    lua8.execute("R2F.MainWindow.Show('gameplay')")
+    check(font_text(lua8, "^No reminders for your class") is not None and lua8.eval("R2FStanceScale == nil and R2FAmmoScale == nil"),
+          "17 a class without reminders sees the 'none yet' line in the Reminders column")
 
 
 def test_ui_updates(fx):
@@ -2479,9 +2667,9 @@ def test_step6_ui(templates, fx):
     keys = [lua.eval("MTABS[%d].r2fKey" % i) for i in range(1, 7)]
     names = [lua.eval("MTABS[%d]:GetName()" % i) for i in range(1, 7)]
     labels = [lua.eval("MTABS[%d].__text" % i) for i in range(1, 7)]
-    check(keys == ["home", "macros", "talents", "plan", "reminders", "settings"]
-          and labels == ["Home", "Macros", "Talents", "Plan", "Reminders", "Settings"]
-          and names == [win + "Tab%d" % i for i in range(1, 7)], "tabs Home / Macros / Talents / Plan / Reminders / Settings, named %s" % names)
+    check(keys == ["home", "macros", "talents", "plan", "gameplay", "settings"]
+          and labels == ["Home", "Macros", "Talents", "Plan", "Gameplay", "Settings"]
+          and names == [win + "Tab%d" % i for i in range(1, 7)], "tabs Home / Macros / Talents / Plan / Gameplay / Settings, named %s" % names)
     tpl = lua.eval("MTABS[1].r2fTemplate")
     check(tpl == ("CharacterFrameTabButtonTemplate" if templates else "UIPanelButtonTemplate"),
           "%s: tab template chain picked %s" % (tag, tpl))
@@ -5725,6 +5913,7 @@ def main():
     test_plan(True)
     test_plan(False)
     test_ranks()
+    test_gameplay()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

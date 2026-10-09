@@ -83,6 +83,18 @@ function QuickSettings.Available(item)
   return api("SetCVar") ~= nil and read(item.cvar) ~= nil
 end
 
+-- Raw access for other features that need one game setting (Gameplay's XP bar text):
+-- every CVar read and write in the addon stays in this file.
+function QuickSettings.Read(cvar)
+  return read(cvar)
+end
+
+function QuickSettings.Write(cvar, value)
+  local set = api("SetCVar")
+  if not set then return false end
+  return pcall(set, cvar, value) and true or false
+end
+
 -- Ticked = the live value is the "on" value, whoever set it.
 function QuickSettings.IsOn(item)
   return same(read(item.cvar), item.on)

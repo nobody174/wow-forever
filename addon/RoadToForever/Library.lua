@@ -110,6 +110,11 @@ function Library.Init()
   if type(st.scale) ~= "number" or st.scale < 0.5 or st.scale > 3 then st.scale = 1 end
   if type(st.x) ~= "number" then st.x = 0 end
   if type(st.y) ~= "number" then st.y = -150 end
+  -- Gameplay features (Gameplay.lua, v0.21.0): one true / false per feature, all OFF until ticked.
+  if type(db.gameplay) ~= "table" then db.gameplay = {} end
+  for _, key in ipairs({ "repair", "sellgray", "duels", "errorfilter", "xpbar" }) do
+    if type(db.gameplay[key]) ~= "boolean" then db.gameplay[key] = false end
+  end
   -- Hunter ammo reminder (Ammo.lua, v0.17.0).
   if type(db.ammo) ~= "table" then db.ammo = {} end
   local am = db.ammo

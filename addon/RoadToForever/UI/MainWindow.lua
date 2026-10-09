@@ -2,7 +2,7 @@
 --
 -- PortraitFrameTemplate shell (UI.Window: same template checks and
 -- fallbacks the Macro Book used since step 3), portrait = our logo, and
--- six bottom tabs in the character frame's style: Home / Macros / Talents / Plan / Reminders / Settings.
+-- six bottom tabs in the character frame's style: Home / Macros / Talents / Plan / Gameplay / Settings.
 -- Each tab is a page frame filling the window; the window shows one page at
 -- a time:
 --   Home    -> UI/Home.lua builds into it
@@ -11,8 +11,9 @@
 --              Copy my build; step 10: Learn talents)
 --   Plan    -> UI/Plan.lua builds into it (15.5, v0.18.0: the launch-day checklist
 --              per group plan, tick boxes, TomTom waypoints)
---   Reminders-> UI/Reminders.lua builds into it (15.4, v0.17.0: the on-screen
---              reminder icons' options: Warrior stance, Hunter ammo)
+--   Gameplay-> UI/Gameplay.lua builds into it (ADDON_PLAN 17, v0.21.0: features that
+--              act for you or change the screen, plus the reminder icons' options:
+--              Warrior stance, Hunter ammo; this was the Reminders tab until 0.20.1)
 --   Settings-> UI/Settings.lua builds into it (15.2, v0.15.0: slots, minimap,
 --              Quick settings, stance icon; was a floating panel)
 --
@@ -28,10 +29,10 @@ local UI = R2F.UI
 local MainWindow = {}
 R2F.MainWindow = MainWindow
 
-MainWindow.TABS = { "home", "macros", "talents", "plan", "reminders", "settings" }
-local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, reminders = 5, settings = 6 }
-local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", plan = "TITLE_PLAN", reminders = "TITLE_REMINDERS", settings = "TITLE_SETTINGS" }
-local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", plan = "TAB_PLAN", reminders = "TAB_REMINDERS", settings = "TAB_SETTINGS" }
+MainWindow.TABS = { "home", "macros", "talents", "plan", "gameplay", "settings" }
+local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, gameplay = 5, settings = 6 }
+local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", plan = "TITLE_PLAN", gameplay = "TITLE_GAMEPLAY", settings = "TITLE_SETTINGS" }
+local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", plan = "TAB_PLAN", gameplay = "TAB_GAMEPLAY", settings = "TAB_SETTINGS" }
 local LOGO = "Interface\\AddOns\\RoadToForever\\media\\logo128"
 
 local frame
@@ -50,8 +51,8 @@ local function refreshPage(key)
     R2F.TalentPanel.Refresh()
   elseif key == "plan" then
     R2F.PlanTab.Refresh()
-  elseif key == "reminders" then
-    R2F.RemindersTab.Refresh()
+  elseif key == "gameplay" then
+    R2F.GameplayTab.Refresh()
   elseif key == "settings" then
     R2F.Settings.Refresh()
   end
@@ -142,7 +143,7 @@ local function build()
   R2F.MacroBook.Build(pages.macros)
   R2F.TalentPanel.Build(pages.talents)
   R2F.PlanTab.Build(pages.plan)
-  R2F.RemindersTab.Build(pages.reminders)
+  R2F.GameplayTab.Build(pages.gameplay)
   R2F.Settings.Build(pages.settings)
 
   for i, key in ipairs(MainWindow.TABS) do tabButtons[i] = buildTab(f, i, key) end

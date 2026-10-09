@@ -1091,3 +1091,22 @@ All three are OFF until ticked on the Gameplay tab. Turn ForeverPlus' MailAlts, 
    mobs with several items: everything is taken at once. Hold the auto-loot key (Shift by default) while
    looting: it should do the opposite of the setting. With auto-loot off, nothing is taken for you.
 4. `/reload`: all three still work.
+
+## 31. Quest automation (v0.23.0)
+
+All OFF until ticked on the Gameplay tab. Turn ForeverPlus' QuestAutoAccept / QuestAutoTurnIn / QuestRewardValue
+off first. **Hold Shift to pause** any of them while testing.
+
+1. **Accept quests:** tick it, walk up to a quest giver with a "!" : the quest window opens and is accepted;
+   with several quests, one after the other. Try an NPC with a gossip list first (talk option + quest) and one
+   that goes straight to the quest list. An escort or group quest: does it accept without asking? (Tell us.)
+2. **Hand in quests:** tick it, complete a quest with NO reward choice and talk to the NPC: it is handed in.
+3. **The reward rule (important):** a quest with ONE or more reward items to choose from must NOT be turned
+   in by the addon: the reward window stays open and you pick. Check with a one-item reward and a 3-item one.
+4. With both on at an NPC that has a finished quest and a new one: the finished one goes first.
+5. **Show reward sell prices:** on a quest with several rewards, each choice button shows its vendor price
+   in the corner (green = best). If nothing shows up, tell us what the game's quest window looks like
+   (`/fstack` on a reward icon gives the frame name).
+6. **Free bag slots:** the number is now at the top of the backpack button; no overlap with the game's own?
+   What is the other number (178)? Hover it with `/fstack` and tell us the frame name.
+7. Anything that fails prints "gameplay feature X hit an error ..." once: send us that line.

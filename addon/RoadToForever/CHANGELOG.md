@@ -3,6 +3,23 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.23.0 (2026-10-09): Gameplay step 3 (quest automation)
+
+**Never run in game yet: TESTING.md 31.** All three are OFF until ticked on the Gameplay tab. Hold
+**Shift** to pause the two that act.
+
+- **Accept quests:** accepts a quest when its window opens and picks the next quest a quest giver offers
+  (gossip list or quest greeting). A quest the game accepted by itself is left alone.
+- **Hand in quests:** completes finished quests at the quest giver. **It never picks a reward**: the
+  quest is only turned in when it has no reward choice at all; with one or more choices the window
+  stays open for you. With both boxes on, a finished quest is handed in before a new one is picked.
+- **Show reward sell prices:** writes what each reward choice sells for to a vendor in the corner of its
+  button; the best is green (not marked when there is only one choice).
+- The quest APIs on this client are partly unverified, so the modern gossip functions are tried first with
+  the classic ones as the fallback, and anything missing does nothing.
+- Free bag slots: the number now sits at the TOP of the backpack button, so it no longer lands on top of
+  the game's own count at the bottom.
+
 ## 0.22.0 (2026-10-09): Gameplay step 2 (mail to your characters, free bag slots, fast loot)
 
 **Never run in game yet: TESTING.md 30.** All three are OFF until ticked on the Gameplay tab.

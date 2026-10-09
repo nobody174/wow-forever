@@ -60,6 +60,11 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.23.0: Gameplay step 3, quest automation)
+- ADDON_PLAN 17 step 3: accept quests, hand in quests (never picks a reward; Shift pauses), reward sell
+  prices. All off by default. Bag-slot number moved to the top of the backpack button. Never run in game
+  yet (TESTING.md 31).
+
 ## 2026-10-09 (Addon 0.22.0: Gameplay step 2)
 - ADDON_PLAN 17 step 2: mail to your own characters, free bag slots on the backpack, fast loot (all off
   by default). QuestZoneTracking waits for the quest log's frame names (needs a look in game). Never run

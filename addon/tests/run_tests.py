@@ -2104,6 +2104,144 @@ def test_gameplay_extras():
     check(all(lua.eval("R2FDB.gameplay.%s" % k) is not None for k in ("mailalts", "bagslots", "fastloot")), "17.2 the new switches have saved flags")
 
 
+GAMEPLAY3_LUA = """
+  ACCEPTED, COMPLETED, REWARDS, SEL_AVAIL, SEL_ACTIVE, GREET_AVAIL, GREET_ACTIVE = 0, 0, {}, {}, {}, {}, {}
+  AUTOACC, COMPLETABLE, CHOICES = false, true, 0
+  AVAIL, ACTIVE = {}, {}
+  AcceptQuest = function() ACCEPTED = ACCEPTED + 1 end
+  QuestGetAutoAccept = function() return AUTOACC end
+  CompleteQuest = function() COMPLETED = COMPLETED + 1 end
+  IsQuestCompletable = function() return COMPLETABLE end
+  GetNumQuestChoices = function() return CHOICES end
+  GetQuestReward = function(i) table.insert(REWARDS, i) end
+  C_GossipInfo = {
+    GetAvailableQuests = function() return AVAIL end,
+    GetActiveQuests = function() return ACTIVE end,
+    SelectAvailableQuest = function(id) table.insert(SEL_AVAIL, id) end,
+    SelectActiveQuest = function(id) table.insert(SEL_ACTIVE, id) end,
+  }
+  GetNumAvailableQuests = function() return GREET_N or 0 end
+  SelectAvailableQuest = function(i) table.insert(GREET_AVAIL, i) end
+  GetNumActiveQuests = function() return 2 end
+  GetActiveTitle = function(i) return 'T' .. i, i == 2 end
+  SelectActiveQuest = function(i) table.insert(GREET_ACTIVE, i) end
+  GetQuestItemLink = function(kind, i) return ({ 'a', 'b', 'c' })[i] end
+  PRICES3 = { a = 100, b = 500, c = 0 }
+  GetItemInfo = function(link) if PRICES3[link] ~= nil then return link, link, 1, 0, 0, '', '', 1, '', 0, PRICES3[link] end end
+  for i = 1, 3 do CreateFrame('Button', 'QuestInfoRewardsFrameQuestInfoItem' .. i, UIParent) end
+"""
+
+
+def gameplay3_runtime(rewards_api=True):
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    lua.execute(GAMEPLAY3_LUA)
+    if not rewards_api:
+        lua.execute("GetNumQuestChoices = nil")
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    return lua, T
+
+
+def test_gameplay_quests():
+    """ADDON_PLAN 17 step 3: accept quests, hand in quests (never picks a reward), reward values."""
+    lua, T = gameplay3_runtime()
+    check(all(lua.eval("R2FDB.gameplay.%s" % k) is False for k in ("questaccept", "questturnin", "rewardvalue")), "17.3 all three ship OFF")
+    # --- off: nothing happens ----------------------------------------------------------------------------
+    lua.execute("AVAIL = { { questID = 11 } } ACTIVE = { { questID = 6, isComplete = true } } CHOICES = 0")
+    for ev in ("QUEST_DETAIL", "GOSSIP_SHOW", "QUEST_PROGRESS", "QUEST_COMPLETE"):
+        T.fire(ev)
+    check(lua.eval("ACCEPTED + COMPLETED + #REWARDS + #SEL_AVAIL + #SEL_ACTIVE") == 0, "17.3 off: no quest event does anything")
+    # --- accept ----------------------------------------------------------------------------------------------
+    lua.execute("R2F.Gameplay.SetOn('questaccept', true)")
+    T.fire("QUEST_DETAIL")
+    check(lua.eval("ACCEPTED") == 1, "17.3 accept on: the quest window is accepted")
+    lua.execute("AUTOACC = true")
+    T.fire("QUEST_DETAIL")
+    check(lua.eval("ACCEPTED") == 1, "17.3 a quest the game accepted by itself is left alone")
+    lua.execute("AUTOACC = false TEST.shift = true")
+    T.fire("QUEST_DETAIL")
+    check(lua.eval("ACCEPTED") == 1, "17.3 Shift pauses accepting")
+    lua.execute("TEST.shift = false ACTIVE = {} AVAIL = { { questID = 11 }, { questID = 12 } }")
+    T.fire("GOSSIP_SHOW")
+    check(lua_table_to_list(lua.eval("SEL_AVAIL")) == [11], "17.3 gossip: the first available quest is picked: %s" % lua_table_to_list(lua.eval("SEL_AVAIL")))
+    lua.execute("GREET_N = 2")
+    T.fire("QUEST_GREETING")
+    check(lua_table_to_list(lua.eval("GREET_AVAIL")) == [1], "17.3 quest greeting: the first quest is picked")
+    # --- hand in -----------------------------------------------------------------------------------------------------
+    T.fire("QUEST_PROGRESS")
+    check(lua.eval("COMPLETED") == 0, "17.3 hand-in off: a finished quest isn't completed")
+    lua.execute("R2F.Gameplay.SetOn('questturnin', true) ACTIVE = { { questID = 5, isComplete = false }, { questID = 6, isComplete = true } } AVAIL = { { questID = 12 } } SEL_AVAIL = {}")
+    T.fire("GOSSIP_SHOW")
+    check(lua_table_to_list(lua.eval("SEL_ACTIVE")) == [6], "17.3 gossip: the finished quest is picked, not the unfinished one")
+    check(lua.eval("#SEL_AVAIL") == 0, "17.3 with both on, a finished quest is handed in before a new one is picked")
+    lua.execute("ACTIVE = { { questID = 5, isComplete = false } } SEL_ACTIVE = {}")
+    T.fire("GOSSIP_SHOW")
+    check(lua.eval("#SEL_ACTIVE") == 0 and lua_table_to_list(lua.eval("SEL_AVAIL")) == [12], "17.3 nothing finished here: the new quest is picked instead")
+    T.fire("QUEST_GREETING")
+    check(lua_table_to_list(lua.eval("GREET_ACTIVE")) == [2], "17.3 quest greeting: the finished quest (the 2nd) is picked")
+    T.fire("QUEST_PROGRESS")
+    check(lua.eval("COMPLETED") == 1, "17.3 a completable quest is completed")
+    lua.execute("COMPLETABLE = false")
+    T.fire("QUEST_PROGRESS")
+    check(lua.eval("COMPLETED") == 1, "17.3 not completable: nothing")
+    lua.execute("CHOICES = 0")
+    T.fire("QUEST_COMPLETE")
+    check(lua_table_to_list(lua.eval("REWARDS")) == [1], "17.3 no reward choice: the quest is turned in")
+    lua.execute("REWARDS = {} CHOICES = 1")
+    T.fire("QUEST_COMPLETE")
+    check(lua.eval("#REWARDS") == 0, "17.3 NEVER picks a reward: even a single choice is left for you")
+    lua.execute("CHOICES = 3")
+    T.fire("QUEST_COMPLETE")
+    check(lua.eval("#REWARDS") == 0, "17.3 several choices: left for you")
+    lua.execute("CHOICES = 0 TEST.shift = true")
+    T.fire("QUEST_COMPLETE")
+    check(lua.eval("#REWARDS") == 0, "17.3 Shift pauses handing in")
+    lua.execute("TEST.shift = false")
+    # --- classic gossip fallback ----------------------------------------------------------------------------------------------
+    lua.execute("""C_GossipInfo = nil
+      GetNumGossipAvailableQuests = function() return 1 end
+      SelectGossipAvailableQuest = function(i) table.insert(SEL_AVAIL, 'classic' .. i) end
+      GetNumGossipActiveQuests = function() return 2 end
+      GetGossipActiveQuests = function() return 'A', 1, false, false, false, false, 'B', 1, false, true, false, false end
+      SelectGossipActiveQuest = function(i) table.insert(SEL_ACTIVE, 'classic' .. i) end
+      SEL_AVAIL, SEL_ACTIVE = {}, {}""")
+    T.fire("GOSSIP_SHOW")
+    check(lua_table_to_list(lua.eval("SEL_ACTIVE")) == ["classic2"], "17.3 classic gossip functions: the finished quest (2nd) is handed in")
+    lua.execute("R2F.Gameplay.SetOn('questturnin', false) SEL_AVAIL = {}")
+    T.fire("GOSSIP_SHOW")
+    check(lua_table_to_list(lua.eval("SEL_AVAIL")) == ["classic1"], "17.3 classic gossip functions: a quest is accepted")
+    # --- reward values ---------------------------------------------------------------------------------------------------------------
+    lua2, T2 = gameplay3_runtime()
+    lua2.execute("CHOICES = 3")
+    T2.fire("QUEST_COMPLETE")
+    T2.runTimers()
+    check(font_text(lua2, "^1s$") is None, "17.3 reward values off: no numbers")
+    lua2.execute("R2F.Gameplay.SetOn('rewardvalue', true)")
+    T2.fire("QUEST_COMPLETE")
+    T2.runTimers()
+    check(font_text(lua2, "^1s$") == "1s" and font_text(lua2, "^5s$") == "5s", "17.3 reward values: 100c = 1s and 500c = 5s on the buttons")
+    lua2.execute("""for _, f in ipairs(TEST.allFrames) do if f.__kind == 'FontString' and f.__text == '5s' then BEST = f end if f.__kind == 'FontString' and f.__text == '1s' then OTHER = f end end""")
+    check(lua2.eval("BEST.__color[1]") < 0.5 and lua2.eval("BEST.__color[2]") == 1 and lua2.eval("OTHER.__color[1]") == 1 and lua2.eval("OTHER.__color[3]") == 1,
+          "17.3 the best vendor price is green, the others white")
+    lua2.execute("CHOICES = 1")
+    T2.fire("QUEST_COMPLETE")
+    T2.runTimers()
+    lua2.execute("""for _, f in ipairs(TEST.allFrames) do if f.__kind == 'FontString' and f.__text == '1s' then ONLY = f end end""")
+    check(lua2.eval("ONLY.__color[1]") == 1, "17.3 a single choice isn't marked best")
+    lua2.execute("R2F.Gameplay.SetOn('rewardvalue', false)")
+    check(lua2.eval("BEST.__shown") is False, "17.3 reward values off again: the numbers go")
+    lua3, T3 = gameplay3_runtime(rewards_api=False)
+    check(lua3.eval("R2F.Gameplay.SetOn('rewardvalue', true)") is False, "17.3 no quest reward API: reward values can't be switched on")
+    # --- tab ---------------------------------------------------------------------------------------------------------------------------------------
+    lua3.execute("R2F.MainWindow.Show('gameplay')")
+    find_frames(lua3, "f.__kind == 'CheckButton' and f.r2fLabel", "GB3")
+    labels = [lua3.eval("GB3[%d].r2fLabel.__text" % i) for i in range(1, lua3.eval("#GB3") + 1)]
+    for k in ("GP_QACCEPT", "GP_QTURNIN", "GP_QVALUE"):
+        check(lua3.eval("R2F.L.%s" % k) in labels, "17.3 the Gameplay tab has the %s box" % k)
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -6024,6 +6162,7 @@ def main():
     test_ranks()
     test_gameplay()
     test_gameplay_extras()
+    test_gameplay_quests()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

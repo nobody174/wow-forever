@@ -164,7 +164,8 @@ Gameplay.Register({
     if not btn then return end
     if not slotText then
       slotText = btn:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
-      slotText:SetPoint("BOTTOM", btn, "BOTTOM", 0, 2)
+      -- Top edge: the game's own count sits at the bottom of the button.
+      slotText:SetPoint("TOP", btn, "TOP", 0, -2)
     end
     slotText:SetShown(on)
     if on then updateSlots() end

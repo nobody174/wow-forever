@@ -66,7 +66,7 @@ are built as well.
 - [ ] **Replace ForeverPlus, steps 2 to 5** (ADDON_PLAN 17; step 1 shipped as 0.21.0, TESTING.md 29; step 2 as 0.22.0, TESTING.md 30):
       2. (done: MailAlts, BagSlots, fast Looting) QuestZoneTracking is left: a track-all box on each quest-log zone header,
          needs the quest log's frame names on this client (`/fstack` or `/dump` in game).
-      3. Quest automation: QuestAutoAccept, QuestAutoTurnIn (never picks a reward), QuestRewardValue.
+      3. (done, 0.23.0, TESTING.md 31) Quest automation: accept, hand in (never picks a reward), reward prices.
       4. GossipAuto and greed rolls, after real measurements.
       5. Buff reminders (owner's ForeverPlus "upper display"): buffs the group can give you with a
          class-buff list to tick which to track, and Find Minerals / Herbs / Treasure. Needs a spike
@@ -89,6 +89,11 @@ are built as well.
       become GPL too); write it fresh from the idea above. Strip colour codes / hyperlink markup optionally
       (a "plain text" tick) so pasted feedback is readable. Also covers `UrlCopy` (click a URL in chat to
       copy it) if wanted.
+
+- [ ] **The big number on the backpack button** (owner, 2026-10-09): the backpack shows "178" next to our
+      free-slots number. Not identified (not free slots: he has 5 free). Ask him to hover it with
+      `/fstack` (or `/dump` the frame) to see which addon or game frame owns it; if it is the game's own
+      "(N)" count, hide it while our number is on, like ForeverPlus does.
 
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 

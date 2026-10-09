@@ -26,8 +26,7 @@ Beta data on the site is level-30 data. Redo these once the live game is up:
 ## Next up: addon round 2 (agreed 2026-10-08, spec: ADDON_PLAN.md section 15)
 
 Build in this order; each step is its own release. Steps 1 (import replaces, 0.14.0), 2 (Settings tab, 0.15.0), 3 (movable bags, 0.16.0) and 4 (Reminders tab, 0.17.0) are built, see
-CHANGELOG.md; their in-game checks are TESTING.md 22, 23, 24 and 25. Step 4's
-stance icon settings move from the Settings tab to Reminders.
+CHANGELOG.md; their in-game checks are TESTING.md 22, 23, 24 and 25.
 - [ ] **More reminders** (15.4 candidates, none picked yet): pet missing / dead / unhappy,
       pet food low, repair needed (durability under X%), bags almost full, rested-XP state.
       The Reminders tab and `Reminders.Register` are ready; a new one is one module.

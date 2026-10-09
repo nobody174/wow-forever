@@ -1362,6 +1362,13 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
+**Victory Rush** (`VR`) — New in Forever (level 20). Free, any stance, heals 10% of your max health. Only after a kill that gives XP (20 sec). Its own button: Forever macros can't fall through to another spell.
+```
+#showtooltip Victory Rush
+/startattack [harm]
+/cast [harm] Victory Rush
+```
+
 **Heroic Strike / Cleave (Shift)** (`HS/Cleave`) — Click: Heroic Strike. Shift-click: Cleave (level 20).
 ```
 #showtooltip [mod:shift] Cleave; Heroic Strike
@@ -1486,24 +1493,26 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
-**Victory Rush > Revenge > Sunder Armor** (`Rev>Sund`) — One tank spam button: Victory Rush when it's up after a kill, else Revenge when it's lit (after a block, dodge or parry), else Sunder. Use this on trash; the Shield Block version on bosses and big pulls. The last line hides the "not ready" error.
+**Sunder Armor** (`Sunder`) — Your spam button. Starts auto-attack.
 ```
 #showtooltip Sunder Armor
 /startattack [harm]
-/cast [harm] Victory Rush
-/cast [harm] Revenge
 /cast [harm] Sunder Armor
-/run UIErrorsFrame:Clear()
 ```
 
-**Shield Block + Revenge > Sunder Armor** (`SBlk+Sund`) — Test in beta: Shield Block has no global cooldown, so it fires with the next button whenever it's off cooldown (needs a shield and Defensive Stance). More blocks = more Revenge procs. Watch your rage: Shield Block 10, Sunder 15.
+**Revenge** (`Rev`) — Defensive Stance, after a block, dodge or parry: press it whenever it lights up (best threat per rage). Its own button: Forever: a macro stops at the first spell you know but can't use right now, so "Revenge, else Sunder" in one macro never reaches Sunder (tested 2026-10-09). 
+```
+#showtooltip Revenge
+/startattack [harm]
+/cast [harm] Revenge
+```
+
+**Shield Block + Sunder Armor** (`SBlk+Sund`) — Test in beta: Shield Block is off the global cooldown, so it fires with Sunder in one press. Unknown on Forever: whether Sunder still goes out while Shield Block is on cooldown (if not, use plain Sunder between blocks). Needs a shield and Defensive Stance.
 ```
 #showtooltip Shield Block
 /startattack [harm]
 /cast Shield Block
-/cast [harm] Revenge
 /cast [harm] Sunder Armor
-/run UIErrorsFrame:Clear()
 ```
 
 **Concussion Blow** (`Concuss`) — Talent (in our level-30 tank build).
@@ -1538,14 +1547,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ### Warrior — DPS
 
 #### Damage / offensive
-
-**Victory Rush > Heroic Strike** (`VR>HS`) — Test in beta: Victory Rush when it's up after a kill; Heroic Strike (no global cooldown) queues on your next swing either way. Watch your rage.
-```
-#showtooltip Heroic Strike
-/startattack [harm]
-/cast [harm] Victory Rush
-/cast [harm] Heroic Strike
-```
 
 **Sweeping Strikes (to Battle)** (`Sweep`) — Arms talent (in our level-30 Arms build). Pair with Cleave.
 ```

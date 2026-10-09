@@ -4,6 +4,18 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-09 (Forever macros don't fall through: Warrior combos split)
+- Owner test on the live client: `/cast Revenge` + `/cast Sunder Armor` never casts Sunder when
+  Revenge isn't lit; `/cast Sunder` alone works; Sunder first casts only Sunder. On Forever's
+  modern client a macro stops at the first spell you know but can't use right now, so
+  "try A, else B" macros don't work. Conditions (`[stance]`, `[mod]`, `[combat]`...) still do.
+- Warrior: "Victory Rush > Revenge > Sunder Armor" and "Victory Rush > Heroic Strike" removed;
+  back to separate buttons: Sunder Armor (`Sunder`), Revenge (`Rev`), Victory Rush (`VR`), each
+  with /startattack. "Shield Block + Revenge > Sunder Armor" -> "Shield Block + Sunder Armor"
+  (same short `SBlk+Sund`, marked test: does Sunder still fire while Shield Block is on
+  cooldown?). Builds page rotation notes updated.
+- BACKLOG: audit of the other classes' multi-cast macros, waiting on that one test.
+
 ## 2026-10-09 (Launch Plan waypoint data for the in-game Plan tab)
 - `launch-plan-waypoints.json`: map points for 36 of the 45 launch-day steps (58 points), per
   group plan where they differ. Confidence per point: 4 exact (Forever sources: Hall of Thanes

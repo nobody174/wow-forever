@@ -23,6 +23,26 @@ Beta data on the site is level-30 data. Redo these once the live game is up:
 - [ ] **Mark beta data:** until the above is done, label level-30 beta data as such
       on Professions and Builds.
 
+## Forever macro fall-through audit (2026-10-09)
+
+Tested in game: a macro stops at the first `/cast` of a spell you know but can't use right
+now (no proc, out of range...), so later lines never run. Conditions still choose fine.
+Warrior combos already split (CHANGELOG 2026-10-09). The rest, by pattern:
+- **Broken by design (fix now):** Hunter "Raptor Strike + Wing Clip" and "Survival melee
+  button" (Raptor on cooldown -> nothing), Rogue "Pick Pocket + Sap" (already picked -> no
+  Sap). Split into single buttons or drop.
+- **Depends on one test:** cooldown + spell pairs: Priest Inner Focus + Greater Heal, Warlock
+  Amplify Curse + Agony, Fel Domination + summon x2, Mage Arcane Power + Missiles, Presence of
+  Mind + Frostbolt / Pyroblast, Rogue Cold Blood + Ambush, Shaman Elemental Mastery + CL / LB,
+  Hunter Bestial Wrath + Rapid Fire, Warrior Shield Block + Sunder. **Test:** Shield Block +
+  Sunder while Shield Block is on cooldown. Sunder casts -> these all keep working (the
+  first spell is just skipped on cooldown); nothing -> each must become two buttons.
+- **Fine (conditions or items):** wand macros, Warlock Shadow Bolt + Imp Firebolt (check),
+  poison / sharpening stone, Feed Pet, Charge + Rend (`[nocombat]` decides; a stance swap
+  out of combat just needs a second press).
+- Open: unranked `/cast Charge` fails for the owner while `/cast Rend` works. Need the red
+  error text and `/dump C_Spell.GetSpellInfo("Charge")` vs `("Charge(Rank 1)")` (spellID 100).
+
 ## Next up: addon round 2 (agreed 2026-10-08, spec: ADDON_PLAN.md section 15)
 
 Build in this order; each step is its own release. Steps 1 (import replaces, 0.14.0), 2 (Settings tab, 0.15.0), 3 (movable bags, 0.16.0) 4 (Reminders tab, 0.17.0) and 5 (Launch Plan in game, 0.18.0) are built, see

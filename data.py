@@ -740,6 +740,10 @@ CLASSES = [
 
         {"spec": "General", "groups": [
             G(DPS, [
+                M("Victory Rush", melee("Victory Rush"),
+                  "New in Forever (level 20). Free, any stance, heals 10% of your max health. Only after a kill "
+                  "that gives XP (20 sec). Its own button: Forever macros can't fall through to another spell.",
+                  short="VR"),
                 M("Heroic Strike / Cleave (Shift)",
                   "#showtooltip [mod:shift] Cleave; Heroic Strike\n"
                   "/startattack [harm]\n"
@@ -809,16 +813,16 @@ CLASSES = [
 
         {"spec": "Tank", "groups": [
             G(DPS, [
-                M("Victory Rush > Revenge > Sunder Armor",
-                  "#showtooltip Sunder Armor\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
-                  "One tank spam button: Victory Rush when it's up after a kill, else Revenge when it's lit "
-                  "(after a block, dodge or parry), else Sunder. Use this on trash; the Shield Block version "
-                  "on bosses and big pulls. The last line hides the \"not ready\" error.", short="Rev>Sund"),
-                M("Shield Block + Revenge > Sunder Armor",
-                  "#showtooltip Shield Block\n/startattack [harm]\n/cast Shield Block\n/cast [harm] Revenge\n/cast [harm] Sunder Armor\n/run UIErrorsFrame:Clear()",
-                  BETA + "Shield Block has no global cooldown, so it fires with the next button whenever it's off "
-                  "cooldown (needs a shield and Defensive Stance). More blocks = more Revenge procs. Watch your "
-                  "rage: Shield Block 10, Sunder 15.", short="SBlk+Sund"),
+                M("Sunder Armor", melee("Sunder Armor"),
+                  "Your spam button. Starts auto-attack.", short="Sunder"),
+                M("Revenge", melee("Revenge"),
+                  "Defensive Stance, after a block, dodge or parry: press it whenever it lights up "
+                  "(best threat per rage). Its own button: Forever: a macro stops at the first spell you know but can't use right now, so \"Revenge, else Sunder\" in one macro never reaches Sunder (tested 2026-10-09). ", short="Rev"),
+                M("Shield Block + Sunder Armor",
+                  "#showtooltip Shield Block\n/startattack [harm]\n/cast Shield Block\n/cast [harm] Sunder Armor",
+                  BETA + "Shield Block is off the global cooldown, so it fires with Sunder in one press. "
+                  "Unknown on Forever: whether Sunder still goes out while Shield Block is on cooldown "
+                  "(if not, use plain Sunder between blocks). Needs a shield and Defensive Stance.", short="SBlk+Sund"),
                 M("Concussion Blow", melee("Concussion Blow"), "Talent (in our level-30 tank build).", short="Concuss"),
                 M("Shield Slam", melee("Shield Slam"), "Talent, level 40. Forever: about double the damage.", short="SSlam"),
             ]),
@@ -835,10 +839,6 @@ CLASSES = [
 
         {"spec": "DPS", "groups": [
             G(DPS, [
-                M("Victory Rush > Heroic Strike",
-                  "#showtooltip Heroic Strike\n/startattack [harm]\n/cast [harm] Victory Rush\n/cast [harm] Heroic Strike",
-                  BETA + "Victory Rush when it's up after a kill; Heroic Strike (no global "
-                  "cooldown) queues on your next swing either way. Watch your rage.", short="VR>HS"),
                 M("Sweeping Strikes (to Battle)", stance(1, "Battle Stance", "Sweeping Strikes", tt=False),
                   "Arms talent (in our level-30 Arms build). Pair with Cleave.", short="Sweep"),
                 M("Mortal Strike", melee("Mortal Strike"), "Arms talent, level 40.", short="MS"),

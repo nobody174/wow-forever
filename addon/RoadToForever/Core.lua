@@ -59,7 +59,12 @@ end
 handlers.UPDATE_MACROS = function() R2F.MainWindow.RequestRefresh() end
 handlers.ACTIONBAR_SLOT_CHANGED = function() R2F.MainWindow.RequestRefresh() end
 -- Newly learned spells: icons and "Learn later" states change.
-handlers.LEARNED_SPELL_IN_TAB = function() R2F.MainWindow.RequestRefresh() end
+handlers.LEARNED_SPELL_IN_TAB = function()
+  R2F.MainWindow.RequestRefresh()
+  R2F.Ranks.OnLearned()
+end
+-- A new spell rank can raise the ranks in the macros the addon made (Ranks.lua, 16).
+handlers.SPELLS_CHANGED = function() R2F.Ranks.OnLearned() end
 -- Talent points spent (here or in Blizzard's talent window) or gained on a
 -- level-up: Home's free-points line and the Talents tab's preview (6.5).
 -- Step 10: CHARACTER_POINTS_CHANGED is the server's answer to a learned point
@@ -150,6 +155,7 @@ local COMMANDS = {
   reminders = function() R2F.MainWindow.Show("reminders") end,
   plan = function() R2F.MainWindow.Show("plan") end,
   here = function() R2F.Plan.Here() end,
+  ranks = function() R2F.Ranks.Print() end,
   ammo = function() R2F.Ammo.ToggleShown() end,
   ["ammo lock"] = function() R2F.Ammo.ToggleLock() end,
   bags = function() R2F.Bags.Report() end,

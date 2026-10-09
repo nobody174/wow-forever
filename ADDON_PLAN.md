@@ -2894,7 +2894,12 @@ for that plan only (no base-chain lookup for waypoints). Without TomTom the butt
   `/way` line. Same mechanism later for the library-book route.
 - Ticks are separate from the site's (browser) ticks; syncing them is out of scope.
 
-## 16. Rank-aware macros (owner test 2026-10-09)
+## 16. Rank-aware macros (owner test 2026-10-09) -- built as v0.19.0, 2026-10-09
+(As built: `Ranks.lua`; `Macros.lua` writes and compares through `wantBody()`; `/cast`,
+`/castsequence` and `#showtooltip` lines; highest known rank found with
+`C_Spell.GetSpellInfo(name.."(Rank N)")` for N = 12..1; a ranked body over 255 characters is not
+used; `Macros.SyncRanks` runs one second after `LEARNED_SPELL_IN_TAB` / `SPELLS_CHANGED`.
+TESTING.md 27.)
 
 Found in game on a level-18 Warrior: `/cast Rend` works unranked, `/cast Charge` fails.
 `/dump C_Spell.GetSpellInfo("Charge")` returns spellID **1240289** = Forever's level-46 Charge

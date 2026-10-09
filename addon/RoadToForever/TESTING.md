@@ -1002,3 +1002,28 @@ Do not trust the first result blindly: which bag windows WoW Forever has is a gu
    line. Send us those lines (or paste them into BACKLOG's "Fill in the check waypoints"). Try it
    in a city and indoors too; if it says it can't read your position, note where.
 6. All of this works in combat (ticks, buttons).
+
+## 27. Rank-aware macros (v0.19.0, ADDON_PLAN 16)
+
+Needs a low-level character that has NOT learned the top rank of a spell whose plain name is
+wrong, like the level-18 Warrior and Charge. Do this on that character.
+
+1. Before anything: `/dump C_Spell.GetSpellInfo("Charge")` (note the spellID), then
+   `/dump C_Spell.GetSpellInfo("Charge(Rank 1)")` and `.../"Charge(Rank 2)"` (the ids of the
+   ranks; they must be different and must exist, otherwise tell us what they return).
+2. `/r2f ranks`: lists the spells in your Road to Forever macros whose plain name is a spell you
+   don't know, the rank used instead, and which macros. Expect Charge here. Note anything else
+   it lists: those are spells where the plain name fails too.
+3. Drag a Charge macro from the Macro Book onto a bar (or let an import update an existing one),
+   then open it in `/macro`: the spell names should read `Charge(Rank 1)` (or the highest rank you
+   know). Press it: it works. A macro for a spell that resolves fine (Rend) is exactly the site's text.
+4. The book still shows the site's text (hover a macro in the Macro Book): no `(Rank N)` there.
+5. Learn the next rank of a spell used by one of the macros (train it). Within a couple of seconds
+   chat says `raised spell ranks in 1 macro.` and the macro in `/macro` now has the new rank.
+   Do this once in combat if you can (e.g. learn it, then pull): the change waits until the fight ends.
+6. Edit one of the macros yourself in `/macro` (add a `/say`), then learn another rank: your macro
+   is left exactly as you wrote it. The Macro Book marks it as edited as before.
+7. `/reload` and relog: no "updated" arrows appear on macros that were already ranked, and chat
+   does not say it raised anything.
+8. Tell us if any macro now stops working, if a ranked macro is reported as changed again and again,
+   or if `/r2f ranks` lists a spell that works fine unranked.

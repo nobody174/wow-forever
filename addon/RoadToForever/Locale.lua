@@ -164,6 +164,15 @@ R2F.L = {
   REMOVE_ALL_DONE_KEPT = " Kept %d you edited as your own.",
 
   -- Home tab (12.4)
+  RANKS_NO_API = "this game has no C_Spell.GetSpellInfo, so spell ranks are not checked.",
+  RANKS_NONE = "every spell in your Road to Forever macros resolves to a spell you know. Nothing is ranked.",
+  RANKS_HEAD = "spells whose plain name is a spell you don't know (the macros use a rank you do know):",
+  RANKS_LINE = "%s -> %s (in %s)",
+  RANKS_LINE_NONE = "%s: you know no rank of it yet, so the macro keeps the plain name (in %s)",
+  RANKS_TOO_LONG = "kept without ranks, the ranked text would be over 255 characters: %s",
+  RANKS_SYNC_DONE = "raised spell ranks in %d macros.",
+  RANKS_SYNC_DONE_ONE = "raised spell ranks in 1 macro.",
+  RANKS_SYNC_QUEUED = "you're in combat; spell ranks in your macros will be raised when combat ends.",
   TITLE_PLAN = "Road to Forever: Plan",
   TAB_PLAN = "Plan",
   HOME_PLAN = "Launch plan",
@@ -353,6 +362,7 @@ R2F.L = {
     "/r2f settings  the Settings tab",
     "/r2f bags  which bag windows the addon found, and the movable / lock state",
     "/r2f minimap  show or hide the minimap button",
+    "/r2f ranks  spells in your macros that use a lower rank than the plain name would give",
     "/r2f plan  the launch plan checklist (Plan tab)",
     "/r2f here  print your zone, uiMapID and x, y (to fill in a plan point that has no position yet)",
     "/r2f reminders  the Reminders tab",

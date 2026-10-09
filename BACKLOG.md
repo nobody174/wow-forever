@@ -47,7 +47,8 @@ Warrior combos already split (CHANGELOG 2026-10-09). The rest, by pattern:
 ## Next up: addon round 2 (agreed 2026-10-08, spec: ADDON_PLAN.md section 15)
 
 Build in this order; each step is its own release. Steps 1 (import replaces, 0.14.0), 2 (Settings tab, 0.15.0), 3 (movable bags, 0.16.0) 4 (Reminders tab, 0.17.0) and 5 (Launch Plan in game, 0.18.0) are built, see
-CHANGELOG.md; their in-game checks are TESTING.md 22 to 26.
+CHANGELOG.md; their in-game checks are TESTING.md 22 to 26. Rank-aware macros (ADDON_PLAN 16, 0.19.0, TESTING.md 27)
+are built as well.
 - [ ] **More reminders** (15.4 candidates, none picked yet): pet missing / dead / unhappy,
       pet food low, repair needed (durability under X%), bags almost full, rested-XP state.
       The Reminders tab and `Reminders.Register` are ready; a new one is one module.
@@ -55,6 +56,12 @@ CHANGELOG.md; their in-game checks are TESTING.md 22 to 26.
       Stormwind Harbor dock, Riverglades, Mount Hyjal, the new dungeons): stand there in the beta,
       type `/r2f here`, send us the lines; then set `zone`/`x`/`y`/`conf: "exact"` in the JSON and
       run `python build.py`. Also re-check the `classic` points ("may have moved") in the beta.
+
+- [ ] **Rank-aware macros: verify in game, then maybe simplify the site** (ADDON_PLAN 16, addon
+      0.19.0, TESTING.md 27): confirm `C_Spell.GetSpellInfo("Charge(Rank 1)")` works on the client,
+      and which other spells resolve to an unknown rank (`/r2f ranks` lists them). Once the addon
+      handles it, the three `Charge(Rank 1)` stopgap macros on the site could go back to plain
+      `Charge` (players without the addon would then hit the problem again, so decide then).
 
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 

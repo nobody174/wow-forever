@@ -3,6 +3,28 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.19.0 (2026-10-09): rank-aware macros (ADDON_PLAN 16)
+
+**Never run in game yet: TESTING.md 27.**
+
+- **Why:** on WoW Forever an unranked spell name can resolve to a rank you don't know: on a
+  level-18 Warrior `/cast Charge` failed (the name gave the level-46 Charge) while `/cast Rend`
+  worked. The addon now fixes this in the game macros it makes.
+- When the addon **creates, updates or replaces** a game macro, every spell name in its `/cast`,
+  `/castsequence` and `#showtooltip` lines is checked with `C_Spell.GetSpellInfo`: if the plain
+  name is a spell you don't know, the highest rank you do know is written in (`Charge(Rank 1)`).
+  Spells that resolve to something you know (Rend) are left alone, and so are spells you haven't
+  learned any rank of yet. A name that already pins a rank (the site's `Charge(Rank 1)`) is raised
+  when you know a higher one, never lowered. A ranked text over 255 characters isn't used.
+- **Learning a spell** (`LEARNED_SPELL_IN_TAB` / `SPELLS_CHANGED`) re-checks the macros the addon
+  made and raises ranks, after a one second pause; in combat the update waits for the end of the
+  fight. Macros you edited yourself are never touched.
+- **The library keeps the site's text.** Only what is written into game macros is ranked; the book,
+  imports and the "edited / updated" checks compare the live macro with its ranked version, so a
+  ranked macro is not mistaken for an edited or outdated one.
+- New `/r2f ranks`: which spells in your macros have a plain name you don't know, the rank used
+  instead, and the macros it is in (also macros kept unranked because of the 255 limit).
+
 ## 0.18.0 (2026-10-09): Launch Plan in game, TomTom waypoints (ADDON_PLAN 15.5)
 
 **Never run in game yet: TESTING.md 26.**

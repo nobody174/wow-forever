@@ -60,6 +60,14 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.19.0: rank-aware macros)
+- ADDON_PLAN 16: found in game that on Forever an unranked name can resolve to a rank the character
+  doesn't know (`Charge` at level 18). Addon 0.19.0 writes `Name(Rank K)` (highest known rank) into
+  the game macros it creates / updates / replaces, raises ranks when a spell is learned (queued in
+  combat), leaves edited macros alone, keeps library bodies as the site sends them, and adds
+  `/r2f ranks`. The site's three Charge macros keep their `Charge(Rank 1)` stopgap, which the addon
+  raises. Never run in game yet (TESTING.md 27). Not released yet.
+
 ## 2026-10-09 (Addon 0.18.0: Launch Plan in game, TomTom waypoints)
 - ADDON_PLAN 15.5, step 5 of addon round 2: a Plan tab (four group plans, launch-day steps,
   per-character ticks, next step on Home), a Waypoint button per point (TomTom, or the `/way`

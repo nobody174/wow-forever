@@ -111,6 +111,15 @@ local function createIcon(entry)
   return entry.icon or QUESTION
 end
 
+-- The body the GAME macro gets for a library entry: the same text with spell
+-- names raised to a rank the player knows where the unranked name would resolve
+-- to an unknown spell (Ranks.lua, ADDON_PLAN 16). Library bodies stay as the site
+-- sends them; everything that writes or compares a game macro uses this.
+local function wantBody(e)
+  return R2F.Ranks.Rewrite(e.body)
+end
+Macros.WantBody = wantBody
+
 -- ---------------------------------------------------------------------------
 -- Ownership
 -- ---------------------------------------------------------------------------
@@ -158,7 +167,7 @@ local function classify(id, want)
   local idx, body = live(rec.name)
   if idx == 0 then return "none" end
   local iconStale = rec.icon ~= nil and rec.icon ~= createIcon(want)
-  if body == want.body and not iconStale then return "unchanged" end
+  if body == wantBody(want) and not iconStale then return "unchanged" end
   if Library.Hash(body) ~= rec.hash then return "edited" end
   return "needed"
 end
@@ -170,7 +179,7 @@ Macros.Classify = classify
 -- Callers check InCombatLockdown() first. Returns the new index (0 = lost).
 local function write(id, idx, name, e)
   local icon = createIcon(e)
-  EditMacro(idx, name, icon, e.body)
+  EditMacro(idx, name, icon, wantBody(e))
   local newIdx = GetMacroIndexByName(name) or 0
   if newIdx > 0 then record(id, name, newIdx, icon) end
   return newIdx
@@ -263,7 +272,7 @@ function Macros.Create(id)
   if perCharacter == nil then R2F.Error(L.ERR_NO_SLOTS); return false end
 
   local icon = createIcon(e)
-  local ok = pcall(CreateMacro, e.short, icon, e.body, perCharacter)
+  local ok = pcall(CreateMacro, e.short, icon, wantBody(e), perCharacter)
   local idx = ok and GetMacroIndexByName(e.short) or 0
   if idx > 0 then
     record(id, e.short, idx, icon)
@@ -332,7 +341,7 @@ function Macros.Ensure(id)
   end
   -- Same name and exactly our text (e.g. saved data lost after a reinstall,
   -- or the player typed it in by hand): nothing to ask, adopt it as ours.
-  if body == e.body then
+  if body == e.body or body == wantBody(e) then
     record(id, e.short, idx, createIcon(e))
     PickupMacro(idx)
     return true
@@ -407,6 +416,25 @@ function Macros.UpdateMany(ids, done, queuedMsg)
   end
   if #ids == 0 then return "now" end
   return Macros.RunOrQueue(run, queuedMsg) and "now" or "queued"
+end
+
+-- The player learned a spell (Ranks.OnLearned): raise the ranks in the macros the
+-- addon made. classify() compares each live macro with its rank-aware body, so
+-- only unedited macros whose body would change are "needed"; edited macros are
+-- left alone, and in combat UpdateMany queues the EditMacro calls. Returns the
+-- number of macros it set out to update.
+function Macros.SyncRanks()
+  local ids = {}
+  for id in pairs(Library.AllCreated()) do
+    if classify(id, Library.Get(id)) == "needed" then ids[#ids + 1] = id end
+  end
+  table.sort(ids)
+  if #ids == 0 then return 0 end
+  Macros.UpdateMany(ids, function(n)
+    if n > 0 then R2F.Print(n == 1 and L.RANKS_SYNC_DONE_ONE or L.RANKS_SYNC_DONE:format(n)) end
+    if R2F.MacroBook then R2F.MacroBook.Refresh() end
+  end, L.RANKS_SYNC_QUEUED)
+  return #ids
 end
 
 -- Should this character get a Changed flag for `id`? Only Universal and the

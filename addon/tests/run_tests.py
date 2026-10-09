@@ -1501,6 +1501,212 @@ def test_plan(templates=True):
     check(lua.eval("R2F.MainWindow.CurrentTab()") == "plan", "%s: clicking the Home entry opens the Plan tab" % tag)
 
 
+RANK_SPELLBOOK_LUA = """
+  -- A fake spellbook for ADDON_PLAN 16. Unranked "Charge" is Forever's top rank (1240289),
+  -- which a level-18 Warrior doesn't know; "Rend" resolves to a spell the Warrior knows.
+  SPELLS = {
+    ['Charge'] = 1240289, ['Charge(Rank 1)'] = 100, ['Charge(Rank 2)'] = 101, ['Charge(Rank 3)'] = 102,
+    ['Rend'] = 500, ['Rend(Rank 1)'] = 500, ['Rend(Rank 2)'] = 501,
+    ['Hamstring'] = 700,
+  }
+  KNOWN = { [100] = true, [500] = true, [700] = true }
+  C_Spell.GetSpellInfo = function(name)
+    local id = SPELLS[name]
+    if id then return { name = name, spellID = id } end
+  end
+  IsPlayerSpell = function(id) return KNOWN[id] == true end
+"""
+
+
+def rank_runtime(known_extra=""):
+    lua = new_runtime()
+    lua.execute("TEST.reset() R2FDB = nil R2FCharDB = nil")
+    lua.execute(RANK_SPELLBOOK_LUA)
+    if known_extra:
+        lua.execute(known_extra)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    return lua, T
+
+
+def rank_add(lua, short, body, class_="WARRIOR"):
+    lua.globals().RS_SHORT, lua.globals().RS_BODY, lua.globals().RS_CLASS = short, body, class_
+    lua.execute("R2F.Library.Apply({ { id = RS_CLASS .. '/' .. RS_SHORT, class = RS_CLASS, section = 'General', "
+                "group = 'Damage / offensive', name = RS_SHORT, short = RS_SHORT, body = RS_BODY } }, 1)")
+    return class_ + "/" + short
+
+
+def rewrite(lua, body):
+    lua.globals().RB = body
+    return lua.eval("(R2F.Ranks.Rewrite(RB))")
+
+
+def test_ranks():
+    """ADDON_PLAN 16: rank-aware game macros (library bodies stay unranked)."""
+    lua, T = rank_runtime()
+    R1 = "Charge(Rank 1)"
+    # --- Rewrite: the section 16 cases ----------------------------------------------------------
+    check(rewrite(lua, "#showtooltip Charge\n/cast [harm] Charge") == "#showtooltip Charge(Rank 1)\n/cast [harm] Charge(Rank 1)",
+          "16 unranked Charge resolves to an unknown spell -> Rank 1 in #showtooltip and /cast: %r" % rewrite(lua, "#showtooltip Charge\n/cast [harm] Charge"))
+    check(rewrite(lua, "/cast Rend") == "/cast Rend", "16 Rend resolves to a known spell: left alone")
+    check(rewrite(lua, "/cast Shoot") == "/cast Shoot", "16 a spell the client doesn't know at all: left alone")
+    check(rewrite(lua, "/cast Hamstring") == "/cast Hamstring", "16 another known spell: left alone")
+    lua.execute("KNOWN[101] = true")
+    check(rewrite(lua, "/cast Charge") == "/cast Charge(Rank 2)", "16 Rank 1 and 2 known -> the highest known rank (2)")
+    lua.execute("KNOWN[102] = true")
+    check(rewrite(lua, "/cast Charge") == "/cast Charge(Rank 3)", "16 Rank 3 known too -> 3")
+    lua.execute("KNOWN[100], KNOWN[101], KNOWN[102] = nil, nil, nil")
+    check(rewrite(lua, "/cast Charge") == "/cast Charge", "16 no rank known (not learned yet): left alone")
+    lua.execute("KNOWN[100] = true")
+    # Pinned ranks (the site's Charge(Rank 1) stopgap).
+    check(rewrite(lua, "#showtooltip Charge(Rank 1)\n/cast Charge(Rank 1)") == "#showtooltip Charge(Rank 1)\n/cast Charge(Rank 1)",
+          "16 a pinned rank with nothing higher known: unchanged")
+    lua.execute("KNOWN[101] = true")
+    check(rewrite(lua, "/cast Charge(Rank 1)") == "/cast Charge(Rank 2)", "16 a pinned Rank 1 is raised once Rank 2 is known")
+    check(rewrite(lua, "/cast Charge(Rank 3)") == "/cast Charge(Rank 3)", "16 a pinned higher rank is never lowered")
+    check(rewrite(lua, "/cast Charge ( rank 1 )") == "/cast Charge(Rank 2)", "16 odd spacing / case in the pinned rank is understood")
+    lua.execute("KNOWN[101] = nil")
+    # Syntax around the name.
+    check(rewrite(lua, "/cast [@mouseover,harm][harm] Charge; [help] Rend") == "/cast [@mouseover,harm][harm] Charge(Rank 1); [help] Rend",
+          "16 conditionals and ;-clauses are kept")
+    check(rewrite(lua, "/cast !Charge") == "/cast !Charge(Rank 1)", "16 the ! prefix is kept")
+    check(rewrite(lua, "/CAST Charge") == "/CAST Charge(Rank 1)", "16 /CAST in capitals")
+    check(rewrite(lua, "/castsequence reset=5 Charge, Rend") == "/castsequence reset=5 Charge(Rank 1), Rend", "16 /castsequence with reset=")
+    check(rewrite(lua, "/castsequence [harm] reset=target Charge, Hamstring, Charge") ==
+          "/castsequence [harm] reset=target Charge(Rank 1), Hamstring, Charge(Rank 1)", "16 /castsequence with conditions, repeats")
+    check(rewrite(lua, "#showtooltip\n/cast Charge") == "#showtooltip\n/cast Charge(Rank 1)", "16 bare #showtooltip is left alone")
+    check(rewrite(lua, "#showtooltip [harm] Charge; Rend") == "#showtooltip [harm] Charge(Rank 1); Rend", "16 #showtooltip with conditionals")
+    check(rewrite(lua, "/use Charge\n/startattack\n/say Charge") == "/use Charge\n/startattack\n/say Charge", "16 other commands are never touched")
+    check(rewrite(lua, "/cast   [harm]   Charge  ") == "/cast   [harm]   Charge(Rank 1)  ", "16 spacing is preserved")
+    # 255-character limit: the ranked text must fit.
+    long_body = "/cast Charge\n" + "/say " + "x" * 235
+    check(len(long_body) <= 255 and len(long_body.replace("Charge", "Charge(Rank 1)")) > 255, "16 (test body is near the limit)")
+    lua.globals().RB = long_body
+    r, tooLong = lua.eval("R2F.Ranks.Rewrite(RB)")
+    check(r == long_body and tooLong is True, "16 a ranked body over 255 characters is not used (original kept, flagged)")
+    # No C_Spell.GetSpellInfo -> nothing happens (the old GetSpellInfo global doesn't exist on this client).
+    lua.execute("SAVED_GSI = C_Spell.GetSpellInfo C_Spell.GetSpellInfo = nil")
+    check(rewrite(lua, "/cast Charge") == "/cast Charge", "16 without C_Spell.GetSpellInfo nothing is rewritten")
+    lua.execute("C_Spell.GetSpellInfo = SAVED_GSI")
+
+    # --- Game macros: create, library untouched, stable on login ------------------------------------
+    lua, T = rank_runtime()
+    cid = rank_add(lua, "Charge", "#showtooltip Charge\n/cast [harm] Charge")
+    rid = rank_add(lua, "Rend", "#showtooltip Rend\n/cast [harm] Rend")
+    lua.execute("R2F.Macros.Ensure(%r) R2F.Macros.Ensure(%r)" % (cid, rid))
+    check(T.bodyOf("Charge") == "#showtooltip Charge(Rank 1)\n/cast [harm] Charge(Rank 1)", "16 the dragged Charge macro is created with Rank 1: %r" % T.bodyOf("Charge"))
+    check(T.bodyOf("Rend") == "#showtooltip Rend\n/cast [harm] Rend", "16 Rend is created exactly as the site has it")
+    check(lua.eval("R2F.Library.Get(%r).body" % cid) == "#showtooltip Charge\n/cast [harm] Charge", "16 the library body stays unranked")
+    check(lua.eval("R2F.Macros.Classify(%r, R2F.Library.Get(%r))" % (cid, cid)) == "unchanged", "16 a ranked macro counts as up to date, not edited")
+    check("Charge" in names_of(lua.eval("R2F.Macros.TidyCandidates()")), "16 the ranked macro is still 'ours, unedited' (Tidy up sees it)")
+    T.calls = lua.table()
+    n = lua.eval("R2F.Macros.SyncOnLogin()")
+    check(n == 0 and lua_table_to_list(lua.eval("TEST.calls")) == [], "16 login sync leaves ranked macros alone (no EditMacro): %s" % lua_table_to_list(lua.eval("TEST.calls")))
+    # Import of the same site text: no update planned.
+    lua.execute("local e = R2F.Library.Get(%r) PLAN = R2F.Macros.PlanUpdates({ { id = %r, body = e.body, icon = e.icon } }, R2F.Library.db.library)" % (cid, cid))
+    plan_n = lua.eval("#PLAN.update")
+    check(plan_n == 0, "16 re-importing the same text plans no update for a ranked macro")
+
+    # --- Learning a rank raises the macro ----------------------------------------------------------------
+    T.chat = lua.table()
+    T.calls = lua.table()
+    lua.execute("KNOWN[101] = true")
+    T.fire("LEARNED_SPELL_IN_TAB")
+    T.runTimers()
+    check(T.bodyOf("Charge") == "#showtooltip Charge(Rank 2)\n/cast [harm] Charge(Rank 2)", "16 learning Rank 2 raises the macro: %r" % T.bodyOf("Charge"))
+    check(T.bodyOf("Rend") == "#showtooltip Rend\n/cast [harm] Rend" and lua_table_to_list(lua.eval("TEST.calls")) == ["edit:Charge"],
+          "16 only the macro that needed it was edited: %s" % lua_table_to_list(lua.eval("TEST.calls")))
+    check("raised spell ranks in 1 macro." in chat_all(lua), "16 chat says it")
+    check(lua.eval("R2F.Macros.SyncRanks()") == 0, "16 after raising, the macro is up to date again (not 'edited')")
+    lua.execute("KNOWN[102] = true")
+    T.fire("SPELLS_CHANGED")
+    T.runTimers()
+    check("Rank 3" in T.bodyOf("Charge"), "16 SPELLS_CHANGED works too (Rank 3)")
+
+    # --- Combat: queued, then applied -----------------------------------------------------------------------------
+    lua, T = rank_runtime()
+    cid = rank_add(lua, "Charge", "#showtooltip Charge\n/cast [harm] Charge")
+    lua.execute("R2F.Macros.Ensure(%r)" % cid)
+    T.calls = lua.table()
+    T.chat = lua.table()
+    T.combat = True
+    lua.execute("KNOWN[101] = true")
+    T.fire("LEARNED_SPELL_IN_TAB")
+    T.runTimers()
+    check("Rank 1" in T.bodyOf("Charge") and lua_table_to_list(lua.eval("TEST.calls")) == [] and lua.eval("R2F.Macros.QueueSize()") == 1,
+          "16 in combat nothing is edited; the update is queued")
+    check("when combat ends" in chat_all(lua), "16 combat: the player is told")
+    T.combat = False
+    lua.execute("R2F.Macros.RunQueue()")
+    check("Rank 2" in T.bodyOf("Charge") and lua.eval("R2F.Macros.QueueSize()") == 0, "16 after combat the rank is raised")
+
+    # --- Edited by the player: never touched ---------------------------------------------------------------------------
+    lua, T = rank_runtime()
+    cid = rank_add(lua, "Charge", "#showtooltip Charge\n/cast [harm] Charge")
+    lua.execute("R2F.Macros.Ensure(%r)" % cid)
+    lua.execute("TEST.setBody('Charge', '/cast Charge(Rank 1)\\n/say my own')")
+    lua.execute("KNOWN[101] = true")
+    T.calls = lua.table()
+    T.fire("LEARNED_SPELL_IN_TAB")
+    T.runTimers()
+    check(T.bodyOf("Charge") == "/cast Charge(Rank 1)\n/say my own" and lua_table_to_list(lua.eval("TEST.calls")) == [],
+          "16 a macro the player edited is never touched")
+    check(lua.eval("R2F.Macros.Classify(%r, R2F.Library.Get(%r))" % (cid, cid)) == "edited", "16 ... and still counts as edited")
+
+    # --- Pinned site macro, update and replace paths ----------------------------------------------------------------------
+    lua, T = rank_runtime("KNOWN[101] = true")
+    pid = rank_add(lua, "ChargeP", "#showtooltip Charge(Rank 1)\n/cast [harm] Charge(Rank 1)")
+    lua.execute("R2F.Macros.Ensure(%r)" % pid)
+    check("Charge(Rank 2)" in T.bodyOf("ChargeP") and "Charge(Rank 1)" not in T.bodyOf("ChargeP"),
+          "16 the site's pinned Charge(Rank 1) is created at the highest known rank (2)")
+    # A site change to the body: the update is written ranked too.
+    lua.globals().NEWBODY = "#showtooltip Charge\n/cast [harm] Charge\n/startattack"
+    lua.execute("R2F.Library.Apply({ { id = %r, class = 'WARRIOR', section = 'General', group = 'Damage / offensive', name = 'ChargeP', "
+                "short = 'ChargeP', body = NEWBODY } }, 2) R2F.Macros.Update(%r)" % (pid, pid))
+    check(T.bodyOf("ChargeP") == "#showtooltip Charge(Rank 2)\n/cast [harm] Charge(Rank 2)\n/startattack", "16 a site update is written with ranks: %r" % T.bodyOf("ChargeP"))
+    # Replace: another macro with the same name is overwritten with the ranked text.
+    lua.execute("TEST.addMacro('Hamstringer', '/say hi', true)")
+    hid = rank_add(lua, "Hamstringer", "/cast Charge")
+    lua.execute("R2F.Macros.Replace(%r)" % hid)
+    check(T.bodyOf("Hamstringer") == "/cast Charge(Rank 2)", "16 Replace writes the ranked body")
+
+    # --- /r2f ranks ----------------------------------------------------------------------------------------------------------
+    lua, T = rank_runtime()
+    cid = rank_add(lua, "Charge", "#showtooltip Charge\n/cast [harm] Charge")
+    cid2 = rank_add(lua, "Charge+Rend", "/cast Charge\n/cast Rend")
+    rid = rank_add(lua, "Rend", "/cast Rend")
+    lua.execute("R2F.Macros.Ensure(%r) R2F.Macros.Ensure(%r) R2F.Macros.Ensure(%r)" % (cid, cid2, rid))
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("ranks")')
+    txt = chat_all(lua)
+    check("Charge -> Charge(Rank 1) (in Charge, Charge+Rend)" in txt and "Rend ->" not in txt and "Hamstring" not in txt,
+          "16 /r2f ranks lists Charge with the rank used and the macros, and not Rend: %r" % txt)
+    lua.execute("KNOWN[101] = true")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("ranks")')
+    check("Charge -> Charge(Rank 2)" in chat_all(lua), "16 /r2f ranks follows the learned rank")
+    lua.execute("KNOWN[100], KNOWN[101] = nil, nil")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("ranks")')
+    check("you know no rank of it yet" in chat_all(lua), "16 /r2f ranks: spell with no known rank says so")
+    lua.execute("KNOWN[1240289] = true")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("ranks")')
+    check("resolves to a spell you know" in chat_all(lua), "16 /r2f ranks: nothing to report when every plain name is known")
+    lua.execute("KNOWN[1240289] = nil KNOWN[100] = true SAVED_GSI = C_Spell.GetSpellInfo C_Spell.GetSpellInfo = nil")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("ranks")')
+    check("no C_Spell.GetSpellInfo" in chat_all(lua), "16 /r2f ranks without the API says so")
+    lua.execute("C_Spell.GetSpellInfo = SAVED_GSI")
+    longid = rank_add(lua, "Longone", "/cast Charge\n/say " + "x" * 235)
+    lua.execute("R2F.Macros.Ensure(%r)" % longid)
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("ranks")')
+    check("kept without ranks" in chat_all(lua) and "Longone" in chat_all(lua), "16 /r2f ranks names macros kept unranked because of the 255 limit")
+    check(T.bodyOf("Longone") == "/cast Charge\n/say " + "x" * 235, "16 ... and that game macro really is the unranked text")
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -5414,6 +5620,7 @@ def main():
     test_reminders()
     test_plan(True)
     test_plan(False)
+    test_ranks()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

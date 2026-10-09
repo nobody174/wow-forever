@@ -27,6 +27,7 @@ handlers.PLAYER_LOGIN = function()
   -- LibDBIcon (ADDON_PLAN 6.10).
   R2F.Minimap.Init()
   R2F.Stance.Init()
+  R2F.Ammo.Init()
   R2F.Bags.Init()
 end
 
@@ -146,6 +147,9 @@ local COMMANDS = {
   macros = function() R2F.MainWindow.Show("macros") end,
   talents = function() R2F.MainWindow.Show("talents") end,
   settings = function() R2F.MainWindow.Show("settings") end,
+  reminders = function() R2F.MainWindow.Show("reminders") end,
+  ammo = function() R2F.Ammo.ToggleShown() end,
+  ["ammo lock"] = function() R2F.Ammo.ToggleLock() end,
   bags = function() R2F.Bags.Report() end,
   minimap = function() R2F.Minimap.ToggleHidden() end,
   stance = function() R2F.Stance.ToggleShown() end,

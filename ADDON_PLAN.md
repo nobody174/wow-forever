@@ -2844,7 +2844,10 @@ Owner wants to drop the Forever Bag Mover addon for this.
   update), never during combat (`InCombatLockdown`).
 - Test: open/close bags, reload, relog, bank open, combat.
 
-### 15.4 Reminders tab (new section)
+### 15.4 Reminders tab (new section) -- built as v0.17.0, 2026-10-09
+(As built: `Reminders.lua` registry + shared framed icon, `UI/Reminders.lua` tab, `Stance.lua`
+moved onto it, `Ammo.lua` new. Ammo counts `GetInventoryItemCount("player", 0)`, the equipped
+ammo's total; default threshold 200, steps of 50. TESTING.md 25.)
 Home of the stance icon (0.13.0) and future at-a-glance alerts. **Not buff reminders**:
 ForeverPlus already tracks buffs, so nothing here duplicates it.
 - Moves here: stance icon + its Show / Lock / Size settings.

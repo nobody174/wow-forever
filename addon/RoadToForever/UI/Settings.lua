@@ -15,7 +15,7 @@
 --   right  Quick settings (moved from Home in 0.15.0, 12.4.1) -> check boxes that
 --                     change game settings with SetCVar (QuickSettings.lua)
 --          Movable bags / Lock bags (Bags.lua, 0.16.0)
---          Stance icon (Warriors only, 0.13.0; moves to Reminders in step 4)
+--          (The Warrior stance icon options moved to the Reminders tab in 0.17.0.)
 --
 -- Only Remove all and the Quick settings boxes are greyed out in combat
 -- (they delete macros / change CVars). The other settings only write
@@ -65,13 +65,6 @@ local function refresh()
   end
   ui.bagMove:SetChecked(R2F.Bags.IsMovable())
   ui.bagLock:SetChecked(R2F.Bags.IsLocked())
-  if ui.stShow then
-    local st = Library.db.stance
-    ui.stShow:SetChecked(st.shown)
-    ui.stLock:SetChecked(st.lock)
-    ui.stScale:SetValue(st.scale * 100)
-    ui.stScaleText:SetText(L.SETTINGS_STANCE_SIZE:format(st.scale * 100 + 0.5))
-  end
 end
 
 local function setSlots(value)
@@ -254,42 +247,12 @@ local function buildQuick(f)
     function() R2F.Bags.SetLock(not R2F.Bags.IsLocked()); refresh() end)
 end
 
--- Warrior stance icon (Stance.lua): show, lock, size.
-local function buildStance(f)
-  heading(f, RIGHT, -292, L.SETTINGS_STANCE)
-  local St = R2F.Stance
-  ui.stShow = UI.CheckButton(f, L.SETTINGS_STANCE_SHOW)
-  ui.stShow:SetPoint("TOPLEFT", RIGHT + 4, -320)
-  ui.stShow:SetScript("OnClick", function() St.SetShown(not Library.db.stance.shown) end)
-  ui.stLock = UI.CheckButton(f, L.SETTINGS_STANCE_LOCK)
-  ui.stLock:SetPoint("TOPLEFT", RIGHT + 4, -346)
-  ui.stLock:SetScript("OnClick", function() St.SetLock(not Library.db.stance.lock) end)
-  ui.stScaleText = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-  ui.stScaleText:SetPoint("TOPLEFT", RIGHT + 8, -380)
-  local sl = CreateFrame("Slider", "R2FStanceScale", f, "OptionsSliderTemplate")
-  sl:SetPoint("TOPLEFT", RIGHT + 10, -406)
-  sl:SetWidth(220)
-  sl:SetMinMaxValues(St.MIN_SCALE * 100, St.MAX_SCALE * 100)
-  sl:SetValueStep(5)
-  if sl.SetObeyStepOnDrag then sl:SetObeyStepOnDrag(true) end
-  for _, part in ipairs({ "Low", "High", "Text" }) do
-    local fs = sl[part] or _G["R2FStanceScale" .. part]
-    if fs then fs:SetText("") end
-  end
-  sl:SetScript("OnValueChanged", function(_, v)
-    local scale = math.floor(v / 5 + 0.5) * 5 / 100
-    if math.abs(scale - Library.db.stance.scale) > 0.001 then St.SetScale(scale) end
-  end)
-  ui.stScale = sl
-end
-
 -- Called once by MainWindow with the Settings page frame.
 function Settings.Build(f)
   page = f
   buildMacros(f)
   buildMinimap(f)
   buildQuick(f)
-  if R2F.Stance.IsWarrior() then buildStance(f) end
   return f
 end
 

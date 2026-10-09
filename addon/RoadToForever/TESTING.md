@@ -949,3 +949,27 @@ Do not trust the first result blindly: which bag windows WoW Forever has is a gu
    saved spot is back.
 8. Bank / mail / vendor open at the same time as your bags: the bags still open where you put them
    and nothing overlaps wrongly. Note anything odd.
+
+## 25. Reminders tab, Hunter ammo low (v0.17.0, ADDON_PLAN 15.4)
+
+1. Five tabs now: Home, Macros, Talents, **Reminders**, Settings. `/r2f reminders` opens it.
+2. **Warrior:** the Reminders tab has "Warrior stance" with Show, Lock and a size slider (they
+   are gone from the Settings tab). Drag the stance icon, lock it, resize it: same as the
+   0.13.0 test, and your old position and size are kept. Switch stance: colour and icon follow.
+3. **Hunter:** the tab has "Hunter ammo" with Show, Lock, a size slider and "Turn red when under:
+   N" (default 200).
+   - Equip arrows or bullets. With the icon unlocked it shows (grey frame) with your ammo count
+     in the corner; drag it where you want it, then lock it. Ammo fine + locked = no icon.
+   - Move the threshold slider above your ammo count: the icon appears with a red frame and a
+     red number. Move it back down: it disappears (locked).
+   - Shoot: the number goes down as ammo is used. Swap to different ammo: the icon and count
+     follow. Unequip all ammo: a red 0 appears.
+   - Is the number the whole stack across your bags, or only what is in the quiver / pouch?
+     Note what you see (the addon counts the equipped ammo's total).
+   - In combat the icon still updates and the tab's controls still work.
+   - `/r2f ammo` hides / shows it, `/r2f ammo lock` locks it.
+4. **Other classes** (Priest, Mage...): the Reminders tab says there are no reminders for the
+   class yet, and no icon ever appears. `/r2f ammo` on a non-Hunter says Hunters only.
+5. `/reload` and relog: positions, sizes, threshold, locks and on / off are kept.
+6. A Hunter without a ranged weapon will see the red 0: tick Show off for the ammo icon.
+   (If that is annoying in practice, tell us: hiding it without a ranged weapon is easy.)

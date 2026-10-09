@@ -3,6 +3,24 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.17.0 (2026-10-09): Reminders tab, Hunter ammo low (ADDON_PLAN 15.4)
+
+**Never run in game yet: TESTING.md 25.**
+
+- **New tab: Reminders** (Home / Macros / Talents / Reminders / Settings). It lists the
+  on-screen reminder icons that apply to your class, each with its own Show, Lock and size
+  slider. `/r2f reminders` opens it. A class without a reminder sees a line saying so.
+- **The Warrior stance icon and its options moved here** from the Settings tab (same
+  settings and saved position, `/r2f stance` unchanged).
+- **New reminder: Hunter ammo low** (`Ammo.lua`). A framed icon with the number of arrows or
+  bullets left (the equipped ammo, counted across quiver / pouch and bags). It turns red under
+  a threshold you set on the tab (default 200, steps of 50, 50 to 1000) and is hidden while
+  the ammo is fine, unless it is unlocked so you can move it. No ammo equipped shows a red 0.
+  `/r2f ammo` shows or hides it, `/r2f ammo lock` locks it. Hunters only.
+- Reminders are read-only (inventory getters only, no protected calls), so they work in
+  combat, and their controls stay enabled in combat. Shared code for the framed icon,
+  dragging and saved position is in `Reminders.lua`; adding a reminder means registering it.
+
 ## 0.16.0 (2026-10-08): movable bags (ADDON_PLAN 15.3)
 
 **Never run in game yet: TESTING.md 24.** Which bag windows WoW Forever uses is

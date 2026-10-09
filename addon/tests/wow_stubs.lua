@@ -571,6 +571,17 @@ function SetCVar(name, value)
 end
 
 function InCombatLockdown() return T.combat end
+-- Ammo slot (0): T.ammoItem = item id or nil, T.ammoCount = how many of it the player owns.
+function GetInventoryItemID(unit, slot)
+  if slot == 0 then return T.ammoItem end
+end
+function GetInventoryItemCount(unit, slot)
+  if slot == 0 then return T.ammoItem and (T.ammoCount or 0) or 0 end
+  return 0
+end
+function GetInventoryItemTexture(unit, slot)
+  if slot == 0 and T.ammoItem then return "Interface\\Icons\\INV_Ammo_Arrow_03" end
+end
 -- hooksecurefunc(name, fn) / (table, name, fn): replace the function with one that
 -- calls the original, then fn (what the real one does, minus the taint tracking).
 function hooksecurefunc(a, b, c)
@@ -637,7 +648,7 @@ for _, name in ipairs({
   "SetMultiLine", "SetAutoFocus", "SetFontObject", "SetMaxLetters", "SetMaxBytes",
   "SetScrollChild", "SetFocus", "ClearFocus", "HighlightText",
   "SetMotionScriptsWhileDisabled", "SetHitRectInsets", "SetFrameLevel",
-  "SetTextInsets", "SetScale", "SetColorTexture", "SetValueStep",
+  "SetTextInsets", "SetValueStep",
   "SetMinMaxValues", "SetValue",
 }) do methods[name] = noop end
 local MT = { __index = methods }
@@ -709,6 +720,8 @@ function methods:GetNormalTexture() return self.__normal end
 function methods:SetCheckedTexture(t) self.__checkedTex = self.__checkedTex or newObject("Texture"); self.__checkedTex.__tex = t end
 function methods:GetCheckedTexture() return self.__checkedTex end
 function methods:SetBlendMode(m) self.__blend = m end
+function methods:SetScale(s) self.__scale = s end
+function methods:SetColorTexture(r, g, b, a) self.__ctex = { r, g, b, a } end
 function methods:SetTexture(t) self.__tex = t end
 function methods:SetDesaturated(v) self.__desat = v end
 function methods:SetTextColor(r, g, b) self.__color = { r, g, b } end

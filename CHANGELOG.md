@@ -34,6 +34,13 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.17.0: Reminders tab, Hunter ammo low)
+- ADDON_PLAN 15.4, step 4 of addon round 2: a Reminders tab (stance icon + options moved out
+  of Settings), the first new reminder Hunter ammo low (red under a user-set threshold, hidden
+  when fine, draggable / lockable / sized like the stance icon), shared framed-icon code in
+  `Reminders.lua`, each reminder only for its class. Never run in game yet (TESTING.md 25).
+  Not released yet.
+
 ## 2026-10-08 (Addon 0.16.0: movable bags; Forever Bag Mover removed from the list)
 - ADDON_PLAN 15.3, step 3 of addon round 2: Movable bags + Lock bags on the Settings tab
   (`Bags.lua`), per character, classic `ContainerFrame1..N` and the combined bag

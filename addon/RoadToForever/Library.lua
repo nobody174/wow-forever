@@ -110,6 +110,15 @@ function Library.Init()
   if type(st.scale) ~= "number" or st.scale < 0.5 or st.scale > 3 then st.scale = 1 end
   if type(st.x) ~= "number" then st.x = 0 end
   if type(st.y) ~= "number" then st.y = -150 end
+  -- Hunter ammo reminder (Ammo.lua, v0.17.0).
+  if type(db.ammo) ~= "table" then db.ammo = {} end
+  local am = db.ammo
+  if type(am.shown) ~= "boolean" then am.shown = true end
+  if type(am.lock) ~= "boolean" then am.lock = false end
+  if type(am.scale) ~= "number" or am.scale < 0.5 or am.scale > 3 then am.scale = 1 end
+  if type(am.x) ~= "number" then am.x = 0 end
+  if type(am.y) ~= "number" then am.y = -100 end
+  if type(am.threshold) ~= "number" or am.threshold < 50 or am.threshold > 1000 then am.threshold = 200 end
   local s = db.settings
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
   -- Main window (12.4, step 6): the tab /r2f reopens. Home on first use.

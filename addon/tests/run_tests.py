@@ -754,6 +754,7 @@ def test_settings_tab(templates, fx):
     T.fire("ADDON_LOADED", "RoadToForever")
     T.fire("PLAYER_LOGIN")
     L = lua.eval("R2F.L")
+    R2F_L_STANCE_SHOW = lua.eval("R2F.L.SETTINGS_STANCE_SHOW")
     MW = lua.eval("R2F.MainWindow")
     res = lua.eval("function(s) local a, b = R2F.Import.Parse(s) return a, b end")(fx["warriorUniversal"]["string"])[0]
     lua.eval("R2F.Library.Apply")(res.records, 1)
@@ -793,9 +794,11 @@ def test_settings_tab(templates, fx):
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel", "CBS")
     labels = {lua.eval("CBS[%d].r2fLabel.__text" % i) for i in range(1, lua.eval("#CBS") + 1)}
     for key in ("SETTINGS_SLOTS_CHAR", "SETTINGS_SLOTS_ACC", "SETTINGS_MINIMAP_SHOW", "SETTINGS_MINIMAP_LOCK",
-                "SETTINGS_STANCE_SHOW", "SETTINGS_STANCE_LOCK", "QS_ZOOM", "QS_GUILD", "QS_PVP"):
+                "QS_ZOOM", "QS_GUILD", "QS_PVP", "BAGS_MOVABLE", "BAGS_LOCK"):
         check(lua.eval("R2F.L.%s" % key) in labels, "Settings tab has the %s control" % key)
-    check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "stance size slider still on Settings (Warrior)")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_STANCE_SHOW", "SSB")
+    check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is False
+          and lua.eval("#SSB == 0 or not SSB[1]:IsVisible()") is True, "stance options are not on the Settings tab any more (15.4)")
     # Combat greys Remove all and the Quick settings boxes through the tab.
     T.combat = True
     T.fire("PLAYER_REGEN_DISABLED")
@@ -1063,6 +1066,180 @@ def test_bags():
     lua.execute("R2F.MainWindow.Show('settings')")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.BAGS_MOVABLE", "BM")
     check(lua.eval("BM[1]:IsEnabled()") is False, "15.3 no bag windows found: the boxes are greyed out")
+
+
+def reminder_runtime(token, preset=None):
+    """Fresh runtime logged in as class `token` (WARRIOR / HUNTER / PRIEST), optional R2FDB preset."""
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    lua.execute("TEST.classToken = %r" % token)
+    if preset:
+        lua.execute("R2FDB = %s" % preset)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    return lua, T
+
+
+def border_of(lua, frame):
+    return lua.eval("(function() local c = %s.border.__ctex return c and table.concat({ c[1], c[2], c[3] }, ',') end)()" % frame)
+
+
+def test_reminders():
+    """ADDON_PLAN 15.4: Reminders tab, stance moved out of Settings, Hunter ammo low."""
+    RED = "0.9,0.1,0.1"
+    # --- Tabs and class filter ------------------------------------------------------
+    lua, T = reminder_runtime("WARRIOR")
+    MW = lua.eval("R2F.MainWindow")
+    keys = [lua.eval("R2F.MainWindow.TABS[%d]" % i) for i in range(1, 6)]
+    check(keys == ["home", "macros", "talents", "reminders", "settings"], "15.4 tab order: %s" % keys)
+    lua.execute('SlashCmdList.R2F("reminders")')
+    check(MW.CurrentTab() == "reminders", "15.4 /r2f reminders opens the Reminders tab")
+    title = lua.eval("R2FMain.__title")
+    check(title == "Road to Forever: Reminders", "15.4 Reminders title: %r" % title)
+    check(lua.eval("R2FStanceFrame ~= nil") and lua.eval("R2FAmmoFrame == nil") and lua.eval("R2FAmmoScale == nil"),
+          "15.4 Warrior: stance frame only, no ammo frame or ammo controls")
+    check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "15.4 stance size slider is on the Reminders tab")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_STANCE_SHOW", "SS")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_STANCE_LOCK", "SL")
+    check(lua.eval("#SS") == 1 and lua.eval("#SL") == 1 and lua.eval("SS[1]:IsVisible()") is True, "15.4 stance Show / Lock boxes on the Reminders tab")
+    lua.execute("SL[1]:Click()")
+    check(lua.eval("R2FDB.stance.lock") is True and lua.eval("SL[1]:GetChecked()") is True, "15.4 stance Lock works from the new tab")
+    lua.execute("SL[1]:Click() SS[1]:Click()")
+    check(lua.eval("R2FDB.stance.shown") is False, "15.4 stance Show works from the new tab")
+    lua.execute("SS[1]:Click() R2FStanceScale:Fire('OnValueChanged', 150)")
+    check(lua.eval("R2FDB.stance.scale") == 1.5, "15.4 stance size slider works from the new tab")
+    lua.execute("R2F.MainWindow.SelectTab('settings')")
+    check(lua.eval("SS[1]:IsVisible()") is False and lua.eval("R2FStanceScale:IsVisible()") is False,
+          "15.4 the stance options are no longer on the Settings tab")
+    # Controls only write SavedVariables: still usable in combat.
+    lua.execute("R2F.MainWindow.SelectTab('reminders')")
+    T.combat = True
+    T.fire("PLAYER_REGEN_DISABLED")
+    check(lua.eval("SS[1]:IsEnabled()") is True and lua.eval("SL[1]:IsEnabled()") is True, "15.4 Reminders controls stay enabled in combat")
+    T.combat = False
+    T.fire("PLAYER_REGEN_ENABLED")
+
+    lua, T = reminder_runtime("HUNTER")
+    check(lua.eval("R2FAmmoFrame ~= nil") and lua.eval("R2FStanceFrame == nil") and lua.eval("R2FStanceScale == nil"),
+          "15.4 Hunter: ammo frame only")
+    lua.execute("R2F.MainWindow.Show('reminders')")
+    check(lua.eval("R2FAmmoScale:IsVisible() and R2FAmmoThreshold:IsVisible()") is True, "15.4 Hunter sees the ammo size + threshold sliders")
+    lua, T = reminder_runtime("PRIEST")
+    check(lua.eval("R2FAmmoFrame == nil and R2FStanceFrame == nil and R2FAmmoScale == nil and R2FStanceScale == nil"),
+          "15.4 Priest: no reminder frames or controls")
+    lua.execute("R2F.MainWindow.Show('reminders')")
+    check(font_text(lua, "^No reminders for your class") is not None, "15.4 a class without reminders sees the 'none yet' line")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("ammo")')
+    check(any("Hunters only" in c for c in lua_table_to_list(lua.eval("TEST.chat"))), "15.4 /r2f ammo on a Priest explains")
+
+    # --- Ammo counting ----------------------------------------------------------------
+    lua, T = reminder_runtime("HUNTER")
+    check(lua.eval("(R2F.Ammo.Count())") == 0, "15.4 no ammo equipped counts as 0")
+    lua.execute("TEST.ammoItem = 11285 TEST.ammoCount = 1500")
+    check(lua.eval("(R2F.Ammo.Count())") == 1500, "15.4 equipped ammo: the slot's total count")
+    lua.execute("TEST.ammoCount = 37")
+    check(lua.eval("(R2F.Ammo.Count())") == 37, "15.4 count follows the item")
+    lua.execute("local old = GetInventoryItemCount GetInventoryItemCount = function() error('boom') end "
+                "COUNT_ERR = R2F.Ammo.Count() GetInventoryItemCount = old")
+    check(lua.eval("COUNT_ERR") == 0, "15.4 a failing count API is caught (0, no error)")
+
+    # --- Threshold, hide when fine, colours ---------------------------------------------------
+    lua, T = reminder_runtime("HUNTER")
+    check(lua.eval("R2FDB.ammo.threshold") == 200 and lua.eval("R2FDB.ammo.shown") is True, "15.4 ammo defaults: on, threshold 200")
+    lua.execute("TEST.ammoItem = 11285 TEST.ammoCount = 1500 R2F.Ammo.SetLock(true)")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is False, "15.4 locked and ammo fine: hidden")
+    lua.execute("TEST.ammoCount = 200 R2F.Ammo.Update()")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is False, "15.4 exactly at the threshold is still fine")
+    lua.execute("TEST.ammoCount = 199 R2F.Ammo.Update()")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is True and border_of(lua, "R2FAmmoFrame") == RED, "15.4 under the threshold: shown with a red border")
+    check(lua.eval("R2FAmmoFrame.count.__text") == "199", "15.4 the icon shows the count: %r" % lua.eval("R2FAmmoFrame.count.__text"))
+    check(lua.eval("R2FAmmoFrame.count.__color[1]") == 1 and lua.eval("R2FAmmoFrame.count.__color[2]") < 0.5, "15.4 the count text turns red")
+    check(lua.eval("R2FAmmoFrame.icon.__tex") == "Interface\\Icons\\INV_Ammo_Arrow_03", "15.4 icon is the equipped ammo's")
+    lua.execute("TEST.ammoItem = nil TEST.ammoCount = nil R2F.Ammo.Update()")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is True and lua.eval("R2FAmmoFrame.count.__text") == "0"
+          and lua.eval("R2FAmmoFrame.icon.__tex") == "Interface\\Icons\\INV_Ammo_Arrow_02", "15.4 no ammo at all: red 0 with the fallback icon")
+    lua.execute("TEST.ammoItem = 11285 TEST.ammoCount = 1500 R2F.Ammo.SetLock(false)")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is True and border_of(lua, "R2FAmmoFrame") != RED,
+          "15.4 unlocked and ammo fine: shown (grey) so it can be moved")
+    lua.execute("R2F.Ammo.SetLock(true) R2F.Ammo.SetShown(false) TEST.ammoCount = 5 R2F.Ammo.Update()")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is False, "15.4 switched off: hidden even when ammo is low")
+    lua.execute("R2F.Ammo.SetShown(true)")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is True, "15.4 switched on again: low ammo shows")
+    # Threshold setting: steps of 50, clamped, and it changes what is low.
+    lua.execute("TEST.ammoCount = 400 R2F.Ammo.Update()")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is False, "15.4 400 ammo with threshold 200: fine")
+    lua.execute("R2F.Ammo.SetThreshold(500)")
+    check(lua.eval("R2FDB.ammo.threshold") == 500 and lua.eval("R2FAmmoFrame:IsShown()") is True, "15.4 threshold 500: 400 ammo is low now")
+    lua.execute("R2F.Ammo.SetThreshold(275)")
+    check(lua.eval("R2FDB.ammo.threshold") == 300, "15.4 threshold rounds to the step (275 -> 300)")
+    lua.execute("R2F.Ammo.SetThreshold(5)")
+    check(lua.eval("R2FDB.ammo.threshold") == 50, "15.4 threshold minimum 50")
+    lua.execute("R2F.Ammo.SetThreshold(99999)")
+    check(lua.eval("R2FDB.ammo.threshold") == 1000, "15.4 threshold maximum 1000")
+    lua.execute("R2F.MainWindow.Show('reminders') R2FAmmoThreshold:Fire('OnValueChanged', 650)")
+    check(lua.eval("R2FDB.ammo.threshold") == 650, "15.4 the threshold slider sets it")
+    check(font_text(lua, "^Turn red when under: 650$") is not None, "15.4 the slider label shows the value")
+
+    # --- Events and combat -------------------------------------------------------------------------
+    lua, T = reminder_runtime("HUNTER")
+    lua.execute("TEST.ammoItem = 11285 TEST.ammoCount = 1500 R2F.Ammo.SetLock(true)")
+    for event in ("BAG_UPDATE", "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED"):
+        lua.execute("TEST.ammoCount = 1500 R2F.Ammo.Update()")
+        lua.execute("TEST.ammoCount = 10")
+        T.fire(event, "player")
+        check(lua.eval("R2FAmmoFrame:IsShown()") is True, "15.4 %s updates the icon" % event)
+    T.combat = True
+    T.errors = lua.table()
+    lua.execute("TEST.ammoCount = 1500")
+    T.fire("BAG_UPDATE")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is False and lua_table_to_list(lua.eval("TEST.errors")) == [],
+          "15.4 works in combat: updates with no errors")
+    lua.execute("TEST.ammoCount = 20")
+    T.fire("BAG_UPDATE")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is True, "15.4 shows in combat when ammo runs low")
+    T.combat = False
+
+    # --- Slash commands -----------------------------------------------------------------------------
+    lua, T = reminder_runtime("HUNTER")
+    lua.execute('SlashCmdList.R2F("ammo lock")')
+    check(lua.eval("R2FDB.ammo.lock") is True, "15.4 /r2f ammo lock locks")
+    lua.execute('SlashCmdList.R2F("ammo")')
+    check(lua.eval("R2FDB.ammo.shown") is False, "15.4 /r2f ammo hides")
+    lua.execute('SlashCmdList.R2F("ammo")')
+    check(lua.eval("R2FDB.ammo.shown") is True, "15.4 /r2f ammo shows again")
+
+    # --- Saved positions and size ---------------------------------------------------------------------------
+    lua, T = reminder_runtime("HUNTER")
+    lua.execute("R2FAmmoFrame.__cx, R2FAmmoFrame.__cy = 111, -222 R2FAmmoFrame:Fire('OnDragStart') R2FAmmoFrame:Fire('OnDragStop')")
+    check(lua.eval("R2FDB.ammo.x") == 111 and lua.eval("R2FDB.ammo.y") == -222, "15.4 dropping the ammo icon saves its position")
+    lua.execute("MV = nil R2FAmmoFrame.StartMoving = function() MV = true end R2F.Ammo.SetLock(true) R2FAmmoFrame:Fire('OnDragStart')")
+    check(lua.eval("MV") is None, "15.4 locked: a drag does not start")
+    lua.execute("R2F.Ammo.SetLock(false) R2FAmmoFrame:Fire('OnDragStart')")
+    check(lua.eval("MV") is True, "15.4 unlocked: a drag starts")
+    lua.execute("R2FDB.ammo.x, R2FDB.ammo.y = 111, -222 R2F.Ammo.SetScale(2)")
+    check(lua.eval("R2FDB.ammo.scale") == 2 and lua.eval("R2FAmmoFrame.__scale") == 2, "15.4 size applies to the frame")
+    lua.execute("R2F.Ammo.SetScale(99)")
+    check(lua.eval("R2FDB.ammo.scale") == 3, "15.4 size clamped to 300%")
+    lua.execute("R2F.Ammo.SetScale(0.01)")
+    check(lua.eval("R2FDB.ammo.scale") == 0.5, "15.4 size clamped to 50%")
+    # Independent from the stance icon: a Warrior's position is untouched by this.
+    lua, T = reminder_runtime("WARRIOR")
+    lua.execute("R2FStanceFrame.__cx, R2FStanceFrame.__cy = 33, 44 R2FStanceFrame:Fire('OnDragStart') R2FStanceFrame:Fire('OnDragStop')")
+    check(lua.eval("R2FDB.stance.x") == 33 and lua.eval("R2FDB.stance.y") == 44 and lua.eval("R2FDB.ammo.x") == 0,
+          "15.4 each reminder keeps its own position")
+    # Relog: saved settings come back.
+    preset = "{ ammo = { shown = true, lock = true, scale = 1.5, x = 70, y = -80, threshold = 350 } }"
+    lua, T = reminder_runtime("HUNTER", preset)
+    check(lua.eval("R2FDB.ammo.threshold") == 350 and lua.eval("R2FDB.ammo.scale") == 1.5 and lua.eval("R2FDB.ammo.x") == 70,
+          "15.4 relog: ammo settings persisted")
+    pt = lua.eval("R2FAmmoFrame.__point")
+    check(pt[1] == "CENTER" and pt[4] == 70 / 1.5 and pt[5] == -80 / 1.5, "15.4 relog: the icon is placed at the saved spot (%s, %s)" % (pt[4], pt[5]))
+    # Bad saved values are repaired, not trusted.
+    lua, T = reminder_runtime("HUNTER", "{ ammo = { threshold = 5, scale = 9, shown = 'yes' } }")
+    check(lua.eval("R2FDB.ammo.threshold") == 200 and lua.eval("R2FDB.ammo.scale") == 1 and lua.eval("R2FDB.ammo.shown") is True,
+          "15.4 invalid saved ammo values fall back to the defaults")
 
 
 def test_ui_updates(fx):
@@ -1729,12 +1906,13 @@ def test_step6_ui(templates, fx):
 
     # ---- Main window tabs ----------------------------------------------------
     n = find_frames(lua, "f.r2fKey ~= nil", "MTABS")
-    check(n == 4, "four bottom tabs (15.2)")
-    keys = [lua.eval("MTABS[%d].r2fKey" % i) for i in range(1, 5)]
-    names = [lua.eval("MTABS[%d]:GetName()" % i) for i in range(1, 5)]
-    labels = [lua.eval("MTABS[%d].__text" % i) for i in range(1, 5)]
-    check(keys == ["home", "macros", "talents", "settings"] and labels == ["Home", "Macros", "Talents", "Settings"]
-          and names == [win + "Tab%d" % i for i in range(1, 5)], "tabs Home / Macros / Talents / Settings, named %s" % names)
+    check(n == 5, "five bottom tabs (15.4)")
+    keys = [lua.eval("MTABS[%d].r2fKey" % i) for i in range(1, 6)]
+    names = [lua.eval("MTABS[%d]:GetName()" % i) for i in range(1, 6)]
+    labels = [lua.eval("MTABS[%d].__text" % i) for i in range(1, 6)]
+    check(keys == ["home", "macros", "talents", "reminders", "settings"]
+          and labels == ["Home", "Macros", "Talents", "Reminders", "Settings"]
+          and names == [win + "Tab%d" % i for i in range(1, 6)], "tabs Home / Macros / Talents / Reminders / Settings, named %s" % names)
     tpl = lua.eval("MTABS[1].r2fTemplate")
     check(tpl == ("CharacterFrameTabButtonTemplate" if templates else "UIPanelButtonTemplate"),
           "%s: tab template chain picked %s" % (tag, tpl))
@@ -4974,6 +5152,7 @@ def main():
     test_settings_tab(False, fx)
     test_tree_names()
     test_bags()
+    test_reminders()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

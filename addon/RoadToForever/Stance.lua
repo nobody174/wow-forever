@@ -1,12 +1,13 @@
--- Stance.lua: Warrior stance indicator (v0.13.0).
+-- Stance.lua: Warrior stance indicator (v0.13.0; a reminder since v0.17.0).
 --
 -- One icon on screen showing the current stance, with a coloured frame:
 -- Battle (Arms) blue, Defensive (tank) green, Berserker red. Warriors only; the
 -- frame is never created for other classes.
 -- Settings live in R2FDB.stance (Library.Init): shown, lock, scale, x, y (the
 -- icon's centre as an offset from the screen centre, in UIParent units, so
--- changing the scale keeps it in place). Changed from the Settings panel or
--- /r2f stance, /r2f stance lock.
+-- changing the scale keeps it in place). Changed from the Reminders tab or
+-- /r2f stance, /r2f stance lock. The framed-icon look, dragging and position
+-- saving are shared with the other reminders (Reminders.lua).
 --
 -- Stance index from GetShapeshiftForm(): 0 none (below level 10), 1 Battle,
 -- 2 Defensive, 3 Berserker. Icons are fixed textures, not looked up, so the
@@ -20,8 +21,6 @@ local L = R2F.L
 local Stance = {}
 R2F.Stance = Stance
 
-local SIZE = 44
-local BORDER = 3
 local STANCES = {
   [1] = { icon = "Interface\\Icons\\Ability_Warrior_OffensiveStance", r = 0.15, g = 0.45, b = 1.0 },
   [2] = { icon = "Interface\\Icons\\Ability_Warrior_DefensiveStance", r = 0.1, g = 0.8, b = 0.2 },
@@ -29,36 +28,17 @@ local STANCES = {
 }
 local NONE = { icon = STANCES[1].icon, r = 0.4, g = 0.4, b = 0.4 }
 
-Stance.MIN_SCALE, Stance.MAX_SCALE = 0.5, 3
+Stance.MIN_SCALE, Stance.MAX_SCALE = R2F.Reminders.MIN_SCALE, R2F.Reminders.MAX_SCALE
 
 local frame
 
 local function db()
   return R2F.Library.db.stance
 end
+Stance.Db = db
 
 function Stance.IsWarrior()
   return R2F.playerClass == "WARRIOR"
-end
-
-local function place()
-  local d = db()
-  local scale = d.scale
-  frame:SetScale(scale)
-  frame:ClearAllPoints()
-  frame:SetPoint("CENTER", UIParent, "CENTER", d.x / scale, d.y / scale)
-end
-
--- Drag end: store the centre as an offset from the screen centre.
-local function savePosition()
-  local cx, cy = frame:GetCenter()
-  local ux, uy = UIParent:GetCenter()
-  if not (cx and ux) then return end
-  local es, ues = frame:GetEffectiveScale(), UIParent:GetEffectiveScale()
-  local d = db()
-  d.x = (cx * es - ux * ues) / ues
-  d.y = (cy * es - uy * ues) / ues
-  place()
 end
 
 function Stance.Update()
@@ -76,41 +56,11 @@ function Stance.Update()
   frame:EnableMouse(not d.lock)
 end
 
-local function build()
-  local f = CreateFrame("Frame", "R2FStanceFrame", UIParent)
-  f:SetSize(SIZE, SIZE)
-  f:SetFrameStrata("MEDIUM")
-  f:SetClampedToScreen(true)
-  f:SetMovable(true)
-  f:RegisterForDrag("LeftButton")
-  f.border = f:CreateTexture(nil, "BACKGROUND")
-  f.border:SetAllPoints()
-  f.icon = f:CreateTexture(nil, "ARTWORK")
-  f.icon:SetPoint("TOPLEFT", BORDER, -BORDER)
-  f.icon:SetPoint("BOTTOMRIGHT", -BORDER, BORDER)
-  f.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-  f:SetScript("OnDragStart", function(self)
-    if not db().lock then self:StartMoving() end
-  end)
-  f:SetScript("OnDragStop", function(self)
-    self:StopMovingOrSizing()
-    savePosition()
-  end)
-  f:SetScript("OnEnter", function(self)
-    if db().lock then return end
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:AddLine(L.STANCE_TIP, 1, 1, 1)
-    GameTooltip:Show()
-  end)
-  f:SetScript("OnLeave", function() GameTooltip:Hide() end)
-  return f
-end
-
 -- PLAYER_LOGIN (Core.lua).
 function Stance.Init()
   if not Stance.IsWarrior() or frame then return end
-  frame = build()
-  place()
+  frame = R2F.Reminders.NewIcon("R2FStanceFrame", db, "REM_DRAG_TIP")
+  frame:Place()
   local ev = CreateFrame("Frame")
   ev:SetScript("OnEvent", Stance.Update)
   for _, e in ipairs({ "UPDATE_SHAPESHIFT_FORM", "UPDATE_SHAPESHIFT_FORMS", "PLAYER_ENTERING_WORLD" }) do
@@ -119,12 +69,12 @@ function Stance.Init()
   Stance.Update()
 end
 
--- Re-read settings after a change (Settings panel, slash commands).
+-- Re-read settings after a change (Reminders tab, slash commands).
 function Stance.Apply()
   if not frame then return end
-  place()
+  frame:Place()
   Stance.Update()
-  if R2F.Settings and R2F.Settings.Refresh then R2F.Settings.Refresh() end
+  R2F.Reminders.RefreshUI()
 end
 
 function Stance.SetShown(on)
@@ -138,7 +88,7 @@ function Stance.SetLock(on)
 end
 
 function Stance.SetScale(v)
-  db().scale = math.max(Stance.MIN_SCALE, math.min(Stance.MAX_SCALE, v))
+  db().scale = R2F.Reminders.ClampScale(v)
   Stance.Apply()
 end
 
@@ -154,3 +104,9 @@ function Stance.ToggleLock()
   Stance.SetLock(not db().lock)
   R2F.Print(db().lock and L.STANCE_LOCKED or L.STANCE_UNLOCKED)
 end
+
+R2F.Reminders.Register({
+  key = "stance", class = "WARRIOR", module = Stance,
+  title = "REM_STANCE_TITLE", show = "SETTINGS_STANCE_SHOW", lock = "SETTINGS_STANCE_LOCK",
+  size = "SETTINGS_STANCE_SIZE",
+})

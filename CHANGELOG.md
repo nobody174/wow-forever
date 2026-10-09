@@ -66,7 +66,7 @@ user-facing release notes.
   line in chat; zone names resolved to uiMapIDs at run time), `/r2f here` to capture the 19
   `check` positions in the beta. `build.py` now also runs `addon/tools/gen_plan_data.js`
   (node) to write `addon/RoadToForever/PlanData.lua` from `launch-plan.html` +
-  `launch-plan-waypoints.json`. Never run in game yet (TESTING.md 26). Not released yet.
+  `launch-plan-waypoints.json`. Never run in game yet (TESTING.md 26). Released as r2f-v0.18.0; addons page points at it.
 
 ## 2026-10-09 (Addon 0.17.0: Reminders tab, Hunter ammo low)
 - ADDON_PLAN 15.4, step 4 of addon round 2: a Reminders tab (stance icon + options moved out

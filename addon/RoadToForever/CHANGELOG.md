@@ -3,6 +3,12 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.23.2 (2026-10-09): mail uses the full character name
+
+- Owner test of 0.22.0: the mail button filled in a bare name ("Alice") and the mail didn't go: on this
+  client a recipient needs the full name, "Name-Realm". The button now fills in `Name-Realm` (the game's
+  normalised realm name, else the realm name without spaces).
+
 ## 0.23.1 (2026-10-09): single quest rewards are taken
 
 - Owner test of 0.23.0: accept and hand in work, but a quest with exactly ONE reward stopped at the reward

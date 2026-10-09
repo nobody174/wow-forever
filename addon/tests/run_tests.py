@@ -1997,6 +1997,7 @@ def test_gameplay():
 
 GAMEPLAY2_LUA = """
   GetRealmName = function() return 'Realm' end
+  GetNormalizedRealmName = function() return 'RealmNorm' end
   UnitName = function(unit) return 'Venom' end
   UnitFactionGroup = function() return 'Alliance' end
   UnitLevel = function() return TEST.level or 18 end
@@ -2058,7 +2059,11 @@ def test_gameplay_extras():
     txt = lua.eval("MENU[2].text")
     check("Alice" in txt and "30" in txt and "|cffabd473" in txt, "17.2 the entry shows name, level and the class colour: %r" % txt)
     lua.execute("MENU[2].func()")
-    check(lua.eval("SendMailNameEditBox:GetText()") == "Alice", "17.2 clicking a character fills in the recipient")
+    check(lua.eval("SendMailNameEditBox:GetText()") == "Alice-RealmNorm", "17.2 clicking a character fills in the FULL name, Name-Realm (a bare name does not arrive on this client)")
+    lua.execute("GetNormalizedRealmName = nil R2F.Gameplay.OtherCharacters()")
+    check(lua.eval("R2F.Gameplay.OtherCharacters()[1].full") == "Alice-Realm", "17.2 without a normalised realm name the realm name is used")
+    lua.execute("GetRealmName = function() return 'Mad Fury' end")
+    check(lua.eval("R2F.Gameplay.OtherCharacters()") is not None, "17.2 realm names with spaces do not break the list")
     lua.execute("R2FDB.chars.Realm.Alice = nil R2FMailAltsButton:Click()")
     check(lua.eval("#MENU") == 2 and "No other characters" in lua.eval("MENU[2].text"), "17.2 no other characters: the menu says so")
     lua.execute("R2F.Gameplay.SetOn('mailalts', false)")

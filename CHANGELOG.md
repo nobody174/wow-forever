@@ -60,6 +60,11 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.23.2: mail uses Name-Realm)
+- Owner test: mail to an alt needs the full name on this client. The Gameplay mail button fills in
+  `Name-Realm`. Backpack "178" is still unidentified (not the item total: that is 334). Released as
+  r2f-v0.23.2; addons page points at it.
+
 ## 2026-10-09 (Addon 0.23.1: single quest rewards are taken)
 - Owner test: auto turn-in stopped at a quest with exactly one reward. Now one (or no) reward is turned in,
   two or more are left for the player. Also found: the "178" on the backpack button is the game's own

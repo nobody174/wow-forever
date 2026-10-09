@@ -30,8 +30,18 @@ function Gameplay.RememberCharacter()
   }
 end
 
+-- The realm part of a full character name ("Name-Realm"): the game's normalised realm name
+-- (no spaces or dashes) when it has one, else the realm name with those removed.
+local function realmSuffix()
+  local normalized = GetNormalizedRealmName and GetNormalizedRealmName()
+  if normalized and normalized ~= "" then return normalized end
+  local realm = GetRealmName and GetRealmName() or ""
+  return (realm:gsub("[%s%-']", ""))
+end
+
 -- Your other characters on this realm and faction, sorted by name:
--- { { name =, class =, level = }, ... }.
+-- { { name =, full = "Name-Realm", class =, level = }, ... }. On this client mail needs the
+-- FULL name (owner test of 0.22.0: a bare name didn't arrive).
 function Gameplay.OtherCharacters()
   local out = {}
   local db = R2F.Library.db
@@ -40,7 +50,7 @@ function Gameplay.OtherCharacters()
   local faction = UnitFactionGroup and (UnitFactionGroup("player")) or ""
   for name, c in pairs((db.chars and realm and db.chars[realm]) or {}) do
     if name ~= me and (c.faction == faction or faction == "" or c.faction == "") then
-      out[#out + 1] = { name = name, class = c.class, level = c.level or 0 }
+      out[#out + 1] = { name = name, full = name .. "-" .. realmSuffix(), class = c.class, level = c.level or 0 }
     end
   end
   table.sort(out, function(a, b) return a.name < b.name end)
@@ -76,8 +86,8 @@ local function openAltMenu(owner)
       func = function()
         local box = mailBox()
         if box then
-          box:SetText(a.name)
-          if box.SetCursorPosition then box:SetCursorPosition(#a.name) end
+          box:SetText(a.full)
+          if box.SetCursorPosition then box:SetCursorPosition(#a.full) end
         end
       end,
     }

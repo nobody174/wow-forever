@@ -40,8 +40,9 @@ Warrior combos already split (CHANGELOG 2026-10-09). The rest, by pattern:
 - **Fine (conditions or items):** wand macros, Warlock Shadow Bolt + Imp Firebolt (check),
   poison / sharpening stone, Feed Pet, Charge + Rend (`[nocombat]` decides; a stance swap
   out of combat just needs a second press).
-- Open: unranked `/cast Charge` fails for the owner while `/cast Rend` works. Need the red
-  error text and `/dump C_Spell.GetSpellInfo("Charge")` vs `("Charge(Rank 1)")` (spellID 100).
+- Solved: unranked `Charge` resolves to Forever's level-46 Charge (spell 1240289) the character
+  doesn't know. Site uses `Charge(Rank 1)` for now; the real fix is rank-aware macros in the
+  addon (ADDON_PLAN 16), next up for Claude Code.
 
 ## Next up: addon round 2 (agreed 2026-10-08, spec: ADDON_PLAN.md section 15)
 

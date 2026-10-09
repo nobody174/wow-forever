@@ -1435,18 +1435,18 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Class QoL
 
-**Charge / Intercept (one button)** (`Charge`) — Out of combat: Charge. In combat: Intercept (level 30). Tactical Mastery (now trained) keeps up to 10 rage on a stance swap.
+**Charge / Intercept (one button)** (`Charge`) — Out of combat: Charge. In combat: Intercept (level 30). Tactical Mastery (now trained) keeps up to 10 rage on a stance swap. Rank 1 on purpose: on Forever an unranked "Charge" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).
 ```
-#showtooltip Charge
-/cast [nocombat, nostance:1] Battle Stance; [nocombat, @targettarget, harm, exists][nocombat, harm] Charge; [nostance:3] Berserker Stance; [@targettarget, harm, exists][harm] Intercept
+#showtooltip Charge(Rank 1)
+/cast [nocombat, nostance:1] Battle Stance; [nocombat, @targettarget, harm, exists][nocombat, harm] Charge(Rank 1); [nostance:3] Berserker Stance; [@targettarget, harm, exists][harm] Intercept
 ```
 
-**Charge + Rend (opener)** (`Charge+Rend`) — Charges in (out of combat only) then immediately opens with Rend.
+**Charge + Rend (opener)** (`Charge+Rend`) — Charges in (out of combat only) then opens with Rend. Rank 1 on purpose: on Forever an unranked "Charge" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).
 ```
-#showtooltip Charge
+#showtooltip Charge(Rank 1)
 /startattack [harm]
 /cast [nocombat, nostance:1] Battle Stance
-/cast [nocombat, harm] Charge
+/cast [nocombat, harm] Charge(Rank 1)
 /cast [harm] Rend
 ```
 
@@ -1500,7 +1500,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Sunder Armor
 ```
 
-**Revenge** (`Rev`) — Defensive Stance, after a block, dodge or parry: press it whenever it lights up (best threat per rage). Its own button: Forever: a macro stops at the first spell you know but can't use right now, so "Revenge, else Sunder" in one macro never reaches Sunder (tested 2026-10-09). 
+**Revenge** (`Rev`) — Defensive Stance, after a block, dodge or parry: press it whenever it lights up (best threat per rage). Its own button because Forever macros stop at the first spell you know but can't use right now, so "Revenge, else Sunder" never reaches Sunder (tested 2026-10-09).
 ```
 #showtooltip Revenge
 /startattack [harm]
@@ -1531,11 +1531,11 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Class QoL
 
-**Charge (Vanguard, any stance)** (`VCharge`) — With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, so no stance swap.
+**Charge (Vanguard, any stance)** (`VCharge`) — With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, so no stance swap. Rank 1 on purpose: on Forever an unranked "Charge" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).
 ```
-#showtooltip Charge
+#showtooltip Charge(Rank 1)
 /startattack [harm]
-/cast [harm] Charge
+/cast [harm] Charge(Rank 1)
 ```
 
 **Taunt (mouseover)** (`Taunt@`) — Defensive Stance. Hover a loose mob to taunt it without changing target.

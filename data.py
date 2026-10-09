@@ -774,20 +774,20 @@ CLASSES = [
             ]),
             G(QOL, [
                 M("Charge / Intercept (one button)",
-                  "#showtooltip Charge\n"
+                  "#showtooltip Charge(Rank 1)\n"
                   "/cast [nocombat, nostance:1] Battle Stance; "
-                  "[nocombat, @targettarget, harm, exists][nocombat, harm] Charge; "
+                  "[nocombat, @targettarget, harm, exists][nocombat, harm] Charge(Rank 1); "
                   "[nostance:3] Berserker Stance; "
                   "[@targettarget, harm, exists][harm] Intercept",
                   "Out of combat: Charge. In combat: Intercept (level 30). "
-                  "Tactical Mastery (now trained) keeps up to 10 rage on a stance swap.", short="Charge"),
+                  "Tactical Mastery (now trained) keeps up to 10 rage on a stance swap. Rank 1 on purpose: on Forever an unranked \"Charge\" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).", short="Charge"),
                 M("Charge + Rend (opener)",
-                  "#showtooltip Charge\n"
+                  "#showtooltip Charge(Rank 1)\n"
                   "/startattack [harm]\n"
                   "/cast [nocombat, nostance:1] Battle Stance\n"
-                  "/cast [nocombat, harm] Charge\n"
+                  "/cast [nocombat, harm] Charge(Rank 1)\n"
                   "/cast [harm] Rend",
-                  "Charges in (out of combat only) then immediately opens with Rend.", short="Charge+Rend"),
+                  "Charges in (out of combat only) then opens with Rend. Rank 1 on purpose: on Forever an unranked \"Charge\" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).", short="Charge+Rend"),
                 M("Taunt (to Defensive)", stance(2, "Defensive Stance", "Taunt"), "Target the friend being hit: TT is the mob.",
                   short="Taunt"),
                 M("Mocking Blow (to Battle)", stance(1, "Battle Stance", "Mocking Blow", attack=True), short="Mock"),
@@ -817,7 +817,7 @@ CLASSES = [
                   "Your spam button. Starts auto-attack.", short="Sunder"),
                 M("Revenge", melee("Revenge"),
                   "Defensive Stance, after a block, dodge or parry: press it whenever it lights up "
-                  "(best threat per rage). Its own button: Forever: a macro stops at the first spell you know but can't use right now, so \"Revenge, else Sunder\" in one macro never reaches Sunder (tested 2026-10-09). ", short="Rev"),
+                  "(best threat per rage). Its own button because Forever macros stop at the first spell you know but can't use right now, so \"Revenge, else Sunder\" never reaches Sunder (tested 2026-10-09).", short="Rev"),
                 M("Shield Block + Sunder Armor",
                   "#showtooltip Shield Block\n/startattack [harm]\n/cast Shield Block\n/cast [harm] Sunder Armor",
                   BETA + "Shield Block is off the global cooldown, so it fires with Sunder in one press. "
@@ -828,9 +828,9 @@ CLASSES = [
             ]),
             G(QOL, [
                 M("Charge (Vanguard, any stance)",
-                  "#showtooltip Charge\n/startattack [harm]\n/cast [harm] Charge",
+                  "#showtooltip Charge(Rank 1)\n/startattack [harm]\n/cast [harm] Charge(Rank 1)",
                   "With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, "
-                  "so no stance swap.", short="VCharge"),
+                  "so no stance swap. Rank 1 on purpose: on Forever an unranked \"Charge\" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).", short="VCharge"),
                 M("Taunt (mouseover)",
                   "#showtooltip Taunt\n/cast [@mouseover, harm, nodead][harm] Taunt",
                   "Defensive Stance. Hover a loose mob to taunt it without changing target.", short="Taunt@"),

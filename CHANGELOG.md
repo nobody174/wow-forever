@@ -4,6 +4,12 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-09 (Charge pinned to Rank 1; rank-aware macros planned)
+- Owner dump: unranked "Charge" = spell 1240289, Forever's level-46 Charge, unknown at 18, so
+  `/cast Charge` fails (Rend unranked works). The three Charge macros (Charge, Charge+Rend,
+  VCharge) now use `Charge(Rank 1)` in `#showtooltip` and `/cast`. ADDON_PLAN 16: the addon
+  will write the highest known rank into game macros and raise it when a rank is learned.
+
 ## 2026-10-09 (Forever macros don't fall through: Warrior combos split)
 - Owner test on the live client: `/cast Revenge` + `/cast Sunder Armor` never casts Sunder when
   Revenge isn't lit; `/cast Sunder` alone works; Sunder first casts only Sunder. On Forever's

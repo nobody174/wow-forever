@@ -2893,3 +2893,32 @@ for that plan only (no base-chain lookup for waypoints). Without TomTom the butt
   `TomTom:AddWaypoint(mapID, x/100, y/100, {title = ...})`; without TomTom: print the
   `/way` line. Same mechanism later for the library-book route.
 - Ticks are separate from the site's (browser) ticks; syncing them is out of scope.
+
+## 16. Rank-aware macros (owner test 2026-10-09)
+
+Found in game on a level-18 Warrior: `/cast Rend` works unranked, `/cast Charge` fails.
+`/dump C_Spell.GetSpellInfo("Charge")` returns spellID **1240289** = Forever's level-46 Charge
+(top rank, which the character doesn't know), not Rank 1 (100). So on Forever an unranked name
+can resolve to a rank you don't know, at least for spells whose ranks Forever re-made with new
+spell ids. Which spells are affected isn't known in advance. (Note the old global
+`GetSpellInfo` doesn't exist on this client: `C_Spell.GetSpellInfo` returns a table.)
+
+Site stopgap (2026-10-09): the three Charge macros use `Charge(Rank 1)`.
+
+Addon feature:
+- When the addon creates or updates a game macro (drag from the book, import update, login
+  sync), check every spell name in `/cast` / `#showtooltip` lines that has no `(Rank N)`:
+  if `C_Spell.GetSpellInfo(name).spellID` is not known (`IsPlayerSpell` / `IsSpellKnown`), find
+  the highest rank of that spell the player knows (spellbook scan incl. "show all ranks", or
+  `C_Spell.GetSpellInfo(name.."(Rank N)")` for N = 1..10) and write `Name(Rank K)` into the
+  game macro. Library bodies stay unranked (they come from the site).
+- When the player learns a spell (`LEARNED_SPELL_IN_TAB` / `SPELLS_CHANGED`), re-check the
+  macros the addon made and raise ranks; queue while in combat (EditMacro is protected).
+- A site macro that already pins a rank (`Charge(Rank 1)`) is treated the same: raised to the
+  highest known rank once a higher one is learned.
+- Edited-by-user macros: never touched (same rule as updates).
+- `/r2f ranks`: prints every spell in the character's R2F macros whose unranked name doesn't
+  resolve to a known spell, and the rank the addon uses instead.
+- Tests: fake spellbook where "Charge" resolves to an unknown id and Rank 1/2 are known;
+  Rend resolves to a known id (left alone); learning Rank 2 raises the macro; combat queue;
+  edited macro untouched.

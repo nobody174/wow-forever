@@ -3,6 +3,20 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.22.0 (2026-10-09): Gameplay step 2 (mail to your characters, free bag slots, fast loot)
+
+**Never run in game yet: TESTING.md 30.** All three are OFF until ticked on the Gameplay tab.
+
+- **Mail: pick your own characters.** A small button after the recipient field in the mail window lists
+  your other characters on this realm and faction (class colour, level); click one to fill in the name.
+  The addon remembers every character that logs in with it (name, class, level, faction), so log in on
+  each once.
+- **Free bag slots on the backpack.** The number of free general-purpose bag slots (quivers and ammo pouches
+  not counted) on the backpack button; red at 3 or fewer. Greyed out if the client has no such button.
+- **Fast loot.** Loots every slot at once when the loot window opens. Only when the game's own auto-loot
+  would loot (the auto-loot key flips it). Greed rolling on greens is NOT included.
+- Quest log "track all in this zone" is not built yet: it needs the quest log's frame names on this client.
+
 ## 0.21.0 (2026-10-09): Gameplay tab, first five features (ADDON_PLAN 17 step 1)
 
 **Never run in game yet: TESTING.md 29.**

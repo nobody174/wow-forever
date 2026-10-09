@@ -728,6 +728,7 @@ function methods:SetCheckedTexture(t) self.__checkedTex = self.__checkedTex or n
 function methods:GetCheckedTexture() return self.__checkedTex end
 function methods:SetBlendMode(m) self.__blend = m end
 function methods:SetScale(s) self.__scale = s end
+function methods:GetParent() return self.__parent end
 function methods:EnableMouseWheel() end
 function methods:EnableMouse(v) self.__mouse = v and true or false end
 function methods:IsMouseEnabled() return self.__mouse == true end

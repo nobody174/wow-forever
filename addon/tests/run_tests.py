@@ -1995,6 +1995,115 @@ def test_gameplay():
           "17 a class without reminders sees the 'none yet' line in the Reminders column")
 
 
+GAMEPLAY2_LUA = """
+  GetRealmName = function() return 'Realm' end
+  UnitName = function(unit) return 'Venom' end
+  UnitFactionGroup = function() return 'Alliance' end
+  UnitLevel = function() return TEST.level or 18 end
+  RAID_CLASS_COLORS = { WARRIOR = { r = 0.78, g = 0.61, b = 0.43 }, HUNTER = { r = 0.67, g = 0.83, b = 0.45 } }
+  SendMailFrame = CreateFrame('Frame', 'SendMailFrame', UIParent)
+  SendMailNameEditBox = CreateFrame('EditBox', 'SendMailNameEditBox', SendMailFrame)
+  MainMenuBarBackpackButton = CreateFrame('Button', 'MainMenuBarBackpackButton', UIParent)
+  FREE = { [0] = 4, [1] = 6, [2] = 2, [3] = 0, [4] = 9 }
+  BAGTYPE = { [0] = 0, [1] = 0, [2] = 0, [3] = 0, [4] = 1 }   -- bag 4 is a quiver: not counted
+  C_Container = C_Container or {}
+  C_Container.GetContainerNumFreeSlots = function(bag) return FREE[bag] or 0, BAGTYPE[bag] or 0 end
+  LOOTED, LOOT_ITEMS = {}, 3
+  GetNumLootItems = function() return LOOT_ITEMS end
+  LootSlot = function(i) table.insert(LOOTED, i) end
+  AUTOLOOT = true
+  GetCVarBool = function(name) return name == 'autoLootDefault' and AUTOLOOT end
+  TOGGLE_HELD = false
+  IsModifiedClick = function(which) return which == 'AUTOLOOTTOGGLE' and TOGGLE_HELD end
+  MENU = nil
+  R2F.UI.ContextMenu = function(items) MENU = items end
+"""
+
+
+def gameplay2_runtime(preset=None, backpack=True):
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    lua.execute(GAMEPLAY2_LUA)
+    if not backpack:
+        lua.execute("MainMenuBarBackpackButton = nil")
+    if preset:
+        lua.execute("R2FDB = %s" % preset)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    return lua, T
+
+
+def test_gameplay_extras():
+    """ADDON_PLAN 17 step 2: own characters in mail, free bag slots, fast loot."""
+    # --- Characters are remembered ---------------------------------------------------------------------
+    lua, T = gameplay2_runtime(preset="{ chars = { Realm = { Alice = { class = 'HUNTER', level = 30, faction = 'Alliance' }, "
+                               "Bob = { class = 'MAGE', level = 5, faction = 'Horde' } }, Other = { Carl = { class = 'WARRIOR', level = 9, faction = 'Alliance' } } } }")
+    check(lua.eval("R2FDB.chars.Realm.Venom.class") == "WARRIOR" and lua.eval("R2FDB.chars.Realm.Venom.level") == 18
+          and lua.eval("R2FDB.chars.Realm.Venom.faction") == "Alliance", "17.2 this character is remembered at login")
+    others = [lua.eval("R2F.Gameplay.OtherCharacters()[%d].name" % i) for i in range(1, lua.eval("#R2F.Gameplay.OtherCharacters()") + 1)]
+    check(others == ["Alice"], "17.2 other characters: same realm and faction only, not yourself: %s" % others)
+    lua.execute("TEST.level = 19")
+    T.fire("PLAYER_LEVEL_UP")
+    check(lua.eval("R2FDB.chars.Realm.Venom.level") == 19, "17.2 the level is updated on level-up")
+    # --- Mail ----------------------------------------------------------------------------------------------
+    T.fire("MAIL_SHOW")
+    check(lua.eval("R2FMailAltsButton == nil"), "17.2 mail off: no button")
+    lua.execute("R2F.Gameplay.SetOn('mailalts', true)")
+    T.fire("MAIL_SHOW")
+    check(lua.eval("R2FMailAltsButton ~= nil and R2FMailAltsButton:IsShown()"), "17.2 mail on: a button after the recipient field")
+    lua.execute("R2FMailAltsButton:Click()")
+    items = lua.eval("MENU")
+    check(lua.eval("#MENU") == 2 and lua.eval("MENU[1].kind") == "title", "17.2 the menu: a title and one character")
+    txt = lua.eval("MENU[2].text")
+    check("Alice" in txt and "30" in txt and "|cffabd473" in txt, "17.2 the entry shows name, level and the class colour: %r" % txt)
+    lua.execute("MENU[2].func()")
+    check(lua.eval("SendMailNameEditBox:GetText()") == "Alice", "17.2 clicking a character fills in the recipient")
+    lua.execute("R2FDB.chars.Realm.Alice = nil R2FMailAltsButton:Click()")
+    check(lua.eval("#MENU") == 2 and "No other characters" in lua.eval("MENU[2].text"), "17.2 no other characters: the menu says so")
+    lua.execute("R2F.Gameplay.SetOn('mailalts', false)")
+    check(lua.eval("R2FMailAltsButton:IsShown()") is False, "17.2 mail off again: the button goes")
+    # --- Bag slots --------------------------------------------------------------------------------------------------
+    lua.execute("R2F.Gameplay.SetOn('bagslots', true)")
+    check(font_text(lua, "^12$") == "12", "17.2 free slots: general bags only (4 + 6 + 2 + 0 = 12, the quiver isn't counted)")
+    lua.execute("FREE[0], FREE[1], FREE[2] = 1, 1, 1")
+    T.fire("BAG_UPDATE_DELAYED")
+    check(font_text(lua, "^3$") == "3", "17.2 BAG_UPDATE_DELAYED refreshes the number")
+    lua.execute("""for _, f in ipairs(TEST.allFrames) do if f.__kind == 'FontString' and f.__text == '3' then BS = f end end""")
+    check(lua.eval("BS.__color[1]") == 1 and lua.eval("BS.__color[2]") < 0.5, "17.2 3 or fewer free slots: red")
+    lua.execute("R2F.Gameplay.SetOn('bagslots', false)")
+    check(lua.eval("BS.__shown") is False, "17.2 off: the number is hidden")
+    lua3, T3 = gameplay2_runtime(backpack=False)
+    check(lua3.eval("R2F.Gameplay.SetOn('bagslots', true)") is False and lua3.eval("R2FDB.gameplay.bagslots") is False,
+          "17.2 no backpack button on this client: can't be switched on")
+    # --- Fast loot ----------------------------------------------------------------------------------------------------------
+    lua.execute("LOOTED = {}")
+    T.fire("LOOT_READY", True)
+    check(lua.eval("#LOOTED") == 0, "17.2 fast loot off: nothing is looted for you")
+    lua.execute("R2F.Gameplay.SetOn('fastloot', true)")
+    T.fire("LOOT_READY", True)
+    check(lua_table_to_list(lua.eval("LOOTED")) == [3, 2, 1], "17.2 fast loot on: every slot at once, last to first: %s" % lua_table_to_list(lua.eval("LOOTED")))
+    lua.execute("LOOTED = {} AUTOLOOT = false")
+    T.fire("LOOT_READY")
+    check(lua.eval("#LOOTED") == 0, "17.2 the game's auto-loot is off: nothing happens")
+    lua.execute("TOGGLE_HELD = true")
+    T.fire("LOOT_READY")
+    check(lua.eval("#LOOTED") == 3, "17.2 the auto-loot key flips it (held with auto-loot off: loots)")
+    lua.execute("LOOTED = {} AUTOLOOT = true")
+    T.fire("LOOT_READY")
+    check(lua.eval("#LOOTED") == 0, "17.2 the auto-loot key held with auto-loot on: does not loot")
+    lua.execute("TOGGLE_HELD = false LOOTED = {}")
+    T.fire("LOOT_READY", False)
+    check(lua.eval("#LOOTED") == 0, "17.2 LOOT_READY's own auto-loot flag false: nothing")
+    # --- Tab ---------------------------------------------------------------------------------------------------------------------
+    lua.execute("R2F.MainWindow.Show('gameplay')")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel", "GB2")
+    labels = [lua.eval("GB2[%d].r2fLabel.__text" % i) for i in range(1, lua.eval("#GB2") + 1)]
+    for k in ("GP_MAIL", "GP_BAGSLOTS", "GP_FASTLOOT"):
+        check(lua.eval("R2F.L.%s" % k) in labels, "17.2 the Gameplay tab has the %s box" % k)
+    check(all(lua.eval("R2FDB.gameplay.%s" % k) is not None for k in ("mailalts", "bagslots", "fastloot")), "17.2 the new switches have saved flags")
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -5914,6 +6023,7 @@ def main():
     test_plan(False)
     test_ranks()
     test_gameplay()
+    test_gameplay_extras()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

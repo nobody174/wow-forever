@@ -60,6 +60,11 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.22.0: Gameplay step 2)
+- ADDON_PLAN 17 step 2: mail to your own characters, free bag slots on the backpack, fast loot (all off
+  by default). QuestZoneTracking waits for the quest log's frame names (needs a look in game). Never run
+  in game yet (TESTING.md 30).
+
 ## 2026-10-09 (Addon 0.21.0: Gameplay tab, first five ForeverPlus features)
 - ADDON_PLAN 17 step 1: the Reminders tab became the Gameplay tab (automatic features, screen features,
   reminders); new features, all off by default: repair at vendors, sell grey items, block duels, hide

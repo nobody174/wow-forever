@@ -1075,3 +1075,19 @@ AutoSellGray, Interruptions, ErrorFilter, XPBarText) or both addons do the job t
 7. `/reload` and relog: ticked features are still active without opening the tab.
 8. Combat: the tab's boxes work in combat, except XP bar text (a game setting): it refuses and says so.
 9. Anything that goes wrong prints "gameplay feature X hit an error ..." once: send us that line.
+
+## 30. Gameplay step 2 (v0.22.0)
+
+All three are OFF until ticked on the Gameplay tab. Turn ForeverPlus' MailAlts, BagSlots and Looting off first.
+
+1. **Mail: pick your own characters.** Log in on each of your characters once with this version (it remembers
+   them). Tick the box, open a mailbox, Send Mail tab: a small button sits right after the recipient field.
+   Click it: your other characters on this realm and faction, class-coloured with their level. Click one: the
+   name is filled in. Is the button where you can see it and not on top of anything?
+2. **Free bag slots:** tick it: a number appears on the backpack button (free slots in your normal bags, not
+   quivers). Pick something up / drop something: it changes. Red at 3 or fewer. Greyed out? Tell us which
+   bar you use (the backpack button's frame name differs per client).
+3. **Fast loot:** needs the game's auto-loot on (Esc > Options > Controls > Auto Loot). Tick it, kill a few
+   mobs with several items: everything is taken at once. Hold the auto-loot key (Shift by default) while
+   looting: it should do the opposite of the setting. With auto-loot off, nothing is taken for you.
+4. `/reload`: all three still work.

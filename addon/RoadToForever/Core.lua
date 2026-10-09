@@ -28,6 +28,7 @@ handlers.PLAYER_LOGIN = function()
   R2F.Minimap.Init()
   R2F.Stance.Init()
   R2F.Ammo.Init()
+  R2F.Gameplay.InitCharacters()
   R2F.Gameplay.Init()
   R2F.Bags.Init()
 end

@@ -3,6 +3,11 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.20.1 (2026-10-09): addon list icon
+
+- The addon list in the game's AddOns window showed a "?" icon: the TOC now has
+  `## IconTexture` (our logo, `media/logo64`).
+
 ## 0.20.0 (2026-10-09): bags rebuilt (Shift+drag), Reload UI in the minimap menu
 
 **Never run in game yet: TESTING.md 24 (rewritten) and 28.**

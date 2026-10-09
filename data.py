@@ -791,10 +791,12 @@ CLASSES = [
                 M("Taunt (to Defensive)", stance(2, "Defensive Stance", "Taunt"), "Target the friend being hit: TT is the mob.",
                   short="Taunt"),
                 M("Mocking Blow (to Battle)", stance(1, "Battle Stance", "Mocking Blow", attack=True), short="Mock"),
-                M("Stance dance (Battle -> Defensive -> Berserker)",
-                  "#showtooltip Battle Stance\n"
-                  "/cast [stance:1] Defensive Stance; [stance:2] Berserker Stance; [stance:3] Battle Stance",
-                  "One button cycles Battle -> Defensive -> Berserker -> Battle.", short="Stances"),
+                M("Stance swap (Battle <> Defensive)",
+                  "#showtooltip [stance:1] Defensive Stance; Battle Stance\n"
+                  "/cast [stance:1] Defensive Stance; Battle Stance",
+                  "One button swaps Battle <> Defensive (from Berserker or no stance it goes to Battle). "
+                  "The old three-stance cycle failed for you in Defensive Stance: its next step was Berserker "
+                  "Stance, which you don't have before level 30.", short="Stances"),
                 M("Stance toggle (Battle <> Defensive, mods for others)",
                   "#showtooltip\n/cast [mod:ctrl, nostance:3] Berserker Stance; "
                   "[mod:alt, nostance:2] Defensive Stance; [stance:1] Defensive Stance; Battle Stance",

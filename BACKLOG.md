@@ -63,6 +63,10 @@ are built as well.
       handles it, the three `Charge(Rank 1)` stopgap macros on the site could go back to plain
       `Charge` (players without the addon would then hit the problem again, so decide then).
 
+- [ ] **Replace ForeverPlus: Gameplay tab** (ADDON_PLAN 17, planned 2026-10-09): waiting for the
+      owner's yes on the tab layout (Gameplay replaces Reminders; Settings keeps the rest) and the
+      build order; ask which ForeverPlus buff placement he used, if any.
+
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 
 Full spec: [ADDON_PLAN.md](ADDON_PLAN.md). Read it before starting any step.

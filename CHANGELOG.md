@@ -60,6 +60,16 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Stance swap macro, addon list icon, ForeverPlus replacement plan)
+- Warrior `Stances` macro (was "Stance dance Battle -> Defensive -> Berserker"): owner test, it did
+  nothing in Defensive Stance (the next step was Berserker Stance, not available before level 30).
+  Now "Stance swap (Battle <> Defensive)": `#showtooltip [stance:1] Defensive Stance; Battle Stance`
+  + `/cast [stance:1] Defensive Stance; Battle Stance`. Same short, so an import updates it in place.
+  `StanceTog` (Ctrl = Berserker, Alt = Defensive) is unchanged.
+- Thunder Clap has no macro on purpose (removed with the other plain casts in the 2026-10-08 cleanup).
+- Addon 0.20.1: `## IconTexture` so the addon list shows our logo instead of "?".
+- ADDON_PLAN 17 (new): what to build to replace ForeverPlus, and the tab layout. Planning only.
+
 ## 2026-10-09 (Addon 0.20.0: bags rebuilt, Reload UI in the minimap menu)
 - Owner test: movable bags didn't move with only R2F enabled, while ForeverPlus' BagWindow module
   (Shift+drag) did. Blizzard's title-bar button swallows drags that start on the title; the fix is

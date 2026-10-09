@@ -2927,3 +2927,56 @@ Addon feature:
 - Tests: fake spellbook where "Charge" resolves to an unknown id and Rank 1/2 are known;
   Rend resolves to a known id (left alone); learning Rank 2 raises the macro; combat queue;
   edited macro untouched.
+
+## 17. Gameplay tab: replacing ForeverPlus (owner, 2026-10-09) -- PLAN, nothing built yet
+
+**Goal:** stop needing ForeverPlus (v0.8.5, by Epicstrike, on CurseForge) by building the parts the owner
+uses into Road to Forever. The owner uses its "Gameplay" page: NPC interaction (QuestAutoAccept,
+QuestAutoTurnIn, QuestRewardValue, GossipAuto, MailAlts), loot and money (Looting, AutoSellGray,
+AutoRepair), and Interruptions (block duels), ErrorFilter, XPBarText, BagSlots, QuestZoneTracking,
+possibly Ammunition and Diagnostics. Not used: buffs / consumables / tooltip / info bar / chat / design /
+profiles (the owner may have used buff placement: ask).
+
+**Licence rule:** ForeverPlus is "All Rights Reserved". We do NOT copy or adapt its code. We use it only as
+a list of what the features do and which traps it found (its comments are a good bug list: build 1.60.1's
+missing gossip option type, the undefined order of MERCHANT_SHOW handlers, taint from calling Blizzard's
+bag code). Everything is written fresh, in our style, with our tests.
+
+**Feature list, difficulty and risks** (ForeverPlus size in lines as a rough measure):
+
+| Feature | What it does | Our difficulty / risk |
+|---|---|---|
+| AutoSellGray (340) | sells grey items when a vendor opens | easy-medium; track merchant open from events, not from frame visibility; never sell anything unless quality 0 |
+| AutoRepair (135) | repairs at vendors that can | easy; guild-bank repair off; say the cost in chat |
+| XPBarText (70) | keeps the XP bar text visible | easy: a game setting (CVar), nothing to hook; verify the CVar exists |
+| BagSlots (419) | free bag slot count on the backpack | medium: needs a text on the backpack frame, which we now hook for movable bags |
+| Block duels (235, "Interruptions") | declines duel requests | easy; ships OFF |
+| ErrorFilter (267) | hides "Not enough mana / not ready / out of range" red spam | easy-medium; match the client's own ERR_ strings, locale independent |
+| QuestZoneTracking (336) | a checkbox on each quest-log zone header: track all / none | medium: touches the quest log UI |
+| QuestAutoAccept (116) | accepts quests without clicking | medium; unverified gossip/quest API names on this client |
+| QuestAutoTurnIn (147) | hands in finished quests, NEVER picks a reward | medium; the no-reward-pick rule is non-negotiable |
+| QuestRewardValue (204) | vendor price on every quest reward | medium; display only, own switch |
+| GossipAuto (437) | clicks the extra line in front of a shop/service | hardest: telling a shop line from an escort/boss line when the option type is missing on this build; ships OFF until proven |
+| MailAlts (242) | button in the mail window listing your own characters | medium; same realm and faction, class colours |
+| Looting (291) | fast loot (removes the 150 ms spacing), optional greed on greens | medium; the greed roll acts in front of others: ships OFF |
+| Ammunition (363) | ammo count on the quiver bag + low warning | we have the ammo reminder icon (0.17); the count-on-the-bag part is missing |
+| Diagnostics (2318) | measures what the client API offers, for bug reports | not needed: we have `/r2f rankdebug`, `/r2f bags`, `/r2f here`; maybe one small `/r2f diag` later |
+
+**Rules for every automation:** one switch per feature; the ones that act on other people or on items
+(duels, greed rolls, gossip, selling) ship OFF; nothing runs in combat if the call is protected; every
+event handler is wrapped so one error never stops the others; each feature says in chat once what it did
+("sold 12 grey items for 3g 20s").
+
+**Tab layout (proposal, needs the owner's yes):** Home / Macros / Talents / Plan / **Gameplay** / Settings.
+* Gameplay (new) has three sections: *Automatic* (quests, gossip, vendor, loot, mail, duels), *Screen*
+  (error filter, XP bar text, bag slots, quest-log tracking) and *Reminders* (what the Reminders tab holds
+  now: Warrior stance icon, Hunter ammo; future pet / repair / bags-full). The Reminders tab goes away.
+* Settings keeps Macros, Minimap, Quick settings (zoom, names, titles) and Movable / Lock bags.
+Reason: Reminders are read-only icons, Gameplay features ACT (accept, sell, repair, loot), so they need
+their own warnings and defaults, but both are "what happens while I play", and six tabs is what fits
+along the window's bottom edge.
+
+**Build order (each its own release):** 1. Gameplay tab + XPBarText, ErrorFilter, Block duels, AutoRepair,
+AutoSellGray (all easy, all useful at once). 2. MailAlts, BagSlots, QuestZoneTracking, Looting (fast loot only).
+3. Quest automation: QuestAutoAccept, QuestAutoTurnIn, QuestRewardValue. 4. GossipAuto, greed rolls (after real
+in-game measurements of the gossip options on this build).

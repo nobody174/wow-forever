@@ -908,10 +908,11 @@ def bag_point(lua, name):
                     "tostring(p[3]), tostring(p[4]), tostring(p[5]) }, ',') end)()" % name)
 
 
-def bag_drag(lua, name, point, x, y):
-    """Simulate a drag: the game reports `point` for the frame after StopMovingOrSizing."""
+def bag_drag(lua, name, point, x, y, shift=True):
+    """Simulate a Shift+drag (v0.20.0): the game reports `point` for the frame after StopMovingOrSizing."""
     lua.execute("%s.GetPoint = function() return %r, UIParent, %r, %d, %d end" % (name, point, point, x, y))
-    lua.execute("%s:Fire('OnDragStart') %s:Fire('OnDragStop')" % (name, name))
+    lua.execute("TEST.shift = %s %s:Fire('OnDragStart') %s:Fire('OnDragStop') TEST.shift = false TEST.fire('MODIFIER_STATE_CHANGED')" % ("true" if shift else "false", name, name))
+    lua.execute("%s.GetPoint = nil" % name)   # the game reports the point again (the fake keeps what SetPoint set)
 
 
 def test_bags():
@@ -995,8 +996,8 @@ def test_bags():
     # --- Turning it off hands the bags back to the game, saved spots are kept --------------------------
     anchors = lua.eval("ANCHOR_CALLS")
     lua.execute("R2F.Bags.SetMovable(false)")
-    check(lua.eval("ANCHOR_CALLS") == anchors + 1 and bag_point(lua, "ContainerFrame1") == "BOTTOMRIGHT,UIParent,BOTTOMRIGHT,-10,100",
-          "15.3 Movable off: the game re-stacks the bags")
+    check(lua.eval("ANCHOR_CALLS") == anchors and bag_point(lua, "ContainerFrame1") == "BOTTOMRIGHT,UIParent,BOTTOMRIGHT,-10,100",
+          "15.3 Movable off: the bags go back to where the game put them, WITHOUT calling the game's placement (it taints the bag code)")
     lua.execute("MOVES = 0")
     bag_drag(lua, "ContainerFrame1", "CENTER", 5, 5)
     lua.execute("UpdateContainerFrameAnchors()")
@@ -1041,9 +1042,52 @@ def test_bags():
     lua.execute("R2F.Bags.SetMovable(true) ContainerFrame1:Show()")
     lua.execute("ContainerFrame1.GetPoint = function() return 'TOPRIGHT', ContainerFrame2, 'TOPLEFT', 0, 0 end"
                 " ContainerFrame1.GetLeft = function() return 111 end ContainerFrame1.GetBottom = function() return 222 end"
-                " ContainerFrame1:Fire('OnDragStart') ContainerFrame1:Fire('OnDragStop')")
+                " TEST.shift = true ContainerFrame1:Fire('OnDragStart') ContainerFrame1:Fire('OnDragStop') TEST.shift = false")
     check(lua.eval("R2FCharDB.bags.bags[0][1]") == "BOTTOMLEFT" and lua.eval("R2FCharDB.bags.bags[0][3]") == 111
           and lua.eval("R2FCharDB.bags.bags[0][4]") == 222, "15.3 relative anchor -> saved as absolute BOTTOMLEFT")
+
+    # --- v0.20.0: Shift+drag, grips, no game placement calls, ForeverPlus note ------------------------------------------
+    lua, T = bag_runtime(True, True)
+    lua.execute("R2F.Bags.SetMovable(true) ContainerFrame1:Show() ContainerFrameCombinedBags:Show() UpdateContainerFrameAnchors()")
+    lua.execute("MOVES = 0")
+    bag_drag(lua, "ContainerFrame1", "LEFT", 7, 8, shift=False)
+    check(lua.eval("MOVES") == 0 and lua.eval("R2FCharDB.bags.bags[0] == nil"), "15.3 without Shift a drag on the bag window does nothing (the title stays the game's)")
+    bag_drag(lua, "ContainerFrame1", "LEFT", 7, 8, shift=True)
+    check(lua.eval("MOVES") == 1 and lua.eval("R2FCharDB.bags.bags[0][3]") == 7, "15.3 Shift+drag moves and saves it")
+    # The grip over the title takes the mouse only while Shift is held.
+    mouse = lambda: lua.eval("(function() local n = 0 for _, f in ipairs(TEST.allFrames) do if f.__mouse and f.__parent == ContainerFrame1 then n = n + 1 end end return n end)()")
+    check(mouse() == 0, "15.3 no Shift: the grip over the title does not take the mouse")
+    lua.execute("TEST.shift = true") ; T.fire("MODIFIER_STATE_CHANGED")
+    check(mouse() == 1, "15.3 Shift held: the grip takes the mouse (the title bar becomes a handle)")
+    lua.execute("TEST.shift = false") ; T.fire("MODIFIER_STATE_CHANGED")
+    check(mouse() == 0, "15.3 Shift released: the grip lets go")
+    lua.execute("R2F.Bags.SetLock(true) TEST.shift = true") ; T.fire("MODIFIER_STATE_CHANGED")
+    check(mouse() == 0, "15.3 locked: Shift does not arm the grip")
+    lua.execute("R2F.Bags.SetLock(false) TEST.shift = true") ; T.fire("MODIFIER_STATE_CHANGED")
+    T.combat = True
+    T.fire("MODIFIER_STATE_CHANGED")
+    check(mouse() == 0, "15.3 combat: the grip is never armed")
+    T.combat = False
+    lua.execute("TEST.shift = false")
+    # Grip's own drag handler starts the move too (the title bar drag).
+    lua.execute("MOVES = 0 TEST.shift = true")
+    for g in range(1):
+        lua.execute("""for _, f in ipairs(TEST.allFrames) do if f.__parent == ContainerFrame1 and f.__scripts.OnDragStart then GRIP = f end end
+          GRIP.__mouse = true GRIP:Fire('OnDragStart')""")
+    check(lua.eval("MOVES") == 1, "15.3 dragging the title grip moves the window")
+    lua.execute("GRIP:Fire('OnDragStop') TEST.shift = false")
+    # Never run the game's placement code from our side.
+    lua.execute("ANCHOR_CALLS = 0 R2F.Bags.SetMovable(false) R2F.Bags.SetMovable(true) R2F.Bags.SetLock(true) R2F.Bags.SetLock(false)")
+    check(lua.eval("ANCHOR_CALLS") == 0, "15.3 switching settings never calls UpdateContainerFrameAnchors (ForeverPlus got 'blocked from an action' from that)")
+    # ForeverPlus note.
+    T.chat = lua.table()
+    lua.execute("C_AddOns = { IsAddOnLoaded = function(name) return name == 'ForeverPlus' end }")
+    lua.execute('SlashCmdList.R2F("bags")')
+    check("ForeverPlus is loaded" in chat_all(lua), "15.3 /r2f bags warns when ForeverPlus (which also moves the bag window) is loaded")
+    T.chat = lua.table()
+    lua.execute("C_AddOns = { IsAddOnLoaded = function(name) return false end }")
+    lua.execute('SlashCmdList.R2F("bags")')
+    check("ForeverPlus" not in chat_all(lua), "15.3 no ForeverPlus warning when it is not loaded")
 
     # --- Settings tab boxes ----------------------------------------------------------------------------------------
     lua, T = bag_runtime(True, False)
@@ -2343,7 +2387,8 @@ def test_step6_ui(templates, fx):
     # ---- Right-click menu (MenuUtil on the template run, own menu on fallbacks)
     lua.execute("R2FMinimapButton:Click('RightButton')")
     expected = [("title", "Road to Forever"), ("button", L.MENU_OPEN), ("button", L.MENU_MACROS),
-                ("button", L.MENU_TALENTS), ("divider", None), ("check", L.MENU_LOCK), ("button", L.MENU_HIDE)]
+                ("button", L.MENU_TALENTS), ("divider", None), ("check", L.MENU_LOCK), ("button", L.MENU_HIDE),
+                ("divider", None), ("button", L.MENU_RELOAD)]
     if templates:
         menu = lua.eval("TEST.menu")
         got = [(menu[i].kind, menu[i].text) for i in range(1, len(menu) + 1)]
@@ -2384,6 +2429,9 @@ def test_step6_ui(templates, fx):
     click(7)
     check(lua.eval("R2FDB.minimap.hide") is True and lua.eval("R2FMinimapButton:IsShown()") is False,
           "menu > Hide minimap button hides it")
+    T.reloaded = 0
+    click(9)
+    check(T.reloaded == 1 and lua.eval("TEST.reloaded") == 1, "menu > Reload UI calls ReloadUI")
     check(any("minimap button hidden. Type /r2f minimap to show it again." in c for c in chat_lines(lua)),
           "hiding prints how to get it back (12.2)")
     check(lua.eval("SHOWBOX:GetChecked()") is False, "Settings' Show box follows the hide")
@@ -2618,7 +2666,7 @@ def test_minimap_libdbicon(fx):
     lua.execute("LDB.objects.RoadToForever.OnClick(UIParent, 'LeftButton')")
     check(lua.eval("R2F.MainWindow.IsShown()") is True, "LDB OnClick left = open the main window")
     lua.execute("LDB.objects.RoadToForever.OnClick(UIParent, 'RightButton')")
-    check(lua.eval("TEST.menu ~= nil and #TEST.menu == 7"), "LDB OnClick right = the menu")
+    check(lua.eval("TEST.menu ~= nil and #TEST.menu == 9"), "LDB OnClick right = the menu")
     lua.execute("GameTooltip:SetOwner() LDB.objects.RoadToForever.OnTooltipShow(GameTooltip)")
     check(lua_table_to_list(lua.eval("GameTooltip.lines"))[0] == "Road to Forever", "LDB tooltip filled by FillTooltip")
 

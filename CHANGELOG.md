@@ -60,6 +60,14 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-09 (Addon 0.20.0: bags rebuilt, Reload UI in the minimap menu)
+- Owner test: movable bags didn't move with only R2F enabled, while ForeverPlus' BagWindow module
+  (Shift+drag) did. Blizzard's title-bar button swallows drags that start on the title; the fix is
+  ForeverPlus' own: a grip over the title while Shift is held. R2F's version now does the same
+  (Movable bags + Lock bags, per character, classic and combined windows) and no longer calls
+  `UpdateContainerFrameAnchors` (the taint ForeverPlus documented). The minimap button's right-click
+  menu got a Reload UI line. Not released yet.
+
 ## 2026-10-09 (Addon 0.19.1 + Warrior tank macros: Charge + Rend for Vanguard, Shield Block + Revenge)
 - Owner test of 0.19.0: `/r2f ranks` didn't find the Charge rank the character has. 0.19.1 reads the
   rank from the spellbook as well and tries every known-check; `/r2f rankdebug <spell>` shows what

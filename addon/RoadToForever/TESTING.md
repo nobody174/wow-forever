@@ -1037,3 +1037,18 @@ wrong, like the level-18 Warrior and Charge. Do this on that character.
 3. `/r2f ranks` lists the spells it ranks in your macros; drag the macro again (or relearn / import)
    and check it in `/macro`.
 
+## 28. Bags rebuilt: Shift+drag, and Reload UI (v0.20.0; replaces the drag steps of section 24)
+
+Test with ForeverPlus' Bag window module OFF (`/fplus`), or the two fight over the position.
+
+1. `/r2f bags` should say which bag windows exist; with ForeverPlus loaded it also warns.
+2. Settings tab: tick **Movable bags**. Open your bags. **Hold Shift** and drag the bag window by its
+   title bar (or the empty background): it follows the mouse. Release: it stays.
+3. Without Shift, click the title: the game's menu (sorting etc.) opens as usual and nothing moves.
+4. Close and reopen the bags, `/reload`, relog: same spot. Another character: its own spot.
+5. Tick **Lock bags**: Shift+drag does nothing. Untick: it works again.
+6. Drag the bag to the far left edge and open a second bag (reagent bag): it should stay on screen.
+7. In combat: Shift+drag does nothing, the bag doesn't jump; after the fight it goes to your spot.
+8. Untick **Movable bags**: the window goes back to where the game puts it. Use items from your bags
+   afterwards (right-click a potion): no "blocked from an action" message anywhere.
+9. **Minimap button, right-click:** the last line is **Reload UI**; it reloads.

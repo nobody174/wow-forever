@@ -3,6 +3,24 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.20.0 (2026-10-09): bags rebuilt (Shift+drag), Reload UI in the minimap menu
+
+**Never run in game yet: TESTING.md 24 (rewritten) and 28.**
+
+- **Movable bags didn't work in game** (owner test of 0.19.x, with every other addon off). Cause,
+  confirmed in ForeverPlus' BagWindow module: Blizzard puts an invisible button over the whole
+  title bar that opens the bag menu when the mouse goes down, so a drag that starts on the title
+  never reaches the window. Now **hold Shift and drag** (title or empty background): while Shift is
+  held a grip of our own covers the title bar, without Shift the title is the game's again (click
+  for its menu). **Movable bags** on, **Lock bags** off. Position still saved per character.
+- **No more taint risk:** 0.16.0 called the game's `UpdateContainerFrameAnchors()` when Movable was
+  switched off. That runs the game's bag placement in our name and can make the game refuse item use
+  ("blocked from an action"; ForeverPlus hit this on 2026-10-04). Switching Movable off now puts each
+  window back where the game last placed it, read off the frame.
+- Windows anchored to a moved bag that would fall off the screen are hung off the other side.
+- `/r2f bags` warns when ForeverPlus (which also moves the bag window) is loaded: use one of the two.
+- **Minimap button right-click menu: Reload UI** (last line), instead of typing /reload.
+
 ## 0.19.1 (2026-10-09): rank detection from the spellbook, /r2f rankdebug
 
 **Never run in game yet.**

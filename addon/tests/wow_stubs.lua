@@ -571,6 +571,7 @@ function SetCVar(name, value)
 end
 
 function InCombatLockdown() return T.combat end
+function ReloadUI() T.reloaded = (T.reloaded or 0) + 1 end
 -- Ammo slot (0): T.ammoItem = item id or nil, T.ammoCount = how many of it the player owns.
 function GetInventoryItemID(unit, slot)
   if slot == 0 then return T.ammoItem end
@@ -641,7 +642,7 @@ local methods = {}
 -- call but don't need to model are listed here as no-ops.
 for _, name in ipairs({
   "SetSize", "SetWidth", "SetHeight", "SetPoint", "ClearAllPoints", "SetAllPoints",
-  "SetFrameStrata", "SetToplevel", "SetMovable", "EnableMouse", "RegisterForDrag",
+  "SetFrameStrata", "SetToplevel", "SetMovable", "RegisterForDrag",
   "SetClampedToScreen", "StartMoving", "StopMovingOrSizing", "SetBackdrop",
   "SetBackdropColor", "SetJustifyH", "SetTexCoord", "SetHighlightTexture",
   "SetPushedTexture", "SetDisabledTexture", "SetCheckedTexture", "RegisterForClicks",
@@ -714,7 +715,13 @@ function methods:GetStringHeight() return 14 end
 function methods:GetStringWidth() return 7 * #(self.__text or "") end
 function methods:GetEffectiveScale() return 1 end
 function methods:IsMouseOver() return false end
-function methods:GetPoint() return "CENTER", nil, "CENTER", 10, 20 end
+function methods:GetPoint()
+  -- A point set with SetPoint(point, relativeTo, relPoint, x, y) is reported back; anything else keeps the old fixed answer.
+  local p = self.__point
+  if p and #p >= 5 then return p[1], p[2], p[3], p[4], p[5] end
+  return "CENTER", nil, "CENTER", 10, 20
+end
+function methods:GetNumPoints() return self.__point and 1 or 0 end
 function methods:SetNormalTexture(t) self.__normal = self.__normal or newObject("Texture"); self.__normal.__tex = t end
 function methods:GetNormalTexture() return self.__normal end
 function methods:SetCheckedTexture(t) self.__checkedTex = self.__checkedTex or newObject("Texture"); self.__checkedTex.__tex = t end
@@ -722,6 +729,8 @@ function methods:GetCheckedTexture() return self.__checkedTex end
 function methods:SetBlendMode(m) self.__blend = m end
 function methods:SetScale(s) self.__scale = s end
 function methods:EnableMouseWheel() end
+function methods:EnableMouse(v) self.__mouse = v and true or false end
+function methods:IsMouseEnabled() return self.__mouse == true end
 function methods:SetVerticalScroll(v) self.__vscroll = v end
 function methods:GetVerticalScroll() return self.__vscroll or 0 end
 function methods:SetColorTexture(r, g, b, a) self.__ctex = { r, g, b, a } end

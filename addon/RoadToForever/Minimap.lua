@@ -127,6 +127,9 @@ function Minimap_.MenuItems()
     { kind = "check", text = L.MENU_LOCK, isChecked = function() return db().lock == true end,
       func = Minimap_.ToggleLock },
     { kind = "button", text = L.MENU_HIDE, func = function() Minimap_.SetHidden(true) end },
+    { kind = "divider" },
+    -- /reload without typing it (ReloadUI is not a protected function).
+    { kind = "button", text = L.MENU_RELOAD, func = function() ReloadUI() end },
   }
 end
 

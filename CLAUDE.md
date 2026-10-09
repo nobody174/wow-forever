@@ -463,3 +463,13 @@ which silently breaks any macro using the short form once that addon is
 installed, with no error shown. Found and fixed 2026-09-29 after a real
 in-game keybind investigation. If a future slash-command shorthand turns out
 to collide with a popular addon, prefer the full command name here too.
+
+## Blizzard's own UI code (extracted from the game, 2026-10-09)
+The game's interface Lua/XML for the Forever beta (1.60.1.70291) is extracted, read-only reference, at
+`D:\WoW-Extract\interface\` (about 4400 files: `addons/blizzard_*`, `blizzard_framexml`, API documentation).
+Read it instead of guessing frame names and function behaviour (e.g. the backpack button's texts live in
+`addons/blizzard_mainmenubarbagbuttons/shared/mainmenubarbagbuttons.lua`). It is Blizzard's code: never copy
+it into the addon. Tool: CASCConsole (CASCExplorer) in `D:\Tools\CASCConsole`, listfile in
+`D:\Tools\CASCConsole_dl\community-listfile.csv`. Re-extract / extract more with
+`CASCConsole.exe -m Listfile -e <csv of "fileID;path" lines> -d D:\WoW-Extract -l enUS -p wow_classic_beta -s "D:\World of Warcraft"`
+(filter the listfile with grep first; `-m Pattern` finds nothing because names come only from the listfile).

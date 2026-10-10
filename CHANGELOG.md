@@ -67,6 +67,9 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.28.2: /r2f who)
+- Probe for the mail list: shows every name the client gives the character, to find the "Venom Oathbreaker" form.
+
 ## 2026-10-10 (Addon 0.28.1: active Gameplay page highlighted, not greyed)
 - Owner feedback on the four pages: the active one looked disabled. Now gold text + gold bar, still enabled.
 

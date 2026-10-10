@@ -3,6 +3,12 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.28.2 (2026-10-10): /r2f who
+
+- **`/r2f who`** lists every way the client names your character (UnitName, UnitFullName, PvP name, realm names,
+  the character window title...). Used to find where a two-part name such as "Venom Oathbreaker" comes from, so the
+  mail list can fill in the right name for every alt. Run it on the paladin and send us the lines.
+
 ## 0.28.1 (2026-10-10): the active Gameplay page stands out
 
 - Owner: the page you are on looked greyed out (the button was disabled), which reads as "not learned / not working".

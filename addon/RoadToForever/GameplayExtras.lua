@@ -30,6 +30,33 @@ function Gameplay.RememberCharacter()
   }
 end
 
+-- /r2f who: every way the client can name this character (to find where a two-part name such as
+-- "Venom Oathbreaker" comes from). Prints one line per candidate; secret values are shown as such.
+function Gameplay.PrintWho()
+  local function show(label, ...)
+    local parts = {}
+    for i = 1, select("#", ...) do
+      local v = select(i, ...)
+      if issecretvalue and issecretvalue(v) then v = "<secret>" end
+      parts[#parts + 1] = tostring(v)
+    end
+    R2F.Print(label .. ": " .. table.concat(parts, " | "))
+  end
+  local function try(label, fn, ...)
+    local ok, a, b = pcall(fn, ...)
+    if ok then show(label, a, b) else R2F.Print(label .. ": error") end
+  end
+  if UnitName then try("UnitName", UnitName, "player") end
+  if UnitFullName then try("UnitFullName", UnitFullName, "player") end
+  if GetUnitName then try("GetUnitName(player)", GetUnitName, "player") try("GetUnitName(player, true)", GetUnitName, "player", true) end
+  if UnitPVPName then try("UnitPVPName", UnitPVPName, "player") end
+  if GetRealmName then try("GetRealmName", GetRealmName) end
+  if GetNormalizedRealmName then try("GetNormalizedRealmName", GetNormalizedRealmName) end
+  if GetPlayerInfoByGUID and UnitGUID then try("GetPlayerInfoByGUID", function() return GetPlayerInfoByGUID(UnitGUID("player")) end) end
+  if CharacterFrameTitleText and CharacterFrameTitleText.GetText then try("Character window title", function() return CharacterFrameTitleText:GetText() end) end
+  if C_PlayerInfo and C_PlayerInfo.GetName then try("C_PlayerInfo.GetName", C_PlayerInfo.GetName) end
+end
+
 -- The realm part of a full character name ("Name-Realm"): the game's normalised realm name
 -- (no spaces or dashes) when it has one, else the realm name with those removed.
 local function realmSuffix()

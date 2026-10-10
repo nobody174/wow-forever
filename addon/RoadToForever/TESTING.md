@@ -1180,3 +1180,7 @@ Both OFF until ticked on the Gameplay tab, Screen section.
 ## 36. Active Gameplay page (v0.28.1)
 
 1. Click through the four page buttons: the page you are on has gold text and a gold bar under it, and is not greyed out. The other three look normal.
+
+## 37. /r2f who (v0.28.2)
+
+1. On the paladin type `/r2f who` and send us all the lines (which one reads "Venom Oathbreaker"?).

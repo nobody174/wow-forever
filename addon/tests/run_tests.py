@@ -1916,6 +1916,8 @@ def test_gameplay():
     lua.execute("R2F.GameplayTab.ShowPage('vendors')")
     check(lua.eval("%s:IsEnabled()" % pagebtn("GP_PAGE_VENDORS")) is True and lua.eval("%s.mark.__shown" % pagebtn("GP_PAGE_VENDORS")) is True
           and lua.eval("%s.mark.__shown" % pagebtn("GP_PAGE_QUESTS")) is False, "17.1 the gold bar follows the page")
+    lua.execute("UnitName = function() return 'Venom' end UnitFullName = function() return 'Venom', 'Realm' end GetRealmName = function() return 'Realm' end TEST.chat = {} R2F.Gameplay.PrintWho()")
+    check(lua.eval("#TEST.chat") >= 1, "17.1 /r2f who prints the ways the client names the character, without error")
     check(boxvis("GP_QACCEPT") is False and boxvis("GP_REPAIR") is True and lua.eval("R2FDB.settings.gameplayPage") == "vendors", "17.1 switching pages swaps the boxes and is remembered")
     lua.execute("R2F.GameplayTab.ShowPage('alerts')")
     check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "17 the Warrior's stance options are on the Alerts page")

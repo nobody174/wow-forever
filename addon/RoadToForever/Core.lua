@@ -162,6 +162,7 @@ local COMMANDS = {
   ranks = function() R2F.Ranks.Print() end,
   copychat = function() R2F.CopyChat.Command() end,
   gossip = function() R2F.Gameplay.PrintGossip() end,
+  who = function() R2F.Gameplay.PrintWho() end,
   reactlog = function() R2F.Gameplay.PrintReactLog() end,
   auras = function() R2F.Diag.Auras() end,
   rankdebug = function() R2F.Ranks.Debug("") end,

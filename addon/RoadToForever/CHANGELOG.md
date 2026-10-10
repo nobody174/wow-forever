@@ -3,6 +3,16 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.27.2 (2026-10-10): "Hide the game's own reactive text" needs a /reload
+
+- Owner test of 0.27.1: our `Ability ready` alert showed where he put it, but the game's own "<Revenge>" text was
+  still there. The game's combat text reads its "Reactive ability alerts" setting (`floatingCombatTextReactives_v2`) when
+  it loads, and when its own options change it, not when another addon changes the setting. So the hide box takes
+  effect after a `/reload`; the addon now says so in chat. (Making the game re-read it now would mean calling its code
+  from ours, which is what tainted it in 0.27.0.) There is no Edit Mode setting for this text: the game's code has none.
+- The alert says "Ability ready" instead of the spell name: the announcement's spell name is a hidden ("secret") value on
+  this client.
+
 ## 0.27.1 (2026-10-10): URGENT fix for 0.27.0 (Lua errors in fights), Gameplay tab scrolls
 
 - **0.27.0 broke the game's floating combat text** ("attempt to perform arithmetic on field 'startY' (a secret

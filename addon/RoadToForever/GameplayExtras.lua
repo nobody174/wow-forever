@@ -319,5 +319,9 @@ Gameplay.Register({
       R2F.QuickSettings.Write(REACT_CVAR, db.reactWas or "1")
       db.reactWas = nil
     end
+    -- The game's combat text reads this setting when it loads (and when its own options change it);
+    -- a setting changed from outside is picked up after the next /reload. Making the game re-read it
+    -- now would mean calling its code from ours (tainting it again), so we say so instead.
+    if R2F.Library.db.gameplay.reactblizzAsked ~= false then R2F.Print(L.GP_REACTBLIZZ_RELOAD) end
   end,
 })

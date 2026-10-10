@@ -2462,6 +2462,10 @@ def test_reactalert():
           and lua.eval("R2FDB.reactWas") == "1", "17.3c hide the game's own reactive text: its setting goes to 0, the old value is remembered")
     lua.execute("R2F.Gameplay.SetOn('reactblizz', false)")
     check(lua.eval("TEST.cvars.floatingCombatTextReactives_v2") == "1" and lua.eval("R2FDB.reactWas") is None, "17.3c untick: the player's value is back")
+    T.chat = lua.table()
+    lua.execute("R2F.Gameplay.SetOn('reactblizz', true)")
+    check("type /reload" in chat_all(lua), "17.3c switching it tells the player a /reload is needed (the game reads the setting when it loads)")
+    lua.execute("R2F.Gameplay.SetOn('reactblizz', false)")
     T.combat = True
     check(lua.eval("R2F.Gameplay.SetOn('reactblizz', true)") is False, "17.3c a game setting can't be changed in combat")
     T.combat = False

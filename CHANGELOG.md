@@ -67,6 +67,10 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.27.2: hide-the-game's-text needs a /reload)
+- Owner test of 0.27.1: our alert works; the game's own "<Revenge>" text stayed because the game only reads its setting
+  at load. The box now says "/reload" in chat. No Edit Mode option exists for that text (checked in the extracted game code).
+
 ## 2026-10-10 (Addon 0.27.1: URGENT, 0.27.0 tainted the game's combat text; Gameplay tab scrolls)
 - 0.27.0 shifted `CombatText.textLocations` to move the "<Revenge>" text: writing into a game table taints it and this
   client then refuses arithmetic on the tainted values (96 errors in a fight). Removed; replaced by our own movable

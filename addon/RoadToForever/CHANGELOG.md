@@ -3,6 +3,24 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.26.0 (2026-10-10): shop-line skipper, tracking reminder, aura probe
+
+**Never run in game yet: TESTING.md 34.**
+
+- **Skip the shop line at NPCs** (Gameplay tab, Automatic; OFF by default). Many NPCs open a gossip window with one
+  line before their shop. This picks that line, and only when: it is the ONLY option, it is Available, the NPC offers
+  no quests, and its ICON is one of the game's shop / trainer / bank / flight-map / auction-house icons (file ids
+  132060, 132058, 132050, 132057, 528409, read from the game files; this build's gossip options have no "type").
+  The innkeeper's "make this your home" and plain chat lines are never picked. Shift pauses it.
+  **`/r2f gossip`** prints the open NPC window's options with their icon ids, so the whitelist can grow from real data.
+- **Minimap tracking reminder** (Gameplay tab, Reminders column; any class that has Find Minerals / Herbs / Treasure):
+  the framed icon shows while you know at least one ticked tracking type and none of them is active; hidden otherwise
+  (when locked). Three boxes choose which types to remind about. Draggable, lockable, resizable like the other
+  reminders. No aura reading, works in combat. (Part of the "buff reminders" ForeverPlus feature the owner used.)
+- **`/r2f auras`** (probe): says whether this client lets an addon read buffs on you and your party, in and out of
+  combat (the game's API files mark aura reads as restricted "secret" values). The group-buff reminder waits for
+  its answer.
+
 ## 0.25.0 (2026-10-10): quest-log track-all boxes, raise the "<Revenge>" text
 
 **Never run in game yet: TESTING.md 33.** Both OFF until ticked on the Gameplay tab (Screen).

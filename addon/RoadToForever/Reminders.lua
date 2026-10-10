@@ -6,8 +6,9 @@
 -- A reminder registers itself here with:
 --   key        "stance" / "ammo": also the SavedVariables key (R2FDB[key]) and the
 --              global name of its frame (R2F<Key>Frame) and size slider (R2F<Key>Scale)
---   class      the class token it is for ("WARRIOR"); other classes never get a frame
---              and never see it on the Reminders tab
+--   class      the class token it is for ("WARRIOR"), or nil for every class; other classes never
+--              see it on the Gameplay tab. `applies` (optional function) narrows it further
+--   checks     optional extra check boxes under the sliders: { {label = L key, get =, set =}, ... }
 --   module     the module table: needs Db(), SetShown(on), SetLock(on), SetScale(v),
 --              MIN_SCALE / MAX_SCALE, and optionally `extra` (a second slider on the
 --              tab, e.g. Ammo's threshold)
@@ -42,7 +43,11 @@ end
 function Reminders.ForPlayer()
   local out = {}
   for _, def in ipairs(Reminders.LIST) do
-    if def.class == R2F.playerClass then out[#out + 1] = def end
+    -- `class` = one class token, or nil for any class; `applies()` narrows it further (tracking
+    -- reminders only for a character that has a tracking spell).
+    if (def.class == nil or def.class == R2F.playerClass) and (def.applies == nil or def.applies()) then
+      out[#out + 1] = def
+    end
   end
   return out
 end

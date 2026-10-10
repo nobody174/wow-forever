@@ -2507,6 +2507,114 @@ def test_gossipshop():
     check(lua2.eval("R2F.Gameplay.SetOn('gossipshop', true)") is False, "17.4 no gossip API: can't be switched on")
 
 
+TRACK_LUA = """
+  TRACKS = {
+    { name = 'Find Herbs', texture = 133939, active = false, type = 'spell', subType = 0, spellID = 2383 },
+    { name = 'Find Minerals', texture = 136025, active = false, type = 'spell', subType = 0, spellID = 2580 },
+    { name = 'Track Humanoids', texture = 133939, active = false, type = 'spell', subType = 0, spellID = 19883 },
+  }
+  C_Minimap = {
+    GetNumTrackingTypes = function() return #TRACKS end,
+    GetTrackingInfo = function(i) return TRACKS[i] end,
+  }
+"""
+
+
+def tracking_runtime(token="PRIEST", tracks=True, preset=None):
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    lua.execute("TEST.classToken = %r" % token)
+    if tracks:
+        lua.execute(TRACK_LUA)
+    if preset:
+        lua.execute("R2FDB = %s" % preset)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    return lua, T
+
+
+def test_tracking():
+    """ADDON_PLAN 17.1 step 5 (first cut): the minimap-tracking reminder (Find Minerals / Herbs / Treasure)."""
+    lua, T = tracking_runtime()
+    check(lua.eval("R2F.Tracking.Applies()") is True and lua.eval("R2FTrackingFrame ~= nil"), "17.5 a Priest who has Find Herbs / Minerals gets the tracking reminder (any class)")
+    check(lua.eval("R2FDB.tracking.herbs") is True and lua.eval("R2FDB.tracking.minerals") is True and lua.eval("R2FDB.tracking.treasure") is True,
+          "17.5 all three types are ticked by default")
+    check(lua.eval("R2FTrackingFrame:IsShown()") is True and lua.eval("R2FTrackingFrame.border.__ctex[1]") > 0.9,
+          "17.5 known and none active: shown with the attention colour")
+    check(lua.eval("R2FTrackingFrame.icon.__tex") == 136025, "17.5 the icon is the first ticked tracking type's (minerals come first)")
+    lua.execute("R2F.Tracking.SetLock(true)")
+    check(lua.eval("R2FTrackingFrame:IsShown()") is True, "17.5 locked and needed: still shown")
+    lua.execute("TRACKS[1].active = true") ; T.fire("MINIMAP_UPDATE_TRACKING")
+    check(lua.eval("R2FTrackingFrame:IsShown()") is False, "17.5 one of them active: hidden (locked)")
+    lua.execute("R2F.Tracking.SetLock(false)")
+    check(lua.eval("R2FTrackingFrame:IsShown()") is True and lua.eval("R2FTrackingFrame.border.__ctex[1]") < 0.5, "17.5 unlocked while fine: shown grey so it can be moved")
+    lua.execute("TRACKS[1].active = false TRACKS[2].active = true") ; T.fire("MINIMAP_UPDATE_TRACKING")
+    lua.execute("R2F.Tracking.SetLock(true)")
+    check(lua.eval("R2FTrackingFrame:IsShown()") is False, "17.5 the other type active also counts (only one tracking is on at a time)")
+    lua.execute("TRACKS[2].active = false TRACKS[3].active = true") ; T.fire("MINIMAP_UPDATE_TRACKING")
+    check(lua.eval("R2FTrackingFrame:IsShown()") is True, "17.5 an unrelated tracking (Track Humanoids) does not count as the ticked ones")
+    lua.execute("R2F.Tracking.SetKind('herbs', false) R2F.Tracking.SetKind('minerals', false)")
+    check(lua.eval("R2FTrackingFrame:IsShown()") is False, "17.5 no known type ticked: nothing to remind about")
+    lua.execute("R2F.Tracking.SetKind('herbs', true)")
+    check(lua.eval("R2FTrackingFrame:IsShown()") is True, "17.5 tick Herbs again: reminder is back")
+    lua.execute("R2F.Tracking.SetShown(false)")
+    check(lua.eval("R2FTrackingFrame:IsShown()") is False, "17.5 switched off: hidden")
+    # persistence and the tab
+    lua.execute("R2F.Tracking.SetShown(true) R2F.MainWindow.Show('gameplay')")
+    check(lua.eval("R2FTrackingScale ~= nil and R2FTrackingScale:IsVisible()") is True, "17.5 the section is on the Gameplay tab's Reminders column")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.TRACKING_HERBS", "TH")
+    check(lua.eval("#TH") == 1 and lua.eval("TH[1]:GetChecked()") is True, "17.5 the 'remind about Find Herbs' box is ticked")
+    lua.execute("TH[1]:Click()")
+    check(lua.eval("R2FDB.tracking.herbs") is False and lua.eval("TH[1]:GetChecked()") is False, "17.5 clicking it unticks the type")
+    # no tracking spell at all
+    lua2, T2 = tracking_runtime(tracks=False)
+    check(lua2.eval("R2F.Tracking.Applies()") is False and lua2.eval("R2FTrackingFrame:IsShown()") is False, "17.5 a character with no tracking spell: no icon (even unlocked)")
+    lua2.execute("R2F.MainWindow.Show('gameplay')")
+    check(lua2.eval("R2FTrackingScale == nil"), "17.5 ... and no section on the tab")
+    # a Warrior still gets its own reminder next to it
+    lua3, T3 = tracking_runtime(token="WARRIOR")
+    lua3.execute("R2F.MainWindow.Show('gameplay')")
+    check(lua3.eval("R2FStanceScale ~= nil and R2FTrackingScale ~= nil"), "17.5 class reminders and the tracking one live side by side")
+    # bad saved values repaired
+    lua4, T4 = tracking_runtime(preset="{ tracking = { scale = 9, herbs = 'x' } }")
+    check(lua4.eval("R2FDB.tracking.scale") == 1 and lua4.eval("R2FDB.tracking.herbs") is True, "17.5 invalid saved values fall back to the defaults")
+
+
+def test_aura_probe():
+    """/r2f auras: a read-only probe of what the client lets an addon read."""
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    lua.execute("""
+      UnitExists = function(u) return u == 'player' or u == 'party1' end
+      IsInInstance = function() return false end
+      C_Secrets = { HasSecretRestrictions = function() return true end, ShouldAurasBeSecret = function() return false end }
+      C_UnitAuras = { GetUnitAuras = function(unit, filter)
+        if unit == 'player' then return { { spellId = 1 }, { spellId = 2 }, { spellId = 3 } } end
+        if unit == 'party1' then return { { spellId = 9 } } end
+      end }
+      issecretvalue = function(v) return v == 9 end
+    """)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("auras")')
+    txt = chat_all(lua)
+    check("secret restrictions yes, auras secret no, in combat no, in an instance no" in txt, "aura probe header: %r" % txt)
+    check("player: 3 buffs, 3 with a readable spell id" in txt, "aura probe: your own buffs are counted")
+    check("party1: 1 buffs, 0 with a readable spell id" in txt, "aura probe: a secret spell id is not counted as readable")
+    check("party2" not in txt, "aura probe: absent units are skipped")
+    lua.execute("C_UnitAuras = nil")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("auras")')
+    check("no C_UnitAuras.GetUnitAuras" in chat_all(lua), "aura probe without the API says so")
+    lua.execute("C_UnitAuras = { GetUnitAuras = function() error('restricted') end }")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("auras")')
+    check("reading failed" in chat_all(lua), "aura probe: a refused read is reported, not raised")
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -6432,6 +6540,8 @@ def main():
     test_questzone()
     test_fctup()
     test_gossipshop()
+    test_tracking()
+    test_aura_probe()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

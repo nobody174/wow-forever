@@ -41,6 +41,7 @@ local function refresh()
       s.extra:SetValue(e.get())
       s.extraText:SetText(L[e.label]:format(e.get()))
     end
+    for _, c in ipairs(s.checks or {}) do c.box:SetChecked(c.def.get() and true or false) end
   end
 end
 
@@ -92,6 +93,18 @@ local function buildSection(f, def, x, y, width)
       if value ~= e.get() then e.set(value) end
     end)
     used = used + 66
+  end
+  -- Extra check boxes (def.checks): e.g. which tracking types to remind about.
+  if def.checks then
+    s.checks = {}
+    local cy = y - used + 4
+    for i, c in ipairs(def.checks) do
+      local b = UI.CheckButton(f, L[c.label])
+      b:SetPoint("TOPLEFT", x + 8, cy - (i - 1) * 24)
+      b:SetScript("OnClick", function() c.set(not c.get()) end)
+      s.checks[i] = { box = b, def = c }
+    end
+    used = used + #def.checks * 24 + 6
   end
   sections[#sections + 1] = s
   return used

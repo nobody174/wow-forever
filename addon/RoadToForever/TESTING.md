@@ -1145,3 +1145,21 @@ Both OFF until ticked on the Gameplay tab, Screen section.
    text should now show higher on the screen than before. Untick the box: it goes back. If the box is greyed out
    the game hasn't loaded floating combat text: switch it on in the options, `/reload`, and look again.
 3. Anything that fails prints "gameplay feature X hit an error ..." once: send us that line.
+
+## 34. Shop-line skipper, tracking reminder, aura probe (v0.26.0)
+
+1. **`/r2f gossip`** (works with the feature off): open an NPC's window (a vendor, a flight master, an innkeeper,
+   a quest giver, a banker) and type it: one line per option with its icon id, status, flags. Send us the lines
+   for at least: a vendor with an extra line, a trainer, a flight master, an innkeeper, a banker, an auctioneer,
+   and an NPC whose line starts something (escort / event) if you meet one.
+2. **Skip the shop line** (Gameplay > Automatic, OFF until ticked): at a vendor that opens a window with ONE line
+   before the shop, the shop opens by itself. It must NOT happen at: the innkeeper (the "make this your home"
+   line must never be clicked), a quest giver (quests listed), an NPC with several options. Hold Shift: paused.
+3. **Tracking reminder:** needs a character with Find Minerals / Find Herbs / Find Treasure (Miner, Herbalist,
+   Druid, Dwarf). On the Gameplay tab, Reminders column: "Minimap tracking" with Show / Lock / size and three
+   boxes. With none of the ticked trackings on, a framed icon shows on screen (drag it, lock it); switch a
+   tracking on from the minimap: the icon disappears (locked). Switch to another tracking (e.g. Track Humanoids):
+   it comes back. Does it appear in combat? Does a character without these spells never get the icon?
+4. **`/r2f auras`** (the buff-reminder probe): run it (a) alone, out of combat, (b) in a party of 2-5 out of
+   combat, (c) in a fight, (d) in a dungeon. Send us the lines each time. It shows whether buffs on you and your
+   party members can be read at all.

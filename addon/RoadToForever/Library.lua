@@ -116,6 +116,17 @@ function Library.Init()
     "questaccept", "questturnin", "rewardvalue", "copychat", "questzone", "fctup", "gossipshop" }) do
     if type(db.gameplay[key]) ~= "boolean" then db.gameplay[key] = false end
   end
+  -- Tracking reminder (Tracking.lua, v0.26.0): any class that has Find Minerals / Herbs / Treasure.
+  if type(db.tracking) ~= "table" then db.tracking = {} end
+  local tr = db.tracking
+  if type(tr.shown) ~= "boolean" then tr.shown = true end
+  if type(tr.lock) ~= "boolean" then tr.lock = false end
+  if type(tr.scale) ~= "number" or tr.scale < 0.5 or tr.scale > 3 then tr.scale = 1 end
+  if type(tr.x) ~= "number" then tr.x = 0 end
+  if type(tr.y) ~= "number" then tr.y = -60 end
+  for _, kind in ipairs({ "minerals", "herbs", "treasure" }) do
+    if type(tr[kind]) ~= "boolean" then tr[kind] = true end
+  end
   -- Hunter ammo reminder (Ammo.lua, v0.17.0).
   if type(db.ammo) ~= "table" then db.ammo = {} end
   local am = db.ammo

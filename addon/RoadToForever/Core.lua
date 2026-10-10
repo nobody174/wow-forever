@@ -28,6 +28,7 @@ handlers.PLAYER_LOGIN = function()
   R2F.Minimap.Init()
   R2F.Stance.Init()
   R2F.Ammo.Init()
+  R2F.Tracking.Init()
   R2F.Gameplay.InitCharacters()
   R2F.Gameplay.Init()
   R2F.Bags.Init()
@@ -161,6 +162,7 @@ local COMMANDS = {
   ranks = function() R2F.Ranks.Print() end,
   copychat = function() R2F.CopyChat.Command() end,
   gossip = function() R2F.Gameplay.PrintGossip() end,
+  auras = function() R2F.Diag.Auras() end,
   rankdebug = function() R2F.Ranks.Debug("") end,
   ammo = function() R2F.Ammo.ToggleShown() end,
   ["ammo lock"] = function() R2F.Ammo.ToggleLock() end,

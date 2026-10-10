@@ -67,6 +67,12 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.26.0: shop-line skipper, tracking reminder, aura probe)
+- ForeverPlus replacement, the rest: GossipAuto in a safe form (single whitelisted-icon line, no quests, Shift
+  pauses; plus `/r2f gossip` to learn more icons), the minimap tracking reminder (Find Minerals / Herbs / Treasure),
+  and an `/r2f auras` probe because aura reads are restricted on this client (`C_Secrets.ShouldAurasBeSecret`,
+  `RequiresUnitAuraAccess`): the group-buff reminder needs its result. Never run in game yet (TESTING.md 34).
+
 ## 2026-10-10 (Addon 0.25.0: quest-log track-all, raise floating combat text)
 - Extracted game code (CASC, `D:\WoW-Extract`) answered two open items: the quest log is the map-frame quest log
   (header buttons from `QuestScrollFrame.headerFramePool`), so QuestZoneTracking could be built (box per zone header);

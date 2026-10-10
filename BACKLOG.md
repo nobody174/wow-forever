@@ -66,10 +66,10 @@ are built as well.
 - [ ] **Replace ForeverPlus, steps 2 to 5** (ADDON_PLAN 17; step 1 shipped as 0.21.0, TESTING.md 29; step 2 as 0.22.0, TESTING.md 30):
       2. (done: MailAlts, BagSlots, fast Looting, QuestZoneTracking in 0.25.0)
       3. (done, 0.23.0, TESTING.md 31) Quest automation: accept, hand in (never picks a reward), reward prices.
-      4. GossipAuto and greed rolls, after real measurements.
-      5. Buff reminders (owner's ForeverPlus "upper display"): buffs the group can give you with a
-         class-buff list to tick which to track, and Find Minerals / Herbs / Treasure. Needs a spike
-         first: ForeverPlus found that auras can't be read in combat on this client.
+      4. (done: GossipAuto shop-line skipper, 0.26.0) Greed rolls on greens are not built (they act in front of other people).
+      5. Buff reminders: the minimap tracking reminder shipped in 0.26.0. The "upper display" of buffs the group can give you
+         (with a tick list of class buffs) waits for the `/r2f auras` probe: the game marks aura reads as restricted, so ask
+         the owner to run it out of combat in a group and in combat, then design from the answer.
 
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 

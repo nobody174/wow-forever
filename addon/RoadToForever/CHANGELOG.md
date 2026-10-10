@@ -3,6 +3,13 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.28.4 (2026-10-10): the ability name in the alert, second try
+
+- Owner's `/r2f reactlog` showed the game announces "Revenge is ready" with the name hidden and sends NO bar-glow
+  event for it, so 0.28.0's glow lookup had nothing to read. The alert now also watches which of Revenge, Overpower,
+  Riposte, Counterattack, Mongoose Bite, Victory Rush has just become usable and uses that name. Other abilities still
+  show "Ability ready". `/r2f reactlog` now also logs `USABLE <name>`.
+
 ## 0.28.3 (2026-10-10): the mail list uses the full in-game name
 
 - **Fix:** the mail button filled in "Venom-ClassicBetaPvE2"; this client names characters "Venom Oathbreaker"

@@ -331,6 +331,35 @@ local function spellNameOf(spellID)
   if ok and type(name) == "string" and not isSecret(name) then return name end
 end
 
+-- Revenge-type abilities have no bar glow on this client (owner's /r2f reactlog 2026-10-10: only
+-- SPELL_ACTIVE with a hidden name, no GLOW_SHOW). So the name is found the other way round: the
+-- reactive spell that has just become usable. A spell is "reactive" if it only works after an event.
+local REACTIVE = { "Revenge", "Overpower", "Riposte", "Counterattack", "Mongoose Bite", "Victory Rush" }
+local wasUsable = {}
+
+-- Returns the name of a reactive spell that is usable now but was not at the last scan (or nil).
+local function scanUsable()
+  local usable = C_Spell and C_Spell.IsSpellUsable
+  if not usable then return nil end
+  local newly
+  for _, name in ipairs(REACTIVE) do
+    local ok, u = pcall(usable, name)
+    u = ok and u == true
+    if u and not wasUsable[name] and not newly then newly = name end
+    wasUsable[name] = u
+  end
+  return newly
+end
+
+-- Remember a name for the alert (and put it into an alert that is already up with the generic text).
+local function noteName(name)
+  lastGlow = { name = name, t = now() }
+  if alertText and alertIsGeneric and now() - alertShownAt <= 1 and alertText:IsShown() then
+    alertText:SetText("<" .. name .. ">")
+    alertIsGeneric = false
+  end
+end
+
 -- Show the alert for a spell name (may be secret / nil); a glow announced in the last second
 -- supplies the name when the announcement doesn't.
 local function showAlert(name)
@@ -371,11 +400,13 @@ Gameplay.Register({
       local name = spellNameOf(spellID)
       logReact("GLOW_SHOW " .. (isSecret(spellID) and "hidden" or tostring(spellID)) .. " " .. tostring(name))
       if not name then return end
-      lastGlow = { name = name, t = now() }
-      -- The alert is already up with the generic text: put the name in (the glow can come second).
-      if alertText and alertIsGeneric and now() - alertShownAt <= 1 and alertText:IsShown() then
-        alertText:SetText("<" .. name .. ">")
-        alertIsGeneric = false
+      noteName(name)
+    end,
+    SPELL_UPDATE_USABLE = function()
+      local name = scanUsable()
+      if name then
+        logReact("USABLE " .. name)
+        noteName(name)
       end
     end,
   },

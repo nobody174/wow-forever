@@ -1188,3 +1188,7 @@ Both OFF until ticked on the Gameplay tab, Screen section.
 ## 38. Mail list full names (v0.28.3)
 
 1. Log in once on each alt, then open a mailbox > Send Mail > the alt button: names read like "Venom Oathbreaker" and the mail arrives.
+
+## 39. Alert ability name, second try (v0.28.4)
+
+1. With the alert on, get a Revenge (or Overpower) proc: does it say <Revenge>? If not, `/r2f reactlog` and paste the lines (look for a USABLE line).

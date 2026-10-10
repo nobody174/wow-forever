@@ -67,6 +67,9 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.28.4: ability name from "just became usable")
+- No glow event for Revenge on this client; the alert names the reactive spell that just became usable instead.
+
 ## 2026-10-10 (Addon 0.28.3: mail list uses the full in-game name)
 - Mail button now fills "Venom Oathbreaker" (GetUnitName) instead of Name-Realm; each alt remembers it at login.
 

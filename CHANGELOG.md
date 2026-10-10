@@ -67,6 +67,11 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Prat 3.0 dropped, the backpack "178" explained)
+- Owner confirmed copy chat (`/r2f copychat`) works: Prat 3.0 removed from addons.html and CLAUDE.md's addon list.
+- The "178" on the backpack button matched the arrows of the owner's logged-in character: it is the game's own
+  ammunition count. Nothing to fix; our free-slot number stays at the top of the button.
+
 ## 2026-10-10 (Addon 0.24.1: Hunter ammo reads the bags)
 - The client has no ammo slot (slot 0 answers id 0, count 1): the 0.17.0 ammo reminder read it and would have
   shown "1" for every Hunter. Now: arrows (bow, crossbow) or bullets (gun) counted over all bags by item class.

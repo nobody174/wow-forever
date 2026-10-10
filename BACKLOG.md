@@ -78,15 +78,6 @@ are built as well.
       `/dump GetCVar("floatingCombatTextReactives")`; then either hide it and add our own movable icon
       reminder (needs a test that spell usability can be read in combat), or move the game's text.
 
-- [ ] **Copy chat: verify in game, then drop Prat 3.0** (built as 0.24.0, TESTING.md 32). Once the owner has
-      used it for real feedback, remove Prat 3.0 from addons.html and CLAUDE.md's addon list. Maybe later: click a
-      URL in chat to copy it (Prat's UrlCopy).
-
-- [ ] **The big number on the backpack button** (owner, 2026-10-09): the backpack shows "178" next to our
-      free-slots number. Not identified (not free slots: he has 5 free). Ask him to hover it with
-      `/fstack` (or `/dump` the frame) to see which addon or game frame owns it; if it is the game's own
-      "(N)" count, hide it while our number is on, like ForeverPlus does.
-
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 
 Full spec: [ADDON_PLAN.md](ADDON_PLAN.md). Read it before starting any step.

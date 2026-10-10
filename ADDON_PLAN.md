@@ -2998,3 +2998,34 @@ The owner uses Prat 3.0 only to copy chat lines for feedback. Plan: a "Copy chat
 chat frame -> window with the lines in a selectable edit box, `/r2f copychat`), written fresh. Prat is GPLv3:
 no code is copied. Details in BACKLOG ("Copy chat text, to drop Prat 3.0"). Fits the Gameplay tab, Screen section;
 when built, also remove Prat from `addons.html`.
+
+## 18. UX pass: how the addon's tabs are organised (owner request 2026-10-10; hats: UX designer, documentation)
+
+**Problem.** The Gameplay tab had 17 boxes (and a class's icons) in one list that needed a scroll wheel, and some
+names only made sense to the person who built them ("Reactive alert", "Lock reactive alert position").
+
+**Principles used.**
+1. *Group by what the player is doing, not by how the code works.* "Automatic / Screen / Reminders" is how WE
+   sorted it; players think "quests", "vendors and loot", "my screen and chat", "things that warn me".
+2. *Plain verbs and the thing you get:* "Auto-repair at vendors", not "Repair at vendors"; "Hide red error
+   messages", not "error filter". No jargon (gossip, reactive, CVar, tainted) in a label.
+3. *Say what it does in one grey line under the name*; the tooltip carries the long version and the caveats.
+4. *Everything off by default,* said once at the bottom of each page.
+5. *Show less at a time:* four pages of 3 to 5 options (class icons next to the alert boxes on Alerts) instead of one
+   list; the page last used is remembered. No scrolling needed on Quests, Vendors and Screen.
+6. *Names are in Locale.lua (`GP_*`, `REM_*`, `TRACKING_*`, `AMMO_*`), hints are `<NAME>_HINT`;* a new feature adds
+   a name, a hint and a tooltip, and is listed in `Tab.PAGES` in UI/Gameplay.lua.
+
+**Pages.** Quests: auto-accept, auto turn-in, skip the NPC chat before shops, sell price on quest rewards, track-all box in
+the quest log. Vendors & loot: auto-repair, auto-sell grey items, fast looting, free bag slots, mail list of your
+characters. Screen & chat: hide red error messages, always show XP numbers, copy-chat button, decline duel requests.
+Alerts: "ability ready" alert + lock + hide Blizzard's text, and the icons for your class (Warrior stance, Hunter
+ammo counter, tracking reminder).
+
+**Other tabs, same review (nothing changed yet).** Home (what's next), Macros, Talents, Plan are fine. Settings mixes
+three kinds of things (macro slots + Remove all, minimap, quick game settings + bags): candidate for a later split into
+"Macros" and "Game settings" if it grows; Quick settings names are already plain ("Max camera zoom", "Hide guild
+names", "Hide PvP titles").
+
+**Not done / ideas.** A short "What's this?" first-run tip on the Gameplay tab; a search box once there are 30+
+options; Edit-mode-style "move everything" button that shows all markers (alert, tracking, stance, ammo) at once.

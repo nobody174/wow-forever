@@ -1164,3 +1164,15 @@ Both OFF until ticked on the Gameplay tab, Screen section.
 4. **`/r2f auras`** (the buff-reminder probe): run it (a) alone, out of combat, (b) in a party of 2-5 out of
    combat, (c) in a fight, (d) in a dungeon. Send us the lines each time. It shows whether buffs on you and your
    party members can be read at all.
+
+## 35. Gameplay tab redesign, the ability name (v0.28.0)
+
+1. **Gameplay tab:** four buttons along the top: Quests, Vendors & loot, Screen & chat, Alerts. Click through them:
+   each page has 3 to 5 options with a plain name and a grey line under it. Close the window and reopen it: it
+   opens on the page you left. Is anything still unclear to a new player, or cut off? Tell us which wording.
+2. **Alerts page:** the alert boxes on the left, your class's icons on the right (Warrior stance, Hunter ammo
+   counter, Tracking reminder). For a Hunter with tracking the right side is tall: does the mouse wheel scroll it?
+3. **The ability name:** tick "Show an 'ability ready' alert", position it, lock it, hide Blizzard's text (`/reload`).
+   Get a Revenge proc: does the alert say `<Revenge>` now? If it still says "Ability ready", type `/r2f reactlog`
+   right after and paste us the lines (they show whether the game sends the glow event for that ability).
+4. **Last tab remembered:** leave the window on Plan, Gameplay or Settings, `/reload`, open it: same tab.

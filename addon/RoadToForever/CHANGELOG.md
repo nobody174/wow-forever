@@ -3,6 +3,26 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.28.0 (2026-10-10): Gameplay tab redesign, plain names, the real ability name in the alert
+
+**Never run in game yet: TESTING.md 35.**
+
+- **The alert says which ability.** The game's own announcement hides the spell name from addons, but the
+  "spell glows on your bar" event (`SPELL_ACTIVATION_OVERLAY_GLOW_SHOW`) carries a spell id; the name is read from
+  that (a glow from the last second, or one that comes just after the announcement, fills it in). If your client
+  sends no glow for that ability the alert still says "Ability ready". **`/r2f reactlog`** prints the last
+  announcements it saw (paste it to us if the name stays missing).
+- **Gameplay tab redesign (UX pass, ADDON_PLAN 18).** Four small pages picked with buttons along the top instead of
+  one long scrolling list: **Quests**, **Vendors & loot**, **Screen & chat**, **Alerts**. The page you used last is
+  remembered. Each option has a plain name and a grey one-line explanation under it (the tooltip keeps the full text).
+- **Plain names** everywhere on the tab: "Auto-accept quests", "Auto turn-in quests", "Skip the NPC chat before
+  shops", "Auto-repair at vendors", "Auto-sell grey items", "Fast looting", "Show free bag slots", "Hide red error
+  messages", "Always show XP numbers", "Decline duel requests", "Show an 'ability ready' alert", "Lock the alert's
+  position", "Hide Blizzard's alert text"... and the class icons: "Warrior stance icon", "Hunter ammo counter",
+  "Tracking reminder" with "Show the icon / Lock its position / Size".
+- **Fix:** the main window reopened on Home after every login if you had last used Plan, Gameplay or Settings (the
+  saved-tab check only knew the first three tabs).
+
 ## 0.27.2 (2026-10-10): "Hide the game's own reactive text" needs a /reload
 
 - Owner test of 0.27.1: our `Ability ready` alert showed where he put it, but the game's own "<Revenge>" text was

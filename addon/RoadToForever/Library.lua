@@ -149,7 +149,10 @@ function Library.Init()
   -- windowPos (the window's saved spot) is written by UI.Window when moved;
   -- before step 6 it was the Macro Book's own window, now it's the main
   -- window that holds the book, so a moved book keeps its spot.
-  if s.lastTab ~= "home" and s.lastTab ~= "macros" and s.lastTab ~= "talents" then s.lastTab = "home" end
+  -- Any tab of the main window (MainWindow.TABS); until 0.28.0 this list stopped at "talents", so a window
+  -- last left on Plan / Gameplay / Settings reopened on Home after every login.
+  local TABS = { home = true, macros = true, talents = true, plan = true, gameplay = true, settings = true }
+  if not TABS[s.lastTab] then s.lastTab = "home" end
   _G.R2FDB = db
 
   local cdb = _G.R2FCharDB

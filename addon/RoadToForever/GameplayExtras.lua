@@ -266,15 +266,55 @@ local function ensureAlert()
   alertText:Hide()
 end
 
--- Show the alert for a spell name (may be secret / nil).
+local function now()
+  return GetTime and GetTime() or 0
+end
+
+local function isSecret(v)
+  return type(_G.issecretvalue) == "function" and _G.issecretvalue(v) == true
+end
+
+-- A short log of what the game announced (the last few entries), for /r2f reactlog.
+local reactLog = {}
+local function logReact(line)
+  reactLog[#reactLog + 1] = ("%.1f %s"):format(now(), line)
+  if #reactLog > 8 then table.remove(reactLog, 1) end
+end
+function Gameplay.PrintReactLog()
+  if #reactLog == 0 then R2F.Print(L.GP_REACTLOG_NONE) return end
+  for _, line in ipairs(reactLog) do R2F.Print("  " .. line) end
+end
+
+-- The spell name of the latest "spell glows on your bar" announcement, and when it came.
+-- The combat-text announcement itself hides the spell name from addons on this client, but the
+-- glow event carries a spell id (documented without restriction), so the name is read from that.
+local lastGlow            -- { name =, t = }
+local alertShownAt = -100
+local alertIsGeneric = false
+
+local function spellNameOf(spellID)
+  local get = C_Spell and C_Spell.GetSpellName or _G.GetSpellInfo
+  if not (get and spellID) or isSecret(spellID) then return nil end
+  local ok, name = pcall(get, spellID)
+  if ok and type(name) == "string" and not isSecret(name) then return name end
+end
+
+-- Show the alert for a spell name (may be secret / nil); a glow announced in the last second
+-- supplies the name when the announcement doesn't.
 local function showAlert(name)
   ensureAlert()
   local text
-  if name ~= nil and not (type(_G.issecretvalue) == "function" and _G.issecretvalue(name)) then
+  if name ~= nil and not isSecret(name) then
     text = "<" .. tostring(name) .. ">"
+    alertIsGeneric = false
+  elseif lastGlow and now() - lastGlow.t <= 1 then
+    text = "<" .. lastGlow.name .. ">"
+    alertIsGeneric = false
   else
     text = L.GP_REACT_READY
+    alertIsGeneric = true
   end
+  alertShownAt = now()
   alertText:SetText(text)
   alertText:SetTextColor(1, 0.82, 0)
   alertText:Show()
@@ -290,7 +330,21 @@ Gameplay.Register({
   key = "reactalert", group = "screen", title = "GP_REACT", tip = "GP_REACT_TIP",
   events = {
     COMBAT_TEXT_UPDATE = function(kind, name)
-      if kind == "SPELL_ACTIVE" then showAlert(name) end
+      if kind == "SPELL_ACTIVE" then
+        logReact("SPELL_ACTIVE (name " .. ((name == nil or isSecret(name)) and "hidden" or tostring(name)) .. ")")
+        showAlert(name)
+      end
+    end,
+    SPELL_ACTIVATION_OVERLAY_GLOW_SHOW = function(spellID)
+      local name = spellNameOf(spellID)
+      logReact("GLOW_SHOW " .. (isSecret(spellID) and "hidden" or tostring(spellID)) .. " " .. tostring(name))
+      if not name then return end
+      lastGlow = { name = name, t = now() }
+      -- The alert is already up with the generic text: put the name in (the glow can come second).
+      if alertText and alertIsGeneric and now() - alertShownAt <= 1 and alertText:IsShown() then
+        alertText:SetText("<" .. name .. ">")
+        alertIsGeneric = false
+      end
     end,
   },
   onToggle = function(on)

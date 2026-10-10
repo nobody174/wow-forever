@@ -1138,6 +1138,7 @@ def test_reminders():
     keys = [lua.eval("R2F.MainWindow.TABS[%d]" % i) for i in range(1, 7)]
     check(keys == ["home", "macros", "talents", "plan", "gameplay", "settings"], "15.4/15.5 tab order: %s" % keys)
     lua.execute('SlashCmdList.R2F("reminders")')
+    lua.execute('R2F.GameplayTab.ShowPage("alerts")')
     check(MW.CurrentTab() == "gameplay", "15.4 /r2f reminders (the old name) opens the Gameplay tab")
     title = lua.eval("R2FMain.__title")
     check(title == "Road to Forever: Gameplay", "15.4 Reminders title: %r" % title)
@@ -1167,12 +1168,12 @@ def test_reminders():
     lua, T = reminder_runtime("HUNTER")
     check(lua.eval("R2FAmmoFrame ~= nil") and lua.eval("R2FStanceFrame == nil") and lua.eval("R2FStanceScale == nil"),
           "15.4 Hunter: ammo frame only")
-    lua.execute("R2F.MainWindow.Show('gameplay')")
+    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
     check(lua.eval("R2FAmmoScale:IsVisible() and R2FAmmoThreshold:IsVisible()") is True, "15.4 Hunter sees the ammo size + threshold sliders")
     lua, T = reminder_runtime("PRIEST")
     check(lua.eval("R2FAmmoFrame == nil and R2FStanceFrame == nil and R2FAmmoScale == nil and R2FStanceScale == nil"),
           "15.4 Priest: no reminder frames or controls")
-    lua.execute("R2F.MainWindow.Show('gameplay')")
+    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
     check(font_text(lua, "^No reminders for your class") is not None, "15.4 a class without reminders sees the 'none yet' line")
     T.chat = lua.table()
     lua.execute('SlashCmdList.R2F("ammo")')
@@ -1246,9 +1247,9 @@ def test_reminders():
     check(lua.eval("R2FDB.ammo.threshold") == 50, "15.4 threshold minimum 50")
     lua.execute("R2F.Ammo.SetThreshold(99999)")
     check(lua.eval("R2FDB.ammo.threshold") == 1000, "15.4 threshold maximum 1000")
-    lua.execute("R2F.MainWindow.Show('gameplay') R2FAmmoThreshold:Fire('OnValueChanged', 650)")
+    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts') R2FAmmoThreshold:Fire('OnValueChanged', 650)")
     check(lua.eval("R2FDB.ammo.threshold") == 650, "15.4 the threshold slider sets it")
-    check(font_text(lua, "^Turn red when under: 650$") is not None, "15.4 the slider label shows the value")
+    check(font_text(lua, "^Turn red below: 650$") is not None, "15.4 the slider label shows the value")
 
     # --- Events and combat -------------------------------------------------------------------------
     lua, T = reminder_runtime("HUNTER")
@@ -1900,11 +1901,22 @@ def test_gameplay():
     labels = {lua.eval("GB[%d].r2fLabel.__text" % i): i for i in range(1, lua.eval("#GB") + 1)}
     wanted = [lua.eval("R2F.L.%s" % k) for k in ("GP_REPAIR", "GP_SELLGRAY", "GP_DUELS", "GP_ERRORFILTER", "GP_XPBAR")]
     check(all(w in labels for w in wanted), "17 the tab has one box per feature")
-    check(font_text(lua, "^Automatic$") is not None and font_text(lua, "^Screen$") is not None and font_text(lua, "^Reminders$") is not None,
-          "17 headings: Automatic / Screen / Reminders")
-    check(lua.eval("(R2FGameplayScroll or R2FGameplayScrollPlain).r2fContentHeight") > 420,
-          "17 the tab scrolls: 17 features are taller than the window (they ran off the bottom in 0.27.0): height %s" % lua.eval("(R2FGameplayScroll or R2FGameplayScrollPlain).r2fContentHeight"))
-    check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "17 the Warrior's stance options sit in the Reminders column of the Gameplay tab")
+    pages = [lua.eval("R2F.GameplayTab.PAGES[%d].key" % i) for i in range(1, 5)]
+    check(pages == ["quests", "vendors", "screen", "alerts"], "17.1 the tab has four pages: %s" % pages)
+    check(all(font_text(lua, "^$") is None or True for _ in [0]) and
+          lua.eval("(function() local n = 0 for _, f in ipairs(TEST.allFrames) do if f.__kind == 'Button' and f.__text and (f.__text == R2F.L.GP_PAGE_QUESTS or f.__text == R2F.L.GP_PAGE_VENDORS or f.__text == R2F.L.GP_PAGE_SCREEN or f.__text == R2F.L.GP_PAGE_ALERTS) then n = n + 1 end end return n end)()") == 4,
+          "17.1 four page buttons along the top")
+    check(lua.eval("R2F.GameplayTab.CurrentPage()") == "quests", "17.1 the first page is Quests")
+    boxvis = lambda lbl: lua.eval("(function() for _, f in ipairs(TEST.allFrames) do if f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.%s then return f:IsVisible() end end end)()" % lbl)
+    check(boxvis("GP_QACCEPT") is True and boxvis("GP_REPAIR") is False, "17.1 only the page you are on shows its boxes")
+    lua.execute("R2F.GameplayTab.ShowPage('vendors')")
+    check(boxvis("GP_QACCEPT") is False and boxvis("GP_REPAIR") is True and lua.eval("R2FDB.settings.gameplayPage") == "vendors", "17.1 switching pages swaps the boxes and is remembered")
+    lua.execute("R2F.GameplayTab.ShowPage('alerts')")
+    check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "17 the Warrior's stance options are on the Alerts page")
+    lua.execute("R2F.GameplayTab.ShowPage('quests')")
+    check(lua.eval("R2FStanceScale:IsVisible()") is False, "17.1 ... and not on the other pages")
+    lua.execute("R2F.GameplayTab.ShowPage('nope')")
+    check(lua.eval("R2F.GameplayTab.CurrentPage()") == "quests", "17.1 an unknown page falls back to Quests")
     box = lambda key: "GB[%d]" % labels[lua.eval("R2F.L.%s" % key)]
     # --- Repair ---------------------------------------------------------------------------------------
     T.fire("MERCHANT_SHOW")
@@ -2440,6 +2452,25 @@ def test_reactalert():
     T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "SECRET")
     check(shown() == "Ability ready", "17.3c a secret spell name falls back to 'Ability ready' (no error)")
     T.runTimers()
+    # the real name from the glow event (spell id), whichever of the two announcements comes first
+    lua.execute("GetTime = function() return TEST.time or 0 end TEST.spellNames[6572] = 'Revenge' TEST.time = 100")
+    T.fire("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", 6572)
+    check(shown() is None, "17.3c a glow alone doesn't show the alert")
+    T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "SECRET")
+    check(shown() == "<Revenge>", "17.3c the glow announced a moment before names the hidden spell: %r" % shown())
+    T.runTimers()
+    lua.execute("TEST.time = 105")
+    T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "SECRET")
+    check(shown() == "Ability ready", "17.3c a glow from five seconds ago is not used")
+    lua.execute("TEST.time = 105.4")
+    T.fire("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", 6572)
+    check(shown() == "<Revenge>", "17.3c a glow that comes just after the announcement upgrades the text to the name: %r" % shown())
+    T.runTimers()
+    lua.execute("TEST.time = 200")
+    T.fire("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", 6572)
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("reactlog")')
+    check("GLOW_SHOW 6572 Revenge" in chat_all(lua) and "SPELL_ACTIVE (name hidden)" in chat_all(lua), "17.3c /r2f reactlog lists what the alert saw: %r" % chat_all(lua))
     # two alerts in a row: the older timer must not hide the newer text
     T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "Revenge")
     T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "Overpower")
@@ -2608,7 +2639,7 @@ def test_tracking():
     lua.execute("R2F.Tracking.SetShown(false)")
     check(lua.eval("R2FTrackingFrame:IsShown()") is False, "17.5 switched off: hidden")
     # persistence and the tab
-    lua.execute("R2F.Tracking.SetShown(true) R2F.MainWindow.Show('gameplay')")
+    lua.execute("R2F.Tracking.SetShown(true) R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
     check(lua.eval("R2FTrackingScale ~= nil and R2FTrackingScale:IsVisible()") is True, "17.5 the section is on the Gameplay tab's Reminders column")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.TRACKING_HERBS", "TH")
     check(lua.eval("#TH") == 1 and lua.eval("TH[1]:GetChecked()") is True, "17.5 the 'remind about Find Herbs' box is ticked")
@@ -2617,11 +2648,11 @@ def test_tracking():
     # no tracking spell at all
     lua2, T2 = tracking_runtime(tracks=False)
     check(lua2.eval("R2F.Tracking.Applies()") is False and lua2.eval("R2FTrackingFrame:IsShown()") is False, "17.5 a character with no tracking spell: no icon (even unlocked)")
-    lua2.execute("R2F.MainWindow.Show('gameplay')")
+    lua2.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
     check(lua2.eval("R2FTrackingScale == nil"), "17.5 ... and no section on the tab")
     # a Warrior still gets its own reminder next to it
     lua3, T3 = tracking_runtime(token="WARRIOR")
-    lua3.execute("R2F.MainWindow.Show('gameplay')")
+    lua3.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
     check(lua3.eval("R2FStanceScale ~= nil and R2FTrackingScale ~= nil"), "17.5 class reminders and the tracking one live side by side")
     # bad saved values repaired
     lua4, T4 = tracking_runtime(preset="{ tracking = { scale = 9, herbs = 'x' } }")

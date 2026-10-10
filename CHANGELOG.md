@@ -67,6 +67,12 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.28.0: Gameplay tab in four pages, plain names, the ability name in the alert)
+- UX pass on the Gameplay tab (ADDON_PLAN 18): pages Quests / Vendors & loot / Screen & chat / Alerts, plain option
+  names with a grey hint line, last page remembered. The alert reads the ability name from the glow event's spell id
+  (the combat-text announcement hides it); `/r2f reactlog` shows what it saw. Fixed: last-used tab Plan / Gameplay /
+  Settings was forgotten at login. Never run in game yet (TESTING.md 35).
+
 ## 2026-10-10 (Addon 0.27.2: hide-the-game's-text needs a /reload)
 - Owner test of 0.27.1: our alert works; the game's own "<Revenge>" text stayed because the game only reads its setting
   at load. The box now says "/reload" in chat. No Edit Mode option exists for that text (checked in the extracted game code).

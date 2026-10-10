@@ -2439,6 +2439,74 @@ def test_fctup():
     check(lua2.eval("R2F.Gameplay.SetOn('fctup', true)") is False, "17.3c floating combat text not loaded: can't be switched on")
 
 
+def test_gossipshop():
+    """ADDON_PLAN 17 step 4: skip the single shop line at an NPC (icon whitelist)."""
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    lua.execute("""
+      OPTS, AVAIL, ACTIVE, PICKED = {}, {}, {}, {}
+      C_GossipInfo = {
+        GetOptions = function() return OPTS end,
+        GetAvailableQuests = function() return AVAIL end,
+        GetActiveQuests = function() return ACTIVE end,
+        SelectOption = function(id) table.insert(PICKED, id) end,
+      }
+      function opt(id, icon, status, name) return { gossipOptionID = id, icon = icon, status = status or 0, name = name or 'x', flags = 0 } end
+    """)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    check(lua.eval("R2FDB.gameplay.gossipshop") is False, "17.4 ships OFF")
+    lua.execute("OPTS = { opt(7, 132060) }")
+    T.fire("GOSSIP_SHOW")
+    check(lua.eval("#PICKED") == 0, "17.4 off: nothing is picked")
+    lua.execute("R2F.Gameplay.SetOn('gossipshop', true)")
+    T.fire("GOSSIP_SHOW")
+    check(lua_table_to_list(lua.eval("PICKED")) == [7], "17.4 one vendor line: picked")
+    for icon, name in ((132058, "trainer"), (132050, "bank"), (132057, "flights"), (528409, "auctions")):
+        lua.execute("PICKED = {} OPTS = { opt(8, %d) }" % icon)
+        T.fire("GOSSIP_SHOW")
+        check(lua_table_to_list(lua.eval("PICKED")) == [8], "17.4 one %s line: picked" % name)
+    lua.execute("PICKED = {} OPTS = { opt(9, 132052) }")
+    T.fire("GOSSIP_SHOW")
+    check(lua.eval("#PICKED") == 0, "17.4 the innkeeper's 'make this your home' icon is never picked")
+    lua.execute("OPTS = { opt(9, 132053) }")
+    T.fire("GOSSIP_SHOW")
+    check(lua.eval("#PICKED") == 0, "17.4 a plain gossip line (could start an escort or a fight) is never picked")
+    lua.execute("OPTS = { opt(7, 132060), opt(8, 132053) }")
+    T.fire("GOSSIP_SHOW")
+    check(lua.eval("#PICKED") == 0, "17.4 more than one line: left for the player")
+    lua.execute("OPTS = { opt(7, 132060, 1) }")
+    T.fire("GOSSIP_SHOW")
+    check(lua.eval("#PICKED") == 0, "17.4 an unavailable line is not picked")
+    lua.execute("OPTS = { opt(7, 132060) } AVAIL = { { questID = 5 } }")
+    T.fire("GOSSIP_SHOW")
+    check(lua.eval("#PICKED") == 0, "17.4 the NPC offers a quest: nothing is picked")
+    lua.execute("AVAIL = {} ACTIVE = { { questID = 6, isComplete = false } }")
+    T.fire("GOSSIP_SHOW")
+    check(lua.eval("#PICKED") == 0, "17.4 the NPC has a quest of yours: nothing is picked")
+    lua.execute("ACTIVE = {} TEST.shift = true")
+    T.fire("GOSSIP_SHOW")
+    check(lua.eval("#PICKED") == 0, "17.4 Shift pauses it")
+    lua.execute("TEST.shift = false")
+    T.fire("GOSSIP_SHOW")
+    check(lua_table_to_list(lua.eval("PICKED")) == [7], "17.4 back to normal without Shift")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("gossip")')
+    txt = chat_all(lua)
+    check("gossip options (1):" in txt and "icon 132060 (shop)" in txt and "the addon would pick: x" in txt, "17.4 /r2f gossip lists the options with icon ids: %r" % txt)
+    lua.execute("OPTS = {}")
+    T.chat = lua.table()
+    lua.execute('SlashCmdList.R2F("gossip")')
+    check("no gossip options" in chat_all(lua), "17.4 /r2f gossip with no window says so")
+    lua2 = new_runtime()
+    lua2.execute("TEST.reset() C_GossipInfo = nil")
+    T2 = lua2.eval("TEST")
+    T2.fire("ADDON_LOADED", "RoadToForever")
+    T2.fire("PLAYER_LOGIN")
+    check(lua2.eval("R2F.Gameplay.SetOn('gossipshop', true)") is False, "17.4 no gossip API: can't be switched on")
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -6363,6 +6431,7 @@ def main():
     test_copychat()
     test_questzone()
     test_fctup()
+    test_gossipshop()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

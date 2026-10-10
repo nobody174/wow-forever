@@ -309,3 +309,67 @@ Gameplay.Register({
     drawZoneBoxes()
   end,
 })
+
+-- ---------------------------------------------------------------------------
+-- Gossip: skip the line in front of a shop
+-- ---------------------------------------------------------------------------
+
+-- Many NPCs open a gossip window with ONE line ("I want to browse your goods") before the shop.
+-- This picks that line, and nothing else. The danger is a line that starts an escort, a fight or
+-- an event, and this build's gossip options have no "type" (the game's API documentation lists
+-- gossipOptionID, name, icon, status, flags...), so a line is recognised by its ICON, from a
+-- short whitelist of the game's own gossip icons (file ids read in the game files:
+-- GossipFrame\VendorGossipIcon 132060, TrainerGossipIcon 132058, BankerGossipIcon 132050,
+-- TaxiGossipIcon 132057, AuctioneerGossipIcon 528409). Rules: exactly ONE option is listed, it is
+-- Available, its icon is on the whitelist, and the NPC offers no quests (those are for you and
+-- the quest features). Never the innkeeper's "make this your home", never a plain chat line.
+-- Hold Shift to pause. `/r2f gossip` prints the open window's options with their icon ids, so
+-- the whitelist can grow from real data.
+local GOSSIP_ICONS = { [132060] = "shop", [132058] = "trainer", [132050] = "bank", [132057] = "flights", [528409] = "auctions" }
+Gameplay.GOSSIP_ICONS = GOSSIP_ICONS
+
+local function gossipOptions()
+  if C_GossipInfo and C_GossipInfo.GetOptions then return C_GossipInfo.GetOptions() or {} end
+  return {}
+end
+
+-- The one option to pick, or nil.
+function Gameplay.GossipPick()
+  local opts = gossipOptions()
+  if #opts ~= 1 then return nil end
+  local o = opts[1]
+  if not (o and o.gossipOptionID and GOSSIP_ICONS[o.icon]) then return nil end
+  if o.status ~= nil and o.status ~= 0 then return nil end      -- 0 = Available
+  if #gossipAvailable() > 0 or #gossipComplete() > 0 then return nil end
+  if C_GossipInfo.GetActiveQuests then
+    for _ in ipairs(C_GossipInfo.GetActiveQuests() or {}) do return nil end
+  end
+  return o
+end
+
+Gameplay.Register({
+  key = "gossipshop", group = "auto", title = "GP_GOSSIP", tip = "GP_GOSSIP_TIP",
+  available = function() return C_GossipInfo ~= nil and C_GossipInfo.GetOptions ~= nil and C_GossipInfo.SelectOption ~= nil end,
+  events = {
+    GOSSIP_SHOW = function()
+      if paused() then return end
+      local o = Gameplay.GossipPick()
+      if o then C_GossipInfo.SelectOption(o.gossipOptionID) end
+    end,
+  },
+})
+
+-- /r2f gossip: what the open gossip window offers.
+function Gameplay.PrintGossip()
+  if not (C_GossipInfo and C_GossipInfo.GetOptions) then R2F.Print(L.GP_GOSSIP_NOAPI) return end
+  local opts = gossipOptions()
+  if #opts == 0 then R2F.Print(L.GP_GOSSIP_NONE) return end
+  R2F.Print(L.GP_GOSSIP_HEAD:format(#opts))
+  for i, o in ipairs(opts) do
+    R2F.Print(("  %d. %s | icon %s%s | status %s | flags %s | id %s"):format(
+      i, o.name or "?", tostring(o.icon), GOSSIP_ICONS[o.icon] and (" (" .. GOSSIP_ICONS[o.icon] .. ")") or "",
+      tostring(o.status), tostring(o.flags), tostring(o.gossipOptionID)))
+  end
+  local pick = Gameplay.GossipPick()
+  R2F.Print(pick and L.GP_GOSSIP_WOULD:format(pick.name or "?") or L.GP_GOSSIP_WOULDNT)
+end

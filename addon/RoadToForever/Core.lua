@@ -160,6 +160,7 @@ local COMMANDS = {
   here = function() R2F.Plan.Here() end,
   ranks = function() R2F.Ranks.Print() end,
   copychat = function() R2F.CopyChat.Command() end,
+  gossip = function() R2F.Gameplay.PrintGossip() end,
   rankdebug = function() R2F.Ranks.Debug("") end,
   ammo = function() R2F.Ammo.ToggleShown() end,
   ["ammo lock"] = function() R2F.Ammo.ToggleLock() end,

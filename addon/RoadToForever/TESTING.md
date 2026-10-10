@@ -1176,3 +1176,7 @@ Both OFF until ticked on the Gameplay tab, Screen section.
    Get a Revenge proc: does the alert say `<Revenge>` now? If it still says "Ability ready", type `/r2f reactlog`
    right after and paste us the lines (they show whether the game sends the glow event for that ability).
 4. **Last tab remembered:** leave the window on Plan, Gameplay or Settings, `/reload`, open it: same tab.
+
+## 36. Active Gameplay page (v0.28.1)
+
+1. Click through the four page buttons: the page you are on has gold text and a gold bar under it, and is not greyed out. The other three look normal.

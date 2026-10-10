@@ -67,6 +67,9 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.28.1: active Gameplay page highlighted, not greyed)
+- Owner feedback on the four pages: the active one looked disabled. Now gold text + gold bar, still enabled.
+
 ## 2026-10-10 (Addons page: version tag)
 - A small `v0.28.0` tag next to "Road to Forever" on its addon card (CLAUDE.md's version-check steps say to keep it current).
 

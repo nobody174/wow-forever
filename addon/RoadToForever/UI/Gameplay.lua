@@ -100,7 +100,19 @@ end
 function Tab.ShowPage(key)
   if not pages[key] then key = Tab.PAGES[1].key end
   for k, p in pairs(pages) do p:SetShown(k == key) end
-  for k, b in pairs(pageButtons) do b:SetEnabled(k ~= key) end
+  -- The page you are on stands out (gold text, a gold bar under it, the button kept lit) and stays
+  -- ENABLED: a greyed-out button reads as "not learned / not working" (owner, 0.28.0).
+  for k, b in pairs(pageButtons) do
+    local on = (k == key)
+    b.mark:SetShown(on)
+    if b.LockHighlight then
+      if on then b:LockHighlight() else b:UnlockHighlight() end
+    end
+    local fs = b.GetFontString and b:GetFontString()
+    if fs then
+      if on then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
+    end
+  end
   content:SetHeight(pageHeight[key] or 100)
   scroll.r2fContentHeight = pageHeight[key] or 100
   scroll:SetVerticalScroll(0)
@@ -125,6 +137,12 @@ function Tab.Build(f)
     b:SetPoint("TOPLEFT", x, -46)
     b:SetText(L[pg.label])
     b:SetScript("OnClick", function() Tab.ShowPage(pg.key) end)
+    b.mark = b:CreateTexture(nil, "OVERLAY")
+    b.mark:SetColorTexture(1, 0.82, 0, 1)
+    b.mark:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", 6, 1)
+    b.mark:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -6, 1)
+    b.mark:SetHeight(3)
+    b.mark:Hide()
     pageButtons[pg.key] = b
     x = x + 116
   end

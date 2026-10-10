@@ -2,7 +2,7 @@
 ## Title: |cffffd100Road to Forever|r
 ## Notes: Import macros and talent builds from the Road to Forever site, export your professions to it.
 ## Author: nobody174
-## Version: 0.28.0
+## Version: 0.28.1
 ## IconTexture: Interface\AddOns\RoadToForever\media\logo64
 ## SavedVariables: R2FDB
 ## SavedVariablesPerCharacter: R2FCharDB

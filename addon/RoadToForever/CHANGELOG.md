@@ -3,6 +3,11 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.28.1 (2026-10-10): the active Gameplay page stands out
+
+- Owner: the page you are on looked greyed out (the button was disabled), which reads as "not learned / not working".
+  It now stays enabled, with gold text, a gold bar under it and the button kept lit; the other pages are normal white.
+
 ## 0.28.0 (2026-10-10): Gameplay tab redesign, plain names, the real ability name in the alert
 
 **Never run in game yet: TESTING.md 35.**

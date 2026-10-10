@@ -1909,7 +1909,13 @@ def test_gameplay():
     check(lua.eval("R2F.GameplayTab.CurrentPage()") == "quests", "17.1 the first page is Quests")
     boxvis = lambda lbl: lua.eval("(function() for _, f in ipairs(TEST.allFrames) do if f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.%s then return f:IsVisible() end end end)()" % lbl)
     check(boxvis("GP_QACCEPT") is True and boxvis("GP_REPAIR") is False, "17.1 only the page you are on shows its boxes")
+    pagebtn = lambda lbl: "(function() for _, f in ipairs(TEST.allFrames) do if f.__kind == 'Button' and f.__text == R2F.L.%s then return f end end end)()" % lbl
+    check(lua.eval("%s:IsEnabled()" % pagebtn("GP_PAGE_QUESTS")) is True and lua.eval("%s.mark.__shown" % pagebtn("GP_PAGE_QUESTS")) is True
+          and lua.eval("%s.mark.__shown" % pagebtn("GP_PAGE_VENDORS")) is False,
+          "17.1 the active page button stays enabled (not greyed) and carries the gold bar; the others don't")
     lua.execute("R2F.GameplayTab.ShowPage('vendors')")
+    check(lua.eval("%s:IsEnabled()" % pagebtn("GP_PAGE_VENDORS")) is True and lua.eval("%s.mark.__shown" % pagebtn("GP_PAGE_VENDORS")) is True
+          and lua.eval("%s.mark.__shown" % pagebtn("GP_PAGE_QUESTS")) is False, "17.1 the gold bar follows the page")
     check(boxvis("GP_QACCEPT") is False and boxvis("GP_REPAIR") is True and lua.eval("R2FDB.settings.gameplayPage") == "vendors", "17.1 switching pages swaps the boxes and is remembered")
     lua.execute("R2F.GameplayTab.ShowPage('alerts')")
     check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "17 the Warrior's stance options are on the Alerts page")

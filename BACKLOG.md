@@ -64,19 +64,12 @@ are built as well.
       `Charge` (players without the addon would then hit the problem again, so decide then).
 
 - [ ] **Replace ForeverPlus, steps 2 to 5** (ADDON_PLAN 17; step 1 shipped as 0.21.0, TESTING.md 29; step 2 as 0.22.0, TESTING.md 30):
-      2. (done: MailAlts, BagSlots, fast Looting) QuestZoneTracking is left: a track-all box on each quest-log zone header,
-         needs the quest log's frame names on this client (`/fstack` or `/dump` in game).
+      2. (done: MailAlts, BagSlots, fast Looting, QuestZoneTracking in 0.25.0)
       3. (done, 0.23.0, TESTING.md 31) Quest automation: accept, hand in (never picks a reward), reward prices.
       4. GossipAuto and greed rolls, after real measurements.
       5. Buff reminders (owner's ForeverPlus "upper display"): buffs the group can give you with a
          class-buff list to tick which to track, and Find Minerals / Herbs / Treasure. Needs a spike
          first: ForeverPlus found that auras can't be read in combat on this client.
-
-- [ ] **Move or replace the "Revenge" screen text** (owner, 2026-10-09): a "Revenge" word shows at the
-      bottom middle of the screen when Revenge becomes usable. Source not identified (no installed addon
-      has that text, so probably the game's floating combat text "reactive ability" alerts). Ask for
-      `/dump GetCVar("floatingCombatTextReactives")`; then either hide it and add our own movable icon
-      reminder (needs a test that spell usability can be read in combat), or move the game's text.
 
 ## Next up: "Road to Forever" in-game addon (planned 2026-10-01)
 

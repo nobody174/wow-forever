@@ -67,6 +67,12 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.25.0: quest-log track-all, raise floating combat text)
+- Extracted game code (CASC, `D:\WoW-Extract`) answered two open items: the quest log is the map-frame quest log
+  (header buttons from `QuestScrollFrame.headerFramePool`), so QuestZoneTracking could be built (box per zone header);
+  and the "<Revenge>" text is the game's own floating combat text (`SPELL_ACTIVE`, setting "Reactive ability alerts"),
+  whose scroll path the new "Raise floating combat text" box moves up. Never run in game yet (TESTING.md 33).
+
 ## 2026-10-10 (Addons page now lists only what the owner uses)
 - Removed Archivist for Forever, ForeverAuras and Leatrix Plus from addons.html and CLAUDE.md (owner: only Leatrix Maps
   is used of the Leatrix addons). The list is now AtlasLootClassic Continued, Forever Bestiary, ForeverPlus (until Road to

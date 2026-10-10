@@ -198,3 +198,114 @@ Gameplay.Register({
   },
   onToggle = function(on) if not on then hideValues() end end,
 })
+
+-- ---------------------------------------------------------------------------
+-- Quest log: a track-all box on every zone header
+-- ---------------------------------------------------------------------------
+
+-- The game's own way is a right-click menu on the zone header (Track All / Untrack All).
+-- This puts that in one click: a small check box on each zone header, ticked when every quest
+-- under it is tracked. Ticking tracks all, unticking untracks all. Built on the public
+-- C_QuestLog functions (AddQuestWatch / RemoveQuestWatch), not by calling the game's quest
+-- log code; the boxes are redrawn after the game redraws the list (hooksecurefunc on
+-- QuestLogQuests_Update). The header buttons come from QuestScrollFrame.headerFramePool and
+-- carry questLogIndex (read in the game's UI code, 1.60.1.70291; the exact look in game is
+-- unverified: TESTING.md 33).
+local zoneBoxes = {}   -- header button -> check button
+local zoneHooked = false
+
+-- The quest ids under a header, in order (stops at the next header).
+local function questsUnder(headerIndex)
+  local ids = {}
+  for i = headerIndex + 1, C_QuestLog.GetNumQuestLogEntries() do
+    local info = C_QuestLog.GetInfo(i)
+    if not info or info.isHeader then break end
+    if info.questID then ids[#ids + 1] = info.questID end
+  end
+  return ids
+end
+
+local function watched(questID)
+  return C_QuestLog.GetQuestWatchType and C_QuestLog.GetQuestWatchType(questID) ~= nil
+end
+
+-- true when the header has quests and every one is tracked
+local function allTracked(headerIndex)
+  local ids = questsUnder(headerIndex)
+  if #ids == 0 then return false end
+  for _, id in ipairs(ids) do
+    if not watched(id) then return false end
+  end
+  return true
+end
+
+local function setHeader(headerIndex, track)
+  for _, id in ipairs(questsUnder(headerIndex)) do
+    local on = watched(id)
+    if track and not on then
+      C_QuestLog.AddQuestWatch(id)
+    elseif not track and on then
+      C_QuestLog.RemoveQuestWatch(id)
+    end
+  end
+end
+
+local function activeHeaders()
+  local pool = _G.QuestScrollFrame and _G.QuestScrollFrame.headerFramePool
+  local out = {}
+  if pool and pool.EnumerateActive then
+    for header in pool:EnumerateActive() do
+      if header.questLogIndex then out[#out + 1] = header end
+    end
+  end
+  return out
+end
+
+local function drawZoneBoxes()
+  local on = Gameplay.IsOn("questzone")
+  for _, box in pairs(zoneBoxes) do box:Hide() end
+  if not on then return end
+  for _, header in ipairs(activeHeaders()) do
+    local box = zoneBoxes[header]
+    if not box then
+      box = R2F.UI.CheckButton(header, "")
+      box:SetSize(18, 18)
+      box:SetPoint("RIGHT", header, "RIGHT", -6, 0)
+      box:SetScript("OnClick", function(self)
+        local h = self:GetParent()
+        if h.questLogIndex then setHeader(h.questLogIndex, not allTracked(h.questLogIndex)) end
+        self:SetChecked(allTracked(h.questLogIndex or 0))
+      end)
+      box:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(L.GP_QZONE_TIP2, 1, 1, 1, true)
+        GameTooltip:Show()
+      end)
+      box:SetScript("OnLeave", function() GameTooltip:Hide() end)
+      zoneBoxes[header] = box
+    end
+    box:SetChecked(allTracked(header.questLogIndex))
+    box:Show()
+  end
+end
+Gameplay.DrawZoneBoxes = drawZoneBoxes
+
+Gameplay.Register({
+  key = "questzone", group = "screen", title = "GP_QZONE", tip = "GP_QZONE_TIP",
+  available = function()
+    return C_QuestLog ~= nil and C_QuestLog.GetNumQuestLogEntries ~= nil and C_QuestLog.GetInfo ~= nil
+      and C_QuestLog.AddQuestWatch ~= nil and C_QuestLog.RemoveQuestWatch ~= nil
+      and _G.QuestScrollFrame ~= nil
+  end,
+  events = {
+    QUEST_WATCH_LIST_CHANGED = drawZoneBoxes,
+    QUEST_LOG_UPDATE = drawZoneBoxes,
+  },
+  onToggle = function(on)
+    if on and not zoneHooked and _G.QuestLogQuests_Update and hooksecurefunc then
+      zoneHooked = true
+      hooksecurefunc("QuestLogQuests_Update", drawZoneBoxes)
+    end
+    drawZoneBoxes()
+  end,
+})

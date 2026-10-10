@@ -219,3 +219,46 @@ function Gameplay.InitCharacters()
   f:SetScript("OnEvent", function() Gameplay.RememberCharacter() end)
   pcall(f.RegisterEvent, f, "PLAYER_LEVEL_UP")
 end
+
+-- ---------------------------------------------------------------------------
+-- Floating combat text: raise it (the "<Revenge>" reactive alert)
+-- ---------------------------------------------------------------------------
+
+-- The game's floating combat text (the damage numbers and alerts like "<Revenge>" that appear
+-- when Revenge becomes usable, setting "Reactive ability alerts") scrolls from the middle of the
+-- screen: `CombatText.textLocations.startY` is 384 (x the screen's height factor) and it moves to
+-- endY (609 scrolling up, 159 scrolling down). Read in the game's own code
+-- (Blizzard_CombatText, 1.60.1.70291). With scrolling set to down, the text sits low on the
+-- screen. This adds a fixed raise to startY and endY: the recomputed table the game makes every
+-- time it rebuilds its layout is raised again by a hook, and switching the box off takes the
+-- raise back out. Needs floating combat text switched on in the game's options (the CombatText
+-- frame is only loaded then).
+local FCT_RAISE = 200
+local fctHooked = false
+
+local function applyFct()
+  local ct = _G.CombatText
+  local t = ct and ct.textLocations
+  if not t then return end
+  local want = Gameplay.IsOn("fctup") and FCT_RAISE or 0
+  local old = t.r2fRaise or 0
+  if want ~= old then
+    local d = (want - old) * (ct.textScaleY or 1)
+    t.startY = t.startY + d
+    t.endY = t.endY + d
+    t.r2fRaise = want
+  end
+end
+
+Gameplay.Register({
+  key = "fctup", group = "screen", title = "GP_FCTUP", tip = "GP_FCTUP_TIP",
+  available = function() return _G.CombatText ~= nil and _G.CombatText.textLocations ~= nil end,
+  onToggle = function()
+    local ct = _G.CombatText
+    if ct and not fctHooked and ct.UpdateDisplayedMessages and hooksecurefunc then
+      fctHooked = true
+      hooksecurefunc(ct, "UpdateDisplayedMessages", applyFct)
+    end
+    applyFct()
+  end,
+})

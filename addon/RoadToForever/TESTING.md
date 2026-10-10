@@ -1130,3 +1130,18 @@ Disable Prat 3.0 first (so you know it is ours).
    window (faint, bright on hover); clicking it opens that window's text. Is it in a bad spot on your layout
    (over the scroll bar or the tabs)? Tell us where it should go.
 5. Esc closes the window. Long chats (more than 200 lines): only the newest 200 show.
+
+## 33. Quest-log track-all and floating combat text (v0.25.0)
+
+Both OFF until ticked on the Gameplay tab, Screen section.
+
+1. **Quest log: track-all box per zone.** Tick it, open the quest log (L or the map's quest tab). Each zone heading
+   should have a small check box at its right end. Tick it: every quest under that heading gets tracked (they appear
+   in the objective tracker); untick: they are all untracked. A heading where only some quests are tracked shows
+   unticked; ticking it tracks the rest. Is the box in a sensible spot and not over the heading's text or arrow?
+   Tell us if not (screenshot). Collapsed headings too.
+2. **Raise floating combat text.** Needs floating combat text on (Esc > Options > Combat > Floating Combat Text) and
+   "Reactive ability alerts" ticked. Get a Revenge proc (let something block / dodge / parry you): the "<Revenge>"
+   text should now show higher on the screen than before. Untick the box: it goes back. If the box is greyed out
+   the game hasn't loaded floating combat text: switch it on in the options, `/reload`, and look again.
+3. Anything that fails prints "gameplay feature X hit an error ..." once: send us that line.

@@ -3,6 +3,20 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.25.0 (2026-10-10): quest-log track-all boxes, raise the "<Revenge>" text
+
+**Never run in game yet: TESTING.md 33.** Both OFF until ticked on the Gameplay tab (Screen).
+
+- **Quest log: track-all box per zone.** A small check box on every zone heading in the quest log: tick it to
+  track every quest under that heading, untick to untrack them all. Built on `C_QuestLog.AddQuestWatch` /
+  `RemoveQuestWatch` (the game's own way is the right-click menu on the heading). Frame names read in the
+  game's UI code (`QuestScrollFrame.headerFramePool`, `questLogIndex`); where the box lands on the heading
+  is unverified.
+- **Raise floating combat text.** The "<Revenge>" alert the owner sees at the bottom middle of the screen is the
+  game's floating combat text ("Reactive ability alerts" setting, CVar `floatingCombatTextReactives_v2`; found in
+  `Blizzard_CombatText`). It scrolls from y 384 down to 159 when scrolling is set to "down". This box raises that
+  whole scroll path by 200 (also damage numbers). Needs floating combat text switched on in the game's options.
+
 ## 0.24.1 (2026-10-10): Hunter ammo counts the real ammunition
 
 - **Bug found by an owner test of the 178 on the backpack:** this client has no ammo slot

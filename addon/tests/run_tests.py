@@ -2350,6 +2350,95 @@ def test_copychat():
     check(lua2.eval("R2F.Gameplay.SetOn('copychat', true)") is False, "17.2 ... and the button feature can't be switched on")
 
 
+QZONE_LUA = """
+  ENTRIES = { { isHeader = true }, { questID = 11 }, { questID = 12 }, { isHeader = true }, { questID = 21 } }
+  WATCH = {}
+  C_QuestLog = {
+    GetNumQuestLogEntries = function() return #ENTRIES end,
+    GetInfo = function(i) return ENTRIES[i] end,
+    GetQuestWatchType = function(id) if WATCH[id] then return 0 end end,
+    AddQuestWatch = function(id) WATCH[id] = true end,
+    RemoveQuestWatch = function(id) WATCH[id] = nil end,
+  }
+  HEAD1 = CreateFrame('Button', nil, UIParent) HEAD1.questLogIndex = 1
+  HEAD2 = CreateFrame('Button', nil, UIParent) HEAD2.questLogIndex = 4
+  ACTIVE = { [HEAD1] = true, [HEAD2] = true }
+  QuestScrollFrame = { headerFramePool = { EnumerateActive = function() return pairs(ACTIVE) end } }
+  QUESTLOG_UPDATES = 0
+  function QuestLogQuests_Update() QUESTLOG_UPDATES = QUESTLOG_UPDATES + 1 end
+"""
+
+
+def test_questzone():
+    """ADDON_PLAN 17 step 3b: a track-all box on every quest-log zone header."""
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    lua.execute(QZONE_LUA)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    box = lambda h: "(function() for _, f in ipairs(TEST.allFrames) do if f.__kind == 'CheckButton' and f.__parent == %s then return f end end end)()" % h
+    check(lua.eval("R2FDB.gameplay.questzone") is False, "17.3b ships OFF")
+    check(lua.eval(box("HEAD1")) is None, "17.3b off: no boxes on the headers")
+    check(lua.eval("R2F.Gameplay.SetOn('questzone', true)") is True, "17.3b switched on")
+    check(lua.eval(box("HEAD1")) is not None and lua.eval(box("HEAD2")) is not None, "17.3b a box on every zone header")
+    check(lua.eval("%s:GetChecked()" % box("HEAD1")) is False, "17.3b nothing tracked: unticked")
+    lua.execute("%s:Click()" % box("HEAD1"))
+    check(lua.eval("WATCH[11] == true and WATCH[12] == true and WATCH[21] == nil"), "17.3b ticking tracks every quest under that header only")
+    check(lua.eval("%s:GetChecked()" % box("HEAD1")) is True, "17.3b the box is ticked")
+    lua.execute("%s:Click()" % box("HEAD1"))
+    check(lua.eval("WATCH[11] == nil and WATCH[12] == nil"), "17.3b unticking untracks them all")
+    lua.execute("WATCH[11] = true")
+    lua.execute("QuestLogQuests_Update()")
+    check(lua.eval("%s:GetChecked()" % box("HEAD1")) is False, "17.3b only some tracked: unticked (and redrawn after the game redraws its list)")
+    lua.execute("%s:Click()" % box("HEAD1"))
+    check(lua.eval("WATCH[11] == true and WATCH[12] == true"), "17.3b with only some tracked a click tracks the rest (not untrack)")
+    lua.execute("WATCH[21] = true QuestLogQuests_Update()")
+    check(lua.eval("%s:GetChecked()" % box("HEAD2")) is True, "17.3b the second header is ticked when its one quest is tracked")
+    lua.execute("R2F.Gameplay.SetOn('questzone', false)")
+    check(lua.eval(box("HEAD1")).__shown is False if False else lua.eval("%s.__shown" % box("HEAD1")) is False, "17.3b off again: the boxes go")
+    lua.execute("ENTRIES = { { isHeader = true } }")
+    lua.execute("R2F.Gameplay.SetOn('questzone', true) QuestLogQuests_Update()")
+    check(lua.eval("%s:GetChecked()" % box("HEAD1")) is False, "17.3b an empty zone is never ticked")
+    lua2 = new_runtime()
+    lua2.execute("TEST.reset()")
+    lua2.execute(QZONE_LUA + " QuestScrollFrame = nil")
+    T2 = lua2.eval("TEST")
+    T2.fire("ADDON_LOADED", "RoadToForever")
+    T2.fire("PLAYER_LOGIN")
+    check(lua2.eval("R2F.Gameplay.SetOn('questzone', true)") is False, "17.3b no quest log frame on this client: can't be switched on")
+
+
+def test_fctup():
+    """ADDON_PLAN 17.3: raise the game's floating combat text (the <Revenge> alert)."""
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    lua.execute("""
+      CombatText = { textScaleY = 1 }
+      function CombatText:UpdateDisplayedMessages() self.textLocations = { startX = 0, startY = 384 * self.textScaleY, endX = 0, endY = 159 * self.textScaleY } end
+      CombatText:UpdateDisplayedMessages()
+    """)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    check(lua.eval("R2FDB.gameplay.fctup") is False and lua.eval("CombatText.textLocations.startY") == 384, "17.3c ships OFF, layout untouched")
+    check(lua.eval("R2F.Gameplay.SetOn('fctup', true)") is True, "17.3c switched on")
+    check(lua.eval("CombatText.textLocations.startY") == 584 and lua.eval("CombatText.textLocations.endY") == 359, "17.3c the whole scroll path is raised by 200")
+    lua.execute("CombatText:UpdateDisplayedMessages()")
+    check(lua.eval("CombatText.textLocations.startY") == 584 and lua.eval("CombatText.textLocations.endY") == 359, "17.3c after the game rebuilds its layout it is raised again (not twice)")
+    lua.execute("R2F.Gameplay.SetOn('fctup', false)")
+    check(lua.eval("CombatText.textLocations.startY") == 384 and lua.eval("CombatText.textLocations.endY") == 159, "17.3c off: the raise is taken out again")
+    lua.execute("CombatText:UpdateDisplayedMessages() R2F.Gameplay.SetOn('fctup', true)")
+    lua.execute("CombatText.textScaleY = 2 CombatText:UpdateDisplayedMessages()")
+    check(lua.eval("CombatText.textLocations.startY") == 768 + 400, "17.3c scaled with the screen height factor (384 x 2 + 200 x 2)")
+    lua2 = new_runtime()
+    lua2.execute("TEST.reset() CombatText = nil")
+    T2 = lua2.eval("TEST")
+    T2.fire("ADDON_LOADED", "RoadToForever")
+    T2.fire("PLAYER_LOGIN")
+    check(lua2.eval("R2F.Gameplay.SetOn('fctup', true)") is False, "17.3c floating combat text not loaded: can't be switched on")
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -6272,6 +6361,8 @@ def main():
     test_gameplay_extras()
     test_gameplay_quests()
     test_copychat()
+    test_questzone()
+    test_fctup()
     test_ui_smoke(True, fx)
     test_ui_smoke(False, fx)
     test_step5_logic(new_runtime(), fx)

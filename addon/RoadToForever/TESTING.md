@@ -1140,9 +1140,11 @@ Both OFF until ticked on the Gameplay tab, Screen section.
    in the objective tracker); untick: they are all untracked. A heading where only some quests are tracked shows
    unticked; ticking it tracks the rest. Is the box in a sensible spot and not over the heading's text or arrow?
    Tell us if not (screenshot). Collapsed headings too.
-2. **Raise floating combat text.** Needs floating combat text on (Esc > Options > Combat > Floating Combat Text) and
-   "Reactive ability alerts" ticked. Get a Revenge proc (let something block / dodge / parry you): the "<Revenge>"
-   text should now show higher on the screen than before. Untick the box: it goes back. If the box is greyed out
+2. **Move floating combat text.** Needs floating combat text on (Esc > Options > Combat > Floating Combat Text) and
+   "Reactive ability alerts" ticked. Tick the box: a marker with the Revenge icon appears on screen. Drag it
+   where the "<Revenge>" text should come up (it starts at the marker and scrolls the way the game does), then
+   tick "Lock floating combat text position": the marker disappears and the position stays. Get a Revenge proc
+   and check where the text shows. Untick the move box: the game's own place is back. If the box is greyed out
    the game hasn't loaded floating combat text: switch it on in the options, `/reload`, and look again.
 3. Anything that fails prints "gameplay feature X hit an error ..." once: send us that line.
 

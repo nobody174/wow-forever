@@ -113,9 +113,16 @@ function Library.Init()
   -- Gameplay features (Gameplay.lua, v0.21.0): one true / false per feature, all OFF until ticked.
   if type(db.gameplay) ~= "table" then db.gameplay = {} end
   for _, key in ipairs({ "repair", "sellgray", "duels", "errorfilter", "xpbar", "mailalts", "bagslots", "fastloot",
-    "questaccept", "questturnin", "rewardvalue", "copychat", "questzone", "fctup", "gossipshop" }) do
+    "questaccept", "questturnin", "rewardvalue", "copychat", "questzone", "fctmove", "fctlock", "gossipshop" }) do
     if type(db.gameplay[key]) ~= "boolean" then db.gameplay[key] = false end
   end
+  -- Where the floating combat text starts (GameplayExtras.lua): offset from the screen centre, UIParent units.
+  if type(db.fct) ~= "table" then db.fct = {} end
+  local fc = db.fct
+  if type(fc.x) ~= "number" then fc.x = 0 end
+  if type(fc.y) ~= "number" then fc.y = 0 end
+  if type(fc.scale) ~= "number" or fc.scale < 0.5 or fc.scale > 3 then fc.scale = 1 end
+  if type(fc.lock) ~= "boolean" then fc.lock = false end
   -- Tracking reminder (Tracking.lua, v0.26.0): any class that has Find Minerals / Herbs / Treasure.
   if type(db.tracking) ~= "table" then db.tracking = {} end
   local tr = db.tracking

@@ -2414,34 +2414,58 @@ def test_questzone():
     check(lua2.eval("R2F.Gameplay.SetOn('questzone', true)") is False, "17.3b no quest log frame on this client: can't be switched on")
 
 
-def test_fctup():
-    """ADDON_PLAN 17.3: raise the game's floating combat text (the <Revenge> alert)."""
-    lua = new_runtime()
-    lua.execute("TEST.reset()")
-    lua.execute("""
+def test_fctmove():
+    """17.3c: a place for the game's floating combat text (the <Revenge> alert) that the player can move."""
+    setup = """
+      WorldFrame = CreateFrame('Frame', 'WorldFrame', UIParent)
       CombatText = { textScaleY = 1 }
       function CombatText:UpdateDisplayedMessages() self.textLocations = { startX = 0, startY = 384 * self.textScaleY, endX = 0, endY = 159 * self.textScaleY } end
       CombatText:UpdateDisplayedMessages()
-    """)
+    """
+    lua = new_runtime()
+    lua.execute("TEST.reset()")
+    lua.execute(setup)
     T = lua.eval("TEST")
     T.fire("ADDON_LOADED", "RoadToForever")
     T.fire("PLAYER_LOGIN")
-    check(lua.eval("R2FDB.gameplay.fctup") is False and lua.eval("CombatText.textLocations.startY") == 384, "17.3c ships OFF, layout untouched")
-    check(lua.eval("R2F.Gameplay.SetOn('fctup', true)") is True, "17.3c switched on")
-    check(lua.eval("CombatText.textLocations.startY") == 584 and lua.eval("CombatText.textLocations.endY") == 359, "17.3c the whole scroll path is raised by 200")
+    loc = lambda k: lua.eval("CombatText.textLocations.%s" % k)
+    check(lua.eval("R2FDB.gameplay.fctmove") is False and lua.eval("R2FDB.gameplay.fctlock") is False and loc("startY") == 384
+          and lua.eval("R2FCombatTextAnchor == nil"), "17.3c ships OFF: layout untouched, no marker")
+    check(lua.eval("R2F.Gameplay.SetOn('fctmove', true)") is True, "17.3c switched on")
+    check(lua.eval("R2FCombatTextAnchor ~= nil and R2FCombatTextAnchor:IsShown()") is True, "17.3c a marker shows on screen")
+    check(loc("startX") == 0 and loc("startY") == 384, "17.3c the marker at the centre changes nothing yet")
+    lua.execute("R2FCombatTextAnchor.__cx, R2FCombatTextAnchor.__cy = 100, 50 R2FCombatTextAnchor:Fire('OnDragStart') R2FCombatTextAnchor:Fire('OnDragStop')")
+    check(lua.eval("R2FDB.fct.x") == 100 and lua.eval("R2FDB.fct.y") == 50, "17.3c dropping the marker saves its offset from the screen centre")
+    check(loc("startX") == 100 and loc("endX") == 100 and loc("startY") == 434 and loc("endY") == 209,
+          "17.3c the whole scroll path (start and end) moved with it: %s %s %s %s" % (loc("startX"), loc("endX"), loc("startY"), loc("endY")))
     lua.execute("CombatText:UpdateDisplayedMessages()")
-    check(lua.eval("CombatText.textLocations.startY") == 584 and lua.eval("CombatText.textLocations.endY") == 359, "17.3c after the game rebuilds its layout it is raised again (not twice)")
-    lua.execute("R2F.Gameplay.SetOn('fctup', false)")
-    check(lua.eval("CombatText.textLocations.startY") == 384 and lua.eval("CombatText.textLocations.endY") == 159, "17.3c off: the raise is taken out again")
-    lua.execute("CombatText:UpdateDisplayedMessages() R2F.Gameplay.SetOn('fctup', true)")
-    lua.execute("CombatText.textScaleY = 2 CombatText:UpdateDisplayedMessages()")
-    check(lua.eval("CombatText.textLocations.startY") == 768 + 400, "17.3c scaled with the screen height factor (384 x 2 + 200 x 2)")
+    check(loc("startX") == 100 and loc("startY") == 434 and loc("endY") == 209, "17.3c after the game rebuilds its layout the shift is applied again (not twice)")
+    lua.execute("R2F.Gameplay.SetOn('fctlock', true)")
+    check(lua.eval("R2FCombatTextAnchor:IsShown()") is False and loc("startY") == 434, "17.3c locked: marker hidden, position kept")
+    lua.execute("R2F.Gameplay.SetOn('fctlock', false)")
+    check(lua.eval("R2FCombatTextAnchor:IsShown()") is True, "17.3c unlocked: marker back")
+    lua.execute("R2F.Gameplay.SetOn('fctmove', false)")
+    check(loc("startX") == 0 and loc("endX") == 0 and loc("startY") == 384 and loc("endY") == 159 and lua.eval("R2FCombatTextAnchor:IsShown()") is False,
+          "17.3c off: the game's own path is back and the marker is gone")
+    lua.execute("UIParent.GetEffectiveScale = function() return 0.5 end CombatText:UpdateDisplayedMessages() R2F.Gameplay.SetOn('fctmove', true)")
+    check(loc("startX") == 50 and loc("startY") == 384 + 25, "17.3c UI scale is converted to the combat text's units (offset x 0.5)")
+    lua.execute("UIParent.GetEffectiveScale = nil")
+    # saved position is applied at login
     lua2 = new_runtime()
-    lua2.execute("TEST.reset() CombatText = nil")
+    lua2.execute("TEST.reset()")
+    lua2.execute(setup)
+    lua2.execute("R2FDB = { fct = { x = 30, y = 40 }, gameplay = { fctmove = true } }")
     T2 = lua2.eval("TEST")
     T2.fire("ADDON_LOADED", "RoadToForever")
     T2.fire("PLAYER_LOGIN")
-    check(lua2.eval("R2F.Gameplay.SetOn('fctup', true)") is False, "17.3c floating combat text not loaded: can't be switched on")
+    check(lua2.eval("CombatText.textLocations.startX") == 30 and lua2.eval("CombatText.textLocations.startY") == 424, "17.3c relog: the saved position is applied without opening the tab")
+    # not available without the frame
+    lua3 = new_runtime()
+    lua3.execute("TEST.reset() CombatText = nil")
+    T3 = lua3.eval("TEST")
+    T3.fire("ADDON_LOADED", "RoadToForever")
+    T3.fire("PLAYER_LOGIN")
+    check(lua3.eval("R2F.Gameplay.SetOn('fctmove', true)") is False, "17.3c floating combat text not loaded: can't be switched on")
 
 
 def test_gossipshop():
@@ -6543,7 +6567,7 @@ def main():
     test_gameplay_quests()
     test_copychat()
     test_questzone()
-    test_fctup()
+    test_fctmove()
     test_gossipshop()
     test_tracking()
     test_aura_probe()

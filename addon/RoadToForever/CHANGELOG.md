@@ -3,6 +3,18 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.27.0 (2026-10-10): move the floating combat text where you want it
+
+**Never run in game yet: TESTING.md 33 item 2 (rewritten).**
+
+- The fixed "Raise floating combat text" box (0.25.0) is replaced by **Move floating combat text** (Gameplay >
+  Screen): a marker with the Revenge icon appears on screen; drag it where the "<Revenge>" alert (and damage
+  numbers) should start. The game's whole scroll path (start and end) is shifted by the marker's offset from the
+  screen centre; the shift is re-applied after every relayout and taken out when the box is unticked.
+  **Lock floating combat text position** hides the marker and keeps the spot. Needs floating combat text switched
+  on in the game's options (the box is greyed out until the game has loaded it).
+- Saved in `R2FDB.fct` (x, y, lock); applied at login without opening the tab.
+
 ## 0.26.1 (2026-10-10): two fixes from the 0.26.0 test
 
 - **Tracking reminder:** it stayed up, grey, while a tracking was on (unlocked). It is now only shown while a tracking

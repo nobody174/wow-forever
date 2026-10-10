@@ -221,37 +221,64 @@ function Gameplay.InitCharacters()
 end
 
 -- ---------------------------------------------------------------------------
--- Floating combat text: raise it (the "<Revenge>" reactive alert)
+-- Floating combat text: a place you can move it to (the "<Revenge>" alert)
 -- ---------------------------------------------------------------------------
 
--- The game's floating combat text (the damage numbers and alerts like "<Revenge>" that appear
--- when Revenge becomes usable, setting "Reactive ability alerts") scrolls from the middle of the
--- screen: `CombatText.textLocations.startY` is 384 (x the screen's height factor) and it moves to
--- endY (609 scrolling up, 159 scrolling down). Read in the game's own code
--- (Blizzard_CombatText, 1.60.1.70291). With scrolling set to down, the text sits low on the
--- screen. This adds a fixed raise to startY and endY: the recomputed table the game makes every
--- time it rebuilds its layout is raised again by a hook, and switching the box off takes the
--- raise back out. Needs floating combat text switched on in the game's options (the CombatText
--- frame is only loaded then).
-local FCT_RAISE = 200
+-- The game's floating combat text (damage numbers, and alerts like "<Revenge>" when an ability
+-- becomes usable, setting "Reactive ability alerts") scrolls along a path in
+-- `CombatText.textLocations`: startX / startY to endX / endY, in WorldFrame units from the
+-- bottom centre of the screen (read in Blizzard_CombatText, 1.60.1.70291). The game rebuilds that
+-- table every time it relayouts. With "Move floating combat text" on, a framed marker (the
+-- Revenge icon) shows on screen; drag it where the text should start. The whole scroll path is
+-- shifted by the marker's offset from the screen centre (a hook re-applies it after each
+-- relayout, and switching it off takes the shift back out). "Lock" hides the marker and keeps the
+-- position. Needs floating combat text switched on in the game's options (the frame is loaded then).
 local fctHooked = false
+local fctMarker
+
+local function fctDb()
+  return R2F.Library.db.fct
+end
+
+local function worldScale()
+  local w = _G.WorldFrame
+  local ws = w and w.GetEffectiveScale and w:GetEffectiveScale() or 1
+  return (UIParent:GetEffectiveScale() or 1) / (ws ~= 0 and ws or 1)
+end
 
 local function applyFct()
   local ct = _G.CombatText
   local t = ct and ct.textLocations
   if not t then return end
-  local want = Gameplay.IsOn("fctup") and FCT_RAISE or 0
-  local old = t.r2fRaise or 0
-  if want ~= old then
-    local d = (want - old) * (ct.textScaleY or 1)
-    t.startY = t.startY + d
-    t.endY = t.endY + d
-    t.r2fRaise = want
+  local ox, oy = 0, 0
+  if Gameplay.IsOn("fctmove") then
+    local d, f = fctDb(), worldScale()
+    ox, oy = d.x * f, d.y * f
+  end
+  local oldx, oldy = t.r2fOx or 0, t.r2fOy or 0
+  if ox ~= oldx or oy ~= oldy then
+    t.startX = t.startX + (ox - oldx)
+    t.endX = t.endX + (ox - oldx)
+    t.startY = t.startY + (oy - oldy)
+    t.endY = t.endY + (oy - oldy)
+    t.r2fOx, t.r2fOy = ox, oy
+  end
+end
+
+local function updateMarker()
+  if not fctMarker then return end
+  local show = Gameplay.IsOn("fctmove") and not Gameplay.IsOn("fctlock")
+  fctMarker:SetShown(show)
+  if show then
+    fctMarker.border:SetColorTexture(0.95, 0.75, 0.1, 1)
+    fctMarker.icon:SetTexture("Interface\Icons\Ability_Warrior_Revenge")
+    fctMarker.count:SetText(L.GP_FCT_MARKER)
+    fctMarker:EnableMouse(true)
   end
 end
 
 Gameplay.Register({
-  key = "fctup", group = "screen", title = "GP_FCTUP", tip = "GP_FCTUP_TIP",
+  key = "fctmove", group = "screen", title = "GP_FCTMOVE", tip = "GP_FCTMOVE_TIP",
   available = function() return _G.CombatText ~= nil and _G.CombatText.textLocations ~= nil end,
   onToggle = function()
     local ct = _G.CombatText
@@ -259,6 +286,21 @@ Gameplay.Register({
       fctHooked = true
       hooksecurefunc(ct, "UpdateDisplayedMessages", applyFct)
     end
+    if ct and not fctMarker then
+      fctMarker = R2F.Reminders.NewIcon("R2FCombatTextAnchor", fctDb, "GP_FCT_DRAGTIP")
+      fctMarker.onMoved = applyFct
+      fctMarker:Place()
+    end
     applyFct()
+    updateMarker()
+  end,
+})
+
+-- Lock: hide the marker, keep the position.
+Gameplay.Register({
+  key = "fctlock", group = "screen", title = "GP_FCTLOCK", tip = "GP_FCTLOCK_TIP",
+  onToggle = function(on)
+    fctDb().lock = on and true or false
+    updateMarker()
   end,
 })

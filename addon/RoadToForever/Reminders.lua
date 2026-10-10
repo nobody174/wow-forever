@@ -94,6 +94,7 @@ function Reminders.NewIcon(name, dbfn, tipKey)
     d.x = (cx * es - ux * ues) / ues
     d.y = (cy * es - uy * ues) / ues
     self:Place()
+    if self.onMoved then self.onMoved(self) end
   end
 
   f:SetScript("OnDragStart", function(self)

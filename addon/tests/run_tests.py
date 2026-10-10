@@ -2362,6 +2362,7 @@ QZONE_LUA = """
   }
   HEAD1 = CreateFrame('Button', nil, UIParent) HEAD1.questLogIndex = 1
   HEAD2 = CreateFrame('Button', nil, UIParent) HEAD2.questLogIndex = 4
+  HEAD2.CollapseButton = CreateFrame('Button', nil, HEAD2)
   ACTIVE = { [HEAD1] = true, [HEAD2] = true }
   QuestScrollFrame = { headerFramePool = { EnumerateActive = function() return pairs(ACTIVE) end } }
   QUESTLOG_UPDATES = 0
@@ -2383,6 +2384,10 @@ def test_questzone():
     check(lua.eval("R2F.Gameplay.SetOn('questzone', true)") is True, "17.3b switched on")
     check(lua.eval(box("HEAD1")) is not None and lua.eval(box("HEAD2")) is not None, "17.3b a box on every zone header")
     check(lua.eval("%s:GetChecked()" % box("HEAD1")) is False, "17.3b nothing tracked: unticked")
+    check(lua.eval("%s.__point[2] == HEAD2.CollapseButton and %s.__point[3] == 'LEFT'" % (box("HEAD2"), box("HEAD2"))) is True,
+          "17.3b the box sits to the LEFT of the game's collapse button (not on top of it)")
+    check(lua.eval("%s.__point[2] == HEAD1 and %s.__point[4] < -10" % (box("HEAD1"), box("HEAD1"))) is True,
+          "17.3b a header without that button: the box keeps clear of the right edge")
     lua.execute("%s:Click()" % box("HEAD1"))
     check(lua.eval("WATCH[11] == true and WATCH[12] == true and WATCH[21] == nil"), "17.3b ticking tracks every quest under that header only")
     check(lua.eval("%s:GetChecked()" % box("HEAD1")) is True, "17.3b the box is ticked")
@@ -2548,7 +2553,7 @@ def test_tracking():
     lua.execute("TRACKS[1].active = true") ; T.fire("MINIMAP_UPDATE_TRACKING")
     check(lua.eval("R2FTrackingFrame:IsShown()") is False, "17.5 one of them active: hidden (locked)")
     lua.execute("R2F.Tracking.SetLock(false)")
-    check(lua.eval("R2FTrackingFrame:IsShown()") is True and lua.eval("R2FTrackingFrame.border.__ctex[1]") < 0.5, "17.5 unlocked while fine: shown grey so it can be moved")
+    check(lua.eval("R2FTrackingFrame:IsShown()") is False, "17.5 unlocked while tracking is on: still hidden (it is gone while you are tracking)")
     lua.execute("TRACKS[1].active = false TRACKS[2].active = true") ; T.fire("MINIMAP_UPDATE_TRACKING")
     lua.execute("R2F.Tracking.SetLock(true)")
     check(lua.eval("R2FTrackingFrame:IsShown()") is False, "17.5 the other type active also counts (only one tracking is on at a time)")

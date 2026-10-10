@@ -3,6 +3,16 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.26.1 (2026-10-10): two fixes from the 0.26.0 test
+
+- **Tracking reminder:** it stayed up, grey, while a tracking was on (unlocked). It is now only shown while a tracking
+  is NEEDED (none of the ticked ones active) and gone otherwise. To place it, switch your tracking off: it appears and
+  can be dragged.
+- **Quest log track-all box:** it sat on top of the game's collapse / expand button. It is now to the LEFT of that
+  button (`header.CollapseButton`).
+- Probe result for the buff reminder (owner, out of combat, in a party of two): `/r2f auras` reads 1 buff on the player
+  and 6 on party1, all with readable spell ids; secret restrictions "yes", auras secret "no" outside combat.
+
 ## 0.26.0 (2026-10-10): shop-line skipper, tracking reminder, aura probe
 
 **Never run in game yet: TESTING.md 34.**

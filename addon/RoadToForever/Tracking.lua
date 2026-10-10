@@ -4,8 +4,9 @@
 -- active at a time (the game switches between them), and it does not stay on by itself after a
 -- reload or after you use another tracking. This reminder shows the framed icon (the same look
 -- as the stance and ammo icons, Reminders.lua) while you KNOW at least one of the tracking types
--- you ticked and NONE of them is active. Hidden otherwise (and while locked); unlocked it always
--- shows so it can be moved. Any class: it only exists for a character that has a tracking spell.
+-- you ticked and NONE of them is active, and is gone otherwise. (Unlike the stance and ammo
+-- icons it is not shown just for placing: switch your tracking off to see it and drag it.)
+-- Any class: it only exists for a character that has a tracking spell.
 --
 -- Read-only and no aura reading (the game's tracking list, C_Minimap.GetNumTrackingTypes /
 -- GetTrackingInfo; documented in the game's API files: name, texture, active, spellID), so it
@@ -80,14 +81,15 @@ function Tracking.Update()
   if not frame then return end
   local d = db()
   local needs, has, texture = Tracking.State()
-  -- A character without any of the three tracking spells never gets the icon.
-  local show = Tracking.Applies() and d.shown and (needs or not d.lock)
+  -- Only while a tracking is needed (owner test of 0.26.0: unlocked it stayed up, grey, while
+  -- tracking was on). To place it, switch your tracking off: it appears and can be dragged.
+  local show = Tracking.Applies() and d.shown and needs
   frame:SetShown(show)
   if not show then return end
   local c = needs and ATTENTION or FINE
   frame.border:SetColorTexture(c.r, c.g, c.b, 1)
   frame.icon:SetTexture(texture or FALLBACK_ICON)
-  frame.icon:SetDesaturated(not needs)
+  frame.icon:SetDesaturated(false)
   frame.count:SetText("")
   frame:EnableMouse(not d.lock)
 end

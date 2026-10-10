@@ -270,7 +270,13 @@ local function drawZoneBoxes()
     if not box then
       box = R2F.UI.CheckButton(header, "")
       box:SetSize(18, 18)
-      box:SetPoint("RIGHT", header, "RIGHT", -6, 0)
+      -- To the LEFT of the game's collapse / expand button (header.CollapseButton, anchored RIGHT -6
+      -- in ListHeaderVisualTemplate); the header's own text ends 4 px left of that button.
+      if header.CollapseButton then
+        box:SetPoint("RIGHT", header.CollapseButton, "LEFT", -6, 0)
+      else
+        box:SetPoint("RIGHT", header, "RIGHT", -30, 0)
+      end
       box:SetScript("OnClick", function(self)
         local h = self:GetParent()
         if h.questLogIndex then setHeader(h.questLogIndex, not allTracked(h.questLogIndex)) end

@@ -67,6 +67,10 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.26.1: tracking reminder gone while tracking, quest-log box left of the collapse button)
+- Fixes from the owner's test of 0.26.0. `/r2f auras` out of combat in a party reads buffs on the player and on a
+  party member with readable spell ids, so a group-buff reminder is possible out of combat (combat still untested).
+
 ## 2026-10-10 (Addon 0.26.0: shop-line skipper, tracking reminder, aura probe)
 - ForeverPlus replacement, the rest: GossipAuto in a safe form (single whitelisted-icon line, no quests, Shift
   pauses; plus `/r2f gossip` to learn more icons), the minimap tracking reminder (Find Minerals / Herbs / Treasure),

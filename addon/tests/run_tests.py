@@ -1185,9 +1185,33 @@ def test_reminders():
     check(lua.eval("(R2F.Ammo.Count())") == 1500, "15.4 equipped ammo: the slot's total count")
     lua.execute("TEST.ammoCount = 37")
     check(lua.eval("(R2F.Ammo.Count())") == 37, "15.4 count follows the item")
-    lua.execute("local old = GetInventoryItemCount GetInventoryItemCount = function() error('boom') end "
-                "COUNT_ERR = R2F.Ammo.Count() GetInventoryItemCount = old")
-    check(lua.eval("COUNT_ERR") == 0, "15.4 a failing count API is caught (0, no error)")
+    lua.execute("local old = C_Container.GetContainerItemInfo C_Container.GetContainerItemInfo = function() error('boom') end "
+                "COUNT_ERR = R2F.Ammo.Count() C_Container.GetContainerItemInfo = old")
+    check(lua.eval("COUNT_ERR") is None, "15.4 a failing bag API is caught: nothing to count, no error")
+
+    # --- v0.24.1: this client has NO ammo slot; count the ammunition the ranged weapon fires -------------------------
+    lua, T = reminder_runtime("HUNTER")
+    check(lua.eval("GetInventoryItemID('player', 0)") == 0 and lua.eval("GetInventoryItemCount('player', 0)") == 1,
+          "15.4.1 (the stub answers like the real client's ammo slot: id 0, count 1)")
+    lua.execute("TEST.ammoItem = nil")
+    check(lua.eval("(R2F.Ammo.Count())") == 0, "15.4.1 slot 0's fake 'count 1' is not used: a bow and no arrows is 0, not 1")
+    lua.execute("TEST.bagItems = { [0] = { { itemID = 2512, stackCount = 100 }, { itemID = 2589, stackCount = 5 }, { itemID = 2512, stackCount = 250 } },"
+                " [1] = { { itemID = 2516, stackCount = 400 }, { itemID = 2512, stackCount = 50 } } }")
+    check(lua.eval("(R2F.Ammo.Count())") == 400, "15.4.1 a bow counts arrows only, over all bags and stacks (100 + 250 + 50), not bullets or other items: %s" % lua.eval("(R2F.Ammo.Count())"))
+    lua.execute("TEST.rangedItem = 2507")
+    check(lua.eval("(R2F.Ammo.Count())") == 400, "15.4.1 a gun counts bullets only (400)")
+    lua.execute("TEST.bagItems[1][1].stackCount = 123 TEST.rangedItem = 2508")
+    check(lua.eval("(R2F.Ammo.Count())") == 400, "15.4.1 a crossbow counts arrows too (400)")
+    lua.execute("TEST.rangedItem = 2515")
+    check(lua.eval("(R2F.Ammo.Count())") is None, "15.4.1 a thrown weapon needs no ammunition: nothing to count")
+    lua.execute("TEST.noRanged = true")
+    check(lua.eval("(R2F.Ammo.Count())") is None, "15.4.1 no ranged weapon: nothing to count")
+    lua.execute("R2F.Ammo.SetLock(true) R2F.Ammo.Update()")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is False, "15.4.1 no ranged weapon + locked: the icon stays hidden (no red 'low ammo' for a Hunter who isn't shooting)")
+    lua.execute("R2F.Ammo.SetLock(false) R2F.Ammo.Update()")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is True and lua.eval("R2FAmmoFrame.count.__text") == "-", "15.4.1 unlocked with nothing to count: shown grey with '-' so it can be placed")
+    lua.execute("TEST.noRanged = nil TEST.rangedItem = 2504 R2F.Ammo.Update()")
+    check(lua.eval("R2FAmmoFrame.icon.__tex") == "Interface\\Icons\\INV_Ammo_Arrow_03", "15.4.1 the icon is the arrows' icon from the bags")
 
     # --- Threshold, hide when fine, colours ---------------------------------------------------
     lua, T = reminder_runtime("HUNTER")

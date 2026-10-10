@@ -974,6 +974,13 @@ Do not trust the first result blindly: which bag windows WoW Forever has is a gu
 6. A Hunter without a ranged weapon will see the red 0: tick Show off for the ammo icon.
    (If that is annoying in practice, tell us: hiding it without a ranged weapon is easy.)
 
+## 25b. Hunter ammo, corrected (v0.24.1)
+
+Needs a Hunter with a bow, crossbow or gun. The count is now the ARROWS (bow / crossbow) or BULLETS (gun) in all
+your bags and quivers, added up. Check: does the number equal what you really carry? Swap the weapon type: the
+count switches arrows <-> bullets. Unequip the ranged weapon: the icon disappears when locked. A ranged weapon
+and no ammunition: red 0. (0.17.0 to 0.24.0 read a slot this client doesn't have and showed "1".)
+
 ## 26. Launch Plan in game, waypoints (v0.18.0, ADDON_PLAN 15.5)
 
 1. Six tabs now: Home, Macros, Talents, **Plan**, Reminders, Settings. Do they all fit on the

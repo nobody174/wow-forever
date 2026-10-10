@@ -3,6 +3,17 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.24.1 (2026-10-10): Hunter ammo counts the real ammunition
+
+- **Bug found by an owner test of the 178 on the backpack:** this client has no ammo slot
+  (`GetInventoryItemID("player", 0)` is 0 and `GetInventoryItemCount("player", 0)` is 1), so the Hunter ammo
+  reminder from 0.17.0 would have shown a wrong "1" (red) for every Hunter. It now counts the ammunition the
+  equipped ranged weapon fires, over all bags: arrows for a bow or crossbow, bullets for a gun (item class 6,
+  weapon in slot 18). No ranged weapon (or a thrown weapon) = nothing to count: the icon stays hidden, grey with
+  "-" while unlocked. A ranged weapon and no ammunition = red 0.
+- The "178" on the backpack button is still unexplained (it is the game's own `Count` text on the backpack
+  button; it is not the ammo slot, not the item total, not the slot total).
+
 ## 0.24.0 (2026-10-09): copy chat (replaces Prat 3.0 for copying)
 
 **Never run in game yet: TESTING.md 32.**

@@ -67,6 +67,11 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.24.1: Hunter ammo reads the bags)
+- The client has no ammo slot (slot 0 answers id 0, count 1): the 0.17.0 ammo reminder read it and would have
+  shown "1" for every Hunter. Now: arrows (bow, crossbow) or bullets (gun) counted over all bags by item class.
+  Released as r2f-v0.24.1; addons page points at it.
+
 ## 2026-10-09 (Addon 0.24.0: copy chat, to drop Prat 3.0)
 - `/r2f copychat [window]` and an optional corner button on every chat window: the chat text in a box to
   select and copy, plain text or raw. Prat 3.0 can go from the owner's addon list once he has tried it

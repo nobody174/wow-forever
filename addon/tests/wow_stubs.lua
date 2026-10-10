@@ -572,16 +572,39 @@ end
 
 function InCombatLockdown() return T.combat end
 function ReloadUI() T.reloaded = (T.reloaded or 0) + 1 end
--- Ammo slot (0): T.ammoItem = item id or nil, T.ammoCount = how many of it the player owns.
+-- WoW Forever has NO ammo slot (owner test 2026-10-10: slot 0 answers id 0, count 1). Ranged weapon in slot 18:
+-- T.noRanged = nothing equipped, T.rangedItem = its id (default 2504, a bow). Ammunition lives in bags:
+-- T.ammoItem set + T.ammoCount = arrows (item 2512) in bag 0 slot 1; or T.bagItems = { [bag] = { {itemID=, stackCount=}, ... } }.
 function GetInventoryItemID(unit, slot)
-  if slot == 0 then return T.ammoItem end
+  if slot == 0 then return 0 end
+  if slot == 18 then if T.noRanged then return nil end return T.rangedItem or 2504 end
 end
 function GetInventoryItemCount(unit, slot)
-  if slot == 0 then return T.ammoItem and (T.ammoCount or 0) or 0 end
+  if slot == 0 then return 1 end
   return 0
 end
-function GetInventoryItemTexture(unit, slot)
-  if slot == 0 and T.ammoItem then return "Interface\\Icons\\INV_Ammo_Arrow_03" end
+-- itemID -> classID, subClassID, icon: 2504 bow, 2507 gun, 2508 crossbow, 2512 arrows, 2516 bullets, 2515 thrown, 2589 junk.
+T.itemClasses = {
+  [2504] = { 2, 2 }, [2507] = { 2, 3 }, [2508] = { 2, 18 }, [2515] = { 2, 16 },
+  [2512] = { 6, 2, "Interface\\Icons\\INV_Ammo_Arrow_03" }, [2516] = { 6, 3, "Interface\\Icons\\INV_Ammo_Bullet_01" },
+  [2589] = { 0, 0 },
+}
+function GetItemInfoInstant(id)
+  local c = T.itemClasses[id]
+  if c then return id, "", "", "", c[3] or "", c[1], c[2] end
+end
+local function ammoBags()
+  if T.bagItems then return T.bagItems end
+  if T.ammoItem and (T.ammoCount or 0) > 0 then
+    return { [0] = { { itemID = 2589, stackCount = 3 }, { itemID = 2512, stackCount = T.ammoCount } } }
+  end
+  return { [0] = { { itemID = 2589, stackCount = 3 } } }
+end
+if C_Container == nil then
+  C_Container = {
+    GetContainerNumSlots = function(bag) local b = ammoBags()[bag] return b and #b or 0 end,
+    GetContainerItemInfo = function(bag, slot) local b = ammoBags()[bag] return b and b[slot] end,
+  }
 end
 -- hooksecurefunc(name, fn) / (table, name, fn): replace the function with one that
 -- calls the original, then fn (what the real one does, minus the taint tracking).

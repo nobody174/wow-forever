@@ -173,7 +173,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   CurseForge), then "What we use": Archivist for Forever, AtlasLootClassic
   Continued, Forever Bestiary, ForeverPlus,
   ForeverAuras (replaced WeakAuras Forever, which CurseForge pulled on
-  2026-10-05), Leatrix Maps, Leatrix Plus, Prat 3.0, Questie, ThreatMaster,
+  2026-10-05), Leatrix Maps, Leatrix Plus, Questie, ThreatMaster,
   TomTom — all CurseForge links, sorted alphabetically (case-insensitive) —
   plus a link to wow4ever.quest's addon compatibility tracker.
   Compact card layout (2026-10-05): a `.pick` column on the left holding the
@@ -227,7 +227,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
      ships one file for every flavor; open the file page to confirm).
      Never pick a Retail/Classic/MoP/TBC/Titan file. Release type R preferred;
      only use a beta/alpha file if no R exists for Forever.
-     Multi-flavor addons (AtlasLootClassic Continued, Prat 3.0, Questie, TomTom)
+     Multi-flavor addons (AtlasLootClassic Continued, Questie, TomTom)
      show "Forever + N" in the list. CurseForge's list can come back stale or
      filtered to another flavor (on 2026-10-05 Prat's list first showed only
      August files without Forever); if no Forever file shows, read the project

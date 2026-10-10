@@ -67,6 +67,9 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addons page: version tag)
+- A small `v0.28.0` tag next to "Road to Forever" on its addon card (CLAUDE.md's version-check steps say to keep it current).
+
 ## 2026-10-10 (Addon 0.28.0: Gameplay tab in four pages, plain names, the ability name in the alert)
 - UX pass on the Gameplay tab (ADDON_PLAN 18): pages Quests / Vendors & loot / Screen & chat / Alerts, plain option
   names with a grey hint line, last page remembered. The alert reads the ability name from the glow event's spell id

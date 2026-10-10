@@ -240,7 +240,8 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
      `https://github.com/nobody174/wow-forever/releases/tag/r2f-v<version>`
      (the repo was renamed from `wow-forever-macros` to `wow-forever`; GitHub
      redirects the old name). Versions below 1.0.0 are GitHub pre-releases, so
-     keep "· pre-release" on the line until 1.0.0; also update the zip name in
+     keep "· pre-release" on the line until 1.0.0; also update the small `v<version>` tag next to the name
+     (`.ver-tag`, data-ver="roadtoforever") and the zip name in
      the card's Install note.
   2. If newer: update that card's link file id, version and date.
   3. Always set `#versions-checked` to today's date (e.g. `Oct 6, 2026`).

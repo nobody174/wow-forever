@@ -470,3 +470,11 @@ it into the addon. Tool: CASCConsole (CASCExplorer) in `D:\Tools\CASCConsole`, l
 `D:\Tools\CASCConsole_dl\community-listfile.csv`. Re-extract / extract more with
 `CASCConsole.exe -m Listfile -e <csv of "fileID;path" lines> -d D:\WoW-Extract -l enUS -p wow_classic_beta -s "D:\World of Warcraft"`
 (filter the listfile with grep first; `-m Pattern` finds nothing because names come only from the listfile).
+
+## Addon rule: never write into the game's own tables or data (found 2026-10-10)
+On this client (secret values), changing a Blizzard table that Blizzard code later does arithmetic on (e.g.
+`CombatText.textLocations`) taints it and the game's own code errors ("... secret number value, while execution
+tainted by 'RoadToForever'"). Our addon may create its own frames, hook with `hooksecurefunc`, and read; it must not
+assign into game-owned tables / fields that game code reads, and must not call game functions that run game logic in
+our name (see also the BagWindow lesson in Bags.lua). To change what the game shows, use its settings (CVars via
+QuickSettings) or draw our own replacement.

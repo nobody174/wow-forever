@@ -1902,6 +1902,8 @@ def test_gameplay():
     check(all(w in labels for w in wanted), "17 the tab has one box per feature")
     check(font_text(lua, "^Automatic$") is not None and font_text(lua, "^Screen$") is not None and font_text(lua, "^Reminders$") is not None,
           "17 headings: Automatic / Screen / Reminders")
+    check(lua.eval("(R2FGameplayScroll or R2FGameplayScrollPlain).r2fContentHeight") > 420,
+          "17 the tab scrolls: 17 features are taller than the window (they ran off the bottom in 0.27.0): height %s" % lua.eval("(R2FGameplayScroll or R2FGameplayScrollPlain).r2fContentHeight"))
     check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "17 the Warrior's stance options sit in the Reminders column of the Gameplay tab")
     box = lambda key: "GB[%d]" % labels[lua.eval("R2F.L.%s" % key)]
     # --- Repair ---------------------------------------------------------------------------------------
@@ -2414,58 +2416,70 @@ def test_questzone():
     check(lua2.eval("R2F.Gameplay.SetOn('questzone', true)") is False, "17.3b no quest log frame on this client: can't be switched on")
 
 
-def test_fctmove():
-    """17.3c: a place for the game's floating combat text (the <Revenge> alert) that the player can move."""
-    setup = """
-      WorldFrame = CreateFrame('Frame', 'WorldFrame', UIParent)
-      CombatText = { textScaleY = 1 }
-      function CombatText:UpdateDisplayedMessages() self.textLocations = { startX = 0, startY = 384 * self.textScaleY, endX = 0, endY = 159 * self.textScaleY } end
-      CombatText:UpdateDisplayedMessages()
-    """
+def test_reactalert():
+    """17.3c: our own movable reactive-ability alert (replaces the 0.27.0 combat-text shift that tainted the game)."""
     lua = new_runtime()
     lua.execute("TEST.reset()")
-    lua.execute(setup)
+    lua.execute("TEST.cvars.floatingCombatTextReactives_v2 = '1'")
     T = lua.eval("TEST")
     T.fire("ADDON_LOADED", "RoadToForever")
     T.fire("PLAYER_LOGIN")
-    loc = lambda k: lua.eval("CombatText.textLocations.%s" % k)
-    check(lua.eval("R2FDB.gameplay.fctmove") is False and lua.eval("R2FDB.gameplay.fctlock") is False and loc("startY") == 384
-          and lua.eval("R2FCombatTextAnchor == nil"), "17.3c ships OFF: layout untouched, no marker")
-    check(lua.eval("R2F.Gameplay.SetOn('fctmove', true)") is True, "17.3c switched on")
-    check(lua.eval("R2FCombatTextAnchor ~= nil and R2FCombatTextAnchor:IsShown()") is True, "17.3c a marker shows on screen")
-    check(loc("startX") == 0 and loc("startY") == 384, "17.3c the marker at the centre changes nothing yet")
-    lua.execute("R2FCombatTextAnchor.__cx, R2FCombatTextAnchor.__cy = 100, 50 R2FCombatTextAnchor:Fire('OnDragStart') R2FCombatTextAnchor:Fire('OnDragStop')")
-    check(lua.eval("R2FDB.fct.x") == 100 and lua.eval("R2FDB.fct.y") == 50, "17.3c dropping the marker saves its offset from the screen centre")
-    check(loc("startX") == 100 and loc("endX") == 100 and loc("startY") == 434 and loc("endY") == 209,
-          "17.3c the whole scroll path (start and end) moved with it: %s %s %s %s" % (loc("startX"), loc("endX"), loc("startY"), loc("endY")))
-    lua.execute("CombatText:UpdateDisplayedMessages()")
-    check(loc("startX") == 100 and loc("startY") == 434 and loc("endY") == 209, "17.3c after the game rebuilds its layout the shift is applied again (not twice)")
-    lua.execute("R2F.Gameplay.SetOn('fctlock', true)")
-    check(lua.eval("R2FCombatTextAnchor:IsShown()") is False and loc("startY") == 434, "17.3c locked: marker hidden, position kept")
-    lua.execute("R2F.Gameplay.SetOn('fctlock', false)")
-    check(lua.eval("R2FCombatTextAnchor:IsShown()") is True, "17.3c unlocked: marker back")
-    lua.execute("R2F.Gameplay.SetOn('fctmove', false)")
-    check(loc("startX") == 0 and loc("endX") == 0 and loc("startY") == 384 and loc("endY") == 159 and lua.eval("R2FCombatTextAnchor:IsShown()") is False,
-          "17.3c off: the game's own path is back and the marker is gone")
-    lua.execute("UIParent.GetEffectiveScale = function() return 0.5 end CombatText:UpdateDisplayedMessages() R2F.Gameplay.SetOn('fctmove', true)")
-    check(loc("startX") == 50 and loc("startY") == 384 + 25, "17.3c UI scale is converted to the combat text's units (offset x 0.5)")
-    lua.execute("UIParent.GetEffectiveScale = nil")
-    # saved position is applied at login
+    shown = lambda: lua.eval("(function() for _, f in ipairs(TEST.allFrames) do if f.__kind == 'FontString' and f.__text and (f.__text:find('^<') or f.__text == 'Ability ready') and f.__shown then return f.__text end end end)()")
+    check(all(lua.eval("R2FDB.gameplay.%s" % k) is False for k in ("reactalert", "reactlock", "reactblizz")) and lua.eval("R2FReactAlertAnchor == nil"),
+          "17.3c all three ship OFF, no marker")
+    T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "Revenge")
+    check(shown() is None, "17.3c off: nothing is shown")
+    check(lua.eval("R2F.Gameplay.SetOn('reactalert', true)") is True and lua.eval("R2FReactAlertAnchor:IsShown()") is True, "17.3c on: the marker shows")
+    T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "Revenge")
+    check(shown() == "<Revenge>", "17.3c a reactive ability announcement shows <Revenge> in our own text: %r" % shown())
+    T.runTimers()
+    check(shown() is None, "17.3c ... and it goes away after a couple of seconds")
+    T.fire("COMBAT_TEXT_UPDATE", "DAMAGE", "Revenge")
+    check(shown() is None, "17.3c other combat text messages are ignored")
+    lua.execute("issecretvalue = function(v) return v == 'SECRET' end")
+    T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "SECRET")
+    check(shown() == "Ability ready", "17.3c a secret spell name falls back to 'Ability ready' (no error)")
+    T.runTimers()
+    # two alerts in a row: the older timer must not hide the newer text
+    T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "Revenge")
+    T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "Overpower")
+    lua.execute("local first = table.remove(TEST.timers, 1) first()")
+    check(shown() == "<Overpower>", "17.3c an older timer doesn't hide a newer alert")
+    T.runTimers()
+    # marker: drag, lock
+    lua.execute("R2FReactAlertAnchor.__cx, R2FReactAlertAnchor.__cy = 80, 120 R2FReactAlertAnchor:Fire('OnDragStart') R2FReactAlertAnchor:Fire('OnDragStop')")
+    check(lua.eval("R2FDB.fct.x") == 80 and lua.eval("R2FDB.fct.y") == 120, "17.3c dropping the marker saves its place")
+    lua.execute("R2F.Gameplay.SetOn('reactlock', true)")
+    check(lua.eval("R2FReactAlertAnchor:IsShown()") is False and lua.eval("R2FDB.fct.lock") is True, "17.3c locked: marker hidden, place kept")
+    T.fire("COMBAT_TEXT_UPDATE", "SPELL_ACTIVE", "Revenge")
+    check(shown() == "<Revenge>", "17.3c a locked alert still shows")
+    lua.execute("R2F.Gameplay.SetOn('reactlock', false)")
+    check(lua.eval("R2FReactAlertAnchor:IsShown()") is True, "17.3c unlocked: marker back")
+    lua.execute("R2F.Gameplay.SetOn('reactalert', false)")
+    check(lua.eval("R2FReactAlertAnchor:IsShown()") is False, "17.3c off: marker gone")
+    # hide the game's own text
+    check(lua.eval("R2F.Gameplay.SetOn('reactblizz', true)") is True and lua.eval("TEST.cvars.floatingCombatTextReactives_v2") == "0"
+          and lua.eval("R2FDB.reactWas") == "1", "17.3c hide the game's own reactive text: its setting goes to 0, the old value is remembered")
+    lua.execute("R2F.Gameplay.SetOn('reactblizz', false)")
+    check(lua.eval("TEST.cvars.floatingCombatTextReactives_v2") == "1" and lua.eval("R2FDB.reactWas") is None, "17.3c untick: the player's value is back")
+    T.combat = True
+    check(lua.eval("R2F.Gameplay.SetOn('reactblizz', true)") is False, "17.3c a game setting can't be changed in combat")
+    T.combat = False
     lua2 = new_runtime()
     lua2.execute("TEST.reset()")
-    lua2.execute(setup)
-    lua2.execute("R2FDB = { fct = { x = 30, y = 40 }, gameplay = { fctmove = true } }")
     T2 = lua2.eval("TEST")
     T2.fire("ADDON_LOADED", "RoadToForever")
     T2.fire("PLAYER_LOGIN")
-    check(lua2.eval("CombatText.textLocations.startX") == 30 and lua2.eval("CombatText.textLocations.startY") == 424, "17.3c relog: the saved position is applied without opening the tab")
-    # not available without the frame
-    lua3 = new_runtime()
-    lua3.execute("TEST.reset() CombatText = nil")
-    T3 = lua3.eval("TEST")
-    T3.fire("ADDON_LOADED", "RoadToForever")
-    T3.fire("PLAYER_LOGIN")
-    check(lua3.eval("R2F.Gameplay.SetOn('fctmove', true)") is False, "17.3c floating combat text not loaded: can't be switched on")
+    check(lua2.eval("R2F.Gameplay.SetOn('reactblizz', true)") is False, "17.3c no such game setting: can't be switched on")
+    # THE REGRESSION GUARD: nothing in the addon writes into the game's combat text (0.27.0 tainted it)
+    bad = []
+    for dirpath, _, names in os.walk(ADDON):
+        for nm in names:
+            if nm.endswith(".lua"):
+                code = "\n".join(l.split("--", 1)[0] for l in open(os.path.join(dirpath, nm), encoding="utf-8"))
+                if re.search(r"textLocations\s*(\.\s*\w+\s*=[^=]|=[^=])", code) or re.search(r"CombatText\s*(\.\s*\w+\s*=[^=]|:\s*\w+\s*\()", code):
+                    bad.append(nm)
+    check(bad == [], "17.3c no file writes into the game's CombatText / textLocations (it taints the game's code): %s" % bad)
 
 
 def test_gossipshop():
@@ -6567,7 +6581,7 @@ def main():
     test_gameplay_quests()
     test_copychat()
     test_questzone()
-    test_fctmove()
+    test_reactalert()
     test_gossipshop()
     test_tracking()
     test_aura_probe()

@@ -71,21 +71,43 @@ local function addBoxes(f, group, y)
   return y
 end
 
--- Called once by MainWindow with the Gameplay page frame.
+-- Mouse-wheel scrolling (the page has more rows than the window is tall).
+local function onWheel(self, delta)
+  local maxScroll = math.max((self.r2fContentHeight or 0) - self:GetHeight(), 0)
+  local v = (self:GetVerticalScroll() or 0) - delta * 40
+  self:SetVerticalScroll(math.max(0, math.min(v, maxScroll)))
+end
+
+-- Called once by MainWindow with the Gameplay page frame. Everything sits in a scrolling area:
+-- 17 features and a class's reminders are taller than the window (0.27.0 ran off the bottom).
 function Tab.Build(f)
   page = f
-  heading(f, LEFT, -58, L.GP_AUTOMATIC)
-  local y = addBoxes(f, "auto", -88)
-  heading(f, LEFT, y - 20, L.GP_SCREEN)
-  y = addBoxes(f, "screen", y - 50)
-  local note = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+  local scroll = UI.TryTemplate("ScrollFrame", "R2FGameplayScroll", f, "UIPanelScrollFrameTemplate",
+    function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FGameplayScrollPlain", f)
+  scroll:SetPoint("TOPLEFT", 6, -44)
+  scroll:SetSize(500, 420)
+  local c = CreateFrame("Frame", nil, scroll)
+  c:SetSize(490, 100)
+  scroll:SetScrollChild(c)
+  scroll:EnableMouseWheel(true)
+  scroll:SetScript("OnMouseWheel", onWheel)
+
+  heading(c, LEFT, -10, L.GP_AUTOMATIC)
+  local y = addBoxes(c, "auto", -40)
+  heading(c, LEFT, y - 20, L.GP_SCREEN)
+  y = addBoxes(c, "screen", y - 50)
+  local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
   note:SetPoint("TOPLEFT", LEFT + 4, y - 16)
   note:SetWidth(230)
   note:SetJustifyH("LEFT")
   note:SetText(L.GP_NOTE)
+  local leftEnd = y - 60
 
-  heading(f, RIGHT, -58, L.GP_REMINDERS)
-  R2F.RemindersTab.BuildInto(f, RIGHT + 2, -90, RIGHT_W)
+  heading(c, RIGHT, -10, L.GP_REMINDERS)
+  local rightEnd = R2F.RemindersTab.BuildInto(c, RIGHT + 2, -42, RIGHT_W) or -100
+  local height = -math.min(leftEnd, rightEnd) + 20
+  c:SetHeight(height)
+  scroll.r2fContentHeight = height
   return f
 end
 

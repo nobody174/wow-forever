@@ -113,7 +113,7 @@ function Library.Init()
   -- Gameplay features (Gameplay.lua, v0.21.0): one true / false per feature, all OFF until ticked.
   if type(db.gameplay) ~= "table" then db.gameplay = {} end
   for _, key in ipairs({ "repair", "sellgray", "duels", "errorfilter", "xpbar", "mailalts", "bagslots", "fastloot",
-    "questaccept", "questturnin", "rewardvalue", "copychat", "questzone", "fctmove", "fctlock", "gossipshop" }) do
+    "questaccept", "questturnin", "rewardvalue", "copychat", "questzone", "reactalert", "reactlock", "reactblizz", "gossipshop" }) do
     if type(db.gameplay[key]) ~= "boolean" then db.gameplay[key] = false end
   end
   -- Where the floating combat text starts (GameplayExtras.lua): offset from the screen centre, UIParent units.

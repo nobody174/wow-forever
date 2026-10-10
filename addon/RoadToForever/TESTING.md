@@ -1140,12 +1140,11 @@ Both OFF until ticked on the Gameplay tab, Screen section.
    in the objective tracker); untick: they are all untracked. A heading where only some quests are tracked shows
    unticked; ticking it tracks the rest. Is the box in a sensible spot and not over the heading's text or arrow?
    Tell us if not (screenshot). Collapsed headings too.
-2. **Move floating combat text.** Needs floating combat text on (Esc > Options > Combat > Floating Combat Text) and
-   "Reactive ability alerts" ticked. Tick the box: a marker with the Revenge icon appears on screen. Drag it
-   where the "<Revenge>" text should come up (it starts at the marker and scrolls the way the game does), then
-   tick "Lock floating combat text position": the marker disappears and the position stays. Get a Revenge proc
-   and check where the text shows. Untick the move box: the game's own place is back. If the box is greyed out
-   the game hasn't loaded floating combat text: switch it on in the options, `/reload`, and look again.
+2. **Reactive alert (own text) + hide the game's own.** After updating, `/reload` once. Tick "Reactive alert (own
+   text, movable)": a marker with the Revenge icon appears: drag it where you want the alert, then tick "Lock reactive
+   alert position". Get a Revenge proc: `<Revenge>` shows in gold at your spot for a couple of seconds. Tick "Hide the
+   game's own reactive text" to get rid of the game's own copy (untick restores your setting). No Lua errors should
+   appear at any point (0.27.0 had the "secret number value, while execution tainted by 'RoadToForever'" error).
 3. Anything that fails prints "gameplay feature X hit an error ..." once: send us that line.
 
 ## 34. Shop-line skipper, tracking reminder, aura probe (v0.26.0)

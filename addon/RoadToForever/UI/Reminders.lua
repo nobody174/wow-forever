@@ -121,11 +121,12 @@ function Tab.BuildInto(f, x, y, width)
     none:SetWidth(width + 20)
     none:SetJustifyH("LEFT")
     none:SetText(L.REM_NONE)
-    return
+    return y - 40
   end
   for _, def in ipairs(mine) do
     y = y - buildSection(f, def, x, y, width)
   end
+  return y
 end
 
 Tab.Refresh = refresh

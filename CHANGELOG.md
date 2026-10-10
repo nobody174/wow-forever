@@ -67,6 +67,12 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.27.1: URGENT, 0.27.0 tainted the game's combat text; Gameplay tab scrolls)
+- 0.27.0 shifted `CombatText.textLocations` to move the "<Revenge>" text: writing into a game table taints it and this
+  client then refuses arithmetic on the tainted values (96 errors in a fight). Removed; replaced by our own movable
+  alert fed by the game's `COMBAT_TEXT_UPDATE` "SPELL_ACTIVE" event, plus an option to hide the game's own text via
+  its setting. Lesson recorded in CLAUDE.md: never write into game tables or frames' data. The Gameplay tab now scrolls.
+
 ## 2026-10-10 (Addon 0.27.0: movable floating combat text)
 - Owner: the "<Revenge>" text still needed to move: replaced the fixed raise with a draggable marker (move +
   lock boxes) that shifts the game's floating-combat-text scroll path. Never run in game yet (TESTING.md 33).

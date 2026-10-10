@@ -3,6 +3,21 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.27.1 (2026-10-10): URGENT fix for 0.27.0 (Lua errors in fights), Gameplay tab scrolls
+
+- **0.27.0 broke the game's floating combat text** ("attempt to perform arithmetic on field 'startY' (a secret
+  number value, while execution tainted by 'RoadToForever')", 96 errors in one fight). Cause: it wrote into
+  Blizzard's `CombatText.textLocations` table to move the "<Revenge>" text. Writing into a game table taints it, and
+  on this client tainted values refuse arithmetic. **That code is gone.** After updating, `/reload` once (the old
+  tainted table lives until the UI reloads).
+- The replacement never touches the game's data: **Reactive alert (own text, movable)** listens for the game's own
+  announcement (`COMBAT_TEXT_UPDATE` / `SPELL_ACTIVE`) and shows `<Revenge>` in OUR text at a marker you drag
+  (**Lock reactive alert position** hides the marker); **Hide the game's own reactive text** switches off the game's
+  setting `floatingCombatTextReactives_v2` (through QuickSettings; your value is put back when unticked). If the event
+  text is a secret value the alert says "Ability ready". All three are OFF by default.
+- A test now fails if any file writes into `CombatText` / `textLocations`.
+- The Gameplay tab **scrolls** (mouse wheel): with 17 features the lower boxes ran off the bottom of the window.
+
 ## 0.27.0 (2026-10-10): move the floating combat text where you want it
 
 **Never run in game yet: TESTING.md 33 item 2 (rewritten).**

@@ -221,86 +221,103 @@ function Gameplay.InitCharacters()
 end
 
 -- ---------------------------------------------------------------------------
--- Floating combat text: a place you can move it to (the "<Revenge>" alert)
+-- Reactive ability alert ("<Revenge>"): our own, movable
 -- ---------------------------------------------------------------------------
 
--- The game's floating combat text (damage numbers, and alerts like "<Revenge>" when an ability
--- becomes usable, setting "Reactive ability alerts") scrolls along a path in
--- `CombatText.textLocations`: startX / startY to endX / endY, in WorldFrame units from the
--- bottom centre of the screen (read in Blizzard_CombatText, 1.60.1.70291). The game rebuilds that
--- table every time it relayouts. With "Move floating combat text" on, a framed marker (the
--- Revenge icon) shows on screen; drag it where the text should start. The whole scroll path is
--- shifted by the marker's offset from the screen centre (a hook re-applies it after each
--- relayout, and switching it off takes the shift back out). "Lock" hides the marker and keeps the
--- position. Needs floating combat text switched on in the game's options (the frame is loaded then).
-local fctHooked = false
-local fctMarker
+-- v0.27.0 shifted the game's floating combat text path (CombatText.textLocations) to move the
+-- "<Revenge>" alert. THAT WAS WRONG: writing into Blizzard's table taints it, and this client then
+-- refuses arithmetic on tainted values ("attempt to perform arithmetic on field 'startY' (a secret
+-- number value, while execution tainted by 'RoadToForever')", 96 errors in a fight). Nothing of the
+-- game's data or frames is written any more. Instead:
+--   * "Reactive alert (own text)": when the game announces a reactive ability (COMBAT_TEXT_UPDATE
+--     with "SPELL_ACTIVE", the same event its own text comes from) we show "<Revenge>" ourselves, in
+--     our own frame, at a marker you drag where you want it, for a couple of seconds.
+--   * "Lock reactive alert position": hides the marker, keeps the place.
+--   * "Hide the game's own reactive text": sets the game's setting floatingCombatTextReactives_v2 to 0
+--     (through QuickSettings, the one place that writes game settings) and puts your value back.
+-- If the event's text is a "secret" value the alert says "Ability ready" instead of the name.
+local ALERT_SECONDS = 2.5
+local alertMarker, alertText, alertToken = nil, nil, 0
+local REACT_CVAR = "floatingCombatTextReactives_v2"
 
-local function fctDb()
+local function alertDb()
   return R2F.Library.db.fct
 end
 
-local function worldScale()
-  local w = _G.WorldFrame
-  local ws = w and w.GetEffectiveScale and w:GetEffectiveScale() or 1
-  return (UIParent:GetEffectiveScale() or 1) / (ws ~= 0 and ws or 1)
-end
-
-local function applyFct()
-  local ct = _G.CombatText
-  local t = ct and ct.textLocations
-  if not t then return end
-  local ox, oy = 0, 0
-  if Gameplay.IsOn("fctmove") then
-    local d, f = fctDb(), worldScale()
-    ox, oy = d.x * f, d.y * f
-  end
-  local oldx, oldy = t.r2fOx or 0, t.r2fOy or 0
-  if ox ~= oldx or oy ~= oldy then
-    t.startX = t.startX + (ox - oldx)
-    t.endX = t.endX + (ox - oldx)
-    t.startY = t.startY + (oy - oldy)
-    t.endY = t.endY + (oy - oldy)
-    t.r2fOx, t.r2fOy = ox, oy
-  end
-end
-
-local function updateMarker()
-  if not fctMarker then return end
-  local show = Gameplay.IsOn("fctmove") and not Gameplay.IsOn("fctlock")
-  fctMarker:SetShown(show)
+local function updateAlertMarker()
+  if not alertMarker then return end
+  local show = Gameplay.IsOn("reactalert") and not Gameplay.IsOn("reactlock")
+  alertMarker:SetShown(show)
   if show then
-    fctMarker.border:SetColorTexture(0.95, 0.75, 0.1, 1)
-    fctMarker.icon:SetTexture("Interface\Icons\Ability_Warrior_Revenge")
-    fctMarker.count:SetText(L.GP_FCT_MARKER)
-    fctMarker:EnableMouse(true)
+    alertMarker.border:SetColorTexture(0.95, 0.75, 0.1, 1)
+    alertMarker.icon:SetTexture("Interface\Icons\Ability_Warrior_Revenge")
+    alertMarker.count:SetText(L.GP_REACT_MARKER)
+    alertMarker:EnableMouse(true)
   end
 end
+
+local function ensureAlert()
+  if alertMarker then return end
+  alertMarker = R2F.Reminders.NewIcon("R2FReactAlertAnchor", alertDb, "GP_REACT_DRAGTIP")
+  alertMarker:Place()
+  local holder = CreateFrame("Frame", nil, UIParent)
+  alertText = holder:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+  alertText:SetPoint("CENTER", alertMarker, "CENTER", 0, 0)
+  alertText:Hide()
+end
+
+-- Show the alert for a spell name (may be secret / nil).
+local function showAlert(name)
+  ensureAlert()
+  local text
+  if name ~= nil and not (type(_G.issecretvalue) == "function" and _G.issecretvalue(name)) then
+    text = "<" .. tostring(name) .. ">"
+  else
+    text = L.GP_REACT_READY
+  end
+  alertText:SetText(text)
+  alertText:SetTextColor(1, 0.82, 0)
+  alertText:Show()
+  alertToken = alertToken + 1
+  local mine = alertToken
+  if C_Timer and C_Timer.After then
+    C_Timer.After(ALERT_SECONDS, function() if mine == alertToken then alertText:Hide() end end)
+  end
+end
+Gameplay.ShowReactiveAlert = showAlert
 
 Gameplay.Register({
-  key = "fctmove", group = "screen", title = "GP_FCTMOVE", tip = "GP_FCTMOVE_TIP",
-  available = function() return _G.CombatText ~= nil and _G.CombatText.textLocations ~= nil end,
-  onToggle = function()
-    local ct = _G.CombatText
-    if ct and not fctHooked and ct.UpdateDisplayedMessages and hooksecurefunc then
-      fctHooked = true
-      hooksecurefunc(ct, "UpdateDisplayedMessages", applyFct)
-    end
-    if ct and not fctMarker then
-      fctMarker = R2F.Reminders.NewIcon("R2FCombatTextAnchor", fctDb, "GP_FCT_DRAGTIP")
-      fctMarker.onMoved = applyFct
-      fctMarker:Place()
-    end
-    applyFct()
-    updateMarker()
+  key = "reactalert", group = "screen", title = "GP_REACT", tip = "GP_REACT_TIP",
+  events = {
+    COMBAT_TEXT_UPDATE = function(kind, name)
+      if kind == "SPELL_ACTIVE" then showAlert(name) end
+    end,
+  },
+  onToggle = function(on)
+    if on then ensureAlert() end
+    updateAlertMarker()
   end,
 })
 
--- Lock: hide the marker, keep the position.
 Gameplay.Register({
-  key = "fctlock", group = "screen", title = "GP_FCTLOCK", tip = "GP_FCTLOCK_TIP",
+  key = "reactlock", group = "screen", title = "GP_REACTLOCK", tip = "GP_REACTLOCK_TIP",
   onToggle = function(on)
-    fctDb().lock = on and true or false
-    updateMarker()
+    alertDb().lock = on and true or false
+    updateAlertMarker()
+  end,
+})
+
+Gameplay.Register({
+  key = "reactblizz", group = "screen", title = "GP_REACTBLIZZ", tip = "GP_REACTBLIZZ_TIP", noCombat = true,
+  available = function() return R2F.QuickSettings.Read(REACT_CVAR) ~= nil end,
+  onToggle = function(on)
+    local db = R2F.Library.db
+    if on then
+      if db.reactWas == nil then db.reactWas = R2F.QuickSettings.Read(REACT_CVAR) or "1" end
+      R2F.QuickSettings.Write(REACT_CVAR, "0")
+    else
+      R2F.QuickSettings.Write(REACT_CVAR, db.reactWas or "1")
+      db.reactWas = nil
+    end
   end,
 })

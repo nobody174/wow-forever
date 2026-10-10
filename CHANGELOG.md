@@ -67,6 +67,11 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addons page now lists only what the owner uses)
+- Removed Archivist for Forever, ForeverAuras and Leatrix Plus from addons.html and CLAUDE.md (owner: only Leatrix Maps
+  is used of the Leatrix addons). The list is now AtlasLootClassic Continued, Forever Bestiary, ForeverPlus (until Road to
+  Forever replaces it), Leatrix Maps, Questie, ThreatMaster, TomTom, plus our own Road to Forever.
+
 ## 2026-10-10 (Prat 3.0 dropped, the backpack "178" explained)
 - Owner confirmed copy chat (`/r2f copychat`) works: Prat 3.0 removed from addons.html and CLAUDE.md's addon list.
 - The "178" on the backpack button matched the arrows of the owner's logged-in character: it is the game's own

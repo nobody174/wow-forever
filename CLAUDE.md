@@ -170,11 +170,9 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   directly.
 - `addons.html` — hand-written page. An "Our own addon" section on top (Road to
   Forever, `data-addon="roadtoforever"`, links to its GitHub release, not
-  CurseForge), then "What we use": Archivist for Forever, AtlasLootClassic
-  Continued, Forever Bestiary, ForeverPlus,
-  ForeverAuras (replaced WeakAuras Forever, which CurseForge pulled on
-  2026-10-05), Leatrix Maps, Leatrix Plus, Questie, ThreatMaster,
-  TomTom — all CurseForge links, sorted alphabetically (case-insensitive) —
+  CurseForge), then "What we use" (the owner's actual list, 2026-10-10): AtlasLootClassic
+  Continued, Forever Bestiary, ForeverPlus (until Road to Forever replaces it), Leatrix Maps, Questie,
+  ThreatMaster, TomTom — all CurseForge links, sorted alphabetically (case-insensitive) —
   plus a link to wow4ever.quest's addon compatibility tracker.
   Compact card layout (2026-10-05): a `.pick` column on the left holding the
   Select checkbox (the whole strip is the click target), then `.card-main` with
@@ -233,8 +231,7 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
      August files without Forever); if no Forever file shows, read the project
      page's "Latest release ... Forever + N" line and confirm on that file's page
      that 1.60.x / Forever is in its supported versions before using it.
-     Watch the slugs: Archivist is `archivist-for-forever` (the plain `archivist`
-     is an old Retail addon), Forever Bestiary is `forever-bestiary-pet-hunter`,
+     Watch the slugs: Forever Bestiary is `forever-bestiary-pet-hunter`,
      AtlasLoot is `atlasloot-continued`.
      `roadtoforever` is ours and not on CurseForge: its version is the newest
      `r2f-v*` tag (`git ls-remote --tags origin 'r2f-*' | sort -V`), cross-checked

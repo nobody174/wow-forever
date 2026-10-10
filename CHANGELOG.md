@@ -4,6 +4,11 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-10 (Server status link on the front page)
+- index.html: "Server status ↗" link under the countdown and a "Server Status" plaque in
+  General Resources, both to wowforeverstatus.com (unofficial realm/login/queue tracker by
+  Skellee Belly). Link only: the site has no API, badge or embed.
+
 ## 2026-10-09 (Charge pinned to Rank 1; rank-aware macros planned)
 - Owner dump: unranked "Charge" = spell 1240289, Forever's level-46 Charge, unknown at 18, so
   `/cast Charge` fails (Rend unranked works). The three Charge macros (Charge, Charge+Rend,

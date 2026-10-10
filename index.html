@@ -148,6 +148,8 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 .countdown .num{display:block;font:600 clamp(24px,4vw,38px)/1 var(--mono);color:var(--text)}
 .countdown .label{display:block;margin-top:6px;font:500 12px/1 var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 .local-time{color:var(--muted);font-size:14px;margin:0}
+.status-link{display:inline-block;margin-top:8px;color:var(--muted);font-size:13px;text-decoration:none;border-bottom:1px dotted currentColor}
+.status-link:hover{color:var(--gold)}
 .live-msg{font:400 clamp(26px,5vw,42px)/1.2 var(--serif);color:var(--gold);text-shadow:0 2px 18px rgba(0,0,0,.65)}
 
 .side-links{
@@ -331,6 +333,7 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
         <a class="mini-plaque" href="https://www.warcrafttavern.com/forever/" target="_blank" rel="noopener"><img class="mini-icon" src="https://www.google.com/s2/favicons?domain=warcrafttavern.com&sz=64" alt="" loading="lazy">Warcraft Tavern</a>
         <a class="mini-plaque" href="https://mobalytics.gg/wow-forever" target="_blank" rel="noopener"><img class="mini-icon" src="https://www.google.com/s2/favicons?domain=mobalytics.gg&sz=64" alt="" loading="lazy">Mobalytics</a>
         <a class="mini-plaque" href="https://foreverchanges.pro/" target="_blank" rel="noopener"><img class="mini-icon" src="https://www.google.com/s2/favicons?domain=foreverchanges.pro&sz=64" alt="" loading="lazy">ForeverChanges</a>
+        <a class="mini-plaque" href="https://wowforeverstatus.com/" target="_blank" rel="noopener"><img class="mini-icon" src="https://www.google.com/s2/favicons?domain=wowforeverstatus.com&sz=64" alt="" loading="lazy">Server Status</a>
       </div>
 
       <div class="link-group tools">
@@ -348,6 +351,7 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
     <h1>Road to Forever</h1>
     <div id="countdown" class="countdown" aria-live="polite"></div>
     <p class="local-time" id="local-time"></p>
+    <a class="status-link" href="https://wowforeverstatus.com/" target="_blank" rel="noopener">Server status ↗</a>
   </div>
 </div>
 

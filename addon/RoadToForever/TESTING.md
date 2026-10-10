@@ -1184,3 +1184,7 @@ Both OFF until ticked on the Gameplay tab, Screen section.
 ## 37. /r2f who (v0.28.2)
 
 1. On the paladin type `/r2f who` and send us all the lines (which one reads "Venom Oathbreaker"?).
+
+## 38. Mail list full names (v0.28.3)
+
+1. Log in once on each alt, then open a mailbox > Send Mail > the alt button: names read like "Venom Oathbreaker" and the mail arrives.

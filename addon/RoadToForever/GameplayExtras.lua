@@ -22,7 +22,12 @@ function Gameplay.RememberCharacter()
   db.chars = db.chars or {}
   db.chars[realm] = db.chars[realm] or {}
   local _, class = UnitClass("player")
+  -- What the client calls him in full ("Venom Oathbreaker": on this client UnitName's second value
+  -- is a surname, not the realm). Mail wants exactly this form. /r2f who showed it (owner, 0.28.2).
+  local full = GetUnitName and GetUnitName("player", true)
+  if type(full) ~= "string" or full == "" or (issecretvalue and issecretvalue(full)) then full = nil end
   db.chars[realm][name] = {
+    full = full,
     class = class,
     level = UnitLevel and UnitLevel("player") or 0,
     faction = UnitFactionGroup and (UnitFactionGroup("player")) or "",
@@ -77,7 +82,7 @@ function Gameplay.OtherCharacters()
   local faction = UnitFactionGroup and (UnitFactionGroup("player")) or ""
   for name, c in pairs((db.chars and realm and db.chars[realm]) or {}) do
     if name ~= me and (c.faction == faction or faction == "" or c.faction == "") then
-      out[#out + 1] = { name = name, full = name .. "-" .. realmSuffix(), class = c.class, level = c.level or 0 }
+      out[#out + 1] = { name = name, full = c.full or (name .. "-" .. realmSuffix()), class = c.class, level = c.level or 0 }
     end
   end
   table.sort(out, function(a, b) return a.name < b.name end)

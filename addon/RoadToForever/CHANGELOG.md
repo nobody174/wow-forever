@@ -3,6 +3,12 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.28.3 (2026-10-10): the mail list uses the full in-game name
+
+- **Fix:** the mail button filled in "Venom-ClassicBetaPvE2"; this client names characters "Venom Oathbreaker"
+  (UnitName's second value is a surname, found with `/r2f who`). Each character now remembers that full name and the
+  list fills it in. **Log in once on each alt with this version** so it is remembered; alts not seen again keep the old form.
+
 ## 0.28.2 (2026-10-10): /r2f who
 
 - **`/r2f who`** lists every way the client names your character (UnitName, UnitFullName, PvP name, realm names,

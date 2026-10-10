@@ -2106,6 +2106,11 @@ def test_gameplay_extras():
     check("Alice" in txt and "30" in txt and "|cffabd473" in txt, "17.2 the entry shows name, level and the class colour: %r" % txt)
     lua.execute("MENU[2].func()")
     check(lua.eval("SendMailNameEditBox:GetText()") == "Alice-RealmNorm", "17.2 clicking a character fills in the FULL name, Name-Realm (a bare name does not arrive on this client)")
+    lua.execute("UnitName = function() return 'Zed' end GetUnitName = function() return 'Zed Oathbreaker' end R2F.Gameplay.RememberCharacter() UnitName = function() return 'Me' end")
+    check(lua.eval("R2FDB.chars[GetRealmName()].Zed.full") == "Zed Oathbreaker", "17.2 the character's full in-game name is remembered for mail")
+    check(any(lua.eval("R2F.Gameplay.OtherCharacters()[%d].full" % i) == "Zed Oathbreaker" for i in range(1, lua.eval("#R2F.Gameplay.OtherCharacters()") + 1)),
+          "17.2 the mail list uses the full in-game name (Zed Oathbreaker), not Name-Realm")
+    lua.execute("GetUnitName = nil UnitName = function() return 'Me' end")
     lua.execute("GetNormalizedRealmName = nil R2F.Gameplay.OtherCharacters()")
     check(lua.eval("R2F.Gameplay.OtherCharacters()[1].full") == "Alice-Realm", "17.2 without a normalised realm name the realm name is used")
     lua.execute("GetRealmName = function() return 'Mad Fury' end")

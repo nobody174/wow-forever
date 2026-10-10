@@ -67,6 +67,9 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-10 (Addon 0.28.3: mail list uses the full in-game name)
+- Mail button now fills "Venom Oathbreaker" (GetUnitName) instead of Name-Realm; each alt remembers it at login.
+
 ## 2026-10-10 (Addon 0.28.2: /r2f who)
 - Probe for the mail list: shows every name the client gives the character, to find the "Venom Oathbreaker" form.
 

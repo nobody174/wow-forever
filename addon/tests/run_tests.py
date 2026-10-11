@@ -2068,6 +2068,9 @@ def test_gameplay():
     check(names() == [] and lua8.eval("R2FGroupBuffFrame:IsShown()") is False, "17.5 alone and locked: no reminder")
     lua8.execute("R2FDB.buffs.lock = false R2F.Buffs.Update()")
     check(lua8.eval("R2FGroupBuffFrame:IsShown()") is True, "17.5 alone and unlocked: a sample icon to drag into place")
+    lua8.execute("GRP = { party1 = 'DRUID' } AUR = { 'Power Word: Fortitude', 'Mark of the Wild', 'Thorns' } R2F.Buffs.Update()")
+    check(lua8.eval("R2FGroupBuffFrame:IsShown()") is True and lua8.eval("R2FGroupBuffFrame.icon.__desat") is True,
+          "17.5 in a group with nothing missing, unlocked: still shown (dimmed) so it can be moved")
     lua8.execute("R2FDB.buffs.lock = true GRP = { party1 = 'DRUID' } issecretvalue = function(v) return v == 'SECRET' end AUR = { 'SECRET' } R2F.Buffs.Update()")
     check(names() == [], "17.5 hidden (secret) auras: it says nothing instead of guessing")
 

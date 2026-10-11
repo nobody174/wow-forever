@@ -9,6 +9,7 @@
 -- Reads your own helpful auras (C_UnitAuras.GetUnitAuras("player", "HELPFUL"); /r2f auras showed they are
 -- readable out of combat). If the game hides them (secret values, e.g. in combat or an instance) the reminder
 -- says nothing rather than guessing: a missing buff is only shown when the list was fully readable.
+-- Unlocked, it always shows (dimmed when nothing is missing) so it can be moved.
 -- Buff names are matched in English (the game's spell names). Settings in R2FDB.buffs: shown, lock, scale, x, y,
 -- and one true/false per buff in LIST.
 
@@ -143,8 +144,9 @@ function Buffs.Update()
   if not frame then return end
   local d = db()
   local missing = Buffs.Missing()
-  -- Unlocked and alone: one dimmed sample icon so you can drag it into place (lock it to hide it).
-  local sample = (#missing == 0) and d.shown and not d.lock and next(Buffs.GroupClasses()) == nil
+  -- Unlocked with nothing missing (alone or in a full-buffed group): one dimmed sample icon so you
+  -- can drag it into place (lock it to hide it).
+  local sample = (#missing == 0) and d.shown and not d.lock
   if #missing == 0 and not sample then
     frame:Hide()
     for _, e in ipairs(extras) do e:Hide() end

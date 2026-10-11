@@ -3,6 +3,12 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.29.1 (2026-10-11): the group-buff icon can always be moved
+
+- Owner: couldn't move the missing-buff icons. With "Lock the icons' position" unticked, nothing was shown when you
+  were in a group with nothing missing, so there was nothing to grab. Unlocked, the icon now always shows (dimmed when
+  nothing is missing); drag it, then tick the lock.
+
 ## 0.29.0 (2026-10-11): missing group buffs, bag Sort button, faster talent learning
 
 **Never run in game yet: TESTING.md 40.**

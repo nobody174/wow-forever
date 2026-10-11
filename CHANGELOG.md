@@ -67,6 +67,9 @@ user-facing release notes.
   (talent names, max ranks, 5-points-per-row gates, prerequisite arrows, 21/51 points) and its
   share code generated there; every rotation icon was checked on wow.zamimg.com.
 
+## 2026-10-11 (Addon 0.29.1: group-buff icon always movable when unlocked)
+- Unlocked, the missing-buff icon always shows (dimmed if nothing is missing) so it can be dragged.
+
 ## 2026-10-11 (Addon 0.29.0: missing group buffs, bag Sort button, faster talent learning)
 - Group buff reminder (icons for Fortitude / Mark of the Wild / Thorns / Intellect / Blessing... you lack, by the classes in your group), a Sort button above the backpack, and talent learning that notices each point within 0.1 s instead of waiting the timeout. Never run in game yet (TESTING.md 40).
 

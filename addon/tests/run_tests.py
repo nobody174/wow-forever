@@ -1174,7 +1174,7 @@ def test_reminders():
     check(lua.eval("R2FAmmoFrame == nil and R2FStanceFrame == nil and R2FAmmoScale == nil and R2FStanceScale == nil"),
           "15.4 Priest: no reminder frames or controls")
     lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
-    check(font_text(lua, "^No reminders for your class") is not None, "15.4 a class without reminders sees the 'none yet' line")
+    check(font_text(lua, "^No reminders for your class") is None and font_text(lua, "^" + "Missing group buffs") is not None, "15.4 every class has the group-buff reminder, so the 'none yet' line is gone")
     T.chat = lua.table()
     lua.execute('SlashCmdList.R2F("ammo")')
     check(any("Hunters only" in c for c in lua_table_to_list(lua.eval("TEST.chat"))), "15.4 /r2f ammo on a Priest explains")
@@ -2037,8 +2037,40 @@ def test_gameplay():
     # --- Other classes: no reminder column content for a Priest -------------------------------------------------------------------------------------
     lua8, T8 = gameplay_runtime(token="PRIEST")
     lua8.execute("R2F.MainWindow.Show('gameplay')")
-    check(font_text(lua8, "^No reminders for your class") is not None and lua8.eval("R2FStanceScale == nil and R2FAmmoScale == nil"),
-          "17 a class without reminders sees the 'none yet' line in the Reminders column")
+    check(font_text(lua8, "^No reminders for your class") is None and lua8.eval("R2FStanceScale == nil and R2FAmmoScale == nil"),
+          "17 a Priest has no stance/ammo controls, only the group-buff reminder")
+    # --- Missing group buffs (Buffs.lua) ----------------------------------------------------------------------------------------------------
+    lua8.execute("""
+      GRP = { party1 = 'DRUID', party2 = 'PALADIN', party3 = 'MAGE' }
+      AUR = {}
+      IsInGroup = function() return GRP ~= false end
+      IsInRaid = function() return false end
+      UnitExists = function(u) return u == 'player' or (GRP and GRP[u] ~= nil) end
+      local oldClass = UnitClass
+      UnitClass = function(u) if u == 'player' then return 'Priest', 'PRIEST' end return GRP[u], GRP[u] end
+      UnitIsDeadOrGhost = function() return false end
+      C_UnitAuras = { GetUnitAuras = function() local t = {} for _, n in ipairs(AUR) do t[#t+1] = { name = n } end return t end }
+      R2F.Buffs.Update()
+    """)
+    names = lambda: [lua8.eval("R2F.Buffs.Missing()[%d].key" % i) for i in range(1, lua8.eval("#R2F.Buffs.Missing()") + 1)]
+    check(names() == ["fortitude", "motw", "thorns", "intellect", "blessing"],
+          "17.5 a Priest, Druid, Paladin and Mage group: Fortitude, Mark of the Wild, Thorns, Intellect, a Blessing are all missing: %r" % names())
+    check(lua8.eval("R2FGroupBuffFrame:IsShown()") is True, "17.5 the reminder shows")
+    lua8.execute("AUR = { 'Power Word: Fortitude', 'Gift of the Wild', 'Greater Blessing of Kings' } R2F.Buffs.Update()")
+    check(names() == ["thorns", "intellect"], "17.5 Fortitude, Gift of the Wild (counts as Mark) and a Greater Blessing are recognised: %r" % names())
+    lua8.execute("R2FDB.buffs.thorns = false R2F.Buffs.Update()")
+    check(names() == ["intellect"], "17.5 a buff you switched off is not asked for")
+    lua8.execute("AUR = { 'Power Word: Fortitude', 'Gift of the Wild', 'Blessing of Might', 'Arcane Intellect' } R2F.Buffs.Update()")
+    check(names() == [] and lua8.eval("R2FGroupBuffFrame:IsShown()") is False, "17.5 nothing missing: the reminder is gone")
+    lua8.execute("GRP = { party1 = 'ROGUE' } AUR = {} R2FDB.buffs.thorns = true R2F.Buffs.Update()")
+    check(names() == ["fortitude"], "17.5 only buffs of classes in the group count (you are the Priest: Fortitude): %r" % names())
+    lua8.execute("GRP = false R2F.Buffs.Update()")
+    check(names() == [] and lua8.eval("R2FGroupBuffFrame:IsShown()") is False, "17.5 alone and locked: no reminder")
+    lua8.execute("R2FDB.buffs.lock = false R2F.Buffs.Update()")
+    check(lua8.eval("R2FGroupBuffFrame:IsShown()") is True, "17.5 alone and unlocked: a sample icon to drag into place")
+    lua8.execute("R2FDB.buffs.lock = true GRP = { party1 = 'DRUID' } issecretvalue = function(v) return v == 'SECRET' end AUR = { 'SECRET' } R2F.Buffs.Update()")
+    check(names() == [], "17.5 hidden (secret) auras: it says nothing instead of guessing")
+
 
 
 GAMEPLAY2_LUA = """
@@ -2132,6 +2164,20 @@ def test_gameplay_extras():
     lua3, T3 = gameplay2_runtime(backpack=False)
     check(lua3.eval("R2F.Gameplay.SetOn('bagslots', true)") is False and lua3.eval("R2FDB.gameplay.bagslots") is False,
           "17.2 no backpack button on this client: can't be switched on")
+    # --- Sort button -----------------------------------------------------------------------------------------------
+    lua.execute("SORTED = 0 C_Container.SortBags = function() SORTED = SORTED + 1 end ContainerFrame1 = CreateFrame('Frame', nil, UIParent) ContainerFrame1.GetID = function() return 0 end ContainerFrame2 = CreateFrame('Frame', nil, UIParent) ContainerFrame2.GetID = function() return 1 end")
+    btn = "(function() for _, f in ipairs(TEST.allFrames) do if f.__kind == 'Button' and f.__text == R2F.L.GP_SORT_BUTTON and f.__parent == %s then return f end end end)()"
+    check(lua.eval("R2F.Gameplay.SetOn('bagsort', true)") is True, "17.2 sort button switches on")
+    check(lua.eval(btn % "ContainerFrame1" + ":IsShown()") is True and lua.eval(btn % "ContainerFrame2" + ":IsShown()") is False,
+          "17.2 the Sort button is on the backpack window only")
+    lua.execute((btn % "ContainerFrame1") + ":Click()")
+    check(lua.eval("SORTED") == 1, "17.2 clicking Sort runs the game's bag clean-up")
+    T.combat = True
+    lua.execute((btn % "ContainerFrame1") + ":Click()")
+    check(lua.eval("SORTED") == 1, "17.2 no sorting in combat")
+    T.combat = False
+    lua.execute("R2F.Gameplay.SetOn('bagsort', false)")
+    check(lua.eval(btn % "ContainerFrame1" + ":IsShown()") is False, "17.2 sort off: the button is gone")
     # --- Fast loot ----------------------------------------------------------------------------------------------------------
     lua.execute("LOOTED = {}")
     T.fire("LOOT_READY", True)

@@ -32,7 +32,7 @@ local LEFT, RIGHT, RIGHT_W = 22, 270, 214
 -- page key -> label key and the features on it (in this order)
 Tab.PAGES = {
   { key = "quests", label = "GP_PAGE_QUESTS", features = { "questaccept", "questturnin", "gossipshop", "rewardvalue", "questzone" } },
-  { key = "vendors", label = "GP_PAGE_VENDORS", features = { "repair", "sellgray", "fastloot", "bagslots", "mailalts" } },
+  { key = "vendors", label = "GP_PAGE_VENDORS", features = { "repair", "sellgray", "fastloot", "bagslots", "bagsort", "mailalts" } },
   { key = "screen", label = "GP_PAGE_SCREEN", features = { "errorfilter", "xpbar", "copychat", "duels" } },
   { key = "alerts", label = "GP_PAGE_ALERTS", features = { "reactalert", "reactlock", "reactblizz" } },
 }

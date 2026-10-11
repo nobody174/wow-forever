@@ -1192,3 +1192,13 @@ Both OFF until ticked on the Gameplay tab, Screen section.
 ## 39. Alert ability name, second try (v0.28.4)
 
 1. With the alert on, get a Revenge (or Overpower) proc: does it say <Revenge>? If not, `/r2f reactlog` and paste the lines (look for a USABLE line).
+
+## 40. Group buffs, Sort button, talent speed (v0.29.0)
+
+1. **Group buffs:** Gameplay > Alerts > "Missing group buffs". Join a party with a Priest / Druid / Paladin / Mage (you count too
+   if you are one). Without the buff you should see a framed icon (Fortitude, Mark of the Wild...); cast / receive it and it goes.
+   Several missing: a row. Untick a buff in the list: it is no longer asked for. Does it work in combat, in a dungeon? (If it goes
+   quiet there, the game hides the auras: tell us.) Alone: untick "Lock the icons' position": a grey sample icon appears to drag; lock it.
+2. **Sort button:** Gameplay > Vendors & loot > "Sort button on the bags". A small Sort button sits above the backpack window
+   (and the combined bag, if you use it). Click it: bags tidy up. Where is it, does it cover anything? In combat it says it can't.
+3. **Talent learning speed:** copy a build from the site and learn it with one-click: how long per point now (it was about 2 s)?

@@ -215,6 +215,60 @@ Gameplay.Register({
 })
 
 -- ---------------------------------------------------------------------------
+-- Sort button on the bags
+-- ---------------------------------------------------------------------------
+
+-- A small "Sort" button sitting just above the backpack window (or the combined bag), one click =
+-- the game's own bag clean-up (C_Container.SortBags, the same thing its bag menu runs). It is a child
+-- of the bag window, placed OUTSIDE it so it never covers the game's own buttons; nothing of the
+-- game's is changed. Out of combat only (the game refuses to sort in combat).
+local sortButtons = {}   -- bag window -> button
+
+local function sortBagsNow()
+  if InCombatLockdown and InCombatLockdown() then R2F.Print(L.GP_SORT_COMBAT) return end
+  if C_Container and C_Container.SortBags then C_Container.SortBags() end
+end
+
+local function refreshSortButton(frame, btn)
+  -- Only the combined bag, or the classic window of the backpack (bag id 0).
+  local wanted = Gameplay.IsOn("bagsort") and (frame == _G.ContainerFrameCombinedBags or frame:GetID() == 0)
+  btn:SetShown(wanted and true or false)
+end
+
+local function ensureSortButtons()
+  local frames = { _G.ContainerFrameCombinedBags }
+  for i = 1, (_G.NUM_CONTAINER_FRAMES or 13) do frames[#frames + 1] = _G["ContainerFrame" .. i] end
+  for _, frame in ipairs(frames) do
+    if frame and not sortButtons[frame] then
+      local btn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+      btn:SetSize(54, 20)
+      btn:SetText(L.GP_SORT_BUTTON)
+      btn:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", -4, 1)
+      btn:SetScript("OnClick", sortBagsNow)
+      btn:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(L.GP_SORT_BUTTON, 1, 1, 1)
+        GameTooltip:AddLine(L.GP_SORT_TIP, 1, 0.82, 0, true)
+        GameTooltip:Show()
+      end)
+      btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+      sortButtons[frame] = btn
+      if frame.HookScript then frame:HookScript("OnShow", function() refreshSortButton(frame, btn) end) end
+    end
+  end
+  for frame, btn in pairs(sortButtons) do refreshSortButton(frame, btn) end
+end
+
+Gameplay.Register({
+  key = "bagsort", group = "auto", title = "GP_SORT", tip = "GP_SORT_TIP2",
+  available = function() return C_Container ~= nil and C_Container.SortBags ~= nil end,
+  events = { PLAYER_ENTERING_WORLD = ensureSortButtons },
+  onToggle = function(on)
+    ensureSortButtons()
+  end,
+})
+
+-- ---------------------------------------------------------------------------
 -- Fast loot
 -- ---------------------------------------------------------------------------
 

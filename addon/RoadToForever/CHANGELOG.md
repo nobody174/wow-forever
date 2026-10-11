@@ -3,6 +3,22 @@
 Version history of the in-game addon itself. The site's history is in the
 repo's root `CHANGELOG.md`.
 
+## 0.29.0 (2026-10-11): missing group buffs, bag Sort button, faster talent learning
+
+**Never run in game yet: TESTING.md 40.**
+
+- **Missing group buffs** (Gameplay > Alerts, next to your class icons). In a party or raid, the classes in it decide which
+  buffs to look for: Priest -> Power Word: Fortitude, Druid -> Mark of the Wild and Thorns, Mage -> Arcane Intellect, Paladin ->
+  any Blessing (also off: Divine Spirit, Shadow Protection, Battle Shout, Trueshot Aura). A framed icon per buff you
+  don't have, a row if several; gone the moment you have it. Switch each buff on or off; Show / Lock / Size like the other
+  icons. It is locked by default: untick "Lock the icons' position" while alone to get a dimmed sample icon to drag, then
+  lock it. If the game hides your auras (combat / instances) it shows nothing instead of guessing.
+- **Sort button on the bags** (Gameplay > Vendors & loot, OFF until ticked): a small Sort button above the backpack
+  window (or the combined bag) that runs the game's own bag clean-up. Not in combat.
+- **Faster talent learning.** Each point waited for the game's event or the full timeout (2 s per point in the one-click mode)
+  before the next; now a learned point is noticed within 0.1 s. Nothing else about the safety checks changed.
+- Every class now has the group-buff section in Alerts, so the "No reminders for your class" line is gone.
+
 ## 0.28.4 (2026-10-10): the ability name in the alert, second try
 
 - Owner's `/r2f reactlog` showed the game announces "Revenge is ready" with the name hidden and sends NO bar-glow

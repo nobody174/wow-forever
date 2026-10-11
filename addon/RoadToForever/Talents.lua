@@ -815,6 +815,7 @@ Talents.LEARN_TIMEOUT = 0.5   -- 13.5: how long to wait for the server's answer
 -- wait for it). A too-short wait only turns into a stop + guided mode (safe,
 -- but annoying), so it gets more room than Classic's single LearnTalent.
 Talents.TRAITS_TIMEOUT = 2
+Talents.POLL = 0.1            -- how often a waiting point is looked for (see stepSend)
 
 local run            -- the current / last run (see Talents.StartLearn)
 -- worked: LearnTalent has landed a point this session (so addons may use it).
@@ -1280,6 +1281,18 @@ stepSend = function(r)
   if C_Timer and C_Timer.After then
     local wait = r.mode == "traits" and Talents.TRAITS_TIMEOUT or Talents.LEARN_TIMEOUT
     C_Timer.After(wait, function() settle(r, tok, true) end)
+    -- Also look every POLL seconds instead of only on the game's events and the timeout: when the
+    -- game sends no event for an applied point, every point used to cost the whole timeout (2 s in
+    -- "traits" mode: a 15-point build took half a minute; owner, 2026-10-11). A look that finds the
+    -- point continues at once; one that doesn't changes nothing (settle without `final` never stops).
+    local function poll()
+      C_Timer.After(Talents.POLL, function()
+        if run ~= r or r.token ~= tok or r.phase ~= "learning" or not r.waiting then return end
+        settle(r, tok, false)
+        if run == r and r.token == tok and r.waiting then poll() end
+      end)
+    end
+    poll()
   end
 end
 

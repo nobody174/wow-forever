@@ -112,7 +112,7 @@ function Library.Init()
   if type(st.y) ~= "number" then st.y = -150 end
   -- Gameplay features (Gameplay.lua, v0.21.0): one true / false per feature, all OFF until ticked.
   if type(db.gameplay) ~= "table" then db.gameplay = {} end
-  for _, key in ipairs({ "repair", "sellgray", "duels", "errorfilter", "xpbar", "mailalts", "bagslots", "fastloot",
+  for _, key in ipairs({ "repair", "sellgray", "duels", "errorfilter", "xpbar", "mailalts", "bagslots", "bagsort", "fastloot",
     "questaccept", "questturnin", "rewardvalue", "copychat", "questzone", "reactalert", "reactlock", "reactblizz", "gossipshop" }) do
     if type(db.gameplay[key]) ~= "boolean" then db.gameplay[key] = false end
   end
@@ -133,6 +133,18 @@ function Library.Init()
   if type(tr.y) ~= "number" then tr.y = -60 end
   for _, kind in ipairs({ "minerals", "herbs", "treasure" }) do
     if type(tr[kind]) ~= "boolean" then tr[kind] = true end
+  end
+  -- Group buff reminder (Buffs.lua, v0.29.0): on, locked (unlock to place it), one switch per buff.
+  if type(db.buffs) ~= "table" then db.buffs = {} end
+  local bf = db.buffs
+  if type(bf.shown) ~= "boolean" then bf.shown = true end
+  if type(bf.lock) ~= "boolean" then bf.lock = true end
+  if type(bf.scale) ~= "number" or bf.scale < 0.5 or bf.scale > 3 then bf.scale = 1 end
+  if type(bf.x) ~= "number" then bf.x = 0 end
+  if type(bf.y) ~= "number" then bf.y = 140 end
+  for key, default in pairs({ fortitude = true, motw = true, thorns = true, intellect = true, blessing = true,
+    spirit = false, shadowprot = false, battleshout = false, trueshot = false }) do
+    if type(bf[key]) ~= "boolean" then bf[key] = default end
   end
   -- Hunter ammo reminder (Ammo.lua, v0.17.0).
   if type(db.ammo) ~= "table" then db.ammo = {} end

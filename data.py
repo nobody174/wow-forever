@@ -771,6 +771,19 @@ CLASSES = [
                   "#showtooltip [stance:1] Retaliation; [stance:2] Shield Wall; [stance:3] Recklessness\n"
                   "/cast [stance:1] Retaliation; [stance:2] Shield Wall; [stance:3] Recklessness",
                   "Uses the big cooldown of the stance you're in.", short="StanceCD"),
+                M("Retaliation with 2H (from Defensive)",
+                  "#showtooltip Retaliation\n"
+                  "/equip Your Two-Hander Name\n"
+                  "/cast [nostance:1] Battle Stance\n"
+                  "/cast [stance:1] Retaliation\n"
+                  "/cast [stance:1] Defensive Stance",
+                  BETA + "Press twice. 1st: equips your 2H (shield goes to bags, keep a free slot) and "
+                  "swaps to Battle Stance. 2nd: Retaliation, then back to Defensive. Does the swap back fire "
+                  "in the same press? If not, use your Stance swap button: a 3rd press won't do it, since "
+                  "Forever macros stop at Retaliation once it's on cooldown. Retaliation hits back with your "
+                  "weapon, so the 2H makes it hit much harder vs packs. Fill in your own 2H name; swap back "
+                  "to 1H + shield yourself.",
+                  short="Retal2H"),
             ]),
             G(QOL, [
                 M("Charge / Intercept (one button)",

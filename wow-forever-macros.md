@@ -1433,6 +1433,15 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [stance:1] Retaliation; [stance:2] Shield Wall; [stance:3] Recklessness
 ```
 
+**Retaliation with 2H (from Defensive)** (`Retal2H`) — Test in beta: Press twice. 1st: equips your 2H (shield goes to bags, keep a free slot) and swaps to Battle Stance. 2nd: Retaliation, then back to Defensive. Does the swap back fire in the same press? If not, use your Stance swap button: a 3rd press won't do it, since Forever macros stop at Retaliation once it's on cooldown. Retaliation hits back with your weapon, so the 2H makes it hit much harder vs packs. Fill in your own 2H name; swap back to 1H + shield yourself.
+```
+#showtooltip Retaliation
+/equip Your Two-Hander Name
+/cast [nostance:1] Battle Stance
+/cast [stance:1] Retaliation
+/cast [stance:1] Defensive Stance
+```
+
 #### Class QoL
 
 **Charge / Intercept (one button)** (`Charge`) — Out of combat: Charge. In combat: Intercept (level 30). Tactical Mastery (now trained) keeps up to 10 rage on a stance swap. Rank 1 on purpose: on Forever an unranked "Charge" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).

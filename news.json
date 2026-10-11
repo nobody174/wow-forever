@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-10-11",
+      "title": "Warrior: Retaliation with a two-hander",
+      "text": "New Warrior macro (General > Panic / defensive): swaps to your 2H and Battle Stance, pops Retaliation, then goes back to Defensive. Press it twice. Fill in your own 2H name.",
+      "link": "macros.html"
+    },
+    {
       "date": "2026-10-08",
       "title": "Addon import now clears removed macros",
       "text": "Road to Forever 0.14.0: when you import a fresh string from the macro page, macros we removed from the site leave your in-game library too. Copy a new string after this update.",

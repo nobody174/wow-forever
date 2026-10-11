@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-11 (Warrior: Retaliation with 2H)
+- data.py, Warrior General > Panic / defensive: "Retaliation with 2H (from Defensive)" (`Retal2H`):
+  `/equip` 2H, `[nostance:1]` Battle Stance, `[stance:1]` Retaliation, `[stance:1]` Defensive Stance.
+  Two presses (stance must register before Retaliation). Marked test: does the swap back to
+  Defensive fire in the same press as Retaliation? A 3rd press can't do it (Forever macros stop at
+  a known spell on cooldown), so the note points to the Stance swap button as fallback.
+
 ## 2026-10-10 (Server status link on the front page)
 - index.html: "Server status ↗" link under the countdown and a "Server Status" plaque in
   General Resources, both to wowforeverstatus.com (unofficial realm/login/queue tracker by

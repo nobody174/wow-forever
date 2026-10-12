@@ -2919,6 +2919,13 @@ def test_biz(templates=True):
     lua.execute("QBOX[1]:SetChecked(false); QBOX[1]:Fire('OnClick')")
     n = find_frames(lua, "f.__kind == 'Button' and f.fs and f.fs.__text and f.fs.__text:find(R2F.L.BIZ_HIDDEN, 1, true) and f.__shown", "HID")
     check(n >= 1, "%s: unticking Quest marks quest slots hidden (%d)" % (tag, n))
+    find_frames(lua, "f.__kind == 'Button' and f.itemId == 9509 and f.__shown", "STAND")
+    check(lua.eval("#STAND") == 1, "%s: Legs falls back to the rank 2 dungeon pick (Petrolspill Leggings)" % tag)
+    n = find_frames(lua, "f.__kind == 'FontString' and f.__text and f.__text:find('your filters hide the best', 1, true) and f.__shown", "STANDL")
+    check(n >= 1, "%s: the stand-in row says the filters hide the best (%d)" % (tag, n))
+    lua.execute("STAND[1]:Fire('OnEnter')")
+    lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(any("From: Gnomeregan" in (l or "") for l in lines), "%s: tooltip says where it comes from: %s" % (tag, lines))
     lua.execute("QBOX[1]:SetChecked(true); QBOX[1]:Fire('OnClick')")
     # wishlist view
     find_frames(lua, "f.__kind == 'Button' and f.__text and f.__text:find('Wishlist', 1, true)", "WBTN")

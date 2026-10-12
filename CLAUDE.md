@@ -148,7 +148,11 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Source chips and row source lines carry small inline SVG icons (`TYPE_ICON`: "?" quest, hammer crafted, crossed
   swords PvP...); crafted rows and the Profession dropdown use the profession's game icon (`PROF_ICON`, zamimg).
   Biz ranks (owner's group joke, keep them): #1 Bizzest, #2 Bizzer, #3 Biz, 4th+ Almost biz, and "The Bizz" tag when
-  the next pick is `THE_BIZZ_GAP` (20) % or more behind; delta 0 = "just as biz". The addon uses the same names. Filters: one chip per source
+  the next pick is `THE_BIZZ_GAP` (20) % or more behind; delta 0 = "just as biz". The addon uses the same names.
+  Every rank has a source (best picks from raw/, ranks 2-3 from `bis/sources.json` when they aren't a best pick
+  anywhere), shown as a line under each rank in the open list. Filters: when the best is filtered out the row shows
+  the first rank that passes (stand-in, `.row.standin`, its rank name as tag, % behind instead of the score);
+  "Hidden by your filters" only when no rank passes. Source icons are coloured per type (`.ti-<type>`), text isn't. Filters: one chip per source
   type in the data (`types`; Raid is greyed until a raid item exists), Profession (crafted items only), Show = all /
   known sources / Forever data only (conf seen + client). A slot whose best pick is filtered out stays as "Hidden by
   your filters" (ranks 2-3 have no source in the data, so it can't fall back to them). Each row: slot, item name =
@@ -165,7 +169,8 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   spec (27; Feral = "Feral (Bear)", ForeverDB weights it for tanking). `python bis/build_bis.py` parses each source
   sentence (type, label, group, profession / skill, instance, drop %, faction) and writes `bis-data.json` +
   `addon/RoadToForever/BiZData.lua`; `--check` = exit 1 if stale (the addon tests run it). `build.py` runs it too.
-  Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
+  `bis/sources.json` = sources for rank 2-3 picks that are no spec's best pick (ForeverDB item pages, same sentence
+  wording as the BiS pages); the build stops if a next pick has no source. Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
   add a rule to `parse_source`, don't hand-edit the outputs.
 - `news.html` + `news.json` + `footer.js` — **What's new** page (latest changes, Coming
   next, Discord ideas button) rendered from `news.json` (`{discord, news: [{date, title,

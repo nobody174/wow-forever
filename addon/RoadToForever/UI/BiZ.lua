@@ -154,11 +154,14 @@ end
 -- ---------------------------------------------------------------------------
 
 -- gap: how far (%) the next pick is behind the best when the best is The Bizz.
-local function rankLine(specName, rank, score, delta, gap)
-  if rank == 1 and gap then return L.BIZ_TIP_BIZZ:format(specName, score, gap) end
-  if rank == 1 then return L.BIZ_TIP_BEST:format(specName, score) end
-  if delta and delta ~= 0 then return L.BIZ_TIP_RANK:format(BiZ.RankName(rank), specName, -delta) end
-  return L.BIZ_TIP_RANK_SAME:format(BiZ.RankName(rank), specName)
+-- gap: how far (%) the next pick is behind the best when the best is The Bizz; label: where it comes from.
+local function rankLine(specName, rank, score, delta, gap, label)
+  local s
+  if rank == 1 and gap then s = L.BIZ_TIP_BIZZ:format(specName, score, gap)
+  elseif rank == 1 then s = L.BIZ_TIP_BEST:format(specName, score)
+  elseif delta and delta ~= 0 then s = L.BIZ_TIP_RANK:format(BiZ.RankName(rank), specName, -delta)
+  else s = L.BIZ_TIP_RANK_SAME:format(BiZ.RankName(rank), specName) end
+  return s .. "\n" .. L.BIZ_TIP_FROM:format(label or L.BIZ_TYPE_UNKNOWN)
 end
 
 local function layoutSet()
@@ -174,24 +177,39 @@ local function layoutSet()
       line("GameFontDisableSmall", 88, y, 300, L.BIZ_NOTHING)
       line("GameFontDisableSmall", 88, y + 14, 320, (sl.note:gsub("^%l", string.upper)))
     else
-      local ok = BiZ.Passes(b)
+      local nxt = sl.next or {}
+      local all = { b }
+      for _, n in ipairs(nxt) do all[#all + 1] = n end
+      -- The row shows the best, or when the filters hide it, the next rank they let through (a stand-in).
+      local pick
+      for i, it in ipairs(all) do
+        if BiZ.Passes(it) then pick = i; break end
+      end
+      local gapOf = function(rank) return rank == 1 and BiZ.IsTheBizz(sl) and -nxt[1].delta or nil end
       local isOpen = open[key]
       local toggle = function()
         open[key] = (not open[key]) or nil
         Tab.Refresh()
       end
-      if ok then
+      if pick then
         shown = shown + 1
-        local name = b.name
-        local fnote = BiZ.FactionNote(b)
-        local gap = BiZ.IsTheBizz(sl) and -sl.next[1].delta or nil
-        local nb = placeItem(66, y, 226, b.id, name, rankLine(sp.name, 1, b.score, nil, gap), toggle)
-        if fnote then nb.fs:SetText(BiZ.ColoredName(b.id, name) .. " |cffe86a5a(" .. fnote .. ")|r") end
-        line("GameFontDisableSmall", 88, y + 15, 228, (gap and ("|cffffd100" .. L.BIZ_THE_BIZZ .. "|r · ") or "") .. b.label)
-        local sc = line("GameFontHighlightSmall", 318, y + 3, 40, tostring(b.score))
+        local p, gap = all[pick], gapOf(pick)
+        local fnote = BiZ.FactionNote(p)
+        local nb = placeItem(66, y, 226, p.id, p.name, rankLine(sp.name, pick, b.score, p.delta, gap, p.label), toggle)
+        if fnote then nb.fs:SetText(BiZ.ColoredName(p.id, p.name) .. " |cffe86a5a(" .. fnote .. ")|r") end
+        local prefix = ""
+        if gap then
+          prefix = "|cffffd100" .. L.BIZ_THE_BIZZ .. "|r · "
+        elseif pick > 1 then
+          prefix = "|cffd9d4c3" .. L.BIZ_STANDIN:format(BiZ.RankName(pick)) .. "|r · "
+        end
+        line("GameFontDisableSmall", 88, y + 15, 228, prefix .. (p.label or L.BIZ_TYPE_UNKNOWN))
+        local sc = line("GameFontHighlightSmall", 318, y + 3, 40,
+          pick == 1 and tostring(b.score) or ("|cffe39a79" .. (p.delta == 0 and "=" or (tostring(p.delta) .. "%")) .. "|r"))
         sc:SetJustifyH("RIGHT")
-        line("GameFontHighlightSmall", 366, y + 3, 46, (CONF_COLOR[b.conf] or "") .. L["BIZ_CONF_" .. b.conf:upper()] .. "|r")
-        placeWish(414, y, b.id, specId, sl.slot)
+        local conf = p.conf or "unknown"
+        line("GameFontHighlightSmall", 366, y + 3, 46, (CONF_COLOR[conf] or "") .. L["BIZ_CONF_" .. conf:upper()] .. "|r")
+        placeWish(414, y, p.id, specId, sl.slot)
       else
         hidden = hidden + 1
         local hb = itemButton()
@@ -203,28 +221,28 @@ local function layoutSet()
       end
       y = y + 32
       if isOpen then
-        local rows = {}
-        if not ok then rows[#rows + 1] = { id = b.id, name = b.name, rank = 1, score = b.score } end
-        for i, n in ipairs(sl.next or {}) do
-          rows[#rows + 1] = { id = n.id, name = n.name, rank = i + 1, delta = n.delta }
-        end
-        for _, r in ipairs(rows) do
-          line("GameFontNormalSmall", 70, y + 3, 20, "#" .. r.rank)
-          local gap = r.rank == 1 and BiZ.IsTheBizz(sl) and -sl.next[1].delta or nil
-          placeItem(88, y, 210, r.id, r.name, rankLine(sp.name, r.rank, r.score, r.delta, gap))
-          local rn = gap and L.BIZ_THE_BIZZ or BiZ.RankName(r.rank)
-          local d = (r.delta == 0 and L.BIZ_SAME) or (r.delta and (r.delta .. "%")) or ""
-          local dl = line("GameFontHighlightSmall", 302, y + 3, 108,
-            "|cffffd100" .. rn .. "|r" .. (d ~= "" and ("  |cffe39a79" .. d .. "|r") or ""))
-          dl:SetJustifyH("RIGHT")
-          placeWish(414, y, r.id, specId, sl.slot)
-          y = y + 22
+        -- Every other rank, each with where it comes from (greyed when the filters hide it).
+        for rank, it in ipairs(all) do
+          if rank ~= pick then
+            local gap = gapOf(rank)
+            line("GameFontNormalSmall", 70, y + 3, 20, "#" .. rank)
+            placeItem(88, y, 210, it.id, it.name, rankLine(sp.name, rank, b.score, it.delta, gap, it.label))
+            local src = (it.label or L.BIZ_TYPE_UNKNOWN)
+            line("GameFontDisableSmall", 88, y + 15, 214, BiZ.Passes(it) and src or ("|cff707070" .. src .. "|r"))
+            local rn = gap and L.BIZ_THE_BIZZ or BiZ.RankName(rank)
+            local d = (it.delta == 0 and L.BIZ_SAME) or (it.delta and (it.delta .. "%")) or ""
+            local dl = line("GameFontHighlightSmall", 302, y + 3, 108,
+              "|cffffd100" .. rn .. "|r" .. (d ~= "" and ("  |cffe39a79" .. d .. "|r") or ""))
+            dl:SetJustifyH("RIGHT")
+            placeWish(414, y, it.id, specId, sl.slot)
+            y = y + 32
+          end
         end
         local ease = (b.ease and b.ease ~= "") and (" · " .. b.ease) or ""
-        local facts = line("GameFontHighlightSmall", 88, y + 2, 320, b.stats .. ease)
+        local facts = line("GameFontHighlightSmall", 88, y + 2, 320, b.name .. ": " .. b.stats .. ease)
         facts:SetTextColor(0.7, 0.7, 0.7)
         y = y + 18
-        if #(sl.next or {}) == 0 then
+        if #nxt == 0 then
           line("GameFontDisableSmall", 88, y, 320, L.BIZ_NO_MORE)
           y = y + 14
         end

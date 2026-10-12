@@ -98,7 +98,11 @@ p.lede{color:var(--muted);max-width:68ch;margin:0 auto 26px;text-align:center}
 .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px}
 .filters .lab{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-right:4px}
 .chip{display:inline-flex;align-items:center;gap:6px;font:600 14px/1 var(--sans);min-height:40px;padding:0 14px 0 11px;border-radius:999px;cursor:pointer;border:1px solid var(--edge);background:transparent;color:var(--muted);vertical-align:middle;margin:0 2px 6px 0}
-.chip .svgi{opacity:.85}
+.chip .svgi{opacity:1}
+.chip[aria-pressed="false"] .svgi{opacity:.4;filter:grayscale(1)}
+/* Source type colours, icons only */
+.ti-dungeon{color:#B794F6}.ti-raid{color:#FF8A3D}.ti-world{color:#6FCF7F}.ti-quest{color:#FFD100}
+.ti-crafted{color:#E8A33D}.ti-vendor{color:#C9CED9}.ti-reputation{color:#5FC7C0}.ti-pvp{color:#F0675A}
 .chip[aria-pressed="true"]{background:rgba(255,209,0,.1);border-color:var(--gold);color:var(--gold)}
 .chip[disabled]{opacity:.45;cursor:not-allowed}
 .filters .sep{width:1px;height:28px;background:var(--edge);margin:0 6px}
@@ -126,6 +130,15 @@ p.lede{color:var(--muted);max-width:68ch;margin:0 auto 26px;text-align:center}
 .item .src > span{overflow:hidden;text-overflow:ellipsis}
 .item .src .svgi{width:14px;height:14px}
 .item .src img.ic{width:14px;height:14px;border-radius:3px}
+.tag.stand{background:rgba(217,212,195,.12);color:#D9D4C3;border:1px solid rgba(217,212,195,.45)}
+.row.standin > .row-main{box-shadow:inset 3px 0 0 rgba(217,212,195,.5)}
+.score .behind{color:#E39A79}
+.more .item .src{margin-top:2px;font-size:12.5px}
+.more .item .src .cf{font:600 10.5px/1 var(--sans);font-style:normal;margin-left:6px;padding:2px 6px;border-radius:999px;background:#2A2D38;color:#B5B1A6;flex:none}
+.cf.c-seen{background:#173A2A;color:#7FD6A4}.cf.c-client{background:#1B2C4A;color:#8DB7EE}.cf.c-classic{background:#3A3122;color:#E0BE77}.cf.c-clue{background:#38233A;color:#D9A1E0}
+.more li.filtered{opacity:.5}
+.more li.picked .rk::after{content:"shown";display:block;font:600 10px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:#D9D4C3;margin-top:3px}
+.more li.picked:first-child .rk::after{content:none}
 .tag.bizz{background:linear-gradient(180deg,#FFE566 0%,var(--gold) 60%,#C79C00 100%);color:#0E1428;border:1px solid #FFE566;letter-spacing:.02em}
 .item .tag{font:600 11px/1 var(--sans);border-radius:4px;padding:2px 6px;margin-left:6px;vertical-align:2px}
 .tag.fac{background:rgba(232,106,90,.15);color:var(--bad);border:1px solid rgba(232,106,90,.4)}
@@ -149,7 +162,7 @@ p.lede{color:var(--muted);max-width:68ch;margin:0 auto 26px;text-align:center}
 
 .more{padding:4px 18px 14px 124px}
 .more ol{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--edge)}
-.more li{display:grid;grid-template-columns:96px minmax(0,1fr) 84px 44px;gap:10px;align-items:center;min-height:44px}
+.more li{display:grid;grid-template-columns:96px minmax(0,1fr) 84px 44px;gap:10px;align-items:center;min-height:48px;padding:3px 0}
 .more .rk{font:600 12.5px/1.1 var(--sans);color:var(--muted)}
 .more .rk b{display:block;font:500 11px/1 var(--mono);color:var(--muted);opacity:.75;margin-top:3px}
 .more .rk.r1{color:var(--gold)}.more .rk.r2{color:#D9D4C3}.more .rk.r3{color:#C7A27A}
@@ -333,6 +346,8 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     dps: svg('<path d="M13.5 2.5L6.2 9.8M13.5 2.5H10.5M13.5 2.5v3M4 7.8l4.2 4.2M5.2 10.8L2.5 13.5"/>', "role-dps"),
     healer: svg('<path d="M6.2 2h3.6v4.2H14v3.6H9.8V14H6.2V9.8H2V6.2h4.2z" fill="currentColor" stroke="none"/>', "role-healer")
   };
+  // Each source type's icon has its own colour (quest yellow, PvP red...); the chip text stays as it is.
+  Object.keys(TYPE_ICON).forEach(function (t) { TYPE_ICON[t] = TYPE_ICON[t].replace('class="svgi"', 'class="svgi ti-' + t + '"'); });
   function srcIcon(b) { return b.type === "crafted" && b.prof && PROF_ICON[b.prof] ? zam(PROF_ICON[b.prof]) : TYPE_ICON[b.type] || ""; }
   var ICON = {
     chev: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
@@ -512,7 +527,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   function render() {
     var sid = currentSpecId(), sp = DATA.specs[sid];
     location.replace("#" + sid);
-    var shown = 0, hidden = 0, empty = 0, bizz = 0;
+    var shown = 0, hidden = 0, empty = 0, bizz = 0, standins = 0;
     var labels = {}; DATA.slots.forEach(function (s) { labels[s.key] = s.label; });
     $("set-title").textContent = sp.name + " " + DATA.classes.filter(function (c) { return c.key === sp.class; })[0].name;
     $("set-title").style.color = CLASS_COLOR[sp.class] || "";
@@ -523,40 +538,55 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
         empty++;
         return '<div class="row empty"><div class="row-main"><span class="slot">' + esc(label) + '</span><span class="item"><span class="nm">Nothing yet</span><span class="src">' + esc(capFirst(s.note)) + "</span></span><span></span><span></span><span></span><span></span></div></div>";
       }
-      var b = s.best, ok = passes(b), isOpen = !!open[key], top = isTheBizz(s);
+      var b = s.best, isOpen = !!open[key], top = isTheBizz(s), nxt = s.next || [];
+      // The pick shown on the row: the best, or when filters hide it, the next rank that passes (a stand-in).
+      var pick = -1;
+      if (passes(b)) pick = 0;
+      else nxt.some(function (n, i) { if (passes(n)) { pick = i + 1; return true; } return false; });
+      var ok = pick >= 0, p = pick > 0 ? nxt[pick - 1] : b;
       if (ok) shown++; else hidden++;
-      if (ok && top) bizz++;
-      wantQuality(b.id); (s.next || []).forEach(function (n) { wantQuality(n.id); });
-      var bizzTag = top ? '<span class="tag bizz" title="The best, and the next pick is ' + Math.abs(s.next[0].delta) + '% behind">The Bizz</span>' : "";
-      var nameHtml = ok ? whLink(b.id, b.name) + bizzTag + factionTag(b) : "Hidden by your filters";
-      var srcHtml = ok ? srcIcon(b) + "<span>" + esc(b.label) + "</span>" : (TYPE_ICON[b.type] || "") + "<span>" + esc(TYPE_LABEL[b.type]) + " pick · click to see it</span>";
+      if (pick > 0) standins++;
+      if (pick === 0 && top) bizz++;
+      wantQuality(b.id); nxt.forEach(function (n) { wantQuality(n.id); });
+      var bizzTag = pick === 0 && top ? '<span class="tag bizz" title="The best, and the next pick is ' + Math.abs(nxt[0].delta) + '% behind">The Bizz</span>' : "";
+      var standTag = pick > 0 ? '<span class="tag stand" title="Your filters hide the ' + esc(top ? "The Bizz" : "Bizzest") + " pick (" + esc(TYPE_LABEL[b.type]) + '); this is the best one they let through">' + rankName(pick) + "</span>" : "";
+      var nameHtml = ok ? whLink(p.id, p.name) + bizzTag + standTag + factionTag(p) : "Hidden by your filters";
+      var srcHtml = ok ? srcIcon(p) + "<span>" + esc(p.label) + "</span>"
+        : (TYPE_ICON[b.type] || "") + "<span>" + esc(TYPE_LABEL[b.type]) + " pick, and nothing in ranks 2–3 passes your filters</span>";
+      var scoreHtml = !ok ? "" : pick === 0 ? '<span title="Score with this spec\'s stat weights">' + esc(b.score) + "</span>"
+        : '<span class="behind" title="How far behind the best it scores">' + (p.delta === 0 ? "=" : esc(p.delta) + "%") + "</span>";
       var main = '<div class="row-main" data-toggle="' + esc(key) + '"><span class="slot">' + esc(label) + '</span><span class="item"><span class="nm">' + nameHtml + '</span><span class="src">' + srcHtml + "</span></span>" +
-        '<span class="score" title="Score with this spec\'s stat weights">' + (ok ? esc(b.score) : "") + "</span>" +
-        (ok ? '<span class="badge b-' + b.conf + '" title="' + esc(confTitle(b.conf)) + '">' + CONF_LABEL[b.conf] + "</span>" : "<span></span>") +
+        '<span class="score">' + scoreHtml + "</span>" +
+        (ok ? confBadge(p.conf) : "<span></span>") +
         '<button type="button" class="icon-btn chev" aria-expanded="' + isOpen + '" aria-label="' + (isOpen ? "Hide" : "Show") + " the next best " + esc(label.toLowerCase()) + ' picks" data-toggle="' + esc(key) + '">' + ICON.chev + "</button>" +
-        (ok ? starBtn(b.id, b.name, sid, s.slot) : "<span></span>") + "</div>";
+        (ok ? starBtn(p.id, p.name, sid, s.slot) : "<span></span>") + "</div>";
       var more = "";
       if (isOpen) {
         var rk = function (i) { return '<span class="rk r' + (i + 1) + '">' + (i === 0 && top ? "The Bizz" : rankName(i)) + "<b>#" + (i + 1) + "</b></span>"; };
-        var list = "<li>" + rk(0) + '<span class="item"><span class="nm">' + whLink(b.id, b.name) + factionTag(b) + '</span></span><span class="dl"></span>' + starBtn(b.id, b.name, sid, s.slot) + "</li>" +
-          (s.next || []).map(function (n, i) {
-            var d = typeof n.delta === "number" ? (n.delta === 0 ? "just as biz" : n.delta + "%") : "";
-            return "<li>" + rk(i + 1) + '<span class="item"><span class="nm">' + whLink(n.id, n.name) + '</span></span><span class="dl">' + esc(d) + "</span>" + starBtn(n.id, n.name, sid, s.slot) + "</li>";
-          }).join("");
+        var srcLine = function (it) {
+          return '<span class="src">' + srcIcon(it) + "<span>" + esc(it.label || "Source not known yet") + "</span>" + (it.conf ? '<i class="cf c-' + it.conf + '" title="' + esc(confTitle(it.conf)) + '">' + CONF_LABEL[it.conf] + "</i>" : "") + "</span>";
+        };
+        var li = function (it, i, d) {
+          return '<li class="' + (passes(it) ? "" : "filtered") + (i === pick ? " picked" : "") + '">' + rk(i) + '<span class="item"><span class="nm">' + whLink(it.id, it.name) + factionTag(it) + "</span>" + srcLine(it) + '</span><span class="dl">' + esc(d) + "</span>" + starBtn(it.id, it.name, sid, s.slot) + "</li>";
+        };
+        var list = li(b, 0, "") + nxt.map(function (n, i) {
+          return li(n, i + 1, typeof n.delta === "number" ? (n.delta === 0 ? "just as biz" : n.delta + "%") : "");
+        }).join("");
         more = '<div class="more"><ol>' + list + "</ol>" +
-          '<p class="facts"><b>' + esc(b.name) + "</b>: " + esc(b.stats) + ". " + esc(TYPE_LABEL[b.type]) + ": " + esc(b.label) + (b.ease ? " · " + esc(b.ease) : "") + "</p>" +
+          '<p class="facts"><b>' + esc(b.name) + "</b>: " + esc(b.stats) + (b.ease ? " · " + esc(b.ease) : "") + "</p>" +
           '<p class="facts links"><a href="https://www.wowhead.com/forever/item=' + b.id + '" target="_blank" rel="noopener">Wowhead</a><a href="https://foreverdb.net/item/' + b.id + '" target="_blank" rel="noopener">ForeverDB</a><a href="' + esc(sp.url) + '" target="_blank" rel="noopener">Full ' + esc(sp.name) + " list</a></p>" +
-          ((s.next || []).length < 2 ? '<p class="note">No more ranked picks for this slot at level 30.</p>' : '<p class="note">Bizzer and Biz show how far behind the best they score. Almost biz picks (4th and lower) come when our own ranking is done.</p>') + "</div>";
+          (nxt.length < 2 ? '<p class="note">No more ranked picks for this slot at level 30.</p>' : '<p class="note">Bizzer and Biz show how far behind the best they score; greyed picks are hidden by your filters. Almost biz picks (4th and lower) come when our own ranking is done.</p>') + "</div>";
       }
-      return '<div class="row' + (ok ? "" : " hidden") + (isOpen ? " open" : "") + '">' + main + more + "</div>";
+      return '<div class="row' + (ok ? "" : " hidden") + (pick > 0 ? " standin" : "") + (isOpen ? " open" : "") + '">' + main + more + "</div>";
     }).join("");
-    $("sum").textContent = shown + " shown" + (bizz ? " · " + bizz + " The Bizz" : "") + (hidden ? " · " + hidden + " hidden by filters" : "") + (empty ? " · " + empty + " empty at level 30" : "");
+    $("sum").textContent = shown + " shown" + (bizz ? " · " + bizz + " The Bizz" : "") + (standins ? " · " + standins + " stand-in" + (standins === 1 ? "" : "s") + " (filters)" : "") + (hidden ? " · " + hidden + " hidden by filters" : "") + (empty ? " · " + empty + " empty at level 30" : "");
     $("foot").innerHTML = "<p><b>Stat weights</b> (" + esc(sp.name) + "): <code>" + esc(sp.weights) + "</code></p>" +
       '<p>Picks and weights from <a href="' + esc(sp.url) + '" target="_blank" rel="noopener">ForeverDB</a> (beta build ' + esc(sp.build) + ", taken " + esc(DATA.updated) +
       '). Tooltips and item pages from <a href="https://www.wowhead.com/forever" target="_blank" rel="noopener">Wowhead</a>. Wrong item? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';
     paintQuality();
     refreshTooltips();
   }
+  function confBadge(c) { c = c || "unknown"; return '<span class="badge b-' + c + '" title="' + esc(confTitle(c)) + '">' + CONF_LABEL[c] + "</span>"; }
   function capFirst(s) { s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
   function confTitle(c) {
     return { seen: "Players have seen this item drop or sold in Forever", client: "From the Forever game files", classic: "Where it comes from is assumed from Classic",
@@ -574,7 +604,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     var groups = {};
     ids.forEach(function (id) {
       var w = items[id], info = itemIndex[id] || {};
-      var g = info.group || "Next-best picks (see Wowhead for the source)";
+      var g = info.group || "Source not known yet";
       (groups[g] = groups[g] || []).push({ id: id, name: info.name || w.name, label: info.label, spec: w.spec, slot: w.slot });
     });
     var labels = {}; DATA.slots.forEach(function (s) { labels[s.key] = s.label; });
@@ -681,7 +711,10 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   fetch("bis-data.json", { cache: "no-cache" }).then(function (r) { return r.json(); }).then(function (d) {
     DATA = d;
     Object.keys(d.specs).forEach(function (sid) {
-      d.specs[sid].slots.forEach(function (s) { if (s.best) itemIndex[s.best.id] = { name: s.best.name, group: s.best.group, label: s.best.label, type: s.best.type }; });
+      d.specs[sid].slots.forEach(function (s) {
+        if (s.best && (!itemIndex[s.best.id] || itemIndex[s.best.id].next)) itemIndex[s.best.id] = { name: s.best.name, group: s.best.group, label: s.best.label, type: s.best.type };
+        (s.next || []).forEach(function (n) { if (!itemIndex[n.id]) itemIndex[n.id] = { name: n.name, group: n.group, label: n.label, type: n.type, next: true }; });
+      });
     });
     var h = decodeURIComponent((location.hash || "").slice(1));
     if (d.specs[h]) { prefs.cls = d.specs[h].class; prefs.specOf[prefs.cls] = h; }

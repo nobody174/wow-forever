@@ -7,6 +7,8 @@ repo's root `CHANGELOG.md`.
 
 **Never run in game yet: TESTING.md 41.**
 
+- Every rank has a source: a grey line under each pick in the open list and "From: ..." in the tooltip. When your
+  filters hide the best, the row shows the best pick they let through ("Bizzer, your filters hide the best").
 - Biz ranks, same as the site: the expanded list says Bizzest / Bizzer / Biz (Almost biz for 4th and lower), with
   "The Bizz" when the best is 20%+ ahead of the next pick (also in gold on the row and in the tooltip). Tab label "BiZ".
 

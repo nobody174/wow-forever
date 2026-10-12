@@ -23,6 +23,26 @@ Beta data on the site is level-30 data. Redo these once the live game is up:
 - [ ] **Mark beta data:** until the above is done, label level-30 beta data as such
       on Professions and Builds.
 
+## Mr.BiZ
+
+- [ ] **Release addon 0.30.0** (tag `r2f-v0.30.0`): owner's call, after he has tried the BiZ tab in game
+      (TESTING.md 41).
+- [ ] **159 rank 2-3 picks with no source** (`bis/sources.json`, "isn't known yet"): mostly items that are new in
+      Forever, plus a few Classic crafts ForeverDB's item pages don't list (e.g. Azure Silk Gloves 4319, Spidersilk
+      Boots 4320). Fill from Wowhead Forever in the owner's Chrome, or from our own addon's loot log once it exists.
+      Four come from creatures ForeverDB doesn't name yet (NPC 245999, 246003, 260322, 260326).
+- [ ] **Our own ranking (after the beta data settles; owner wants it, 2026-10-12).** Plan, so we don't depend on
+      ForeverDB or any addon:
+      1. *Items:* every equippable item's stats from the game files (owner already extracts the client with
+         CASCConsole: `ItemSparse`/`Item` DB2), or Wowhead's Forever tooltip JSON as the fallback.
+      2. *Sources:* Classic drop/quest/vendor tables (CMaNGOS / QuestieDB, open data) for old items, plus our own
+         addon recording what we and the group actually loot, buy and get from quests (the "Seen" layer).
+      3. *Weights:* one stat-weight table per spec in `bis/weights/<spec>.json`, starting from public weights, tuned
+         by us; later maybe a small sim.
+      4. *Rules:* armor type / weapon skills per class, 1H+OH vs 2H, unique items, faction and level limits.
+      5. *Output:* the same `bis-data.json` + `BiZData.lua`, but 5-7 ranks per slot, each with its source, for
+         every level bracket (30 now, 60 after launch). ForeverDB stays a cross-check.
+
 ## Forever macro fall-through audit (2026-10-09)
 
 Tested in game: a macro stops at the first `/cast` of a spell you know but can't use right

@@ -4,6 +4,17 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-12 (Mr.BiZ round 3: a source for every rank, stand-ins, icon colours)
+- `bis/sources.json`: where each rank 2-3 pick comes from, for the 193 that aren't a best pick in any spec, read from
+  each item's ForeverDB page (124 found, 69 not known yet). `build_bis.py` puts type / label / group / conf on every
+  next pick (best picks' own sources first); a next pick with no entry stops the build. Vendor sentences without
+  coordinates parse; Fallen Champion = Scarlet Monastery.
+- bis.html: every rank in the open list shows its source line (icon, where, confidence). When filters hide the best,
+  the row shows the next rank that passes (a "stand-in" with its biz rank and % behind); only slots where nothing
+  passes say "Hidden by your filters". Filtered ranks are greyed in the open list. Source icons have their own colour
+  (quest yellow, dungeon purple, PvP red...), off chips grey theirs. The wishlist groups next picks by source too.
+- Addon (still 0.30.0): same stand-ins, a grey source line under every rank, and "From: ..." in the Mr.BiZ tooltip line.
+
 ## 2026-10-12 (Mr.BiZ round 2: nav, dropdowns, biz ranks)
 - Top bar on every page reordered by the player's path, grouped by type: Launch Plan / Builds / Talent / Legacy Calc /
   Mr.BiZ / Professions / Macros / Addons (was Macros / Builds / BiS / Addons / Professions / Launch Plan / Talent).

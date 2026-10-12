@@ -1,0 +1,778 @@
+{
+ "updated": "2026-10-12",
+ "about": "Sources for the rank 2-3 picks that aren't a best pick anywhere, read from each item's ForeverDB page (https://foreverdb.net/item/<id>) and written in the BiS-page wording parse_source reads. Best picks keep their own source from raw/.",
+ "items": {
+  "888": {
+   "name": "Naga Battle Gloves",
+   "src": "Drops from Lady Sarevess in Blackfathom Deeps, 40% (Classic data)."
+  },
+  "1121": {
+   "name": "Feet of the Lynx",
+   "src": "World drop (Classic data)."
+  },
+  "1484": {
+   "name": "Witching Stave",
+   "src": "World drop (Classic data)."
+  },
+  "1717": {
+   "name": "Double Link Tunic",
+   "src": "World drop (Classic data)."
+  },
+  "1974": {
+   "name": "Mindthrust Bracers",
+   "src": "World drop (Classic data)."
+  },
+  "1978": {
+   "name": "Wolfclaw Gloves",
+   "src": "World drop (Classic data)."
+  },
+  "1998": {
+   "name": "Bloodscalp Channeling Staff",
+   "src": "World drop (Classic data)."
+  },
+  "2041": {
+   "name": "Tunic of Westfall",
+   "src": "Where it comes from isn't known yet"
+  },
+  "2098": {
+   "name": "Double-barreled Shotgun",
+   "src": "World drop (Classic data)."
+  },
+  "2264": {
+   "name": "Mantle of Thieves",
+   "src": "World drop (Classic data)."
+  },
+  "2277": {
+   "name": "Necromancer Leggings",
+   "src": "World drop (Classic data)."
+  },
+  "2280": {
+   "name": "Kam's Walking Stick",
+   "src": "Drops from Kam Deepfury in Stormwind Stockade, 1% (Seen in Forever)."
+  },
+  "2292": {
+   "name": "Necrology Robes",
+   "src": "World drop (Classic data)."
+  },
+  "2805": {
+   "name": "Yeti Fur Cloak",
+   "src": "Quest reward: Bartolo's Yeti Fur Cloak, level 34 · Alliance (Classic data)."
+  },
+  "2870": {
+   "name": "Shining Silver Breastplate",
+   "src": "Where it comes from isn't known yet"
+  },
+  "2943": {
+   "name": "Eye of Paleth",
+   "src": "Quest reward: Cleansing the Eye, level 30 · Alliance (Classic data)."
+  },
+  "2950": {
+   "name": "Icicle Rod",
+   "src": "Quest reward: Return the Statuette, level 25 · Alliance (Classic data)."
+  },
+  "3228": {
+   "name": "Jimmied Handcuffs",
+   "src": "Drops from Bruegal Ironknuckle in Stormwind Stockade, 33% (Classic data)."
+  },
+  "3230": {
+   "name": "Black Wolf Bracers",
+   "src": "Drops from Fenrus the Devourer in Shadowfang Keep, 30% (Seen in Forever)."
+  },
+  "3341": {
+   "name": "Gauntlets of Ogre Strength",
+   "src": "World drop (Classic data)."
+  },
+  "3414": {
+   "name": "Crested Scepter",
+   "src": "World drop (Classic data)."
+  },
+  "3719": {
+   "name": "Hillman's Cloak",
+   "src": "Where it comes from isn't known yet"
+  },
+  "3765": {
+   "name": "Brigand's Pauldrons",
+   "src": "Quest reward: Taretha's Gift, level 40 · Horde (Classic data)."
+  },
+  "4108": {
+   "name": "Panther Hunter Leggings",
+   "src": "Quest reward: Panther Mastery, level 40 (Classic data)."
+  },
+  "4119": {
+   "name": "Raptor Hunter Tunic",
+   "src": "Quest reward: Raptor Mastery, level 43 (Classic data)."
+  },
+  "4122": {
+   "name": "Bookmaker's Scepter",
+   "src": "Quest reward: The Hidden Key, level 37 · Alliance (Classic data)."
+  },
+  "4127": {
+   "name": "Shrapnel Blaster",
+   "src": "Quest reward: Colonel Kurzen, level 40 · Alliance (Classic data)."
+  },
+  "4197": {
+   "name": "Berylline Pads",
+   "src": "Quest reward: The Crone of the Kraul, level 34 · Alliance (Classic data)."
+  },
+  "4319": {
+   "name": "Azure Silk Gloves",
+   "src": "Where it comes from isn't known yet"
+  },
+  "4320": {
+   "name": "Spidersilk Boots",
+   "src": "Where it comes from isn't known yet"
+  },
+  "4464": {
+   "name": "Trouncing Boots",
+   "src": "World drop (Classic data)."
+  },
+  "4743": {
+   "name": "Pulsating Crystalline Shard",
+   "src": "Quest reward: Summoning the Princess, level 50 (Classic data)."
+  },
+  "4977": {
+   "name": "Sword of Hammerfall",
+   "src": "Quest reward: The Real Threat, level 40 · Horde (Classic data)."
+  },
+  "5183": {
+   "name": "Pulsating Hydra Heart",
+   "src": "Drops from Gesharahan, 25% (Classic data)."
+  },
+  "5214": {
+   "name": "Wand of Eventide",
+   "src": "Drops from Dragonmaw Battlemaster, 0.5% (Classic data)."
+  },
+  "5964": {
+   "name": "Barbaric Shoulders",
+   "src": "Crafted: Leatherworking (Forever client)."
+  },
+  "6198": {
+   "name": "Jurassic Wristguards",
+   "src": "World drop (Classic data)."
+  },
+  "6204": {
+   "name": "Tribal Worg Helm",
+   "src": "World drop (Classic data)."
+  },
+  "6392": {
+   "name": "Belt of Arugal",
+   "src": "Drops from Archmage Arugal in Shadowfang Keep, 40% (Classic data)."
+  },
+  "6408": {
+   "name": "Insignia Gloves",
+   "src": "Drops from Mekgineer Thermaplugg in Gnomeregan, 0.5% (Classic data)."
+  },
+  "6682": {
+   "name": "Death Speaker Robes",
+   "src": "Drops from Death Speaker Jargba in Razorfen Kraul, 40% (Classic data)."
+  },
+  "6685": {
+   "name": "Death Speaker Mantle",
+   "src": "Drops from Death Speaker Jargba in Razorfen Kraul, 40% (Classic data)."
+  },
+  "6686": {
+   "name": "Tusken Helm",
+   "src": "Drops from Overlord Ramtusk in Razorfen Kraul, 60% (Classic data)."
+  },
+  "6692": {
+   "name": "Pronged Reaver",
+   "src": "Drops from Charlga Razorflank in Razorfen Kraul, 20% (Classic data)."
+  },
+  "6694": {
+   "name": "Heart of Agamaggan",
+   "src": "Drops from Charlga Razorflank in Razorfen Kraul, 40% (Classic data)."
+  },
+  "6695": {
+   "name": "Stygian Bone Amulet",
+   "src": "Drops from Blind Hunter in Razorfen Kraul, 33% (Classic data)."
+  },
+  "6697": {
+   "name": "Batwing Mantle",
+   "src": "Drops from Blind Hunter in Razorfen Kraul, 33% (Classic data)."
+  },
+  "6720": {
+   "name": "Spirit Hunter Headdress",
+   "src": "Quest reward: Frostmaw, level 37 · Horde (Classic data)."
+  },
+  "6723": {
+   "name": "Medal of Courage",
+   "src": "Quest reward: Saving Yenniku, level 46 · Horde (Classic data)."
+  },
+  "6742": {
+   "name": "Stonefist Girdle",
+   "src": "Quest reward: The Crone of the Kraul, level 34 · Alliance (Classic data)."
+  },
+  "6745": {
+   "name": "Swiftrunner Cape",
+   "src": "Quest reward: Alliance Relations, level 33 · Horde (Classic data)."
+  },
+  "6747": {
+   "name": "Enforcer Pauldrons",
+   "src": "Quest reward: The Corrupter, level 40 · Horde (Classic data)."
+  },
+  "6750": {
+   "name": "Snake Hoop",
+   "src": "Quest reward: Willix the Importer, level 30 (Classic data)."
+  },
+  "6784": {
+   "name": "Braced Handguards",
+   "src": "Quest reward: Centaur Bounty, level 31 · Horde (Classic data)."
+  },
+  "6798": {
+   "name": "Blasting Hackbut",
+   "src": "Quest reward: Questioning Reethe, level 37 · Horde (Classic data)."
+  },
+  "6901": {
+   "name": "Glowing Thresher Cape",
+   "src": "Drops from Old Serra'kis in Blackfathom Deeps, 40% (Classic data)."
+  },
+  "6903": {
+   "name": "Gaze Dreamer Pants",
+   "src": "Drops from Twilight Lord Kelris in Blackfathom Deeps, 40% (Classic data)."
+  },
+  "6911": {
+   "name": "Moss Cinch",
+   "src": "Drops from Aku'mai in Blackfathom Deeps, 40% (Classic data)."
+  },
+  "6975": {
+   "name": "Whirlwind Axe",
+   "src": "Quest reward: Whirlwind Weapon, level 40 (Classic data)."
+  },
+  "6977": {
+   "name": "Whirlwind Sword",
+   "src": "Quest reward: Whirlwind Weapon, level 40 (Classic data)."
+  },
+  "6998": {
+   "name": "Nimbus Boots",
+   "src": "Where it comes from isn't known yet"
+  },
+  "7065": {
+   "name": "Green Silk Armor",
+   "src": "Crafted: Tailoring (Forever client)."
+  },
+  "7683": {
+   "name": "Bloody Brass Knuckles",
+   "src": "Drops from Interrogator Vishas in Scarlet Monastery, 90% (Classic data)."
+  },
+  "7690": {
+   "name": "Ebon Vise",
+   "src": "Drops from Fallen Champion, 33% (Classic data)."
+  },
+  "7691": {
+   "name": "Embalmed Shroud",
+   "src": "Drops from Fallen Champion, 33% (Classic data)."
+  },
+  "7729": {
+   "name": "Chesterfall Musket",
+   "src": "World drop (Classic data)."
+  },
+  "7746": {
+   "name": "Explorers' League Commendation",
+   "src": "Quest reward: Mythology of the Titans, level 38 · Alliance (Classic data)."
+  },
+  "7747": {
+   "name": "Vile Protector",
+   "src": "Quest reward: Compendium of the Fallen, level 38 · Horde (Classic data)."
+  },
+  "7750": {
+   "name": "Mantle of Woe",
+   "src": "Quest reward: Vorrel's Revenge, level 33 · Horde (Classic data)."
+  },
+  "7751": {
+   "name": "Vorrel's Boots",
+   "src": "Quest reward: Vorrel's Revenge, level 33 · Horde (Classic data)."
+  },
+  "7913": {
+   "name": "Barbaric Iron Shoulders",
+   "src": "Where it comes from isn't known yet"
+  },
+  "8071": {
+   "name": "Sizzle Stick",
+   "src": "Quest reward: Deviate Eradication, level 21 (Classic data)."
+  },
+  "9454": {
+   "name": "Acidic Walkers",
+   "src": "Drops from Viscous Fallout in Gnomeregan, 55% (Classic data)."
+  },
+  "9457": {
+   "name": "Royal Diplomatic Scepter",
+   "src": "Drops from Dark Iron Ambassador in Gnomeregan, 33% (Classic data)."
+  },
+  "9509": {
+   "name": "Petrolspill Leggings",
+   "src": "Drops from Caverndeep Burrower (Classic data)."
+  },
+  "9521": {
+   "name": "Skullsplitter",
+   "src": "Quest reward: Call to Arms, level 40 · Horde (Classic data)."
+  },
+  "9522": {
+   "name": "Energized Stone Circle",
+   "src": "Quest reward: Power Stones, level 36 (Classic data)."
+  },
+  "9536": {
+   "name": "Fairywing Mantle",
+   "src": "Quest reward: A Fine Mess, level 30 (Classic data)."
+  },
+  "9605": {
+   "name": "Repairman's Cape",
+   "src": "Quest reward: Data Rescue, level 30 · Alliance (Classic data)."
+  },
+  "9609": {
+   "name": "Shilly Mitts",
+   "src": "Where it comes from isn't known yet"
+  },
+  "9622": {
+   "name": "Reedknot Ring",
+   "src": "Quest reward: Jarl Needs a Blade, level 35 (Classic data)."
+  },
+  "10332": {
+   "name": "Scarlet Boots",
+   "src": "World drop (Classic data)."
+  },
+  "10359": {
+   "name": "Everlast Boots",
+   "src": "Quest reward: Power Stones, level 36 (Classic data)."
+  },
+  "10654": {
+   "name": "Jutebraid Gloves",
+   "src": "Quest reward: Horde Presence, level 29 · Horde (Classic data)."
+  },
+  "13045": {
+   "name": "Viscous Hammer",
+   "src": "World drop (Classic data)."
+  },
+  "13063": {
+   "name": "Starfaller",
+   "src": "World drop (Classic data)."
+  },
+  "13087": {
+   "name": "River Pride Choker",
+   "src": "World drop (Classic data)."
+  },
+  "13097": {
+   "name": "Thunderbrow Ring",
+   "src": "World drop (Classic data)."
+  },
+  "13114": {
+   "name": "Troll's Bane Leggings",
+   "src": "World drop (Classic data)."
+  },
+  "13124": {
+   "name": "Ravasaur Scale Boots",
+   "src": "World drop (Classic data)."
+  },
+  "14764": {
+   "name": "Enduring Gauntlets",
+   "src": "Drops from Mekgineer Thermaplugg in Gnomeregan, 0.5% (Classic data)."
+  },
+  "15455": {
+   "name": "Dustfall Robes",
+   "src": "Quest reward: Hints of a New Plague?, level 37 · Alliance (Classic data)."
+  },
+  "15468": {
+   "name": "Windsong Drape",
+   "src": "Quest reward: Free at Last, level 29 · Horde (Classic data)."
+  },
+  "15698": {
+   "name": "Wrangling Spaulders",
+   "src": "Quest reward: Kodo Roundup, level 34 (Classic data)."
+  },
+  "16741": {
+   "name": "Oilrag Handwraps",
+   "src": "Quest reward: The Lost Pages, level 30 · Horde (Classic data)."
+  },
+  "16789": {
+   "name": "Captain Rackmore's Tiller",
+   "src": "Quest reward: Claim Rackmore's Treasure!, level 36 (Classic data)."
+  },
+  "16975": {
+   "name": "Warsong Sash",
+   "src": "Quest reward: Warsong Supplies, level 27 · Horde (Classic data)."
+  },
+  "16977": {
+   "name": "Warsong Boots",
+   "src": "Quest reward: Warsong Supplies, level 27 · Horde (Classic data)."
+  },
+  "17039": {
+   "name": "Skullbreaker",
+   "src": "Quest reward: An Unholy Alliance, level 36 · Horde (Classic data)."
+  },
+  "17042": {
+   "name": "Nail Spitter",
+   "src": "Quest reward: An Unholy Alliance, level 36 · Horde (Classic data)."
+  },
+  "18585": {
+   "name": "Band of Allegiance",
+   "src": "Quest reward: Service to the Horde, level 45 · Horde (Classic data)."
+  },
+  "19573": {
+   "name": "Lorekeeper's Staff",
+   "src": "Sold by Illiyana Moonblaze in Ashenvale for 4g 48s 70c (Classic data)."
+  },
+  "20096": {
+   "name": "Highlander's Cloth Boots",
+   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 6s 92c (Classic data)."
+  },
+  "20102": {
+   "name": "Highlander's Lizardhide Boots",
+   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 36s 61c (Classic data)."
+  },
+  "20117": {
+   "name": "Highlander's Leather Girdle",
+   "src": "Sold by Samuel Hawke in Arathi Highlands for 89s 41c (Classic data)."
+  },
+  "20123": {
+   "name": "Highlander's Mail Greaves",
+   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 37s 10c (Classic data)."
+  },
+  "20129": {
+   "name": "Highlander's Plate Greaves",
+   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 56s 88c (Classic data)."
+  },
+  "20428": {
+   "name": "Caretaker's Cape",
+   "src": "Sold by Illiyana Moonblaze in Ashenvale for 36s 50c (Classic data)."
+  },
+  "20431": {
+   "name": "Lorekeeper's Ring",
+   "src": "Sold by Illiyana Moonblaze in Ashenvale for 2g (Classic data)."
+  },
+  "20444": {
+   "name": "Sentinel's Medallion",
+   "src": "Sold by Illiyana Moonblaze in Ashenvale for 2g (Classic data)."
+  },
+  "21568": {
+   "name": "Rune of Duty",
+   "src": "Sold by Illiyana Moonblaze in Ashenvale for 2g (Classic data)."
+  },
+  "249394": {
+   "name": "Orb of Mystic Insight",
+   "src": "Crafted: Enchanting (Forever client)."
+  },
+  "250498": {
+   "name": "Veteran's Chain Helm",
+   "src": "Crafted: Blacksmithing (Forever client)."
+  },
+  "250506": {
+   "name": "Acolyte's Boots",
+   "src": "Where it comes from isn't known yet"
+  },
+  "250509": {
+   "name": "Guard's Gloves",
+   "src": "Where it comes from isn't known yet"
+  },
+  "250510": {
+   "name": "Protector's Gloves",
+   "src": "Where it comes from isn't known yet"
+  },
+  "250518": {
+   "name": "Veteran's Silvered Chain Shirt",
+   "src": "Crafted: Blacksmithing (Forever client)."
+  },
+  "250519": {
+   "name": "Guard's Silvered Chain Shirt",
+   "src": "Where it comes from isn't known yet"
+  },
+  "250521": {
+   "name": "Acolyte's Silvered Chain Shirt",
+   "src": "Where it comes from isn't known yet"
+  },
+  "250524": {
+   "name": "Guard's Silvered Chain Leggings",
+   "src": "Where it comes from isn't known yet"
+  },
+  "250530": {
+   "name": "Protector's Silvered Chain Helm",
+   "src": "Where it comes from isn't known yet"
+  },
+  "250603": {
+   "name": "Bronze Dory",
+   "src": "Crafted: Blacksmithing (Forever client)."
+  },
+  "251486": {
+   "name": "Tabitha's Cuffs",
+   "src": "Where it comes from isn't known yet"
+  },
+  "252439": {
+   "name": "Brawler's Leather Boots",
+   "src": "Where it comes from isn't known yet"
+  },
+  "252451": {
+   "name": "Totemic Leather Tunic",
+   "src": "Where it comes from isn't known yet"
+  },
+  "252461": {
+   "name": "Skirmisher's Leather Belt",
+   "src": "Crafted: Leatherworking (Forever client)."
+  },
+  "252502": {
+   "name": "Stormrider's Leather Pants",
+   "src": "Where it comes from isn't known yet"
+  },
+  "252503": {
+   "name": "Wisdom's Leather Pants",
+   "src": "Crafted: Leatherworking (Forever client)."
+  },
+  "252504": {
+   "name": "Brawler's Leather Hood",
+   "src": "Where it comes from isn't known yet"
+  },
+  "252516": {
+   "name": "Brawler's Leather Legguards",
+   "src": "Where it comes from isn't known yet"
+  },
+  "252519": {
+   "name": "Wisdom's Leather Leggings",
+   "src": "Crafted: Leatherworking (Forever client)."
+  },
+  "253913": {
+   "name": "Pristine Gloves",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253915": {
+   "name": "Silky Gloves",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253917": {
+   "name": "Flame Gloves",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253919": {
+   "name": "Shadow Gloves",
+   "src": "Crafted: Tailoring (Forever client)."
+  },
+  "253937": {
+   "name": "Filigreed Pristine Leggings",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253939": {
+   "name": "Filigreed Silky Leggings",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253941": {
+   "name": "Filigreed Flame Leggings",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253951": {
+   "name": "Silky Circlet",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253953": {
+   "name": "Flame Circlet",
+   "src": "Crafted: Tailoring (Forever client)."
+  },
+  "253955": {
+   "name": "Shadow Circlet",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253961": {
+   "name": "Pristine Gown",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253983": {
+   "name": "Filigreed Pearly Circlet",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253989": {
+   "name": "Silky Leggings",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253993": {
+   "name": "Shadow Leggings",
+   "src": "Crafted: Tailoring (Forever client)."
+  },
+  "253995": {
+   "name": "Pearly Leggings",
+   "src": "Where it comes from isn't known yet"
+  },
+  "253999": {
+   "name": "Earthen Leggings",
+   "src": "Crafted: Tailoring (Forever client)."
+  },
+  "270030": {
+   "name": "Tattered Mittens",
+   "src": "Quest reward: The Book of Ur, level 26 (Seen in Forever)."
+  },
+  "270032": {
+   "name": "Cultist's Armguards",
+   "src": "Quest reward: Blackfathom Villainy, level 27 (Seen in Forever)."
+  },
+  "270051": {
+   "name": "Ladimore Heirloom Ring",
+   "src": "Where it comes from isn't known yet"
+  },
+  "270052": {
+   "name": "Swamp Ring",
+   "src": "Where it comes from isn't known yet"
+  },
+  "270053": {
+   "name": "Ring of Ruin",
+   "src": "Where it comes from isn't known yet"
+  },
+  "271214": {
+   "name": "Rotmender's Treads",
+   "src": "Where it comes from isn't known yet"
+  },
+  "271740": {
+   "name": "Knife-Polishing Rag",
+   "src": "Where it comes from isn't known yet"
+  },
+  "271766": {
+   "name": "Heavehammer",
+   "src": "Quest reward: Earthen Echo, level 31 (Seen in Forever)."
+  },
+  "271911": {
+   "name": "Theramore Signet",
+   "src": "Where it comes from isn't known yet"
+  },
+  "271920": {
+   "name": "Seal of the Expedition",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273024": {
+   "name": "Glinteye Slippers",
+   "src": "Drops from a creature new in Forever (Seen in Forever)."
+  },
+  "273026": {
+   "name": "Garb of Florid Feathers",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273027": {
+   "name": "Raptor's Gaze",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273030": {
+   "name": "Ring of Power Regulation",
+   "src": "Drops from a creature new in Forever (Seen in Forever)."
+  },
+  "273031": {
+   "name": "Runemender's Seal",
+   "src": "Drops from a creature new in Forever (Seen in Forever)."
+  },
+  "273034": {
+   "name": "Ephemeral Grips",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273036": {
+   "name": "Graveweave Bindings",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273038": {
+   "name": "Garb of Fallen Felbark",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273039": {
+   "name": "Blightleaf Rope",
+   "src": "Drops from a creature new in Forever (Seen in Forever)."
+  },
+  "273041": {
+   "name": "Slitherwrap Girdle",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273044": {
+   "name": "Violet Sorcerer's Robes",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273049": {
+   "name": "Archmagister's Faceted Pendant",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273054": {
+   "name": "Cartilage Shapers",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273806": {
+   "name": "Dark Horde Band",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273808": {
+   "name": "Bridgebreaker Bindings",
+   "src": "Where it comes from isn't known yet"
+  },
+  "273841": {
+   "name": "Twilight Maul",
+   "src": "Where it comes from isn't known yet"
+  },
+  "276631": {
+   "name": "Coldflame Saber",
+   "src": "Where it comes from isn't known yet"
+  },
+  "277042": {
+   "name": "Cloudy Gustwoven Hood",
+   "src": "Crafted: Leatherworking (Forever client)."
+  },
+  "277043": {
+   "name": "Cloudy Gustwoven Spaulders",
+   "src": "Crafted: Leatherworking (Forever client)."
+  },
+  "277050": {
+   "name": "Azure Gustwoven Hood",
+   "src": "Where it comes from isn't known yet"
+  },
+  "277051": {
+   "name": "Azure Gustwoven Spaulders",
+   "src": "Crafted: Leatherworking (Forever client)."
+  },
+  "277210": {
+   "name": "Pyrewood Signet Ring",
+   "src": "Where it comes from isn't known yet"
+  },
+  "277213": {
+   "name": "Dro'zem's Tunic",
+   "src": "Where it comes from isn't known yet"
+  },
+  "277219": {
+   "name": "Solomon's Comfortable Hat",
+   "src": "Where it comes from isn't known yet"
+  },
+  "281295": {
+   "name": "Pelt Pants",
+   "src": "Where it comes from isn't known yet"
+  },
+  "281312": {
+   "name": "Fallen Dragon's Scepter",
+   "src": "Where it comes from isn't known yet"
+  },
+  "281319": {
+   "name": "Golem War Cloak",
+   "src": "Where it comes from isn't known yet"
+  },
+  "281321": {
+   "name": "Giantstone Medallion",
+   "src": "Where it comes from isn't known yet"
+  },
+  "282283": {
+   "name": "Malignant Root",
+   "src": "Where it comes from isn't known yet"
+  },
+  "282653": {
+   "name": "Dissolved Locket",
+   "src": "Where it comes from isn't known yet"
+  },
+  "282658": {
+   "name": "Dragonmaw Battle Shroud",
+   "src": "Where it comes from isn't known yet"
+  },
+  "284382": {
+   "name": "Budding Leaf Belt",
+   "src": "Where it comes from isn't known yet"
+  },
+  "284383": {
+   "name": "Faerie Dragon's Skin",
+   "src": "Where it comes from isn't known yet"
+  },
+  "284399": {
+   "name": "Seared Grove Shoulderpads",
+   "src": "Where it comes from isn't known yet"
+  },
+  "284401": {
+   "name": "Sorrow's Shroud",
+   "src": "Where it comes from isn't known yet"
+  },
+  "285338": {
+   "name": "Kodohide Legguards",
+   "src": "Where it comes from isn't known yet"
+  }
+ }
+}

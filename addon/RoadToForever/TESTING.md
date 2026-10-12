@@ -1212,7 +1212,9 @@ Both OFF until ticked on the Gameplay tab, Screen section.
 3. Hover an item name: the game's item tooltip shows, with a gold "Mr.BiZ: ..." line at the bottom. Shift-click: the link goes in chat.
 4. Click a name: ranks 2 and 3 open under it, each with a tooltip and a box. The right column says Bizzest / Bizzer / Biz
    (gold) with the % behind; a slot whose best is 20%+ ahead says "The Bizz" there and on the row's source line. Does the
-   rank text fit without overlapping the boxes? Untick Quest: quest slots say "Hidden by your filters".
+   rank text fit without overlapping the boxes?
+   Each rank has a grey "where from" line under it; untick Quest: Legs (BM Hunter) shows Petrolspill Leggings with
+   "Bizzer, your filters hide the best". Does that line fit? Untick Quest: quest slots say "Hidden by your filters".
 5. Tick a few boxes, click Wishlist: grouped by dungeon / profession / vendor? Export list, paste on the site's BiS page (Paste from
    game); then Copy for the addon on the site and Import list in game. `/reload`: the wishlist is still there.
 6. Class and Spec buttons: the menus open under the cursor and switch the list.

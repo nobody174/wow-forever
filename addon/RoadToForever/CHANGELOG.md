@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.38.1 (2026-10-13)
+
+- New Warlock macros in the bundle: Shadow Bolt (target / target's target) replaces "Shadow Bolt + Imp Firebolt";
+  Corruption mouseover, Bane of Agony mouseover and Pet attack mouseover are new. They cast on your mouseover enemy, then
+  your enemy target, then your friendly target's enemy target, and never on a corpse. Curse of Agony is Bane of Agony in
+  Forever and is renamed in the Warlock macros.
+
 ## 0.38.0 (2026-10-13)
 
 - Tweaks: a search box (bottom left). Type a word (repair, bags, outline...) to list the options that match; click one to open the page it is on.

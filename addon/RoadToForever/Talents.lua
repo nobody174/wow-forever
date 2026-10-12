@@ -493,6 +493,16 @@ local function traitFreePoints(configID, excludeStaged)
   return value
 end
 
+-- The level at which `points` talent points are reached (0 for no points). Talent
+-- points start at level 10; the Talented legacy perk (5 ranks) starts them
+-- 5 levels earlier, so the same build is reached sooner. The game gives the real
+-- points either way: this only labels a build with the level it needs.
+Talents.PERK_POINTS = 5
+function Talents.LevelFor(points, perk)
+  if type(points) ~= "number" or points <= 0 then return 0 end
+  return points + 9 - (perk and Talents.PERK_POINTS or 0)
+end
+
 -- n, source: n = unspent points, or nil when the client gives no usable
 -- answer ("unknown" is not "zero": the summary says so and Learn stays off).
 -- source = "traits" | "classic".

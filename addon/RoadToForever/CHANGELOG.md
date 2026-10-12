@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## Unreleased
+
+- Talents tab: a "Talented perk (+5 points)" switch. The Talented legacy perk starts talent points at level 5 instead
+  of 10, so a build is reached 5 levels sooner. The game already gives you the points you really have, so the switch only
+  changes the level line under a build ("26 points: reached at level 30 with the Talented perk"). Default off.
+
 ## 0.34.0 (2026-10-12)
 
 - Size slider no longer runs away while you drag it: the number follows the thumb and the window changes once, when you let go (also if the cursor leaves the bar). Numbers 50 / 100 / 150 are written under the bar.

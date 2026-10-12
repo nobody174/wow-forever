@@ -10,9 +10,11 @@ stale checkmark.
 Level 20 builds were removed. Level 30 now has one or more builds for every class, but these specs have none
 (owner will supply the talent codes; each needs a rotation):
 
-- [ ] Warrior **Fury** (also had a level 20 build; level 60 has one)
+- [ ] Warrior **Fury** (also had a level 20 build; level 60 has one). Owner's code `-4505010505001` (26 points, needs the
+      Talented perk) is valid: add it with a rotation (Fury 30 abilities to confirm in beta)
 - [ ] Warlock **Destruction** (level 60 has one), Demonology
-- [ ] Priest **Discipline**
+- [ ] Priest **Discipline**: ForeverChanges PvP build `023303131300121-3-` (26 points, needs the Talented perk, valid): add
+      it with a rotation
 - [ ] Hunter **Marksmanship** (level 60 has one), Survival
 - [ ] Rogue **Assassination**, Subtlety
 - [ ] Druid **Balance**

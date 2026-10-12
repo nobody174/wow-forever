@@ -219,6 +219,20 @@ local function build(f)
   -- Free talent points (moved here from Home): same wording as the minimap tooltip.
   ui.points = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   ui.points:SetPoint("TOPLEFT", 24, -52)
+  -- Talented legacy perk (+5 points): only changes the level line under a build.
+  ui.perk = UI.Switch(f, L.TALENT_PERK)
+  ui.perk:SetPoint("TOPRIGHT", -190, -52)
+  ui.perk:SetScript("OnClick", function(self)
+    R2F.Library.db.settings.talented = self:GetChecked() and true or false
+    TalentPanel.Refresh()
+  end)
+  ui.perk:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:AddLine(L.TALENT_PERK, 1, 1, 1)
+    GameTooltip:AddLine(L.TALENT_PERK_TIP, 1, 0.82, 0, true)
+    GameTooltip:Show()
+  end)
+  ui.perk:SetScript("OnLeave", function() GameTooltip:Hide() end)
   ui.label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   ui.label:SetPoint("TOPLEFT", 24, -74)
   ui.label:SetText(L.TALENT_LINK_LABEL)
@@ -262,6 +276,9 @@ local function build(f)
   ui.summary:SetPoint("TOPLEFT", 24, TREE_TOP - 24 - (ROWS - 1) * STEP_Y - CELL - 16)
   ui.summary:SetWidth(600)
   ui.summary:SetJustifyH("LEFT")
+  ui.level = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  ui.level:SetPoint("TOPLEFT", ui.summary, "BOTTOMLEFT", 0, -4)
+  ui.level:SetTextColor(0.7, 0.7, 0.7)
 
   -- Learn talents. Enabled only for a plan with zero conflicts and
   -- points to learn now (plan.learnable), out of combat, while no run is
@@ -425,6 +442,14 @@ function TalentPanel.Refresh()
     showStatus(nil)
   end
 
+  local perk = R2F.Library.db.settings.talented == true
+  ui.perk:SetChecked(perk)
+  if withBuild and plan.total and plan.total > 0 then
+    local n, lvl = plan.total, Talents.LevelFor(plan.total, perk)
+    ui.level:SetText((perk and L.TALENT_NEEDS_LEVEL_PERK or L.TALENT_NEEDS_LEVEL):format(n, lvl))
+  else
+    ui.level:SetText("")
+  end
   if withBuild then
     ui.summary:SetText(plan.summary)
     -- Red only for the conflict line; the rest are plain information.

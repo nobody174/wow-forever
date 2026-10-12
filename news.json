@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-10-13",
+      "title": "Talented perk switch for builds and the calculator",
+      "text": "A new switch counts the Talented legacy perk (+5 talent points, you start earning points at level 5). Builds and the talent calculator then show the level a build is reached at with or without it. The Road to Forever addon has the same switch on its Talents tab.",
+      "link": "builds.html"
+    },
+    {
       "date": "2026-10-12",
       "title": "Builds: level 30 and 60 only",
       "text": "The level 20 builds are gone now that the beta goes to 30. Pick a class, then Level 30 (leveling) or Level 60. The gold buttons are readable again too.",

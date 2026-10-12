@@ -487,6 +487,10 @@ R2F.L = {
   TALENT_SUMMARY_POINTS_UNKNOWN = "Couldn't read your free talent points, so nothing can be learned from here. "
     .. "Learn them in Blizzard's talent window.",
   TALENT_SUMMARY_DONE = "You already have this whole build.",
+  TALENT_PERK = "Talented perk (+5 points)",
+  TALENT_PERK_TIP = "The Talented legacy perk gives you talent points 5 levels sooner. The game already gives you the points you really have; this only changes the level shown under a build.",
+  TALENT_NEEDS_LEVEL = "%d points: reached at level %d.",
+  TALENT_NEEDS_LEVEL_PERK = "%d points: reached at level %d with the Talented perk.",
   TALENT_SUMMARY_EMPTY = "This link has no talent points in it.",
   TALENT_CONFLICT_UNUSED = "You already have %s in %s, which this build doesn't use. "
     .. "Reset your talents at a trainer first.",

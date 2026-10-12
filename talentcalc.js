@@ -21,6 +21,8 @@
      instance.encode() "<class>/<code>"   instance.reset()   instance.setCode(code)
      instance.link()   "<class>/<code>~<hash>" (what every link we hand out uses)
      instance.split() [pts, pts, pts]      instance.mainTree()   instance.total()
+     instance.level()  build level of the points (counts the Talented perk when on)
+     TalentCalc.talented() / setTalented(on) / mountTalentedSwitch(el)   the +5 points switch
      TalentCalc.presetCode(raw, cls, preset) -> "<class>/<code>" or ""
      TalentCalc.treeHash(raw, cls)   4-char check of the class's talent names
      TalentCalc.hashFor(cls)         same, from the data already loaded ("" if none)
@@ -36,6 +38,42 @@
   var DATA_URL = "https://nether.wowhead.com/forever/data/talents-classic";
   var ICON = "https://wow.zamimg.com/images/wow/icons/large/";
   var MAX_POINTS = 51;
+
+  // The "Talented" legacy perk (5 ranks): talent points start at level 10 - rank
+  // instead of level 10, so the build level of N points is N + 9 - rank. Five
+  // ranks = 5 extra points at any level below the 51-point cap. One setting for
+  // the whole site (localStorage wf-talented: "5" or absent), shared by every
+  // calculator on the page; the switch itself is TalentCalc.mountTalentedSwitch.
+  var TALENTED_KEY = "wf-talented", TALENTED_RANK = 5;
+  var talented = false;
+  try { talented = localStorage.getItem(TALENTED_KEY) === "5"; } catch (e) { /* private mode */ }
+  var instances = [];
+  function perkRank() { return talented ? TALENTED_RANK : 0; }
+  function levelFor(points) { return points ? points + 9 - perkRank() : 0; }
+  function setTalented(on) {
+    talented = !!on;
+    try { if (talented) localStorage.setItem(TALENTED_KEY, "5"); else localStorage.removeItem(TALENTED_KEY); } catch (e) { /* ignore */ }
+    instances = instances.filter(function (i) { return i.el.isConnected; });
+    instances.forEach(function (i) { i.refresh(); });
+    document.dispatchEvent(new CustomEvent("wf-talented", { detail: { on: talented } }));
+  }
+  // A labelled on/off switch in `host`; every instance on the page follows it.
+  function mountTalentedSwitch(host) {
+    if (!host) return null;
+    host.innerHTML = '<div class="tc-perk"><button type="button" role="switch" class="tc-sw" aria-checked="false" aria-label="Talented legacy perk">' +
+      '<span class="tc-sw-knob"></span></button><span class="tc-perk-text"><b>Talented</b> legacy perk: +5 talent points ' +
+      '<small>You start earning points at level 5 instead of 10, so a build is reached 5 levels sooner.</small></span></div>';
+    var sw = host.querySelector(".tc-sw");
+    function paint() { sw.setAttribute("aria-checked", talented ? "true" : "false"); }
+    sw.addEventListener("click", function () { setTalented(!talented); });
+    host.querySelector(".tc-perk-text").addEventListener("click", function () { setTalented(!talented); });
+    document.addEventListener("wf-talented", paint);
+    window.addEventListener("storage", function (e) {
+      if (e.key === TALENTED_KEY) { talented = e.newValue === "5"; instances = instances.filter(function (i) { return i.el.isConnected; }); instances.forEach(function (i) { i.refresh(); }); paint(); document.dispatchEvent(new CustomEvent("wf-talented", { detail: { on: talented } })); }
+    });
+    paint();
+    return sw;
+  }
 
   // Armor-type order like the rest of the site; tree ids in in-game tab order.
   var CLASSES = [
@@ -247,7 +285,7 @@
       el.style.setProperty("--c", cls.color);
       var saveBtn = window.TalentSaved ? '<button type="button" class="tc-btn tc-save" data-tc-act="save">Save build</button>' : "";
       var bar = compact
-        ? '<div class="tc-bar"><span class="tc-stat">Points <b data-tc="spent">0</b> / 51</span><span class="tc-stat">Level <b data-tc="level">—</b></span>' +
+        ? '<div class="tc-bar"><span class="tc-stat">Points <b data-tc="spent">0</b> / 51</span><span class="tc-stat">Level <b data-tc="level">—</b><span class="tc-perkbadge" data-tc="perk" title="Counting the Talented legacy perk (+5 points)" hidden>Talented</span></span>' +
           '<button type="button" class="tc-btn tc-danger" data-tc-act="reset">Reset to build</button>' +
           '<button type="button" class="tc-btn" data-tc-act="copy">Copy link</button>' + saveBtn +
           '<a class="tc-btn" data-tc="open" href="talents.html">Open in Talent Calc</a></div>' +
@@ -255,7 +293,7 @@
             return '<button type="button" role="tab" data-tab="' + ti + '" aria-selected="' + (ti === active) + '">' + esc(t.name) + '<span class="tc-n" data-pts="' + ti + '">0</span></button>';
           }).join("") + "</div>"
         : '<div class="tc-bar"><span class="tc-stat tc-split">Build <b data-tc="split">0 / 0 / 0</b></span><span class="tc-stat">Spent <b data-tc="spent">0</b> / 51</span>' +
-          '<span class="tc-stat tc-left">Left <b data-tc="left">51</b></span><span class="tc-stat">Level <b data-tc="level">—</b></span>' +
+          '<span class="tc-stat tc-left">Left <b data-tc="left">51</b></span><span class="tc-stat">Level <b data-tc="level">—</b><span class="tc-perkbadge" data-tc="perk" title="Counting the Talented legacy perk (+5 points)" hidden>Talented</span></span>' +
           '<button type="button" class="tc-btn" data-tc-act="copy">Copy link</button>' + saveBtn + '<button type="button" class="tc-btn tc-danger" data-tc-act="reset">Reset</button></div>' +
           '<p class="tc-hint">Click to add a point, right-click to remove, Shift-click to max. On a phone, tap a talent for + and − buttons.</p>';
       var html = trees.map(function (t, ti) {
@@ -285,7 +323,8 @@
       set("split", trees.map(function (t, ti) { return treePoints(ti); }).join(" / "));
       set("spent", spent);
       set("left", MAX_POINTS - spent);
-      set("level", spent ? String(spent + 9) : "—");
+      set("level", spent ? String(levelFor(spent)) : "—");
+      var pk = q('[data-tc="perk"]'); if (pk) pk.hidden = !(talented && spent);
       var open = q('[data-tc="open"]');
       if (open) open.href = "talents.html#" + self.link();
       if (changed && typeof opts.onChange === "function") opts.onChange(self);
@@ -396,6 +435,10 @@
     this.split = function () { return trees.map(function (t, ti) { return treePoints(ti); }); };
     this.mainTree = function () { var sp = self.split(), m = 0; sp.forEach(function (n, i) { if (n > sp[m]) m = i; }); return sp[m] ? trees[m].name : ""; };
     this.total = total;
+    this.el = el;
+    this.level = function () { return levelFor(total()); };
+    this.refresh = function () { update(false); };
+    instances.push(this);
     this.reset = function () { ranks = {}; captureInitial(); update(true); };
     this.setCode = function (c) { applyCode(c); update(false); };
     this._add = add;
@@ -422,6 +465,9 @@
     // For pages that only hold a stored code (talentsaved.js): the hash from
     // the data this page already loaded, or "" before it has loaded.
     hashFor: function (clsId) { var c = classById(clsId); return c && loadedRaw ? treeHash(loadedRaw, c) : ""; },
-    cleanCode: cleanCode
+    cleanCode: cleanCode,
+    talented: function () { return talented; },
+    setTalented: setTalented,
+    mountTalentedSwitch: mountTalentedSwitch
   };
 })();

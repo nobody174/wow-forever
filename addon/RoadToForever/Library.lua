@@ -163,6 +163,8 @@ function Library.Init()
   if type(s.menuScale) ~= "number" or s.menuScale < 0.5 or s.menuScale > 1.5 then s.menuScale = 1 end
   if type(s.menuAlpha) ~= "number" or s.menuAlpha < 0.3 or s.menuAlpha > 1 then s.menuAlpha = 1 end
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
+  -- Talents tab: show build levels as if the Talented legacy perk (+5 points) is on. Display only.
+  if type(s.talented) ~= "boolean" then s.talented = false end
   -- Main window: the tab /r2f reopens. Home on first use.
   -- windowPos (the window's saved spot) is written by UI.Window when moved.
   -- Any tab of the main window (MainWindow.TABS), so a window last left on

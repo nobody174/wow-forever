@@ -4,6 +4,20 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-13 (Talented legacy perk switch)
+- talentcalc.js / talentcalc.css: a switch for the **Talented** legacy perk (+5 talent points; talent points start at
+  level 5 instead of 10). Setting `wf-talented` ("5" or absent), shared by every calculator on a page and across tabs
+  (`storage` event). The calculators' Level stat counts it (points + 9 - 5) and show a small "Talented" badge. API:
+  `TalentCalc.talented()`, `setTalented(on)`, `mountTalentedSwitch(el)`, `instance.level()`.
+- talents.html: the switch sits above the class roster (Talents mode only). builds.html: the switch sits under the
+  intro, and a build with more than 21 points says under its title at which level it is reached ("26 points: reached
+  at level 30 with the Talented perk"). Cache bump `?v=20261013a` on both pages.
+- The Warrior Fury and Priest Discipline level 30 codes from the owner are 26-point builds (Fury `-4505010505001`,
+  Disc `023303131300121-3-`, both checked against Wowhead's Forever data: valid); they are NOT added to builds.html yet
+  (rotations pending), see BACKLOG.
+- Addon: Talents tab has the same switch (`R2FDB.settings.talented`, default off) and a line under the build
+  summary with the level the build is reached at. See addon/RoadToForever/CHANGELOG.md "Unreleased".
+
 ## 2026-10-12 (Builds: level 20 removed)
 - builds.html: the Level 20 prebuilt builds are gone (the beta cap is 30, and level 30 builds include those points).
   Level buttons are now 30 and 60; the page opens on 30; old `?level=20` links fall back to 30. Removed the `DATA`

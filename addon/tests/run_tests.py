@@ -851,6 +851,21 @@ def test_settings_tab(templates, fx):
           "SetNormalIcon falls back to the question mark for an empty path")
 
 
+def test_talented_perk():
+    """The Talented legacy perk: build level = points + 9 - 5 with it on; setting defaults off;
+    talentcalc.js uses the same arithmetic."""
+    lua = new_runtime()
+    lua.execute("R2FDB = nil R2FCharDB = nil R2F.Library.Init()")
+    check(lua.eval("R2F.Talents.LevelFor(21, false)") == 30, "perk: 21 points = level 30 without the perk")
+    check(lua.eval("R2F.Talents.LevelFor(26, true)") == 30, "perk: 26 points = level 30 with the perk")
+    check(lua.eval("R2F.Talents.LevelFor(26, false)") == 35, "perk: 26 points = level 35 without the perk")
+    check(lua.eval("R2F.Talents.LevelFor(0, true)") == 0, "perk: no points = no level")
+    check(lua.eval("R2F.Library.db.settings.talented") is False, "perk: setting defaults to off")
+    js = open(os.path.join(ROOT, "talentcalc.js"), encoding="utf-8").read()
+    check("points + 9 - perkRank()" in js and "TALENTED_RANK = 5" in js,
+          "perk: talentcalc.js uses points + 9 - 5, the same as Talents.LevelFor")
+
+
 def test_tree_names():
     """15.2: the Talents tab's tree names = talentcalc.js CLASSES (same names, same order)."""
     js = open(os.path.join(ROOT, "talentcalc.js"), encoding="utf-8").read()
@@ -6943,6 +6958,7 @@ def main():
     test_settings_tab(True, fx)
     test_settings_tab(False, fx)
     test_tree_names()
+    test_talented_perk()
     test_bags()
     test_reminders()
     test_plan(True)

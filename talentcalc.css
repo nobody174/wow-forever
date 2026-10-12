@@ -183,3 +183,17 @@ body.ts-open .ts-drawer{transform:none;visibility:visible;transition:transform .
 .lc-mode button:hover{color:var(--text)}
 .lc-mode button[aria-pressed="true"]{color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border-color:#FFE566}
 body.lc-on .ts-fab{display:none}
+
+/* "Talented" legacy perk switch (+5 talent points), shared by talents.html and builds.html */
+.tc-perk{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px auto 4px;max-width:640px;padding:10px 14px;background:var(--panel);border:1px solid var(--edge);border-radius:10px;text-align:left}
+.tc-sw{flex:none;position:relative;width:46px;height:24px;border-radius:999px;border:1px solid #4A506A;background:#0A0F1F;cursor:pointer;padding:0;transition:background .12s ease,border-color .12s ease}
+.tc-sw-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#9AA0B8;transition:transform .12s ease,background .12s ease}
+.tc-sw[aria-checked="true"]{background:var(--gold);border-color:#FFE566}
+.tc-sw[aria-checked="true"] .tc-sw-knob{transform:translateX(22px);background:#0E1428}
+.tc-sw:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.tc-perk-text{font-size:14px;color:var(--text);cursor:pointer;line-height:1.35}
+.tc-perk-text b{color:var(--gold)}
+.tc-perk-text small{display:block;color:var(--muted);font-size:12.5px}
+.tc-perkbadge{margin-left:6px;font:700 10px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:#0E1428;background:var(--gold);border-radius:4px;padding:3px 5px;vertical-align:middle}
+.tc-perkbadge[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){.tc-sw,.tc-sw-knob{transition:none}}

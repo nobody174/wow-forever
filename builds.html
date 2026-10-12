@@ -189,9 +189,11 @@ h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spac
 .confidence.medium{color:#E8A33D;border:1px solid rgba(232,163,61,.5)}
 .wrap{overflow-x:clip}  /* hidden rotation tooltips must not widen the page on phones */
 .build-calc{margin-top:4px}
+.perk-note{margin:0 0 8px;font-size:13px;color:var(--gold)}
+.perk-note[hidden]{display:none}
 .build-calc .tc-trees{justify-content:center}
 </style>
-<link rel="stylesheet" href="talentcalc.css?v=20261006b">
+<link rel="stylesheet" href="talentcalc.css?v=20261013a">
 </head>
 <body>
 <div class="topbar">
@@ -210,13 +212,15 @@ h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spac
   <h1>Builds</h1>
   <p class="lede">Talent builds for WoW Forever, added as we level up. Pick a class, then Level 30 (leveling) or Level 60 (endgame dungeons and raids). Each build has a rotation for its role: tank, healer or damage.</p>
 
+  <div id="talented-switch"></div>
+
   <nav class="roster" id="roster" aria-label="Class"></nav>
   <nav class="specs levels" id="levels" aria-label="Level"></nav>
   <nav class="specs" id="specs" aria-label="Spec"></nav>
   <p class="empty-hint" id="empty-hint" hidden>Pick a class above to see its build.</p>
   <main class="builds-grid" id="out"></main>
 </div>
-<script src="talentcalc.js?v=20261006b"></script>
+<script src="talentcalc.js?v=20261013a"></script>
 <script src="talentsaved.js?v=20261012a"></script>
 <script>
 const CLASS_ICONS = {
@@ -291,9 +295,27 @@ function buildHTML(b, i){
   return `<div class="build-section">
     <div class="build-head"><h2>${esc(b.title)}</h2><a class="ench-link" href="professions.html#bis/${cls.toLowerCase()}">Enchants for ${esc(cls)} →</a></div>
     <p class="build-meta">Hover a talent for details. Change points to try your own version.${b.meta ? " " + esc(b.meta) : ""}</p>
+    <p class="perk-note" data-note="${i}" hidden></p>
     <div class="build-calc" data-build="${i}">${talentRowHTML(b.talents)}</div>
     ${rotationHTML(b.rotation)}
   </div>`;
+}
+// A level-30 build has 21 points; one with more needs the "Talented" legacy perk
+// (+5 points). Say so under the build's title, following the page's switch.
+function perkNote(i, inst){
+  const note = out.querySelector('[data-note="' + i + '"]');
+  if(!note) return;
+  const paint = () => {
+    if(!note.isConnected){ document.removeEventListener("wf-talented", paint); return; }
+    const n = inst.total(), TC = window.TalentCalc;
+    if(!(n > 21) || !TC){ note.hidden = true; return; }
+    note.hidden = false;
+    note.textContent = TC.talented()
+      ? n + " points: reached at level " + inst.level() + " with the Talented perk (+5 points)."
+      : n + " points: reached at level " + inst.level() + ". Switch on the Talented perk above to see it at level " + (n + 4) + ".";
+  };
+  paint();
+  document.addEventListener("wf-talented", paint);
 }
 let mountToken = 0;
 function mountCalcs(shown){
@@ -305,10 +327,11 @@ function mountCalcs(shown){
     out.querySelectorAll(".build-calc").forEach(el=>{
       const b = shown[+el.dataset.build];
       if(!b) return;
-      TC.mountSync(el, raw, {
+      const inst = TC.mountSync(el, raw, {
         cls: clsNow.toLowerCase(), compact: true, saveName: b.title,
         ...(b.code ? {code: b.code} : {preset: b.talents.map(t=>[t.name, parseInt(t.rank,10)])}),
       });
+      perkNote(el.dataset.build, inst);
     });
   }).catch(()=>{ /* keep the static talent row */ });
 }
@@ -681,6 +704,7 @@ try{
   if(lq && LEVELS[lq]) level = lq;
 }catch(e){ /* ignore */ }
 render();
+if(window.TalentCalc) TalentCalc.mountTalentedSwitch(document.getElementById("talented-switch"));
 </script>
 <script src="footer.js" defer></script>
 </body>

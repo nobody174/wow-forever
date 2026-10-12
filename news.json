@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-10-12",
+      "title": "Mr.BiZ: best in slot for every spec",
+      "text": "New BiS page: the best gear per slot for all 27 specs at level 30, with the next best picks, quality colours and Wowhead tooltips, source filters and a wishlist per character. The addon (0.30.0) gets the same list as a BiS tab with item tooltips; /biz opens it.",
+      "link": "bis.html"
+    },
+    {
       "date": "2026-10-11",
       "title": "Warrior: Retaliation with a two-hander",
       "text": "New Warrior macro (General > Panic / defensive): swaps to your 2H and Battle Stance, pops Retaliation, then goes back to Defensive. Press it twice. Fill in your own 2H name.",

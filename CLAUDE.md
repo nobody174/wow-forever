@@ -7,8 +7,8 @@ Small multi-page site: `index.html` is the countdown/landing page ("Road to Fore
 builds per class, `addons.html` lists addons, `launch-plan.html` is the launch-week
 leveling plan, `talents.html` is our own talent calculator plus Legacy calculator
 (Talents / Legacy switch), `professions.html` holds BiS enchants with stand-ins, our crafters
-and profession costs. All seven share a top bar
-(site title, Macros / Builds / Addons / Professions / Launch Plan / Talent / Legacy Calc
+and profession costs, `bis.html` is Mr.BiZ (best-in-slot gear per class / spec + wishlist). All eight share a top bar
+(site title, Macros / Builds / BiS / Addons / Professions / Launch Plan / Talent / Legacy Calc
 links, current page highlighted).
 
 Class roster order on both `macros.html` and `builds.html` follows armor type,
@@ -137,6 +137,27 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Recipe names are Wowhead links (`/forever/item=` for k "i", `/forever/spell=` for k "s",
   `data-wowhead="...&domain=forever"`); Wowhead's `tooltips.js` (zamimg) gives hover
   tooltips with icon and stats; `refreshTooltips()` re-scans after each render.
+- `bis.html` — **Mr.BiZ**, hand-written, JS-rendered from `bis-data.json` (GENERATED: never hand-edit). Pickers: Class,
+  Spec (`<optgroup>` per role: Tank / DPS / Healer), Faction (Alliance default; flags faction-only quest rewards
+  "Horde only"), level shown fixed at 30 (the beta cap; the data is level 30 only). Filters: one chip per source
+  type in the data (`types`; Raid is greyed until a raid item exists), Profession (crafted items only), Show = all /
+  known sources / Forever data only (conf seen + client). A slot whose best pick is filtered out stays as "Hidden by
+  your filters" (ranks 2-3 have no source in the data, so it can't fall back to them). Each row: slot, item name =
+  Wowhead link `/forever/item=<id>` with `data-wowhead="item=<id>&domain=forever"` (tooltips.js, `iconizeLinks`,
+  `refreshTooltips()` after each render), coloured by quality (`.q0`–`.q5`) from
+  `https://nether.wowhead.com/forever/tooltip/item/<id>` (4 at a time, cached in localStorage `wf-bis-quality-v1`, same
+  approach as the Crafters view), source label, score, confidence badge, chevron (ranks 2-3 with % behind, Wowhead /
+  ForeverDB links, stats), wishlist star. Wishlist aside: per character name (select + New; localStorage
+  `wf-bis-wish-v1` = `{current, chars: {name: {items: {id: {name, spec, slot}}}}}`), grouped by the best pick's
+  `group` (dungeon / profession / vendor...), biggest first. "Copy for the addon" / "Paste from game" use the addon's
+  string `R2FW1:<id>:<class/spec>:<slot>,...`. Prefs in `wf-bis-v1`; `bis.html#<class>/<spec>` opens a spec (shareable).
+  Credit line (ForeverDB + Wowhead) under the list: keep it.
+- `bis/` — Mr.BiZ data. `bis/raw/<class>-<spec>.json` = ForeverDB's BiS page for that spec (level 30 PvE), one per
+  spec (27; Feral = "Feral (Bear)", ForeverDB weights it for tanking). `python bis/build_bis.py` parses each source
+  sentence (type, label, group, profession / skill, instance, drop %, faction) and writes `bis-data.json` +
+  `addon/RoadToForever/BiZData.lua`; `--check` = exit 1 if stale (the addon tests run it). `build.py` runs it too.
+  Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
+  add a rule to `parse_source`, don't hand-edit the outputs.
 - `news.html` + `news.json` + `footer.js` — **What's new** page (latest changes, Coming
   next, Discord ideas button) rendered from `news.json` (`{discord, news: [{date, title,
   text, link}], next: [{title, text}]}`, newest news first). `footer.js` (loaded with
@@ -388,9 +409,9 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
    changes), then run `python build.py`.
    The top bar CSS (3-column grid: title left / nav centered / optional right-side
    item like index.html's mute button; stacks into one centered column at
-   max-width 1180px so the title never wraps next to the 6-tab nav) must stay identical across all pages —
-   `index.html`, `builds.html`, `addons.html`, `launch-plan.html`, `talents.html`,
-   `library-books.html`, `professions.html` are
+   max-width 1180px so the title never wraps next to the 7-tab nav) must stay identical across all pages —
+   `index.html`, `builds.html`, `bis.html`, `addons.html`, `launch-plan.html`, `talents.html`,
+   `library-books.html`, `professions.html`, `news.html` are
    hand-written and each carry their own copy, while `macros.html` gets its copy from
    `template.html`. A hand-edit to one page's topbar CSS needs to be repeated in the others, or they
    drift out of sync (this happened once already — see CHANGELOG 2026-09-27).

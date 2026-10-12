@@ -95,6 +95,8 @@ handlers.CONFIG_COMMIT_FAILED = function(configID)
   R2F.MainWindow.RequestRefresh()
 end
 handlers.PLAYER_LEVEL_UP = function() R2F.MainWindow.RequestRefresh() end
+-- Mr.BiZ (v0.30.0): an item the tab asked the client for has loaded (quality, icon).
+handlers.GET_ITEM_INFO_RECEIVED = function() R2F.BiZTab.OnItemInfo() end
 -- Professions (14): the game only lists recipes while a profession window
 -- is open. Most professions use the trade skill window; Enchanting (and Beast
 -- Training) used the older "craft" window in Classic. Both are read.
@@ -159,6 +161,8 @@ local COMMANDS = {
   gameplay = function() R2F.MainWindow.Show("gameplay") end,
   reminders = function() R2F.MainWindow.Show("gameplay") end,   -- the old tab name
   plan = function() R2F.MainWindow.Show("plan") end,
+  bis = function() R2F.MainWindow.Show("bis") end,
+  biz = function() R2F.MainWindow.Show("bis") end,
   here = function() R2F.Plan.Here() end,
   ranks = function() R2F.Ranks.Print() end,
   copychat = function() R2F.CopyChat.Command() end,
@@ -213,3 +217,12 @@ end
 
 _G.SLASH_R2FT1 = "/r2ft"
 SlashCmdList.R2FT = function() R2F.MainWindow.Show("talents") end
+
+-- Mr.BiZ (v0.30.0): /biz and /mrbiz open the BiS tab (/bis is taken by several BiS
+-- addons, so it is left to them). "/biz wish" opens the wishlist.
+_G.SLASH_R2FBIZ1 = "/biz"
+_G.SLASH_R2FBIZ2 = "/mrbiz"
+SlashCmdList.R2FBIZ = function(msg)
+  msg = (msg or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
+  R2F.BiZTab.Show((msg == "wish" or msg == "wishlist") and "wish" or nil)
+end

@@ -674,6 +674,8 @@ for _, name in ipairs({
   "SetMotionScriptsWhileDisabled", "SetHitRectInsets", "SetFrameLevel",
   "SetTextInsets", "SetValueStep",
   "SetMinMaxValues", "SetValue",
+  -- Mr.BiZ (v0.30.0): FontString:SetWordWrap (real widget method, nothing to model)
+  "SetWordWrap",
 }) do methods[name] = noop end
 local MT = { __index = methods }
 

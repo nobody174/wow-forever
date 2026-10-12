@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mr.BiZ — best in slot for WoW Forever</title>
+<meta name="description" content="Mr.BiZ: best-in-slot gear for every WoW Forever class and spec at the level 30 beta cap, with the next best picks per slot, filters by source and a wishlist per character.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Road to Forever">
+<meta property="og:title" content="Mr.BiZ — best in slot for WoW Forever">
+<meta property="og:description" content="Best-in-slot gear for every WoW Forever class and spec, the next best picks per slot, source filters and a wishlist per character.">
+<meta property="og:url" content="https://nobody174.github.io/wow-forever/bis.html">
+<meta property="og:image" content="https://nobody174.github.io/wow-forever/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B1124">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1428; --panel:#161E38; --panel2:#121933; --edge:#3A4468; --gold:#FFD100;
+  --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100; --ok:#6FCF7F; --warn:#E8A33D; --bad:#E86A5A;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --serif:"Marcellus","Palatino Linotype",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+a{color:var(--gold)}
+.topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
+.topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
+.topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
+@media (max-width:1180px){
+  .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .topbar .site-title{justify-self:center}
+}
+.topbar nav a{
+  font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;
+  color:var(--gold);text-decoration:none;padding:10px 16px;border-radius:6px;
+  background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);
+  border:1px solid var(--edge);border-top-color:#4A5688;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.35);
+  transition:transform .08s ease, box-shadow .08s ease, border-color .08s ease;
+}
+.topbar nav a:hover{
+  border-color:var(--gold);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 0 10px rgba(255,209,0,.35), 0 2px 4px rgba(0,0,0,.35);
+  transform:translateY(-1px);
+}
+.topbar nav a:active{transform:translateY(0);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
+.topbar nav a[aria-current="page"]{
+  color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);
+  border-color:#FFE566;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(255,209,0,.5);
+}
+@media (prefers-reduced-motion:reduce){.topbar nav a{transition:none}}
+
+.wrap{max-width:1180px;margin:0 auto;padding:36px 16px 70px}
+h1{font:400 clamp(30px,5vw,46px)/1.1 var(--serif);color:var(--gold);margin:0 0 8px;letter-spacing:.01em;text-align:center}
+p.lede{color:var(--muted);max-width:68ch;margin:0 auto 26px;text-align:center}
+.lede b{color:var(--text);font-weight:600}
+
+/* Pickers */
+.pick{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.pick label{display:flex;flex-direction:column;gap:6px;font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.pick select{font:16px/1.2 var(--sans);color:var(--text);background:var(--panel2);border:1px solid var(--edge);border-radius:6px;height:44px;padding:0 12px;min-width:170px}
+.pick select:focus-visible,.chip:focus-visible,.btn:focus-visible,.icon-btn:focus-visible,.row-main:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.pick .lvl{display:flex;flex-direction:column;gap:6px}
+.pick .lvl span{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.pick .lvl b{display:flex;align-items:center;height:44px;font:600 16px/1 var(--sans);color:var(--text)}
+.pick .lvl small{font-weight:400;color:var(--muted);margin-left:6px}
+.pick .spacer{flex:1}
+
+/* Filters */
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px}
+.filters .lab{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-right:4px}
+.chip{font:600 14px/1 var(--sans);min-height:40px;padding:0 14px;border-radius:999px;cursor:pointer;border:1px solid var(--edge);background:transparent;color:var(--muted)}
+.chip[aria-pressed="true"]{background:rgba(255,209,0,.1);border-color:var(--gold);color:var(--gold)}
+.chip[disabled]{opacity:.45;cursor:not-allowed}
+.filters select{font:14px/1 var(--sans);color:var(--text);background:var(--panel2);border:1px solid var(--edge);border-radius:6px;height:40px;padding:0 10px}
+.filters .sep{width:1px;height:28px;background:var(--edge);margin:0 6px}
+
+/* Layout */
+.cols{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start}
+.set{flex:999 1 640px;min-width:0;background:var(--panel);border:1px solid var(--edge);border-radius:10px;overflow:hidden}
+.set-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 14px;padding:14px 18px;border-bottom:1px solid var(--edge)}
+.set-head h2{margin:0;font:400 22px/1.2 var(--serif);color:var(--gold)}
+.set-head .sum{color:var(--muted);font-size:13.5px}
+
+.row{border-bottom:1px solid rgba(58,68,104,.55)}
+.row:last-child{border-bottom:0}
+.row-main{display:grid;grid-template-columns:96px minmax(0,1fr) 56px 76px 44px 44px;gap:10px;align-items:center;padding:8px 6px 8px 18px;min-height:56px;cursor:pointer}
+.row.open > .row-main{background:rgba(255,209,0,.05);box-shadow:inset 3px 0 0 var(--gold)}
+.slot{font:600 12px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.item{min-width:0}
+.item .nm{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item a.wh{text-decoration:none;color:var(--text)}
+.item a.wh:hover{text-decoration:underline}
+.item .src{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .tag{font:600 11px/1 var(--sans);border-radius:4px;padding:2px 6px;margin-left:6px;vertical-align:2px}
+.tag.fac{background:rgba(232,106,90,.15);color:var(--bad);border:1px solid rgba(232,106,90,.4)}
+.tag.alt{background:rgba(154,160,184,.12);color:var(--muted);border:1px solid var(--edge)}
+.score{font:500 14px/1 var(--mono);text-align:right;color:var(--text)}
+.badge{justify-self:end;font:600 11.5px/1 var(--sans);border-radius:999px;padding:4px 9px;white-space:nowrap}
+.b-seen{background:#173A2A;color:#7FD6A4}
+.b-client{background:#1B2C4A;color:#8DB7EE}
+.b-classic{background:#3A3122;color:#E0BE77}
+.b-clue{background:#38233A;color:#D9A1E0}
+.b-unknown{background:#2A2D38;color:#B5B1A6}
+.icon-btn{width:44px;height:44px;border:0;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.icon-btn:hover{background:rgba(255,255,255,.05);color:var(--text)}
+.icon-btn.on{color:var(--gold)}
+.icon-btn svg{width:20px;height:20px}
+.chev svg{transition:transform .12s ease}
+.row.open .chev svg{transform:rotate(180deg)}
+.row.empty .row-main{cursor:default}
+.row.empty .item .nm,.row.hidden .item .nm{color:var(--muted);font-weight:400}
+.row.hidden .row-main{opacity:.7}
+
+.more{padding:4px 18px 14px 124px}
+.more ol{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--edge)}
+.more li{display:grid;grid-template-columns:28px minmax(0,1fr) 74px 44px;gap:10px;align-items:center;min-height:44px}
+.more .rk{font:500 13px/1 var(--mono);color:var(--muted)}
+.more .dl{font:500 13px/1 var(--mono);text-align:right;color:#E39A79}
+.more .facts{margin:10px 0 0;padding-left:16px;color:var(--muted);font-size:13.5px}
+.more .facts b{color:var(--text);font-weight:600}
+.more .links{margin-top:6px;font-size:13.5px}
+.more .links a{margin-right:14px}
+.more .note{margin:8px 0 0 16px;color:var(--muted);font-size:13px}
+
+/* Item quality colours (in-game) */
+a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:#3392ff}a.wh.q4{color:#b55cff}a.wh.q5{color:#ff8000}
+
+/* Wishlist */
+.wish{flex:1 1 300px;min-width:0;background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:16px 18px;position:sticky;top:calc(var(--topbar-h,70px) + 14px)}
+.wish h2{margin:0 0 4px;font:400 22px/1.2 var(--serif);color:var(--gold)}
+.wish .who{display:flex;gap:8px;align-items:center;margin:10px 0 14px;flex-wrap:wrap}
+.wish .who label{font-size:13px;color:var(--muted)}
+.wish .who select{font:15px/1 var(--sans);color:var(--text);background:var(--panel2);border:1px solid var(--edge);border-radius:6px;height:40px;padding:0 10px;flex:1;min-width:120px}
+.wgroup{margin:0 0 14px}
+.wgroup h3{display:flex;justify-content:space-between;margin:0 0 6px;font:600 13px/1.3 var(--sans);color:var(--gold)}
+.wgroup h3 span{color:var(--muted);font-weight:400}
+.witem{display:grid;grid-template-columns:minmax(0,1fr) 40px;align-items:center;background:var(--panel2);border-radius:6px;padding:4px 4px 4px 10px;margin-bottom:6px}
+.witem .nm{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.witem .nm a.wh{text-decoration:none;color:var(--text)}
+.witem small{display:block;color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.witem .icon-btn{width:40px;height:40px}
+.wish .empty{color:var(--muted);font-size:14px;margin:6px 0 14px}
+.wish .acts{display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid var(--edge);padding-top:14px}
+.btn{font:600 14px/1 var(--sans);min-height:44px;padding:0 16px;border-radius:6px;cursor:pointer;border:1px solid var(--edge);background:var(--panel2);color:var(--text)}
+.btn.gold{color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border-color:#FFE566}
+.btn:hover{filter:brightness(1.08)}
+.wish textarea{width:100%;min-height:90px;margin-top:10px;font:13px/1.4 var(--mono);color:var(--text);background:var(--panel2);border:1px solid var(--edge);border-radius:6px;padding:8px}
+.wish .msg{font-size:13px;color:var(--muted);margin:8px 0 0}
+
+.foot{margin-top:18px;color:var(--muted);font-size:13.5px}
+.foot p{margin:0 0 6px}
+.foot code{font:500 12.5px/1 var(--mono);color:var(--text)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:14px;font-size:13px;color:var(--muted)}
+.legend span.badge{justify-self:auto}
+
+@media (max-width:700px){
+  .row-main{grid-template-columns:minmax(0,1fr) 52px 44px 44px;padding-left:14px}
+  .row-main .slot{grid-column:1 / -1;margin-bottom:-6px}
+  .row-main .badge{display:none}
+  .more{padding-left:18px}
+  .more li{grid-template-columns:24px minmax(0,1fr) 60px 40px}
+  .wish{position:static}
+}
+@media (prefers-reduced-motion:reduce){.chev svg{transition:none}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="site-title" href="index.html">Road to Forever</a>
+  <nav aria-label="Site">
+    <a href="macros.html">Macros</a>
+    <a href="builds.html">Builds</a>
+    <a href="bis.html" aria-current="page">BiS</a>
+    <a href="addons.html">Addons</a>
+    <a href="professions.html">Professions</a>
+    <a href="launch-plan.html">Launch Plan</a>
+    <a href="talents.html">Talent / Legacy Calc</a>
+  </nav>
+</div>
+<main class="wrap">
+  <h1>Mr.BiZ</h1>
+  <p class="lede">Best in slot for your class and spec at the <b>level 30</b> beta cap. Click a slot for the next best picks, hover an item for its tooltip, click its name to open it on Wowhead. Star items to build a wishlist per character.</p>
+
+  <form class="pick" id="pick" onsubmit="return false">
+    <label>Class <select id="cls"></select></label>
+    <label>Spec <select id="spec"></select></label>
+    <label>Faction <select id="faction"><option value="alliance">Alliance</option><option value="horde">Horde</option></select></label>
+    <div class="lvl"><span>Level</span><b>30<small>beta cap</small></b></div>
+  </form>
+
+  <div class="filters" role="group" aria-label="Filters">
+    <span class="lab">Sources</span>
+    <span id="chips"></span>
+    <span class="sep" aria-hidden="true"></span>
+    <label class="lab" for="prof">Profession</label>
+    <select id="prof"><option value="any">Any</option></select>
+    <label class="lab" for="conf" style="margin-left:8px">Show</label>
+    <select id="conf">
+      <option value="all">All sources</option>
+      <option value="known">Known sources only</option>
+      <option value="forever">Forever data only</option>
+    </select>
+  </div>
+
+  <div class="cols">
+    <section class="set" aria-labelledby="set-title">
+      <div class="set-head"><h2 id="set-title">Complete set</h2><span class="sum" id="sum"></span></div>
+      <div id="rows"><p style="padding:18px">Loading…</p></div>
+    </section>
+
+    <aside class="wish" aria-labelledby="wish-title">
+      <h2 id="wish-title">Wishlist</h2>
+      <div class="who">
+        <label for="char">Character</label>
+        <select id="char"></select>
+        <button type="button" class="btn" id="char-add">New</button>
+      </div>
+      <div id="wish-list"></div>
+      <div class="acts">
+        <button type="button" class="btn gold" id="wish-copy">Copy for the addon</button>
+        <button type="button" class="btn" id="wish-paste">Paste from game</button>
+        <button type="button" class="btn" id="wish-clear">Clear</button>
+      </div>
+      <div id="wish-io" hidden>
+        <textarea id="wish-text" aria-label="Wishlist string" spellcheck="false"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px"><button type="button" class="btn gold" id="wish-apply">Add to this wishlist</button><button type="button" class="btn" id="wish-close">Close</button></div>
+      </div>
+      <p class="msg" id="wish-msg" aria-live="polite"></p>
+    </aside>
+  </div>
+
+  <div class="foot" id="foot"></div>
+  <div class="legend" aria-label="What the badges mean">
+    <span><span class="badge b-seen">Seen</span> seen in Forever</span>
+    <span><span class="badge b-client">Client</span> from the Forever game files</span>
+    <span><span class="badge b-classic">Classic</span> source assumed from Classic</span>
+    <span><span class="badge b-clue">Clue</span> a lead, not confirmed</span>
+    <span><span class="badge b-unknown">Unknown</span> source not known yet</span>
+  </div>
+</main>
+<script>window.whTooltips = { colorLinks: false, iconizeLinks: true, renameLinks: false, iconSize: "small" };</script>
+<script src="https://wow.zamimg.com/js/tooltips.js" defer></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function lget(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function lset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } }
+  function topbarH() { var t = document.querySelector(".topbar"); if (t) document.documentElement.style.setProperty("--topbar-h", t.offsetHeight + "px"); }
+  topbarH(); window.addEventListener("resize", topbarH);
+
+  var TYPE_LABEL = { dungeon: "Dungeon", raid: "Raid", world: "World drop", quest: "Quest", crafted: "Crafted",
+    vendor: "Vendor", reputation: "Reputation", pvp: "PvP", unknown: "Unknown source" };
+  var CONF_LABEL = { seen: "Seen", client: "Client", classic: "Classic", clue: "Clue", unknown: "Unknown" };
+  var ROLE_LABEL = { tank: "Tank", dps: "DPS", healer: "Healer" };
+  var ICON = {
+    chev: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    star: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l2.3 4.7 5.2.8-3.8 3.7.9 5.2L10 14.4l-4.6 2.5.9-5.2L2.5 8l5.2-.8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+    starOn: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l2.3 4.7 5.2.8-3.8 3.7.9 5.2L10 14.4l-4.6 2.5.9-5.2L2.5 8l5.2-.8z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+    x: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+  };
+
+  var DATA = null;
+  var prefs = lget("wf-bis-v1", {});
+  prefs.specOf = prefs.specOf || {};
+  prefs.types = prefs.types || {};
+  var store = lget("wf-bis-wish-v1", null) || { current: "Venom", chars: { Venom: { items: {} } } };
+  var quality = lget("wf-bis-quality-v1", {});
+  var open = {};
+  var itemIndex = {};   // id -> { name, group, label, type } from any spec's best picks
+
+  function save() { lset("wf-bis-v1", prefs); }
+  function saveWish() { lset("wf-bis-wish-v1", store); }
+  function wishItems() { var c = store.chars[store.current]; if (!c) { c = store.chars[store.current] = { items: {} }; } return c.items; }
+
+  function whLink(id, name, cls) {
+    var q = quality[id];
+    return '<a class="wh' + (typeof q === "number" ? " q" + q : "") + (cls ? " " + cls : "") + '" href="https://www.wowhead.com/forever/item=' + id +
+      '" data-wowhead="item=' + id + '&amp;domain=forever" target="_blank" rel="noopener">' + esc(name) + "</a>";
+  }
+
+  // ---- quality colours: Wowhead's Forever tooltip JSON (CORS ok, same as the Crafters view) ----
+  var qQueue = [], qBusy = 0, qTimer = null;
+  function wantQuality(id) { if (id && !(id in quality) && qQueue.indexOf(id) === -1) { qQueue.push(id); pumpQ(); } }
+  function pumpQ() {
+    while (qBusy < 4 && qQueue.length) {
+      var id = qQueue.shift(); qBusy++;
+      fetch("https://nether.wowhead.com/forever/tooltip/item/" + id).then(function (r) { return r.ok ? r.json() : null; })
+        .then((function (id) { return function (j) { quality[id] = j && typeof j.quality === "number" ? j.quality : null; }; })(id))
+        .catch((function (id) { return function () { quality[id] = null; }; })(id))
+        .then(function () {
+          qBusy--;
+          clearTimeout(qTimer);
+          qTimer = setTimeout(function () { lset("wf-bis-quality-v1", quality); paintQuality(); }, 200);
+          pumpQ();
+        });
+    }
+  }
+  function paintQuality() {
+    document.querySelectorAll("a.wh").forEach(function (a) {
+      var m = /item=(\d+)/.exec(a.getAttribute("data-wowhead") || ""); if (!m) return;
+      var q = quality[m[1]];
+      if (typeof q === "number") { a.classList.remove("q0", "q1", "q2", "q3", "q4", "q5"); a.classList.add("q" + q); }
+    });
+  }
+  function refreshTooltips() {
+    try { if (window.$WowheadPower && window.$WowheadPower.refreshLinks) window.$WowheadPower.refreshLinks(); } catch (e) { /* tooltips are optional */ }
+  }
+
+  // ---- pickers ----
+  function currentSpecId() { return prefs.specOf[prefs.cls] || DATA.classes.filter(function (c) { return c.key === prefs.cls; })[0].specs[0]; }
+  function fillClass() {
+    $("cls").innerHTML = DATA.classes.map(function (c) { return '<option value="' + c.key + '">' + esc(c.name) + "</option>"; }).join("");
+    $("cls").value = prefs.cls;
+  }
+  function fillSpec() {
+    var c = DATA.classes.filter(function (c) { return c.key === prefs.cls; })[0];
+    var byRole = { tank: [], dps: [], healer: [] };
+    c.specs.forEach(function (sid) { byRole[DATA.specs[sid].role].push(sid); });
+    $("spec").innerHTML = ["tank", "dps", "healer"].filter(function (r) { return byRole[r].length; }).map(function (r) {
+      return '<optgroup label="' + ROLE_LABEL[r] + '">' + byRole[r].map(function (sid) { return '<option value="' + sid + '">' + esc(DATA.specs[sid].name) + "</option>"; }).join("") + "</optgroup>";
+    }).join("");
+    $("spec").value = currentSpecId();
+  }
+  function fillChips() {
+    var present = {};
+    Object.keys(DATA.specs).forEach(function (sid) { DATA.specs[sid].slots.forEach(function (s) { if (s.best) present[s.best.type] = 1; }); });
+    $("chips").innerHTML = DATA.types.map(function (t) {
+      var none = !present[t];
+      var on = !none && prefs.types[t] !== false;
+      return '<button type="button" class="chip" data-type="' + t + '" aria-pressed="' + on + '"' + (none ? ' disabled title="No ' + esc(TYPE_LABEL[t].toLowerCase()) + ' items at this level yet"' : "") + ">" + esc(TYPE_LABEL[t]) + "</button> ";
+    }).join("");
+    var profs = {};
+    Object.keys(DATA.specs).forEach(function (sid) { DATA.specs[sid].slots.forEach(function (s) { if (s.best && s.best.prof) profs[s.best.prof] = 1; }); });
+    $("prof").innerHTML = '<option value="any">Any</option>' + Object.keys(profs).sort().map(function (p) { return '<option value="' + esc(p) + '">' + esc(p) + "</option>"; }).join("");
+    $("prof").value = prefs.prof || "any";
+    $("conf").value = prefs.conf || "all";
+  }
+
+  function passes(b) {
+    if (b.type !== "unknown" && prefs.types[b.type] === false) return false;
+    if (b.type === "crafted" && prefs.prof && prefs.prof !== "any" && b.prof !== prefs.prof) return false;
+    if (prefs.conf === "known" && b.type === "unknown") return false;
+    if (prefs.conf === "forever" && b.conf !== "seen" && b.conf !== "client") return false;
+    return true;
+  }
+
+  // ---- the set ----
+  function starBtn(id, name, specId, slot) {
+    var on = !!wishItems()[id];
+    return '<button type="button" class="icon-btn star' + (on ? " on" : "") + '" data-star="' + id + '" data-spec="' + esc(specId) + '" data-slot="' + esc(slot) +
+      '" data-name="' + esc(name) + '" aria-pressed="' + on + '" aria-label="' + (on ? "Remove " : "Add ") + esc(name) + (on ? " from" : " to") + ' your wishlist">' + (on ? ICON.starOn : ICON.star) + "</button>";
+  }
+  function factionTag(b) {
+    if (b.faction && b.faction !== prefs.faction) return '<span class="tag fac">' + (b.faction === "horde" ? "Horde only" : "Alliance only") + "</span>";
+    if (b.horde && prefs.faction === "horde") return '<span class="tag alt" title="The Horde version">Horde: ' + esc(b.horde) + "</span>";
+    return "";
+  }
+  function render() {
+    var sid = currentSpecId(), sp = DATA.specs[sid];
+    location.replace("#" + sid);
+    var shown = 0, hidden = 0, empty = 0;
+    var labels = {}; DATA.slots.forEach(function (s) { labels[s.key] = s.label; });
+    $("set-title").textContent = sp.name + " " + DATA.classes.filter(function (c) { return c.key === sp.class; })[0].name;
+    $("rows").innerHTML = sp.slots.map(function (s) {
+      var key = sid + "|" + s.slot, label = labels[s.slot];
+      if (!s.best) {
+        empty++;
+        return '<div class="row empty"><div class="row-main"><span class="slot">' + esc(label) + '</span><span class="item"><span class="nm">Nothing yet</span><span class="src">' + esc(capFirst(s.note)) + "</span></span><span></span><span></span><span></span><span></span></div></div>";
+      }
+      var b = s.best, ok = passes(b), isOpen = !!open[key];
+      if (ok) shown++; else hidden++;
+      wantQuality(b.id); (s.next || []).forEach(function (n) { wantQuality(n.id); });
+      var nameHtml = ok ? whLink(b.id, b.name) + factionTag(b) : "Hidden by your filters";
+      var srcHtml = ok ? esc(b.label) : esc(TYPE_LABEL[b.type]) + " pick · click to see it";
+      var main = '<div class="row-main" data-toggle="' + esc(key) + '"><span class="slot">' + esc(label) + '</span><span class="item"><span class="nm">' + nameHtml + '</span><span class="src">' + srcHtml + "</span></span>" +
+        '<span class="score" title="Score with this spec\'s stat weights">' + (ok ? esc(b.score) : "") + "</span>" +
+        (ok ? '<span class="badge b-' + b.conf + '" title="' + esc(confTitle(b.conf)) + '">' + CONF_LABEL[b.conf] + "</span>" : "<span></span>") +
+        '<button type="button" class="icon-btn chev" aria-expanded="' + isOpen + '" aria-label="' + (isOpen ? "Hide" : "Show") + " the next best " + esc(label.toLowerCase()) + ' picks" data-toggle="' + esc(key) + '">' + ICON.chev + "</button>" +
+        (ok ? starBtn(b.id, b.name, sid, s.slot) : "<span></span>") + "</div>";
+      var more = "";
+      if (isOpen) {
+        var list = '<li><span class="rk">#1</span><span class="item"><span class="nm">' + whLink(b.id, b.name) + factionTag(b) + '</span></span><span class="dl">best</span>' + starBtn(b.id, b.name, sid, s.slot) + "</li>" +
+          (s.next || []).map(function (n, i) {
+            var d = typeof n.delta === "number" ? (n.delta === 0 ? "same" : n.delta + "%") : "";
+            return '<li><span class="rk">#' + (i + 2) + '</span><span class="item"><span class="nm">' + whLink(n.id, n.name) + '</span></span><span class="dl">' + esc(d) + "</span>" + starBtn(n.id, n.name, sid, s.slot) + "</li>";
+          }).join("");
+        more = '<div class="more"><ol>' + list + "</ol>" +
+          '<p class="facts"><b>' + esc(b.name) + "</b>: " + esc(b.stats) + ". " + esc(TYPE_LABEL[b.type]) + ": " + esc(b.label) + (b.ease ? " · " + esc(b.ease) : "") + "</p>" +
+          '<p class="facts links"><a href="https://www.wowhead.com/forever/item=' + b.id + '" target="_blank" rel="noopener">Wowhead</a><a href="https://foreverdb.net/item/' + b.id + '" target="_blank" rel="noopener">ForeverDB</a><a href="' + esc(sp.url) + '" target="_blank" rel="noopener">Full ' + esc(sp.name) + " list</a></p>" +
+          ((s.next || []).length < 2 ? '<p class="note">No more ranked picks for this slot at level 30.</p>' : '<p class="note">Ranks 2–3 show how far behind the best they score. More ranks come when our own ranking is done.</p>') + "</div>";
+      }
+      return '<div class="row' + (ok ? "" : " hidden") + (isOpen ? " open" : "") + '">' + main + more + "</div>";
+    }).join("");
+    $("sum").textContent = shown + " shown" + (hidden ? " · " + hidden + " hidden by filters" : "") + (empty ? " · " + empty + " empty at level 30" : "");
+    $("foot").innerHTML = "<p><b>Stat weights</b> (" + esc(sp.name) + "): <code>" + esc(sp.weights) + "</code></p>" +
+      '<p>Picks and weights from <a href="' + esc(sp.url) + '" target="_blank" rel="noopener">ForeverDB</a> (beta build ' + esc(sp.build) + ", taken " + esc(DATA.updated) +
+      '). Tooltips and item pages from <a href="https://www.wowhead.com/forever" target="_blank" rel="noopener">Wowhead</a>. Wrong item? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';
+    paintQuality();
+    refreshTooltips();
+  }
+  function capFirst(s) { s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function confTitle(c) {
+    return { seen: "Players have seen this item drop or sold in Forever", client: "From the Forever game files", classic: "Where it comes from is assumed from Classic",
+      clue: "A lead from the beta, not confirmed", unknown: "Where it comes from isn't known yet" }[c] || "";
+  }
+
+  // ---- wishlist ----
+  function fillChars() {
+    $("char").innerHTML = Object.keys(store.chars).sort().map(function (n) { return '<option value="' + esc(n) + '">' + esc(n) + "</option>"; }).join("");
+    $("char").value = store.current;
+  }
+  function renderWish() {
+    var items = wishItems(), ids = Object.keys(items);
+    if (!ids.length) { $("wish-list").innerHTML = '<p class="empty">Star an item (☆) to add it. The list groups items by where you get them.</p>'; return; }
+    var groups = {};
+    ids.forEach(function (id) {
+      var w = items[id], info = itemIndex[id] || {};
+      var g = info.group || "Next-best picks (see Wowhead for the source)";
+      (groups[g] = groups[g] || []).push({ id: id, name: info.name || w.name, label: info.label, spec: w.spec, slot: w.slot });
+    });
+    var labels = {}; DATA.slots.forEach(function (s) { labels[s.key] = s.label; });
+    $("wish-list").innerHTML = Object.keys(groups).sort(function (a, b) { return groups[b].length - groups[a].length || a.localeCompare(b); }).map(function (g) {
+      var list = groups[g];
+      return '<div class="wgroup"><h3>' + esc(g) + "<span>" + list.length + (list.length === 1 ? " item" : " items") + "</span></h3>" + list.map(function (it) {
+        var sp = DATA.specs[it.spec];
+        return '<div class="witem"><span><span class="nm">' + whLink(it.id, it.name) + "</span><small>" + esc(labels[it.slot] || it.slot) + (sp ? " · " + esc(sp.name) : "") + (it.label && it.label !== g ? " · " + esc(it.label) : "") +
+          '</small></span><button type="button" class="icon-btn" data-unwish="' + it.id + '" aria-label="Remove ' + esc(it.name) + ' from your wishlist">' + ICON.x + "</button></div>";
+      }).join("") + "</div>";
+    }).join("");
+    paintQuality(); refreshTooltips();
+  }
+  function toggleWish(id, name, spec, slot) {
+    var items = wishItems();
+    if (items[id]) delete items[id]; else items[id] = { name: name, spec: spec, slot: slot };
+    saveWish(); render(); renderWish();
+  }
+  // R2FW1:<id>:<class>/<spec>:<slot>,... (the addon's Mr.BiZ tab reads and writes the same)
+  function wishString() {
+    var items = wishItems();
+    return "R2FW1:" + Object.keys(items).map(function (id) { return id + ":" + items[id].spec + ":" + items[id].slot; }).join(",");
+  }
+  function applyWishString(text) {
+    var m = /R2FW1:([^\s]*)/.exec(text || "");
+    if (!m) return -1;
+    var items = wishItems(), n = 0;
+    m[1].split(",").forEach(function (part) {
+      var p = part.split(":"); var id = p[0];
+      if (!/^\d+$/.test(id) || !DATA.specs[p[1]]) return;
+      if (!items[id]) n++;
+      items[id] = { name: (itemIndex[id] && itemIndex[id].name) || nameOf(id) || ("Item " + id), spec: p[1], slot: p[2] || "" };
+    });
+    saveWish();
+    return n;
+  }
+  function nameOf(id) {
+    var found = null;
+    Object.keys(DATA.specs).some(function (sid) { return DATA.specs[sid].slots.some(function (s) { return (s.next || []).some(function (n) { if (String(n.id) === String(id)) { found = n.name; return true; } return false; }); }); });
+    return found;
+  }
+
+  // ---- events ----
+  $("cls").addEventListener("change", function () { prefs.cls = this.value; save(); fillSpec(); render(); });
+  $("spec").addEventListener("change", function () { prefs.specOf[prefs.cls] = this.value; save(); render(); });
+  $("faction").addEventListener("change", function () { prefs.faction = this.value; save(); render(); });
+  $("prof").addEventListener("change", function () { prefs.prof = this.value; save(); render(); });
+  $("conf").addEventListener("change", function () { prefs.conf = this.value; save(); render(); });
+  $("chips").addEventListener("click", function (e) {
+    var b = e.target.closest(".chip"); if (!b || b.disabled) return;
+    var t = b.dataset.type; prefs.types[t] = prefs.types[t] === false; save();
+    b.setAttribute("aria-pressed", String(prefs.types[t] !== false)); render();
+  });
+  $("rows").addEventListener("click", function (e) {
+    var star = e.target.closest("[data-star]");
+    if (star) { toggleWish(star.dataset.star, star.dataset.name, star.dataset.spec, star.dataset.slot); return; }
+    if (e.target.closest("a")) return;   // item links open Wowhead
+    var t = e.target.closest("[data-toggle]"); if (!t) return;
+    var k = t.dataset.toggle;
+    if (open[k]) delete open[k]; else open[k] = 1;
+    render();
+    var btn = document.querySelector('.chev[data-toggle="' + (window.CSS && CSS.escape ? CSS.escape(k) : k) + '"]'); if (btn && e.detail === 0) btn.focus();
+  });
+  $("wish-list").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-unwish]"); if (!b) return;
+    delete wishItems()[b.dataset.unwish]; saveWish(); render(); renderWish();
+  });
+  $("char").addEventListener("change", function () { store.current = this.value; saveWish(); render(); renderWish(); });
+  $("char-add").addEventListener("click", function () {
+    var n = (prompt("Character name for the new wishlist:") || "").trim();
+    if (!n) return;
+    if (!store.chars[n]) store.chars[n] = { items: {} };
+    store.current = n; saveWish(); fillChars(); render(); renderWish();
+  });
+  $("wish-clear").addEventListener("click", function () {
+    if (!Object.keys(wishItems()).length || !confirm("Clear " + store.current + "'s wishlist?")) return;
+    store.chars[store.current].items = {}; saveWish(); render(); renderWish();
+  });
+  $("wish-copy").addEventListener("click", function () {
+    var s = wishString();
+    $("wish-io").hidden = false; $("wish-text").value = s; $("wish-text").select();
+    $("wish-apply").hidden = true;
+    var done = function () { $("wish-msg").textContent = "Copied. In game: /biz, Wishlist, Import, then paste."; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s).then(done, function () { $("wish-msg").textContent = "Press Ctrl+C to copy the text above."; });
+    else $("wish-msg").textContent = "Press Ctrl+C to copy the text above.";
+  });
+  $("wish-paste").addEventListener("click", function () {
+    $("wish-io").hidden = false; $("wish-apply").hidden = false; $("wish-text").value = ""; $("wish-text").focus();
+    $("wish-msg").textContent = "In game: /biz, Wishlist, Export. Paste the text here.";
+  });
+  $("wish-apply").addEventListener("click", function () {
+    var n = applyWishString($("wish-text").value);
+    $("wish-msg").textContent = n < 0 ? "That isn't a Mr.BiZ wishlist (it starts with R2FW1:)." : n + " new item" + (n === 1 ? "" : "s") + " added to " + store.current + "'s wishlist.";
+    if (n >= 0) { $("wish-io").hidden = true; render(); renderWish(); }
+  });
+  $("wish-close").addEventListener("click", function () { $("wish-io").hidden = true; $("wish-msg").textContent = ""; });
+
+  fetch("bis-data.json", { cache: "no-cache" }).then(function (r) { return r.json(); }).then(function (d) {
+    DATA = d;
+    Object.keys(d.specs).forEach(function (sid) {
+      d.specs[sid].slots.forEach(function (s) { if (s.best) itemIndex[s.best.id] = { name: s.best.name, group: s.best.group, label: s.best.label, type: s.best.type }; });
+    });
+    var h = decodeURIComponent((location.hash || "").slice(1));
+    if (d.specs[h]) { prefs.cls = d.specs[h].class; prefs.specOf[prefs.cls] = h; }
+    if (!prefs.cls || !d.classes.some(function (c) { return c.key === prefs.cls; })) prefs.cls = "hunter";
+    if (prefs.specOf[prefs.cls] && !d.specs[prefs.specOf[prefs.cls]]) delete prefs.specOf[prefs.cls];
+    prefs.faction = prefs.faction === "horde" ? "horde" : "alliance";
+    $("faction").value = prefs.faction;
+    if (!store.chars[store.current]) store.chars[store.current] = { items: {} };
+    fillClass(); fillSpec(); fillChips(); fillChars();
+    render(); renderWish();
+  }).catch(function () { $("rows").innerHTML = '<p style="padding:18px">Couldn’t load the BiS data right now.</p>'; });
+  window.addEventListener("hashchange", function () {
+    if (!DATA) return;
+    var h = decodeURIComponent((location.hash || "").slice(1));
+    if (DATA.specs[h] && h !== currentSpecId()) { prefs.cls = DATA.specs[h].class; prefs.specOf[prefs.cls] = h; fillClass(); fillSpec(); render(); }
+  });
+})();
+</script>
+<script src="footer.js" defer></script>
+</body>
+</html>

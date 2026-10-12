@@ -3029,3 +3029,34 @@ names", "Hide PvP titles").
 
 **Not done / ideas.** A short "What's this?" first-run tip on the Gameplay tab; a search box once there are 30+
 options; Edit-mode-style "move everything" button that shows all markers (alert, tracking, stance, ammo) at once.
+
+## 19. Mr.BiZ, best in slot (owner request 2026-10-12) -- built as v0.30.0, 2026-10-12
+
+Research, plan and UI design: the owner's "Mr.BiZ - BiS research, plan & design" doc (Claude Docs) and the "Mr.BiZ UI
+mockups" canvas. Short version: no shared BiS database exists; every Forever BiS addon mixes item data from the beta client,
+sources from Classic databases plus beta sightings, and a ranking (stat weights x item stats, a sim, or a hand list).
+
+### 19.1 Decisions
+- A tab in Road to Forever (owner's fewer-addons rule), not a separate addon; code in BiZ.lua / UI/BiZ.lua so it could be
+  split out later. Tab label "BiS", title "Road to Forever: Mr.BiZ". Slash `/biz`, `/mrbiz`, `/r2f bis` (`/bis` is
+  taken by three BiS addons).
+- v1 data = ForeverDB's level 30 PvE BiS pages for all 27 specs (best pick per slot + the next two with % behind, stat
+  weights, source sentence, confidence label), copied into `bis/raw/*.json` on 2026-10-12 and credited on the site
+  and in game. ForeverDB has one Feral list, weighted for tanking, so it is "Feral (Bear)"; no Cat list yet.
+  Open question for the owner: ask ForeverDB before relying on it long-term, or build our own ranking from item stats.
+- `bis/build_bis.py` parses each source sentence into a type (one filter per type), label, group (for the wishlist),
+  profession / skill, instance, drop chance and faction, and writes `bis-data.json` (site) and `BiZData.lua` (addon).
+  The tests fail if either is stale.
+- Quality colour, icon and tooltip come from the game client (C_Item / GetItemInfo / GameTooltip:SetItemByID), never
+  from the data, so they are always the client's own. Uncached items: white + RequestLoadItemDataByID, redrawn on
+  GET_ITEM_INFO_RECEIVED (throttled 0.2 s).
+- Menus via UI.ContextMenu (no UIDropDownMenu, 6.7). Wishlist ticks are CheckButtons (no custom star art).
+- Filtering only knows the best pick's source (ranks 2-3 have no source in the data), so a filtered slot stays visible
+  as "Hidden by your filters" instead of jumping to a rank whose source is unknown.
+
+### 19.2 Later
+- Our own ranking from the item pool + weights (more than 3 picks per slot, any level, compare with what you wear).
+- Sources for ranks 2-3, so filters can pick the best remaining item.
+- Mr.BiZ lines on every item tooltip in the game (bags, loot), with a setting.
+- Raid filter once the first raid tier is out (9 Dec 2026).
+

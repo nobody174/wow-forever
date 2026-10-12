@@ -9,6 +9,7 @@ globals = {
   "R2F",                    -- the addon's one namespace table
   "R2FDB", "R2FCharDB",     -- SavedVariables (the TOC makes them global)
   "SLASH_R2F1", "SLASH_R2FT1", -- slash command registration (/r2f, /r2ft)
+  "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", -- /biz, /mrbiz (Mr.BiZ, v0.30.0)
   "SlashCmdList",           -- .R2F field
   "UISpecialFrames",        -- Esc-to-close (append only)
   -- Key Bindings menu labels for Bindings.xml (names fixed by Blizzard, 6.9)
@@ -50,6 +51,8 @@ read_globals = {
   -- Quick settings (ADDON_PLAN 12.4.1): game settings via CVars. QuickSettings.lua
   -- reads them through _G (falling back to C_CVar), so only C_CVar is named here.
   "C_CVar",
+  -- Mr.BiZ (v0.30.0): item quality / icon / links, faction for faction-only quest rewards
+  "GetItemIcon", "GetItemInfoInstant", "ITEM_QUALITY_COLORS", "UnitFactionGroup", "GameFontDisableSmall",
 }
 -- Nothing is vendored in libs\ (ADDON_PLAN.md 6.10), so there is no
 -- third-party code to exclude; LibStub is only read through _G in Minimap.lua.

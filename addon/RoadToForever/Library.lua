@@ -163,7 +163,7 @@ function Library.Init()
   -- window that holds the book, so a moved book keeps its spot.
   -- Any tab of the main window (MainWindow.TABS); until 0.28.0 this list stopped at "talents", so a window
   -- last left on Plan / Gameplay / Settings reopened on Home after every login.
-  local TABS = { home = true, macros = true, talents = true, plan = true, gameplay = true, settings = true }
+  local TABS = { home = true, macros = true, talents = true, plan = true, bis = true, gameplay = true, settings = true }
   if not TABS[s.lastTab] then s.lastTab = "home" end
   _G.R2FDB = db
 
@@ -189,6 +189,18 @@ function Library.Init()
   if type(cdb.plan) ~= "table" then cdb.plan = {} end
   if type(cdb.plan.done) ~= "table" then cdb.plan.done = {} end
   if not (R2F.PlanData and R2F.PlanData.plans[cdb.plan.selected]) then cdb.plan.selected = "hwd" end
+  -- Mr.BiZ tab (BiZ.lua, v0.30.0): class / spec shown, source filters, the wishlist.
+  -- Per character: the wishlist is this character's gear goals.
+  if type(cdb.biz) ~= "table" then cdb.biz = {} end
+  local bz = cdb.biz
+  if type(bz.class) ~= "string" then bz.class = nil end
+  if type(bz.spec) ~= "table" then bz.spec = {} end
+  if type(bz.types) ~= "table" then bz.types = {} end
+  if type(bz.known) ~= "boolean" then bz.known = false end
+  if type(bz.wish) ~= "table" then bz.wish = {} end
+  for id, w in pairs(bz.wish) do
+    if type(id) ~= "number" or type(w) ~= "table" then bz.wish[id] = nil end
+  end
   _G.R2FCharDB = cdb
 
   Library.db, Library.cdb = db, cdb

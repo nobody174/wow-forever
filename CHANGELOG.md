@@ -4,6 +4,18 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-12 (Mr.BiZ: BiS page + addon tab)
+- New `bis.html` (top bar "BiS", after Builds, on every page): class + spec pickers (specs grouped Tank / DPS / Healer),
+  faction, level 30. One row per slot: item name coloured by quality (Wowhead's Forever tooltip JSON, cached in
+  localStorage `wf-bis-quality-v1`), Wowhead hover tooltip (tooltips.js, `domain=forever`), click = Wowhead item page,
+  source, score, confidence badge, wishlist star. Chevron opens ranks 2-3 with % behind plus Wowhead / ForeverDB links.
+  Filter chips per source type (Raid greyed until there's raid data), Profession, Show (all / known / Forever data only).
+  Wishlist per character (localStorage `wf-bis-wish-v1`), grouped by where to get the items; Copy for the addon / Paste
+  from game share it with the addon (`R2FW1:<id>:<class/spec>:<slot>,...`). Prefs in `wf-bis-v1`; `#class/spec` hash.
+- Data: `bis/raw/<class>-<spec>.json` (ForeverDB's level 30 PvE BiS pages, all 27 specs, 2026-10-12) ->
+  `python bis/build_bis.py` -> `bis-data.json` + `addon/RoadToForever/BiZData.lua`; build.py runs it too.
+- Addon 0.30.0: the same list as a BiS tab (see addon/RoadToForever/CHANGELOG.md).
+
 ## 2026-10-11 (Warrior: Retaliation with 2H)
 - data.py, Warrior General > Panic / defensive: "Retaliation with 2H (from Defensive)" (`Retal2H`):
   `/equip` 2H, `[nostance:1]` Battle Stance, `[stance:1]` Retaliation, `[stance:1]` Defensive Stance.

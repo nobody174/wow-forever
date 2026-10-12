@@ -185,3 +185,9 @@ if _node:
     subprocess.run([_node, "addon/tools/gen_plan_data.js"], check=True)
 else:
     print("warning: node not found, addon/RoadToForever/PlanData.lua was not regenerated")
+
+# =============================================================================
+# Mr.BiZ (bis.html + the addon's BiS tab): bis/raw/*.json -> bis-data.json and
+# addon/RoadToForever/BiZData.lua. See bis/README.md.
+# =============================================================================
+subprocess.run([sys.executable, "bis/build_bis.py"], check=True)

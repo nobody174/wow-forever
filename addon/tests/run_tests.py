@@ -1135,8 +1135,8 @@ def test_reminders():
     # --- Tabs and class filter ------------------------------------------------------
     lua, T = reminder_runtime("WARRIOR")
     MW = lua.eval("R2F.MainWindow")
-    keys = [lua.eval("R2F.MainWindow.TABS[%d]" % i) for i in range(1, 7)]
-    check(keys == ["home", "macros", "talents", "plan", "gameplay", "settings"], "15.4/15.5 tab order: %s" % keys)
+    keys = [lua.eval("R2F.MainWindow.TABS[%d]" % i) for i in range(1, 8)]
+    check(keys == ["home", "macros", "talents", "plan", "bis", "gameplay", "settings"], "15.4/15.5/19 tab order: %s" % keys)
     lua.execute('SlashCmdList.R2F("reminders")')
     lua.execute('R2F.GameplayTab.ShowPage("alerts")')
     check(MW.CurrentTab() == "gameplay", "15.4 /r2f reminders (the old name) opens the Gameplay tab")
@@ -1507,7 +1507,7 @@ def test_plan(templates=True):
     lua.execute("R2F.MainWindow.Show('plan')")
     title = lua.eval("R2FMain.__title") if templates else lua.eval("R2FMainPlain.r2fTitle.__text")
     check(title == "Road to Forever: Plan", "%s: Plan title: %r" % (tag, title))
-    check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 6, "%s: six tabs, Plan fourth" % tag)
+    check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 7, "%s: seven tabs, Plan fourth" % tag)
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text ~= '' and f.stepId == nil", "PICKS")
     labels = [lua.eval("PICKS[%d].r2fLabel.__text" % i) for i in range(1, lua.eval("#PICKS") + 1)]
     wanted = [lua.eval("R2F.Plan.Label(%r)" % p) for p in ("hwd", "hunter", "h3d", "trio")]
@@ -2768,6 +2768,188 @@ def test_aura_probe():
     check("reading failed" in chat_all(lua), "aura probe: a refused read is reported, not raised")
 
 
+# ---------------------------------------------------------------------------
+BIZ_STUBS = """
+BIZ_Q = { [252512] = 2, [7374] = 3, [6720] = 2 }
+C_Item = C_Item or {}
+C_Item.GetItemQualityByID = function(id) return BIZ_Q[id] end
+C_Item.GetItemIconByID = function(id) if BIZ_Q[id] then return 'Interface\\\\Icons\\\\INV_Helmet_' .. id end end
+BIZ_REQUESTED = {}
+C_Item.RequestLoadItemDataByID = function(id) BIZ_REQUESTED[id] = true end
+function GetItemInfo(id)
+  if BIZ_Q[id] then return 'Item ' .. id, '|cff1eff00|Hitem:' .. id .. '::::::::|h[Item ' .. id .. ']|h|r', BIZ_Q[id] end
+end
+BIZ_FACTION = 'Alliance'
+function UnitFactionGroup() return BIZ_FACTION end
+function GameTooltip:SetItemByID(id) self.itemArgs = { id }; table.insert(self.lines, 'ITEM ' .. id) end
+function GameTooltip:Show() self.__shown = true end
+function GameTooltip:Hide() self.__shown = false end
+"""
+
+
+def biz_runtime(templates=True, token="HUNTER", preset=None):
+    lua = new_runtime(templates, before_load=BIZ_STUBS)
+    lua.execute("TEST.reset()")
+    lua.execute("TEST.classToken = '%s'" % token)
+    if not templates:
+        lua.execute("TEST.templates.UIPanelScrollFrameTemplate = nil")
+    if preset:
+        lua.execute("R2FCharDB = %s" % preset)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    return lua, T
+
+
+def test_biz(templates=True):
+    """ADDON_PLAN 19: Mr.BiZ tab: data, spec choice, filters, wishlist, tooltips, quality, site string."""
+    import subprocess
+    tag = "biz " + ("templates" if templates else "fallbacks")
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "bis", "build_bis.py"), "--check"], capture_output=True, text=True)
+    check(r.returncode == 0, "BiZData.lua and bis-data.json match bis/raw (run python bis/build_bis.py): %s" % r.stdout.strip())
+    site = json.load(open(os.path.join(ROOT, "bis-data.json"), encoding="utf-8"))
+
+    lua, T = biz_runtime(templates)
+    BiZ = lua.eval("R2F.BiZ")
+    D = lua.eval("R2F.BiZData")
+    check(len(site["specs"]) == 27 and lua.eval("(function() local n = 0 for _ in pairs(R2F.BiZData.specs) do n = n + 1 end return n end)()") == 27,
+          "%s: 27 specs in the addon and on the site" % tag)
+    # every spec: the same 17 best picks in game as on the site
+    same = True
+    for sid, sp in site["specs"].items():
+        for i, sl in enumerate(sp["slots"], 1):
+            lb = lua.eval("R2F.BiZData.specs[%r].slots[%d].best" % (sid, i))
+            want = sl.get("best")
+            if (lb is None) != (want is None) or (want and (lb.id != want["id"] or lb.type != want["type"])):
+                same = False
+    check(same, "%s: addon data = site data for every spec and slot" % tag)
+
+    # default class = the player's, first spec; choice remembered per class
+    check(BiZ.Class() == "hunter" and BiZ.SpecId() == "hunter/beast-mastery", "%s: opens on your class, first spec" % tag)
+    BiZ.SetSpec("hunter/survival")
+    BiZ.SetClass("mage")
+    check(BiZ.SpecId() == "mage/arcane", "%s: another class shows its first spec" % tag)
+    BiZ.SetClass("hunter")
+    check(BiZ.SpecId() == "hunter/survival", "%s: the spec picked for a class is remembered" % tag)
+    BiZ.SetSpec("hunter/beast-mastery")
+    check(lua.eval("R2FCharDB.biz.spec.hunter") == "hunter/beast-mastery", "%s: spec saved per character" % tag)
+    roles = [lua.eval("R2F.BiZ.Spec(R2F.BiZ.SpecsOf('warrior')[1]).role")]
+    check(roles == ["tank"], "%s: Warrior lists Protection (tank) first" % tag)
+
+    # filters
+    types = [lua.eval("R2F.BiZ.Types()[%d]" % i) for i in range(1, lua.eval("#R2F.BiZ.Types()") + 1)]
+    check("raid" not in types and "quest" in types and "dungeon" in types, "%s: filter chips only for types in the data: %s" % (tag, types))
+    legs = lua.eval("R2F.BiZData.specs['hunter/beast-mastery'].slots[9].best")
+    check(legs.type == "quest" and BiZ.Passes(legs), "%s: quest pick passes by default" % tag)
+    BiZ.SetTypeOn("quest", False)
+    check(not BiZ.Passes(legs) and lua.eval("R2FCharDB.biz.types.quest") is False, "%s: quest filter off hides it (saved)" % tag)
+    BiZ.SetTypeOn("quest", True)
+    check(lua.eval("R2FCharDB.biz.types.quest") is None, "%s: back on clears the saved flag" % tag)
+    unk = lua.eval("R2F.BiZData.specs['hunter/beast-mastery'].slots[12].best")
+    check(unk.type == "unknown" and BiZ.Passes(unk), "%s: unknown source shows by default" % tag)
+    BiZ.SetKnownOnly(True)
+    check(not BiZ.Passes(unk), "%s: Known sources hides it" % tag)
+    BiZ.SetKnownOnly(False)
+    check(BiZ.FactionNote(legs) == lua.eval("R2F.L.BIZ_HORDE_ONLY"), "%s: Horde quest flagged for an Alliance player" % tag)
+    lua.execute("BIZ_FACTION = 'Horde'")
+    check(BiZ.FactionNote(legs) is None, "%s: no flag for a Horde player" % tag)
+    lua.execute("BIZ_FACTION = 'Alliance'")
+
+    # quality colour and icon from the game, white + request while unknown
+    check(BiZ.ColoredName(252512, "Brawler's Leather Helm").startswith("|cff1eff00"), "%s: uncommon item in green" % tag)
+    check(BiZ.ColoredName(7374, "Dusky Leather Armor").startswith("|cff0070dd"), "%s: rare item in blue" % tag)
+    check(BiZ.ColoredName(999999, "X").startswith("|cffffffff") and lua.eval("BIZ_REQUESTED[999999]") is True,
+          "%s: unknown item white, and the client is asked to load it" % tag)
+
+    # wishlist + the site's string
+    BiZ.ToggleWish(252512, "hunter/beast-mastery", "head")
+    BiZ.ToggleWish(7374, "hunter/beast-mastery", "chest")
+    BiZ.ToggleWish(6720, "hunter/beast-mastery", "head")
+    check(BiZ.WishCount() == 3, "%s: three items wished" % tag)
+    exp = BiZ.Export()
+    check(exp == "R2FW1:6720:hunter/beast-mastery:head,7374:hunter/beast-mastery:chest,252512:hunter/beast-mastery:head",
+          "%s: export string: %s" % (tag, exp))
+    groups = lua.eval("R2F.BiZ.WishGroups()")
+    gnames = [groups[i].name for i in range(1, len(groups) + 1)]
+    check(gnames == ["Leatherworking", lua.eval("R2F.L.BIZ_GROUP_NEXT")], "%s: grouped by source, next-best picks last: %s" % (tag, gnames))
+    BiZ.ToggleWish(6720, "hunter/beast-mastery", "head")
+    check(not BiZ.IsWished(6720), "%s: toggling again removes it" % tag)
+    bad = BiZ.Import("junk")
+    check(isinstance(bad, tuple) and bad[0] is None and "R2FW1" in bad[1], "%s: a non-wishlist string is refused: %r" % (tag, bad))
+    site_string = "R2FW1:252512:hunter/beast-mastery:head,2721:priest/holy:head,123:nope/nope:head,x:priest/holy:head"
+    n = BiZ.Import("  " + site_string + "\\n")
+    check(n == 1 and BiZ.IsWished(2721) and not BiZ.IsWished(123), "%s: import adds new valid items only (%s)" % (tag, n))
+    check(lua.eval("R2FCharDB.biz.wish[2721].spec") == "priest/holy", "%s: imported item keeps its spec" % tag)
+
+    # the tab
+    lua.execute("R2F.MainWindow.Show('bis')")
+    win = "R2FMain" if templates else "R2FMainPlain"
+    title = lua.eval("%s.__title" % win) if templates else lua.eval("%s.r2fTitle.__text" % win)
+    check(title == "Road to Forever: Mr.BiZ", "%s: tab title %r" % (tag, title))
+    find_frames(lua, "f.__kind == 'Button' and f.itemId == 252512 and f.__shown", "HELM")
+    check(lua.eval("#HELM") == 1, "%s: Brawler's Leather Helm row shown" % tag)
+    txt = lua.eval("HELM[1].fs.__text")
+    check(txt.startswith("|cff1eff00Brawler's Leather Helm"), "%s: name in its quality colour: %r" % (tag, txt))
+    lua.execute("HELM[1]:Fire('OnEnter')")
+    lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(lua.eval("GameTooltip.itemArgs[1]") == 252512 and lines[0] == "ITEM 252512", "%s: mouseover shows the game's item tooltip" % tag)
+    check(any("best in slot for Beast Mastery" in (l or "") for l in lines), "%s: tooltip adds the Mr.BiZ rank line: %s" % (tag, lines))
+    lua.execute("HELM[1]:Fire('OnLeave')")
+    check(lua.eval("GameTooltip.__shown") is False, "%s: leaving hides the tooltip" % tag)
+    # click = next best picks open under it
+    lua.execute("HELM[1]:Click()")
+    find_frames(lua, "f.__kind == 'Button' and f.itemId == 6720 and f.__shown", "NEXT2")
+    check(lua.eval("#NEXT2") == 1, "%s: clicking the name opens rank 2 (Spirit Hunter Headdress)" % tag)
+    lua.execute("NEXT2[1]:Fire('OnEnter')")
+    lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+    check(any("#2 for Beast Mastery, -12% behind" in (l or "") for l in lines), "%s: rank 2 tooltip says how far behind: %s" % (tag, lines))
+    # shift-click = link in chat (stays collapsed/expanded as it was)
+    lua.execute("TEST.shift = true; HELM[1]:Click(); TEST.shift = false")
+    check("Hitem:252512" in (lua.eval("TEST.chatInsert") or ""), "%s: shift-click links the item in chat" % tag)
+    check(lua.eval("#NEXT2") == 1 and lua.eval("NEXT2[1].__shown") is True, "%s: shift-click doesn't collapse" % tag)
+    # wishlist box on the helm row is ticked
+    find_frames(lua, "f.__kind == 'CheckButton' and f.itemId == 252512 and f.__shown", "HBOX")
+    check(lua.eval("#HBOX") >= 1 and lua.eval("HBOX[1]:GetChecked()") is True, "%s: wished item's box is ticked" % tag)
+    lua.execute("HBOX[1]:Click()")
+    check(not BiZ.IsWished(252512), "%s: unticking removes it from the wishlist" % tag)
+    # filters on the tab
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.BIZ_TYPE_QUEST", "QBOX")
+    lua.execute("QBOX[1]:SetChecked(false); QBOX[1]:Fire('OnClick')")
+    n = find_frames(lua, "f.__kind == 'Button' and f.fs and f.fs.__text and f.fs.__text:find(R2F.L.BIZ_HIDDEN, 1, true) and f.__shown", "HID")
+    check(n >= 1, "%s: unticking Quest marks quest slots hidden (%d)" % (tag, n))
+    lua.execute("QBOX[1]:SetChecked(true); QBOX[1]:Fire('OnClick')")
+    # wishlist view
+    find_frames(lua, "f.__kind == 'Button' and f.__text and f.__text:find('Wishlist', 1, true)", "WBTN")
+    lua.execute("WBTN[1]:Click()")
+    find_frames(lua, "f.__kind == 'Button' and f.itemId == 2721 and f.__shown", "WROW")
+    check(lua.eval("#WROW") == 1, "%s: wishlist view lists the imported Holy Shroud" % tag)
+    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.BIZ_EXPORT and f.__shown", "EXP")
+    check(lua.eval("#EXP") == 1, "%s: Export button in the wishlist view" % tag)
+    lua.execute("EXP[1]:Click()")
+    check(lua.eval("R2FCopy:IsShown()") is True and lua.eval("R2FCopy.text") == BiZ.Export(), "%s: Export opens the copy box" % tag)
+    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.BIZ_IMPORT and f.__shown", "IMP")
+    lua.execute("IMP[1]:Click()")
+    check(lua.eval("R2FBiZImport:IsShown()") is True, "%s: Import opens the paste box" % tag)
+    # item info arriving redraws (no error)
+    T.fire("GET_ITEM_INFO_RECEIVED", 999999, True)
+    # slash commands
+    lua.execute("R2F.MainWindow.Hide(); SlashCmdList.R2FBIZ('')")
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "bis" and lua.eval("SLASH_R2FBIZ1") == "/biz" and lua.eval("SLASH_R2FBIZ2") == "/mrbiz",
+          "%s: /biz opens the BiS tab" % tag)
+    lua.execute("R2F.MainWindow.Hide(); SlashCmdList.R2F('bis')")
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "bis", "%s: /r2f bis opens it too" % tag)
+
+    # bad saved data is cleaned
+    lua2, _ = biz_runtime(templates, preset="{ biz = { spec = 5, wish = { [1] = 'x', abc = {} , [7374] = { spec = 'hunter/survival' } } } }")
+    check(lua2.eval("type(R2FCharDB.biz.spec)") == "table" and lua2.eval("R2FCharDB.biz.wish[1]") is None
+          and lua2.eval("R2FCharDB.biz.wish.abc") is None and lua2.eval("R2FCharDB.biz.wish[7374].spec") == "hunter/survival",
+          "%s: bad saved data cleaned, good entries kept" % tag)
+    lua3, _ = biz_runtime(templates, token="DRUID")
+    check(lua3.eval("R2F.BiZ.SpecId()") == "druid/feral" and lua3.eval("R2F.BiZ.Spec('druid/feral').name") == "Feral (Bear)",
+          "%s: Druid opens on Feral (Bear)" % tag)
+
+
+
 def test_ui_updates(fx):
     """Step 4 through the UI: preview line, green arrow on the slot, cleared by the first tooltip."""
     lua = new_runtime()
@@ -2991,7 +3173,7 @@ def test_ui_smoke(templates, fx):
       local out = {}
       for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
-    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1", "SLASH_R2FT1"} | BINDING_GLOBALS
+    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2"} | BINDING_GLOBALS
     test_vars = {"EDIT", "PREVIEW", "IMPORTBTN", "BADTEXT", "TABS", "SLOTS", "PAGETEXT", "TIDY", "BOOKIMPORT",
                  "COMBATTEXT", "OTHER", "NS"}
     bad = [g for g in new_globals if g and g not in allowed_exact and g not in test_vars and not g.startswith("R2F")]
@@ -3245,7 +3427,7 @@ def test_step5_ui(templates, fx):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"SETBTN", "CHECKS", "REMOVEALL", "L", "APPLIED", "NS", "REAL_MM"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2") and not g.startswith("R2F")]
     check(not bad, "%s: step 5 adds no globals besides R2F* frames and the binding labels: %s" % (tag, bad))
 
 
@@ -3436,13 +3618,13 @@ def test_step6_ui(templates, fx):
 
     # ---- Main window tabs ----------------------------------------------------
     n = find_frames(lua, "f.r2fKey ~= nil", "MTABS")
-    check(n == 6, "six bottom tabs (15.5)")
-    keys = [lua.eval("MTABS[%d].r2fKey" % i) for i in range(1, 7)]
-    names = [lua.eval("MTABS[%d]:GetName()" % i) for i in range(1, 7)]
-    labels = [lua.eval("MTABS[%d].__text" % i) for i in range(1, 7)]
-    check(keys == ["home", "macros", "talents", "plan", "gameplay", "settings"]
-          and labels == ["Home", "Macros", "Talents", "Plan", "Gameplay", "Settings"]
-          and names == [win + "Tab%d" % i for i in range(1, 7)], "tabs Home / Macros / Talents / Plan / Gameplay / Settings, named %s" % names)
+    check(n == 7, "seven bottom tabs (15.5, 19)")
+    keys = [lua.eval("MTABS[%d].r2fKey" % i) for i in range(1, 8)]
+    names = [lua.eval("MTABS[%d]:GetName()" % i) for i in range(1, 8)]
+    labels = [lua.eval("MTABS[%d].__text" % i) for i in range(1, 8)]
+    check(keys == ["home", "macros", "talents", "plan", "bis", "gameplay", "settings"]
+          and labels == ["Home", "Macros", "Talents", "Plan", "BiS", "Gameplay", "Settings"]
+          and names == [win + "Tab%d" % i for i in range(1, 8)], "tabs Home / Macros / Talents / Plan / BiS / Gameplay / Settings, named %s" % names)
     tpl = lua.eval("MTABS[1].r2fTemplate")
     check(tpl == ("CharacterFrameTabButtonTemplate" if templates else "UIPanelButtonTemplate"),
           "%s: tab template chain picked %s" % (tag, tpl))
@@ -4266,7 +4448,7 @@ def test_talent_preview(templates):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"NS", "TBTN", "PH", "SUM", "HEAD", "HN", "S21", "CAU", "ERR", "WC"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2") and not g.startswith("R2F")]
     check(not bad, "%s: step 9 adds no globals besides R2F* frames: %s" % (tag, bad))
 
     # ---- The last link comes back in a new session (6.3 lastTalentLink) ---------------
@@ -4896,7 +5078,7 @@ def test_talent_learning(templates):
     bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST", "NOTE", "BZ", "PREV", "GetCVarBool")
            and not g.startswith("TalentFrame")
            and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2") and not g.startswith("R2F")]
     check(not bad, "%s: step 10 adds no globals of its own: %s" % (tag, bad))
 
 
@@ -5785,7 +5967,7 @@ def test_talent_traits_learning(templates):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST")
            and not g.startswith("TalentFrame") and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2") and not g.startswith("R2F")]
     check(not bad, "%s: traits mode adds no globals: %s" % (tag, bad))
 
 
@@ -6559,7 +6741,7 @@ def test_class_picker(templates, fx):
     lua.execute("NEWG = {} for k in pairs(_G) do if not BEFORE[k] then NEWG[#NEWG + 1] = k end end")
     test_vars = {"EDIT", "IMPORTBTN", "BTABS", "PICKS", "BSLOTS", "FT", "NS", "NEWG", "CONFIRMSHOWN", "ENSURES"}
     bad = [g for g in lua_table_to_list(lua.eval("NEWG")) if g not in test_vars and not g.startswith("R2F")
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1") and g not in BINDING_GLOBALS]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2") and g not in BINDING_GLOBALS]
     check(not bad, "%s: the class picker adds no globals: %s" % (tag, bad))
 
 
@@ -6685,6 +6867,8 @@ def main():
     test_reminders()
     test_plan(True)
     test_plan(False)
+    test_biz(True)
+    test_biz(False)
     test_ranks()
     test_gameplay()
     test_gameplay_extras()

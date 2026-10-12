@@ -634,6 +634,20 @@ function TalentPanel.SaveLoadout()
   end)
 end
 
+-- Deleting lives in its own menu and always asks first.
+function TalentPanel.DeleteMenu()
+  local items = { { kind = "title", text = L.TALENT_LOADOUT_DELETE_TITLE } }
+  for _, l in ipairs(Talents.Loadouts(Talents.ClassId())) do
+    items[#items + 1] = { kind = "button", text = l.by and L.TALENT_LOADOUT_BY:format(l.name, l.by) or l.name,
+                          func = function()
+                            UI.Confirm(L.TALENT_LOADOUT_CONFIRM:format(l.name), L.BTN_DELETE, L.BTN_CANCEL, function()
+                              if Talents.DeleteLoadout(l.id) then R2F.Print(L.TALENT_LOADOUT_DELETED:format(l.name)) end
+                            end)
+                          end }
+  end
+  UI.ContextMenu(items)
+end
+
 function TalentPanel.LoadoutsMenu()
   local list = Talents.Loadouts(Talents.ClassId())
   local items = {}
@@ -646,12 +660,8 @@ function TalentPanel.LoadoutsMenu()
                             func = function() setLink(l.body) end }
     end
     items[#items + 1] = { kind = "divider" }
-    for _, l in ipairs(list) do
-      items[#items + 1] = { kind = "button", text = L.TALENT_LOADOUT_DELETE:format(l.name),
-                            func = function()
-                              if Talents.DeleteLoadout(l.id) then R2F.Print(L.TALENT_LOADOUT_DELETED:format(l.name)) end
-                            end }
-    end
+    items[#items + 1] = { kind = "button", text = L.TALENT_LOADOUT_DELETE_MENU,
+                          func = function() TalentPanel.DeleteMenu() end }
   end
   UI.ContextMenu(items)
 end

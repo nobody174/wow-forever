@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.37.1 (2026-10-13)
+
+- Loadouts: deleting moved out of the load list into its own "Delete a loadout..." menu, and asks for confirmation before anything is removed.
+
 ## 0.37.0 (2026-10-13)
 
 - Talent planner on the Talents tab: switch on "Edit build", then left-click a talent to add a point and right-click to remove one. The build updates as a normal link, so Preview and Learn work on it. It enforces max rank, the tier rule (5 points per tier above) and the 51-point cap. It does not check talent prerequisites (the game gives no reliable list), so double-check those.

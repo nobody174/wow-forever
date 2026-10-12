@@ -1,6 +1,6 @@
 # Road to Forever changelog
 
-## 1.0.0 (2026-10-12): first public release
+## 0.30.0 (2026-10-12): public test build
 
 - **Macros**: import macros from the site, browse them in a spellbook-style book, drag them
   to your bars. Imports update macros the addon made and never touch ones you edited.

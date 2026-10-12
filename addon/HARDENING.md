@@ -138,3 +138,7 @@ verified point by point, 17,873 passing tests). What stands between it and a pub
 - Accepted: reactive-alert `SPELL_UPDATE_USABLE` makes 6 `C_Spell.IsSpellUsable` calls per event, only while that alert is on. Cheap; a known-spell filter needs an API not verified on this client.
 - Professions export/reading is already debounced (`schedule`).
 - Not measured in game: needs the owner's in-game check (use the built-in addon CPU profiler: `/console scriptProfile 1`, then reload).
+
+## Release plan (2026-10-12, owner's decision)
+- 0.30.0 is tagged first as a GitHub pre-release test build (the hardened code, TOC 0.30.0). 1.0.0 and CurseForge wait until testing, reviews and the backlog are done.
+- To ship 1.0.0: set the TOC to 1.0.0, rename the newest CHANGELOG heading to `## 1.0.0 (<date>): first public release`, update addons.html and news.json.

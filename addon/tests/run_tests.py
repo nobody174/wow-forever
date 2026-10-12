@@ -806,7 +806,7 @@ def test_settings_tab(templates, fx):
 
     # --- Macros page Options menu: where new macros go, Remove all ----------------------
     lua.execute("R2F.MainWindow.SelectTab('macros') R2F.MacroBook.OptionsMenu()")
-    check(lua.eval("R2FMenu:IsShown()") is True and lua.eval("R2FMenu.rows[5].text.__text") == lua.eval("R2F.L.BTN_REMOVE_ALL"),
+    check(lua.eval("R2FMenu:IsShown()") is True and lua.eval("R2FMenu.rows[6].text.__text") == lua.eval("R2F.L.BTN_REMOVE_ALL"),
           "%s: Remove all is in the Macros Options menu" % tag)
     check(lua.eval("R2FMenu.rows[2].check.__tex") == "Interface\\Buttons\\UI-CheckBox-Check",
           "%s: Options menu: character slots first by default" % tag)
@@ -3174,7 +3174,7 @@ def test_ui_smoke(templates, fx):
         if f.__kind == 'Button' and f.__text == 'Import' and f.__parent ~= R2FImport then BOOKIMPORT = f end
         if f.__kind == 'FontString' and f.__text == 'In combat' then COMBATTEXT = f end
       end""")
-    check(lua.eval("TIDY.__enabled") is False and lua.eval("BOOKIMPORT.__enabled") is False and lua.eval("COMBATTEXT.__shown") is True,
+    check(lua.eval("TIDY.__enabled") is False and lua.eval("COMBATTEXT.__shown") is True,
           "combat greys out Import/Tidy up and shows In combat")
     T.cursor = None
     lua.execute("SLOTS[4]:Fire('OnDragStart')")
@@ -3426,7 +3426,7 @@ def test_step5_ui(templates, fx):
 
     # Remove all through the real confirm dialog; accepted in combat -> queued.
     lua.execute('TEST.actions[1] = "Ham"')
-    lua.execute("R2F.MacroBook.OptionsMenu() R2FMenu.rows[5]:Click()")
+    lua.execute("R2F.MacroBook.OptionsMenu() R2FMenu.rows[6]:Click()")
     check(lua.eval("R2FConfirm:IsShown()") is True, "Remove all asks first")
     text = lua.eval("R2FConfirm.text.__text")
     check(text.startswith("Delete 2 Road to Forever macros") and "Ham, OP" in text and "library stays" in text,
@@ -3444,7 +3444,7 @@ def test_step5_ui(templates, fx):
     check(any("removed 2 Road to Forever macros." in c for c in chat_lines(lua)), "Remove all chat line")
     check(lua.eval("R2F.Library.Count()") == lib_count, "Remove all kept the library")
     T.chat = lua.table()
-    lua.execute("R2F.MacroBook.OptionsMenu() R2FMenu.rows[5]:Click()")
+    lua.execute("R2F.MacroBook.OptionsMenu() R2FMenu.rows[6]:Click()")
     check(any(lua.eval("R2F.L.REMOVE_ALL_NONE") in c for c in chat_lines(lua)), "Remove all with nothing to remove just says so")
 
     # Esc closes the panel; one-global audit with Settings built.
@@ -3689,6 +3689,14 @@ def test_step6_ui(templates, fx):
     check(lua.eval("R2FDB.settings.menuAlpha") == 1, "opacity does not change while the thumb is held")
     lua.execute("local sl = R2F.MainWindow.Frame().r2fOpacitySlider sl:Fire('OnMouseUp')")
     check(lua.eval("R2FDB.settings.menuAlpha") == 0.4, "opacity applies on release")
+    # Held thumb + cursor leaves the bar (no OnMouseUp): applied once the button is up, never while held.
+    lua.execute("local sl = R2F.MainWindow.Frame().r2fSizeSlider sl:Fire('OnMouseDown') sl:SetValue(80) sl:Fire('OnValueChanged', 80)")
+    T.mouseDown = True
+    lua.execute("R2F.MainWindow.Frame().r2fSizeSlider:Fire('OnUpdate', 0.1)")
+    check(lua.eval("R2FDB.settings.menuScale") == 1.2, "size does not change while the mouse button is held")
+    T.mouseDown = False
+    lua.execute("R2F.MainWindow.Frame().r2fSizeSlider:Fire('OnUpdate', 0.1)")
+    check(lua.eval("R2FDB.settings.menuScale") == 0.8, "size applies once when the button is released outside the bar")
     lua.execute("R2FDB.settings.menuScale = 9 R2FDB.settings.menuAlpha = 0 R2F.Library.Init()")
     check(lua.eval("R2FDB.settings.menuScale") == 1 and lua.eval("R2FDB.settings.menuAlpha") == 1, "bad size / opacity values are reset")
     lua.execute("R2F.MainWindow.ApplyLook()")

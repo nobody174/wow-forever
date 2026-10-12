@@ -73,7 +73,7 @@ end
 -- ---------------------------------------------------------------------------
 
 local WIN_W, WIN_H = 820, 600
-local TOP_H, SIDE_W = 44, 150
+local TOP_H, SIDE_W = 50, 150
 -- The pages were laid out for the old 540 x 500 book and keep that size until
 -- they are reflowed; they sit centred in the content area, shifted up because
 -- their first ~44 px were the old title bar.
@@ -137,11 +137,15 @@ end
 local STEP = 10
 local function topSlider(parent, label, min, max, get, set, x)
   local fs = parent:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-  fs:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -8)
-  local function caption(v) fs:SetText(("%s %d%%"):format(label, math.floor(v * 100 + 0.5))) end
-  caption(get())
+  fs:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -5)
+  local function snap(v)
+    v = math.floor(v / STEP + 0.5) * STEP
+    return math.max(min, math.min(max, v))
+  end
+  local function caption(pct) fs:SetText(("%s %d%%"):format(label, pct)) end
+  caption(math.floor(get() * 100 + 0.5))
   local sl = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
-  sl:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -22)
+  sl:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -17)
   sl:SetWidth(84)
   sl:SetMinMaxValues(min, max)
   sl:SetValueStep(STEP)
@@ -149,28 +153,42 @@ local function topSlider(parent, label, min, max, get, set, x)
   for _, part in ipairs({ "Low", "High", "Text" }) do
     if sl[part] then sl[part]:SetText("") end
   end
-  local function commit(v)
-    v = math.floor(v / STEP + 0.5) * STEP / 100
-    v = math.max(min / 100, math.min(max / 100, v))
-    caption(v)
+  -- The slider sits inside the window it scales, so changing the scale while
+  -- the thumb is held moves the bar under the cursor and the value runs away.
+  -- While the mouse button is down only the caption follows; the value is
+  -- applied once, when the button is released (checked in OnUpdate as well,
+  -- because OnMouseUp does not arrive when the cursor leaves the bar).
+  local function commit()
+    sl.r2fDown = false
+    local v = snap(sl:GetValue()) / 100
+    caption(math.floor(v * 100 + 0.5))
     if math.abs(v - get()) > 0.001 then set(v) end
   end
   sl:SetScript("OnValueChanged", function(self, v)
-    if not self.r2fDown then commit(v) end
+    if self.r2fDown then caption(snap(v)) else commit() end
   end)
   sl:SetScript("OnMouseDown", function(self) self.r2fDown = true end)
-  sl:SetScript("OnMouseUp", function(self)
-    self.r2fDown = false
-    commit(self:GetValue())
+  sl:SetScript("OnMouseUp", function(self) if self.r2fDown then commit() end end)
+  sl:SetScript("OnUpdate", function(self)
+    if self.r2fDown and not IsMouseButtonDown("LeftButton") then commit() end
   end)
-  -- Tick marks under the bar, one per step, so the steps can be seen. The thumb's centre travels
-  -- about 8 px in from each end of the bar.
+  sl:SetScript("OnHide", function(self) self.r2fDown = false end)
+  -- Tick marks under the bar, one per step, with the end and middle values
+  -- written under them. The thumb's centre travels about 8 px in from each
+  -- end of the bar.
   local n = (max - min) / STEP
   for i = 0, n do
     local t = parent:CreateTexture(nil, "ARTWORK")
-    t:SetSize(1, (i % 5 == 0) and 6 or 4)
-    t:SetPoint("TOP", sl, "BOTTOMLEFT", 8 + (84 - 16) * i / n, 2)
+    local major = (i == 0 or i == n or min + i * STEP == 100)
+    t:SetSize(1, major and 6 or 4)
+    local tx = 8 + (84 - 16) * i / n
+    t:SetPoint("TOP", sl, "BOTTOMLEFT", tx, 2)
     t:SetColorTexture(0.75, 0.75, 0.78, 0.8)
+    if major then
+      local m = parent:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+      m:SetPoint("TOP", sl, "BOTTOMLEFT", tx, -4)
+      m:SetText(tostring(min + i * STEP))
+    end
   end
   sl.r2fLabel = fs
   return sl
@@ -251,10 +269,11 @@ local function build()
   for _, key in ipairs(MainWindow.TABS) do
     local p = CreateFrame("Frame", nil, f)
     local custom = (key == "bis" and R2F.BiZTab.PAGE) or (key == "home" and R2F.Home.PAGE)
+      or (key == "talents" and R2F.TalentPanel.PAGE)
     if custom then
       -- Mr.BiZ and Home use the whole content area.
       p:SetSize(custom.w, custom.h)
-      p:SetPoint("TOPLEFT", f, "TOPLEFT", SIDE_W + 12, -(TOP_H + 8))
+      p:SetPoint("TOPLEFT", f, "TOPLEFT", SIDE_W + 12, -(TOP_H + 4))
     else
       p:SetSize(PAGE_W, PAGE_H)
       p:SetPoint("TOPLEFT", f, "TOPLEFT", PAGE_X, PAGE_Y)

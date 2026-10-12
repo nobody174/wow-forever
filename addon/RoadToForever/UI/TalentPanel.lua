@@ -33,8 +33,9 @@ R2F.TalentPanel = TalentPanel
 local Talents = R2F.Talents
 
 local TREES, COLS, ROWS = 3, 4, 7    -- Three trees, each a 4 x 7 grid
-local CELL, STEP_X, STEP_Y = 26, 32, 30
-local TREE_W, TREE_TOP = 172, -158
+local CELL, STEP_X, STEP_Y = 34, 42, 38
+local TREE_W, TREE_TOP = 204, -150
+TalentPanel.PAGE = { w = 650, h = 540 }
 
 local page
 local ui = {}
@@ -98,14 +99,14 @@ local function buildCell(parent, x, y)
   -- (64 px ring behind a 37 px button there).
   b.slot = b:CreateTexture(nil, "BACKGROUND")
   b.slot:SetTexture("Interface\\Buttons\\UI-EmptySlot-White")
-  b.slot:SetSize(45, 45)
+  b.slot:SetSize(CELL * 1.73, CELL * 1.73)
   b.slot:SetPoint("CENTER", 0, 0)
   b.icon = b:CreateTexture(nil, "BORDER")
   b.icon:SetAllPoints()
   b.glow = b:CreateTexture(nil, "OVERLAY")
   b.glow:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
   b.glow:SetBlendMode("ADD")
-  b.glow:SetSize(46, 46)
+  b.glow:SetSize(CELL * 1.77, CELL * 1.77)
   b.glow:SetPoint("CENTER", 0, 0)
   b.glow:SetVertexColor(1, 0.82, 0)
   b.glow:Hide()
@@ -161,7 +162,7 @@ end
 
 local function buildTrees(f)
   for t = 1, TREES do
-    local x0 = 12 + (t - 1) * TREE_W
+    local x0 = 10 + (t - 1) * TREE_W
     local name = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     name:SetPoint("TOPLEFT", f, "TOPLEFT", x0 + 6, TREE_TOP)
     name:SetJustifyH("LEFT")
@@ -252,14 +253,14 @@ local function build(f)
 
   ui.status = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
   ui.status:SetPoint("TOPLEFT", 24, -134)
-  ui.status:SetWidth(490)
+  ui.status:SetWidth(600)
   ui.status:SetJustifyH("LEFT")
 
   buildTrees(f)
 
   ui.summary = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
   ui.summary:SetPoint("TOPLEFT", 24, TREE_TOP - 24 - (ROWS - 1) * STEP_Y - CELL - 16)
-  ui.summary:SetWidth(490)
+  ui.summary:SetWidth(600)
   ui.summary:SetJustifyH("LEFT")
 
   -- Learn talents. Enabled only for a plan with zero conflicts and

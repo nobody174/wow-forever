@@ -624,6 +624,7 @@ function GetItemInfo() return nil end
 function GetShapeshiftForm() return T.stanceIndex or 0 end
 function UnitClass() return T.className or "Warrior", T.classToken or "WARRIOR", 1 end
 function IsShiftKeyDown() return T.shift or false end
+function IsMouseButtonDown() return T.mouseDown == true end
 function GetCursorPosition() return T.cursorX or 500, T.cursorY or 400 end
 function UnitCharacterPoints() return T.talentPoints or 0 end
 function PlaySound() end

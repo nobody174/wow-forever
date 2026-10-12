@@ -320,27 +320,51 @@ end
 -- CheckButton underneath, so every caller keeps using SetChecked / GetChecked /
 -- SetScript("OnClick") / SetEnabled and the r2fLabel text exactly as with a
 -- check box. Drawn from our own textures only (no Blizzard template).
-local SWITCH_ON, SWITCH_OFF = { 0.18, 0.72, 0.28 }, { 0.04, 0.04, 0.05 }
+local SWITCH_ON, SWITCH_OFF = { 0.13, 0.52, 0.21 }, { 0.04, 0.04, 0.05 }
+local DOT = "Interface\\AddOns\\RoadToForever\\media\\dot"
+local SW_W, SW_H = 28, 12
+
+-- A pill (rounded on both ends) made from two round caps and a bar between
+-- them, all tinted together. `inset` shrinks it evenly on every side.
+local function pill(parent, layer, inset, w, h)
+  local d = h - 2 * inset
+  local p = { parts = {} }
+  local function add(width, point, x)
+    local t = parent:CreateTexture(nil, layer)
+    t:SetSize(width, d)
+    t:SetPoint(point, parent, point, x, 0)
+    p.parts[#p.parts + 1] = t
+    return t
+  end
+  local l = add(d, "LEFT", inset)
+  l:SetTexture(DOT)
+  local r = add(d, "RIGHT", -inset)
+  r:SetTexture(DOT)
+  add(w - 2 * inset - d, "CENTER", 0)
+  function p.color(c, a)
+    l:SetVertexColor(c[1], c[2], c[3], a or 1)
+    r:SetVertexColor(c[1], c[2], c[3], a or 1)
+    p.parts[3]:SetColorTexture(c[1], c[2], c[3], a or 1)
+  end
+  return p
+end
+
 function UI.Switch(parent, label)
   local b = CreateFrame("CheckButton", nil, parent)
-  b:SetSize(30, 14)
-  local rim = b:CreateTexture(nil, "BACKGROUND")
-  rim:SetAllPoints(b)
-  rim:SetColorTexture(0.45, 0.45, 0.48, 1)
-  local track = b:CreateTexture(nil, "BORDER")
-  track:SetPoint("TOPLEFT", b, "TOPLEFT", 1, -1)
-  track:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -1, 1)
-  track:SetColorTexture(SWITCH_OFF[1], SWITCH_OFF[2], SWITCH_OFF[3], 1)
+  b:SetSize(SW_W, SW_H)
+  local rim = pill(b, "BACKGROUND", 0, SW_W, SW_H)
+  rim.color({ 0.45, 0.45, 0.48 })
+  local track = pill(b, "BORDER", 1, SW_W, SW_H)
+  track.color(SWITCH_OFF)
   local knob = b:CreateTexture(nil, "ARTWORK")
-  knob:SetSize(10, 10)
-  knob:SetColorTexture(0.7, 0.7, 0.72, 1)
+  knob:SetSize(8, 8)
+  knob:SetTexture(DOT)
   b.r2fRim, b.r2fTrack, b.r2fKnob = rim, track, knob
 
   local function paint()
     local on = b:GetChecked() and true or false
-    local c = on and SWITCH_ON or SWITCH_OFF
-    track:SetColorTexture(c[1], c[2], c[3], 1)
-    if on then knob:SetColorTexture(1, 1, 1, 1) else knob:SetColorTexture(0.7, 0.7, 0.72, 1) end
+    track.color(on and SWITCH_ON or SWITCH_OFF)
+    if on then knob:SetVertexColor(1, 1, 1) else knob:SetVertexColor(0.7, 0.7, 0.72) end
     knob:ClearAllPoints()
     if on then knob:SetPoint("RIGHT", b, "RIGHT", -2, 0) else knob:SetPoint("LEFT", b, "LEFT", 2, 0) end
     b:SetAlpha(b.r2fEnabled == false and 0.45 or 1)

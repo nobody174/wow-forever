@@ -485,6 +485,9 @@ local function optionsMenu()
     { kind = "check", text = L.SETTINGS_SLOTS_ACC, isChecked = function() return first == "account" end,
       func = function() Library.db.settings.slotsFirst = "account" end },
     { kind = "divider" },
+    { kind = "button", text = L.BTN_IMPORT, func = function()
+        if R2F.InCombat() then R2F.Print(L.TIDY_TIP_COMBAT) else R2F.ImportFrame.Show() end
+      end },
     { kind = "button", text = L.BTN_REMOVE_ALL, func = function()
         if R2F.InCombat() then R2F.Print(L.TIDY_TIP_COMBAT) else onRemoveAll() end
       end },
@@ -551,11 +554,8 @@ local function build(f)
     b:SetText(label)
     return b
   end
-  ui.import = button(L.BTN_IMPORT, 100)
-  ui.import:SetPoint("BOTTOMLEFT", 20, 16)
-  ui.import:SetScript("OnClick", function() R2F.ImportFrame.Show() end)
   ui.tidy = button(L.BTN_TIDY, 100)
-  ui.tidy:SetPoint("LEFT", ui.import, "RIGHT", 8, 0)
+  ui.tidy:SetPoint("BOTTOMLEFT", 20, 16)
   ui.tidy:SetScript("OnClick", onTidy)
   -- Tooltip also while greyed out in combat, so it can say why (Home's
   -- Quick settings boxes do the same).
@@ -701,7 +701,6 @@ local function refreshBottom()
   if acc >= maxAcc then ui.acc:SetTextColor(1, 0.1, 0.1) else ui.acc:SetTextColor(1, 1, 1) end
   local combat = R2F.InCombat()
   ui.combat:SetShown(combat)
-  ui.import:SetEnabled(not combat)
   ui.tidy:SetEnabled(not combat)
 end
 

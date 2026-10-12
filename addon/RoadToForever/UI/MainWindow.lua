@@ -2,7 +2,7 @@
 --
 -- Flat 820 x 600 window (UI.FlatWindow): a top bar (logo + name, Size and
 -- Opacity sliders, Reload UI, close), a sidebar on the left (Home; Journey:
--- Plan / Talents / BiZ; Tools: Macros / Gameplay; Options: Settings) and the
+-- Plan / Talents / BiZ; Tools: Macros / Gameplay) and the
 -- page on the right. Each tab is a page frame; the window shows one at a time:
 --   Home    -> UI/Home.lua builds into it
 --   Macros  -> UI/MacroBook.lua builds into it
@@ -14,8 +14,8 @@
 --              from the site's BiS data, item tooltips, the wishlist)
 --   Gameplay-> UI/Gameplay.lua builds into it (features that act for you or
 --              change the screen, plus the reminder icons' options)
---   Settings-> UI/Settings.lua builds into it (slots, minimap, Quick settings,
---              bags)
+--   (Settings is part of Home since 0.32: UI/Settings.lua builds the game, minimap and bag
+--    switches into the Home page; /r2f settings opens Home.)
 -- The pages are still the 540 x 500 layouts of the old book, centred in the
 -- content area until they are reflowed one by one.
 --
@@ -30,12 +30,14 @@ local UI = R2F.UI
 local MainWindow = {}
 R2F.MainWindow = MainWindow
 
-MainWindow.TABS = { "home", "macros", "talents", "plan", "bis", "gameplay", "settings" }
-local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, bis = 5, gameplay = 6, settings = 7 }  -- membership check
+MainWindow.TABS = { "home", "macros", "talents", "plan", "bis", "gameplay" }
+local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, bis = 5, gameplay = 6 }  -- membership check
+-- Tabs that were folded into another one (the Settings tab became part of Home).
+local ALIAS = { settings = "home" }
 local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", plan = "TITLE_PLAN",
-                 bis = "TITLE_BIS", gameplay = "TITLE_GAMEPLAY", settings = "TITLE_SETTINGS" }
+                 bis = "TITLE_BIS", gameplay = "TITLE_GAMEPLAY" }
 local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", plan = "TAB_PLAN",
-                 bis = "TAB_BIS", gameplay = "TAB_GAMEPLAY", settings = "TAB_SETTINGS" }
+                 bis = "TAB_BIS", gameplay = "TAB_GAMEPLAY" }
 local LOGO = "Interface\\AddOns\\RoadToForever\\media\\logo128"
 
 local frame
@@ -58,8 +60,6 @@ local function refreshPage(key)
     R2F.BiZTab.Refresh()
   elseif key == "gameplay" then
     R2F.GameplayTab.Refresh()
-  elseif key == "settings" then
-    R2F.Settings.Refresh()
   end
 end
 
@@ -86,7 +86,6 @@ MainWindow.NAV = {
   { tabs = { "home" } },
   { heading = "NAV_JOURNEY", tabs = { "plan", "talents", "bis" } },
   { heading = "NAV_TOOLS", tabs = { "macros", "gameplay" } },
-  { heading = "NAV_OPTIONS", tabs = { "settings" } },
 }
 
 local GOLD = { 1, 0.82, 0 }
@@ -251,9 +250,9 @@ local function build()
 
   for _, key in ipairs(MainWindow.TABS) do
     local p = CreateFrame("Frame", nil, f)
-    local custom = key == "bis" and R2F.BiZTab.PAGE
+    local custom = (key == "bis" and R2F.BiZTab.PAGE) or (key == "home" and R2F.Home.PAGE)
     if custom then
-      -- Mr.BiZ uses the whole content area (paper doll + slot panel).
+      -- Mr.BiZ and Home use the whole content area.
       p:SetSize(custom.w, custom.h)
       p:SetPoint("TOPLEFT", f, "TOPLEFT", SIDE_W + 12, -(TOP_H + 8))
     else
@@ -269,7 +268,6 @@ local function build()
   R2F.PlanTab.Build(pages.plan)
   R2F.BiZTab.Build(pages.bis)
   R2F.GameplayTab.Build(pages.gameplay)
-  R2F.Settings.Build(pages.settings)
 
   f:SetScript("OnShow", function()
     UI.PlaySound("IG_SPELLBOOK_OPEN")
@@ -296,6 +294,7 @@ end
 -- Show one page. Works whether the window is open or not (an open window
 -- refreshes the page right away; a closed one does it in OnShow).
 function MainWindow.SelectTab(key)
+  key = ALIAS[key] or key
   if not TAB_INDEX[key] then key = "home" end
   ensure()
   if current ~= key then

@@ -759,56 +759,63 @@ def test_settings_tab(templates, fx):
     res = lua.eval("function(s) local a, b = R2F.Import.Parse(s) return a, b end")(fx["warriorUniversal"]["string"])[0]
     lua.eval("R2F.Library.Apply")(res.records, 1)
 
-    # --- Fourth tab, slash command, title -----------------------------------------
+    # --- /r2f settings opens Home (the Settings tab was folded into it) -------------
     lua.execute('SlashCmdList.R2F("settings")')
-    check(MW.IsShown() is True and MW.CurrentTab() == "settings", "%s: /r2f settings opens the Settings tab" % tag)
-    win = "R2FMain"
+    check(MW.IsShown() is True and MW.CurrentTab() == "home", "%s: /r2f settings opens Home" % tag)
     title = lua.eval("R2F.MainWindow.Title()")
-    check(title == "Road to Forever: Settings", "%s: Settings title: %r" % (tag, title))
-    check(lua.eval("R2FDB.settings.lastTab") == "settings", "Settings can be the remembered last tab")
+    check(title == "Road to Forever", "%s: Home title: %r" % (tag, title))
+    check(lua.eval("R2FDB.settings.lastTab") == "home", "the retired settings tab is remembered as home")
+    lua.execute("R2FDB.settings.lastTab = 'settings' R2F.Library.Init()")
+    check(lua.eval("R2FDB.settings.lastTab") == "home", "a saved lastTab of 'settings' becomes home")
     lua.execute("R2F.MainWindow.SelectTab('macros')")
     check(lua.eval("R2F.Settings.IsShown()") is False, "Settings.IsShown() false on another tab")
 
-    # --- Home is a short 'what's next' list; Quick settings are not on it -----------
+    # --- Home: headline, the plan entry, the options, share card ---------------------
     lua.execute("R2F.MainWindow.SelectTab('home')")
     find_frames(lua, "f.__kind == 'Button' and f.tab ~= nil and f.sub ~= nil", "HOME")
-    check(lua.eval("#HOME") == 4, "%s: Home has four entries" % tag)
-    check(font_text(lua, "^What's next$") == "What's next", "Home heading")
+    check(lua.eval("#HOME") == 1 and lua.eval("HOME[1].tab") == "plan", "%s: Home has the one plan entry" % tag)
+    check(font_text(lua, "^Road to Forever$") == "Road to Forever" and font_text(lua, "^" + lua.eval("R2F.L.HOME_TAGLINE") + "$") is not None,
+          "Home headline and tagline")
     acc_n, acc_max, char_n, char_max = lua.eval("R2F.Macros.Counts()")
-    check(lua.eval("HOME[3].sub.__text") == "%d of %d character slots, %d of %d account slots used" % (char_n, char_max, acc_n, acc_max),
-          "Home slot line: %r" % lua.eval("HOME[3].sub.__text"))
-    lua.execute('TEST.addMacro("Mine", "/dance", true) R2F.Home.Refresh()')
-    check(lua.eval("HOME[3].sub.__text").startswith("%d of %d character slots" % (char_n + 1, char_max)),
-          "Home slot line follows the live macro count")
+    check(lua.eval("R2F.Home.SlotLine()") == "%d of %d character slots, %d of %d account slots used" % (char_n, char_max, acc_n, acc_max),
+          "slot line helper: %r" % lua.eval("R2F.Home.SlotLine()"))
     find_frames(lua, "f.qsItem ~= nil", "QSB")
-    check(lua.eval("#QSB") == 3 and lua.eval("QSB[1]:IsVisible()") is False,
-          "Quick settings boxes exist but are not on the Home page")
-
-    # --- Settings page content ----------------------------------------------------
-    lua.execute("R2F.MainWindow.SelectTab('settings')")
-    for key in ("SETTINGS_MACROS", "SETTINGS_MINIMAP", "QS_TITLE"):
-        check(font_text(lua, "^" + lua.eval("R2F.L.%s" % key) + "$") is not None, "Settings tab has the %s heading" % key)
-    check(lua.eval("QSB[1]:IsVisible()") is True, "%s: Quick settings boxes visible on the Settings tab" % tag)
-    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.BTN_REMOVE_ALL", "RM")
-    check(lua.eval("#RM") == 1 and lua.eval("RM[1]:IsVisible()") is True, "Remove all is on the Settings tab")
+    check(lua.eval("#QSB") == 3 and lua.eval("QSB[1]:IsVisible()") is True,
+          "%s: Quick settings switches are on the Home page" % tag)
+    for key in ("QS_TITLE", "SETTINGS_MINIMAP", "BAGS_TITLE", "HOME_SHARE"):
+        check(font_text(lua, "^" + lua.eval("R2F.L.%s" % key) + "$") is not None, "Home has the %s heading" % key)
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel", "CBS")
     labels = {lua.eval("CBS[%d].r2fLabel.__text" % i) for i in range(1, lua.eval("#CBS") + 1)}
-    for key in ("SETTINGS_SLOTS_CHAR", "SETTINGS_SLOTS_ACC", "SETTINGS_MINIMAP_SHOW", "SETTINGS_MINIMAP_LOCK",
-                "QS_ZOOM", "QS_GUILD", "QS_PVP", "BAGS_MOVABLE", "BAGS_LOCK"):
-        check(lua.eval("R2F.L.%s" % key) in labels, "Settings tab has the %s control" % key)
+    for key in ("SETTINGS_MINIMAP_SHOW", "SETTINGS_MINIMAP_LOCK", "QS_ZOOM", "QS_GUILD", "QS_PVP", "BAGS_MOVABLE", "BAGS_LOCK"):
+        check(lua.eval("R2F.L.%s" % key) in labels, "Home has the %s control" % key)
+    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.HOME_PROFS and f.__shown", "PROFS")
+    check(lua.eval("#PROFS") == 1, "Export professions is on Home")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_STANCE_SHOW", "SSB")
     check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is False
-          and lua.eval("#SSB == 0 or not SSB[1]:IsVisible()") is True, "stance options are not on the Settings tab any more (15.4)")
-    # Combat greys Remove all and the Quick settings boxes through the tab.
+          and lua.eval("#SSB == 0 or not SSB[1]:IsVisible()") is True, "stance options are not on Home (15.4)")
+    # Combat greys the Quick settings switches.
     T.combat = True
     T.fire("PLAYER_REGEN_DISABLED")
-    check(lua.eval("RM[1]:IsEnabled()") is False and lua.eval("QSB[1]:IsEnabled()") is False, "combat greys Remove all + Quick settings")
+    check(lua.eval("QSB[1]:IsEnabled()") is False, "combat greys the Quick settings switches")
     T.combat = False
     T.fire("PLAYER_REGEN_ENABLED")
-    check(lua.eval("RM[1]:IsEnabled()") is True and lua.eval("QSB[1]:IsEnabled()") is True, "after combat both are enabled again")
+    check(lua.eval("QSB[1]:IsEnabled()") is True, "after combat they are enabled again")
     # The old floating panel and its button are gone.
     check(lua.eval("R2FSettings == nil"), "no floating Settings panel")
     check("R2FSettings" not in lua_table_to_list(lua.eval("UISpecialFrames")), "R2FSettings not in UISpecialFrames")
+
+    # --- Macros page Options menu: where new macros go, Remove all ----------------------
+    lua.execute("R2F.MainWindow.SelectTab('macros') R2F.MacroBook.OptionsMenu()")
+    check(lua.eval("R2FMenu:IsShown()") is True and lua.eval("R2FMenu.rows[5].text.__text") == lua.eval("R2F.L.BTN_REMOVE_ALL"),
+          "%s: Remove all is in the Macros Options menu" % tag)
+    check(lua.eval("R2FMenu.rows[2].check.__tex") == "Interface\\Buttons\\UI-CheckBox-Check",
+          "%s: Options menu: character slots first by default" % tag)
+    lua.execute("R2FMenu.rows[3]:Click()")
+    check(lua.eval("R2FDB.settings.slotsFirst") == "account", "%s: Options menu: account slots first" % tag)
+    lua.execute("R2F.MacroBook.OptionsMenu() R2FMenu.rows[2]:Click()")
+    check(lua.eval("R2FDB.settings.slotsFirst") == "character", "%s: Options menu: back to character slots" % tag)
+    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.BTN_MACRO_OPTIONS and f.__shown", "OPTBTN")
+    check(lua.eval("#OPTBTN") == 1, "%s: the Macros page has an Options button" % tag)
 
     # --- Black squares: checked glow + icon fallback --------------------------------
     lua.execute("R2F.MainWindow.SelectTab('macros') R2F.MacroBook.Refresh()")
@@ -1135,8 +1142,8 @@ def test_reminders():
     # --- Tabs and class filter ------------------------------------------------------
     lua, T = reminder_runtime("WARRIOR")
     MW = lua.eval("R2F.MainWindow")
-    keys = [lua.eval("R2F.MainWindow.TABS[%d]" % i) for i in range(1, 8)]
-    check(keys == ["home", "macros", "talents", "plan", "bis", "gameplay", "settings"], "15.4/15.5/19 tab order: %s" % keys)
+    keys = [lua.eval("R2F.MainWindow.TABS[%d]" % i) for i in range(1, 7)]
+    check(keys == ["home", "macros", "talents", "plan", "bis", "gameplay"], "15.4/15.5/19 tab order: %s" % keys)
     lua.execute('SlashCmdList.R2F("reminders")')
     lua.execute('R2F.GameplayTab.ShowPage("alerts")')
     check(MW.CurrentTab() == "gameplay", "15.4 /r2f reminders (the old name) opens the Gameplay tab")
@@ -1510,7 +1517,7 @@ def test_plan(templates=True):
     lua.execute("R2F.MainWindow.Show('plan')")
     title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever: Plan", "%s: Plan title: %r" % (tag, title))
-    check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 7, "%s: seven tabs, Plan fourth" % tag)
+    check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 6, "%s: six tabs, Plan fourth" % tag)
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text ~= '' and f.stepId == nil", "PICKS")
     labels = [lua.eval("PICKS[%d].r2fLabel.__text" % i) for i in range(1, lua.eval("#PICKS") + 1)]
     wanted = [lua.eval("R2F.Plan.Label(%r)" % p) for p in ("hwd", "hunter", "h3d", "trio")]
@@ -1561,15 +1568,15 @@ def test_plan(templates=True):
     lua, T = plan_runtime(templates=templates)
     lua.execute("R2F.MainWindow.Show('home')")
     find_frames(lua, "f.__kind == 'Button' and f.tab ~= nil and f.sub ~= nil", "HOME")
-    check(lua.eval("#HOME") == 4 and lua.eval("HOME[4].tab") == "plan", "%s: Home has the launch plan entry" % tag)
+    check(lua.eval("#HOME") == 1 and lua.eval("HOME[1].tab") == "plan", "%s: Home has the launch plan entry" % tag)
     nxt = lua.eval("R2F.Plan.Next('hwd')")
-    check(lua.eval("HOME[4].sub.__text") == "Next: [%s] %s" % (nxt.lvl, nxt.t), "%s: Home next-step line: %r" % (tag, lua.eval("HOME[4].sub.__text")))
+    check(lua.eval("HOME[1].sub.__text") == "Next: [%s] %s" % (nxt.lvl, nxt.t), "%s: Home next-step line: %r" % (tag, lua.eval("HOME[1].sub.__text")))
     lua.execute("R2F.Plan.SetDone(R2F.Plan.Next('hwd').id, true) R2F.Home.Refresh()")
     nxt2 = lua.eval("R2F.Plan.Next('hwd')")
-    check(lua.eval("HOME[4].sub.__text") == "Next: [%s] %s" % (nxt2.lvl, nxt2.t) and nxt2.id != nxt.id, "%s: the next-step line follows the ticks" % tag)
+    check(lua.eval("HOME[1].sub.__text") == "Next: [%s] %s" % (nxt2.lvl, nxt2.t) and nxt2.id != nxt.id, "%s: the next-step line follows the ticks" % tag)
     lua.execute("for _, s in ipairs(R2F.Plan.Steps('hwd')) do R2F.Plan.SetDone(s.id, true) end R2F.Home.Refresh()")
-    check(lua.eval("HOME[4].sub.__text") == "All launch-day steps done", "%s: Home says all done" % tag)
-    lua.execute("HOME[4]:Click()")
+    check(lua.eval("HOME[1].sub.__text") == "All launch-day steps done", "%s: Home says all done" % tag)
+    lua.execute("HOME[1]:Click()")
     check(lua.eval("R2F.MainWindow.CurrentTab()") == "plan", "%s: clicking the Home entry opens the Plan tab" % tag)
 
 
@@ -3386,28 +3393,21 @@ def test_step5_ui(templates, fx):
       end""")
     check(lua.eval("SETBTN == nil"), "%s: no Settings button in the Macro Book (15.2)" % tag)
     lua.execute("R2F.Settings.Show()")
-    check(lua.eval("R2F.MainWindow.CurrentTab()") == "settings" and lua.eval("R2F.Settings.IsShown()") is True
-          and lua.eval("R2FSettings == nil"), "%s: Settings opens as a tab of the main window" % tag)
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "home" and lua.eval("R2F.Settings.IsShown()") is True
+          and lua.eval("R2FSettings == nil"), "%s: Settings opens on the Home page" % tag)
     lua.execute("""
       CHECKS = {}
       for _, f in ipairs(TEST.allFrames) do
         if f.__kind == 'CheckButton' and f.r2fLabel then CHECKS[f.r2fLabel.__text] = f end
-        if f.__kind == 'Button' and f.__text == R2F.L.BTN_REMOVE_ALL then REMOVEALL = f end
       end
       L = R2F.L""")
     rb = lambda key: "CHECKS[L.%s]" % key
-    check(lua.eval(rb("SETTINGS_SLOTS_CHAR") + ":GetChecked()") is True and lua.eval(rb("SETTINGS_SLOTS_ACC") + ":GetChecked()") is False,
-          "Settings: Character slots first is selected by default")
-
-    # Account first through the panel -> the next CreateMacro goes to account slots.
-    lua.execute(rb("SETTINGS_SLOTS_ACC") + ":Click()")
-    check(lua.eval("R2FDB.settings.slotsFirst") == "account", "Settings radio writes R2FDB.settings.slotsFirst")
-    check(lua.eval(rb("SETTINGS_SLOTS_ACC") + ":GetChecked()") is True and lua.eval(rb("SETTINGS_SLOTS_CHAR") + ":GetChecked()") is False,
-          "Settings: radio pair has exactly one selected")
+    lua.execute("R2FDB.settings.slotsFirst = 'character' R2F.MacroBook.OptionsMenu() R2FMenu.rows[3]:Click()")
+    check(lua.eval("R2FDB.settings.slotsFirst") == "account", "Options menu writes R2FDB.settings.slotsFirst")
     lua.execute('R2F.Macros.Ensure("WARRIOR/Ham")')
     check(lua.eval("#TEST.macros.acc") == 1 and lua.eval("#TEST.macros.char") == 0,
-          "%s: after choosing Account first in Settings, a dragged macro is created in an account slot" % tag)
-    lua.execute(rb("SETTINGS_SLOTS_CHAR") + ":Click()")
+          "%s: after choosing Account first, a dragged macro is created in an account slot" % tag)
+    lua.execute("R2F.MacroBook.OptionsMenu() R2FMenu.rows[2]:Click()")
     lua.execute('R2F.Macros.Ensure("WARRIOR/OP")')
     check(lua.eval("#TEST.macros.char") == 1 and lua.eval('GetMacroIndexByName("Ham") <= 120'),
           "back to Character first: next macro in a character slot, VR stays in its account slot")
@@ -3424,17 +3424,9 @@ def test_step5_ui(templates, fx):
     lua.execute(rb("SETTINGS_MINIMAP_SHOW") + ":Click() R2F.Minimap = REAL_MM")
     check(lua.eval("R2FDB.minimap.hide") is False, "Show minimap button toggles back")
 
-    # Combat: Remove all greyed out, Settings button still usable.
-    T.fire("PLAYER_REGEN_DISABLED")
-    T.combat = True
-    check(lua.eval("REMOVEALL.__enabled") is False, "combat greys out Remove all")
-    T.combat = False
-    T.fire("PLAYER_REGEN_ENABLED")
-    check(lua.eval("REMOVEALL.__enabled") is True, "combat end re-enables Remove all")
-
     # Remove all through the real confirm dialog; accepted in combat -> queued.
     lua.execute('TEST.actions[1] = "Ham"')
-    lua.execute("REMOVEALL:Click()")
+    lua.execute("R2F.MacroBook.OptionsMenu() R2FMenu.rows[5]:Click()")
     check(lua.eval("R2FConfirm:IsShown()") is True, "Remove all asks first")
     text = lua.eval("R2FConfirm.text.__text")
     check(text.startswith("Delete 2 Road to Forever macros") and "Ham, OP" in text and "library stays" in text,
@@ -3452,7 +3444,7 @@ def test_step5_ui(templates, fx):
     check(any("removed 2 Road to Forever macros." in c for c in chat_lines(lua)), "Remove all chat line")
     check(lua.eval("R2F.Library.Count()") == lib_count, "Remove all kept the library")
     T.chat = lua.table()
-    lua.execute("REMOVEALL:Click()")
+    lua.execute("R2F.MacroBook.OptionsMenu() R2FMenu.rows[5]:Click()")
     check(any(lua.eval("R2F.L.REMOVE_ALL_NONE") in c for c in chat_lines(lua)), "Remove all with nothing to remove just says so")
 
     # Esc closes the panel; one-global audit with Settings built.
@@ -3670,14 +3662,14 @@ def test_step6_ui(templates, fx):
 
     # ---- Main window tabs ----------------------------------------------------
     n = find_frames(lua, "f.r2fKey ~= nil", "MTABS")
-    check(n == 7, "seven sidebar entries")
+    check(n == 6, "six sidebar entries")
     lua.execute("NAV = {} for _, f in ipairs(MTABS) do NAV[f.r2fKey] = f end "
-                "MTABS = {NAV.home, NAV.macros, NAV.talents, NAV.plan, NAV.bis, NAV.gameplay, NAV.settings}")
-    labels = [lua.eval("MTABS[%d].r2fText.__text" % i) for i in range(1, 8)]
-    check(labels == ["Home", "Macros", "Talents", "Plan", "BiZ", "Gameplay", "Settings"],
+                "MTABS = {NAV.home, NAV.macros, NAV.talents, NAV.plan, NAV.bis, NAV.gameplay}")
+    labels = [lua.eval("MTABS[%d].r2fText.__text" % i) for i in range(1, 7)]
+    check(labels == ["Home", "Macros", "Talents", "Plan", "BiZ", "Gameplay"],
           "sidebar labels %s" % labels)
-    order = [lua.eval("R2F.MainWindow.NAV[%d].tabs[%d]" % (g, t)) for g, t in ((1, 1), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2), (4, 1))]
-    check(order == ["home", "plan", "talents", "bis", "macros", "gameplay", "settings"], "sidebar order %s" % order)
+    order = [lua.eval("R2F.MainWindow.NAV[%d].tabs[%d]" % (g, t)) for g, t in ((1, 1), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2))]
+    check(order == ["home", "plan", "talents", "bis", "macros", "gameplay"], "sidebar order %s" % order)
     lua.execute("MTABS[1]:Click()")
     check(MW.CurrentTab() == "home" and lua.eval("MTABS[1].r2fBar.__shown") is True and lua.eval("MTABS[2].r2fBar.__shown") is False,
           "clicking Home selects it (gold bar on the selected entry only)")
@@ -3724,40 +3716,29 @@ def test_step6_ui(templates, fx):
     check((inlib, onbars) == (total, 2), "Home counts: whole library, our macros on bars only (%s, %s)" % (inlib, onbars))
     lua.execute("R2F.MainWindow.Show('home')")
     find_frames(lua, "f.__kind == 'Button' and f.tab ~= nil and f.sub ~= nil", "HOME")
-    check(lua.eval("#HOME") == 4, "Home has four entries: Macro Book, Talents, macro slots, launch plan (15.5)")
-    check(lua.eval("HOME[1].sub.__text") == "%d macros in your library, 2 on your bars" % total,
-          "Home Macro Book line: %r" % lua.eval("HOME[1].sub.__text"))
-    # Step 9: 12.4's free-points line instead of the step-6 placeholder.
-    check(lua.eval("HOME[2].sub.__text") == "No free talent points", "Home Talents line with no free points")
+    check(lua.eval("#HOME") == 1 and lua.eval("HOME[1].tab") == "plan", "Home has one entry: the launch plan (Phase 2)")
+    check(lua.eval("R2F.Home.MacroLine()") == "%d macros in your library, 2 on your bars" % total,
+          "Home macro line: %r" % lua.eval("R2F.Home.MacroLine()"))
+    TL = lua.eval("R2F.Home.TalentLine")
+    check(TL() == "No free talent points", "Talent points line with no free points")
     T.talentPoints = 5
-    lua.execute("R2F.Home.Refresh()")
-    check(lua.eval("HOME[2].sub.__text") == "5 free talent points", "Home Talents line: 5 free talent points")
+    check(TL() == "5 free talent points", "Talent points line: 5 free talent points")
     T.talentPoints = 1
-    T.fire("CHARACTER_POINTS_CHANGED")
-    T.runTimers()
-    check(lua.eval("HOME[2].sub.__text") == "1 free talent point", "Home Talents line follows CHARACTER_POINTS_CHANGED")
+    check(TL() == "1 free talent point", "Talent points line: 1 free talent point")
     T.talentPoints = 0
-    T.fire("PLAYER_LEVEL_UP")
-    T.runTimers()
-    check(lua.eval("HOME[2].sub.__text") == "No free talent points", "Home Talents line follows PLAYER_LEVEL_UP")
+    lua.execute("R2F.MainWindow.SelectTab('talents') R2F.TalentPanel.Refresh()")
+    find_frames(lua, "f.__kind == 'FontString' and f.__text == 'No free talent points'", "TPTS")
+    check(lua.eval("#TPTS") >= 1, "the Talents page shows the free points line")
     lua.execute('TEST.actions[80] = nil')
     T.fire("ACTIONBAR_SLOT_CHANGED")
     T.runTimers()
-    check(lua.eval("HOME[1].sub.__text").endswith(", 1 on your bars"), "Home count follows ACTIONBAR_SLOT_CHANGED")
+    check(lua.eval("R2F.Home.MacroLine()").endswith(", 1 on your bars"), "macro count follows ACTIONBAR_SLOT_CHANGED")
     lua.execute("R2F.Library.db.library = {} R2F.Library.Apply({ { id = 'ANY/Zoom', class = 'ANY', section = 'Universal',"
-                " group = 'Misc / UI', name = 'Zoom', short = 'Zoom', body = '/x' } }, 1) R2F.Home.Refresh()")
-    check(lua.eval("HOME[1].sub.__text").startswith("1 macro in your library"), "singular wording for 1 macro")
+                " group = 'Misc / UI', name = 'Zoom', short = 'Zoom', body = '/x' } }, 1)")
+    check(lua.eval("R2F.Home.MacroLine()").startswith("1 macro in your library"), "singular wording for 1 macro")
     lua.eval("R2F.Library.Apply")(res.records, 1)
-    find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.HOME_IMPORT", "HIMPORT")
-    T.fire("PLAYER_REGEN_DISABLED")
-    check(lua.eval("HIMPORT[1].__enabled") is False, "Home's Import macros is greyed out in combat")
-    T.fire("PLAYER_REGEN_ENABLED")
-    lua.execute("HIMPORT[1]:Click()")
-    check(lua.eval("R2FImport:IsShown()") is True, "Home's Import macros opens the Import window")
-    lua.execute("R2FImport:Hide() HOME[1]:Click()")
-    check(MW.CurrentTab() == "macros", "clicking the Macro Book entry switches to the Macros tab")
-    lua.execute("R2F.MainWindow.SelectTab('home') HOME[2]:Click()")
-    check(MW.CurrentTab() == "talents", "clicking the Talents entry switches to the Talents tab")
+    lua.execute("R2F.MainWindow.SelectTab('home') HOME[1]:Click()")
+    check(MW.CurrentTab() == "plan", "clicking the plan entry switches to the Plan tab")
 
     # ---- Home footer: version/author (12.4.2) ----------------------------------
     # The footer is built once with the page (same as every other Home widget),
@@ -6303,7 +6284,7 @@ def test_quick_settings(templates, fx):
     # Set by "someone else" (a /console, another addon) before Home is opened.
     lua.execute("TEST.cvars.UnitNamePlayerGuild = '0' TEST.cvars.cameraDistanceMaxZoomFactor = '4.000000'")
     lua.execute('SlashCmdList.R2F("settings")')
-    check(lua.eval("R2F.MainWindow.CurrentTab()") == "settings", "%s: /r2f settings opens the Settings tab" % tag)
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "home", "%s: /r2f settings opens Home (settings live there)" % tag)
     n = find_frames(lua, "f.qsItem ~= nil", "QSB")
     check(n == 3, "%s: three Quick settings boxes on the Settings tab (%d)" % (tag, n))
     check([lua.eval("QSB[%d].qsItem.key" % i) for i in (1, 2, 3)] == ["zoom", "guild", "pvp"], "boxes in item order")
@@ -6470,9 +6451,8 @@ def test_quick_settings(templates, fx):
     check(lua.eval("R2F.Library.Get('ANY/Zoom') ~= nil and R2F.Library.Get('ANY/HidePvP') ~= nil"),
           "the three stay in the library (only the grid hides them)")
     lua.execute("R2F.MainWindow.SelectTab('home')")
-    lua.execute("QHOME = nil for _, f in ipairs(TEST.allFrames) do if f.tab == 'macros' and not QHOME then QHOME = f end end")
-    check(lua.eval("QHOME.sub.__text").startswith("%d macros in your library" % (total + 3)),
-          "Home's library count still counts the whole library")
+    check(lua.eval("R2F.Home.MacroLine()").startswith("%d macros in your library" % (total + 3)),
+          "the library count still counts the whole library")
 
     # A box that can't work keeps its macro visible.
     lua.execute("R2F.MainWindow.SelectTab('settings') TEST.cvars.UnitNamePlayerPVPTitle = nil R2F.Settings.Refresh()")

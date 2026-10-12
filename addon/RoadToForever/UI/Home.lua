@@ -1,18 +1,17 @@
 -- UI/Home.lua: the Home tab of the main window.
 --
--- "What's next" (including the launch plan's next step): large entries in spellbook-slot style
--- (big icon in the quick-slot border, gold name, white line under it): Talents
--- with the free talent points, Macro Book with live counts, and the macro slot
--- use. Clicking an entry switches the main window to that tab. Below
--- them: the Import macros / Export professions buttons and one line on how to
--- get an import string. Quick settings moved to the Settings tab.
+-- A headline (name + one line), the launch plan's next step as one large entry (spellbook-slot
+-- style: big icon in the quick-slot border, gold name, white line under it; click opens the
+-- Plan tab), then the game and minimap options (UI/Settings.lua builds them into this page)
+-- and a "Share with the site" card (Export professions). Macro import, slots and Remove all
+-- live on the Macros page; the free talent points on the Talents page.
 -- At the very bottom, a version/author footer, so the addon's version and
 -- author can be seen in game. Reads the TOC's own
 -- ## Version / ## Author fields through GetAddOnMetadata so the footer can
 -- never drift out of sync with the TOC the way a second hardcoded string
 -- would.
 --
--- Built into the page frame MainWindow hands it, like MacroBook.
+-- Built into the page frame MainWindow hands it (650 x 540, Home.PAGE), like MacroBook.
 
 local _, R2F = ...
 local L = R2F.L
@@ -23,6 +22,9 @@ R2F.Home = Home
 
 local page
 local ui = {}
+
+-- Home uses the whole content area; MainWindow reads this.
+Home.PAGE = { w = 650, h = 540 }
 
 -- "N macros in your library, M on your bars". N = every imported macro, any
 -- class (the library is account-wide). M = real macros this addon made
@@ -69,10 +71,10 @@ end
 -- One big entry: a 44 px icon in the quick-slot border (the spellbook's look,
 -- 5.3, scaled up), name and sub line to the right. The whole row is the
 -- button, with the quest log's row highlight, so the click target is large.
-local function entry(parent, y, icon, title, tab)
+local function entry(parent, y, icon, title, tab, w)
   local b = CreateFrame("Button", nil, parent)
-  b:SetSize(420, 56)
-  b:SetPoint("TOPLEFT", 40, y)
+  b:SetSize(w or 420, 56)
+  b:SetPoint("TOPLEFT", 0, y)
   b:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
   b.icon = b:CreateTexture(nil, "BORDER")
   b.icon:SetSize(44, 44)
@@ -87,7 +89,7 @@ local function entry(parent, y, icon, title, tab)
   b.name:SetText(title)
   b.sub = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
   b.sub:SetPoint("TOPLEFT", b.name, "BOTTOMLEFT", 0, -6)
-  b.sub:SetWidth(340)
+  b.sub:SetWidth((w or 420) - 80)
   b.sub:SetJustifyH("LEFT")
   b.tab = tab
   b:SetScript("OnClick", function() R2F.MainWindow.SelectTab(tab) end)
@@ -95,34 +97,31 @@ local function entry(parent, y, icon, title, tab)
 end
 
 local function build(f)
-  -- Home is a short "what's next" list: free talent points, library
-  -- and bar counts, macro slot use. Quick settings moved to the Settings tab.
   ui.head = f:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-  ui.head:SetPoint("TOPLEFT", 52, -56)
-  ui.head:SetText(L.HOME_NEXT)
-  ui.macros = entry(f, -156, "INV_Misc_Book_09", L.HOME_MACROS, "macros")
-  ui.talents = entry(f, -86, "INV_Misc_Book_11", L.HOME_TALENTS, "talents")
-  ui.slots = entry(f, -226, "INV_Scroll_03", L.HOME_SLOTS, "macros")
-  ui.plan = entry(f, -296, "INV_Misc_Map_01", L.HOME_PLAN, "plan")
+  ui.head:SetPoint("TOPLEFT", 0, -2)
+  ui.head:SetText(L.ADDON_NAME)
+  ui.tagline = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  ui.tagline:SetPoint("TOPLEFT", ui.head, "BOTTOMLEFT", 0, -6)
+  ui.tagline:SetText(L.HOME_TAGLINE)
+  ui.tagline:SetTextColor(0.75, 0.75, 0.75)
 
-  ui.import = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-  ui.import:SetSize(160, 24)
-  ui.import:SetPoint("TOPLEFT", 52, -382)
-  ui.import:SetText(L.HOME_IMPORT)
-  ui.import:SetScript("OnClick", function() R2F.ImportFrame.Show() end)
+  ui.plan = entry(f, -52, "INV_Misc_Map_01", L.HOME_PLAN, "plan", 650)
 
-  ui.hint = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-  ui.hint:SetPoint("TOPLEFT", ui.import, "BOTTOMLEFT", 0, -10)
-  ui.hint:SetWidth(420)
-  ui.hint:SetJustifyH("LEFT")
-  ui.hint:SetTextColor(0.7, 0.7, 0.7)
-  ui.hint:SetText(L.HOME_IMPORT_HINT)
-
+  -- Share with the site (right column, under the bag switches).
+  ui.shareHead = f:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+  ui.shareHead:SetPoint("TOPLEFT", 340, -250)
+  ui.shareHead:SetText(L.HOME_SHARE)
+  ui.shareText = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.shareText:SetPoint("TOPLEFT", 344, -278)
+  ui.shareText:SetWidth(300)
+  ui.shareText:SetJustifyH("LEFT")
+  ui.shareText:SetTextColor(0.7, 0.7, 0.7)
+  ui.shareText:SetText(L.HOME_PROFS_TIP)
   -- Export professions: same as /r2f profs and the profession
   -- window's Export button. Read-only, so it stays enabled in combat.
   ui.profs = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   ui.profs:SetSize(160, 24)
-  ui.profs:SetPoint("LEFT", ui.import, "RIGHT", 10, 0)
+  ui.profs:SetPoint("TOPLEFT", 344, -352)
   ui.profs:SetText(L.HOME_PROFS)
   ui.profs:SetScript("OnClick", function() R2F.Professions.Export() end)
   ui.profs:SetScript("OnEnter", function(self)
@@ -134,9 +133,11 @@ local function build(f)
   ui.profs:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
   ui.combat = f:CreateFontString(nil, "ARTWORK", "GameFontRed")
-  ui.combat:SetPoint("LEFT", ui.profs, "RIGHT", 12, 0)
+  ui.combat:SetPoint("TOPLEFT", 344, -384)
   ui.combat:SetText(L.IN_COMBAT)
 
+  -- The game / minimap / bag options.
+  R2F.Settings.Build(f)
   return f
 end
 
@@ -157,8 +158,8 @@ end
 local function buildFooter(f)
   local version, author = addonMetadata("Version"), addonMetadata("Author")
   ui.footer = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-  ui.footer:SetPoint("BOTTOMLEFT", 52, 14)
-  ui.footer:SetWidth(440)
+  ui.footer:SetPoint("BOTTOMLEFT", 0, 10)
+  ui.footer:SetWidth(600)
   ui.footer:SetJustifyH("LEFT")
   if version and author then
     ui.footer:SetText(L.HOME_FOOTER:format(version, author))
@@ -188,15 +189,9 @@ end
 
 function Home.Refresh()
   if not page or not page:IsVisible() then return end
-  ui.macros.sub:SetText(Home.MacroLine())
-  ui.talents.sub:SetText(Home.TalentLine())
-  ui.slots.sub:SetText(Home.SlotLine())
   ui.plan.sub:SetText(Home.PlanLine())
-  -- Import is greyed out in combat, like the book's Import button:
-  -- every import button behaves the same.
-  local combat = R2F.InCombat()
-  ui.import:SetEnabled(not combat)
-  ui.combat:SetShown(combat)
+  ui.combat:SetShown(R2F.InCombat())
+  R2F.Settings.Refresh()
 end
 
 -- PLAYER_REGEN_DISABLED / ENABLED: redraw at once (the button must grey out

@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.33.0 (2026-10-12)
+
+- The Settings tab is gone; its settings now live on Home (quick game settings, minimap button, bags). `/r2f settings` opens Home.
+- Macros page has an Options button: where new macros go (character / account slots) and Remove all.
+- The free talent points line moved from Home to the Talents page.
+- Home is wider and shows the launch plan, the share card and the settings together.
+
 ## 0.32.1 (2026-10-12)
 
 - Shift-click on a Mr.BiZ item now links it in chat even when the game doesn't know the item yet

@@ -215,6 +215,9 @@ local function button(f, label, w)
 end
 
 local function build(f)
+  -- Free talent points (moved here from Home): same wording as the minimap tooltip.
+  ui.points = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  ui.points:SetPoint("TOPLEFT", 24, -52)
   ui.label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   ui.label:SetPoint("TOPLEFT", 24, -74)
   ui.label:SetText(L.TALENT_LINK_LABEL)
@@ -386,6 +389,7 @@ end
 
 function TalentPanel.Refresh()
   if not page or not page:IsVisible() then return end
+  ui.points:SetText(R2F.Home.TalentLine())
   -- Re-run the preview every time: it's cheap and read-only, and the free
   -- points / learned talents may have changed since (CHARACTER_POINTS_CHANGED,
   -- PLAYER_LEVEL_UP, learning in Blizzard's own talent window).

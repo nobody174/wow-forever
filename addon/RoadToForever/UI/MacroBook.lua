@@ -431,6 +431,67 @@ local function onTidy()
   end)
 end
 
+-- Options (the old Settings tab's Macros section): where new macros go, and Remove all.
+local function namesOf(list)
+  local out = {}
+  for i, c in ipairs(list) do out[i] = c.name end
+  return UI.NameList(out)
+end
+
+local function onRemoveAll()
+  local plan = Macros.RemoveAllPlan()
+  local nDel, nKeep = #plan.delete, #plan.keep
+  if nDel == 0 and nKeep == 0 then
+    -- Only records of macros that are already gone (if any): forgetting
+    -- them is SavedVariables only, so no popup and no combat check needed.
+    for id in pairs(Library.AllCreated()) do Library.SetCreated(id, nil) end
+    R2F.Print(L.REMOVE_ALL_NONE)
+    return
+  end
+  local text, accept
+  if nDel == 0 then
+    text, accept = L.REMOVE_ALL_ONLY_KEEP:format(namesOf(plan.keep)), L.BTN_OK
+  else
+    text = nDel == 1 and L.REMOVE_ALL_TEXT_ONE:format(namesOf(plan.delete))
+      or L.REMOVE_ALL_TEXT:format(nDel, namesOf(plan.delete))
+    if nKeep > 0 then
+      text = text .. (nKeep == 1 and L.REMOVE_ALL_KEEP_ONE or L.REMOVE_ALL_KEEP):format(namesOf(plan.keep))
+    end
+    text, accept = text .. L.REMOVE_ALL_LIBRARY, L.BTN_REMOVE
+  end
+  UI.Confirm(text, accept, L.BTN_CANCEL, function()
+    -- Same path as Tidy up: the menu entry is greyed out in combat, and a popup
+    -- accepted in combat anyway (opened just before the pull) is queued for
+    -- PLAYER_REGEN_ENABLED. RemoveAll re-reads everything when it runs.
+    Macros.RunOrQueue(function()
+      local deleted, kept = Macros.RemoveAll()
+      local msg = deleted == 1 and L.REMOVE_ALL_DONE_ONE or L.REMOVE_ALL_DONE:format(deleted)
+      if kept > 0 then msg = msg .. L.REMOVE_ALL_DONE_KEPT:format(kept) end
+      R2F.Print(msg)
+      MacroBook.Refresh()
+    end)
+  end)
+end
+MacroBook.RemoveAll = onRemoveAll
+
+-- WoW can't move a macro between the account and character tabs (that would take delete + create,
+-- which empties every action button holding it), so the choice only affects macros made from now on.
+local function optionsMenu()
+  local first = Library.db.settings.slotsFirst
+  UI.ContextMenu({
+    { kind = "title", text = L.SETTINGS_SLOTS },
+    { kind = "check", text = L.SETTINGS_SLOTS_CHAR, isChecked = function() return first ~= "account" end,
+      func = function() Library.db.settings.slotsFirst = "character" end },
+    { kind = "check", text = L.SETTINGS_SLOTS_ACC, isChecked = function() return first == "account" end,
+      func = function() Library.db.settings.slotsFirst = "account" end },
+    { kind = "divider" },
+    { kind = "button", text = L.BTN_REMOVE_ALL, func = function()
+        if R2F.InCombat() then R2F.Print(L.TIDY_TIP_COMBAT) else onRemoveAll() end
+      end },
+  })
+end
+MacroBook.OptionsMenu = optionsMenu
+
 -- Draws the book into `f`, the main window's Macros page (a frame filling
 -- the 540 x 500 main window, so the offsets below are the same as when the
 -- book was its own window). The window frame, title, portrait, Esc and
@@ -501,6 +562,9 @@ local function build(f)
   if ui.tidy.SetMotionScriptsWhileDisabled then ui.tidy:SetMotionScriptsWhileDisabled(true) end
   ui.tidy:SetScript("OnEnter", showTidyTip)
   ui.tidy:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  ui.options = button(L.BTN_MACRO_OPTIONS, 100)
+  ui.options:SetPoint("LEFT", ui.tidy, "RIGHT", 8, 0)
+  ui.options:SetScript("OnClick", optionsMenu)
   return f
 end
 

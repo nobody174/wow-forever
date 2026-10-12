@@ -165,8 +165,8 @@ function Library.Init()
   -- windowPos (the window's saved spot) is written by UI.Window when moved.
   -- Any tab of the main window (MainWindow.TABS), so a window last left on
   -- Plan / Gameplay / Settings reopens there.
-  local TABS = { home = true, macros = true, talents = true, plan = true, bis = true, gameplay = true, settings = true }
-  if not TABS[s.lastTab] then s.lastTab = "home" end
+  local TABS = { home = true, macros = true, talents = true, plan = true, bis = true, gameplay = true }
+  if not TABS[s.lastTab] then s.lastTab = "home" end   -- includes the retired "settings"
   _G.R2FDB = db
 
   local cdb = _G.R2FCharDB

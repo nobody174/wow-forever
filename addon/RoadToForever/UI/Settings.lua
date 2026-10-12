@@ -1,30 +1,25 @@
--- UI/Settings.lua: the Settings tab of the main window.
+-- UI/Settings.lua: the game and minimap options that live on the Home page.
 --
--- Two columns:
---   left   Macros  -> New macros go to: Character / Account slots first
---                     (R2FDB.settings.slotsFirst, read by Macros.ChooseSlot at every
---                     CreateMacro), Remove all Road to Forever macros (confirm popup;
---                     Macros.RemoveAll)
---          Minimap -> Show / Lock the minimap button (R2FDB.minimap.hide / .lock,
---                     LibDBIcon's format), then R2F.Minimap.Apply(). The minimap
---                     button's own menu and /r2f minimap change the same values and
---                     call Settings.Refresh.
---   right  Quick settings -> check boxes that change game settings with SetCVar
---                     (QuickSettings.lua)
---          Movable bags / Lock bags (Bags.lua)
+-- (Until 0.32 this was the Settings tab. Macro slots + Remove all moved to the Macros page's
+-- Options menu; what is left is built into the Home page frame.)
+--   left   Quick settings -> switches that change game settings with SetCVar (QuickSettings.lua)
+--          Minimap        -> Show / Lock the minimap button (R2FDB.minimap.hide / .lock,
+--                            LibDBIcon's format), then R2F.Minimap.Apply(). The minimap
+--                            button's own menu and /r2f minimap change the same values and
+--                            call Settings.Refresh.
+--   right  Bags           -> Movable bags / Lock bags (Bags.lua)
 --
--- Only Remove all and the Quick settings boxes are greyed out in combat
--- (they delete macros / change CVars). The other settings only write
--- SavedVariables, which is allowed in combat and changes nothing protected.
+-- Only the Quick settings and bag switches are greyed out in combat (they change CVars / bag
+-- frames). The minimap switches only write SavedVariables.
 --
--- Quick settings read the LIVE CVar every time the tab is drawn (opened, combat
+-- Quick settings read the LIVE CVar every time the page is drawn (opened, combat
 -- change, CVAR_UPDATE), never GetChecked after the click, so a refused change
--- snaps the box back.
+-- snaps the switch back.
 
 local _, R2F = ...
 local L = R2F.L
 local UI = R2F.UI
-local Library, Macros = R2F.Library, R2F.Macros
+local Library = R2F.Library
 
 local Settings = {}
 R2F.Settings = Settings
@@ -32,7 +27,9 @@ R2F.Settings = Settings
 local page
 local ui = {}
 
-local LEFT, RIGHT = 28, 282
+-- Positions inside the Home page (650 wide): left column, right column.
+local LEFT, RIGHT = 0, 340
+local TOP = -150
 
 local function visible()
   return page ~= nil and page:IsVisible()
@@ -40,13 +37,10 @@ end
 
 local function refresh()
   if not visible() then return end
-  local s, mm = Library.db.settings, Library.db.minimap
-  ui.char:SetChecked(s.slotsFirst ~= "account")
-  ui.acc:SetChecked(s.slotsFirst == "account")
+  local mm = Library.db.minimap
   ui.show:SetChecked(not mm.hide)
   ui.lock:SetChecked(mm.lock == true)
   local combat = R2F.InCombat()
-  ui.removeAll:SetEnabled(not combat)
   for _, b in ipairs(ui.quick) do
     local available = R2F.QuickSettings.Available(b.qsItem)
     b:SetChecked(available and R2F.QuickSettings.IsOn(b.qsItem))
@@ -63,56 +57,10 @@ local function refresh()
   ui.bagLock:SetChecked(R2F.Bags.IsLocked())
 end
 
-local function setSlots(value)
-  Library.db.settings.slotsFirst = value
-  refresh()
-end
-
 -- The minimap button re-reads R2FDB.minimap. Still guarded: the Settings
 -- tests swap R2F.Minimap out, and a client without a Minimap frame has none.
 local function applyMinimap()
   if R2F.Minimap and R2F.Minimap.Apply then R2F.Minimap.Apply() end
-end
-
-local function names(list)
-  local out = {}
-  for i, c in ipairs(list) do out[i] = c.name end
-  return UI.NameList(out)
-end
-
-local function onRemoveAll()
-  local plan = Macros.RemoveAllPlan()
-  local nDel, nKeep = #plan.delete, #plan.keep
-  if nDel == 0 and nKeep == 0 then
-    -- Only records of macros that are already gone (if any): forgetting
-    -- them is SavedVariables only, so no popup and no combat check needed.
-    for id in pairs(Library.AllCreated()) do Library.SetCreated(id, nil) end
-    R2F.Print(L.REMOVE_ALL_NONE)
-    return
-  end
-  local text, accept
-  if nDel == 0 then
-    text, accept = L.REMOVE_ALL_ONLY_KEEP:format(names(plan.keep)), L.BTN_OK
-  else
-    text = nDel == 1 and L.REMOVE_ALL_TEXT_ONE:format(names(plan.delete))
-      or L.REMOVE_ALL_TEXT:format(nDel, names(plan.delete))
-    if nKeep > 0 then
-      text = text .. (nKeep == 1 and L.REMOVE_ALL_KEEP_ONE or L.REMOVE_ALL_KEEP):format(names(plan.keep))
-    end
-    text, accept = text .. L.REMOVE_ALL_LIBRARY, L.BTN_REMOVE
-  end
-  UI.Confirm(text, accept, L.BTN_CANCEL, function()
-    -- Same path as Tidy up: the button is greyed out in combat, and a popup
-    -- accepted in combat anyway (opened just before the pull) is queued for
-    -- PLAYER_REGEN_ENABLED. RemoveAll re-reads everything when it runs.
-    Macros.RunOrQueue(function()
-      local deleted, kept = Macros.RemoveAll()
-      local msg = deleted == 1 and L.REMOVE_ALL_DONE_ONE or L.REMOVE_ALL_DONE:format(deleted)
-      if kept > 0 then msg = msg .. L.REMOVE_ALL_DONE_KEPT:format(kept) end
-      R2F.Print(msg)
-      R2F.MacroBook.Refresh()
-    end)
-  end)
 end
 
 -- Quick settings tooltip: what it changes, and why it is greyed out.
@@ -136,41 +84,12 @@ local function heading(f, x, y, text)
   return h
 end
 
-local function buildMacros(f)
-  heading(f, LEFT, -58, L.SETTINGS_MACROS)
-  local slots = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  slots:SetPoint("TOPLEFT", LEFT + 4, -86)
-  slots:SetText(L.SETTINGS_SLOTS)
-
-  ui.char = UI.CheckButton(f, L.SETTINGS_SLOTS_CHAR, true)
-  ui.char:SetPoint("TOPLEFT", LEFT + 12, -108)
-  ui.char:SetScript("OnClick", function() setSlots("character") end)
-  ui.acc = UI.CheckButton(f, L.SETTINGS_SLOTS_ACC, true)
-  ui.acc:SetPoint("TOPLEFT", LEFT + 12, -130)
-  ui.acc:SetScript("OnClick", function() setSlots("account") end)
-
-  -- Why "from now on": WoW can't move a macro between the account and
-  -- character tabs; it would take delete + create, which empties every
-  -- action button holding it. So existing macros stay where they are.
-  local note = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-  note:SetPoint("TOPLEFT", LEFT + 12, -154)
-  note:SetWidth(220)
-  note:SetJustifyH("LEFT")
-  note:SetText(L.SETTINGS_SLOTS_NOTE)
-
-  ui.removeAll = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-  ui.removeAll:SetSize(222, 22)
-  ui.removeAll:SetPoint("TOPLEFT", LEFT + 4, -204)
-  ui.removeAll:SetText(L.BTN_REMOVE_ALL)
-  ui.removeAll:SetScript("OnClick", onRemoveAll)
-end
-
 local function buildMinimap(f)
-  heading(f, LEFT, -256, L.SETTINGS_MINIMAP)
+  heading(f, LEFT, TOP - 170, L.SETTINGS_MINIMAP)
   -- Values are flipped from the saved setting, then the boxes are redrawn
   -- from it (refresh), instead of reading GetChecked after the click.
   ui.show = UI.CheckButton(f, L.SETTINGS_MINIMAP_SHOW)
-  ui.show:SetPoint("TOPLEFT", LEFT + 4, -284)
+  ui.show:SetPoint("TOPLEFT", LEFT + 4, TOP - 198)
   ui.show:SetScript("OnClick", function()
     local mm = Library.db.minimap
     mm.hide = not mm.hide
@@ -178,7 +97,7 @@ local function buildMinimap(f)
     applyMinimap()
   end)
   ui.lock = UI.CheckButton(f, L.SETTINGS_MINIMAP_LOCK)
-  ui.lock:SetPoint("TOPLEFT", LEFT + 4, -310)
+  ui.lock:SetPoint("TOPLEFT", LEFT + 4, TOP - 224)
   ui.lock:SetScript("OnClick", function()
     local mm = Library.db.minimap
     mm.lock = not mm.lock
@@ -188,10 +107,10 @@ local function buildMinimap(f)
 end
 
 local function buildQuick(f)
-  heading(f, RIGHT, -58, L.QS_TITLE)
+  heading(f, LEFT, TOP, L.QS_TITLE)
   local note = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-  note:SetPoint("TOPLEFT", RIGHT + 4, -86)
-  note:SetWidth(232)
+  note:SetPoint("TOPLEFT", LEFT + 4, TOP - 28)
+  note:SetWidth(300)
   note:SetJustifyH("LEFT")
   note:SetTextColor(0.7, 0.7, 0.7)
   note:SetText(L.QS_NOTE)
@@ -200,7 +119,7 @@ local function buildQuick(f)
   ui.quick = {}
   for i, item in ipairs(R2F.QuickSettings.ITEMS) do
     local b = UI.CheckButton(f, item.label)
-    b:SetPoint("TOPLEFT", RIGHT + 4, -124 - (i - 1) * 26)
+    b:SetPoint("TOPLEFT", LEFT + 4, TOP - 70 - (i - 1) * 26)
     b.qsItem = item
     -- Tooltips still show while the box is greyed out (combat / missing),
     -- so the player can see why.
@@ -216,7 +135,7 @@ local function buildQuick(f)
 
   -- Movable bags / Lock bags (Bags.lua): not CVars, so not in
   -- QuickSettings.ITEMS; same look and the same combat rule.
-  local n = #R2F.QuickSettings.ITEMS
+  heading(f, RIGHT, TOP, L.BAGS_TITLE)
   local function bagBox(label, tip, y, onClick)
     local b = UI.CheckButton(f, label)
     b:SetPoint("TOPLEFT", RIGHT + 4, y)
@@ -237,32 +156,31 @@ local function buildQuick(f)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
     return b
   end
-  ui.bagMove = bagBox(L.BAGS_MOVABLE, L.BAGS_MOVABLE_TIP, -124 - n * 26,
+  ui.bagMove = bagBox(L.BAGS_MOVABLE, L.BAGS_MOVABLE_TIP, TOP - 32,
     function() R2F.Bags.SetMovable(not R2F.Bags.IsMovable()); refresh() end)
-  ui.bagLock = bagBox(L.BAGS_LOCK, L.BAGS_LOCK_TIP, -124 - (n + 1) * 26,
+  ui.bagLock = bagBox(L.BAGS_LOCK, L.BAGS_LOCK_TIP, TOP - 58,
     function() R2F.Bags.SetLock(not R2F.Bags.IsLocked()); refresh() end)
 end
 
--- Called once by MainWindow with the Settings page frame.
+-- Called once by Home.Build with the Home page frame.
 function Settings.Build(f)
   page = f
-  buildMacros(f)
   buildMinimap(f)
   buildQuick(f)
   return f
 end
 
--- Open the main window on this tab (the old floating panel's Show / Toggle).
+-- Open the main window on the Home page (the old floating panel's Show / Toggle).
 function Settings.Show()
-  R2F.MainWindow.Show("settings")
+  R2F.MainWindow.Show("home")
 end
 
 function Settings.Toggle()
-  R2F.MainWindow.Toggle("settings")
+  R2F.MainWindow.Toggle("home")
 end
 
 function Settings.IsShown()
-  return R2F.MainWindow.CurrentTab() == "settings"
+  return R2F.MainWindow.CurrentTab() == "home"
 end
 
 -- PLAYER_REGEN_DISABLED / ENABLED: grey out / re-enable Remove all and

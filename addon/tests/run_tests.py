@@ -2893,7 +2893,9 @@ def test_biz(templates=True):
     lua.execute("HELM[1]:Fire('OnEnter')")
     lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
     check(lua.eval("GameTooltip.itemArgs[1]") == 252512 and lines[0] == "ITEM 252512", "%s: mouseover shows the game's item tooltip" % tag)
-    check(any("best in slot for Beast Mastery" in (l or "") for l in lines), "%s: tooltip adds the Mr.BiZ rank line: %s" % (tag, lines))
+    check(any("Bizzest for Beast Mastery" in (l or "") for l in lines), "%s: tooltip adds the Mr.BiZ rank line: %s" % (tag, lines))
+    check(lua.eval("R2F.BiZ.RankName(2)") == "Bizzer" and lua.eval("R2F.BiZ.RankName(3)") == "Biz" and lua.eval("R2F.BiZ.RankName(5)") == "Almost biz", "%s: biz rank names" % tag)
+    check(lua.eval("R2F.BiZ.IsTheBizz({ next = { { delta = -25 } } })") is True and lua.eval("R2F.BiZ.IsTheBizz({ next = { { delta = -12 } } })") is False and lua.eval("R2F.BiZ.IsTheBizz({ next = {} })") is False, "%s: The Bizz needs a 20%% lead" % tag)
     lua.execute("HELM[1]:Fire('OnLeave')")
     check(lua.eval("GameTooltip.__shown") is False, "%s: leaving hides the tooltip" % tag)
     # click = next best picks open under it
@@ -2902,7 +2904,7 @@ def test_biz(templates=True):
     check(lua.eval("#NEXT2") == 1, "%s: clicking the name opens rank 2 (Spirit Hunter Headdress)" % tag)
     lua.execute("NEXT2[1]:Fire('OnEnter')")
     lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
-    check(any("#2 for Beast Mastery, -12% behind" in (l or "") for l in lines), "%s: rank 2 tooltip says how far behind: %s" % (tag, lines))
+    check(any("Bizzer for Beast Mastery, 12% behind" in (l or "") for l in lines), "%s: rank 2 tooltip says how far behind: %s" % (tag, lines))
     # shift-click = link in chat (stays collapsed/expanded as it was)
     lua.execute("TEST.shift = true; HELM[1]:Click(); TEST.shift = false")
     check("Hitem:252512" in (lua.eval("TEST.chatInsert") or ""), "%s: shift-click links the item in chat" % tag)
@@ -3623,8 +3625,8 @@ def test_step6_ui(templates, fx):
     names = [lua.eval("MTABS[%d]:GetName()" % i) for i in range(1, 8)]
     labels = [lua.eval("MTABS[%d].__text" % i) for i in range(1, 8)]
     check(keys == ["home", "macros", "talents", "plan", "bis", "gameplay", "settings"]
-          and labels == ["Home", "Macros", "Talents", "Plan", "BiS", "Gameplay", "Settings"]
-          and names == [win + "Tab%d" % i for i in range(1, 8)], "tabs Home / Macros / Talents / Plan / BiS / Gameplay / Settings, named %s" % names)
+          and labels == ["Home", "Macros", "Talents", "Plan", "BiZ", "Gameplay", "Settings"]
+          and names == [win + "Tab%d" % i for i in range(1, 8)], "tabs Home / Macros / Talents / Plan / BiZ / Gameplay / Settings, named %s" % names)
     tpl = lua.eval("MTABS[1].r2fTemplate")
     check(tpl == ("CharacterFrameTabButtonTemplate" if templates else "UIPanelButtonTemplate"),
           "%s: tab template chain picked %s" % (tag, tpl))

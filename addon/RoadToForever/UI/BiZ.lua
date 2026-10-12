@@ -153,10 +153,12 @@ end
 -- Best in slot view
 -- ---------------------------------------------------------------------------
 
-local function rankLine(specName, rank, score, delta)
+-- gap: how far (%) the next pick is behind the best when the best is The Bizz.
+local function rankLine(specName, rank, score, delta, gap)
+  if rank == 1 and gap then return L.BIZ_TIP_BIZZ:format(specName, score, gap) end
   if rank == 1 then return L.BIZ_TIP_BEST:format(specName, score) end
-  if delta and delta ~= 0 then return L.BIZ_TIP_RANK:format(rank, specName, delta) end
-  return L.BIZ_TIP_RANK_SAME:format(rank, specName)
+  if delta and delta ~= 0 then return L.BIZ_TIP_RANK:format(BiZ.RankName(rank), specName, -delta) end
+  return L.BIZ_TIP_RANK_SAME:format(BiZ.RankName(rank), specName)
 end
 
 local function layoutSet()
@@ -182,9 +184,10 @@ local function layoutSet()
         shown = shown + 1
         local name = b.name
         local fnote = BiZ.FactionNote(b)
-        local nb = placeItem(66, y, 226, b.id, name, rankLine(sp.name, 1, b.score), toggle)
+        local gap = BiZ.IsTheBizz(sl) and -sl.next[1].delta or nil
+        local nb = placeItem(66, y, 226, b.id, name, rankLine(sp.name, 1, b.score, nil, gap), toggle)
         if fnote then nb.fs:SetText(BiZ.ColoredName(b.id, name) .. " |cffe86a5a(" .. fnote .. ")|r") end
-        line("GameFontDisableSmall", 88, y + 15, 228, b.label)
+        line("GameFontDisableSmall", 88, y + 15, 228, (gap and ("|cffffd100" .. L.BIZ_THE_BIZZ .. "|r · ") or "") .. b.label)
         local sc = line("GameFontHighlightSmall", 318, y + 3, 40, tostring(b.score))
         sc:SetJustifyH("RIGHT")
         line("GameFontHighlightSmall", 366, y + 3, 46, (CONF_COLOR[b.conf] or "") .. L["BIZ_CONF_" .. b.conf:upper()] .. "|r")
@@ -207,9 +210,12 @@ local function layoutSet()
         end
         for _, r in ipairs(rows) do
           line("GameFontNormalSmall", 70, y + 3, 20, "#" .. r.rank)
-          placeItem(88, y, 210, r.id, r.name, rankLine(sp.name, r.rank, r.score, r.delta))
-          local d = r.rank == 1 and L.BIZ_BEST or (r.delta == 0 and L.BIZ_SAME) or (r.delta and (r.delta .. "%")) or ""
-          local dl = line("GameFontHighlightSmall", 318, y + 3, 40, "|cffe39a79" .. d .. "|r")
+          local gap = r.rank == 1 and BiZ.IsTheBizz(sl) and -sl.next[1].delta or nil
+          placeItem(88, y, 210, r.id, r.name, rankLine(sp.name, r.rank, r.score, r.delta, gap))
+          local rn = gap and L.BIZ_THE_BIZZ or BiZ.RankName(r.rank)
+          local d = (r.delta == 0 and L.BIZ_SAME) or (r.delta and (r.delta .. "%")) or ""
+          local dl = line("GameFontHighlightSmall", 302, y + 3, 108,
+            "|cffffd100" .. rn .. "|r" .. (d ~= "" and ("  |cffe39a79" .. d .. "|r") or ""))
           dl:SetJustifyH("RIGHT")
           placeWish(414, y, r.id, specId, sl.slot)
           y = y + 22

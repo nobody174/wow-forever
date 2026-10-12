@@ -4,6 +4,16 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-12 (Mr.BiZ round 2: nav, dropdowns, biz ranks)
+- Top bar on every page reordered by the player's path, grouped by type: Launch Plan / Builds / Talent / Legacy Calc /
+  Mr.BiZ / Professions / Macros / Addons (was Macros / Builds / BiS / Addons / Professions / Launch Plan / Talent).
+  The BiS tab is now "Mr.BiZ".
+- bis.html: custom dropdowns with class colours and class icons, spec in class colour with Tank / DPS / Healer role
+  icons, faction in Alliance blue / Horde red with banner icons, profession icons in the Profession filter. Level picker:
+  30 (beta cap) and 60 "in the works" (shows what's coming). Icons on the source chips and each row's source line.
+- Biz ranks on the site and in the addon: Bizzest / Bizzer / Biz / Almost biz, "The Bizz" tag when the best is 20%+
+  ahead of the next pick. Addon tab label "BiS" -> "BiZ" (still 0.30.0, not tagged yet).
+
 ## 2026-10-12 (Mr.BiZ: BiS page + addon tab)
 - New `bis.html` (top bar "BiS", after Builds, on every page): class + spec pickers (specs grouped Tank / DPS / Healer),
   faction, level 30. One row per slot: item name coloured by quality (Wowhead's Forever tooltip JSON, cached in

@@ -3038,7 +3038,7 @@ sources from Classic databases plus beta sightings, and a ranking (stat weights 
 
 ### 19.1 Decisions
 - A tab in Road to Forever (owner's fewer-addons rule), not a separate addon; code in BiZ.lua / UI/BiZ.lua so it could be
-  split out later. Tab label "BiS", title "Road to Forever: Mr.BiZ". Slash `/biz`, `/mrbiz`, `/r2f bis` (`/bis` is
+  split out later. Tab label "BiZ" (was "BiS"; "Mr.BiZ" is the site nav label, the shorter one keeps 7 tabs inside the window), title "Road to Forever: Mr.BiZ". Ranks use the biz names (Bizzest / Bizzer / Biz / Almost biz, "The Bizz" at a 20% lead), same as the site. Slash `/biz`, `/mrbiz`, `/r2f bis` (`/bis` is
   taken by three BiS addons).
 - v1 data = ForeverDB's level 30 PvE BiS pages for all 27 specs (best pick per slot + the next two with % behind, stat
   weights, source sentence, confidence label), copied into `bis/raw/*.json` on 2026-10-12 and credited on the site

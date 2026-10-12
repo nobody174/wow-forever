@@ -1203,14 +1203,16 @@ Both OFF until ticked on the Gameplay tab, Screen section.
    (and the combined bag, if you use it). Click it: bags tidy up. Where is it, does it cover anything? In combat it says it can't.
 3. **Talent learning speed:** copy a build from the site and learn it with one-click: how long per point now (it was about 2 s)?
 
-## 41. Mr.BiZ, the BiS tab (v0.30.0)
+## 41. Mr.BiZ, the BiZ tab (v0.30.0)
 
-1. `/biz`: the window opens on the BiS tab with your class and its first spec. Do the 7 bottom tabs fit along the window, or does
+1. `/biz`: the window opens on the BiZ tab with your class and its first spec. Do the 7 bottom tabs fit along the window, or does
    the last one hang off the right edge?
 2. Item names: coloured by quality (green / blue)? On first open some may be white with a question-mark icon for a moment, then
    colour in by themselves. If they stay white, say which ones.
 3. Hover an item name: the game's item tooltip shows, with a gold "Mr.BiZ: ..." line at the bottom. Shift-click: the link goes in chat.
-4. Click a name: ranks 2 and 3 open under it, each with a tooltip and a box. Untick Quest: quest slots say "Hidden by your filters".
+4. Click a name: ranks 2 and 3 open under it, each with a tooltip and a box. The right column says Bizzest / Bizzer / Biz
+   (gold) with the % behind; a slot whose best is 20%+ ahead says "The Bizz" there and on the row's source line. Does the
+   rank text fit without overlapping the boxes? Untick Quest: quest slots say "Hidden by your filters".
 5. Tick a few boxes, click Wishlist: grouped by dungeon / profession / vendor? Export list, paste on the site's BiS page (Paste from
    game); then Copy for the addon on the site and Import list in game. `/reload`: the wishlist is still there.
 6. Class and Spec buttons: the menus open under the cursor and switch the list.

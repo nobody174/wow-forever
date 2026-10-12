@@ -8,8 +8,10 @@ builds per class, `addons.html` lists addons, `launch-plan.html` is the launch-w
 leveling plan, `talents.html` is our own talent calculator plus Legacy calculator
 (Talents / Legacy switch), `professions.html` holds BiS enchants with stand-ins, our crafters
 and profession costs, `bis.html` is Mr.BiZ (best-in-slot gear per class / spec + wishlist). All eight share a top bar
-(site title, Macros / Builds / BiS / Addons / Professions / Launch Plan / Talent / Legacy Calc
-links, current page highlighted).
+(site title, Launch Plan / Builds / Talent / Legacy Calc / Mr.BiZ / Professions / Macros / Addons
+links, current page highlighted). Nav order (2026-10-12) follows the player's path, grouped by type: plan the
+launch, then your character (build, talents, gear, professions), then your UI (macros, addons). New pages go in the
+group they belong to.
 
 Class roster order on both `macros.html` and `builds.html` follows armor type,
 Cloth → Leather → Mail → Plate: Priest, Warlock, Mage, Rogue, Shaman, Hunter,
@@ -137,9 +139,16 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Recipe names are Wowhead links (`/forever/item=` for k "i", `/forever/spell=` for k "s",
   `data-wowhead="...&domain=forever"`); Wowhead's `tooltips.js` (zamimg) gives hover
   tooltips with icon and stats; `refreshTooltips()` re-scans after each render.
-- `bis.html` — **Mr.BiZ**, hand-written, JS-rendered from `bis-data.json` (GENERATED: never hand-edit). Pickers: Class,
-  Spec (`<optgroup>` per role: Tank / DPS / Healer), Faction (Alliance default; flags faction-only quest rewards
-  "Horde only"), level shown fixed at 30 (the beta cap; the data is level 30 only). Filters: one chip per source
+- `bis.html` — **Mr.BiZ**, hand-written, JS-rendered from `bis-data.json` (GENERATED: never hand-edit). Pickers are custom
+  dropdowns (`Drop(id, onPick)`: button + `role="listbox"`, arrow keys / Enter / Esc / type a letter), because native
+  `<select>` can't show icons or colours everywhere: Class (WoW class colours `CLASS_COLOR` + class icons), Spec (class
+  colour, grouped Tank / DPS / Healer with role icons), Faction (Alliance blue / Horde red + banner icons; Alliance
+  default; flags faction-only quest rewards "Horde only"), Level (30 "beta cap"; 60 "in the works" is pickable and
+  shows what's coming, never saved, so every visit starts at 30; add real 60 data as its own level when it exists).
+  Source chips and row source lines carry small inline SVG icons (`TYPE_ICON`: "?" quest, hammer crafted, crossed
+  swords PvP...); crafted rows and the Profession dropdown use the profession's game icon (`PROF_ICON`, zamimg).
+  Biz ranks (owner's group joke, keep them): #1 Bizzest, #2 Bizzer, #3 Biz, 4th+ Almost biz, and "The Bizz" tag when
+  the next pick is `THE_BIZZ_GAP` (20) % or more behind; delta 0 = "just as biz". The addon uses the same names. Filters: one chip per source
   type in the data (`types`; Raid is greyed until a raid item exists), Profession (crafted items only), Show = all /
   known sources / Forever data only (conf seen + client). A slot whose best pick is filtered out stays as "Hidden by
   your filters" (ranks 2-3 have no source in the data, so it can't fall back to them). Each row: slot, item name =

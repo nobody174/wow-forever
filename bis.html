@@ -66,23 +66,43 @@ p.lede{color:var(--muted);max-width:68ch;margin:0 auto 26px;text-align:center}
 
 /* Pickers */
 .pick{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:16px 18px;margin-bottom:14px}
-.pick label{display:flex;flex-direction:column;gap:6px;font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-.pick select{font:16px/1.2 var(--sans);color:var(--text);background:var(--panel2);border:1px solid var(--edge);border-radius:6px;height:44px;padding:0 12px;min-width:170px}
-.pick select:focus-visible,.chip:focus-visible,.btn:focus-visible,.icon-btn:focus-visible,.row-main:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.pick .lvl{display:flex;flex-direction:column;gap:6px}
-.pick .lvl span{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-.pick .lvl b{display:flex;align-items:center;height:44px;font:600 16px/1 var(--sans);color:var(--text)}
-.pick .lvl small{font-weight:400;color:var(--muted);margin-left:6px}
-.pick .spacer{flex:1}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.flab{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.dd-btn:focus-visible,.dd-list li:focus-visible,.chip:focus-visible,.btn:focus-visible,.icon-btn:focus-visible,.row-main:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* Dropdowns with icons and colours (native <select> can't show either everywhere) */
+.dd{position:relative}
+.dd-btn{display:flex;align-items:center;gap:8px;width:100%;min-width:180px;height:44px;padding:0 10px 0 10px;font:600 16px/1.2 var(--sans);color:var(--text);background:var(--panel2);border:1px solid var(--edge);border-radius:6px;cursor:pointer;text-align:left}
+.dd-btn:hover{border-color:#56628F}
+.dd.open .dd-btn{border-color:var(--gold)}
+.dd-v{display:flex;align-items:center;gap:8px;flex:1;min-width:0;white-space:nowrap;overflow:hidden}
+.dd-v .dd-t{overflow:hidden;text-overflow:ellipsis}
+.dd-btn > svg{width:16px;height:16px;flex:none;color:var(--muted);transition:transform .12s ease}
+.dd.open .dd-btn > svg{transform:rotate(180deg)}
+.dd-list{position:absolute;z-index:30;top:calc(100% + 4px);left:0;min-width:100%;max-height:min(420px,60vh);overflow:auto;margin:0;padding:6px;list-style:none;background:#10172F;border:1px solid var(--edge);border-radius:8px;box-shadow:0 10px 28px rgba(0,0,0,.5)}
+.dd-list li[role="option"]{display:flex;align-items:center;gap:8px;min-height:40px;padding:4px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;font-weight:600}
+.dd-list li[role="option"]:hover,.dd-list li[role="option"]:focus{background:rgba(255,255,255,.06);outline:0}
+.dd-list li[role="option"]:focus-visible{box-shadow:inset 0 0 0 2px var(--gold)}
+.dd-list li[aria-selected="true"]{background:rgba(255,209,0,.1)}
+.dd-list li small,.dd-v small{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--warn);border:1px solid rgba(232,163,61,.45);border-radius:4px;padding:3px 5px;margin-left:auto}
+.dd-v small{margin-left:4px}
+.dd-list .dd-g{display:flex;align-items:center;gap:6px;padding:8px 10px 4px;font:600 11.5px/1 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.dd-list .dd-g + li{margin-top:2px}
+.dd img.ic,.ic{width:20px;height:20px;border-radius:4px;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.6)}
+.dd-list .dd-g img.ic{width:14px;height:14px}
+.svgi{width:16px;height:16px;flex:none}
+.role-tank{color:#7FB2E5}.role-dps{color:#E8806F}.role-healer{color:#7FD68C}
+.dd-sm .dd-btn{height:40px;min-width:150px;font-size:14px}
 
 /* Filters */
 .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px}
 .filters .lab{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-right:4px}
-.chip{font:600 14px/1 var(--sans);min-height:40px;padding:0 14px;border-radius:999px;cursor:pointer;border:1px solid var(--edge);background:transparent;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;font:600 14px/1 var(--sans);min-height:40px;padding:0 14px 0 11px;border-radius:999px;cursor:pointer;border:1px solid var(--edge);background:transparent;color:var(--muted);vertical-align:middle;margin:0 2px 6px 0}
+.chip .svgi{opacity:.85}
 .chip[aria-pressed="true"]{background:rgba(255,209,0,.1);border-color:var(--gold);color:var(--gold)}
 .chip[disabled]{opacity:.45;cursor:not-allowed}
-.filters select{font:14px/1 var(--sans);color:var(--text);background:var(--panel2);border:1px solid var(--edge);border-radius:6px;height:40px;padding:0 10px}
 .filters .sep{width:1px;height:28px;background:var(--edge);margin:0 6px}
+.filters .fgrp{display:flex;align-items:center;gap:8px}
 
 /* Layout */
 .cols{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start}
@@ -97,10 +117,16 @@ p.lede{color:var(--muted);max-width:68ch;margin:0 auto 26px;text-align:center}
 .row.open > .row-main{background:rgba(255,209,0,.05);box-shadow:inset 3px 0 0 var(--gold)}
 .slot{font:600 12px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .item{min-width:0}
-.item .nm{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .nm{display:flex;align-items:center;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden}
+.item .nm a.wh{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.item .nm .tag{flex:none}
 .item a.wh{text-decoration:none;color:var(--text)}
 .item a.wh:hover{text-decoration:underline}
-.item .src{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .src{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden}
+.item .src > span{overflow:hidden;text-overflow:ellipsis}
+.item .src .svgi{width:14px;height:14px}
+.item .src img.ic{width:14px;height:14px;border-radius:3px}
+.tag.bizz{background:linear-gradient(180deg,#FFE566 0%,var(--gold) 60%,#C79C00 100%);color:#0E1428;border:1px solid #FFE566;letter-spacing:.02em}
 .item .tag{font:600 11px/1 var(--sans);border-radius:4px;padding:2px 6px;margin-left:6px;vertical-align:2px}
 .tag.fac{background:rgba(232,106,90,.15);color:var(--bad);border:1px solid rgba(232,106,90,.4)}
 .tag.alt{background:rgba(154,160,184,.12);color:var(--muted);border:1px solid var(--edge)}
@@ -123,8 +149,10 @@ p.lede{color:var(--muted);max-width:68ch;margin:0 auto 26px;text-align:center}
 
 .more{padding:4px 18px 14px 124px}
 .more ol{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--edge)}
-.more li{display:grid;grid-template-columns:28px minmax(0,1fr) 74px 44px;gap:10px;align-items:center;min-height:44px}
-.more .rk{font:500 13px/1 var(--mono);color:var(--muted)}
+.more li{display:grid;grid-template-columns:96px minmax(0,1fr) 84px 44px;gap:10px;align-items:center;min-height:44px}
+.more .rk{font:600 12.5px/1.1 var(--sans);color:var(--muted)}
+.more .rk b{display:block;font:500 11px/1 var(--mono);color:var(--muted);opacity:.75;margin-top:3px}
+.more .rk.r1{color:var(--gold)}.more .rk.r2{color:#D9D4C3}.more .rk.r3{color:#C7A27A}
 .more .dl{font:500 13px/1 var(--mono);text-align:right;color:#E39A79}
 .more .facts{margin:10px 0 0;padding-left:16px;color:var(--muted);font-size:13.5px}
 .more .facts b{color:var(--text);font-weight:600}
@@ -162,13 +190,22 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
 .foot code{font:500 12.5px/1 var(--mono);color:var(--text)}
 .legend{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:14px;font-size:13px;color:var(--muted)}
 .legend span.badge{justify-self:auto}
+.legend .tag{font:600 11px/1 var(--sans);border-radius:4px;padding:2px 6px}
+
+/* Level 60 placeholder */
+.soon{padding:26px 22px;text-align:center}
+.soon h3{margin:0 0 8px;font:400 24px/1.2 var(--serif);color:var(--gold)}
+.soon p{max-width:58ch;margin:0 auto 10px;color:var(--muted)}
+.soon ul{display:inline-block;text-align:left;margin:6px auto 14px;color:var(--text);font-size:14.5px}
 
 @media (max-width:700px){
+  .pick .field{flex:1 1 calc(50% - 7px)}
+  .dd-btn{min-width:0}
+  .more li{grid-template-columns:78px minmax(0,1fr) 64px 40px}
   .row-main{grid-template-columns:minmax(0,1fr) 52px 44px 44px;padding-left:14px}
   .row-main .slot{grid-column:1 / -1;margin-bottom:-6px}
   .row-main .badge{display:none}
   .more{padding-left:18px}
-  .more li{grid-template-columns:24px minmax(0,1fr) 60px 40px}
   .wish{position:static}
 }
 @media (prefers-reduced-motion:reduce){.chev svg{transition:none}}
@@ -178,38 +215,32 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
 <div class="topbar">
   <a class="site-title" href="index.html">Road to Forever</a>
   <nav aria-label="Site">
-    <a href="macros.html">Macros</a>
-    <a href="builds.html">Builds</a>
-    <a href="bis.html" aria-current="page">BiS</a>
-    <a href="addons.html">Addons</a>
-    <a href="professions.html">Professions</a>
     <a href="launch-plan.html">Launch Plan</a>
+    <a href="builds.html">Builds</a>
     <a href="talents.html">Talent / Legacy Calc</a>
+    <a href="bis.html" aria-current="page">Mr.BiZ</a>
+    <a href="professions.html">Professions</a>
+    <a href="macros.html">Macros</a>
+    <a href="addons.html">Addons</a>
   </nav>
 </div>
 <main class="wrap">
   <h1>Mr.BiZ</h1>
   <p class="lede">Best in slot for your class and spec at the <b>level 30</b> beta cap. Click a slot for the next best picks, hover an item for its tooltip, click its name to open it on Wowhead. Star items to build a wishlist per character.</p>
 
-  <form class="pick" id="pick" onsubmit="return false">
-    <label>Class <select id="cls"></select></label>
-    <label>Spec <select id="spec"></select></label>
-    <label>Faction <select id="faction"><option value="alliance">Alliance</option><option value="horde">Horde</option></select></label>
-    <div class="lvl"><span>Level</span><b>30<small>beta cap</small></b></div>
-  </form>
+  <div class="pick" id="pick">
+    <div class="field"><span class="flab" id="l-cls">Class</span><div class="dd" id="cls" data-label="l-cls"></div></div>
+    <div class="field"><span class="flab" id="l-spec">Spec</span><div class="dd" id="spec" data-label="l-spec"></div></div>
+    <div class="field"><span class="flab" id="l-faction">Faction</span><div class="dd" id="faction" data-label="l-faction"></div></div>
+    <div class="field"><span class="flab" id="l-level">Level</span><div class="dd" id="level" data-label="l-level"></div></div>
+  </div>
 
   <div class="filters" role="group" aria-label="Filters">
     <span class="lab">Sources</span>
     <span id="chips"></span>
     <span class="sep" aria-hidden="true"></span>
-    <label class="lab" for="prof">Profession</label>
-    <select id="prof"><option value="any">Any</option></select>
-    <label class="lab" for="conf" style="margin-left:8px">Show</label>
-    <select id="conf">
-      <option value="all">All sources</option>
-      <option value="known">Known sources only</option>
-      <option value="forever">Forever data only</option>
-    </select>
+    <span class="fgrp"><span class="lab" id="l-prof">Profession</span><div class="dd dd-sm" id="prof" data-label="l-prof"></div></span>
+    <span class="fgrp"><span class="lab" id="l-conf" style="margin-left:8px">Show</span><div class="dd dd-sm" id="conf" data-label="l-conf"></div></span>
   </div>
 
   <div class="cols">
@@ -247,6 +278,13 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     <span><span class="badge b-clue">Clue</span> a lead, not confirmed</span>
     <span><span class="badge b-unknown">Unknown</span> source not known yet</span>
   </div>
+  <div class="legend" aria-label="What the ranks mean">
+    <span><span class="tag bizz">The Bizz</span> the best, and 20%+ ahead of the next pick: go get it</span>
+    <span><b style="color:var(--gold)">Bizzest</b> the best</span>
+    <span><b style="color:#D9D4C3">Bizzer</b> second best</span>
+    <span><b style="color:#C7A27A">Biz</b> third best</span>
+    <span><b>Almost biz</b> fourth and lower (when longer lists come)</span>
+  </div>
 </main>
 <script>window.whTooltips = { colorLinks: false, iconizeLinks: true, renameLinks: false, iconSize: "small" };</script>
 <script src="https://wow.zamimg.com/js/tooltips.js" defer></script>
@@ -264,6 +302,38 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     vendor: "Vendor", reputation: "Reputation", pvp: "PvP", unknown: "Unknown source" };
   var CONF_LABEL = { seen: "Seen", client: "Client", classic: "Classic", clue: "Clue", unknown: "Unknown" };
   var ROLE_LABEL = { tank: "Tank", dps: "DPS", healer: "Healer" };
+  // WoW's own class colours (the ones raid frames and chat use)
+  var CLASS_COLOR = { priest: "#FFFFFF", warlock: "#8788EE", mage: "#3FC7EB", rogue: "#FFF468", druid: "#FF7C0A",
+    shaman: "#0070DD", hunter: "#AAD372", paladin: "#F48CBA", warrior: "#C69B6D" };
+  var FACTION = { alliance: { label: "Alliance", color: "#5AA0F0", icon: "inv_bannerpvp_02" }, horde: { label: "Horde", color: "#E8564A", icon: "inv_bannerpvp_01" } };
+  var PROF_ICON = { Alchemy: "trade_alchemy", Blacksmithing: "trade_blacksmithing", Enchanting: "trade_engraving",
+    Engineering: "trade_engineering", Leatherworking: "inv_misc_armorkit_17", Tailoring: "trade_tailoring" };
+  // Biz ranks: #1 Bizzest (The Bizz when the next pick is THE_BIZZ_GAP % or more behind), #2 Bizzer, #3 Biz, then Almost biz.
+  var RANK_NAME = ["Bizzest", "Bizzer", "Biz"];
+  var THE_BIZZ_GAP = 20;
+  function rankName(i) { return RANK_NAME[i] || "Almost biz"; }
+  function isTheBizz(s) { var n = s.next && s.next[0]; return !!(n && typeof n.delta === "number" && n.delta <= -THE_BIZZ_GAP); }
+  // The levels the page knows. 60 is pickable but only shows what's coming.
+  var LEVELS = [{ value: "30", label: "30", note: "beta cap" }, { value: "60", label: "60", note: "in the works" }];
+  function zam(icon) { return '<img class="ic" src="https://wow.zamimg.com/images/wow/icons/medium/' + icon + '.jpg" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">'; }
+  function svg(body, cls) { return '<svg class="svgi' + (cls ? " " + cls : "") + '" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + body + "</svg>"; }
+  var TYPE_ICON = {
+    dungeon: svg('<path d="M3 14.5V7a5 5 0 0 1 10 0v7.5M1.5 14.5h13M6.2 14.5v-3.8a1.8 1.8 0 0 1 3.6 0v3.8"/>'),
+    raid: svg('<path d="M8 1.8a5.4 5.4 0 0 0-5.4 5.4c0 1.9 1 3.3 2.2 4.1v2.9h6.4v-2.9c1.2-.8 2.2-2.2 2.2-4.1A5.4 5.4 0 0 0 8 1.8zM7 14.2v-1.7M9 14.2v-1.7"/><circle cx="5.9" cy="7.6" r="1.1" fill="currentColor"/><circle cx="10.1" cy="7.6" r="1.1" fill="currentColor"/>'),
+    world: svg('<circle cx="8" cy="8" r="6.2"/><ellipse cx="8" cy="8" rx="2.6" ry="6.2"/><path d="M1.8 8h12.4"/>'),
+    quest: svg('<text x="8" y="14" text-anchor="middle" font-size="16" font-weight="700" font-family="Georgia,serif" fill="currentColor" stroke="none">?</text>'),
+    crafted: svg('<path d="M3 13.5l5.3-5.3"/><path d="M6.6 4.6l3-3 4.8 4.8-3 3z"/>'),
+    vendor: svg('<circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="3"/>'),
+    reputation: svg('<path d="M4 14.5V1.8M4 2.2h8.5l-2.2 3 2.2 3H4"/>'),
+    pvp: svg('<path d="M2.5 2.5l8.3 8.3M13.5 2.5l-8.3 8.3M9.2 12.6l3.4-3.4M6.8 12.6L3.4 9.2M11.6 11.6l2 2M4.4 11.6l-2 2"/>'),
+    unknown: ""
+  };
+  var ROLE_ICON = {
+    tank: svg('<path d="M8 1.5l5.5 2v4c0 3.4-2.4 5.9-5.5 7-3.1-1.1-5.5-3.6-5.5-7v-4z"/>', "role-tank"),
+    dps: svg('<path d="M13.5 2.5L6.2 9.8M13.5 2.5H10.5M13.5 2.5v3M4 7.8l4.2 4.2M5.2 10.8L2.5 13.5"/>', "role-dps"),
+    healer: svg('<path d="M6.2 2h3.6v4.2H14v3.6H9.8V14H6.2V9.8H2V6.2h4.2z" fill="currentColor" stroke="none"/>', "role-healer")
+  };
+  function srcIcon(b) { return b.type === "crafted" && b.prof && PROF_ICON[b.prof] ? zam(PROF_ICON[b.prof]) : TYPE_ICON[b.type] || ""; }
   var ICON = {
     chev: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     star: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l2.3 4.7 5.2.8-3.8 3.7.9 5.2L10 14.4l-4.6 2.5.9-5.2L2.5 8l5.2-.8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
@@ -318,20 +388,83 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     try { if (window.$WowheadPower && window.$WowheadPower.refreshLinks) window.$WowheadPower.refreshLinks(); } catch (e) { /* tooltips are optional */ }
   }
 
+  // ---- dropdowns: a button + listbox, so options can carry icons and colours ----
+  // options: [{ value, label, icon?, color?, note? } | { group, icon? }]
+  var DROPS = [];
+  function Drop(id, onPick) {
+    var root = $(id), lab = root.getAttribute("data-label");
+    root.innerHTML = '<button type="button" class="dd-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="' + lab + " " + id + '-v"><span class="dd-v" id="' + id + '-v"></span>' + ICON.chev + "</button>" +
+      '<ul class="dd-list" role="listbox" aria-labelledby="' + lab + '" hidden></ul>';
+    var btn = root.querySelector(".dd-btn"), list = root.querySelector(".dd-list");
+    var me = { root: root, value: null, opts: [] };
+    function optHtml(o) {
+      return (o.icon || "") + '<span class="dd-t"' + (o.color ? ' style="color:' + o.color + '"' : "") + ">" + esc(o.label) + "</span>" + (o.note ? "<small>" + esc(o.note) + "</small>" : "");
+    }
+    function draw() {
+      var sel = me.opts.filter(function (o) { return !o.group && o.value === me.value; })[0];
+      root.querySelector(".dd-v").innerHTML = sel ? optHtml(sel) : "";
+      list.innerHTML = me.opts.map(function (o) {
+        if (o.group) return '<li class="dd-g" role="presentation">' + (o.icon || "") + esc(o.group) + "</li>";
+        return '<li role="option" tabindex="-1" data-v="' + esc(o.value) + '" aria-selected="' + (o.value === me.value) + '">' + optHtml(o) + "</li>";
+      }).join("");
+    }
+    function items() { return [].slice.call(list.querySelectorAll('[role="option"]')); }
+    function openList() {
+      DROPS.forEach(function (d) { if (d !== me) d.close(); });
+      list.hidden = false; root.classList.add("open"); btn.setAttribute("aria-expanded", "true");
+      var s = list.querySelector('[aria-selected="true"]') || items()[0]; if (s) s.focus();
+    }
+    me.close = function (focus) {
+      if (list.hidden) return;
+      list.hidden = true; root.classList.remove("open"); btn.setAttribute("aria-expanded", "false");
+      if (focus) btn.focus();
+    };
+    function pick(v) { me.close(true); if (v !== me.value) { me.value = v; draw(); onPick(v); } }
+    me.set = function (opts, value) { me.opts = opts; me.value = String(value); draw(); };
+    me.setValue = function (v) { me.value = String(v); draw(); };
+    btn.addEventListener("click", function () { if (list.hidden) openList(); else me.close(); });
+    btn.addEventListener("keydown", function (e) { if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); openList(); } });
+    list.addEventListener("click", function (e) { var li = e.target.closest('[role="option"]'); if (li) pick(li.getAttribute("data-v")); });
+    list.addEventListener("keydown", function (e) {
+      var all = items(), i = all.indexOf(document.activeElement), n = all.length;
+      if (e.key === "ArrowDown") { e.preventDefault(); all[Math.min(i + 1, n - 1)].focus(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); all[Math.max(i - 1, 0)].focus(); }
+      else if (e.key === "Home") { e.preventDefault(); all[0].focus(); }
+      else if (e.key === "End") { e.preventDefault(); all[n - 1].focus(); }
+      else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (i >= 0) pick(all[i].getAttribute("data-v")); }
+      else if (e.key === "Escape") { e.preventDefault(); me.close(true); }
+      else if (e.key === "Tab") { me.close(); }
+      else if (e.key.length === 1) {   // type a letter to jump
+        var k = e.key.toLowerCase();
+        for (var j = 1; j <= n; j++) { var li = all[(i + j) % n]; if (li.textContent.trim().toLowerCase().charAt(0) === k) { li.focus(); break; } }
+      }
+    });
+    DROPS.push(me);
+    return me;
+  }
+  document.addEventListener("click", function (e) { if (!e.target.closest(".dd")) DROPS.forEach(function (d) { d.close(); }); });
+
   // ---- pickers ----
+  var dd = {};
   function currentSpecId() { return prefs.specOf[prefs.cls] || DATA.classes.filter(function (c) { return c.key === prefs.cls; })[0].specs[0]; }
   function fillClass() {
-    $("cls").innerHTML = DATA.classes.map(function (c) { return '<option value="' + c.key + '">' + esc(c.name) + "</option>"; }).join("");
-    $("cls").value = prefs.cls;
+    dd.cls.set(DATA.classes.map(function (c) {
+      return { value: c.key, label: c.name, color: CLASS_COLOR[c.key], icon: zam("classicon_" + c.key) };
+    }), prefs.cls);
   }
   function fillSpec() {
     var c = DATA.classes.filter(function (c) { return c.key === prefs.cls; })[0];
-    var byRole = { tank: [], dps: [], healer: [] };
+    var byRole = { tank: [], dps: [], healer: [] }, opts = [];
     c.specs.forEach(function (sid) { byRole[DATA.specs[sid].role].push(sid); });
-    $("spec").innerHTML = ["tank", "dps", "healer"].filter(function (r) { return byRole[r].length; }).map(function (r) {
-      return '<optgroup label="' + ROLE_LABEL[r] + '">' + byRole[r].map(function (sid) { return '<option value="' + sid + '">' + esc(DATA.specs[sid].name) + "</option>"; }).join("") + "</optgroup>";
-    }).join("");
-    $("spec").value = currentSpecId();
+    ["tank", "dps", "healer"].forEach(function (r) {
+      if (!byRole[r].length) return;
+      opts.push({ group: ROLE_LABEL[r], icon: ROLE_ICON[r] });
+      byRole[r].forEach(function (sid) { opts.push({ value: sid, label: DATA.specs[sid].name, color: CLASS_COLOR[c.key], icon: ROLE_ICON[r] }); });
+    });
+    dd.spec.set(opts, currentSpecId());
+  }
+  function fillFaction() {
+    dd.faction.set(["alliance", "horde"].map(function (f) { return { value: f, label: FACTION[f].label, color: FACTION[f].color, icon: zam(FACTION[f].icon) }; }), prefs.faction);
   }
   function fillChips() {
     var present = {};
@@ -339,13 +472,14 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     $("chips").innerHTML = DATA.types.map(function (t) {
       var none = !present[t];
       var on = !none && prefs.types[t] !== false;
-      return '<button type="button" class="chip" data-type="' + t + '" aria-pressed="' + on + '"' + (none ? ' disabled title="No ' + esc(TYPE_LABEL[t].toLowerCase()) + ' items at this level yet"' : "") + ">" + esc(TYPE_LABEL[t]) + "</button> ";
+      return '<button type="button" class="chip" data-type="' + t + '" aria-pressed="' + on + '"' + (none ? ' disabled title="No ' + esc(TYPE_LABEL[t].toLowerCase()) + ' items at this level yet"' : "") + ">" + (TYPE_ICON[t] || "") + esc(TYPE_LABEL[t]) + "</button>";
     }).join("");
     var profs = {};
     Object.keys(DATA.specs).forEach(function (sid) { DATA.specs[sid].slots.forEach(function (s) { if (s.best && s.best.prof) profs[s.best.prof] = 1; }); });
-    $("prof").innerHTML = '<option value="any">Any</option>' + Object.keys(profs).sort().map(function (p) { return '<option value="' + esc(p) + '">' + esc(p) + "</option>"; }).join("");
-    $("prof").value = prefs.prof || "any";
-    $("conf").value = prefs.conf || "all";
+    dd.prof.set([{ value: "any", label: "Any", icon: TYPE_ICON.crafted }].concat(Object.keys(profs).sort().map(function (p) {
+      return { value: p, label: p, icon: PROF_ICON[p] ? zam(PROF_ICON[p]) : TYPE_ICON.crafted };
+    })), profs[prefs.prof] ? prefs.prof : "any");
+    dd.conf.set([{ value: "all", label: "All sources" }, { value: "known", label: "Known sources only" }, { value: "forever", label: "Forever data only" }], prefs.conf || "all");
   }
 
   function passes(b) {
@@ -367,23 +501,35 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     if (b.horde && prefs.faction === "horde") return '<span class="tag alt" title="The Horde version">Horde: ' + esc(b.horde) + "</span>";
     return "";
   }
+  function renderSoon(sp) {
+    $("sum").textContent = "Level 60 · in the works";
+    $("rows").innerHTML = '<div class="soon"><h3>Level 60 Mr.BiZ is in the works</h3>' +
+      "<p>The beta stops at level 30, so nobody can rank level 60 gear yet. When WoW Forever launches on November 4 and the level 60 lists come out, they land here for every class and spec, " + esc(sp.name) + " included.</p>" +
+      "<ul><li>Pre-raid best in slot (dungeons, quests, crafted, reputation)</li><li>Raid tiers as each raid opens</li><li>The same filters, biz ranks and wishlist as level 30</li></ul>" +
+      '<p><button type="button" class="btn gold" data-level="30">Back to level 30</button></p></div>';
+    $("foot").innerHTML = '<p>Want something in the level 60 lists? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';
+  }
   function render() {
     var sid = currentSpecId(), sp = DATA.specs[sid];
     location.replace("#" + sid);
-    var shown = 0, hidden = 0, empty = 0;
+    var shown = 0, hidden = 0, empty = 0, bizz = 0;
     var labels = {}; DATA.slots.forEach(function (s) { labels[s.key] = s.label; });
     $("set-title").textContent = sp.name + " " + DATA.classes.filter(function (c) { return c.key === sp.class; })[0].name;
+    $("set-title").style.color = CLASS_COLOR[sp.class] || "";
+    if (level === "60") { renderSoon(sp); return; }
     $("rows").innerHTML = sp.slots.map(function (s) {
       var key = sid + "|" + s.slot, label = labels[s.slot];
       if (!s.best) {
         empty++;
         return '<div class="row empty"><div class="row-main"><span class="slot">' + esc(label) + '</span><span class="item"><span class="nm">Nothing yet</span><span class="src">' + esc(capFirst(s.note)) + "</span></span><span></span><span></span><span></span><span></span></div></div>";
       }
-      var b = s.best, ok = passes(b), isOpen = !!open[key];
+      var b = s.best, ok = passes(b), isOpen = !!open[key], top = isTheBizz(s);
       if (ok) shown++; else hidden++;
+      if (ok && top) bizz++;
       wantQuality(b.id); (s.next || []).forEach(function (n) { wantQuality(n.id); });
-      var nameHtml = ok ? whLink(b.id, b.name) + factionTag(b) : "Hidden by your filters";
-      var srcHtml = ok ? esc(b.label) : esc(TYPE_LABEL[b.type]) + " pick · click to see it";
+      var bizzTag = top ? '<span class="tag bizz" title="The best, and the next pick is ' + Math.abs(s.next[0].delta) + '% behind">The Bizz</span>' : "";
+      var nameHtml = ok ? whLink(b.id, b.name) + bizzTag + factionTag(b) : "Hidden by your filters";
+      var srcHtml = ok ? srcIcon(b) + "<span>" + esc(b.label) + "</span>" : (TYPE_ICON[b.type] || "") + "<span>" + esc(TYPE_LABEL[b.type]) + " pick · click to see it</span>";
       var main = '<div class="row-main" data-toggle="' + esc(key) + '"><span class="slot">' + esc(label) + '</span><span class="item"><span class="nm">' + nameHtml + '</span><span class="src">' + srcHtml + "</span></span>" +
         '<span class="score" title="Score with this spec\'s stat weights">' + (ok ? esc(b.score) : "") + "</span>" +
         (ok ? '<span class="badge b-' + b.conf + '" title="' + esc(confTitle(b.conf)) + '">' + CONF_LABEL[b.conf] + "</span>" : "<span></span>") +
@@ -391,19 +537,20 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
         (ok ? starBtn(b.id, b.name, sid, s.slot) : "<span></span>") + "</div>";
       var more = "";
       if (isOpen) {
-        var list = '<li><span class="rk">#1</span><span class="item"><span class="nm">' + whLink(b.id, b.name) + factionTag(b) + '</span></span><span class="dl">best</span>' + starBtn(b.id, b.name, sid, s.slot) + "</li>" +
+        var rk = function (i) { return '<span class="rk r' + (i + 1) + '">' + (i === 0 && top ? "The Bizz" : rankName(i)) + "<b>#" + (i + 1) + "</b></span>"; };
+        var list = "<li>" + rk(0) + '<span class="item"><span class="nm">' + whLink(b.id, b.name) + factionTag(b) + '</span></span><span class="dl"></span>' + starBtn(b.id, b.name, sid, s.slot) + "</li>" +
           (s.next || []).map(function (n, i) {
-            var d = typeof n.delta === "number" ? (n.delta === 0 ? "same" : n.delta + "%") : "";
-            return '<li><span class="rk">#' + (i + 2) + '</span><span class="item"><span class="nm">' + whLink(n.id, n.name) + '</span></span><span class="dl">' + esc(d) + "</span>" + starBtn(n.id, n.name, sid, s.slot) + "</li>";
+            var d = typeof n.delta === "number" ? (n.delta === 0 ? "just as biz" : n.delta + "%") : "";
+            return "<li>" + rk(i + 1) + '<span class="item"><span class="nm">' + whLink(n.id, n.name) + '</span></span><span class="dl">' + esc(d) + "</span>" + starBtn(n.id, n.name, sid, s.slot) + "</li>";
           }).join("");
         more = '<div class="more"><ol>' + list + "</ol>" +
           '<p class="facts"><b>' + esc(b.name) + "</b>: " + esc(b.stats) + ". " + esc(TYPE_LABEL[b.type]) + ": " + esc(b.label) + (b.ease ? " · " + esc(b.ease) : "") + "</p>" +
           '<p class="facts links"><a href="https://www.wowhead.com/forever/item=' + b.id + '" target="_blank" rel="noopener">Wowhead</a><a href="https://foreverdb.net/item/' + b.id + '" target="_blank" rel="noopener">ForeverDB</a><a href="' + esc(sp.url) + '" target="_blank" rel="noopener">Full ' + esc(sp.name) + " list</a></p>" +
-          ((s.next || []).length < 2 ? '<p class="note">No more ranked picks for this slot at level 30.</p>' : '<p class="note">Ranks 2–3 show how far behind the best they score. More ranks come when our own ranking is done.</p>') + "</div>";
+          ((s.next || []).length < 2 ? '<p class="note">No more ranked picks for this slot at level 30.</p>' : '<p class="note">Bizzer and Biz show how far behind the best they score. Almost biz picks (4th and lower) come when our own ranking is done.</p>') + "</div>";
       }
       return '<div class="row' + (ok ? "" : " hidden") + (isOpen ? " open" : "") + '">' + main + more + "</div>";
     }).join("");
-    $("sum").textContent = shown + " shown" + (hidden ? " · " + hidden + " hidden by filters" : "") + (empty ? " · " + empty + " empty at level 30" : "");
+    $("sum").textContent = shown + " shown" + (bizz ? " · " + bizz + " The Bizz" : "") + (hidden ? " · " + hidden + " hidden by filters" : "") + (empty ? " · " + empty + " empty at level 30" : "");
     $("foot").innerHTML = "<p><b>Stat weights</b> (" + esc(sp.name) + "): <code>" + esc(sp.weights) + "</code></p>" +
       '<p>Picks and weights from <a href="' + esc(sp.url) + '" target="_blank" rel="noopener">ForeverDB</a> (beta build ' + esc(sp.build) + ", taken " + esc(DATA.updated) +
       '). Tooltips and item pages from <a href="https://www.wowhead.com/forever" target="_blank" rel="noopener">Wowhead</a>. Wrong item? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';
@@ -471,17 +618,23 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   }
 
   // ---- events ----
-  $("cls").addEventListener("change", function () { prefs.cls = this.value; save(); fillSpec(); render(); });
-  $("spec").addEventListener("change", function () { prefs.specOf[prefs.cls] = this.value; save(); render(); });
-  $("faction").addEventListener("change", function () { prefs.faction = this.value; save(); render(); });
-  $("prof").addEventListener("change", function () { prefs.prof = this.value; save(); render(); });
-  $("conf").addEventListener("change", function () { prefs.conf = this.value; save(); render(); });
+  // Level isn't saved: 60 only shows what's coming, so every visit starts at 30.
+  var level = "30";
+  dd.cls = Drop("cls", function (v) { prefs.cls = v; save(); fillSpec(); render(); });
+  dd.spec = Drop("spec", function (v) { prefs.specOf[prefs.cls] = v; save(); render(); });
+  dd.faction = Drop("faction", function (v) { prefs.faction = v; save(); render(); });
+  dd.level = Drop("level", function (v) { level = v; render(); });
+  dd.prof = Drop("prof", function (v) { prefs.prof = v; save(); render(); });
+  dd.conf = Drop("conf", function (v) { prefs.conf = v; save(); render(); });
+  dd.level.set(LEVELS, level);
   $("chips").addEventListener("click", function (e) {
     var b = e.target.closest(".chip"); if (!b || b.disabled) return;
     var t = b.dataset.type; prefs.types[t] = prefs.types[t] === false; save();
     b.setAttribute("aria-pressed", String(prefs.types[t] !== false)); render();
   });
   $("rows").addEventListener("click", function (e) {
+    var lv = e.target.closest("[data-level]");
+    if (lv) { level = lv.getAttribute("data-level"); dd.level.setValue(level); render(); return; }
     var star = e.target.closest("[data-star]");
     if (star) { toggleWish(star.dataset.star, star.dataset.name, star.dataset.spec, star.dataset.slot); return; }
     if (e.target.closest("a")) return;   // item links open Wowhead
@@ -535,9 +688,8 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     if (!prefs.cls || !d.classes.some(function (c) { return c.key === prefs.cls; })) prefs.cls = "hunter";
     if (prefs.specOf[prefs.cls] && !d.specs[prefs.specOf[prefs.cls]]) delete prefs.specOf[prefs.cls];
     prefs.faction = prefs.faction === "horde" ? "horde" : "alliance";
-    $("faction").value = prefs.faction;
     if (!store.chars[store.current]) store.chars[store.current] = { items: {} };
-    fillClass(); fillSpec(); fillChips(); fillChars();
+    fillClass(); fillSpec(); fillFaction(); fillChips(); fillChars();
     render(); renderWish();
   }).catch(function () { $("rows").innerHTML = '<p style="padding:18px">Couldn’t load the BiS data right now.</p>'; });
   window.addEventListener("hashchange", function () {

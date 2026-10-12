@@ -93,6 +93,18 @@ function BiZ.SetSpec(specId)
   end
 end
 
+-- Biz rank names (the site uses the same): 1 Bizzest, 2 Bizzer, 3 Biz, lower Almost biz.
+BiZ.THE_BIZZ_GAP = 20
+function BiZ.RankName(rank)
+  return R2F.L["BIZ_RANK_" .. rank] or R2F.L.BIZ_RANK_LOW
+end
+
+-- The best pick is The Bizz when the next pick scores THE_BIZZ_GAP % or more behind it.
+function BiZ.IsTheBizz(slot)
+  local n = slot.next and slot.next[1]
+  return n ~= nil and type(n.delta) == "number" and n.delta <= -BiZ.THE_BIZZ_GAP
+end
+
 function BiZ.SlotLabel(key)
   for _, s in ipairs(data().slots) do
     if s.key == key then return s.label end

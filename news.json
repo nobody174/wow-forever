@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-12",
+      "title": "Mr.BiZ gets biz ranks and colours",
+      "text": "Items now rank as Bizzest, Bizzer and Biz, and a gold The Bizz tag marks the best picks that are 20% or more ahead of the next one: those are worth chasing. Class and faction colours and icons in the pickers, icons on the source filters, and a level 60 option that shows what's coming at launch. The top bar is also in a new order: plan, character, then UI.",
+      "link": "bis.html"
+    },
+    {
+      "date": "2026-10-12",
       "title": "Mr.BiZ: best in slot for every spec",
       "text": "New BiS page: the best gear per slot for all 27 specs at level 30, with the next best picks, quality colours and Wowhead tooltips, source filters and a wishlist per character. The addon (0.30.0) gets the same list as a BiS tab with item tooltips; /biz opens it.",
       "link": "bis.html"

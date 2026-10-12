@@ -5002,11 +5002,15 @@ def test_talent_learning(templates):
           "%s: guided popup says what will happen" % tag)
     c.accept()
     defl = c.index_of("Deflection")
+    check((c.ev("TEST.toggles") or 0) == 0 and glow(c)["shown"] is False and c.said(c.ev("R2F.L.TALENT_GUIDE_OPEN")),
+          "%s: guided mode never opens Blizzard's window itself, it asks the player to" % tag)
+    c.lua.execute("ToggleTalentFrame()")   # the player presses N
+    tick(c)
     g = glow(c)
-    check(c.ev("TalentFrame:IsShown()") is True and c.ev("TEST.toggles") == 1, "%s: Blizzard's talent window opened" % tag)
+    check(c.ev("TalentFrame:IsShown()") is True and c.ev("TEST.toggles") == 1, "%s: the player opened Blizzard's talent window" % tag)
     check(g["shown"] is True and g["anchor"] == "TalentFrameTalent%d" % defl and g["label"] == "Click Deflection (1 of 17)",
           "%s: glow on Deflection's button (client index %d): %s" % (tag, defl, g))
-    check(c.said("Click Deflection (1 of 17)") and c.said(c.ev("R2F.L.TALENT_GUIDE_START")), "%s: chat says what to click" % tag)
+    check(c.said("Click Deflection (1 of 17)"), "%s: chat says what to click" % tag)
     check(c.text(c.learn) == "Learning 1 / 17" and c.text(c.cancel) == "Stop", "%s: guided label" % tag)
     check(c.ev("LHINT ~= nil") and find_frames(c.lua, "f.__kind == 'FontString' and f.__text == 'Click Deflection (1 of 17)'", "NOTE") >= 2,
           "%s: the tab's note line shows it too" % tag)
@@ -5088,6 +5092,8 @@ def test_talent_learning(templates):
     check(c.said("Stopped at Deflection: the game didn't accept the point. 0 of 17 learned. " + c.ev("R2F.L.TALENT_BLOCKED_HINT")),
           "%s: blocked LearnTalent -> 13.5's stop + guided hint" % tag)
     c.click(c.learn)
+    c.lua.execute("ToggleTalentFrame()")   # the player presses N
+    tick(c)
     check(c.popup() is None and c.status().mode == "guided" and glow(c)["label"] == "Click Deflection (1 of 17)",
           "%s: next Learn -> guided mode on the same run" % tag)
     # ADDON_ACTION_FORBIDDEN for LearnTalent: stops at once, no timer needed.
@@ -5112,8 +5118,8 @@ def test_talent_learning(templates):
                  "1:%dx1" % c.index_of("Anger Management")]
     check(prev_calls == want_prev and c.popup() is None and c.ev("TEST.talentWrites") == 0,
           "%s: fills Blizzard's preview in learning order, no popup, no LearnTalent / commit: %s" % (tag, prev_calls))
-    check(c.said(c.ev("R2F.L.TALENT_PREVIEW_FILLED").replace("%d", "17")) and c.ev("TalentFrame:IsShown()") is True,
-          "%s: talent window opened for Blizzard's Learn button" % tag)
+    check(c.said(c.ev("R2F.L.TALENT_PREVIEW_FILLED").replace("%d", "17")) and (c.ev("TEST.toggles") or 0) == 0,
+          "%s: the player is told to open the talent window for Blizzard's Learn button; we don't open it" % tag)
     c = ctx({}, 17, setup="GetCVarBool = function() return false end")
     check(c.ev("R2F.Talents.LearnMode()") == "direct", "%s: preview functions present but CVar off -> direct" % tag)
 

@@ -20,9 +20,10 @@
 --   re-checks whether the talent window is open and which tab it shows.
 --   (Throttled refresh only while the window is open, like every other
 --   refresh in the addon.)
--- * Opening the window: Blizzard's own ToggleTalentFrame() (what the N key
---   does), only out of combat (guided mode stops in combat), and only if the
---   window isn't already showing (Toggle would close it).
+-- * The window is never opened from here: calling Blizzard's ToggleTalentFrame()
+--   would run its code (panel layout, tab state) in our name and taint it. The
+--   player opens it (default key N) and the chat/note text says so; the glow
+--   appears as soon as the window is showing.
 --
 -- Frame names differ by client generation: vanilla's Blizzard_TalentUI has
 -- TalentFrame with buttons TalentFrameTalent<i> and tabs TalentFrameTab<n>;
@@ -180,13 +181,11 @@ function TalentGuide.Text()
   return instruction(kind)
 end
 
--- Open Blizzard's talent window (if it isn't already). Returns false when
--- the client has no ToggleTalentFrame (the player opens it themselves).
-function TalentGuide.OpenTalentWindow()
+-- Is Blizzard's talent window showing? Read only: it is never opened from
+-- here (see the header), so false means "ask the player to open it".
+function TalentGuide.IsWindowOpen()
   local f = blizzard()
-  if f and f:IsVisible() then return true end
-  if not ToggleTalentFrame then return false end
-  return (pcall(ToggleTalentFrame))
+  return (f and f:IsVisible()) and true or false
 end
 
 -- Test hooks.

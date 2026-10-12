@@ -30,20 +30,28 @@ Done, committed (`2f7948d`), 17885 tests passing:
       old bare command names (`/r2f rankdebug` etc.) still work
 - [x] L1 Ammo reminder uses `BAG_UPDATE_DELAYED`, ignores other units' `UNIT_INVENTORY_CHANGED`
 
-Not started yet (next session):
-- [ ] M1 ~2,500 internal dev-comment lines across the addon (ADDON_PLAN refs, "owner test"
-      notes, version-history comments, stale claims) — big, mechanical
-- [ ] M2 TESTING.md (1,221 lines) and the dev CHANGELOG.md (853 lines, still has old
-      `/r2f who`-style command names from its own history — fine, it's a historical log, but
-      decide whether it ships at all) currently ship inside `addon/RoadToForever/` and so are
-      in the release zip; write a public README.md + short player CHANGELOG, decide how to
-      keep/exclude the dev files
-- [ ] M4 no CI runs tests/luacheck before a release tag
-- [ ] M5 luacheck globals (~355 warnings, mostly `.luacheckrc` missing WoW API globals)
-- [ ] M6 dedicated taint audit (Step 4): TalentGuide.lua `ToggleTalentFrame()`,
-      Professions.lua `prepare()`, re-check Bags.lua
-- [ ] M7 LICENSE file (All Rights Reserved text), README.md, `## X-Website` / `## X-License`
-      in the .toc, version bump 0.30.0 → 1.0.0 in .toc + CHANGELOG
+Done in the second session (all committed, 17887 tests passing, luacheck 0 warnings):
+- [x] M1 dev comments cleaned (about 500 lines touched, proven comment-only with
+      `addon/tests/check_comment_only.py`)
+- [x] M2 README.md + short player CHANGELOG.md ship; TESTING.md and the dev CHANGELOG.md
+      moved to `addon/dev/` (not shipped)
+- [x] M4 CI (`.github/workflows/ci.yml`: tests, luacheck, release-tree check); release.yml
+      now needs it
+- [x] M5 luacheck globals (0 warnings)
+- [x] M6 taint audit:
+      - TalentGuide: removed `ToggleTalentFrame()` (it ran game logic in our name). The
+        addon now only reads whether the window is open and asks the player to press N.
+      - Bags: the `frame.r2fDragging` field written onto Blizzard's bag frames is now a
+        local `dragging[frame]` table.
+      - Professions `prepare()`: C-API only, low taint risk, but it changes the player's
+        filter UI state. Needs in-game QA.
+      - GameplayQuests: our check boxes are parented to Blizzard's header buttons, no field
+        writes, low risk.
+- [x] M7 LICENSE, .toc fields, version 1.0.0
+- Needs in-game re-test by the owner: rebuilt error filter, guided mode and preview mode
+  (no longer open the talent window by themselves).
+
+Not started yet:
 - [ ] L2 duplicated helpers (isSecret ×3, vendor price ×2, throttled-refresh ×5, two
       context-menu implementations) — likely low priority
 - [ ] L3 "More are planned (pet, repairs, bags)" UI promise line — low priority, or fold into M1

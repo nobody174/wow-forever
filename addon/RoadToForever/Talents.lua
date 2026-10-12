@@ -1361,7 +1361,7 @@ local function begin(r)
   local mode = Talents.LearnMode()
   if mode == "guided" then
     r.mode, r.phase = "guided", "guided"
-    if R2F.TalentGuide.OpenTalentWindow() then
+    if R2F.TalentGuide.IsWindowOpen() then
       R2F.Print(L.TALENT_GUIDE_START)
     else
       R2F.Print(L.TALENT_GUIDE_OPEN)
@@ -1539,7 +1539,6 @@ function Talents.FillPreview(plan)
       n = n + e.now
     end
   end
-  R2F.TalentGuide.OpenTalentWindow()
   say(L.TALENT_PREVIEW_FILLED:format(n), "info")
   notify()
   return n

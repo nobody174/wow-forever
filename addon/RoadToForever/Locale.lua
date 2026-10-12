@@ -519,7 +519,7 @@ R2F.L = {
   TALENT_GUIDE_TAB = "Open the %s tab, then click %s (%d of %d)",
   TALENT_GUIDE_START = "click the glowing talent in Blizzard's talent window, one at a time.",
   TALENT_GUIDE_OPEN = "open your talent window (default key N) and click the talents named here, one at a time.",
-  TALENT_PREVIEW_FILLED = "added %d talent points to the talent window's preview. Click its Learn button to keep them.",
+  TALENT_PREVIEW_FILLED = "added %d talent points to the talent window's preview. Open your talent window (default key N) and click its Learn button to keep them.",
 
   -- Minimap button
   MM_LIBRARY = "%d macros in your library",

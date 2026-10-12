@@ -51,6 +51,7 @@ local SIDE_GAP = 11           -- the gap the game leaves between two bag windows
 local hooked = {}             -- frame -> true once our scripts are on it
 local grips = {}              -- frame -> grip frame over its title
 local gameAnchor = {}         -- frame -> { game's first point } as it last placed the window
+local dragging = {}             -- frame -> true while our Shift-drag moves it (kept here, not on the game's frame)
 local anchorsHooked = false
 local pending = false         -- something was skipped in combat
 local watcher, events
@@ -208,8 +209,8 @@ function Bags.SyncGrips()
 end
 
 local function stopDrag(frame)
-  if not frame.r2fDragging then return end
-  frame.r2fDragging = nil
+  if not dragging[frame] then return end
+  dragging[frame] = nil
   if watcher then watcher.active = nil; watcher:SetScript("OnUpdate", nil) end
   frame:StopMovingOrSizing()
   -- Moving a named frame by hand makes the client remember it in its own layout cache;
@@ -238,7 +239,7 @@ end
 
 local function startDrag(frame)
   if not (canDrag() and shift()) then return end
-  frame.r2fDragging = true
+  dragging[frame] = true
   frame:StartMoving()
   watchRelease(frame)
   Bags.SyncGrips()

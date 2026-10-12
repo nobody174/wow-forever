@@ -1,5 +1,15 @@
 # Road to Forever changelog
 
+## 0.34.0 (2026-10-12)
+
+- Size slider no longer runs away while you drag it: the number follows the thumb and the window changes once, when you let go (also if the cursor leaves the bar). Numbers 50 / 100 / 150 are written under the bar.
+- Switches are slimmer, rounded at the ends, and the green is a little darker.
+- Talent trees are bigger and use the wider page.
+- Import macros moved from its own button into the Macros page's Options menu.
+- The Gameplay tab is now called QoL, with pages Quests, Vendors & loot, Chat & screen, Bags and Alerts & HUD.
+- Alerts & HUD: alert text size slider (50-250%) and outline (none / thin / thick).
+- Each QoL page has Reset page, and a small gold dot on a page button shows that something on it is switched on.
+
 ## 0.33.0 (2026-10-12)
 
 - The Settings tab is gone; its settings now live on Home (quick game settings, minimap button, bags). `/r2f settings` opens Home.

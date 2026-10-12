@@ -124,6 +124,8 @@ function Library.Init()
   if type(fc.y) ~= "number" then fc.y = 0 end
   if type(fc.scale) ~= "number" or fc.scale < 0.5 or fc.scale > 3 then fc.scale = 1 end
   if type(fc.lock) ~= "boolean" then fc.lock = false end
+  if type(fc.textScale) ~= "number" or fc.textScale < 0.5 or fc.textScale > 2.5 then fc.textScale = 1 end
+  if fc.outline ~= "none" and fc.outline ~= "thin" and fc.outline ~= "thick" then fc.outline = "none" end
   -- Tracking reminder (Tracking.lua): any class that has Find Minerals / Herbs / Treasure.
   if type(db.tracking) ~= "table" then db.tracking = {} end
   local tr = db.tracking

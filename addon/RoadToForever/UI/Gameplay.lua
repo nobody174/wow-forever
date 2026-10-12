@@ -25,6 +25,9 @@ local boxes = {}        -- feature key -> check button
 local pages = {}        -- page key -> container frame
 local pageButtons = {}  -- page key -> button
 local pageHeight = {}
+local outlineButtons = {}   -- "none" / "thin" / "thick" -> button (Alerts & HUD page)
+local sizeSlider, sizeText
+local DOT = "Interface\\AddOns\\RoadToForever\\media\\dot"
 local scroll, content
 local LEFT, RIGHT, RIGHT_W = 22, 270, 214
 
@@ -33,8 +36,9 @@ Tab.PAGES = {
   { key = "quests", label = "GP_PAGE_QUESTS",
     features = { "questaccept", "questturnin", "gossipshop", "rewardvalue", "questzone" } },
   { key = "vendors", label = "GP_PAGE_VENDORS",
-    features = { "repair", "sellgray", "fastloot", "bagslots", "bagsort", "mailalts" } },
+    features = { "repair", "sellgray", "fastloot", "mailalts" } },
   { key = "screen", label = "GP_PAGE_SCREEN", features = { "errorfilter", "xpbar", "copychat", "duels" } },
+  { key = "bags", label = "GP_PAGE_BAGS", features = { "bagslots", "bagsort" } },
   { key = "alerts", label = "GP_PAGE_ALERTS", features = { "reactalert", "reactlock", "reactblizz" } },
 }
 
@@ -51,6 +55,27 @@ local function refresh()
       b:SetChecked(Gameplay.IsOn(def.key))
       b:SetEnabled(ok)
       if ok then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
+    end
+  end
+  -- A gold dot on a page button when something on that page is on / changed from the default.
+  for _, pg in ipairs(Tab.PAGES) do
+    local any = false
+    for _, key in ipairs(pg.features) do if Gameplay.IsOn(key) then any = true end end
+    if pg.key == "alerts" then
+      local d = R2F.Library.db.fct
+      if d.textScale ~= 1 or d.outline ~= "none" then any = true end
+    end
+    if pageButtons[pg.key] then pageButtons[pg.key].dot:SetShown(any) end
+  end
+  if sizeSlider then
+    local d = R2F.Library.db.fct
+    sizeSlider:SetValue(d.textScale * 100)
+    sizeText:SetText(L.GP_ALERT_SIZE:format(d.textScale * 100 + 0.5))
+    for k, b in pairs(outlineButtons) do
+      local fs = b.GetFontString and b:GetFontString()
+      if fs then
+        if k == d.outline then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
+      end
     end
   end
   R2F.RemindersTab.Refresh()
@@ -121,6 +146,24 @@ function Tab.ShowPage(key)
   refresh()
 end
 
+-- Turns every box on the page you are on off again (the defaults) and puts the alert text style back.
+function Tab.ResetPage()
+  local key = Tab.CurrentPage()
+  for _, pg in ipairs(Tab.PAGES) do
+    if pg.key == key then
+      for _, f in ipairs(pg.features) do
+        if Gameplay.IsOn(f) then Gameplay.SetOn(f, false) end
+      end
+      if key == "alerts" then
+        local d = R2F.Library.db.fct
+        d.textScale, d.outline = 1, "none"
+        Gameplay.ApplyAlertStyle()
+      end
+    end
+  end
+  refresh()
+end
+
 function Tab.CurrentPage()
   return R2F.Library.db.settings.gameplayPage
 end
@@ -131,10 +174,10 @@ function Tab.Build(f)
   local defs = byKey()
 
   -- The page buttons along the top.
-  local x = 22
+  local x = 12
   for _, pg in ipairs(Tab.PAGES) do
     local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-    b:SetSize(112, 22)
+    b:SetSize(100, 22)
     b:SetPoint("TOPLEFT", x, -46)
     b:SetText(L[pg.label])
     b:SetScript("OnClick", function() Tab.ShowPage(pg.key) end)
@@ -144,9 +187,27 @@ function Tab.Build(f)
     b.mark:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -6, 1)
     b.mark:SetHeight(3)
     b.mark:Hide()
+    b.dot = b:CreateTexture(nil, "OVERLAY")
+    b.dot:SetTexture(DOT)
+    b.dot:SetVertexColor(1, 0.82, 0)
+    b.dot:SetSize(7, 7)
+    b.dot:SetPoint("TOPRIGHT", b, "TOPRIGHT", -3, -3)
+    b.dot:Hide()
     pageButtons[pg.key] = b
-    x = x + 116
+    x = x + 104
   end
+
+  local reset = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+  reset:SetSize(100, 22)
+  reset:SetPoint("BOTTOMRIGHT", -20, 12)
+  reset:SetText(L.GP_RESET_PAGE)
+  reset:SetScript("OnClick", function() Tab.ResetPage() end)
+  reset:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_TOP")
+    GameTooltip:AddLine(L.GP_RESET_TIP, 1, 1, 1, true)
+    GameTooltip:Show()
+  end)
+  reset:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
   scroll = UI.TryTemplate("ScrollFrame", "R2FGameplayScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FGameplayScrollPlain", f)
@@ -169,6 +230,45 @@ function Tab.Build(f)
     end
     local bottom = y  -- luacheck: ignore 311
     if pg.key == "alerts" then
+      sizeText = c:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+      sizeText:SetPoint("TOPLEFT", LEFT + 4, y - 6)
+      sizeSlider = CreateFrame("Slider", nil, c, "OptionsSliderTemplate")
+      sizeSlider:SetPoint("TOPLEFT", LEFT + 4, y - 30)
+      sizeSlider:SetWidth(200)
+      sizeSlider:SetMinMaxValues(50, 250)
+      sizeSlider:SetValueStep(10)
+      if sizeSlider.SetObeyStepOnDrag then sizeSlider:SetObeyStepOnDrag(true) end
+      for _, part in ipairs({ "Low", "High", "Text" }) do
+        if sizeSlider[part] then sizeSlider[part]:SetText("") end
+      end
+      sizeSlider:SetScript("OnValueChanged", function(_, v)
+        local d = R2F.Library.db.fct
+        v = math.max(50, math.min(250, math.floor(v / 10 + 0.5) * 10))
+        sizeText:SetText(L.GP_ALERT_SIZE:format(v))
+        if math.abs(v / 100 - d.textScale) > 0.001 then
+          d.textScale = v / 100
+          Gameplay.ApplyAlertStyle()
+          refresh()
+        end
+      end)
+      local ol = c:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+      ol:SetPoint("TOPLEFT", LEFT + 4, y - 56)
+      ol:SetText(L.GP_ALERT_OUTLINE)
+      local bx = LEFT + 4
+      for _, k in ipairs({ "none", "thin", "thick" }) do
+        local ob = CreateFrame("Button", nil, c, "UIPanelButtonTemplate")
+        ob:SetSize(64, 22)
+        ob:SetPoint("TOPLEFT", bx, y - 74)
+        ob:SetText(L["GP_OUTLINE_" .. k:upper()])
+        ob:SetScript("OnClick", function()
+          R2F.Library.db.fct.outline = k
+          Gameplay.ApplyAlertStyle()
+          refresh()
+        end)
+        outlineButtons[k] = ob
+        bx = bx + 68
+      end
+      y = y - 108
       local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
       note:SetPoint("TOPLEFT", LEFT + 4, y - 4)
       note:SetWidth(230)
@@ -185,7 +285,7 @@ function Tab.Build(f)
       note:SetPoint("TOPLEFT", LEFT + 4, y - 4)
       note:SetWidth(440)
       note:SetJustifyH("LEFT")
-      note:SetText(L.GP_NOTE)
+      note:SetText(pg.key == "bags" and (L.GP_BAGS_NOTE .. " " .. L.GP_NOTE) or L.GP_NOTE)
       bottom = y - 30
     end
     pageHeight[pg.key] = -bottom + 20

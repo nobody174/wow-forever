@@ -670,7 +670,7 @@ for _, name in ipairs({
   "SetClampedToScreen", "StartMoving", "StopMovingOrSizing", "SetBackdrop",
   "SetBackdropColor", "SetJustifyH", "SetTexCoord", "SetHighlightTexture",
   "SetPushedTexture", "SetDisabledTexture", "SetCheckedTexture", "RegisterForClicks",
-  "SetMultiLine", "SetAutoFocus", "SetFontObject", "SetMaxLetters", "SetMaxBytes",
+  "SetMultiLine", "SetAutoFocus", "SetFontObject", "SetFont", "SetMaxLetters", "SetMaxBytes",
   "SetScrollChild", "SetFocus", "ClearFocus", "HighlightText",
   "SetMotionScriptsWhileDisabled", "SetHitRectInsets", "SetFrameLevel",
   "SetTextInsets", "SetValueStep",

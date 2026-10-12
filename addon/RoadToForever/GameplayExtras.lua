@@ -351,6 +351,21 @@ local function updateAlertMarker()
   end
 end
 
+-- Size and outline of the alert text (Alerts & HUD page). Our own font string only.
+local OUTLINE_FLAGS = { none = "", thin = "OUTLINE", thick = "THICKOUTLINE" }
+function Gameplay.ApplyAlertStyle()
+  if not alertText then return end
+  local d = alertDb()
+  local path, size = "Fonts\\FRIZQT__.TTF", 16
+  local base = _G.GameFontNormalLarge
+  if base and base.GetFont then
+    local p, sz = base:GetFont()
+    if type(p) == "string" then path = p end
+    if type(sz) == "number" and sz > 0 then size = sz end
+  end
+  alertText:SetFont(path, math.floor(size * d.textScale + 0.5), OUTLINE_FLAGS[d.outline] or "")
+end
+
 local function ensureAlert()
   if alertMarker then return end
   alertMarker = R2F.Reminders.NewIcon("R2FReactAlertAnchor", alertDb, "GP_REACT_DRAGTIP")
@@ -359,6 +374,7 @@ local function ensureAlert()
   alertText = holder:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   alertText:SetPoint("CENTER", alertMarker, "CENTER", 0, 0)
   alertText:Hide()
+  Gameplay.ApplyAlertStyle()
 end
 
 local function now()

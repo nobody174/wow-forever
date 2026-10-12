@@ -272,6 +272,66 @@ function UI.Confirm(text, acceptLabel, cancelLabel, onAccept)
   UI.PlaySound("IG_MAINMENU_OPEN")
 end
 
+-- ---------------------------------------------------------------------------
+-- Name prompt (talent loadouts): one line of text, Save / Cancel.
+-- ---------------------------------------------------------------------------
+
+local prompt
+
+function UI.Prompt(title, default, acceptLabel, cancelLabel, onAccept)
+  if not prompt then
+    local f = UI.DialogFrame("R2FPrompt", UIParent)
+    f:SetSize(340, 130)
+    f:SetPoint("CENTER", 0, 120)
+    f:SetFrameStrata("DIALOG")
+    f:SetToplevel(true)
+    f:EnableMouse(true)
+    f:Hide()
+    closeOnEsc("R2FPrompt")
+    f.title = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    f.title:SetPoint("TOP", 0, -20)
+    local edit = CreateFrame("EditBox", nil, f, (BackdropTemplateMixin and "BackdropTemplate") or nil)
+    if edit.SetBackdrop then
+      edit:SetBackdrop({ bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+                         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16,
+                         edgeSize = 12, insets = { left = 3, right = 3, top = 3, bottom = 3 } })
+      edit:SetBackdropColor(0, 0, 0, 0.8)
+    end
+    edit:SetFontObject(ChatFontNormal or GameFontHighlight)
+    edit:SetTextInsets(6, 6, 0, 0)
+    edit:SetAutoFocus(false)
+    edit:SetMaxLetters(24)
+    edit:SetSize(280, 24)
+    edit:SetPoint("TOP", 0, -48)
+    local function accept()
+      local text, fn = edit:GetText(), f.onAccept
+      f.onAccept = nil
+      f:Hide()
+      if fn and text and text ~= "" then fn(text) end
+    end
+    edit:SetScript("OnEnterPressed", accept)
+    edit:SetScript("OnEscapePressed", function() f.onAccept = nil f:Hide() end)
+    local yes = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    yes:SetSize(110, 22)
+    yes:SetPoint("BOTTOMRIGHT", f, "BOTTOM", -6, 16)
+    yes:SetScript("OnClick", accept)
+    local no = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    no:SetSize(110, 22)
+    no:SetPoint("BOTTOMLEFT", f, "BOTTOM", 6, 16)
+    no:SetScript("OnClick", function() f.onAccept = nil f:Hide() end)
+    f.edit, f.yes, f.no = edit, yes, no
+    prompt = f
+  end
+  prompt.title:SetText(title)
+  prompt.yes:SetText(acceptLabel)
+  prompt.no:SetText(cancelLabel)
+  prompt.edit:SetText(default or "")
+  prompt.onAccept = onAccept
+  prompt:Show()
+  prompt.edit:SetFocus()
+  prompt.edit:HighlightText()
+end
+
 -- "VR, HS, Rend" for a popup. More than `max` names -> "VR, HS and 12 more",
 -- so a big Remove all / Tidy up can't grow the dialog off the screen.
 function UI.NameList(names, max)

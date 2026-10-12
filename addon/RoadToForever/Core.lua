@@ -20,6 +20,7 @@ handlers.PLAYER_LOGIN = function()
   R2F.playerClass = select(2, UnitClass("player"))
   -- The macros that ship inside the addon (MacroData.lua) go into the library first.
   R2F.Bundle.Run()
+  R2F.Talents.RegisterShare()
   -- An import on another character updated the shared library but not this
   -- character's macros; catch up now (combat-safe: queued if in combat,
   -- e.g. after a /reload mid-fight).
@@ -62,6 +63,9 @@ handlers.PLAYER_REGEN_ENABLED = function()
 end
 
 -- Slot counter, markers and the Home counts; no-ops while the window is closed.
+-- Talent loadouts shared by a group member (Talents.lua).
+handlers.CHAT_MSG_ADDON = function(...) R2F.Talents.OnAddonMessage(...) end
+
 handlers.UPDATE_MACROS = function() R2F.MainWindow.RequestRefresh() end
 handlers.ACTIONBAR_SLOT_CHANGED = function() R2F.MainWindow.RequestRefresh() end
 -- Newly learned spells: icons and "Learn later" states change.

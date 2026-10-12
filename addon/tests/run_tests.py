@@ -894,6 +894,53 @@ def test_bundle(fx):
     check(lua.eval("R2F.Library.Get('ANY/Zoom') ~= nil"), "a new bundled version restores / updates the macros")
 
 
+def test_planner():
+    """0.37.0: the talent planner (EditPlan, loadouts, sharing over the addon channel)."""
+    fxt = json.load(open(TALENT_FIXTURE, encoding="utf-8"))
+    js = talent_js()
+    lua = new_runtime()
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    set_game_talents(lua, fxt["talents"], js["classes"]["warrior"], {})
+    lua.execute("TL = R2F.Talents")
+    lua.execute("PL = TL.Preview(TL.LinkFromCodes({'', '', ''})).plan")
+    check(lua.eval("PL ~= nil and PL.total") == 0, "planner: an empty link previews as an empty plan")
+    # Tier 1 of tree 1: +1 works, the max is respected, a deep tier with no points is rejected.
+    lua.execute("C1 = TL.EditPlan(PL, 1, 1, 1)")
+    check(lua.eval("C1 ~= nil and C1[1]:sub(1, 1)") == "1", "planner: +1 on the first talent gives rank 1")
+    lua.execute("n = #PL.trees[1].talents local last = n C2, why = TL.EditPlan(PL, 1, last, 1)")
+    check(lua.eval("C2") is None and lua.eval("why") == "tier", "planner: a deep talent with no points above is refused (tier)")
+    lua.execute("C3, why = TL.EditPlan(PL, 1, 1, -1)")
+    check(lua.eval("C3") is None and lua.eval("why") == "min", "planner: below 0 is refused")
+    lua.execute("LINK = TL.LinkFromCodes(C1) P2 = TL.Preview(LINK).plan")
+    check(lua.eval("P2 ~= nil and P2.total") == 1, "planner: the built link previews with 1 point")
+    # Loadouts
+    lua.execute("R2FDB.loadouts = R2FDB.loadouts or {} ")
+    lua.execute("LO = TL.SaveLoadout('Leveling', LINK)")
+    check(lua.eval("LO ~= nil and LO.by == nil and #TL.Loadouts('warrior')") == 1, "planner: a loadout is saved")
+    lua.execute("TL.SaveLoadout('Leveling', LINK)")
+    check(lua.eval("#TL.Loadouts('warrior')") == 1, "planner: same name updates instead of duplicating")
+    check(lua.eval("TL.SaveLoadout('', LINK)") is None and lua.eval("TL.SaveLoadout('x', 'junk')") is None,
+          "planner: empty name / bad link are refused")
+    # Sharing
+    T.addonSent = lua.table()
+    lua.execute("TEST.addonSent = {}")
+    check(lua.eval("TL.ShareLoadout(LO, 'PARTY')") is True and lua.eval("#TEST.addonSent") == 1
+          and lua.eval("TEST.addonSent[1][1]") == "R2FT" and lua.eval("TEST.addonSent[1][3]") == "PARTY",
+          "planner: share sends one R2FT message to the channel")
+    lua.execute("MSG = TEST.addonSent[1][2]")
+    lua.execute("TL.DeleteLoadout(LO.id)")
+    check(lua.eval("#TL.Loadouts('warrior')") == 0, "planner: delete removes it")
+    lua.execute("TL.OnAddonMessage('R2FT', MSG, 'PARTY', 'Bob-Realm')")
+    check(lua.eval("#TL.Loadouts('warrior')") == 1 and lua.eval("TL.Loadouts('warrior')[1].by") == "Bob",
+          "planner: a received loadout is saved, marked with the sender")
+    lua.execute("TL.OnAddonMessage('R2FT', 'L\\tBad\\tnonsense', 'PARTY', 'Eve-Realm')")
+    lua.execute("TL.OnAddonMessage('R2FT', MSG, 'PARTY', UnitName('player') .. '-Realm')")
+    lua.execute("TL.OnAddonMessage('XXXX', MSG, 'PARTY', 'Zed-Realm')")
+    check(lua.eval("#TL.Loadouts('warrior')") == 1, "planner: bad body, own name and wrong prefix are ignored")
+
+
 def test_tree_names():
     """15.2: the Talents tab's tree names = talentcalc.js CLASSES (same names, same order)."""
     js = open(os.path.join(ROOT, "talentcalc.js"), encoding="utf-8").read()
@@ -7016,6 +7063,7 @@ def main():
     test_settings_tab(False, fx)
     test_tree_names()
     test_bundle(fx)
+    test_planner()
     test_talented_perk()
     test_bags()
     test_reminders()

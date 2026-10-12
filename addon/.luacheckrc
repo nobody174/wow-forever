@@ -19,7 +19,7 @@ globals = {
 
 read_globals = {
   -- Lua extras WoW provides
-  "time",
+  "time", "C_ChatInfo",
   -- Macros
   "GetNumMacros", "GetMacroIndexByName", "GetMacroInfo", "CreateMacro", "EditMacro",
   "DeleteMacro", "PickupMacro", "MAX_ACCOUNT_MACROS", "MAX_CHARACTER_MACROS",

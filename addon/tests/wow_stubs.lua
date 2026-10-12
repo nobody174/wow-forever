@@ -622,6 +622,10 @@ end
 function GetSpellTexture(name) return T.knownSpells[name] end
 function GetItemInfo() return nil end
 function GetShapeshiftForm() return T.stanceIndex or 0 end
+T.addonSent = {}
+C_ChatInfo = { RegisterAddonMessagePrefix = function() return true end,
+               SendAddonMessage = function(prefix, msg, channel) table.insert(T.addonSent, { prefix, msg, channel }) return true end }
+if not UnitName then function UnitName() return T.playerName or "Me" end end
 function UnitClass() return T.className or "Warrior", T.classToken or "WARRIOR", 1 end
 function IsShiftKeyDown() return T.shift or false end
 function IsMouseButtonDown() return T.mouseDown == true end

@@ -5,12 +5,6 @@ everything not shipped yet lives here, whether started or not. The moment
 something ships, it moves to [CHANGELOG.md](CHANGELOG.md), not left here as a
 stale checkmark.
 
-## Addon: talent planner (2026-10-12, owner request)
-
-- [ ] Talents tab: play around with points (click to spend, same rules as talents.html), save as named loadouts per
-      character, and share with the group (link/paste, same R2FT link format). Today the tab only previews a pasted
-      build and learns it.
-
 ## Builds: level 30 gaps (2026-10-12)
 
 Level 20 builds were removed. Level 30 now has one or more builds for every class, but these specs have none

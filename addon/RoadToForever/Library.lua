@@ -118,6 +118,7 @@ function Library.Init()
     if type(db.gameplay[key]) ~= "boolean" then db.gameplay[key] = false end
   end
   -- Where the floating combat text starts (GameplayExtras.lua): offset from the screen centre, UIParent units.
+  if type(db.loadouts) ~= "table" then db.loadouts = {} end
   if type(db.fct) ~= "table" then db.fct = {} end
   local fc = db.fct
   if type(fc.x) ~= "number" then fc.x = 0 end

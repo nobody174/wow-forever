@@ -41,7 +41,7 @@ local page
 local ui = {}
 local cells = {}           -- cells[tree][row][col]
 local heads = {}           -- heads[tree] = { name, counts }
-local state = { text = nil }   -- the link being previewed (nil = none)
+local state = { text = nil, editing = false }   -- the link being previewed (nil = none)
 
 local function cdb() return R2F.Library.cdb end
 
@@ -88,6 +88,7 @@ local function cellTooltip(b)
     if e.state == "conflict" then GameTooltip:AddLine(L.TALENT_TIP_CONFLICT, 1, 0.15, 0.15, true) end
     if e.state == "overmax" then GameTooltip:AddLine(L.TALENT_TIP_OVERMAX, 1, 0.15, 0.15, true) end
   end
+  if state.editing then GameTooltip:AddLine(L.TALENT_EDIT_HOW, 0.6, 0.85, 1) end
   GameTooltip:Show()
 end
 
@@ -123,6 +124,8 @@ local function buildCell(parent, x, y)
   b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
   b:SetScript("OnEnter", cellTooltip)
   b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+  b:SetScript("OnClick", function(self, button) TalentPanel.CellClick(self, button) end)
   return b
 end
 
@@ -310,9 +313,33 @@ local function build(f)
 
   -- Guided mode's "Click Cruelty (2 of 21)"; empty otherwise.
   ui.note = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  ui.note:SetPoint("BOTTOMLEFT", 24, 20)
+  ui.note:SetPoint("BOTTOMLEFT", 24, 46)
   ui.note:SetWidth(270)
   ui.note:SetJustifyH("LEFT")
+
+  -- Planner: edit switch, loadouts, sharing.
+  ui.editMode = UI.Switch(f, L.TALENT_EDIT)
+  ui.editMode:SetPoint("BOTTOMLEFT", 22, 20)
+  ui.editMode:SetScript("OnClick", function(self)
+    state.editing = self:GetChecked() and true or false
+    TalentPanel.Refresh()
+  end)
+  ui.editMode:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_TOP")
+    GameTooltip:AddLine(L.TALENT_EDIT, 1, 1, 1)
+    GameTooltip:AddLine(L.TALENT_EDIT_TIP, 1, 0.82, 0, true)
+    GameTooltip:Show()
+  end)
+  ui.editMode:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  ui.saveLoadout = button(f, L.BTN_SAVE_LOADOUT, 96)
+  ui.saveLoadout:SetPoint("BOTTOMLEFT", 130, 16)
+  ui.saveLoadout:SetScript("OnClick", function() TalentPanel.SaveLoadout() end)
+  ui.loadouts = button(f, L.BTN_LOADOUTS, 86)
+  ui.loadouts:SetPoint("LEFT", ui.saveLoadout, "RIGHT", 4, 0)
+  ui.loadouts:SetScript("OnClick", function() TalentPanel.LoadoutsMenu() end)
+  ui.share = button(f, L.BTN_SHARE, 66)
+  ui.share:SetPoint("LEFT", ui.loadouts, "RIGHT", 4, 0)
+  ui.share:SetScript("OnClick", function() TalentPanel.ShareMenu() end)
   return f
 end
 
@@ -457,6 +484,7 @@ function TalentPanel.Refresh()
   else
     ui.summary:SetText("")
   end
+  ui.editMode:SetChecked(state.editing)
   applyLearnState(withBuild and plan or nil)
 end
 
@@ -554,6 +582,101 @@ end
 -- button). A run in progress was already stopped by Talents.OnCombat.
 function TalentPanel.SetCombat()
   TalentPanel.Refresh()
+end
+
+-- ---------------------------------------------------------------------------
+-- Planner: cell clicks, loadouts, sharing
+-- ---------------------------------------------------------------------------
+
+-- Shows `link` in the box and redraws (like pressing Preview, without reading the box).
+local function setLink(link)
+  Talents.ResetLearn()
+  state.text = link
+  if Talents.ParseLink(link) then cdb().lastTalentLink = link end
+  ui.edit:SetText(link)
+  TalentPanel.Refresh()
+end
+TalentPanel.SetLink = setLink
+
+-- The "class/code~hash" of the build on screen, or nil.
+function TalentPanel.CurrentBody()
+  local link = state.text and Talents.ParseLink(state.text)
+  if not link then return nil end
+  return link.class .. "/" .. link.code .. (link.hash and ("~" .. link.hash) or "")
+end
+
+-- Left click +1, right click -1, while "Edit build" is on and no learn run is active.
+function TalentPanel.CellClick(cell, mouse)
+  if not state.editing or Talents.LearnBusy() then return end
+  local e = cell.entry
+  if not e then return end
+  local plan = state.result and state.result.plan or Talents.CurrentPlan()
+  if not plan then return end
+  local codes, why = Talents.EditPlan(plan, e.tab, e.pos, mouse == "RightButton" and -1 or 1)
+  if not codes then
+    if why == "cap" then R2F.Print(L.TALENT_EDIT_NOPOINTS:format(Talents.MAX_POINTS))
+    elseif why == "tier" then R2F.Print(L.TALENT_EDIT_TIER)
+    elseif why == "max" then R2F.Print(L.TALENT_EDIT_MAX) end
+    return
+  end
+  local link = Talents.LinkFromCodes(codes)
+  if link then setLink(link) end
+  if GameTooltip:IsShown() then cellTooltip(cell) end
+end
+
+function TalentPanel.SaveLoadout()
+  local body = TalentPanel.CurrentBody()
+  if not body then R2F.Print(L.TALENT_LOADOUT_NEED_BUILD) return end
+  UI.Prompt(L.TALENT_LOADOUT_NAME, "", L.BTN_PROMPT_OK, L.BTN_CANCEL, function(name)
+    local l, why = Talents.SaveLoadout(name, body)
+    if l then R2F.Print(L.TALENT_LOADOUT_SAVED:format(l.name))
+    elseif why == "full" then R2F.Print(L.TALENT_LOADOUT_FULL) end
+  end)
+end
+
+function TalentPanel.LoadoutsMenu()
+  local list = Talents.Loadouts(Talents.ClassId())
+  local items = {}
+  if #list == 0 then
+    items[1] = { kind = "title", text = L.TALENT_LOADOUT_NONE }
+  else
+    for _, l in ipairs(list) do
+      local label = l.by and L.TALENT_LOADOUT_BY:format(l.name, l.by) or l.name
+      items[#items + 1] = { kind = "button", text = L.TALENT_LOADOUT_LOAD:format(label),
+                            func = function() setLink(l.body) end }
+    end
+    items[#items + 1] = { kind = "divider" }
+    for _, l in ipairs(list) do
+      items[#items + 1] = { kind = "button", text = L.TALENT_LOADOUT_DELETE:format(l.name),
+                            func = function()
+                              if Talents.DeleteLoadout(l.id) then R2F.Print(L.TALENT_LOADOUT_DELETED:format(l.name)) end
+                            end }
+    end
+  end
+  UI.ContextMenu(items)
+end
+
+function TalentPanel.ShareMenu()
+  local body = TalentPanel.CurrentBody()
+  if not body then R2F.Print(L.TALENT_LOADOUT_NEED_BUILD) return end
+  local name = Talents.ClassName(body:match("^(%a+)/")) .. " build"
+  for _, l in ipairs(Talents.Loadouts(Talents.ClassId())) do
+    if l.body == body then name = l.name end
+  end
+  local items = { { kind = "title", text = L.TALENT_SHARE_TITLE },
+                  { kind = "button", text = L.TALENT_SHARE_COPY,
+                    func = function() R2F.UI.ShowCopy(Talents.SITE_URL .. body, L.TALENT_COPY_HINT) end } }
+  for _, ch in ipairs(Talents.CHANNELS) do
+    items[#items + 1] = { kind = "button", text = L["TALENT_SHARE_" .. ch],
+                          func = function()
+                            if Talents.ShareLoadout({ name = name, body = body }, ch) then
+                              R2F.Print(L.TALENT_SHARE_SENT:format(name, L["TALENT_SHARE_" .. ch]))
+                            else
+                              R2F.Print(L.TALENT_SHARE_FAILED)
+                            end
+                          end }
+  end
+  UI.ContextMenu(items)
 end
 
 -- Test hook: the cell drawn for tree t, tier row, column col.

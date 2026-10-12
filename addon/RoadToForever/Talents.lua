@@ -667,7 +667,7 @@ function Talents.Plan(trees, codes, free)
       -- tree (and drops empty trailing trees), so a short code is normal.
       local planned = tonumber(code:sub(k, k)) or 0
       local e = { name = x.name, icon = x.icon, tier = x.tier, column = x.column, rank = x.rank,
-                  maxRank = x.maxRank, index = x.index, nodeID = x.nodeID, spellID = x.spellID,
+                  maxRank = x.maxRank, index = x.index, pos = k, nodeID = x.nodeID, spellID = x.spellID,
                   tab = t, planned = planned,
                   add = 0, now = 0, later = 0 }
       tree.current = tree.current + x.rank
@@ -745,6 +745,158 @@ function Talents.CurrentPlan()
     codes[t] = table.concat(d)
   end
   return Talents.Plan(trees, codes, (Talents.FreePointsInfo()))
+end
+
+-- ===========================================================================
+-- Planner: change a build point by point, save it as a loadout, share it
+-- ===========================================================================
+--
+-- The planner works on the codes of a plan (one digit per talent, in the same order as a link), so
+-- everything it makes is an ordinary link that Preview / Learn already understand. Rules checked
+-- here: max rank, the Classic tier rule (5 points in the tree per tier above the first, also when
+-- taking points away from a lower tier) and the point cap. Prerequisite arrows between talents are
+-- NOT checked: the client's trait data in the addon carries no reliable prerequisite list, so the
+-- site's calculator is the place for that; a point the game refuses stops a Learn run as before.
+
+Talents.MAX_POINTS = 51
+
+local function digitsOf(tree)
+  local out = {}
+  for k, e in ipairs(tree.talents) do out[k] = e.planned end
+  return out
+end
+
+-- Checks a list of planned ranks (index = position in the tree) against the tier rule.
+local function tierRuleHolds(tree, ranksList)
+  local below = {}   -- below[t] = points in tiers lower than t
+  local perTier = {}
+  for k, e in ipairs(tree.talents) do
+    perTier[e.tier] = (perTier[e.tier] or 0) + (ranksList[k] or 0)
+  end
+  local sum = 0
+  for t = 1, 7 do
+    below[t] = sum
+    sum = sum + (perTier[t] or 0)
+  end
+  for k, e in ipairs(tree.talents) do
+    if (ranksList[k] or 0) > 0 and below[e.tier] < (e.tier - 1) * 5 then return false end
+  end
+  return true
+end
+
+-- plan.trees[tab].talents[pos].planned + delta (+1 / -1). Returns the new per-tree digit strings
+-- (a list of strings, one per tree) or nil, reason ("max" | "min" | "tier" | "cap").
+function Talents.EditPlan(plan, tab, pos, delta)
+  local tree = plan and plan.trees[tab]
+  local e = tree and tree.talents[pos]
+  if not e then return nil, "min" end
+  local want = e.planned + delta
+  if want > e.maxRank then return nil, "max" end
+  if want < 0 then return nil, "min" end
+  local total = 0
+  for _, t in ipairs(plan.trees) do for _, x in ipairs(t.talents) do total = total + x.planned end end
+  if delta > 0 and total + delta > Talents.MAX_POINTS then return nil, "cap" end
+  local list = digitsOf(tree)
+  list[pos] = want
+  if not tierRuleHolds(tree, list) then return nil, "tier" end
+  local codes = {}
+  for t, tr in ipairs(plan.trees) do
+    local d = {}
+    for k, x in ipairs(tr.talents) do d[k] = tostring(t == tab and list[k] or x.planned) end
+    codes[t] = table.concat(d)
+  end
+  return codes
+end
+
+-- The link body ("class/code~hash") for per-tree digit strings, against the live trees.
+function Talents.LinkFromCodes(codes)
+  local trees, classId = Talents.ReadTrees(), Talents.ClassId()
+  if not trees or not classId then return nil end
+  local parts = {}
+  for t = 1, #trees do parts[t] = ((codes[t] or ""):gsub("0+$", "")) end
+  local code = table.concat(parts, "-"):gsub("%-+$", "")
+  return Talents.SITE_URL .. classId .. "/" .. code .. "~" .. Talents.Hash(trees)
+end
+
+-- ---- Loadouts (R2FDB.loadouts, account-wide, each remembers its class) -------------------------
+-- { id, name, class, body = "class/code~hash", by = nil (mine) | sender name, ts }
+
+local MAX_LOADOUTS, MAX_SHARED = 60, 30
+
+local function cleanName(name)
+  name = tostring(name or ""):gsub("[%c|]", ""):gsub("^%s+", ""):gsub("%s+$", "")
+  return name:sub(1, 24)
+end
+
+function Talents.Loadouts(classId)
+  local out = {}
+  for _, l in ipairs(R2F.Library.db.loadouts) do
+    if l.class == classId then out[#out + 1] = l end
+  end
+  return out
+end
+
+function Talents.SaveLoadout(name, text, by)
+  name = cleanName(name)
+  local link = Talents.ParseLink(text)
+  if name == "" or not link then return nil end
+  local list = R2F.Library.db.loadouts
+  local body = link.class .. "/" .. link.code .. (link.hash and ("~" .. link.hash) or "")
+  for _, l in ipairs(list) do
+    if l.name == name and l.class == link.class and l.by == by then
+      l.body, l.ts = body, time()
+      return l
+    end
+  end
+  local mine, shared = 0, 0
+  for _, l in ipairs(list) do if l.by then shared = shared + 1 else mine = mine + 1 end end
+  if (by and shared >= MAX_SHARED) or (not by and mine >= MAX_LOADOUTS) then return nil, "full" end
+  local l = { id = tostring(time()) .. "-" .. tostring(#list + 1), name = name, class = link.class, body = body,
+              by = by, ts = time() }
+  list[#list + 1] = l
+  return l
+end
+
+function Talents.DeleteLoadout(id)
+  local list = R2F.Library.db.loadouts
+  for i, l in ipairs(list) do
+    if l.id == id then table.remove(list, i); return true end
+  end
+end
+
+-- ---- Sharing over the addon channel -------------------------------------------------------------
+-- "L<tab>name<tab>link body" to PARTY / RAID / GUILD. What arrives is saved as a loadout marked with the
+-- sender, never applied. Everything received is validated like a pasted link.
+Talents.PREFIX = "R2FT"
+Talents.CHANNELS = { "PARTY", "RAID", "GUILD" }
+
+function Talents.RegisterShare()
+  if C_ChatInfo and C_ChatInfo.RegisterAddonMessagePrefix then
+    pcall(C_ChatInfo.RegisterAddonMessagePrefix, Talents.PREFIX)
+  end
+end
+
+function Talents.ShareLoadout(loadout, channel)
+  local send = C_ChatInfo and C_ChatInfo.SendAddonMessage
+  if not send then return false end
+  local msg = "L\t" .. cleanName(loadout.name) .. "\t" .. loadout.body
+  if #msg > 250 then return false end
+  return pcall(send, Talents.PREFIX, msg, channel) and true or false
+end
+
+-- CHAT_MSG_ADDON(prefix, message, channel, sender)
+function Talents.OnAddonMessage(prefix, msg, _, sender)
+  if prefix ~= Talents.PREFIX or type(msg) ~= "string" or type(sender) ~= "string" then return end
+  local me = UnitName and UnitName("player")
+  local short = sender:match("^([^-]+)") or sender
+  if short == me then return end
+  local kind, name, body = msg:match("^(L)\t([^\t]*)\t([^\t]*)$")
+  if not kind or not Talents.ParseLink(body) then return end
+  name = cleanName(name)
+  if name == "" then return end
+  local saved = Talents.SaveLoadout(name, body, short)
+  if saved then R2F.Print(L.TALENT_SHARE_GOT:format(short, name)) end
+  if R2F.TalentPanel and R2F.TalentPanel.RequestRefresh then R2F.TalentPanel.RequestRefresh() end
 end
 
 -- Preview: text -> result.

@@ -315,27 +315,32 @@ function UI.CheckButton(parent, label, radio)
   return b
 end
 
--- On/off switch (the look of the new window): a track with a knob that
--- slides, gold when on. A plain CheckButton underneath, so every caller keeps
--- using SetChecked / GetChecked / SetScript("OnClick") / SetEnabled and the
--- r2fLabel text exactly as with a check box. Drawn from our own textures only
--- (no Blizzard template), so it looks the same on every client.
-local SWITCH_ON, SWITCH_OFF = { 0.92, 0.72, 0.15 }, { 0.28, 0.28, 0.32 }
+-- On/off switch (the look of the new window): a slim track with a round-ish
+-- knob that slides; green when on, black with a grey rim when off. A plain
+-- CheckButton underneath, so every caller keeps using SetChecked / GetChecked /
+-- SetScript("OnClick") / SetEnabled and the r2fLabel text exactly as with a
+-- check box. Drawn from our own textures only (no Blizzard template).
+local SWITCH_ON, SWITCH_OFF = { 0.18, 0.72, 0.28 }, { 0.04, 0.04, 0.05 }
 function UI.Switch(parent, label)
   local b = CreateFrame("CheckButton", nil, parent)
-  b:SetSize(34, 18)
-  local track = b:CreateTexture(nil, "BACKGROUND")
-  track:SetAllPoints(b)
+  b:SetSize(30, 14)
+  local rim = b:CreateTexture(nil, "BACKGROUND")
+  rim:SetAllPoints(b)
+  rim:SetColorTexture(0.45, 0.45, 0.48, 1)
+  local track = b:CreateTexture(nil, "BORDER")
+  track:SetPoint("TOPLEFT", b, "TOPLEFT", 1, -1)
+  track:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -1, 1)
   track:SetColorTexture(SWITCH_OFF[1], SWITCH_OFF[2], SWITCH_OFF[3], 1)
   local knob = b:CreateTexture(nil, "ARTWORK")
-  knob:SetSize(14, 14)
-  knob:SetColorTexture(0.95, 0.95, 0.95, 1)
-  b.r2fTrack, b.r2fKnob = track, knob
+  knob:SetSize(10, 10)
+  knob:SetColorTexture(0.7, 0.7, 0.72, 1)
+  b.r2fRim, b.r2fTrack, b.r2fKnob = rim, track, knob
 
   local function paint()
     local on = b:GetChecked() and true or false
     local c = on and SWITCH_ON or SWITCH_OFF
     track:SetColorTexture(c[1], c[2], c[3], 1)
+    if on then knob:SetColorTexture(1, 1, 1, 1) else knob:SetColorTexture(0.7, 0.7, 0.72, 1) end
     knob:ClearAllPoints()
     if on then knob:SetPoint("RIGHT", b, "RIGHT", -2, 0) else knob:SetPoint("LEFT", b, "LEFT", 2, 0) end
     b:SetAlpha(b.r2fEnabled == false and 0.45 or 1)
@@ -348,13 +353,39 @@ function UI.Switch(parent, label)
   b.SetChecked = function(self, v) setChecked(self, v); paint() end
   b.SetEnabled = function(self, v) b.r2fEnabled = v and true or false; setEnabled(self, v); paint() end
   b:SetScript("PostClick", paint)
-  b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
 
   local text = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
   text:SetPoint("LEFT", b, "RIGHT", 6, 0)
   text:SetText(label)
   b:SetHitRectInsets(0, -(text:GetStringWidth() + 6), 0, 0)
   b.r2fLabel = text
+  paint()
+  return b
+end
+
+-- Small black square tick box (the "mark all in this zone" box in the quest
+-- log): black inside, thin grey rim, a green square when ticked. Same API as
+-- UI.Switch (SetChecked / GetChecked / OnClick).
+function UI.BlackBox(parent, size)
+  size = size or 16
+  local b = CreateFrame("CheckButton", nil, parent)
+  b:SetSize(size, size)
+  local rim = b:CreateTexture(nil, "BACKGROUND")
+  rim:SetAllPoints(b)
+  rim:SetColorTexture(0.45, 0.45, 0.48, 1)
+  local fill = b:CreateTexture(nil, "BORDER")
+  fill:SetPoint("TOPLEFT", b, "TOPLEFT", 1, -1)
+  fill:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -1, 1)
+  fill:SetColorTexture(0, 0, 0, 1)
+  local tick = b:CreateTexture(nil, "ARTWORK")
+  tick:SetPoint("TOPLEFT", b, "TOPLEFT", 4, -4)
+  tick:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -4, 4)
+  tick:SetColorTexture(SWITCH_ON[1], SWITCH_ON[2], SWITCH_ON[3], 1)
+  b.r2fTick = tick
+  local function paint() if b:GetChecked() then tick:Show() else tick:Hide() end end
+  local setChecked = b.SetChecked
+  b.SetChecked = function(self, v) setChecked(self, v); paint() end
+  b:SetScript("PostClick", paint)
   paint()
   return b
 end

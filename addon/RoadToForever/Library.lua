@@ -158,7 +158,7 @@ function Library.Init()
   if type(am.threshold) ~= "number" or am.threshold < 50 or am.threshold > 1000 then am.threshold = 200 end
   local s = db.settings
   -- Main window size and opacity (top bar sliders).
-  if type(s.menuScale) ~= "number" or s.menuScale < 0.7 or s.menuScale > 1.3 then s.menuScale = 1 end
+  if type(s.menuScale) ~= "number" or s.menuScale < 0.5 or s.menuScale > 1.5 then s.menuScale = 1 end
   if type(s.menuAlpha) ~= "number" or s.menuAlpha < 0.3 or s.menuAlpha > 1 then s.menuAlpha = 1 end
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
   -- Main window: the tab /r2f reopens. Home on first use.

@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.31.1 (2026-10-12): look fixes
+
+- The window is a solid dark panel again (Opacity slider fades it, default 100%).
+- Switches are slim: green when on, black with a grey rim when off.
+- The quest log "mark all in this zone" box is a small black square with a green tick.
+- Size slider runs 50% to 150% and Size / Opacity show their percentage, in steps of 10.
+
 ## 0.31.0 (2026-10-12): new window, phase 1 (test build)
 
 - **New window shell**: a larger flat window (820 x 600) with a sidebar instead of the bottom tabs

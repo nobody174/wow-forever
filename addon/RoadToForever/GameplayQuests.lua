@@ -267,8 +267,7 @@ local function drawZoneBoxes()
   for _, header in ipairs(activeHeaders()) do
     local box = zoneBoxes[header]
     if not box then
-      box = R2F.UI.CheckButton(header, "")
-      box:SetSize(18, 18)
+      box = R2F.UI.BlackBox(header, 16)
       -- To the LEFT of the game's collapse / expand button (header.CollapseButton, anchored RIGHT -6
       -- in ListHeaderVisualTemplate); the header's own text ends 4 px left of that button.
       if header.CollapseButton then

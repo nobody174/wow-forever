@@ -20,7 +20,7 @@
 -- content area until they are reflowed one by one.
 --
 -- Saved in R2FDB.settings: windowPos (by UI.FlatWindow when dragged), lastTab,
--- menuScale (0.7 to 1.3) and menuAlpha (0.3 to 1). Esc closes it
+-- menuScale (0.5 to 1.5) and menuAlpha (0.3 to 1). Esc closes it
 -- (UISpecialFrames). Spellbook sounds.
 
 local _, R2F = ...
@@ -127,29 +127,33 @@ function MainWindow.ApplyLook()
   if not frame then return end
   local st = settings()
   frame:SetScale(st.menuScale)
-  frame:SetBackdropColor(1, 1, 1, st.menuAlpha)
-  frame.r2fSide:SetColorTexture(0, 0, 0, 0.35 * st.menuAlpha)
+  frame:SetBackdropColor(0, 0, 0, 0)
+  frame.r2fBgTex:SetColorTexture(0.07, 0.07, 0.09, st.menuAlpha)
+  frame.r2fSide:SetColorTexture(0, 0, 0, 0.45 * st.menuAlpha)
 end
 
 -- Small labelled slider for the top bar. onApply(value) runs when the value
 -- settles: while the mouse drags the thumb the window must not rescale under
 -- it, so size changes apply on release.
+local STEP = 10
 local function topSlider(parent, label, min, max, get, set, x)
   local fs = parent:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
   fs:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -8)
-  fs:SetText(label)
+  local function caption(v) fs:SetText(("%s %d%%"):format(label, math.floor(v * 100 + 0.5))) end
+  caption(get())
   local sl = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
   sl:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -22)
   sl:SetWidth(84)
   sl:SetMinMaxValues(min, max)
-  sl:SetValueStep(5)
+  sl:SetValueStep(STEP)
   if sl.SetObeyStepOnDrag then sl:SetObeyStepOnDrag(true) end
   for _, part in ipairs({ "Low", "High", "Text" }) do
     if sl[part] then sl[part]:SetText("") end
   end
   local function commit(v)
-    v = math.floor(v / 5 + 0.5) / 100 * 5
+    v = math.floor(v / STEP + 0.5) * STEP / 100
     v = math.max(min / 100, math.min(max / 100, v))
+    caption(v)
     if math.abs(v - get()) > 0.001 then set(v) end
   end
   sl:SetScript("OnValueChanged", function(self, v)
@@ -171,6 +175,13 @@ end
 local function build()
   local f = UI.FlatWindow("R2FMain", WIN_W, WIN_H, "windowPos")
 
+  -- Solid panel (opacity from the top bar slider); the dialog backdrop only
+  -- draws the rim.
+  local bgTex = f:CreateTexture(nil, "BACKGROUND")
+  bgTex:SetPoint("TOPLEFT", f, "TOPLEFT", 4, -4)
+  bgTex:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -4, 4)
+  bgTex:SetColorTexture(0.07, 0.07, 0.09, 1)
+  f.r2fBgTex = bgTex
   -- Sidebar background and the line under the top bar.
   local side = f:CreateTexture(nil, "BACKGROUND")
   side:SetPoint("TOPLEFT", f, "TOPLEFT", 4, -TOP_H)
@@ -203,7 +214,7 @@ local function build()
   reload:SetText(L.MENU_RELOAD)
   reload:SetScript("OnClick", function() ReloadUI() end)
   f.r2fReload = reload
-  f.r2fSizeSlider = topSlider(f, L.WIN_SIZE, 70, 130,
+  f.r2fSizeSlider = topSlider(f, L.WIN_SIZE, 50, 150,
     function() return settings().menuScale end,
     function(v) settings().menuScale = v MainWindow.ApplyLook() end, WIN_W - 36 - 84 - 8 - 2 * 92)
   f.r2fOpacitySlider = topSlider(f, L.WIN_OPACITY, 30, 100,

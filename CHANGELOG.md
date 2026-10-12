@@ -4,6 +4,11 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-12 (Addon versions checked)
+- addons.html: Leatrix Maps 1.60.12-forever -> 1.60.20-forever (Oct 10), Questie v12.0.3+v1.0.4 -> v12.0.4+v1.0.5
+  (Oct 6), TomTom v4.3.11-release -> v4.3.12-release (Oct 6); Forever confirmed on each file page. "Versions checked"
+  -> Oct 12, 2026. Road to Forever stays 0.29.1 (newest tag; 0.30.0 in the .toc isn't tagged yet).
+
 ## 2026-10-12 (Mr.BiZ round 3: a source for every rank, stand-ins, icon colours)
 - `bis/sources.json`: where each rank 2-3 pick comes from, for the 193 that aren't a best pick in any spec, read from
   each item's ForeverDB page (124 found, 69 not known yet). `build_bis.py` puts type / label / group / conf on every

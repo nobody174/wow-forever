@@ -673,7 +673,7 @@ for _, name in ipairs({
   "SetScrollChild", "SetFocus", "ClearFocus", "HighlightText",
   "SetMotionScriptsWhileDisabled", "SetHitRectInsets", "SetFrameLevel",
   "SetTextInsets", "SetValueStep",
-  "SetMinMaxValues", "SetValue",
+  "SetMinMaxValues",
   -- Mr.BiZ (v0.30.0): FontString:SetWordWrap (real widget method, nothing to model)
   "SetWordWrap",
 }) do methods[name] = noop end
@@ -728,6 +728,8 @@ function methods:SetText(t)
   if self.__kind == "EditBox" and self.__scripts.OnTextChanged then self.__scripts.OnTextChanged(self, false) end
 end
 function methods:GetText() return self.__text end
+function methods:SetValue(v) self.__value = v end
+function methods:GetValue() return self.__value or 0 end
 function methods:SetEnabled(v) self.__enabled = not not v end
 function methods:Enable() self.__enabled = true end
 function methods:Disable() self.__enabled = false end

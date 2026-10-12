@@ -1,10 +1,9 @@
 -- UI/MainWindow.lua: the one Road to Forever window.
 --
--- PortraitFrameTemplate shell (UI.Window: same template checks and
--- fallbacks the Macro Book uses), portrait = our logo, and
--- seven bottom tabs in the character frame's style: Home / Macros / Talents / Plan / BiS / Gameplay / Settings.
--- Each tab is a page frame filling the window; the window shows one page at
--- a time:
+-- Flat 820 x 600 window (UI.FlatWindow): a top bar (logo + name, Size and
+-- Opacity sliders, Reload UI, close), a sidebar on the left (Home; Journey:
+-- Plan / Talents / BiZ; Tools: Macros / Gameplay; Options: Settings) and the
+-- page on the right. Each tab is a page frame; the window shows one at a time:
 --   Home    -> UI/Home.lua builds into it
 --   Macros  -> UI/MacroBook.lua builds into it
 --   Talents -> UI/TalentPanel.lua builds into it (link, preview, Copy my build,
@@ -14,15 +13,15 @@
 --   BiS     -> UI/BiZ.lua builds into it (Mr.BiZ: best in slot per class / spec
 --              from the site's BiS data, item tooltips, the wishlist)
 --   Gameplay-> UI/Gameplay.lua builds into it (features that act for you or
---              change the screen, plus the reminder icons' options: Warrior
---              stance, Hunter ammo, tracking)
+--              change the screen, plus the reminder icons' options)
 --   Settings-> UI/Settings.lua builds into it (slots, minimap, Quick settings,
 --              bags)
+-- The pages are still the 540 x 500 layouts of the old book, centred in the
+-- content area until they are reflowed one by one.
 --
--- Saved in R2FDB.settings: windowPos (by UI.Window when dragged) and
--- lastTab. The size is fixed (540 x 500, the book's size): the book's grid is
--- laid out for that size, so a resize handle would only show empty space.
--- Esc closes it (UISpecialFrames, via UI.Window). Spellbook sounds.
+-- Saved in R2FDB.settings: windowPos (by UI.FlatWindow when dragged), lastTab,
+-- menuScale (0.7 to 1.3) and menuAlpha (0.3 to 1). Esc closes it
+-- (UISpecialFrames). Spellbook sounds.
 
 local _, R2F = ...
 local L = R2F.L
@@ -32,7 +31,7 @@ local MainWindow = {}
 R2F.MainWindow = MainWindow
 
 MainWindow.TABS = { "home", "macros", "talents", "plan", "bis", "gameplay", "settings" }
-local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, bis = 5, gameplay = 6, settings = 7 }
+local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, bis = 5, gameplay = 6, settings = 7 }  -- membership check
 local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", plan = "TITLE_PLAN",
                  bis = "TITLE_BIS", gameplay = "TITLE_GAMEPLAY", settings = "TITLE_SETTINGS" }
 local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", plan = "TAB_PLAN",
@@ -40,7 +39,7 @@ local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENT
 local LOGO = "Interface\\AddOns\\RoadToForever\\media\\logo128"
 
 local frame
-local pages, tabButtons = {}, {}
+local pages, tabButtons = {}, {}   -- tabButtons: key -> sidebar button
 local current            -- key of the page showing (kept while the window is closed)
 
 local function settings() return R2F.Library.db.settings end
@@ -70,62 +69,99 @@ local function pageHidden(key)
 end
 
 -- ---------------------------------------------------------------------------
--- Bottom tabs
+-- Layout
 -- ---------------------------------------------------------------------------
 
--- Blizzard's character-frame tab look: PanelTabButtonTemplate in
--- newer clients, CharacterFrameTabButtonTemplate in older Classic ones,
--- whichever the client has (checked like every template). Without
--- either, plain UIPanelButtonTemplate buttons along the bottom edge.
--- Tabs get global names <window>Tab<n> because the Classic template's
--- textures are named $parentLeft etc. and PanelTemplates_* find tabs by
--- that name in older clients (all R2F-prefixed).
--- Offsets between tabs: the Classic template's art overlaps by design.
-local TAB_TEMPLATES = {
-  { name = "PanelTabButtonTemplate", gap = 3 },
-  { name = "CharacterFrameTabButtonTemplate", gap = -15 },
+local WIN_W, WIN_H = 820, 600
+local TOP_H, SIDE_W = 44, 150
+-- The pages were laid out for the old 540 x 500 book and keep that size until
+-- they are reflowed; they sit centred in the content area, shifted up because
+-- their first ~44 px were the old title bar.
+local PAGE_W, PAGE_H = 540, 500
+local PAGE_X = SIDE_W + math.floor((WIN_W - SIDE_W - PAGE_W) / 2)
+local PAGE_Y = -(TOP_H - 44)
+
+-- Sidebar order: a group heading (or none) and the tabs under it.
+MainWindow.NAV = {
+  { tabs = { "home" } },
+  { heading = "NAV_JOURNEY", tabs = { "plan", "talents", "bis" } },
+  { heading = "NAV_TOOLS", tabs = { "macros", "gameplay" } },
+  { heading = "NAV_OPTIONS", tabs = { "settings" } },
 }
 
-local function buildTab(f, i, key)
-  local name = f:GetName() .. "Tab" .. i
-  local t, gap
-  for _, tpl in ipairs(TAB_TEMPLATES) do
-    t = UI.TryTemplate("Button", name, f, tpl.name, function(b) return b.SetText ~= nil end)
-    if t then
-      t.r2fTemplate, gap = tpl.name, tpl.gap
-      break
-    end
-  end
-  if not t then
-    t = CreateFrame("Button", name, f, "UIPanelButtonTemplate")
-    t:SetSize(110, 24)
-    t.r2fTemplate, gap = "UIPanelButtonTemplate", 4
-  end
-  t:SetID(i)
-  t:SetText(L[LABELS[key]])
-  if t.r2fTemplate ~= "UIPanelButtonTemplate" and PanelTemplates_TabResize then
-    PanelTemplates_TabResize(t, 0)
-  end
-  if i == 1 then
-    t:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 12, 2)
-  else
-    t:SetPoint("LEFT", tabButtons[i - 1], "RIGHT", gap, 0)
-  end
-  t.r2fKey = key
-  t:SetScript("OnClick", function() MainWindow.SelectTab(key) end)
-  return t
+local GOLD = { 1, 0.82, 0 }
+
+local function buildNavButton(parent, key, y)
+  local b = CreateFrame("Button", nil, parent)
+  b:SetSize(SIDE_W - 16, 26)
+  b:SetPoint("TOPLEFT", parent, "TOPLEFT", 8, y)
+  b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+  local sel = b:CreateTexture(nil, "BACKGROUND")
+  sel:SetAllPoints(b)
+  sel:SetColorTexture(GOLD[1], GOLD[2], GOLD[3], 0.16)
+  sel:Hide()
+  local bar = b:CreateTexture(nil, "ARTWORK")
+  bar:SetSize(3, 26)
+  bar:SetPoint("LEFT", b, "LEFT", 0, 0)
+  bar:SetColorTexture(GOLD[1], GOLD[2], GOLD[3], 1)
+  bar:Hide()
+  local fs = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  fs:SetPoint("LEFT", b, "LEFT", 14, 0)
+  fs:SetText(L[LABELS[key]])
+  b.r2fKey, b.r2fSel, b.r2fBar, b.r2fText = key, sel, bar, fs
+  b:SetScript("OnClick", function() MainWindow.SelectTab(key) end)
+  return b
 end
 
--- Selected look. PanelTemplates_SetTab is Blizzard's helper for exactly this
--- (it only touches the frame and tabs passed in, which are ours: no taint);
--- it needs frame.numTabs / frame.Tabs. Without it, or with the plain-button
--- fallback, the selected tab is simply disabled (greyed, not clickable).
-local function showSelected(index)
-  if PanelTemplates_SetTab and tabButtons[1].r2fTemplate ~= "UIPanelButtonTemplate" then
-    PanelTemplates_SetTab(frame, index)
-  else
-    for i, t in ipairs(tabButtons) do t:SetEnabled(i ~= index) end
+local function showSelected(key)
+  for k, b in pairs(tabButtons) do
+    local on = k == key
+    if on then b.r2fSel:Show() b.r2fBar:Show() else b.r2fSel:Hide() b.r2fBar:Hide() end
+    if on then b.r2fText:SetTextColor(GOLD[1], GOLD[2], GOLD[3]) else b.r2fText:SetTextColor(1, 1, 1) end
   end
+end
+
+-- Apply the saved size and opacity. The backdrop frame carries the opacity
+-- (text and controls stay fully readable).
+function MainWindow.ApplyLook()
+  if not frame then return end
+  local st = settings()
+  frame:SetScale(st.menuScale)
+  frame:SetBackdropColor(1, 1, 1, st.menuAlpha)
+  frame.r2fSide:SetColorTexture(0, 0, 0, 0.35 * st.menuAlpha)
+end
+
+-- Small labelled slider for the top bar. onApply(value) runs when the value
+-- settles: while the mouse drags the thumb the window must not rescale under
+-- it, so size changes apply on release.
+local function topSlider(parent, label, min, max, get, set, x)
+  local fs = parent:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  fs:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -8)
+  fs:SetText(label)
+  local sl = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
+  sl:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -22)
+  sl:SetWidth(84)
+  sl:SetMinMaxValues(min, max)
+  sl:SetValueStep(5)
+  if sl.SetObeyStepOnDrag then sl:SetObeyStepOnDrag(true) end
+  for _, part in ipairs({ "Low", "High", "Text" }) do
+    if sl[part] then sl[part]:SetText("") end
+  end
+  local function commit(v)
+    v = math.floor(v / 5 + 0.5) / 100 * 5
+    v = math.max(min / 100, math.min(max / 100, v))
+    if math.abs(v - get()) > 0.001 then set(v) end
+  end
+  sl:SetScript("OnValueChanged", function(self, v)
+    if not self.r2fDown then commit(v) end
+  end)
+  sl:SetScript("OnMouseDown", function(self) self.r2fDown = true end)
+  sl:SetScript("OnMouseUp", function(self)
+    self.r2fDown = false
+    commit(self:GetValue())
+  end)
+  sl.r2fLabel = fs
+  return sl
 end
 
 -- ---------------------------------------------------------------------------
@@ -133,15 +169,70 @@ end
 -- ---------------------------------------------------------------------------
 
 local function build()
-  local f = UI.Window("R2FMain", 540, 500, "windowPos")
-  if f.r2fPortrait then
-    f.r2fPortrait:SetTexture(LOGO)
-    f.r2fPortrait:SetTexCoord(0, 1, 0, 1)
+  local f = UI.FlatWindow("R2FMain", WIN_W, WIN_H, "windowPos")
+
+  -- Sidebar background and the line under the top bar.
+  local side = f:CreateTexture(nil, "BACKGROUND")
+  side:SetPoint("TOPLEFT", f, "TOPLEFT", 4, -TOP_H)
+  side:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 4, 4)
+  side:SetWidth(SIDE_W - 4)
+  side:SetColorTexture(0, 0, 0, 0.35)
+  f.r2fSide = side
+  local rule = f:CreateTexture(nil, "ARTWORK")
+  rule:SetPoint("TOPLEFT", f, "TOPLEFT", 4, -TOP_H)
+  rule:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -TOP_H)
+  rule:SetHeight(1)
+  rule:SetColorTexture(GOLD[1], GOLD[2], GOLD[3], 0.35)
+
+  -- Top bar: logo, name (real text), size + opacity sliders, Reload UI, close.
+  local logo = f:CreateTexture(nil, "ARTWORK")
+  logo:SetSize(30, 30)
+  logo:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -7)
+  logo:SetTexture(LOGO)
+  f.r2fLogo = logo
+  local title = f:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+  title:SetPoint("LEFT", logo, "RIGHT", 8, 0)
+  f.r2fTitle = title
+
+  local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
+  close:SetPoint("TOPRIGHT", f, "TOPRIGHT", -2, -2)
+  f.CloseButton = close
+  local reload = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+  reload:SetSize(84, 22)
+  reload:SetPoint("TOPRIGHT", f, "TOPRIGHT", -36, -11)
+  reload:SetText(L.MENU_RELOAD)
+  reload:SetScript("OnClick", function() ReloadUI() end)
+  f.r2fReload = reload
+  f.r2fSizeSlider = topSlider(f, L.WIN_SIZE, 70, 130,
+    function() return settings().menuScale end,
+    function(v) settings().menuScale = v MainWindow.ApplyLook() end, WIN_W - 36 - 84 - 8 - 2 * 92)
+  f.r2fOpacitySlider = topSlider(f, L.WIN_OPACITY, 30, 100,
+    function() return settings().menuAlpha end,
+    function(v) settings().menuAlpha = v MainWindow.ApplyLook() end, WIN_W - 36 - 84 - 8 - 92)
+  f.r2fSizeSlider:SetValue(settings().menuScale * 100)
+  f.r2fOpacitySlider:SetValue(settings().menuAlpha * 100)
+
+  -- Sidebar.
+  local y = -(TOP_H + 12)
+  for _, group in ipairs(MainWindow.NAV) do
+    if group.heading then
+      y = y - 8
+      local h = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+      h:SetPoint("TOPLEFT", f, "TOPLEFT", 16, y)
+      h:SetText(L[group.heading]:upper())
+      h:SetTextColor(0.6, 0.6, 0.65)
+      y = y - 18
+    end
+    for _, key in ipairs(group.tabs) do
+      tabButtons[key] = buildNavButton(f, key, y)
+      y = y - 28
+    end
   end
 
   for _, key in ipairs(MainWindow.TABS) do
     local p = CreateFrame("Frame", nil, f)
-    p:SetAllPoints(f)
+    p:SetSize(PAGE_W, PAGE_H)
+    p:SetPoint("TOPLEFT", f, "TOPLEFT", PAGE_X, PAGE_Y)
     p:Hide()
     pages[key] = p
   end
@@ -153,11 +244,6 @@ local function build()
   R2F.GameplayTab.Build(pages.gameplay)
   R2F.Settings.Build(pages.settings)
 
-  for i, key in ipairs(MainWindow.TABS) do tabButtons[i] = buildTab(f, i, key) end
-  f.Tabs = tabButtons
-  f.numTabs = #tabButtons
-  if PanelTemplates_SetNumTabs then PanelTemplates_SetNumTabs(f, #tabButtons) end
-
   f:SetScript("OnShow", function()
     UI.PlaySound("IG_SPELLBOOK_OPEN")
     if current then refreshPage(current) end
@@ -166,6 +252,8 @@ local function build()
     UI.PlaySound("IG_SPELLBOOK_CLOSE")
     if current then pageHidden(current) end
   end)
+  frame = f
+  MainWindow.ApplyLook()
   return f
 end
 
@@ -192,8 +280,8 @@ function MainWindow.SelectTab(key)
     current = key
   end
   pages[key]:Show()
-  frame.r2fSetTitle(L[TITLES[key]])
-  showSelected(TAB_INDEX[key])
+  frame.r2fTitle:SetText(L[TITLES[key]])
+  showSelected(key)
   settings().lastTab = key
   if frame:IsShown() then refreshPage(key) end
 end
@@ -229,6 +317,11 @@ function MainWindow.CurrentTab()
 end
 
 function MainWindow.Frame() return frame end
+
+-- The title text in the top bar (nil before the window is built).
+function MainWindow.Title()
+  return frame and frame.r2fTitle:GetText() or nil
+end
 
 -- UPDATE_MACROS / ACTIONBAR_SLOT_CHANGED / LEARNED_SPELL_IN_TAB /
 -- CHARACTER_POINTS_CHANGED / PLAYER_LEVEL_UP: redraw the visible page (all

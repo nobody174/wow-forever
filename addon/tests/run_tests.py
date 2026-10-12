@@ -762,8 +762,8 @@ def test_settings_tab(templates, fx):
     # --- Fourth tab, slash command, title -----------------------------------------
     lua.execute('SlashCmdList.R2F("settings")')
     check(MW.IsShown() is True and MW.CurrentTab() == "settings", "%s: /r2f settings opens the Settings tab" % tag)
-    win = "R2FMain" if templates else "R2FMainPlain"
-    title = lua.eval("%s.__title" % win) if templates else lua.eval("%s.r2fTitle.__text" % win)
+    win = "R2FMain"
+    title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever: Settings", "%s: Settings title: %r" % (tag, title))
     check(lua.eval("R2FDB.settings.lastTab") == "settings", "Settings can be the remembered last tab")
     lua.execute("R2F.MainWindow.SelectTab('macros')")
@@ -1140,7 +1140,7 @@ def test_reminders():
     lua.execute('SlashCmdList.R2F("reminders")')
     lua.execute('R2F.GameplayTab.ShowPage("alerts")')
     check(MW.CurrentTab() == "gameplay", "15.4 /r2f reminders (the old name) opens the Gameplay tab")
-    title = lua.eval("R2FMain.__title")
+    title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever: Gameplay", "15.4 Reminders title: %r" % title)
     check(lua.eval("R2FStanceFrame ~= nil") and lua.eval("R2FAmmoFrame == nil") and lua.eval("R2FAmmoScale == nil"),
           "15.4 Warrior: stance frame only, no ammo frame or ammo controls")
@@ -1508,7 +1508,7 @@ def test_plan(templates=True):
     # --- The Plan tab (both template chains) ------------------------------------------------------------------------
     lua, T = plan_runtime(templates=templates, tomtom=False)
     lua.execute("R2F.MainWindow.Show('plan')")
-    title = lua.eval("R2FMain.__title") if templates else lua.eval("R2FMainPlain.r2fTitle.__text")
+    title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever: Plan", "%s: Plan title: %r" % (tag, title))
     check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 7, "%s: seven tabs, Plan fourth" % tag)
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text ~= '' and f.stepId == nil", "PICKS")
@@ -1902,7 +1902,7 @@ def test_gameplay():
     check(all(lua.eval(G + k) is False for k in ("repair", "sellgray", "duels", "errorfilter", "xpbar")),
           "17 every gameplay feature ships OFF")
     lua.execute('SlashCmdList.R2F("gameplay")')
-    check(lua.eval("R2F.MainWindow.CurrentTab()") == "gameplay" and lua.eval("R2FMain.__title") == "Road to Forever: Gameplay",
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "gameplay" and lua.eval("R2F.MainWindow.Title()") == "Road to Forever: Gameplay",
           "17 /r2f gameplay opens the Gameplay tab")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel", "GB")
     labels = {lua.eval("GB[%d].r2fLabel.__text" % i): i for i in range(1, lua.eval("#GB") + 1)}
@@ -2894,8 +2894,8 @@ def test_biz(templates=True):
 
     # the tab
     lua.execute("R2F.MainWindow.Show('bis')")
-    win = "R2FMain" if templates else "R2FMainPlain"
-    title = lua.eval("%s.__title" % win) if templates else lua.eval("%s.r2fTitle.__text" % win)
+    win = "R2FMain"
+    title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever: Mr.BiZ", "%s: tab title %r" % (tag, title))
     find_frames(lua, "f.__kind == 'Button' and f.itemId == 252512 and f.__shown", "HELM")
     check(lua.eval("#HELM") == 1, "%s: Brawler's Leather Helm row shown" % tag)
@@ -3052,8 +3052,7 @@ def test_ui_smoke(templates, fx):
     lua.execute('SlashCmdList.R2F("macros")')
     check(lua.eval("R2F.MacroBook.IsShown()") is True, "/r2f macros shows the Macro Book")
     tag = "templates" if templates else "fallbacks"
-    check(lua.eval("R2FMain ~= nil") if templates else lua.eval("R2FMainPlain ~= nil"),
-          "%s: main window created via %s" % (tag, "PortraitFrameTemplate" if templates else "fallback"))
+    check(lua.eval("R2FMain ~= nil"), "%s: main window created (flat window, no Blizzard template)" % tag)
 
     lua.execute('SlashCmdList.R2F("import")')
     check(lua.eval("R2FImport:IsShown()") is True, "import window opens")
@@ -3188,7 +3187,7 @@ def test_ui_smoke(templates, fx):
 
     # Esc support + the one-global audit.
     special = lua_table_to_list(lua.eval("UISpecialFrames"))
-    check("R2FImport" in special and any(s.startswith("R2FMain") for s in special), "windows close with Esc: %s" % special)
+    check("R2FImport" in special and "R2FMain" in special, "windows close with Esc: %s" % special)
     new_globals = lua.eval("""(function()
       local out = {}
       for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
@@ -3439,7 +3438,7 @@ def test_step5_ui(templates, fx):
     check(any(lua.eval("R2F.L.REMOVE_ALL_NONE") in c for c in chat_lines(lua)), "Remove all with nothing to remove just says so")
 
     # Esc closes the panel; one-global audit with Settings built.
-    check("R2FMain" in lua_table_to_list(lua.eval("UISpecialFrames")) or "R2FMainPlain" in lua_table_to_list(lua.eval("UISpecialFrames")),
+    check("R2FMain" in lua_table_to_list(lua.eval("UISpecialFrames")),
           "Settings tab closes with Esc (it is part of the main window)")
     new_globals = lua.eval("""(function()
       local out = {}
@@ -3488,7 +3487,7 @@ def test_step6_ui(templates, fx):
     T.fire("ADDON_LOADED", "RoadToForever")
     T.fire("PLAYER_LOGIN")
     MW = lua.eval("R2F.MainWindow")
-    win = "R2FMain" if templates else "R2FMainPlain"
+    win = "R2FMain"
 
     # ---- Minimap button: own backend, R2F.Minimap.Apply -------------------
     check(lua.eval("R2F.Minimap.backend") == "own", "%s: no LibDBIcon loaded -> own minimap button" % tag)
@@ -3653,34 +3652,43 @@ def test_step6_ui(templates, fx):
 
     # ---- Main window tabs ----------------------------------------------------
     n = find_frames(lua, "f.r2fKey ~= nil", "MTABS")
-    check(n == 7, "seven bottom tabs (15.5, 19)")
-    keys = [lua.eval("MTABS[%d].r2fKey" % i) for i in range(1, 8)]
-    names = [lua.eval("MTABS[%d]:GetName()" % i) for i in range(1, 8)]
-    labels = [lua.eval("MTABS[%d].__text" % i) for i in range(1, 8)]
-    check(keys == ["home", "macros", "talents", "plan", "bis", "gameplay", "settings"]
-          and labels == ["Home", "Macros", "Talents", "Plan", "BiZ", "Gameplay", "Settings"]
-          and names == [win + "Tab%d" % i for i in range(1, 8)], "tabs Home / Macros / Talents / Plan / BiZ / Gameplay / Settings, named %s" % names)
-    tpl = lua.eval("MTABS[1].r2fTemplate")
-    check(tpl == ("CharacterFrameTabButtonTemplate" if templates else "UIPanelButtonTemplate"),
-          "%s: tab template chain picked %s" % (tag, tpl))
+    check(n == 7, "seven sidebar entries")
+    lua.execute("NAV = {} for _, f in ipairs(MTABS) do NAV[f.r2fKey] = f end "
+                "MTABS = {NAV.home, NAV.macros, NAV.talents, NAV.plan, NAV.bis, NAV.gameplay, NAV.settings}")
+    labels = [lua.eval("MTABS[%d].r2fText.__text" % i) for i in range(1, 8)]
+    check(labels == ["Home", "Macros", "Talents", "Plan", "BiZ", "Gameplay", "Settings"],
+          "sidebar labels %s" % labels)
+    order = [lua.eval("R2F.MainWindow.NAV[%d].tabs[%d]" % (g, t)) for g, t in ((1, 1), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2), (4, 1))]
+    check(order == ["home", "plan", "talents", "bis", "macros", "gameplay", "settings"], "sidebar order %s" % order)
     lua.execute("MTABS[1]:Click()")
-    check(MW.CurrentTab() == "home" and lua.eval("MTABS[1].__enabled") is False and lua.eval("MTABS[2].__enabled") is True,
-          "clicking Home selects it (selected tab looks selected = disabled)")
+    check(MW.CurrentTab() == "home" and lua.eval("MTABS[1].r2fBar.__shown") is True and lua.eval("MTABS[2].r2fBar.__shown") is False,
+          "clicking Home selects it (gold bar on the selected entry only)")
     check(lua.eval("R2FDB.settings.lastTab") == "home", "last tab saved in R2FDB.settings.lastTab")
-    title = lua.eval("%s.__title" % win) if templates else lua.eval("%s.r2fTitle.__text" % win)
+    title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever", "Home title: %r" % title)
     lua.execute("MTABS[2]:Click()")
-    title = lua.eval("%s.__title" % win) if templates else lua.eval("%s.r2fTitle.__text" % win)
+    title = lua.eval("R2F.MainWindow.Title()")
     check(MW.CurrentTab() == "macros" and title == "Road to Forever: Macros", "Macros tab + title")
     check(lua.eval("R2FDB.settings.lastTab") == "macros", "switching tabs saves lastTab")
+    # Top bar: Reload UI, size and opacity sliders (apply on release, saved, clamped).
+    lua.execute("R2F.MainWindow.Frame().r2fReload:Click()")
+    check(lua.eval("TEST.reloaded") == 2, "top bar Reload UI button reloads")
+    lua.execute("local sl = R2F.MainWindow.Frame().r2fSizeSlider sl:SetValue(120) sl:Fire('OnValueChanged', 120)")
+    check(lua.eval("R2FDB.settings.menuScale") == 1.2 and lua.eval("R2FMain.__scale") == 1.2, "size slider sets the window scale")
+    lua.execute("local sl = R2F.MainWindow.Frame().r2fOpacitySlider sl:Fire('OnMouseDown') sl:SetValue(40) sl:Fire('OnValueChanged', 40)")
+    check(lua.eval("R2FDB.settings.menuAlpha") == 1, "opacity does not change while the thumb is held")
+    lua.execute("local sl = R2F.MainWindow.Frame().r2fOpacitySlider sl:Fire('OnMouseUp')")
+    check(lua.eval("R2FDB.settings.menuAlpha") == 0.4, "opacity applies on release")
+    lua.execute("R2FDB.settings.menuScale = 9 R2FDB.settings.menuAlpha = 0 R2F.Library.Init()")
+    check(lua.eval("R2FDB.settings.menuScale") == 1 and lua.eval("R2FDB.settings.menuAlpha") == 1, "bad size / opacity values are reset")
+    lua.execute("R2F.MainWindow.ApplyLook()")
     lua.execute("MTABS[3]:Click()")
     check(MW.CurrentTab() == "talents" and lua.eval("R2F.MacroBook.IsShown()") is False, "Talents tab hides the book")
     # Step 9 replaced the placeholder with the real tab (tested in test_talent_preview).
     check(find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.BTN_PREVIEW", "TT") == 1
           and lua.eval("R2F.L.TALENTS_TAB_LATER") is None, "Talents tab has its Preview button, no placeholder")
-    if templates:
-        check(lua.eval("R2FMain.PortraitContainer.portrait.__tex") == "Interface\\AddOns\\RoadToForever\\media\\logo128",
-              "portrait = media/logo128")
+    check(lua.eval("R2FMain.r2fLogo.__tex") == "Interface\\AddOns\\RoadToForever\\media\\logo128",
+          "top bar logo = media/logo128")
     check(win in lua_table_to_list(lua.eval("UISpecialFrames")), "main window closes with Esc (UISpecialFrames)")
     check(lua.eval("R2FMacroBook == nil and R2FMacroBookPlain == nil"), "no separate Macro Book window any more")
     lua.execute("R2F.MainWindow.Hide() R2FDB.settings.lastTab = 'bogus' R2F.Library.Init()")

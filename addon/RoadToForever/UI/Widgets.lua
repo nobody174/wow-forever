@@ -159,6 +159,26 @@ function UI.Window(name, width, height, saveKey)
   return f
 end
 
+-- Flat window (the main window since 0.31): a dialog-backdrop frame with no
+-- Blizzard portrait chrome, named `name`, movable, closes with Esc. The caller
+-- builds its own top bar and sidebar. frame.r2fBg is the backdrop frame itself.
+function UI.FlatWindow(name, width, height, saveKey)
+  local f = UI.DialogFrame(name, UIParent)
+  f:SetSize(width, height)
+  f:SetFrameStrata("HIGH")
+  f:SetToplevel(true)
+  f:Hide()
+  local pos = saveKey and R2F.Library.db.settings[saveKey]
+  if type(pos) == "table" and pos[1] then
+    f:SetPoint(pos[1], UIParent, pos[2] or pos[1], pos[3] or 0, pos[4] or 0)
+  else
+    f:SetPoint("CENTER", UIParent, "CENTER", 0, 20)
+  end
+  makeMovable(f, saveKey)
+  closeOnEsc(name)
+  return f
+end
+
 -- ---------------------------------------------------------------------------
 -- Multi-line edit box (import paste box, copy box)
 -- ---------------------------------------------------------------------------
@@ -275,11 +295,10 @@ end
 -- click, rather than trusting the button's own toggle, so a radio pair can't
 -- end up with both or neither checked.
 function UI.CheckButton(parent, label, radio)
+  if not radio then return UI.Switch(parent, label) end
   local isButton = function(b) return b.SetChecked ~= nil end
-  local b = UI.TryTemplate("CheckButton", nil, parent, radio and "UIRadioButtonTemplate" or "UICheckButtonTemplate", isButton)
-  if not b and radio then
-    b = UI.TryTemplate("CheckButton", nil, parent, "UICheckButtonTemplate", isButton)
-  end
+  local b = UI.TryTemplate("CheckButton", nil, parent, "UIRadioButtonTemplate", isButton)
+    or UI.TryTemplate("CheckButton", nil, parent, "UICheckButtonTemplate", isButton)
   if not b then
     b = CreateFrame("CheckButton", nil, parent)
     b:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up")
@@ -287,13 +306,56 @@ function UI.CheckButton(parent, label, radio)
     b:SetHighlightTexture("Interface\\Buttons\\UI-CheckBox-Highlight", "ADD")
     b:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check")
   end
-  b:SetSize(radio and 16 or 24, radio and 16 or 24)
+  b:SetSize(16, 16)
   local text = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
   text:SetPoint("LEFT", b, "RIGHT", 4, 0)
   text:SetText(label)
-  -- Clicking the label toggles too, like Blizzard's own option check boxes.
   b:SetHitRectInsets(0, -(text:GetStringWidth() + 4), 0, 0)
   b.r2fLabel = text
+  return b
+end
+
+-- On/off switch (the look of the new window): a track with a knob that
+-- slides, gold when on. A plain CheckButton underneath, so every caller keeps
+-- using SetChecked / GetChecked / SetScript("OnClick") / SetEnabled and the
+-- r2fLabel text exactly as with a check box. Drawn from our own textures only
+-- (no Blizzard template), so it looks the same on every client.
+local SWITCH_ON, SWITCH_OFF = { 0.92, 0.72, 0.15 }, { 0.28, 0.28, 0.32 }
+function UI.Switch(parent, label)
+  local b = CreateFrame("CheckButton", nil, parent)
+  b:SetSize(34, 18)
+  local track = b:CreateTexture(nil, "BACKGROUND")
+  track:SetAllPoints(b)
+  track:SetColorTexture(SWITCH_OFF[1], SWITCH_OFF[2], SWITCH_OFF[3], 1)
+  local knob = b:CreateTexture(nil, "ARTWORK")
+  knob:SetSize(14, 14)
+  knob:SetColorTexture(0.95, 0.95, 0.95, 1)
+  b.r2fTrack, b.r2fKnob = track, knob
+
+  local function paint()
+    local on = b:GetChecked() and true or false
+    local c = on and SWITCH_ON or SWITCH_OFF
+    track:SetColorTexture(c[1], c[2], c[3], 1)
+    knob:ClearAllPoints()
+    if on then knob:SetPoint("RIGHT", b, "RIGHT", -2, 0) else knob:SetPoint("LEFT", b, "LEFT", 2, 0) end
+    b:SetAlpha(b.r2fEnabled == false and 0.45 or 1)
+  end
+  b.r2fPaint = paint
+
+  -- Callers set the state themselves after a click (SetChecked), and the
+  -- button also toggles on its own; repaint after both.
+  local setChecked, setEnabled = b.SetChecked, b.SetEnabled
+  b.SetChecked = function(self, v) setChecked(self, v); paint() end
+  b.SetEnabled = function(self, v) b.r2fEnabled = v and true or false; setEnabled(self, v); paint() end
+  b:SetScript("PostClick", paint)
+  b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+
+  local text = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  text:SetPoint("LEFT", b, "RIGHT", 6, 0)
+  text:SetText(label)
+  b:SetHitRectInsets(0, -(text:GetStringWidth() + 6), 0, 0)
+  b.r2fLabel = text
+  paint()
   return b
 end
 

@@ -1,5 +1,13 @@
 # Road to Forever changelog
 
+## Unreleased: new window (UI overhaul, phase 1)
+
+- **New window shell**: a larger flat window (820 x 600) with a sidebar instead of the bottom tabs
+  (Home; Journey: Plan, Talents, BiZ; Tools: Macros, Gameplay; Options: Settings).
+- **Top bar**: logo and name, Size and Opacity sliders, Reload UI button, close.
+- **On/off switches** replace the tick boxes everywhere.
+- The pages inside are still the old layouts, centred; they get reflowed in the next phases.
+
 ## 0.30.0 (2026-10-12): public test build
 
 - **Macros**: import macros from the site, browse them in a spellbook-style book, drag them

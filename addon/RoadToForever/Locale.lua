@@ -10,6 +10,12 @@ _G.R2F = R2F
 
 R2F.L = {
   ADDON_NAME = "Road to Forever",
+  -- Main window: sidebar group headings, top bar sliders
+  NAV_JOURNEY = "Journey",
+  NAV_TOOLS = "Tools",
+  NAV_OPTIONS = "Options",
+  WIN_SIZE = "Size",
+  WIN_OPACITY = "Opacity",
   -- Main window: title per tab, bottom tabs
   TITLE_HOME = "Road to Forever",
   TITLE_MACROS = "Road to Forever: Macros",

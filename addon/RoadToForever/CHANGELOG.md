@@ -15,5 +15,6 @@
   tracking, missing group buffs).
 - **Settings**, a minimap button, movable bags, and `/r2f profs` to share your professions
   with the site.
+- **BiZ tab polish**: a real down arrow on the class and spec buttons, "Bizzest" shown on the best pick, roomier rows, and item colours remembered between sessions.
 - Troubleshooting commands are grouped under `/r2f debug`; `/r2f help` lists only the commands
   you use day to day.

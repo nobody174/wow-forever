@@ -71,7 +71,7 @@ end
 local function icon()
   return pool("icon", function()
     local t = content:CreateTexture(nil, "ARTWORK")
-    t:SetSize(18, 18)
+    t:SetSize(22, 22)
     return t
   end)
 end
@@ -80,7 +80,7 @@ end
 local function itemButton()
   return pool("item", function()
     local b = CreateFrame("Button", nil, content)
-    b:SetHeight(16)
+    b:SetHeight(18)
     b.fs = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     b.fs:SetAllPoints(b)
     b.fs:SetJustifyH("LEFT")
@@ -199,13 +199,15 @@ local function layoutSet()
         local fnote = BiZ.FactionNote(p)
         local nb = placeItem(66, y, 226, p.id, p.name, rankLine(sp.name, pick, b.score, p.delta, gap, p.label, p.via), toggle)
         if fnote then nb.fs:SetText(BiZ.ColoredName(p.id, p.name) .. " |cffe86a5a(" .. fnote .. ")|r") end
-        local prefix = ""
+        local prefix
         if gap then
           prefix = "|cffffd100" .. L.BIZ_THE_BIZZ .. "|r · "
-        elseif pick > 1 then
+        elseif pick == 1 then
+          prefix = "|cffffd100" .. BiZ.RankName(1) .. "|r · "
+        else
           prefix = "|cffd9d4c3" .. L.BIZ_STANDIN:format(BiZ.RankName(pick)) .. "|r · "
         end
-        line("GameFontDisableSmall", 88, y + 15, 228, prefix .. (p.label or L.BIZ_TYPE_UNKNOWN))
+        line("GameFontDisableSmall", 88, y + 19, 228, prefix .. (p.label or L.BIZ_TYPE_UNKNOWN))
         local sc = line("GameFontHighlightSmall", 318, y + 3, 40,
           pick == 1 and tostring(b.score) or ("|cffe39a79" .. (p.delta == 0 and "=" or (tostring(p.delta) .. "%")) .. "|r"))
         sc:SetJustifyH("RIGHT")
@@ -219,9 +221,9 @@ local function layoutSet()
         hb:SetWidth(226)
         hb.itemId, hb.rankLine, hb.onClick = nil, nil, toggle
         hb.fs:SetText("|cff808080" .. L.BIZ_HIDDEN .. "|r")
-        line("GameFontDisableSmall", 88, y + 15, 228, L.BIZ_HIDDEN_HINT:format(L["BIZ_TYPE_" .. b.type:upper()]))
+        line("GameFontDisableSmall", 88, y + 19, 228, L.BIZ_HIDDEN_HINT:format(L["BIZ_TYPE_" .. b.type:upper()]))
       end
-      y = y + 32
+      y = y + 38
       if isOpen then
         -- Every other rank, each with where it comes from (greyed when the filters hide it).
         for rank, it in ipairs(all) do
@@ -230,14 +232,14 @@ local function layoutSet()
             line("GameFontNormalSmall", 70, y + 3, 20, "#" .. rank)
             placeItem(88, y, 210, it.id, it.name, rankLine(sp.name, rank, b.score, it.delta, gap, it.label, it.via))
             local src = (it.label or L.BIZ_TYPE_UNKNOWN)
-            line("GameFontDisableSmall", 88, y + 15, 214, BiZ.Passes(it) and src or ("|cff707070" .. src .. "|r"))
+            line("GameFontDisableSmall", 88, y + 19, 214, BiZ.Passes(it) and src or ("|cff707070" .. src .. "|r"))
             local rn = gap and L.BIZ_THE_BIZZ or BiZ.RankName(rank)
             local d = (it.delta == 0 and L.BIZ_SAME) or (it.delta and (it.delta .. "%")) or ""
             local dl = line("GameFontHighlightSmall", 302, y + 3, 108,
               "|cffffd100" .. rn .. "|r" .. (d ~= "" and ("  |cffe39a79" .. d .. "|r") or ""))
             dl:SetJustifyH("RIGHT")
             placeWish(414, y, it.id, specId, sl.slot)
-            y = y + 32
+            y = y + 38
           end
         end
         local ease = (b.ease and b.ease ~= "") and (" · " .. b.ease) or ""
@@ -251,7 +253,7 @@ local function layoutSet()
         y = y + 6
       end
     end
-    if not b then y = y + 32 end
+    if not b then y = y + 38 end
   end
   ui.footer:SetText(L.BIZ_FOOTER:format(R2F.BiZData.level, R2F.BiZData.source, sp.build))
   ui.summary:SetText(hidden > 0 and L.BIZ_SUMMARY_HIDDEN:format(shown, hidden) or L.BIZ_SUMMARY:format(shown))
@@ -383,8 +385,8 @@ end
 local function refresh()
   if not visible() then return end
   local sp = BiZ.Spec(BiZ.SpecId())
-  ui.classBtn:SetText(BiZ.ClassName(BiZ.Class()) .. " |cffffd100v|r")
-  ui.specBtn:SetText(sp.name .. " |cffffd100v|r")
+  ui.classBtn:SetText(BiZ.ClassName(BiZ.Class()))
+  ui.specBtn:SetText(sp.name)
   ui.setBtn:SetEnabled(view ~= "set")
   ui.wishBtn:SetEnabled(view ~= "wish")
   ui.wishBtn:SetText(L.BIZ_VIEW_WISH:format(BiZ.WishCount()))
@@ -420,6 +422,26 @@ local function onWheel(self, delta)
   self:SetVerticalScroll(math.max(0, math.min(v, maxScroll)))
 end
 
+-- A button that opens a menu: the game's own down arrow sits at its right edge, the text is
+-- moved left to make room.
+local function dropButton(parent, w, fn)
+  local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+  b:SetSize(w, 24)
+  b:SetScript("OnClick", fn)
+  local arrow = b:CreateTexture(nil, "OVERLAY")
+  arrow:SetSize(20, 20)
+  arrow:SetPoint("RIGHT", b, "RIGHT", -3, -1)
+  arrow:SetTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+  local fs = b.GetFontString and b:GetFontString()
+  if fs then
+    fs:ClearAllPoints()
+    fs:SetPoint("LEFT", b, "LEFT", 10, 0)
+    fs:SetPoint("RIGHT", b, "RIGHT", -24, 0)
+    fs:SetJustifyH("LEFT")
+  end
+  return b
+end
+
 local function button(parent, w, label, fn)
   local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
   b:SetSize(w, 22)
@@ -431,9 +453,9 @@ end
 -- Called once by MainWindow with the BiS page frame.
 function Tab.Build(f)
   page = f
-  ui.classBtn = button(f, 118, "", classMenu)
+  ui.classBtn = dropButton(f, 124, classMenu)
   ui.classBtn:SetPoint("TOPLEFT", 28, -54)
-  ui.specBtn = button(f, 150, "", specMenu)
+  ui.specBtn = dropButton(f, 156, specMenu)
   ui.specBtn:SetPoint("LEFT", ui.classBtn, "RIGHT", 6, 0)
   ui.setBtn = button(f, 96, L.BIZ_VIEW_SET, function() view = "set"; scroll:SetVerticalScroll(0); refresh() end)
   ui.setBtn:SetPoint("TOPLEFT", 324, -54)

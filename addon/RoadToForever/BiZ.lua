@@ -261,12 +261,27 @@ end
 -- ---------------------------------------------------------------------------
 
 -- Quality 0-5, or nil while the client hasn't loaded the item (asks it to).
+-- Remembered between sessions (account-wide): an item the client once knew keeps its colour even
+-- when it is not loaded yet the next time.
+local function qualityCache()
+  local d = R2F.Library and R2F.Library.db
+  if not d then return nil end
+  d.bizQuality = d.bizQuality or {}
+  return d.bizQuality
+end
+
 function BiZ.Quality(id)
   local q
   if C_Item and C_Item.GetItemQualityByID then q = C_Item.GetItemQualityByID(id) end
   if q == nil and GetItemInfo then q = select(3, GetItemInfo(id)) end
-  if q == nil and C_Item and C_Item.RequestLoadItemDataByID then C_Item.RequestLoadItemDataByID(id) end
-  return q
+  local cache = qualityCache()
+  if q ~= nil then
+    if cache then cache[id] = q end
+    return q
+  end
+  if cache and cache[id] ~= nil then return cache[id] end
+  if C_Item and C_Item.RequestLoadItemDataByID then C_Item.RequestLoadItemDataByID(id) end
+  return nil
 end
 
 -- "|cffRRGGBBname|r" in the item's quality colour (white until it's known).

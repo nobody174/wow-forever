@@ -27,6 +27,8 @@ local pageButtons = {}  -- page key -> button
 local pageHeight = {}
 local outlineButtons = {}   -- "none" / "thin" / "thick" -> button (Alerts & HUD page)
 local sizeSlider, sizeText
+local searchBox, results, resultRows = nil, nil, {}
+local bagBoxes = {}     -- Movable bags / Lock bags (Bags.lua), on the Bags page
 local scroll, content
 local LEFT, RIGHT, RIGHT_W = 22, 270, 214
 
@@ -67,6 +69,15 @@ local function refresh()
       end
     end
   end
+  local bagsOk = R2F.Bags.Available() and not R2F.InCombat()
+  for _, b in ipairs(bagBoxes) do
+    b:SetEnabled(bagsOk)
+    if bagsOk then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
+  end
+  if bagBoxes[1] then
+    bagBoxes[1]:SetChecked(R2F.Bags.IsMovable())
+    bagBoxes[2]:SetChecked(R2F.Bags.IsLocked())
+  end
   R2F.RemindersTab.Refresh()
 end
 
@@ -105,11 +116,88 @@ local function addRow(parent, def, x, y)
   return y - (hint and 52 or 28)
 end
 
+-- Movable bags / Lock bags: not features (no SavedVariables toggle of ours), so their own boxes.
+local function addBagBox(parent, label, tip, y, onClick)
+  local b = UI.CheckButton(parent, label)
+  b:SetPoint("TOPLEFT", LEFT, y)
+  if b.SetMotionScriptsWhileDisabled then b:SetMotionScriptsWhileDisabled(true) end
+  b:SetScript("OnClick", function() onClick() refresh() end)
+  b:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:AddLine(label, 1, 1, 1)
+    GameTooltip:AddLine(tip, 1, 0.82, 0, true)
+    if not R2F.Bags.Available() then
+      GameTooltip:AddLine(L.BAGS_UNAVAILABLE, 1, 0.1, 0.1, true)
+    elseif R2F.InCombat() then
+      GameTooltip:AddLine(L.QS_TIP_COMBAT, 1, 0.1, 0.1, true)
+    end
+    GameTooltip:Show()
+  end)
+  b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  bagBoxes[#bagBoxes + 1] = b
+  return y - 28
+end
+
 -- Mouse-wheel scrolling (only needed when a page is taller than the window, e.g. Alerts for a Hunter).
 local function onWheel(self, delta)
   local maxScroll = math.max((self.r2fContentHeight or 0) - self:GetHeight(), 0)
   local v = (self:GetVerticalScroll() or 0) - delta * 40
   self:SetVerticalScroll(math.max(0, math.min(v, maxScroll)))
+end
+
+-- Search: matches the option names, their hints and tooltips, and the page names. Returns a list of
+-- { label, page } (up to 10). Options that are not plain features are listed in EXTRA.
+local EXTRA = {
+  { "BAGS_MOVABLE", "bags" }, { "BAGS_LOCK", "bags" },
+  { "GP_ALERT_OUTLINE", "alerts" }, { "GP_ICONS", "alerts" },
+}
+
+function Tab.Search(q)
+  q = tostring(q or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
+  local out = {}
+  if q == "" then return out end
+  local function hit(...)
+    for i = 1, select("#", ...) do
+      local t = select(i, ...)
+      if t and tostring(t):lower():find(q, 1, true) then return true end
+    end
+  end
+  for _, pg in ipairs(Tab.PAGES) do
+    for _, key in ipairs(pg.features) do
+      local def
+      for _, d in ipairs(Gameplay.FEATURES) do if d.key == key then def = d end end
+      if def and #out < 10 and hit(L[def.title], L[def.title .. "_HINT"], L[def.tip], L[pg.label]) then
+        out[#out + 1] = { label = L[def.title], page = pg.key }
+      end
+    end
+  end
+  for _, e in ipairs(EXTRA) do
+    if #out < 10 and hit(L[e[1]], L[e[1] .. "_TIP"]) then out[#out + 1] = { label = L[e[1]], page = e[2] } end
+  end
+  return out
+end
+
+local function showResults(list, q)
+  for _, r in ipairs(resultRows) do r:Hide() end
+  results:SetShown(q ~= "")
+  results.none:SetShown(q ~= "" and #list == 0)
+  for i, item in ipairs(list) do
+    local r = resultRows[i]
+    if not r then
+      r = CreateFrame("Button", nil, results, "UIPanelButtonTemplate")
+      r:SetSize(300, 24)
+      r:SetPoint("TOPLEFT", 16, -10 - (i - 1) * 28)
+      r:SetScript("OnClick", function(self)
+        searchBox:SetText("")
+        searchBox:ClearFocus()
+        Tab.ShowPage(self.page)
+      end)
+      resultRows[i] = r
+    end
+    r.page = item.page
+    r:SetText(item.label .. "  |cff999999(" .. L["GP_PAGE_" .. item.page:upper()] .. ")|r")
+    r:Show()
+  end
 end
 
 function Tab.ShowPage(key)
@@ -192,6 +280,23 @@ function Tab.Build(f)
   end)
   reset:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
+  -- Search box (bottom left): lists the options that match; a click opens the page they are on.
+  searchBox = CreateFrame("EditBox", "R2FGameplaySearch", f, "InputBoxTemplate")
+  searchBox:SetSize(200, 22)
+  searchBox:SetPoint("BOTTOMLEFT", 24, 12)
+  searchBox:SetAutoFocus(false)
+  searchBox:SetMaxLetters(40)
+  local hint = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+  hint:SetPoint("LEFT", searchBox, "LEFT", 6, 0)
+  hint:SetText(L.GP_SEARCH)
+  searchBox:SetScript("OnTextChanged", function(self)
+    local q = self:GetText() or ""
+    hint:SetShown(q == "")
+    showResults(Tab.Search(q), q)
+  end)
+  searchBox:SetScript("OnEscapePressed", function(self) self:SetText("") self:ClearFocus() end)
+  searchBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
+
   scroll = UI.TryTemplate("ScrollFrame", "R2FGameplayScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FGameplayScrollPlain", f)
   scroll:SetPoint("TOPLEFT", 6, -76)
@@ -202,6 +307,18 @@ function Tab.Build(f)
   scroll:EnableMouseWheel(true)
   scroll:SetScript("OnMouseWheel", onWheel)
 
+  results = CreateFrame("Frame", nil, f)
+  results:SetPoint("TOPLEFT", 6, -76)
+  results:SetSize(500, 390)
+  results:SetFrameLevel(scroll:GetFrameLevel() + 5)
+  results.bg = results:CreateTexture(nil, "BACKGROUND")
+  results.bg:SetAllPoints()
+  results.bg:SetColorTexture(0.04, 0.04, 0.05, 0.97)
+  results:Hide()
+  results.none = results:CreateFontString(nil, "ARTWORK", "GameFontDisable")
+  results.none:SetPoint("TOPLEFT", 20, -14)
+  results.none:SetText(L.GP_SEARCH_NONE)
+
   for _, pg in ipairs(Tab.PAGES) do
     local c = CreateFrame("Frame", nil, content)
     c:SetPoint("TOPLEFT", 0, 0)
@@ -210,6 +327,12 @@ function Tab.Build(f)
     local y = -10
     for _, key in ipairs(pg.features) do
       if defs[key] then y = addRow(c, defs[key], LEFT, y) end
+    end
+    if pg.key == "bags" then
+      y = addBagBox(c, L.BAGS_MOVABLE, L.BAGS_MOVABLE_TIP, y,
+        function() R2F.Bags.SetMovable(not R2F.Bags.IsMovable()) end)
+      y = addBagBox(c, L.BAGS_LOCK, L.BAGS_LOCK_TIP, y,
+        function() R2F.Bags.SetLock(not R2F.Bags.IsLocked()) end)
     end
     local bottom = y  -- luacheck: ignore 311
     if pg.key == "alerts" then
@@ -278,7 +401,7 @@ function Tab.Build(f)
       note:SetPoint("TOPLEFT", LEFT + 4, y - 4)
       note:SetWidth(440)
       note:SetJustifyH("LEFT")
-      note:SetText(pg.key == "bags" and (L.GP_BAGS_NOTE .. " " .. L.GP_NOTE) or L.GP_NOTE)
+      note:SetText(L.GP_NOTE)
       bottom = y - 30
     end
     pageHeight[pg.key] = -bottom + 20

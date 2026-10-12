@@ -49,6 +49,7 @@ handlers.PLAYER_REGEN_DISABLED = function()
   R2F.MainWindow.SetCombat()
   R2F.ImportFrame.SetCombat(true)
   R2F.Settings.SetCombat()
+  if R2F.GameplayTab and R2F.GameplayTab.Refresh then R2F.GameplayTab.Refresh() end
 end
 
 -- PLAYER_REGEN_ENABLED fires after the lockdown has lifted, so queued macro
@@ -60,6 +61,7 @@ handlers.PLAYER_REGEN_ENABLED = function()
   R2F.MainWindow.SetCombat()
   R2F.ImportFrame.SetCombat(false)
   R2F.Settings.SetCombat()
+  if R2F.GameplayTab and R2F.GameplayTab.Refresh then R2F.GameplayTab.Refresh() end
 end
 
 -- Slot counter, markers and the Home counts; no-ops while the window is closed.

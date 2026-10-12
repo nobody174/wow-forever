@@ -785,11 +785,11 @@ def test_settings_tab(templates, fx):
     find_frames(lua, "f.qsItem ~= nil", "QSB")
     check(lua.eval("#QSB") == 3 and lua.eval("QSB[1]:IsVisible()") is True,
           "%s: Quick settings switches are on the Home page" % tag)
-    for key in ("QS_TITLE", "SETTINGS_MINIMAP", "BAGS_TITLE", "HOME_SHARE"):
+    for key in ("QS_TITLE", "SETTINGS_MINIMAP", "HOME_SHARE"):
         check(font_text(lua, "^" + lua.eval("R2F.L.%s" % key) + "$") is not None, "Home has the %s heading" % key)
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel", "CBS")
     labels = {lua.eval("CBS[%d].r2fLabel.__text" % i) for i in range(1, lua.eval("#CBS") + 1)}
-    for key in ("SETTINGS_MINIMAP_SHOW", "SETTINGS_MINIMAP_LOCK", "QS_ZOOM", "QS_GUILD", "QS_PVP", "BAGS_MOVABLE", "BAGS_LOCK"):
+    for key in ("SETTINGS_MINIMAP_SHOW", "SETTINGS_MINIMAP_LOCK", "QS_ZOOM", "QS_GUILD", "QS_PVP"):
         check(lua.eval("R2F.L.%s" % key) in labels, "Home has the %s control" % key)
     find_frames(lua, "f.__kind == 'Button' and f.__text == R2F.L.HOME_PROFS and f.__shown", "PROFS")
     check(lua.eval("#PROFS") == 1, "Export professions is on Home")
@@ -939,6 +939,26 @@ def test_planner():
     lua.execute("TL.OnAddonMessage('R2FT', MSG, 'PARTY', UnitName('player') .. '-Realm')")
     lua.execute("TL.OnAddonMessage('XXXX', MSG, 'PARTY', 'Zed-Realm')")
     check(lua.eval("#TL.Loadouts('warrior')") == 1, "planner: bad body, own name and wrong prefix are ignored")
+
+
+def test_tweaks_search():
+    """0.38.0: the Tweaks search box lists matching options and opens their page."""
+    lua = new_runtime()
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    lua.execute("R2F.MainWindow.Show('gameplay')")
+    check(lua.eval("#R2F.GameplayTab.Search('')") == 0, "search: empty text gives nothing")
+    check(lua.eval("#R2F.GameplayTab.Search('zzzqq')") == 0, "search: no match gives nothing")
+    check(lua.eval("R2F.GameplayTab.Search('repair')[1].page") == "vendors", "search: repair is on the Vendors page")
+    check(lua.eval("R2F.GameplayTab.Search('MOVABLE')[1].page") == "bags", "search: Movable bags is found on Bags (any case)")
+    check(lua.eval("R2F.GameplayTab.Search('outline')[1].page") == "alerts", "search: alert outline is on Alerts")
+    lua.execute("R2FGameplaySearch:SetText('repair') R2FGameplaySearch:GetScript('OnTextChanged')(R2FGameplaySearch)")
+    find_frames(lua, "f.__kind == 'Button' and f.page == 'vendors' and f.__shown", "SR")
+    check(lua.eval("#SR") >= 1, "search: a result button is shown")
+    lua.execute("SR[1]:Click()")
+    check(lua.eval("R2F.GameplayTab.CurrentPage()") == "vendors" and lua.eval("R2FGameplaySearch:GetText()") == "",
+          "search: clicking a result opens its page and clears the box")
 
 
 def test_tree_names():
@@ -1188,11 +1208,11 @@ def test_bags():
 
     # --- Settings tab boxes ----------------------------------------------------------------------------------------
     lua, T = bag_runtime(True, False)
-    lua.execute("R2F.MainWindow.Show('settings')")
+    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('bags')")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.BAGS_MOVABLE", "BM")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.BAGS_LOCK", "BL")
     check(lua.eval("#BM") == 1 and lua.eval("#BL") == 1 and lua.eval("BM[1]:IsVisible()") is True,
-          "15.3 Settings tab has Movable bags + Lock bags")
+          "15.3 Tweaks > Bags page has Movable bags + Lock bags")
     lua.execute("BM[1]:Click()")
     check(lua.eval("R2FCharDB.bags.movable") is True and lua.eval("BM[1]:GetChecked()") is True, "15.3 clicking Movable bags turns it on")
     lua.execute("BL[1]:Click()")
@@ -1204,7 +1224,7 @@ def test_bags():
     T.fire("PLAYER_REGEN_ENABLED")
     check(lua.eval("BM[1]:IsEnabled()") is True, "15.3 and come back after combat")
     lua, T = bag_runtime(False, False)
-    lua.execute("R2F.MainWindow.Show('settings')")
+    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('bags')")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.BAGS_MOVABLE", "BM")
     check(lua.eval("BM[1]:IsEnabled()") is False, "15.3 no bag windows found: the boxes are greyed out")
 
@@ -7064,6 +7084,7 @@ def main():
     test_tree_names()
     test_bundle(fx)
     test_planner()
+    test_tweaks_search()
     test_talented_perk()
     test_bags()
     test_reminders()

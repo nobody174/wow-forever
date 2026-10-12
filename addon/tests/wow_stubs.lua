@@ -703,6 +703,7 @@ function methods:Hide()
   if was and self.__scripts.OnHide then self.__scripts.OnHide(self) end
 end
 function methods:SetShown(v) if v then self:Show() else self:Hide() end end
+function methods:GetFrameLevel() return 1 end
 function methods:IsShown() return self.__shown end
 -- Like the real client: IsShown is the frame's own flag, IsVisible also
 -- needs every parent shown (the main window's pages rely on this, step 6).

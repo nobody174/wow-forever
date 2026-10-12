@@ -28,7 +28,7 @@ local page
 local ui = {}
 
 -- Positions inside the Home page (650 wide): left column, right column.
-local LEFT, RIGHT = 0, 340
+local LEFT = 0
 local TOP = -150
 
 local function visible()
@@ -48,13 +48,6 @@ local function refresh()
     b:SetEnabled(enabled)
     if enabled then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
   end
-  local bagsOk = R2F.Bags.Available() and not combat
-  for _, b in ipairs({ ui.bagMove, ui.bagLock }) do
-    b:SetEnabled(bagsOk)
-    if bagsOk then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
-  end
-  ui.bagMove:SetChecked(R2F.Bags.IsMovable())
-  ui.bagLock:SetChecked(R2F.Bags.IsLocked())
 end
 
 -- The minimap button re-reads R2FDB.minimap. Still guarded: the Settings
@@ -132,34 +125,6 @@ local function buildQuick(f)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
     ui.quick[i] = b
   end
-
-  -- Movable bags / Lock bags (Bags.lua): not CVars, so not in
-  -- QuickSettings.ITEMS; same look and the same combat rule.
-  heading(f, RIGHT, TOP, L.BAGS_TITLE)
-  local function bagBox(label, tip, y, onClick)
-    local b = UI.CheckButton(f, label)
-    b:SetPoint("TOPLEFT", RIGHT + 4, y)
-    b.bagTip = tip
-    if b.SetMotionScriptsWhileDisabled then b:SetMotionScriptsWhileDisabled(true) end
-    b:SetScript("OnClick", onClick)
-    b:SetScript("OnEnter", function(self)
-      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-      GameTooltip:AddLine(label, 1, 1, 1)
-      GameTooltip:AddLine(tip, 1, 0.82, 0, true)
-      if not R2F.Bags.Available() then
-        GameTooltip:AddLine(L.BAGS_UNAVAILABLE, 1, 0.1, 0.1, true)
-      elseif R2F.InCombat() then
-        GameTooltip:AddLine(L.QS_TIP_COMBAT, 1, 0.1, 0.1, true)
-      end
-      GameTooltip:Show()
-    end)
-    b:SetScript("OnLeave", function() GameTooltip:Hide() end)
-    return b
-  end
-  ui.bagMove = bagBox(L.BAGS_MOVABLE, L.BAGS_MOVABLE_TIP, TOP - 32,
-    function() R2F.Bags.SetMovable(not R2F.Bags.IsMovable()); refresh() end)
-  ui.bagLock = bagBox(L.BAGS_LOCK, L.BAGS_LOCK_TIP, TOP - 58,
-    function() R2F.Bags.SetLock(not R2F.Bags.IsLocked()); refresh() end)
 end
 
 -- Called once by Home.Build with the Home page frame.

@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.38.0 (2026-10-13)
+
+- Tweaks: a search box (bottom left). Type a word (repair, bags, outline...) to list the options that match; click one to open the page it is on.
+- Movable bags and Lock bags moved from Home to Tweaks > Bags, next to the other bag options. Home is shorter.
+
 ## 0.37.1 (2026-10-13)
 
 - Loadouts: deleting moved out of the load list into its own "Delete a loadout..." menu, and asks for confirmation before anything is removed.

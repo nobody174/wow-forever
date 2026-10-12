@@ -27,7 +27,6 @@ local pageButtons = {}  -- page key -> button
 local pageHeight = {}
 local outlineButtons = {}   -- "none" / "thin" / "thick" -> button (Alerts & HUD page)
 local sizeSlider, sizeText
-local DOT = "Interface\\AddOns\\RoadToForever\\media\\dot"
 local scroll, content
 local LEFT, RIGHT, RIGHT_W = 22, 270, 214
 
@@ -56,16 +55,6 @@ local function refresh()
       b:SetEnabled(ok)
       if ok then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
     end
-  end
-  -- A gold dot on a page button when something on that page is on / changed from the default.
-  for _, pg in ipairs(Tab.PAGES) do
-    local any = false
-    for _, key in ipairs(pg.features) do if Gameplay.IsOn(key) then any = true end end
-    if pg.key == "alerts" then
-      local d = R2F.Library.db.fct
-      if d.textScale ~= 1 or d.outline ~= "none" then any = true end
-    end
-    if pageButtons[pg.key] then pageButtons[pg.key].dot:SetShown(any) end
   end
   if sizeSlider then
     local d = R2F.Library.db.fct
@@ -187,12 +176,6 @@ function Tab.Build(f)
     b.mark:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -6, 1)
     b.mark:SetHeight(3)
     b.mark:Hide()
-    b.dot = b:CreateTexture(nil, "OVERLAY")
-    b.dot:SetTexture(DOT)
-    b.dot:SetVertexColor(1, 0.82, 0)
-    b.dot:SetSize(7, 7)
-    b.dot:SetPoint("TOPRIGHT", b, "TOPRIGHT", -3, -3)
-    b.dot:Hide()
     pageButtons[pg.key] = b
     x = x + 104
   end

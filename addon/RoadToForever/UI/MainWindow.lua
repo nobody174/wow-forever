@@ -164,43 +164,49 @@ local function topSlider(parent, label, min, max, get, set, x)
     caption(math.floor(v * 100 + 0.5))
     if math.abs(v - get()) > 0.001 then set(v) end
   end
-  -- Only the thumb moves the slider: a press anywhere else on the bar is undone (the bar would
-  -- otherwise jump to where you clicked, which resized the window under the cursor).
-  local function overThumb()
+  -- Only dragging the thumb changes the slider. A press anywhere else on the bar is undone: the
+  -- engine moves the bar to the click before our OnMouseDown runs, so nothing is ever applied from
+  -- OnValueChanged. The value is applied once, on release, and only when the press began on the thumb
+  -- (judged from where the thumb was before the press, i.e. from the applied value).
+  local TRACK_W = 84
+  local function pressedOnThumb()
+    local left, scale = sl:GetLeft(), sl:GetEffectiveScale()
+    if type(left) == "number" and type(scale) == "number" and scale > 0 and GetCursorPosition then
+      local cx = GetCursorPosition() / scale
+      local frac = (math.max(min, math.min(max, get() * 100)) - min) / (max - min)
+      return math.abs(cx - (left + 8 + (TRACK_W - 16) * frac)) <= 14
+    end
     local thumb = sl.GetThumbTexture and sl:GetThumbTexture()
     if not (thumb and thumb.IsMouseOver) then return true end
     local ok, over = pcall(thumb.IsMouseOver, thumb)
     return (not ok) or over == true
   end
+  local function revert()
+    sl.r2fBlock, sl.r2fDown = false, false
+    local v = math.max(min, math.min(max, get() * 100))
+    sl:SetValue(v)
+    caption(math.floor(v + 0.5))
+  end
   sl:SetScript("OnValueChanged", function(self, v)
     if self.r2fBlock then
-      if self:GetValue() ~= self.r2fStartV then self:SetValue(self.r2fStartV) end
+      local keep = math.max(min, math.min(max, get() * 100))
+      if self:GetValue() ~= keep then self:SetValue(keep) end
       return
     end
-    if self.r2fDown then caption(snap(v)) else commit() end
+    caption(snap(v))
   end)
   sl:SetScript("OnMouseDown", function(self)
-    self.r2fStartV = self:GetValue()
-    self.r2fBlock = not overThumb()
+    self.r2fBlock = not pressedOnThumb()
     self.r2fDown = true
+    if self.r2fBlock then caption(math.floor(get() * 100 + 0.5)) end
   end)
-  sl:SetScript("OnMouseUp", function(self)
-    if self.r2fBlock then
-      self.r2fBlock, self.r2fDown = false, false
-      self:SetValue(self.r2fStartV)
-    elseif self.r2fDown then
-      commit()
-    end
-  end)
+  local function release(self)
+    if not self.r2fDown then return end
+    if self.r2fBlock then revert() else commit() end
+  end
+  sl:SetScript("OnMouseUp", release)
   sl:SetScript("OnUpdate", function(self)
-    if self.r2fDown and not IsMouseButtonDown("LeftButton") then
-      if self.r2fBlock then
-        self.r2fBlock, self.r2fDown = false, false
-        self:SetValue(self.r2fStartV)
-      else
-        commit()
-      end
-    end
+    if self.r2fDown and not IsMouseButtonDown("LeftButton") then release(self) end
   end)
   sl:SetScript("OnHide", function(self) self.r2fDown, self.r2fBlock = false, false end)
   -- Tick marks under the bar, one per step, with the end and middle values

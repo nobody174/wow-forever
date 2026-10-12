@@ -146,7 +146,8 @@ function Library.Init()
   if type(bf.x) ~= "number" then bf.x = 0 end
   if type(bf.y) ~= "number" then bf.y = 140 end
   for key, default in pairs({ fortitude = true, motw = true, thorns = true, intellect = true, blessing = true,
-    spirit = false, shadowprot = false, battleshout = false, trueshot = false }) do
+    spirit = false, shadowprot = false, battleshout = false, trueshot = false,
+    strengthearth = false, graceair = false, windfury = false, manaspring = false }) do
     if type(bf[key]) ~= "boolean" then bf[key] = default end
   end
   -- Hunter ammo reminder (Ammo.lua).

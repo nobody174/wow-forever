@@ -3716,7 +3716,7 @@ def test_step6_ui(templates, fx):
     # Top bar: Reload UI, size and opacity sliders (apply on release, saved, clamped).
     lua.execute("R2F.MainWindow.Frame().r2fReload:Click()")
     check(lua.eval("TEST.reloaded") == 2, "top bar Reload UI button reloads")
-    lua.execute("local sl = R2F.MainWindow.Frame().r2fSizeSlider sl:SetValue(120) sl:Fire('OnValueChanged', 120)")
+    lua.execute("local sl = R2F.MainWindow.Frame().r2fSizeSlider sl:Fire('OnMouseDown') sl:SetValue(120) sl:Fire('OnValueChanged', 120) sl:Fire('OnMouseUp')")
     check(lua.eval("R2FDB.settings.menuScale") == 1.2 and lua.eval("R2FMain.__scale") == 1.2, "size slider sets the window scale")
     lua.execute("local sl = R2F.MainWindow.Frame().r2fOpacitySlider sl:Fire('OnMouseDown') sl:SetValue(40) sl:Fire('OnValueChanged', 40)")
     check(lua.eval("R2FDB.settings.menuAlpha") == 1, "opacity does not change while the thumb is held")
@@ -3730,6 +3730,21 @@ def test_step6_ui(templates, fx):
     check(lua.eval("R2FDB.settings.menuScale") == 1.2 and lua.eval("R2F.MainWindow.Frame().r2fSizeSlider:GetValue()") == 120,
           "pressing the bar away from the thumb changes nothing")
     T.thumbOver = True
+    # Real-client geometry: the thumb sits at left + 8 + 68 * fraction; a press 40 px away is ignored.
+    cur = lua.eval("R2FDB.settings.menuScale") * 100
+    thumb_x = 100 + 8 + 68 * (cur - 50) / 100
+    lua.execute("R2F.MainWindow.Frame().r2fSizeSlider.__left = 100")
+    for dx, expect in ((40, False), (3, True)):
+        T.cursorX = thumb_x + dx
+        T.mouseDown = True
+        lua.execute("local sl = R2F.MainWindow.Frame().r2fSizeSlider sl:Fire('OnMouseDown') sl:SetValue(50) sl:Fire('OnValueChanged', 50)")
+        check(lua.eval("R2F.MainWindow.Frame().r2fSizeSlider.r2fBlock") is (not expect), "press %+d px from the thumb %s" % (dx, "drags" if expect else "is ignored"))
+        T.mouseDown = False
+        lua.execute("R2F.MainWindow.Frame().r2fSizeSlider:Fire('OnUpdate', 0.1)")
+        check((lua.eval("R2FDB.settings.menuScale") == cur / 100) is (not expect), "release: %s" % ("applied" if expect else "unchanged"))
+        lua.execute("R2FDB.settings.menuScale = %s R2F.MainWindow.Frame().r2fSizeSlider:SetValue(%s)" % (cur / 100, cur))
+    lua.execute("R2F.MainWindow.Frame().r2fSizeSlider.__left = nil")
+    T.cursorX = None
     # Held thumb + cursor leaves the bar (no OnMouseUp): applied once the button is up, never while held.
     lua.execute("local sl = R2F.MainWindow.Frame().r2fSizeSlider sl:Fire('OnMouseDown') sl:SetValue(80) sl:Fire('OnValueChanged', 80)")
     T.mouseDown = True

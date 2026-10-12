@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.35.1 (2026-10-13)
+
+- Size / Opacity sliders: pressing the bar away from the thumb no longer changes anything (the previous fix still let the click through). Only dragging the thumb applies.
+- Removed the small gold dot on the Tweaks page buttons (it only meant "something on this page is switched on" and confused more than it helped).
+- Group buffs: Shaman totems added (Strength of Earth, Grace of Air, Windfury Totem, Mana Spring), off by default until the aura names are confirmed in game. Warlock and Rogue have no group buffs.
+
 ## 0.35.0 (2026-10-12)
 
 - Size and Opacity sliders only move when you drag the thumb itself; clicking elsewhere on the bar does nothing.

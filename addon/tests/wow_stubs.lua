@@ -746,6 +746,7 @@ function methods:CreateFontString() return newObject("FontString") end
 function methods:GetStringHeight() return 14 end
 function methods:GetStringWidth() return 7 * #(self.__text or "") end
 function methods:GetEffectiveScale() return 1 end
+function methods:GetLeft() return self.__left end
 function methods:IsMouseOver() return false end
 function methods:GetPoint()
   -- A point set with SetPoint(point, relativeTo, relPoint, x, y) is reported back; anything else keeps the old fixed answer.

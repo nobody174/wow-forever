@@ -1456,16 +1456,29 @@ PLAN_MAPS_LUA = """
 PLAN_SEP = chr(30)
 
 
-def plan_runtime(templates=True, maps=True, tomtom=False, preset=None):
+# BiZNav world stub: Dun Morogh (1426) is a 1000 x 1000 yard square on continent 0 with the
+# game's axes (world x = north, world y = west); Ironforge (1455) is on continent 1 so it
+# counts as "another continent"; 9999 has no world position.
+NAV_WORLD_LUA = """
+  function CreateVector2D(x, y) return { x = x, y = y, GetXY = function(v) return v.x, v.y end } end
+  C_Map.GetWorldPosFromMapPos = function(mapID, v)
+    if mapID == 1426 then return 0, CreateVector2D(1000 * (1 - v.y), 1000 * (1 - v.x)) end
+    if mapID == 1455 then return 1, CreateVector2D(1000 * (1 - v.y), 1000 * (1 - v.x)) end
+  end
+  TEST.facing = 0
+  function GetPlayerFacing() return TEST.facing end
+"""
+
+
+def plan_runtime(templates=True, maps=True, nav=False, preset=None):
     lua = new_runtime(templates)
     lua.execute("TEST.reset()")
     if not templates:
         lua.execute("TEST.templates.UIPanelScrollFrameTemplate = nil")
     if maps:
         lua.execute(PLAN_MAPS_LUA)
-    lua.execute("TOMTOM_CALLS = {}")
-    if tomtom:
-        lua.execute("TomTom = { AddWaypoint = function(self, mapID, x, y, opts) table.insert(TOMTOM_CALLS, { mapID, x, y, opts.title }) end }")
+    if nav:
+        lua.execute(NAV_WORLD_LUA)
     if preset:
         lua.execute("R2FCharDB = %s" % preset)
     T = lua.eval("TEST")
@@ -1579,28 +1592,90 @@ def test_plan(templates=True):
         lua.execute(PLAN_MAPS_LUA + " R2F.Plan.ResetMapCache()")
         check(lua.eval("R2F.Plan.ResolveMap('Burning Steppes')") == 1428, "15.5 the map list is rebuilt when C_Map shows up later")
 
-        # --- Waypoint paths: TomTom, no TomTom, check points ------------------------------------------------
+        # --- Waypoint paths: our arrow (BiZNav), the /way line, check points ---------------------------
         exact = "{ zone = 'Dun Morogh', mapHint = 1426, x = 29.9, y = 71.2, label = 'Anvilmar', conf = 'exact' }"
-        lua, T = plan_runtime(tomtom=True)
+        lua, T = plan_runtime(nav=True)
         T.chat = lua.table()
         lua.execute("R = R2F.Plan.Waypoint(%s)" % exact)
-        call = lua.eval("TOMTOM_CALLS[1]")
-        check(lua.eval("R") == "tomtom" and call is not None and call[1] == 1426 and abs(call[2] - 0.299) < 1e-9
-              and abs(call[3] - 0.712) < 1e-9 and call[4] == "Anvilmar", "15.5 TomTom: AddWaypoint(mapID, x/100, y/100, {title}) called")
-        check("waypoint set: Anvilmar" in chat_all(lua), "15.5 TomTom: chat confirms the waypoint")
+        tgt = lua.eval("R2F.Nav.Target()")
+        check(lua.eval("R") == "arrow" and tgt is not None and tgt.mapID == 1426 and tgt.x == 29.9 and tgt.label == "Anvilmar",
+              "BiZNav: the Waypoint button points the arrow at mapID x y")
+        check("arrow: Anvilmar" in chat_all(lua) and lua.eval("R2FNavFrame:IsShown()") is True, "BiZNav: chat confirms and the arrow shows")
         T.chat = lua.table()
         lua.execute("R = R2F.Plan.Waypoint({ zone = 'Zephras Isle', x = 10, y = 20, label = 'Valanaar', conf = 'approx' })")
-        check(lua.eval("R") == "line" and lua.eval("#TOMTOM_CALLS") == 1 and "/way Zephras Isle 10 20 Valanaar" in chat_all(lua)
-              and "no map called Zephras Isle" in chat_all(lua), "15.5 TomTom but unknown map: prints the /way line, sets nothing")
+        check(lua.eval("R") == "line" and "/way Zephras Isle 10 20 Valanaar" in chat_all(lua)
+              and "no map called Zephras Isle" in chat_all(lua) and lua.eval("R2F.Nav.Target().label") == "Anvilmar",
+              "BiZNav: unknown map prints the /way line and keeps the old arrow")
         T.chat = lua.table()
         lua.execute("R = R2F.Plan.Waypoint({ zone = 'Zephras Isle', label = 'Valanaar', conf = 'check' })")
-        check(lua.eval("R") is None and lua.eval("#TOMTOM_CALLS") == 1 and chat_all(lua) == "", "15.5 check points: no waypoint, nothing printed")
-        lua, T = plan_runtime(tomtom=False)
+        check(lua.eval("R") is None and chat_all(lua) == "", "15.5 check points: no waypoint, nothing printed")
+        lua, T = plan_runtime(nav=False)
         T.chat = lua.table()
         lua.execute("R = R2F.Plan.Waypoint(%s)" % exact)
-        check(lua.eval("R") == "line" and "/way Dun Morogh 29.9 71.2 Anvilmar" in chat_all(lua), "15.5 no TomTom: the /way line is printed: %r" % chat_all(lua))
-        check(lua.eval("R2F.Plan.HasTomTom()") is False and lua.eval("R2F.Plan.HasPosition({ conf = 'check' })") is False
-              and lua.eval("R2F.Plan.HasPosition({ conf = 'exact', x = 1, y = 2 })") is True, "15.5 HasTomTom / HasPosition")
+        check(lua.eval("R") == "line" and "/way Dun Morogh 29.9 71.2 Anvilmar" in chat_all(lua) and lua.eval("R2F.Nav.Target()") is None,
+              "BiZNav: a client without GetWorldPosFromMapPos gets the /way line: %r" % chat_all(lua))
+        check(lua.eval("R2F.Nav.Supported()") is False and lua.eval("R2F.Plan.HasPosition({ conf = 'check' })") is False
+              and lua.eval("R2F.Plan.HasPosition({ conf = 'exact', x = 1, y = 2 })") is True, "BiZNav Supported / HasPosition")
+
+        # --- The arrow: direction, distance, other continent, no position, arrival, clear --------------------
+        lua, T = plan_runtime(nav=True)
+        lua.execute("TEST.hereMap = 1426 TEST.herePos = { 0.5, 0.5 }")
+        def arrow(facing, x, y):
+            lua.execute("TEST.facing = %r R2F.Nav.SetTarget(1426, %r, %r, 'Spot', 'Dun Morogh')" % (facing, x, y))
+            lua.execute("R2FNavFrame:Fire('OnUpdate', 1)")
+            return lua.eval("R2FNavFrame.arrow.__rotation"), lua.eval("R2FNavFrame.dist.__text")
+        import math
+        rot, dist = arrow(0, 50, 40)
+        check(abs(rot) < 1e-9 and dist == "100 yd", "BiZNav: target 100 yd north, facing north -> straight up: %r %r" % (rot, dist))
+        rot, _ = arrow(0, 60, 50)
+        check(abs(rot + math.pi / 2) < 1e-9, "BiZNav: target east, facing north -> arrow turned right (clockwise): %r" % rot)
+        rot, _ = arrow(0, 40, 50)
+        check(abs(rot - math.pi / 2) < 1e-9, "BiZNav: target west -> arrow turned left: %r" % rot)
+        rot, _ = arrow(math.pi / 2, 50, 40)
+        check(abs(rot + math.pi / 2) < 1e-9, "BiZNav: facing west, target north -> arrow turned right: %r" % rot)
+        rot, _ = arrow(0, 50, 60)
+        check(abs(abs(rot) - math.pi) < 1e-9, "BiZNav: target south -> arrow points down: %r" % rot)
+        _, dist = arrow(0, 50, 0)  # 500 yd north, on the map's top edge
+        check(dist == "500 yd", "BiZNav: a target on the map's edge still measures: %r" % dist)
+        lua.execute("R2F.Nav.SetTarget(1426, 99.5, 99.5, 'Corner', 'Dun Morogh') R2FNavFrame:Fire('OnUpdate', 1)")
+        check(abs(lua.eval("R2FNavFrame.arrow.__rotation") + 3 * math.pi / 4) < 1e-6,
+              "BiZNav: south-east corner target (probe flipped at the edge) -> down-right: %r" % lua.eval("R2FNavFrame.arrow.__rotation"))
+        lua.execute("R2F.Nav.SetTarget(1455, 50, 50, 'IF', 'Ironforge') R2FNavFrame:Fire('OnUpdate', 1)")
+        check(lua.eval("R2FNavFrame.arrow:IsShown()") is False and "another continent (Ironforge)" in lua.eval("R2FNavFrame.dist.__text"),
+              "BiZNav: another continent hides the arrow and says so")
+        lua.execute("R2F.Nav.SetTarget(1426, 50, 40, 'Spot', 'Dun Morogh') TEST.hereMap = nil R2FNavFrame:Fire('OnUpdate', 1)")
+        check(lua.eval("R2FNavFrame.arrow:IsShown()") is False and lua.eval("R2FNavFrame.dist.__text") == "no position here",
+              "BiZNav: no player position (instance) hides the arrow")
+        check(lua.eval("R2F.Nav.SetTarget(9999, 50, 50, 'X', 'Nowhere')") is False, "BiZNav: a map with no world position is refused")
+        T.chat = lua.table()
+        lua.execute("TEST.hereMap = 1426 TEST.herePos = { 0.5, 0.405 } R2FNavFrame:Fire('OnUpdate', 1)")
+        check(lua.eval("R2F.Nav.Target()") is None and lua.eval("R2FNavFrame:IsShown()") is False and "arrived: Spot" in chat_all(lua),
+              "BiZNav: within 10 yd the target is reached, cleared and announced")
+        lua.execute("R2F.Nav.SetTarget(1426, 50, 40, 'Spot', 'Dun Morogh') R2FNavFrame:Fire('OnMouseUp', 'RightButton')")
+        check(lua.eval("R2F.Nav.Target()") is None and lua.eval("R2FNavFrame:IsShown()") is False, "BiZNav: right-click clears the arrow")
+        lua.execute("R2FNavFrame.__cx, R2FNavFrame.__cy = 30, 40 R2FNavFrame:Fire('OnDragStart') R2FNavFrame:Fire('OnDragStop')")
+        check(lua.eval("R2FDB.nav.x") == 30 and lua.eval("R2FDB.nav.y") == 40, "BiZNav: dragging saves the arrow position")
+        # /r2f way and /r2f clear
+        T.chat = lua.table()
+        lua.execute('SlashCmdList.R2F("way Dun Morogh 47.4 52.5 Kharanos Inn")')
+        tgt = lua.eval("R2F.Nav.Target()")
+        check(tgt is not None and tgt.mapID == 1426 and tgt.x == 47.4 and tgt.y == 52.5 and tgt.label == "Kharanos Inn"
+              and "arrow: Kharanos Inn" in chat_all(lua), "BiZNav: /r2f way Zone x y label sets the arrow, label keeps its capitals")
+        T.chat = lua.table()
+        lua.execute('SlashCmdList.R2F("way dun morogh 10, 20")')
+        check(lua.eval("R2F.Nav.Target().x") == 10 and "dun morogh 10.0, 20.0" in chat_all(lua), "BiZNav: /r2f way without a label names the spot")
+        T.chat = lua.table()
+        lua.execute('SlashCmdList.R2F("way Nowhere 1 2")')
+        check("no map called Nowhere" in chat_all(lua), "BiZNav: /r2f way with an unknown zone says so")
+        T.chat = lua.table()
+        lua.execute('SlashCmdList.R2F("way")')
+        lua.execute('SlashCmdList.R2F("way Dun Morogh 147 2")')
+        check(chat_all(lua).count("usage: /r2f way") == 2, "BiZNav: /r2f way without coordinates (or out of range) shows the usage")
+        T.chat = lua.table()
+        lua.execute('SlashCmdList.R2F("clear")')
+        check(lua.eval("R2F.Nav.Target()") is None and chat_all(lua) == "", "BiZNav: /r2f clear removes the arrow")
+        lua.execute('SlashCmdList.R2F("clear")')
+        check("no arrow set" in chat_all(lua), "BiZNav: /r2f clear with nothing set says so")
         check(lua.eval("R2F.Plan.MayHaveMoved({ conf = 'classic' })") is True and lua.eval("R2F.Plan.MayHaveMoved({ conf = 'approx' })") is True
               and lua.eval("R2F.Plan.MayHaveMoved({ conf = 'exact' })") is False, "15.5 classic / approx get the 'may have moved' note, exact does not")
 
@@ -1623,7 +1698,7 @@ def test_plan(templates=True):
         check(lua.eval("R2F.MainWindow.CurrentTab()") == "plan", "15.5 /r2f plan opens the Plan tab")
 
     # --- The Plan tab (both template chains) ------------------------------------------------------------------------
-    lua, T = plan_runtime(templates=templates, tomtom=False)
+    lua, T = plan_runtime(templates=templates, nav=False)
     lua.execute("R2F.MainWindow.Show('plan')")
     title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever: Plan", "%s: Plan title: %r" % (tag, title))
@@ -1649,7 +1724,7 @@ def test_plan(templates=True):
           "%s: picking Paladin · Hunter · Shaman shows its %d steps" % (tag, wanted_trio))
     # Waypoint lines: the trio's Coldridge step has a classic point; the Zephras step a check point.
     find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible()", "WPB")
-    check(lua.eval("#WPB") >= 1 and lua.eval("WPB[1].__text") == "Show /way", "%s: without TomTom the button says Show /way" % tag)
+    check(lua.eval("#WPB") >= 1 and lua.eval("WPB[1].__text") == "Show /way", "%s: a client without an arrow says Show /way" % tag)
     lua.execute("for _, b in ipairs(WPB) do if b.point.label:find('Anvilmar') then ANVIL = b end end")
     T.chat = lua.table()
     lua.execute("ANVIL:Click()")
@@ -1659,18 +1734,19 @@ def test_plan(templates=True):
     check(font_text(lua, "position not known yet") is not None, "%s: a check point shows its label with 'position not known yet'" % tag)
     find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible() and f.point.conf == 'check'", "CHK")
     check(lua.eval("#CHK") == 0, "%s: check points have no button" % tag)
-    # TomTom loaded: the button sets a waypoint.
-    lua.execute("TomTom = { AddWaypoint = function(self, m, x, y, o) table.insert(TOMTOM_CALLS, { m, x, y, o.title }) end }")
+    # With the arrow available: the button says Waypoint and points the arrow.
+    lua.execute(NAV_WORLD_LUA)
     lua.execute("R2F.Plan.Select('trio') R2F.PlanTab.Refresh()")
     find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible()", "WPB")
-    check(lua.eval("WPB[1].__text") == "Waypoint", "%s: with TomTom the button says Waypoint" % tag)
+    check(lua.eval("WPB[1].__text") == "Waypoint", "%s: with the arrow the button says Waypoint" % tag)
     lua.execute("for _, b in ipairs(WPB) do if b.point.label:find('Anvilmar') then ANVIL = b end end ANVIL:Click()")
-    check(lua.eval("#TOMTOM_CALLS") == 1 and lua.eval("TOMTOM_CALLS[1][1]") == 1426, "%s: clicking Waypoint calls TomTom with the resolved map" % tag)
+    check(lua.eval("R2F.Nav.Target() and R2F.Nav.Target().mapID") == 1426, "%s: clicking Waypoint points the arrow at the resolved map" % tag)
     # Works in combat (no protected calls).
+    lua.execute("R2F.Nav.Clear()")
     T.combat = True
     T.fire("PLAYER_REGEN_DISABLED")
     lua.execute("ANVIL:Click() STEPS[1]:Click()")
-    check(lua.eval("#TOMTOM_CALLS") == 2, "%s: waypoints and ticks work in combat" % tag)
+    check(lua.eval("R2F.Nav.Target() ~= nil"), "%s: waypoints and ticks work in combat" % tag)
     T.combat = False
     T.fire("PLAYER_REGEN_ENABLED")
 

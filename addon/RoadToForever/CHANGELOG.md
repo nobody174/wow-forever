@@ -1,5 +1,15 @@
 # Road to Forever changelog
 
+## 0.39.0 (2026-10-13)
+
+- BiZNav, our own waypoint arrow (step 1; replaces TomTom for the Plan tab). The Waypoint button on a Plan step now
+  points a small gold arrow at the spot, with the distance in yards and the place name. Drag the arrow to move it,
+  right-click it to clear. It says "arrived" and disappears within 10 yards. Inside instances it shows "no position
+  here", and for a spot on the other continent it says so instead of pointing.
+- `/r2f way <zone> <x> <y> [label]` sets the arrow by hand, like TomTom's /way (e.g. `/r2f way Dun Morogh 47.4 52.5
+  Kharanos`). `/r2f clear` removes it.
+- TomTom is no longer used. Where the game has no map of that name, the button still prints the /way line.
+
 ## 0.38.1 (2026-10-13)
 
 - New Warlock macros in the bundle: Shadow Bolt (target / target's target) replaces "Shadow Bolt + Imp Firebolt";

@@ -720,6 +720,8 @@ function methods:GetID() return self.__id end
 function methods:SetSize(w, h) self.__w, self.__h = w, h end
 function methods:GetWidth() return self.__w or 0 end
 function methods:GetHeight() return self.__h or 0 end
+-- BiZNav (v0.39.0): the arrow texture turns; tests read the angle back.
+function methods:SetRotation(a) self.__rotation = a end
 function methods:GetCenter() return self.__cx or 0, self.__cy or 0 end
 function methods:SetPoint(...) self.__point = { ... } end
 function methods:ClearAllPoints() self.__point = nil end

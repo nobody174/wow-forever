@@ -14,12 +14,12 @@
 --   position known yet (label only, no button); classic / approx = "may have moved".
 --   The zone name is turned into a uiMapID at run time (Plan.ResolveMap) by walking
 --   C_Map.GetMapChildrenInfo, because the ids are not known for Forever's new zones.
---   With TomTom loaded the button calls TomTom:AddWaypoint(mapID, x/100, y/100, {title});
---   without it (or without a map id) it prints the "/way Zone x y label" line to chat.
+--   The button points our own arrow (Nav.lua, BiZNav) at it; without a map id, or on a
+--   client that can't place the map in the world, it prints the "/way Zone x y label" line.
 -- * /r2f here prints the zone, uiMapID and x / y you stand at, so a `check` point can be
 --   filled in from the game.
 --
--- Everything here is read-only game-wise (map getters, TomTom): it works in combat.
+-- Everything here is read-only game-wise (map getters, our own arrow frame): it works in combat.
 
 local _, R2F = ...
 local L = R2F.L
@@ -217,10 +217,6 @@ function Plan.WayLine(pt)
   return ("/way %s %s %s %s"):format(pt.zone, pt.x, pt.y, pt.label)
 end
 
-function Plan.HasTomTom()
-  return _G.TomTom ~= nil and _G.TomTom.AddWaypoint ~= nil
-end
-
 -- A point with a position (not `check`).
 function Plan.HasPosition(pt)
   return pt.conf ~= "check" and pt.x ~= nil and pt.y ~= nil
@@ -231,17 +227,17 @@ function Plan.MayHaveMoved(pt)
   return pt.conf == "classic" or pt.conf == "approx"
 end
 
--- The Waypoint button: set a TomTom waypoint, or print the /way line. Returns "tomtom",
--- "line", or nil for a point with no position.
+-- The Waypoint button: point our arrow (Nav.lua) at the spot, or print the /way line when
+-- this game has no such map or can't place it. Returns "arrow", "line", or nil for a
+-- point with no position.
 function Plan.Waypoint(pt)
   if not Plan.HasPosition(pt) then return nil end
   local mapID = Plan.ResolveMap(pt.zone, pt.mapHint)
-  if Plan.HasTomTom() and mapID then
-    _G.TomTom:AddWaypoint(mapID, pt.x / 100, pt.y / 100, { title = pt.label })
-    R2F.Print(L.PLAN_WAYPOINT_SET:format(pt.label))
-    return "tomtom"
+  if mapID and R2F.Nav.SetTarget(mapID, pt.x, pt.y, pt.label, pt.zone) then
+    R2F.Print(L.NAV_SET:format(pt.label))
+    return "arrow"
   end
-  if Plan.HasTomTom() and not mapID then R2F.Print(L.PLAN_NO_MAP:format(pt.zone)) end
+  if not mapID then R2F.Print(L.NAV_NO_MAP:format(pt.zone)) end
   R2F.Print(Plan.WayLine(pt))
   return "line"
 end

@@ -9,7 +9,7 @@
 --   Talents -> UI/TalentPanel.lua builds into it (link, preview, Copy my build,
 --              Learn talents)
 --   Plan    -> UI/Plan.lua builds into it (the launch-day checklist per group
---              plan, tick boxes, TomTom waypoints)
+--              plan, tick boxes, waypoint arrow)
 --   BiS     -> UI/BiZ.lua builds into it (Mr.BiZ: best in slot per class / spec
 --              from the site's BiS data, item tooltips, the wishlist)
 --   Gameplay-> UI/Gameplay.lua builds into it (features that act for you or

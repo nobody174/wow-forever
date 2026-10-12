@@ -119,6 +119,10 @@ function Library.Init()
   end
   -- Where the floating combat text starts (GameplayExtras.lua): offset from the screen centre, UIParent units.
   if type(db.loadouts) ~= "table" then db.loadouts = {} end
+  -- BiZNav arrow position (Nav.lua): offset from the screen centre, UIParent units.
+  if type(db.nav) ~= "table" then db.nav = {} end
+  if type(db.nav.x) ~= "number" then db.nav.x = 0 end
+  if type(db.nav.y) ~= "number" then db.nav.y = 220 end
   if type(db.fct) ~= "table" then db.fct = {} end
   local fc = db.fct
   if type(fc.x) ~= "number" then fc.x = 0 end

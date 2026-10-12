@@ -6,11 +6,11 @@
 --     exact            [Waypoint]  label
 --     classic / approx [Waypoint]  label  (may have moved)
 --     check            label  (position not known yet)   -- no button
---   With TomTom loaded the button sets a TomTom waypoint; without it, it prints the
---   /way line to chat (Plan.Waypoint).
+--   The button points our own arrow (Nav.lua) at the spot; where that isn't possible it
+--   prints the /way line to chat (Plan.Waypoint).
 -- The list is redrawn from the data every time (a few dozen rows): row frames are
 -- pooled, heights come from the wrapped text so notes of any length fit.
--- Everything here only writes SavedVariables or calls map getters / TomTom, so it all
+-- Everything here only writes SavedVariables or calls map getters / our arrow, so it all
 -- stays usable in combat.
 
 local _, R2F = ...
@@ -106,7 +106,7 @@ end
 
 local function layout()
   local planId = Plan.Selected()
-  local tomtom = Plan.HasTomTom()
+  local arrow = R2F.Nav.Supported()
   local y, nHead, nRow = 0, 0, 0
   for _, ph in ipairs(Plan.Phases(planId)) do
     nHead = nHead + 1
@@ -155,7 +155,7 @@ local function layout()
           text = text .. " |cffff8040(" .. L.PLAN_UNKNOWN_POS .. ")|r"
         else
           p.btn.point = pt
-          p.btn:SetText(tomtom and L.PLAN_WAYPOINT or L.PLAN_WAYLINE_BTN)
+          p.btn:SetText(arrow and L.PLAN_WAYPOINT or L.PLAN_WAYLINE_BTN)
           p.btn:ClearAllPoints()
           p.btn:SetPoint("TOPLEFT", content, "TOPLEFT", 78, py)
           p.btn:Show()

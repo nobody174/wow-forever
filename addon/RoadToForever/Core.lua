@@ -167,6 +167,9 @@ local COMMANDS = {
   gameplay = function() R2F.MainWindow.Show("gameplay") end,
   reminders = function() R2F.MainWindow.Show("gameplay") end,   -- the tab's former name
   plan = function() R2F.MainWindow.Show("plan") end,
+  -- BiZNav arrow
+  way = function() R2F.Print(L.NAV_WAY_USAGE) end,
+  clear = function() if not R2F.Nav.Clear() then R2F.Print(L.NAV_NONE) end end,
   bis = function() R2F.MainWindow.Show("bis") end,
   biz = function() R2F.MainWindow.Show("bis") end,
   copychat = function() R2F.CopyChat.Command() end,
@@ -226,6 +229,9 @@ R2F.COMMANDS = COMMANDS
 -- binding labels and the R2F-prefixed frame names they are the only globals.
 _G.SLASH_R2F1 = "/r2f"
 SlashCmdList.R2F = function(msg)
+  -- "/r2f way Zone x y label": keep the capitals the player typed for the arrow's label.
+  local wayRest = (msg or ""):match("^%s*[Ww][Aa][Yy]%s+(.*)$")
+  if wayRest then R2F.Nav.WayCommand(wayRest) return end
   msg = (msg or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
   local fn = COMMANDS[msg]
   local chatArg = msg:match("^copychat%s+(%d+)$")

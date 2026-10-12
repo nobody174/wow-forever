@@ -1163,7 +1163,7 @@ def test_reminders():
     lua.execute('R2F.GameplayTab.ShowPage("alerts")')
     check(MW.CurrentTab() == "gameplay", "15.4 /r2f reminders (the old name) opens the Gameplay tab")
     title = lua.eval("R2F.MainWindow.Title()")
-    check(title == "Road to Forever: QoL", "15.4 Reminders title: %r" % title)
+    check(title == "Road to Forever: Tweaks", "15.4 Reminders title: %r" % title)
     check(lua.eval("R2FStanceFrame ~= nil") and lua.eval("R2FAmmoFrame == nil") and lua.eval("R2FAmmoScale == nil"),
           "15.4 Warrior: stance frame only, no ammo frame or ammo controls")
     check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "15.4 stance size slider is on the Reminders tab")
@@ -1924,7 +1924,7 @@ def test_gameplay():
     check(all(lua.eval(G + k) is False for k in ("repair", "sellgray", "duels", "errorfilter", "xpbar")),
           "17 every gameplay feature ships OFF")
     lua.execute('SlashCmdList.R2F("gameplay")')
-    check(lua.eval("R2F.MainWindow.CurrentTab()") == "gameplay" and lua.eval("R2F.MainWindow.Title()") == "Road to Forever: QoL",
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "gameplay" and lua.eval("R2F.MainWindow.Title()") == "Road to Forever: Tweaks",
           "17 /r2f gameplay opens the Gameplay tab")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel", "GB")
     labels = {lua.eval("GB[%d].r2fLabel.__text" % i): i for i in range(1, lua.eval("#GB") + 1)}
@@ -1943,6 +1943,12 @@ def test_gameplay():
           "Reset page turns the page's boxes off and restores the alert text style")
     lua.execute("R2FDB.fct.textScale = 9 R2FDB.fct.outline = 'bogus' R2F.Library.Init()")
     check(lua.eval("R2FDB.fct.textScale") == 1 and lua.eval("R2FDB.fct.outline") == "none", "bad alert style values are reset")
+    find_frames(lua, "f.__kind == 'FontString' and type(f.__text) == 'string' and f.__text:find('Priest') and f.__text:find('/')", "PRG")
+    check(lua.eval("#PRG") >= 1, "group buffs are grouped under a Priest fold-out header")
+    lua.execute("R2F.RemindersTab.OpenGroups().PRIEST = true R2F.GameplayTab.Refresh()")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == 'Divine Spirit' and f.__shown", "PRS")
+    check(lua.eval("#PRS") == 1, "opening the Priest group shows Divine Spirit")
+    lua.execute("R2F.RemindersTab.OpenGroups().PRIEST = nil R2F.GameplayTab.Refresh()")
     lua.execute("R2F.GameplayTab.ShowPage('quests')")
     check(all(font_text(lua, "^$") is None or True for _ in [0]) and
           lua.eval("(function() local n = 0 for _, f in ipairs(TEST.allFrames) do if f.__kind == 'Button' and f.__text and (f.__text == R2F.L.GP_PAGE_QUESTS or f.__text == R2F.L.GP_PAGE_VENDORS or f.__text == R2F.L.GP_PAGE_SCREEN or f.__text == R2F.L.GP_PAGE_ALERTS) then n = n + 1 end end return n end)()") == 4,
@@ -3693,7 +3699,7 @@ def test_step6_ui(templates, fx):
     lua.execute("NAV = {} for _, f in ipairs(MTABS) do NAV[f.r2fKey] = f end "
                 "MTABS = {NAV.home, NAV.macros, NAV.talents, NAV.plan, NAV.bis, NAV.gameplay}")
     labels = [lua.eval("MTABS[%d].r2fText.__text" % i) for i in range(1, 7)]
-    check(labels == ["Home", "Macros", "Talents", "Plan", "BiZ", "QoL"],
+    check(labels == ["Home", "Macros", "Talents", "Plan", "BiZ", "Tweaks"],
           "sidebar labels %s" % labels)
     order = [lua.eval("R2F.MainWindow.NAV[%d].tabs[%d]" % (g, t)) for g, t in ((1, 1), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2))]
     check(order == ["home", "plan", "talents", "bis", "macros", "gameplay"], "sidebar order %s" % order)
@@ -3716,6 +3722,14 @@ def test_step6_ui(templates, fx):
     check(lua.eval("R2FDB.settings.menuAlpha") == 1, "opacity does not change while the thumb is held")
     lua.execute("local sl = R2F.MainWindow.Frame().r2fOpacitySlider sl:Fire('OnMouseUp')")
     check(lua.eval("R2FDB.settings.menuAlpha") == 0.4, "opacity applies on release")
+    # A press away from the thumb is undone; the window never changes size.
+    T.thumbOver = False
+    lua.execute("local sl = R2F.MainWindow.Frame().r2fSizeSlider sl:Fire('OnMouseDown') sl:SetValue(150) sl:Fire('OnValueChanged', 150)")
+    T.mouseDown = False
+    lua.execute("R2F.MainWindow.Frame().r2fSizeSlider:Fire('OnUpdate', 0.1)")
+    check(lua.eval("R2FDB.settings.menuScale") == 1.2 and lua.eval("R2F.MainWindow.Frame().r2fSizeSlider:GetValue()") == 120,
+          "pressing the bar away from the thumb changes nothing")
+    T.thumbOver = True
     # Held thumb + cursor leaves the bar (no OnMouseUp): applied once the button is up, never while held.
     lua.execute("local sl = R2F.MainWindow.Frame().r2fSizeSlider sl:Fire('OnMouseDown') sl:SetValue(80) sl:Fire('OnValueChanged', 80)")
     T.mouseDown = True

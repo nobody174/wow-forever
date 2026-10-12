@@ -164,15 +164,45 @@ local function topSlider(parent, label, min, max, get, set, x)
     caption(math.floor(v * 100 + 0.5))
     if math.abs(v - get()) > 0.001 then set(v) end
   end
+  -- Only the thumb moves the slider: a press anywhere else on the bar is undone (the bar would
+  -- otherwise jump to where you clicked, which resized the window under the cursor).
+  local function overThumb()
+    local thumb = sl.GetThumbTexture and sl:GetThumbTexture()
+    if not (thumb and thumb.IsMouseOver) then return true end
+    local ok, over = pcall(thumb.IsMouseOver, thumb)
+    return (not ok) or over == true
+  end
   sl:SetScript("OnValueChanged", function(self, v)
+    if self.r2fBlock then
+      if self:GetValue() ~= self.r2fStartV then self:SetValue(self.r2fStartV) end
+      return
+    end
     if self.r2fDown then caption(snap(v)) else commit() end
   end)
-  sl:SetScript("OnMouseDown", function(self) self.r2fDown = true end)
-  sl:SetScript("OnMouseUp", function(self) if self.r2fDown then commit() end end)
-  sl:SetScript("OnUpdate", function(self)
-    if self.r2fDown and not IsMouseButtonDown("LeftButton") then commit() end
+  sl:SetScript("OnMouseDown", function(self)
+    self.r2fStartV = self:GetValue()
+    self.r2fBlock = not overThumb()
+    self.r2fDown = true
   end)
-  sl:SetScript("OnHide", function(self) self.r2fDown = false end)
+  sl:SetScript("OnMouseUp", function(self)
+    if self.r2fBlock then
+      self.r2fBlock, self.r2fDown = false, false
+      self:SetValue(self.r2fStartV)
+    elseif self.r2fDown then
+      commit()
+    end
+  end)
+  sl:SetScript("OnUpdate", function(self)
+    if self.r2fDown and not IsMouseButtonDown("LeftButton") then
+      if self.r2fBlock then
+        self.r2fBlock, self.r2fDown = false, false
+        self:SetValue(self.r2fStartV)
+      else
+        commit()
+      end
+    end
+  end)
+  sl:SetScript("OnHide", function(self) self.r2fDown, self.r2fBlock = false, false end)
   -- Tick marks under the bar, one per step, with the end and middle values
   -- written under them. The thumb's centre travels about 8 px in from each
   -- end of the bar.

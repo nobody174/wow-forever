@@ -729,6 +729,10 @@ function methods:SetText(t)
   if self.__kind == "EditBox" and self.__scripts.OnTextChanged then self.__scripts.OnTextChanged(self, false) end
 end
 function methods:GetText() return self.__text end
+function methods:GetThumbTexture()
+  self.__thumb = self.__thumb or { IsMouseOver = function() return T.thumbOver ~= false end }
+  return self.__thumb
+end
 function methods:SetValue(v) self.__value = v end
 function methods:GetValue() return self.__value or 0 end
 function methods:SetEnabled(v) self.__enabled = not not v end

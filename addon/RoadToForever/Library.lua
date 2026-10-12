@@ -165,6 +165,8 @@ function Library.Init()
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
   -- Talents tab: show build levels as if the Talented legacy perk (+5 points) is on. Display only.
   if type(s.talented) ~= "boolean" then s.talented = false end
+  -- Alerts & HUD page: which class groups of group buffs are folded open (class token -> true).
+  if type(s.hudOpen) ~= "table" then s.hudOpen = {} end
   -- Main window: the tab /r2f reopens. Home on first use.
   -- windowPos (the window's saved spot) is written by UI.Window when moved.
   -- Any tab of the main window (MainWindow.TABS), so a window last left on

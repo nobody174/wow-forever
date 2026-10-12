@@ -481,9 +481,9 @@ local function optionsMenu()
   UI.ContextMenu({
     { kind = "title", text = L.SETTINGS_SLOTS },
     { kind = "check", text = L.SETTINGS_SLOTS_CHAR, isChecked = function() return first ~= "account" end,
-      func = function() Library.db.settings.slotsFirst = "character" end },
+      func = function() Library.db.settings.slotsFirst = "character" R2F.Print(L.SLOTS_NOW_CHAR) end },
     { kind = "check", text = L.SETTINGS_SLOTS_ACC, isChecked = function() return first == "account" end,
-      func = function() Library.db.settings.slotsFirst = "account" end },
+      func = function() Library.db.settings.slotsFirst = "account" R2F.Print(L.SLOTS_NOW_ACC) end },
     { kind = "divider" },
     { kind = "button", text = L.BTN_IMPORT, func = function()
         if R2F.InCombat() then R2F.Print(L.TIDY_TIP_COMBAT) else R2F.ImportFrame.Show() end

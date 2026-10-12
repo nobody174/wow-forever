@@ -23,6 +23,50 @@ local page
 local sections = {}   -- { def =, show =, lock =, size =, sizeText =, extra =, extraText = }
 
 local SECTION_H = 150
+local CLASS_ORDER = { "PRIEST", "MAGE", "DRUID", "PALADIN", "WARRIOR", "HUNTER", "WARLOCK", "ROGUE", "SHAMAN" }
+
+local function className(cls)
+  local names = _G.LOCALIZED_CLASS_NAMES_MALE
+  return (names and names[cls]) or (cls:sub(1, 1) .. cls:sub(2):lower())
+end
+
+function Tab.OpenGroups()
+  local st = R2F.Library.db.settings
+  if type(st.hudOpen) ~= "table" then st.hudOpen = {} end
+  return st.hudOpen
+end
+
+-- Places a section's class groups according to which are open, sets its container height and tells
+-- the page (Tab.OnReflow) so the scroll height follows.
+function Tab.Relayout(s)
+  local open = Tab.OpenGroups()
+  local y = -s.baseUsed
+  for _, g in ipairs(s.groups) do
+    local on = 0
+    for _, c in ipairs(g.items) do if c.get() then on = on + 1 end end
+    g.head:ClearAllPoints()
+    g.head:SetPoint("TOPLEFT", s.f, "TOPLEFT", s.x + 4, y)
+    g.head.text:SetText(("%s %s  |cff999999%d / %d|r"):format(open[g.class] and "-" or "+", className(g.class), on, #g.items))
+    y = y - 24
+    for _, c in ipairs(g.items) do
+      c.box:ClearAllPoints()
+      c.box:SetPoint("TOPLEFT", s.f, "TOPLEFT", s.x + 22, y)
+      c.box:SetShown(open[g.class] and true or false)
+      if open[g.class] then y = y - 24 end
+    end
+    y = y - 2
+  end
+  s.height = -y + 6
+  s.container:SetHeight(s.height)
+  if Tab.OnReflow then Tab.OnReflow() end
+end
+
+-- Total height of all sections (for the page's scroll height).
+function Tab.TotalHeight()
+  local h = 0
+  for _, s in ipairs(sections) do h = h + (s.height or 0) end
+  return h
+end
 
 local function visible()
   return page ~= nil and page:IsVisible()
@@ -42,6 +86,7 @@ local function refresh()
       s.extraText:SetText(L[e.label]:format(e.get()))
     end
     for _, c in ipairs(s.checks or {}) do c.box:SetChecked(c.def.get() and true or false) end
+    if s.groups and s.container then Tab.Relayout(s) end
   end
 end
 
@@ -94,19 +139,59 @@ local function buildSection(f, def, x, y, width)
     end)
     used = used + 66
   end
-  -- Extra check boxes (def.checks): e.g. which tracking types to remind about.
+  -- Extra check boxes (def.checks): e.g. which tracking types to remind about. Checks that carry a
+  -- `class` are grouped under a fold-out header per class (group buffs: Priest -> Fortitude, Spirit...).
   if def.checks then
     s.checks = {}
-    local cy = y - used + 4
-    for i, c in ipairs(def.checks) do
-      local b = UI.CheckButton(f, L[c.label])
-      b:SetPoint("TOPLEFT", x + 8, cy - (i - 1) * 24)
-      b:SetScript("OnClick", function() c.set(not c.get()) end)
-      s.checks[i] = { box = b, def = c }
+    local grouped = def.checks[1] and def.checks[1].class ~= nil
+    if not grouped then
+      local cy = y - used + 4
+      for i, c in ipairs(def.checks) do
+        local b = UI.CheckButton(f, L[c.label])
+        b:SetPoint("TOPLEFT", x + 8, cy - (i - 1) * 24)
+        b:SetScript("OnClick", function() c.set(not c.get()) end)
+        s.checks[i] = { box = b, def = c }
+      end
+      used = used + #def.checks * 24 + 6
+    else
+      s.groups = {}
+      local byClass = {}
+      for _, c in ipairs(def.checks) do
+        local g = byClass[c.class]
+        if not g then
+          g = { class = c.class, items = {} }
+          byClass[c.class] = g
+        end
+        g.items[#g.items + 1] = c
+      end
+      local ordered = {}
+      for _, cls in ipairs(CLASS_ORDER) do if byClass[cls] then ordered[#ordered + 1] = byClass[cls] end end
+      for _, g in ipairs(ordered) do
+        g.head = CreateFrame("Button", nil, f)
+        g.head:SetSize(width, 22)
+        g.head:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
+        g.head.text = g.head:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        g.head.text:SetPoint("LEFT", 4, 0)
+        g.head:SetScript("OnClick", function()
+          local open = Tab.OpenGroups()
+          open[g.class] = not open[g.class] or nil
+          Tab.Relayout(s)
+        end)
+        for _, c in ipairs(g.items) do
+          local b = UI.CheckButton(f, (L[c.label]:gsub("%s*%(.-%)%s*$", "")))
+          b:SetScript("OnClick", function() c.set(not c.get()) Tab.Relayout(s) end)
+          s.checks[#s.checks + 1] = { box = b, def = c }
+          c.box = b
+        end
+        s.groups[#s.groups + 1] = g
+      end
+      s.baseUsed, s.x, s.f = used, x, f
+      sections[#sections + 1] = s
+      return nil
     end
-    used = used + #def.checks * 24 + 6
   end
   sections[#sections + 1] = s
+  s.height = used
   return used
 end
 
@@ -123,10 +208,24 @@ function Tab.BuildInto(f, x, y, width)
     none:SetText(L.REM_NONE)
     return y - 40
   end
+  local prev
   for _, def in ipairs(mine) do
-    y = y - buildSection(f, def, x, y, width)
+    local box = CreateFrame("Frame", nil, f)
+    box:SetSize(width + 20, 10)
+    if prev then box:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, 0) else box:SetPoint("TOPLEFT", f, "TOPLEFT", x, y) end
+    local before = #sections
+    local used = buildSection(box, def, 0, 0, width)
+    local s = sections[before + 1]
+    s.container = box
+    if used then
+      s.height = used
+      box:SetHeight(used)
+    else
+      Tab.Relayout(s)
+    end
+    prev = box
   end
-  return y
+  return y - Tab.TotalHeight()
 end
 
 Tab.Refresh = refresh

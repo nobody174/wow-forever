@@ -1,7 +1,11 @@
 # Road to Forever changelog
 
-## Unreleased
+## 0.35.0 (2026-10-12)
 
+- Size and Opacity sliders only move when you drag the thumb itself; clicking elsewhere on the bar does nothing.
+- Choosing character / account slots first in the Macros Options menu now says so in chat (it only affects macros made from then on).
+- The Gameplay tab is now called Tweaks.
+- Alerts & HUD: group buffs are grouped per class (Priest, Mage, Druid ...) under fold-out headers showing how many are on; open/closed is remembered.
 - Talents tab: a "Talented perk (+5 points)" switch. The Talented legacy perk starts talent points at level 5 instead
   of 10, so a build is reached 5 levels sooner. The game already gives you the points you really have, so the switch only
   changes the level line under a build ("26 points: reached at level 30 with the Talented perk"). Default off.

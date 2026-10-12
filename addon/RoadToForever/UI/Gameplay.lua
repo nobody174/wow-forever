@@ -279,7 +279,17 @@ function Tab.Build(f)
       head:SetPoint("TOPLEFT", RIGHT, -10)
       head:SetText(L.GP_ICONS)
       local rightEnd = R2F.RemindersTab.BuildInto(c, RIGHT + 2, -42, RIGHT_W) or -100
+      local leftBottom = bottom
       bottom = math.min(bottom, rightEnd)
+      -- Folding a class group in or out changes the right column's height.
+      R2F.RemindersTab.OnReflow = function()
+        local h = math.max(-leftBottom, 42 + R2F.RemindersTab.TotalHeight()) + 20
+        pageHeight.alerts = h
+        if Tab.CurrentPage() == "alerts" then
+          content:SetHeight(h)
+          scroll.r2fContentHeight = h
+        end
+      end
     else
       local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
       note:SetPoint("TOPLEFT", LEFT + 4, y - 4)

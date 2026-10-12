@@ -224,7 +224,7 @@ end
 
 local checks = {}
 for _, b in ipairs(Buffs.LIST) do
-  checks[#checks + 1] = { label = b.label, get = function() return db()[b.key] end,
+  checks[#checks + 1] = { class = b.class, label = b.label, get = function() return db()[b.key] end,
                           set = function(v) Buffs.SetBuff(b.key, v) end }
 end
 

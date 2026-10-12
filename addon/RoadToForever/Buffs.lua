@@ -180,7 +180,14 @@ function Buffs.Init()
   frame = R2F.Reminders.NewIcon("R2FGroupBuffFrame", db, "REM_DRAG_TIP")
   frame:Place()
   local ev = CreateFrame("Frame")
-  ev:SetScript("OnEvent", Buffs.Update)
+  -- UNIT_AURA fires many times a second in combat. Bursts are merged into one refresh.
+  local queued = false
+  ev:SetScript("OnEvent", function(_, event)
+    if event ~= "UNIT_AURA" or not (C_Timer and C_Timer.After) then Buffs.Update() return end
+    if queued then return end
+    queued = true
+    C_Timer.After(0.2, function() queued = false; Buffs.Update() end)
+  end)
   for _, e in ipairs({ "GROUP_ROSTER_UPDATE", "PLAYER_ENTERING_WORLD", "PLAYER_DEAD", "PLAYER_ALIVE", "PLAYER_UNGHOST" }) do
     pcall(ev.RegisterEvent, ev, e)
   end

@@ -293,6 +293,15 @@ local function drawZoneBoxes()
     box:Show()
   end
 end
+
+-- QUEST_LOG_UPDATE comes in bursts. One redraw a moment later covers them all.
+local zoneQueued = false
+local function queueZoneBoxes()
+  if not (C_Timer and C_Timer.After) then drawZoneBoxes() return end
+  if zoneQueued then return end
+  zoneQueued = true
+  C_Timer.After(0.1, function() zoneQueued = false; drawZoneBoxes() end)
+end
 Gameplay.DrawZoneBoxes = drawZoneBoxes
 
 Gameplay.Register({
@@ -303,8 +312,8 @@ Gameplay.Register({
       and _G.QuestScrollFrame ~= nil
   end,
   events = {
-    QUEST_WATCH_LIST_CHANGED = drawZoneBoxes,
-    QUEST_LOG_UPDATE = drawZoneBoxes,
+    QUEST_WATCH_LIST_CHANGED = queueZoneBoxes,
+    QUEST_LOG_UPDATE = queueZoneBoxes,
   },
   onToggle = function(on)
     if on and not zoneHooked and _G.QuestLogQuests_Update and hooksecurefunc then

@@ -131,3 +131,10 @@ verified point by point, 17,873 passing tests). What stands between it and a pub
 
 - Code and data: covered by H4 (character and friend names). No email, real name, local paths or tokens found.
 - **Git history:** re-checked 2026-10-12: no commit has vartdal@gmail.com. The public commits use nobodylearn174@gmail.com. Setting the repo's git email to the GitHub noreply address stops it showing on new commits.
+
+## Step 4b: Lua performance pass (2026-10-12)
+- Checked: OnUpdate scripts (only the Bags drag watcher, Minimap drag, TalentGuide 0.2 s host; all run only while active), timers (no tickers), event registrations (Gameplay features register events only while switched on).
+- Fixed: Buffs `UNIT_AURA` bursts are merged into one refresh per 0.2 s (it walked the whole group on every aura change). Quest-zone boxes `QUEST_LOG_UPDATE` / `QUEST_WATCH_LIST_CHANGED` merged into one redraw per 0.1 s.
+- Accepted: reactive-alert `SPELL_UPDATE_USABLE` makes 6 `C_Spell.IsSpellUsable` calls per event, only while that alert is on. Cheap; a known-spell filter needs an API not verified on this client.
+- Professions export/reading is already debounced (`schedule`).
+- Not measured in game: needs the owner's in-game check (use the built-in addon CPU profiler: `/console scriptProfile 1`, then reload).

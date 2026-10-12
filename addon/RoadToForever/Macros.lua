@@ -1,5 +1,5 @@
--- Macros.lua: every call that touches the game's real macros lives here
--- (ADDON_PLAN.md 6.4). Nothing else in the addon calls CreateMacro, EditMacro,
+-- Macros.lua: every call that touches the game's real macros lives here.
+-- Nothing else in the addon calls CreateMacro, EditMacro,
 -- DeleteMacro or PickupMacro.
 --
 -- Rules:
@@ -24,22 +24,21 @@ R2F.Macros = Macros
 
 local QUESTION = "INV_MISC_QUESTIONMARK"
 local ICON_PATH = "Interface\\Icons\\"
--- Highest action slot read by Tidy up / On-your-bars (6.4: slots 1-120).
+-- Highest action slot read by Tidy up / On-your-bars (slots 1-120).
 local NUM_ACTION_SLOTS = 120
 
 -- Slot limits. Blizzard defines MAX_ACCOUNT_MACROS / MAX_CHARACTER_MACROS in
--- Blizzard_MacroUI, which we must not load (6.6), so they're usually nil here
--- and we fall back to a hardcoded default. On a real WoW Forever client
--- /dump MAX_CHARACTER_MACROS also came back nil (same client quirk as
--- GetBuildInfo()'s 4th return value, ADDON_PLAN.md 6.2/11), so the fallback
--- is load-bearing, not just a last resort — confirmed 2026-10-02 by counting
--- the in-game /macro Character tab directly: 30 slots (5 rows x 6), not the
--- vanilla/Classic Era 18 (3 rows x 6) this addon originally assumed.
+-- Blizzard_MacroUI, which we must not load, so they're usually nil here
+-- and we fall back to a hardcoded default. On WoW Forever
+-- MAX_CHARACTER_MACROS is also nil (same client quirk as GetBuildInfo()'s
+-- 4th return value), so the fallback is load-bearing, not just a last
+-- resort: the in-game /macro Character tab has 30 slots (5 rows x 6), not the
+-- vanilla/Classic Era 18 (3 rows x 6).
 function Macros.Limits()
   return MAX_ACCOUNT_MACROS or 120, MAX_CHARACTER_MACROS or 30
 end
 
--- Character 7 / 18, Account 31 / 120 (5.5).
+-- Returns the counts and limits, e.g. Character 7 / 30, Account 31 / 120.
 function Macros.Counts()
   local acc, char = GetNumMacros()
   local maxAcc, maxChar = Macros.Limits()
@@ -47,7 +46,7 @@ function Macros.Counts()
 end
 
 -- ---------------------------------------------------------------------------
--- Icons (3.3, 5.3)
+-- Icons
 -- ---------------------------------------------------------------------------
 
 local function trim(s) return (s:gsub("^%s+", ""):gsub("%s+$", "")) end
@@ -105,7 +104,7 @@ function Macros.DisplayIcon(entry)
 end
 
 -- Icon passed to CreateMacro. #showtooltip macros get the question mark,
--- which the game swaps for the live spell icon on the bar (3.3).
+-- which the game swaps for the live spell icon on the bar.
 local function createIcon(entry)
   if entry.body:match("^#showtooltip") then return QUESTION end
   return entry.icon or QUESTION
@@ -113,7 +112,7 @@ end
 
 -- The body the GAME macro gets for a library entry: the same text with spell
 -- names raised to a rank the player knows where the unranked name would resolve
--- to an unknown spell (Ranks.lua, ADDON_PLAN 16). Library bodies stay as the site
+-- to an unknown spell (Ranks.lua). Library bodies stay as the site
 -- sends them; everything that writes or compares a game macro uses this.
 local function wantBody(e)
   return R2F.Ranks.Rewrite(e.body)
@@ -141,7 +140,7 @@ end
 -- Record what we wrote. The hash is taken from the body read BACK from the
 -- game, not the one we sent, in case the client normalises it on save;
 -- otherwise every macro would look "edited" right away.
--- `icon` = the icon name we passed (step 4). The game reports a macro's icon
+-- `icon` = the icon name we passed. The game reports a macro's icon
 -- back as a file id, not the name we gave it, so we can't compare against
 -- the live icon; we compare against what we last wrote instead.
 local function record(id, name, idx, icon)
@@ -159,7 +158,7 @@ end
 --   "needed"    ours, unedited, and different: an EditMacro would update it
 -- A live body equal to `want` counts as unchanged even if the player edited
 -- it into exactly that text: there is nothing to write either way.
--- Records from v0.1.0 have no icon; they're treated as up to date on the icon
+-- Records written without an icon are treated as up to date on the icon
 -- (worst case an icon-only change on the site waits for the next body change).
 local function classify(id, want)
   local rec = Library.Created(id)
@@ -186,7 +185,7 @@ local function write(id, idx, name, e)
 end
 
 -- ---------------------------------------------------------------------------
--- Combat queue (6.4, 6.5)
+-- Combat queue
 -- ---------------------------------------------------------------------------
 
 local queue = {}
@@ -223,8 +222,8 @@ function Macros.QueueSize() return #queue end
 -- ---------------------------------------------------------------------------
 
 -- Can this character use library entry `e`? Universal macros: always. Class
--- macros: only on a character of that class. Since v0.10.0 the Macro Book
--- can show another class's macros (class picker, ADDON_PLAN 5.10), read-only.
+-- macros: only on a character of that class. The Macro Book
+-- can show another class's macros (class picker), read-only.
 -- The book already refuses drag/click on those, but this is the real gate:
 -- Create / Replace / Ensure check it too, so no code path can ever put a
 -- Paladin macro into a Warrior's macro list or onto its bars, where every
@@ -247,7 +246,7 @@ end
 
 -- Which slots a new macro goes to (2, setting slotsFirst). Returns
 -- perCharacter (true/false) or nil when both are full.
--- Read at every CreateMacro, so changing the setting (Settings panel, step 5)
+-- Read at every CreateMacro, so changing the setting (Settings panel)
 -- only steers macros made from then on. Existing macros are NOT moved: WoW
 -- has no "move macro to the other tab" call, so moving would mean delete +
 -- create, which empties every action button holding the old macro.
@@ -279,8 +278,8 @@ function Macros.Create(id)
     PickupMacro(idx)
     return true
   end
-  -- ADDON_PLAN 11: unconfirmed whether a new macro can be found and picked
-  -- up in the same frame it was created. If the lookup misses, try once more
+  -- A new macro may not be findable in the same frame it was created. If the
+  -- lookup misses, try once more
   -- on the next frame (PickupMacro itself isn't combat-protected).
   if ok and C_Timer and C_Timer.After then
     C_Timer.After(0, function()
@@ -316,7 +315,7 @@ function Macros.Replace(id)
   return true
 end
 
--- Drag or click on a Macro Book entry (5.3, 6.4).
+-- Drag or click on a Macro Book entry.
 function Macros.Ensure(id)
   if InCombatLockdown() then R2F.Error(L.ERR_COMBAT); return false end
   local e = Library.Get(id)
@@ -353,7 +352,7 @@ function Macros.Ensure(id)
   return false
 end
 
--- Bring an existing real macro up to the library version (6.4 Update). Only
+-- Bring an existing real macro up to the library version. Only
 -- if it's ours and unedited. Returns "updated", "unchanged", "edited",
 -- "none" (no real macro) or "queued" (in combat; runs after combat).
 -- Everything is re-checked at write time, so a queued update still leaves
@@ -372,7 +371,7 @@ function Macros.Update(id)
 end
 
 -- ---------------------------------------------------------------------------
--- Updates after an import, and on login (step 4, ADDON_PLAN 6.4 / 6.8)
+-- Updates after an import, and on login
 -- ---------------------------------------------------------------------------
 
 -- Which real macros an import of `records` would update, and which ones the
@@ -439,13 +438,13 @@ end
 
 -- Should this character get a Changed flag for `id`? Only Universal and the
 -- player's own class: the flag is about THIS character's action bars, and
--- another class's macro can't be on them (v0.10.0's class picker shows
+-- another class's macro can't be on them (the class picker shows
 -- other classes read-only, but a flag there would mean nothing).
 local function visible(id)
   return Macros.UsableHere(Library.Get(id))
 end
 
--- Set the Changed marker (5.3) for each id whose real macro is on a bar.
+-- Set the Changed marker for each id whose real macro is on a bar.
 -- `kind` = "updated" (we rewrote it) or "edited" (site changed, player's
 -- edit kept). Macros not on a bar get no marker: nothing visible changed.
 function Macros.MarkChanged(ids, kind)
@@ -479,7 +478,7 @@ function Macros.SyncOnLogin()
 end
 
 -- ---------------------------------------------------------------------------
--- Action bars + Tidy up (6.4)
+-- Action bars + Tidy up
 -- ---------------------------------------------------------------------------
 
 -- Set of macro names on action slots 1-120. GetActionText returns a macro
@@ -542,7 +541,7 @@ function Macros.Tidy(candidates)
 end
 
 -- ---------------------------------------------------------------------------
--- Macros made from library entries the site removed (ADDON_PLAN 15.1)
+-- Macros made from library entries the site removed
 -- ---------------------------------------------------------------------------
 
 -- Read-only. For each id with a real macro of ours: delete = unedited and not
@@ -589,7 +588,7 @@ function Macros.RemoveGone(ids)
 end
 
 -- ---------------------------------------------------------------------------
--- Remove all (Settings, 5.8; decisions in ADDON_PLAN 6.9)
+-- Remove all (Settings)
 -- ---------------------------------------------------------------------------
 
 -- What "Remove all Road to Forever macros" would do right now, read-only.
@@ -597,8 +596,8 @@ end
 -- name. `delete` = every real macro we made that is still unedited, ON A BAR
 -- OR NOT (that's the difference from Tidy up: this is the deliberate "take
 -- all of it out of my game" button). `keep` = ours but edited by the player:
--- 5.8 says Remove all deletes only macros "you haven't edited", so those
--- stay, as the player's own macros (we stop tracking them).
+-- Remove all deletes only macros "you haven't edited", so those stay, as the
+-- player's own macros (we stop tracking them).
 -- Records whose macro is already gone are in neither list.
 function Macros.RemoveAllPlan()
   local plan = { delete = {}, keep = {} }
@@ -641,7 +640,7 @@ function Macros.RemoveAll()
   return deleted, #plan.keep
 end
 
--- Is the real macro for `id` ours and on an action bar? (5.3 marker)
+-- Is the real macro for `id` ours and on an action bar? (the Macro Book's marker)
 function Macros.OnBars(id, namesOnBars)
   local rec = Library.Created(id)
   if not rec or not namesOnBars[rec.name] then return false end

@@ -1,4 +1,4 @@
--- Ranks.lua: rank-aware macros (ADDON_PLAN.md 16, v0.19.0).
+-- Ranks.lua: rank-aware macros.
 --
 -- On WoW Forever an unranked spell name can resolve to a rank the character doesn't
 -- know: on a level-18 Warrior `/cast Charge` fails because C_Spell.GetSpellInfo("Charge")

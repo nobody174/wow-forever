@@ -1,4 +1,4 @@
--- Import.lua: parse + validate + diff the site's import string (ADDON_PLAN.md 7).
+-- Import.lua: parse + validate + diff the site's import string.
 --
 -- Format, as template.html's importString() writes it:
 --   R2F1:<base64( "v=1\n" .. records joined by \30 )>
@@ -6,7 +6,7 @@
 -- \30/\31 are the ASCII record/unit separators. They never occur in macro text,
 -- so bodies keep real newlines and nothing needs unescaping here. The site
 -- also strips them from every field before joining.
--- K records (ADDON_PLAN 15.1, 0.14.0): "K" \31 class \31 id,id,... = every id that
+-- K records: "K" \31 class \31 id,id,... = every id that
 -- class has on the site now. They follow the macro records. Parse turns them into
 -- parsed.keep[class] = { id = true }; a string without any keeps add-only behaviour.
 -- The R2F1: prefix is the format version: a future R2F2: (e.g. compressed)
@@ -58,7 +58,7 @@ local function toRecord(fields)
   if not R2F.Library.KNOWN_CLASSES[r.class] then return nil end
   if utf8len(r.short) > MAX_SHORT then return nil end
   if utf8len(r.body) > MAX_BODY then return nil end
-  -- The id is how updates are recognised (3.4), so it must be the site's
+  -- The id is how updates are recognised, so it must be the site's
   -- "<class>/<short>" exactly; anything else is a damaged record.
   if r.id ~= r.class .. "/" .. r.short then return nil end
   if r.icon == "" then r.icon = nil end
@@ -140,12 +140,12 @@ end
 -- Fields that make an imported macro "updated" when they differ.
 local COMPARE = { "class", "section", "group", "name", "short", "icon", "body", "note" }
 
--- Diff parsed records against the current library (5.6 preview).
+-- Diff parsed records against the current library (the import preview).
 -- Returns { total, new, updated, unchanged, otherClass, skipped, firstNew = record,
 --           firstNewOwn = first new Universal / own-class record (or nil),
 --           status = {id -> "new"/"updated"/"unchanged"},
 --           plan = { update = {ids}, edited = {ids} } }
--- `plan` (step 4) = real macros this import will rewrite, and ones the player
+-- `plan` = real macros this import will rewrite, and ones the player
 -- edited that it will leave alone (Macros.PlanUpdates). Must be computed
 -- before Library.Apply, while `library` still holds the old versions.
 --
@@ -179,7 +179,7 @@ function Import.Diff(parsed, library, playerClass, opts)
       d.otherClass = d.otherClass + 1
     elseif status == "new" and not d.firstNewOwn then
       -- The first new Universal / own-class record: where the book opens
-      -- after the import (v0.10.0, ADDON_PLAN 5.10), ahead of other classes.
+      -- after the import, ahead of other classes.
       d.firstNewOwn = r
     end
   end
@@ -204,8 +204,8 @@ function Import.PreviewText(d)
   elseif d.skipped > 1 then
     s = s .. L.IMPORT_SKIPPED:format(d.skipped)
   end
-  -- Step 4: what happens to macros already made in the game. A second line,
-  -- so the counts line keeps 5.6's exact wording.
+  -- What happens to macros already made in the game. A second line,
+  -- so the counts line keeps its wording.
   local up, kept = #d.plan.update, #d.plan.edited
   local parts = {}
   if up == 1 then parts[#parts + 1] = L.IMPORT_WILL_UPDATE_ONE
@@ -213,7 +213,7 @@ function Import.PreviewText(d)
   if kept == 1 then parts[#parts + 1] = L.IMPORT_WILL_KEEP_ONE
   elseif kept > 1 then parts[#parts + 1] = L.IMPORT_WILL_KEEP:format(kept) end
   if #parts > 0 then s = s .. "\n" .. table.concat(parts, " ") end
-  -- 15.1: library entries this import removes.
+  -- Library entries this import removes.
   local n = #d.gone
   if n > 0 then
     local line
@@ -242,7 +242,7 @@ local function shortNames(ids)
 end
 
 -- Do the import: write the library, then update the real macros that are
--- ours and unedited (6.4 Update), then report. The order matters: the
+-- ours and unedited, then report. The order matters: the
 -- plan is taken from the OLD library (to see what changed on the site), and
 -- the writes read the NEW library entries.
 --
@@ -276,7 +276,7 @@ function Import.Commit(parsed, playerClass, now, opts)
     R2F.Print(L.KEPT_EDITED:format(#plan.edited, shortNames(plan.edited)))
   end
 
-  -- 15.1: entries the site no longer has leave the library. The real macros
+  -- Entries the site no longer has leave the library. The real macros
   -- made from them follow Tidy up's rules (Macros.RemoveGone): unedited and
   -- not on a bar -> deleted (queued in combat); on a bar or edited -> kept
   -- and listed in chat. Their "created" records stay, so a kept macro can be

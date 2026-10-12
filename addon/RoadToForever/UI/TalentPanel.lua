@@ -1,9 +1,8 @@
--- UI/TalentPanel.lua: the Talents tab of the main window (ADDON_PLAN.md 13.4).
+-- UI/TalentPanel.lua: the Talents tab of the main window.
 --
--- Step 9: a talent-link box + Preview, Copy my build (step 8's function, now
--- with its button), three mini trees side by side, the summary line.
--- Step 10: Learn talents -> confirm popup -> Talents.lua's learning engine
--- (13.5, 13.8). This file only shows its state: "Learning X / N" on the
+-- A talent-link box + Preview, Copy my build, three mini trees side by
+-- side, the summary line. Learn talents -> confirm popup -> Talents.lua's
+-- learning engine. This file only shows its state: "Learning X / N" on the
 -- button, the rest of the tab locked meanwhile (Cancel becomes Stop), the
 -- stop / done message in the status line, guided mode's "Click ..." in the
 -- note line. The engine runs on events, not on this tab: closing the window
@@ -18,7 +17,7 @@
 --   summary line
 --   learning note                            [Cancel] [Learn talents]
 --
--- Look: Blizzard textures only (5), the talent frame's own pieces: the
+-- Look: Blizzard textures only, the talent frame's own pieces: the
 -- UI-EmptySlot-White ring behind each icon tinted per state (the talent frame
 -- tints the same texture green/gold/grey), TalentFrame-RankBorder for the rank
 -- badge, the action-button glow for "learned now", ButtonHilight-Square on
@@ -33,7 +32,7 @@ R2F.TalentPanel = TalentPanel
 
 local Talents = R2F.Talents
 
-local TREES, COLS, ROWS = 3, 4, 7    -- 13.4: three trees, each a 4 x 7 grid
+local TREES, COLS, ROWS = 3, 4, 7    -- Three trees, each a 4 x 7 grid
 local CELL, STEP_X, STEP_Y = 26, 32, 30
 local TREE_W, TREE_TOP = 172, -158
 
@@ -60,8 +59,8 @@ local LOOK = {
 -- Mini-tree cells
 -- ---------------------------------------------------------------------------
 
--- Hover (13.4): the game's own talent tooltip plus "Build: 3 / 3".
--- Since 13.10 talents are read through C_Traits and carry their spell id, so
+-- Hover: the game's own talent tooltip plus "Build: 3 / 3".
+-- Talents are read through C_Traits and carry their spell id, so
 -- the tooltip is GameTooltip:SetSpellByID(spellID): our (tab, index) is no
 -- longer Classic's talent index, and SetTalent(tab, index) could show another
 -- talent's text. SetTalent stays only for an entry without a spell id. Both
@@ -145,7 +144,7 @@ local function paintCell(b, e, withBuild)
   b.glow:SetShown(look.glow or false)
   b.later:SetShown(e.state == "later")
   if e.state == "now" then
-    setBadge(b, "+" .. e.now, GOLD)                -- 13.4: "+2 in gold"
+    setBadge(b, "+" .. e.now, GOLD)                -- "+2 in gold"
   elseif e.state == "overmax" then
     setBadge(b, tostring(e.planned), RED)
   elseif e.rank > 0 then
@@ -183,8 +182,8 @@ end
 
 -- Single-line link box: InputBoxTemplate (Blizzard's standard text field)
 -- if the client has it, else a plain EditBox on a tooltip backdrop; checked
--- like every template (6.7). Named because the Classic InputBoxTemplate names
--- its border textures $parentLeft etc. (R2F prefix, 6.7's naming rule).
+-- like every template. Named because the Classic InputBoxTemplate names
+-- its border textures $parentLeft etc. (R2F prefix).
 local function buildLinkBox(f)
   local edit = UI.TryTemplate("EditBox", "R2FTalentLink", f, "InputBoxTemplate",
     function(e) return e.SetAutoFocus ~= nil end)
@@ -235,7 +234,7 @@ local function build(f)
   ui.preview:SetPoint("LEFT", ui.edit, "RIGHT", 8, 0)
   ui.preview:SetScript("OnClick", function() TalentPanel.Preview() end)
 
-  -- 13.4 puts Copy my build on this tab. Read-only (13.6), so it works in
+  -- Copy my build lives on this tab. Read-only, so it works in
   -- combat too, like /r2f copybuild.
   ui.copy = button(f, L.BTN_COPY_BUILD, 130)
   ui.copy:SetPoint("TOPRIGHT", f, "TOPRIGHT", -20, -100)
@@ -260,7 +259,7 @@ local function build(f)
   ui.summary:SetWidth(490)
   ui.summary:SetJustifyH("LEFT")
 
-  -- Learn talents (13.4). Enabled only for a plan with zero conflicts and
+  -- Learn talents. Enabled only for a plan with zero conflicts and
   -- points to learn now (plan.learnable), out of combat, while no run is
   -- active. The tooltip shows while disabled too (SetMotionScriptsWhileDisabled)
   -- so "why is it grey" has an answer in combat.
@@ -288,7 +287,7 @@ local function build(f)
     if Talents.LearnBusy() then Talents.StopLearn() else TalentPanel.Cancel() end
   end)
 
-  -- Guided mode's "Click Cruelty (2 of 21)" (13.5); empty otherwise.
+  -- Guided mode's "Click Cruelty (2 of 21)"; empty otherwise.
   ui.note = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   ui.note:SetPoint("BOTTOMLEFT", 24, 20)
   ui.note:SetWidth(270)
@@ -299,7 +298,7 @@ end
 -- Called once by MainWindow with the Talents page frame.
 function TalentPanel.Build(f)
   page = build(f)
-  -- The last link previewed on this character (6.3's lastTalentLink) comes
+  -- The last link previewed on this character (lastTalentLink) comes
   -- back in the box and is previewed again, against the live talents.
   state.text = cdb() and cdb().lastTalentLink or nil
   ui.edit:SetText(state.text or "")
@@ -344,12 +343,12 @@ local function drawTrees(plan, withBuild)
   end
 end
 
--- The last result shown (for the tests and step 10).
+-- The last result shown (for the tests).
 function TalentPanel.Result() return state.result end
 
 -- The Learn / Cancel buttons and the locks from the learning engine's state
--- (13.4: "While learning: button reads Learning 7 / 21, everything else
--- locked"). `plan` = the build preview, nil when there is none.
+-- (while learning the button reads "Learning 7 / 21" and everything else is
+-- locked). `plan` = the build preview, nil when there is none.
 -- Locked while a run is active: the link box, Preview, Copy my build. They
 -- would be harmless (read-only), but changing the link mid-run would make
 -- the trees show another build than the one being learned. Cancel turns into
@@ -395,7 +394,7 @@ function TalentPanel.Refresh()
   local plan, withBuild = res and res.plan, true
   if not plan then
     -- No preview (none asked for, or a stop message): show the character's
-    -- own trees, no plan. 13.3: "stop entirely, no preview, no plan".
+    -- own trees, no plan: a stop means no preview.
     plan, withBuild = Talents.CurrentPlan(), false
   end
   drawTrees(plan, withBuild)
@@ -414,7 +413,7 @@ function TalentPanel.Refresh()
       showStatus(msg.text, 1, 0.82, 0)
     end
   elseif res and res.caution then
-    showStatus(res.caution, 1, 0.82, 0)            -- 13.3's yellow line
+    showStatus(res.caution, 1, 0.82, 0)            -- yellow caution line
   elseif not plan then
     showStatus(L.TALENT_READ_FAILED_TAB, 1, 0.15, 0.15)
   else
@@ -423,7 +422,7 @@ function TalentPanel.Refresh()
 
   if withBuild then
     ui.summary:SetText(plan.summary)
-    -- Red only for the conflict line (13.4); the rest are plain information.
+    -- Red only for the conflict line; the rest are plain information.
     if plan.kind == "conflict" then ui.summary:SetTextColor(1, 0.15, 0.15) else ui.summary:SetTextColor(1, 1, 1) end
   else
     ui.summary:SetText("")
@@ -431,15 +430,15 @@ function TalentPanel.Refresh()
   applyLearnState(withBuild and plan or nil)
 end
 
--- Learn talents (13.4, 13.5). The preview is re-run here rather than taking
+-- Learn talents. The preview is re-run here rather than taking
 -- the one on screen (it may be up to 0.2 s old). Then, by client:
 --   preview mode -> fill Blizzard's own preview (its Learn button commits,
 --                   so no popup of ours);
---   a stopped run for this same link -> continue it (13.5: "Click Learn
+--   a stopped run for this same link -> continue it ("Click Learn
 --                   talents to continue"), no second popup;
---   otherwise    -> the confirm popup (13.4), the commit step on a client
+--   otherwise    -> the confirm popup, the commit step on a client
 --                   that learns a talent the moment it's sent. The same
---                   popup for "direct", "traits" (13.12) and "guided".
+--                   popup for "direct", "traits" and "guided".
 function TalentPanel.Learn()
   if Talents.LearnBusy() or R2F.InCombat() or not state.text then return end
   local text = state.text
@@ -467,7 +466,7 @@ end
 
 -- Preview button / Enter in the link box. Reads the box, remembers the link
 -- for this character, redraws. Read-only, so it isn't greyed out or queued
--- in combat (13.7): nothing it calls is protected. Locked during a run.
+-- in combat: nothing it calls is protected. Locked during a run.
 function TalentPanel.Preview()
   if Talents.LearnBusy() then return end
   local text = (ui.edit:GetText() or ""):gsub("^%s+", ""):gsub("%s+$", "")
@@ -482,11 +481,10 @@ function TalentPanel.Preview()
   -- Only a readable link is remembered; junk would come back on every open.
   if Talents.ParseLink(text) then cdb().lastTalentLink = text end
   TalentPanel.Refresh()
-  -- The trait config (C_SpecializationInfo / C_Traits, 13.10) may not be
+  -- The trait config (C_SpecializationInfo / C_Traits) may not be
   -- readable in the first moments after login. One retry a moment later
   -- covers that without turning ReadTrees() into an async API for every
-  -- other caller (13.7-style defensive check). Kept from 13.9, whose
-  -- Blizzard_TalentUI premise was wrong but whose "not ready yet" case isn't.
+  -- other caller.
   if state.result and state.result.error == L.TALENT_READ_FAILED_TAB and C_Timer and C_Timer.After then
     C_Timer.After(0.5, function()
       if state.text == text then TalentPanel.Refresh() end
@@ -522,7 +520,7 @@ function TalentPanel.RequestRefresh()
 end
 
 -- PLAYER_REGEN_DISABLED / ENABLED (MainWindow.SetCombat): Learn talents greys
--- out in combat and comes back after (6.9's rule for every destructive
+-- out in combat and comes back after (same for every destructive
 -- button). A run in progress was already stopped by Talents.OnCombat.
 function TalentPanel.SetCombat()
   TalentPanel.Refresh()

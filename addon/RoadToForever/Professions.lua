@@ -1,5 +1,5 @@
 -- Professions.lua: read the recipes this character knows and export them for
--- the site's Professions page (ADDON_PLAN.md 14, v0.12.0).
+-- the site's Professions page.
 --
 -- The game only lists recipes while a profession window is open, so we read
 -- them on TRADE_SKILL_SHOW / CRAFT_SHOW (and the UPDATE events that follow
@@ -19,9 +19,9 @@
 -- window, the trade path reads it the same way. Collapsed headers and the
 -- "Have materials" filter would hide recipes, so before reading we expand all
 -- headers and clear that filter (both are plain UI state changes, not
--- protected). Unconfirmed in game: TESTING.md section 21.
+-- protected).
 --
--- Export string (ADDON_PLAN 14.2): "R2FP1:" .. base64(text), text = lines
+-- Export string: "R2FP1:" .. base64(text), text = lines
 -- joined by "\n", fields by "\t":
 --   C  <name>  <realm>  <CLASS>  <faction>  <unix time>
 --   P  <profession>  <rank>  <max>  <api>
@@ -113,9 +113,8 @@ local function read(api)
   return profName, entry
 end
 
--- Modern profession window (v0.12.1): newer clients drop GetNumTradeSkills & co.
--- and use C_TradeSkillUI with recipe ids (WoW Forever runs on a modern client:
--- talents are C_Traits there, 13.10). Recipe info and its materials come from
+-- Modern profession window: newer clients drop GetNumTradeSkills & co.
+-- and use C_TradeSkillUI with recipe ids (WoW Forever runs on a modern client). Recipe info and its materials come from
 -- GetRecipeInfo + GetRecipeSchematic (basic reagents only), or the older
 -- GetRecipeNumReagents / GetRecipeReagentInfo pair when there is no schematic.
 local function readModern()
@@ -298,7 +297,7 @@ function Professions.Export()
   return s
 end
 
--- /r2f profdebug (v0.12.1): what this client offers, so a silent profession
+-- /r2f profdebug: what this client offers, so a silent profession
 -- window can be diagnosed from one chat paste. Read-only.
 function Professions.Debug()
   local T = C_TradeSkillUI

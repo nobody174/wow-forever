@@ -1,4 +1,4 @@
--- Tracking.lua: "turn your minimap tracking on" reminder (ADDON_PLAN.md 17.1 step 5, v0.26.0).
+-- Tracking.lua: "turn your minimap tracking on" reminder.
 --
 -- Find Minerals, Find Herbs and Find Treasure are minimap tracking spells: only one tracking is
 -- active at a time (the game switches between them), and it does not stay on by itself after a
@@ -81,8 +81,8 @@ function Tracking.Update()
   if not frame then return end
   local d = db()
   local needs, has, texture = Tracking.State()
-  -- Only while a tracking is needed (owner test of 0.26.0: unlocked it stayed up, grey, while
-  -- tracking was on). To place it, switch your tracking off: it appears and can be dragged.
+  -- Only while a tracking is needed (otherwise it would stay up, grey, while
+  -- tracking is on). To place it, switch your tracking off: it appears and can be dragged.
   local show = Tracking.Applies() and d.shown and needs
   frame:SetShown(show)
   if not show then return end

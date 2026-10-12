@@ -1,4 +1,4 @@
--- Locale.lua: every player-facing string (ADDON_PLAN.md 5.9). English only.
+-- Locale.lua: every player-facing string. English only.
 --
 -- This is the first file in the TOC, so it also creates the addon's one and
 -- only global, R2F. WoW passes every file of an addon the same private table
@@ -10,7 +10,7 @@ _G.R2F = R2F
 
 R2F.L = {
   ADDON_NAME = "Road to Forever",
-  -- Main window (12.4): title per tab, bottom tabs
+  -- Main window: title per tab, bottom tabs
   TITLE_HOME = "Road to Forever",
   TITLE_MACROS = "Road to Forever: Macros",
   TITLE_TALENTS = "Road to Forever: Talents",
@@ -19,7 +19,7 @@ R2F.L = {
   TAB_TALENTS = "Talents",
   CHAT_PREFIX = "|cffffd100Road to Forever:|r ",
 
-  -- Macro Book (5.3 - 5.5, 5.7)
+  -- Macro Book
   SLOTS_CHARACTER = "Character %d / %d",
   SLOTS_ACCOUNT = "Account %d / %d",
   PAGE = "Page %d of %d",
@@ -32,7 +32,7 @@ R2F.L = {
   OTHER_CLASSES = "You also have macros for %s. Click a class icon at the top to look at them; "
     .. "log in on that character to use them.",
   OTHER_CLASS_ENTRY = "%s (%d)",
-  -- Class picker (v0.10.0, ADDON_PLAN 5.10): browse any class in the library
+  -- Class picker: browse any class in the library
   PICKER_YOURS = "%s (your class)",
   PICKER_PREVIEW = "%s (preview)",
   PICKER_TIP_YOURS = "Your class: drag these to your bars.",
@@ -41,11 +41,11 @@ R2F.L = {
   BROWSE_NOTE = "Previewing %s macros: read-only on this character. "
     .. "The slot counts and gold checks below are for the character you're playing.",
   TIP_SHARE = "Shift-click to put it in chat.",
-  -- Remove from library (right-click menu, v0.10.0 confirm popup, ADDON_PLAN 5.10)
+  -- Remove from library (right-click menu, confirm popup)
   REMOVE_CONFIRM = "Remove %s (%s) from your library?\n\nIt disappears from the Macro Book. "
     .. "Any macro you already made from it stays in the game and on your bars; "
     .. "Tidy up or Remove all can delete it later.",
-  -- Tidy up button tooltip (v0.10.0): what it does, and how it differs from
+  -- Tidy up button tooltip: what it does, and how it differs from
   -- Remove from library.
   TIDY_TIP = "Deletes the macros Road to Forever made in your game that aren't on any action bar "
     .. "and that you haven't edited, to give you those macro slots back. "
@@ -63,7 +63,7 @@ R2F.L = {
   COPY_HINT = "Press Ctrl+C to copy, then Esc.",
   REMOVED = "removed %s from the library.",
 
-  -- Import window (5.6, 7)
+  -- Import window
   IMPORT_TITLE = "Import macros",
   IMPORT_PLACEHOLDER = "Paste the import string from the Macros page (Ctrl+V).",
   IMPORT_PREVIEW = "%d macros: %d new, %d updated, %d unchanged.",
@@ -79,7 +79,7 @@ R2F.L = {
   IMPORT_DONE_ONE = "imported 1 macro.",
   BTN_CANCEL = "Cancel",
 
-  -- Updates of real macros after an import (step 4, ADDON_PLAN 6.8)
+  -- Updates of real macros after an import
   IMPORT_GONE = "%d macros were removed from the site and leave your library.",
   IMPORT_GONE_ONE = "1 macro was removed from the site and leaves your library.",
   IMPORT_GONE_REPLACE = "%d macros are not in this string and leave your library.",
@@ -110,13 +110,13 @@ R2F.L = {
   TIP_CHANGED_EDITED = "The site has a new version. You edited this macro, so yours was kept. "
     .. "Drag it and choose Replace to use the new one.",
 
-  -- Errors (5.9), shown red in UIErrorsFrame
+  -- Errors, shown red in UIErrorsFrame
   ERR_COMBAT = "You can't create macros in combat.",
   ERR_NO_SLOTS = "No free macro slots. Click Tidy up or delete a macro in /macro.",
   ERR_CREATE_FAILED = "The game didn't create the macro. Try again out of combat.",
   ERR_MISSING = "That macro is no longer in your library.",
 
-  -- Popups (5.9, 6.4)
+  -- Popups
   REPLACE_TEXT = "You already have a macro called \"%s\". Replace it?",
   BTN_REPLACE = "Replace",
   BTN_KEEP = "Keep mine",
@@ -131,7 +131,7 @@ R2F.L = {
   -- Long name lists in popups are cut short (the dialog grows with its text).
   LIST_MORE = "%s and %d more",
 
-  -- Settings panel (5.8, step 5)
+  -- Settings tab
   SETTINGS_TITLE = "Settings",
   SETTINGS_SLOTS = "New macros go to:",
   SETTINGS_SLOTS_CHAR = "Character slots first",
@@ -163,7 +163,7 @@ R2F.L = {
   REMOVE_ALL_DONE_ONE = "removed 1 Road to Forever macro. Your macro library is unchanged.",
   REMOVE_ALL_DONE_KEPT = " Kept %d you edited as your own.",
 
-  -- Home tab (12.4)
+  -- Home tab
   RANKS_NO_API = "this game has no C_Spell.GetSpellInfo, so spell ranks are not checked.",
   RANKS_DEBUG_USAGE = "usage: /r2f debug rank Charge",
   RANKS_NONE = "every spell in your Road to Forever macros resolves to a spell you know. Nothing is ranked.",
@@ -322,7 +322,7 @@ R2F.L = {
   AMMO_HIDDEN = "ammo icon hidden. Type /r2f ammo to show it again.",
   AMMO_LOCKED = "ammo icon locked.",
   AMMO_UNLOCKED = "ammo icon unlocked: drag it to move it.",
-  -- Mr.BiZ, the BiS tab (ADDON_PLAN 19, v0.30.0)
+  -- Mr.BiZ, the BiS tab
   TITLE_BIS = "Road to Forever: Mr.BiZ",
   TAB_BIS = "BiZ",
   BIZ_CLASS = "Class",
@@ -408,18 +408,18 @@ R2F.L = {
   HOME_MACROS_COUNT_ONE = "1 macro in your library, %d on your bars",
   HOME_TALENTS = "Talents",
   HOME_NO_TALENT_POINTS = "No free talent points",
-  -- 13.12: the client gave no usable free-points answer (not the same as 0).
+  -- The client gave no usable free-points answer (not the same as 0).
   HOME_TALENT_POINTS_UNKNOWN = "Free talent points: couldn't read them",
   HOME_IMPORT = "Import macros",
   HOME_IMPORT_HINT = "Pick macros on the Macros page of the Road to Forever site, click Copy import string, "
     .. "then click Import macros and paste it.",
 
-  -- Version/author footer at the bottom of Home (12.4.2). %s/%s = version, author.
+  -- Version/author footer at the bottom of Home. %s/%s = version, author.
   HOME_FOOTER = "Road to Forever v%s \194\183 by %s \194\183 nobody174.github.io/wow-forever",
   HOME_FOOTER_FALLBACK = "Road to Forever \194\183 nobody174.github.io/wow-forever",
   HOME_FOOTER_TIP = "Import macros and talent builds from the Road to Forever site.",
 
-  -- Quick settings on the Home tab (12.4.1): game settings via SetCVar, no macro
+  -- Quick settings (Settings tab): game settings via SetCVar, no macro
   QS_TITLE = "Quick settings",
   QS_NOTE = "These change your game settings directly. No macro or macro slot needed.",
   QS_ZOOM = "Max camera zoom",
@@ -436,11 +436,11 @@ R2F.L = {
   QS_NOT_ACCEPTED = "The game didn't accept that setting.",
   BOOK_QUICK_SETTINGS = "Zoom, guild names and PvP titles are Quick settings on the Home tab, so no macro is needed.",
 
-  -- Talent export (13.4 Copy my build, step 8)
+  -- Talent export (Copy my build)
   TALENT_COPY_HINT = "Press Ctrl+C, then paste it in your browser or Discord.",
   TALENT_READ_FAILED = "couldn't read your talents yet. Try again in a moment.",
 
-  -- Talents tab: link box, preview, summary (13.2 - 13.4, step 9)
+  -- Talents tab: link box, preview, summary
   TALENT_LINK_LABEL = "Talent link",
   TALENT_LINK_PLACEHOLDER = "talents.html#%s/...",
   TALENT_TAB_HINT = "Paste a link from the site's talent calculator (Copy link), then click Preview. "
@@ -486,7 +486,7 @@ R2F.L = {
   TALENT_TIP_CONFLICT = "You have points here that this build doesn't use.",
   TALENT_TIP_OVERMAX = "The link asks for more ranks than this talent has.",
 
-  -- Talent learning (13.4, 13.5, step 10; decisions in ADDON_PLAN 13.8)
+  -- Talent learning
   BTN_LEARN_CONFIRM = "Learn",
   BTN_STOP = "Stop",
   TALENT_CONFIRM = "Learn %d talent points? Only a trainer reset can undo this.",
@@ -510,7 +510,7 @@ R2F.L = {
   TALENT_BLOCKED_HINT = "Your game may not let addons learn talents. "
     .. "Click Learn talents to be shown which talents to click instead.",
   TALENT_LATE = "The point in %s arrived late after all. %d of %d learned. Click Learn talents to continue.",
-  -- 13.12 ("traits" learning on WoW Forever)
+  -- "Traits" learning (WoW Forever)
   TALENT_STOP_STAGED = "Stopped at %s: the point is waiting in Blizzard's talent window but wasn't applied. "
     .. "Click Apply Changes there to keep it, or undo it there. %d of %d learned.",
   TALENT_STOP_PENDING = "Stopped: Blizzard's talent window has changes that aren't applied yet. "
@@ -521,7 +521,7 @@ R2F.L = {
   TALENT_GUIDE_OPEN = "open your talent window (default key N) and click the talents named here, one at a time.",
   TALENT_PREVIEW_FILLED = "added %d talent points to the talent window's preview. Click its Learn button to keep them.",
 
-  -- Minimap button (12.2)
+  -- Minimap button
   MM_LIBRARY = "%d macros in your library",
   MM_LIBRARY_ONE = "1 macro in your library",
   MM_TALENT_POINTS = "%d free talent points",
@@ -538,7 +538,7 @@ R2F.L = {
   MM_HIDDEN = "minimap button hidden. Type /r2f minimap to show it again.",
   MM_SHOWN = "minimap button shown.",
 
-  -- Slash commands (12.3). /r2f help prints HELP_LINES, one chat line each.
+  -- Slash commands. /r2f help prints HELP_LINES, one chat line each.
   HELP_LINES = {
     "commands:",
     "/r2f  open or close Road to Forever (on the tab you used last)",
@@ -573,7 +573,7 @@ R2F.L = {
 
   UNKNOWN_COMMAND = "unknown command \"%s\". Type /r2f help for the list.",
   UNKNOWN_DEBUG = "unknown debug tool \"%s\". Type /r2f debug for the list.",
-  -- Professions export (14, v0.12.0)
+  -- Professions export
   PROF_SAVED = "saved %d %s recipes (skill %d). Type /r2f profs to copy them for the site.",
   PROF_NONE = "no professions saved yet. Open each profession window once (e.g. Enchanting), then type /r2f profs.",
   PROF_COPY_HINT = "Press Ctrl+C, then paste it on the site or in Discord.",

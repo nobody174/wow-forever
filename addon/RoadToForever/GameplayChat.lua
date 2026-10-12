@@ -1,5 +1,5 @@
--- GameplayChat.lua: copy chat text (ADDON_PLAN.md 17.2, v0.24.0). Replaces Prat 3.0 for the one
--- thing the owner used it for: getting lines out of chat to paste somewhere (bug reports).
+-- GameplayChat.lua: copy chat text, for getting lines out of chat to paste somewhere
+-- (bug reports).
 --
 -- Chat text can't be selected in the game's own chat frames. This opens a window with the last
 -- lines of a chat frame in an edit box: Ctrl+A, Ctrl+C. Two ways in:

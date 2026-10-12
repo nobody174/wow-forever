@@ -1,4 +1,4 @@
--- UI/Plan.lua: the Plan tab of the main window (ADDON_PLAN.md 15.5, v0.18.0).
+-- UI/Plan.lua: the Plan tab of the main window.
 --
 --   Group plan picker (the site's four plans) -> progress line -> a scrolling list of
 --   the launch-day steps grouped by phase. Each step: a tick box (saved per character),

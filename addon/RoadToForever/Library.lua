@@ -1,11 +1,11 @@
--- Library.lua: SavedVariables access, ids, hashes (ADDON_PLAN.md 6.3, 6.5).
+-- Library.lua: SavedVariables access, ids, hashes.
 --
 -- R2FDB (account) holds the macro library: every imported macro of every
--- class, keyed by its stable id "<CLASS>/<short>" (3.4). No slot limit here;
+-- class, keyed by its stable id "<CLASS>/<short>". No slot limit here;
 -- real macros are only made when one is dragged out (Macros.lua).
 -- R2FCharDB (per character) records the real macros this addon created in
 -- character slots; account-slot ones are in R2FDB.createdAccount. It also
--- holds the per-character "Changed" markers (R2FCharDB.changed, step 4).
+-- holds the per-character "Changed" markers (R2FCharDB.changed).
 
 local _, R2F = ...
 
@@ -13,7 +13,7 @@ local Library = {}
 R2F.Library = Library
 
 -- Shared output helpers. Calling AddMessage on Blizzard's frames is a plain
--- method call (no hook, no taint); errors go to UIErrorsFrame in red (5.9).
+-- method call (no hook, no taint); errors go to UIErrorsFrame in red.
 function R2F.Print(msg)
   if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage(R2F.L.CHAT_PREFIX .. msg) end
 end
@@ -37,8 +37,8 @@ end
 
 local DB_VERSION = 1
 
--- Section order per class, mirroring data.py (3.1). The import string only
--- carries section names, not their order, so the tabs (5.2) are sorted by
+-- Section order per class, mirroring data.py. The import string only
+-- carries section names, not their order, so the tabs are sorted by
 -- this table; unknown sections (added on the site later) follow in the order
 -- they were first imported. addon/tests/run_tests.py checks this table against
 -- data.py so it can't silently drift.
@@ -72,7 +72,7 @@ local GROUP_RANK = {}
 for i, g in ipairs(Library.GROUP_ORDER) do GROUP_RANK[g] = i end
 
 -- djb2 over the bytes, as 8 hex digits. Used to tell "the macro is exactly
--- what we wrote" from "the player edited it" (6.4). Lua 5.1 has no bit ops,
+-- what we wrote" from "the player edited it". Lua 5.1 has no bit ops,
 -- so the 32-bit wrap is done with % 2^32; h * 33 + 255 stays below 2^53.
 function Library.Hash(s)
   local h = 5381
@@ -93,16 +93,16 @@ function Library.Init()
   if type(db.settings) ~= "table" then db.settings = {} end
   if type(db.createdAccount) ~= "table" then db.createdAccount = {} end
   if type(db.sectionSeen) ~= "table" then db.sectionSeen = {} end
-  -- LibDBIcon's own format (6.3). Minimap.lua (step 6) reads it for our own
+  -- LibDBIcon's own format. Minimap.lua reads it for our own
   -- button, or hands it to LibDBIcon:Register as-is when another addon has
-  -- loaded LibDBIcon (6.10). Settings writes hide/lock, so fill each field
+  -- loaded LibDBIcon. Settings writes hide/lock, so fill each field
   -- separately rather than only when the whole table is missing.
   if type(db.minimap) ~= "table" then db.minimap = {} end
   local mm = db.minimap
   if type(mm.hide) ~= "boolean" then mm.hide = false end
   if type(mm.lock) ~= "boolean" then mm.lock = false end
   if type(mm.minimapPos) ~= "number" then mm.minimapPos = 220 end
-  -- Warrior stance indicator (Stance.lua, v0.13.0).
+  -- Warrior stance indicator (Stance.lua).
   if type(db.stance) ~= "table" then db.stance = {} end
   local st = db.stance
   if type(st.shown) ~= "boolean" then st.shown = true end
@@ -110,7 +110,7 @@ function Library.Init()
   if type(st.scale) ~= "number" or st.scale < 0.5 or st.scale > 3 then st.scale = 1 end
   if type(st.x) ~= "number" then st.x = 0 end
   if type(st.y) ~= "number" then st.y = -150 end
-  -- Gameplay features (Gameplay.lua, v0.21.0): one true / false per feature, all OFF until ticked.
+  -- Gameplay features (Gameplay.lua): one true / false per feature, all OFF until ticked.
   if type(db.gameplay) ~= "table" then db.gameplay = {} end
   for _, key in ipairs({ "repair", "sellgray", "duels", "errorfilter", "xpbar", "mailalts", "bagslots", "bagsort", "fastloot",
     "questaccept", "questturnin", "rewardvalue", "copychat", "questzone", "reactalert", "reactlock", "reactblizz", "gossipshop" }) do
@@ -123,7 +123,7 @@ function Library.Init()
   if type(fc.y) ~= "number" then fc.y = 0 end
   if type(fc.scale) ~= "number" or fc.scale < 0.5 or fc.scale > 3 then fc.scale = 1 end
   if type(fc.lock) ~= "boolean" then fc.lock = false end
-  -- Tracking reminder (Tracking.lua, v0.26.0): any class that has Find Minerals / Herbs / Treasure.
+  -- Tracking reminder (Tracking.lua): any class that has Find Minerals / Herbs / Treasure.
   if type(db.tracking) ~= "table" then db.tracking = {} end
   local tr = db.tracking
   if type(tr.shown) ~= "boolean" then tr.shown = true end
@@ -134,7 +134,7 @@ function Library.Init()
   for _, kind in ipairs({ "minerals", "herbs", "treasure" }) do
     if type(tr[kind]) ~= "boolean" then tr[kind] = true end
   end
-  -- Group buff reminder (Buffs.lua, v0.29.0): on, locked (unlock to place it), one switch per buff.
+  -- Group buff reminder (Buffs.lua): on, locked (unlock to place it), one switch per buff.
   if type(db.buffs) ~= "table" then db.buffs = {} end
   local bf = db.buffs
   if type(bf.shown) ~= "boolean" then bf.shown = true end
@@ -146,7 +146,7 @@ function Library.Init()
     spirit = false, shadowprot = false, battleshout = false, trueshot = false }) do
     if type(bf[key]) ~= "boolean" then bf[key] = default end
   end
-  -- Hunter ammo reminder (Ammo.lua, v0.17.0).
+  -- Hunter ammo reminder (Ammo.lua).
   if type(db.ammo) ~= "table" then db.ammo = {} end
   local am = db.ammo
   if type(am.shown) ~= "boolean" then am.shown = true end
@@ -157,12 +157,10 @@ function Library.Init()
   if type(am.threshold) ~= "number" or am.threshold < 50 or am.threshold > 1000 then am.threshold = 200 end
   local s = db.settings
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
-  -- Main window (12.4, step 6): the tab /r2f reopens. Home on first use.
-  -- windowPos (the window's saved spot) is written by UI.Window when moved;
-  -- before step 6 it was the Macro Book's own window, now it's the main
-  -- window that holds the book, so a moved book keeps its spot.
-  -- Any tab of the main window (MainWindow.TABS); until 0.28.0 this list stopped at "talents", so a window
-  -- last left on Plan / Gameplay / Settings reopened on Home after every login.
+  -- Main window: the tab /r2f reopens. Home on first use.
+  -- windowPos (the window's saved spot) is written by UI.Window when moved.
+  -- Any tab of the main window (MainWindow.TABS), so a window last left on
+  -- Plan / Gameplay / Settings reopens there.
   local TABS = { home = true, macros = true, talents = true, plan = true, bis = true, gameplay = true, settings = true }
   if not TABS[s.lastTab] then s.lastTab = "home" end
   _G.R2FDB = db
@@ -171,25 +169,25 @@ function Library.Init()
   if type(cdb) ~= "table" then cdb = {} end
   if type(cdb.created) ~= "table" then cdb.created = {} end
   if type(cdb.changed) ~= "table" then cdb.changed = {} end
-  -- Talents tab (6.3, step 9): the last link previewed on this character,
+  -- Talents tab: the last link previewed on this character,
   -- put back in the link box. Per character because a link is per class.
   if type(cdb.lastTalentLink) ~= "string" then cdb.lastTalentLink = nil end
-  -- Professions (14, v0.12.0): what Professions.lua read from the profession
+  -- Professions: what Professions.lua read from the profession
   -- windows, keyed by profession name. Rebuilt each time a window opens.
   if type(cdb.professions) ~= "table" then cdb.professions = {} end
-  -- Movable bags (Bags.lua, v0.16.0): per character, because the bag windows
+  -- Movable bags (Bags.lua): per character, because the bag windows
   -- are placed on THIS character's screen layout.
   if type(cdb.bags) ~= "table" then cdb.bags = {} end
   if type(cdb.bags.movable) ~= "boolean" then cdb.bags.movable = false end
   if type(cdb.bags.lock) ~= "boolean" then cdb.bags.lock = false end
   if type(cdb.bags.bags) ~= "table" then cdb.bags.bags = {} end
   if type(cdb.bags.combined) ~= "table" then cdb.bags.combined = nil end
-  -- Launch Plan tab (Plan.lua, v0.18.0): the chosen group plan and the ticked step ids.
+  -- Launch Plan tab (Plan.lua): the chosen group plan and the ticked step ids.
   -- Per character: ticks are about THIS character's progress.
   if type(cdb.plan) ~= "table" then cdb.plan = {} end
   if type(cdb.plan.done) ~= "table" then cdb.plan.done = {} end
   if not (R2F.PlanData and R2F.PlanData.plans[cdb.plan.selected]) then cdb.plan.selected = "hwd" end
-  -- Mr.BiZ tab (BiZ.lua, v0.30.0): class / spec shown, source filters, the wishlist.
+  -- Mr.BiZ tab (BiZ.lua): class / spec shown, source filters, the wishlist.
   -- Per character: the wishlist is this character's gear goals.
   if type(cdb.biz) ~= "table" then cdb.biz = {} end
   local bz = cdb.biz
@@ -219,7 +217,7 @@ function Library.Remove(id)
   Library.SetChanged(id, nil) -- no slot left to hover, so it could never clear
 end
 
--- "Changed" markers (5.3, step 4): id -> "updated" (an import rewrote the
+-- "Changed" markers: id -> "updated" (an import rewrote the
 -- real macro on your bars) or "edited" (the site changed it, your edited
 -- macro was kept). Per character (R2FCharDB), not account-wide, because the
 -- marker is about YOUR action bars, which are per character: an account-wide
@@ -255,7 +253,7 @@ end
 
 -- Store validated import records (from Import.Parse). Returns the number stored.
 -- `pos` = the record's place in the import string. The site writes records in
--- page order (4.5), and it remembers the selection (4.4), so a re-import is
+-- page order, and it remembers the selection, so a re-import is
 -- normally a superset in the same order and re-stamps every pos consistently.
 function Library.Apply(records, now)
   local lib = Library.db.library
@@ -304,7 +302,7 @@ end
 
 -- Count library macros per class token, Universal (ANY) left out: token -> n.
 -- Only classes that really have macros appear (the Macro Book's class
--- picker lists exactly these, v0.10.0, ADDON_PLAN 5.10).
+-- picker lists exactly these).
 function Library.ClassCounts()
   local counts = {}
   for _, e in pairs(Library.db.library) do
@@ -315,7 +313,7 @@ function Library.ClassCounts()
   return counts
 end
 
--- Count library macros per class other than `cls` and ANY (5.7).
+-- Count library macros per class other than `cls` and ANY.
 function Library.OtherClassCounts(cls)
   local counts = Library.ClassCounts()
   counts[cls or ""] = nil

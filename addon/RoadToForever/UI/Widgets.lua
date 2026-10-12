@@ -1,13 +1,12 @@
 -- UI/Widgets.lua: small shared UI pieces (window shell, confirm dialog,
 -- multi-line edit box, sounds), all from Blizzard templates and textures
--- (ADDON_PLAN.md 5: no custom skinning).
+-- (no custom skinning).
 --
--- Nothing here has run against the Forever client yet (ADDON_PLAN 11), so
--- every template is tried first and verified by the child keys we use; if
+-- Every template is tried first and verified by the child keys we use; if
 -- a template is missing or different, a plain fallback built from Blizzard
 -- textures takes over instead of erroring.
 --
--- Taint notes (6.6): no secure templates, no hooks, Blizzard frames are
+-- Taint notes: no secure templates, no hooks, Blizzard frames are
 -- never modified. The confirm dialog is our own frame instead of a
 -- StaticPopupDialogs entry, so we don't write into a shared Blizzard table
 -- that protected popups also use.
@@ -38,7 +37,7 @@ end
 
 -- Checked state of a CheckButton drawn as a gold glow over the icon.
 -- SetCheckedTexture("...CheckButtonHilight", "ADD") rendered a black square on
--- the selected class circle and the Universal side tab in game (0.14.0 feedback):
+-- the selected class circle and the Universal side tab in game:
 -- the second argument is only a blend mode for SetHighlightTexture, so the
 -- checked texture was drawn with normal blending. This sets the blend mode on
 -- the texture itself and uses the same square glow as the highlight; if the
@@ -88,7 +87,7 @@ end
 
 local function closeOnEsc(name)
   -- UISpecialFrames is how Blizzard's own Esc handler finds frames to close.
-  -- Appending a name is the documented pattern (ADDON_PLAN 5.1) and needs
+  -- Appending a name is the documented pattern and needs
   -- a named frame; that's why our windows have global frame names.
   if name and UISpecialFrames then table.insert(UISpecialFrames, name) end
 end
@@ -108,7 +107,7 @@ local function makeMovable(f, saveKey)
   end)
 end
 
--- Main window shell (5.1): PortraitFrameTemplate if the client has it, else
+-- Main window shell: PortraitFrameTemplate if the client has it, else
 -- ButtonFrameTemplate, else a dialog-backdrop frame with a close button.
 -- Returns the frame; frame.r2fSetTitle(text), frame.r2fPortrait (texture or nil).
 function UI.Window(name, width, height, saveKey)
@@ -164,7 +163,7 @@ end
 -- Multi-line edit box (import paste box, copy box)
 -- ---------------------------------------------------------------------------
 
--- InputScrollFrameTemplate if available (ADDON_PLAN 5.6), else
+-- InputScrollFrameTemplate if available, else
 -- UIPanelScrollFrameTemplate + our own EditBox. Returns scrollFrame, editBox.
 -- Scroll templates name their scroll bar "$parentScrollBar", so the scroll
 -- frame gets a global name (R2F-prefixed) to keep that from colliding.
@@ -174,7 +173,7 @@ function UI.MultiLineEdit(parent, name, width, height)
   local edit
   if scroll then
     edit = scroll.EditBox
-    -- No character limit (an all-classes string is ~83 KB, 4.5) and no
+    -- No character limit (an all-classes string is ~83 KB) and no
     -- counter under the box.
     edit:SetMaxLetters(0)
     if edit.SetMaxBytes then edit:SetMaxBytes(0) end
@@ -199,7 +198,7 @@ function UI.MultiLineEdit(parent, name, width, height)
 end
 
 -- ---------------------------------------------------------------------------
--- Confirm dialog (5.9 Replace/Keep mine, Tidy up, Settings > Remove all)
+-- Confirm dialog (Replace/Keep mine, Tidy up, Settings > Remove all)
 -- ---------------------------------------------------------------------------
 
 local confirm
@@ -264,7 +263,7 @@ function UI.NameList(names, max)
 end
 
 -- ---------------------------------------------------------------------------
--- Check box / radio button (Settings, 5.8)
+-- Check box / radio button (Settings)
 -- ---------------------------------------------------------------------------
 
 -- Blizzard's UIRadioButtonTemplate / UICheckButtonTemplate when the client
@@ -299,7 +298,7 @@ function UI.CheckButton(parent, label, radio)
 end
 
 -- ---------------------------------------------------------------------------
--- Context menu (minimap button right-click, 12.2)
+-- Context menu (minimap button right-click)
 -- ---------------------------------------------------------------------------
 
 -- items = { { kind = "title" | "button" | "check" | "divider", text =,
@@ -307,7 +306,7 @@ end
 --
 -- Why not UIDropDownMenu / EasyMenu: those write Blizzard's shared
 -- UIDROPDOWNMENU_* globals, the classic source of "action blocked" taint in
--- Classic clients (6.7). Blizzard's newer MenuUtil doesn't have that problem
+-- Classic clients. Blizzard's newer MenuUtil doesn't have that problem
 -- and Minimap.lua uses it when the client has it; this plain frame is the
 -- fallback, built from tooltip/quest textures so it still looks native.
 -- One menu at a time (named, so Esc closes it); it closes after a click or
@@ -380,7 +379,7 @@ function UI.ContextMenu(items)
       r.text:SetFontObject(GameFontHighlightSmall or GameFontHighlight)
       r.text:SetPoint("LEFT", 20, 0)
     end
-    -- Title and divider rows aren't clickable (12.2: "not clickable").
+    -- Title and divider rows aren't clickable.
     r:SetEnabled(it.kind == "button" or it.kind == "check")
     r:EnableMouse(it.kind == "button" or it.kind == "check")
     if it.kind == "check" then
@@ -408,13 +407,13 @@ function UI.ContextMenu(items)
 end
 
 -- ---------------------------------------------------------------------------
--- Copy box (right-click > Copy text; /r2f copybuild, step 8)
+-- Copy box (right-click > Copy text; /r2f copybuild)
 -- ---------------------------------------------------------------------------
 
 local copyBox
 
 -- hint = the line above the box; default "Press Ctrl+C to copy, then Esc."
--- Copy my build passes its own (13.4: "Press Ctrl+C, then paste it in your
+-- Copy my build passes its own ("Press Ctrl+C, then paste it in your
 -- browser or Discord.").
 function UI.ShowCopy(text, hint)
   if not copyBox then

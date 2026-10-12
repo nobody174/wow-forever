@@ -1,4 +1,4 @@
--- Ammo.lua: Hunter "ammo low" reminder (ADDON_PLAN.md 15.4, v0.17.0).
+-- Ammo.lua: Hunter "ammo low" reminder.
 --
 -- A framed icon (the same look as the stance icon, Reminders.lua) showing how
 -- many arrows / bullets are left. It turns red under a threshold the player sets
@@ -7,8 +7,8 @@
 --
 -- The count is every piece of the ammunition the equipped ranged weapon fires, added up over
 -- all bags (quivers and pouches included): arrows for a bow or crossbow, bullets for a gun.
--- v0.24.1: this client has NO ammo slot (owner test: GetInventoryItemID("player", 0) is 0 and
--- the count is 1), so 0.17.0-0.24.0 showed a wrong "1". Ammunition is item class 6
+-- This client has NO ammo slot (GetInventoryItemID("player", 0) is 0 and
+-- the count is 1), so the ammo slot can't be used. Ammunition is item class 6
 -- (subclass 2 arrows, 3 bullets) and the ranged weapon is slot 18 (class 2: subclass 2 bow,
 -- 18 crossbow, 3 gun); the bags are read with C_Container.GetContainerItemInfo.
 -- No ranged weapon (or a thrown weapon, a wand) = nothing to count: the icon stays hidden

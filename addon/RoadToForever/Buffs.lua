@@ -1,4 +1,4 @@
--- Buffs.lua: "buffs your group could give you, that you don't have" reminder (ADDON_PLAN.md 17.1 step 5, v0.29.0).
+-- Buffs.lua: "buffs your group could give you, that you don't have" reminder.
 --
 -- While you are in a party or raid, the classes in it decide which buffs to look for: a Priest
 -- (anyone in the group, you too) -> Power Word: Fortitude, a Druid -> Mark of the Wild and Thorns, a Mage ->
@@ -6,7 +6,7 @@
 -- you are missing, a small framed icon shows on screen (a row of them if several are missing); each is gone
 -- the moment you have the buff. Only YOUR buffs are looked at (not the other members').
 --
--- Reads your own helpful auras (C_UnitAuras.GetUnitAuras("player", "HELPFUL"); /r2f auras showed they are
+-- Reads your own helpful auras (C_UnitAuras.GetUnitAuras("player", "HELPFUL"); /r2f debug auras checks that they are
 -- readable out of combat). If the game hides them (secret values, e.g. in combat or an instance) the reminder
 -- says nothing rather than guessing: a missing buff is only shown when the list was fully readable.
 -- Unlocked, it always shows (dimmed when nothing is missing) so it can be moved.

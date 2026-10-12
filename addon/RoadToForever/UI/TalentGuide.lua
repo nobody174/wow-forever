@@ -1,12 +1,12 @@
--- UI/TalentGuide.lua: guided mode, 13.5's fallback for a client where addons
--- can't call LearnTalent (decisions in ADDON_PLAN 13.8).
+-- UI/TalentGuide.lua: guided mode, the fallback for a client where addons
+-- can't call LearnTalent.
 --
 -- The player learns each point with Blizzard's own talent window; we only
 -- point at the talent to click: a pulsing gold glow plus "Click Cruelty
 -- (2 of 21)". Talents.lua decides WHICH point (the same verified list as the
 -- direct mode) and calls Show / Hide; this file only draws.
 --
--- Taint rules (6.6), the reason for the shape of this file:
+-- Taint rules, the reason for the shape of this file:
 -- * Nothing of Blizzard's is modified: no SetScript / HookScript / SetPoint /
 --   Show / Hide / SetParent on any Blizzard frame, no new keys on them.
 --   Blizzard's frames are only READ (_G lookup, IsVisible, selectedTab).
@@ -18,8 +18,8 @@
 -- * Because we may not hook Blizzard's OnHide / tab clicks, a small throttled
 --   OnUpdate on our own invisible host frame (0.2 s, only while guiding)
 --   re-checks whether the talent window is open and which tab it shows.
---   That's 6.6's "throttled refresh while the window is open" rule, extended
---   to guided mode.
+--   (Throttled refresh only while the window is open, like every other
+--   refresh in the addon.)
 -- * Opening the window: Blizzard's own ToggleTalentFrame() (what the N key
 --   does), only out of combat (guided mode stops in combat), and only if the
 --   window isn't already showing (Toggle would close it).
@@ -28,7 +28,7 @@
 -- TalentFrame with buttons TalentFrameTalent<i> and tabs TalentFrameTab<n>;
 -- TBC/Wrath-era code has PlayerTalentFrame / PlayerTalentFrameTalent<i>. In
 -- both, button i is talent index i (GetTalentInfo(selectedTab, i)) of the tab
--- that's showing. Which one Forever has is unconfirmed (TESTING.md 15), so
+-- that's showing. Clients differ in which one they have, so
 -- both are tried; with neither, the text alone still says what to click.
 
 local _, R2F = ...
@@ -72,7 +72,7 @@ function TalentGuide.Target(p)
     if type(tab) == "table" and tab.IsVisible and tab:IsVisible() then return tab, "tab" end
     return nil
   end
-  -- 13.10: p.index comes from C_Traits (our pane position), not Classic's
+  -- P.index comes from C_Traits (our pane position), not Classic's
   -- talent index, so a glow on Button<index> is only right if Classic's
   -- GetTalentInfo names this very talent there. Otherwise no glow: the text
   -- alone is better than a gold ring on the wrong talent.
@@ -98,7 +98,7 @@ local function build()
   glow:EnableMouse(false)                -- clicks go through to Blizzard's button
   glow:Hide()
   -- The action-button border glow, gold, the same texture the mini trees use
-  -- for "learned now" (13.7), so it reads as "this one".
+  -- for "learned now", so it reads as "this one".
   glow.tex = glow:CreateTexture(nil, "OVERLAY")
   glow.tex:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
   glow.tex:SetBlendMode("ADD")

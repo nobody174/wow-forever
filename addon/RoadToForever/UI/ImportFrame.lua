@@ -1,8 +1,8 @@
--- UI/ImportFrame.lua: paste box + preview + Import/Cancel (ADDON_PLAN.md 5.6).
+-- UI/ImportFrame.lua: paste box + preview + Import/Cancel.
 --
--- Importing writes the addon's own saved library and (step 4) updates real
+-- Importing writes the addon's own saved library and updates real
 -- macros that are ours and unedited, through Macros.lua's combat-checked
--- write path. The button is greyed out in combat, as 6.5 asks; if an import
+-- write path. The button is greyed out in combat; if an import
 -- still ran in combat, those macro writes would be queued, not skipped.
 
 local _, R2F = ...
@@ -47,16 +47,16 @@ local function doImport()
   -- Library write + real-macro updates + chat summary (Import.Commit).
   local diff = R2F.Import.Commit(parsed, playerClass(), time(), { replace = replaceBox:GetChecked() })
   frame:Hide()
-  -- Jump to the first tab that got a new macro (5.6): a Universal / own-class
-  -- one if any, else another class's, shown as a preview (5.10, v0.10.0).
+  -- Jump to the first tab that got a new macro: a Universal / own-class
+  -- one if any, else another class's, shown as a preview.
   local first = diff.firstNewOwn or diff.firstNew
   R2F.MacroBook.ShowSection(first and first.class, first and first.section)
 end
 
 local function build()
   local f = UI.DialogFrame("R2FImport", UIParent)
-  -- 340 tall (was 320 in v0.1.0): the preview can now be two lines that
-  -- each wrap (step 4's "will be updated / left as they are" line).
+  -- Tall enough for a preview of two lines that each wrap (the "will be
+  -- updated / left as they are" line).
   f:SetSize(460, 380)
   f:SetPoint("CENTER", 0, 40)
   f:SetFrameStrata("DIALOG")
@@ -80,7 +80,7 @@ local function build()
   scroll, edit = UI.MultiLineEdit(f, "R2FImportScroll", 390, 170)
   scroll:SetPoint("TOPLEFT", 26, -46)
 
-  -- Placeholder text, hidden while the box has text (5.6).
+  -- Placeholder text, hidden while the box has text.
   local hint = f:CreateFontString(nil, "ARTWORK", "GameFontDisable")
   hint:SetPoint("TOPLEFT", scroll, "TOPLEFT", 4, -2)
   hint:SetWidth(380)
@@ -92,7 +92,7 @@ local function build()
   preview:SetWidth(400)
   preview:SetJustifyH("LEFT")
 
-  -- 15.1: clean slate. Unchecked on every open; the preview line changes with it.
+  -- Clean slate. Unchecked on every open; the preview line changes with it.
   replaceBox = UI.CheckButton(f, L.IMPORT_REPLACE)
   replaceBox:SetPoint("BOTTOMLEFT", 26, 46)
   replaceBox:SetScript("OnClick", refresh)
@@ -147,7 +147,7 @@ function ImportFrame.Hide()
   if frame then frame:Hide() end
 end
 
--- PLAYER_REGEN_DISABLED / ENABLED (6.5).
+-- PLAYER_REGEN_DISABLED / ENABLED.
 function ImportFrame.SetCombat(inCombat)
   if not frame or not frame:IsShown() then return end
   if inCombat then importBtn:Disable() else refresh() end

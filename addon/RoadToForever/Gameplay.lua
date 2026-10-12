@@ -1,6 +1,6 @@
--- Gameplay.lua: the Gameplay features that replace ForeverPlus (ADDON_PLAN.md 17, v0.21.0).
+-- Gameplay.lua: the Gameplay features that replace ForeverPlus.
 --
--- A small registry plus the first five features (build order step 1). Every feature has
+-- A small registry of features. Every feature has
 -- ONE switch, stored in R2FDB.gameplay[key] (true / false), and ships OFF: nothing here
 -- acts until the player ticks it on the Gameplay tab. Features register what they need:
 --   key        "repair" ...

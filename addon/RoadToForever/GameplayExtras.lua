@@ -1,7 +1,7 @@
--- GameplayExtras.lua: Gameplay features, build order step 2 (ADDON_PLAN.md 17, v0.22.0):
+-- GameplayExtras.lua: more Gameplay features:
 -- mail to your own characters, free bag slots on the backpack, fast loot.
 -- Same rules as Gameplay.lua: one switch each, all OFF until ticked, handlers in pcall,
--- written from scratch (ForeverPlus only taught us what these features are).
+-- written from scratch.
 
 local _, R2F = ...
 local L = R2F.L
@@ -73,7 +73,7 @@ end
 
 -- Your other characters on this realm and faction, sorted by name:
 -- { { name =, full = "Name-Realm", class =, level = }, ... }. On this client mail needs the
--- FULL name (owner test of 0.22.0: a bare name didn't arrive).
+-- FULL name (a bare name doesn't arrive).
 function Gameplay.OtherCharacters()
   local out = {}
   local db = R2F.Library.db
@@ -310,11 +310,11 @@ end
 -- Reactive ability alert ("<Revenge>"): our own, movable
 -- ---------------------------------------------------------------------------
 
--- v0.27.0 shifted the game's floating combat text path (CombatText.textLocations) to move the
--- "<Revenge>" alert. THAT WAS WRONG: writing into Blizzard's table taints it, and this client then
+-- Moving the game's floating combat text path (CombatText.textLocations) to place the
+-- "<Revenge>" alert does NOT work: writing into Blizzard's table taints it, and this client then
 -- refuses arithmetic on tainted values ("attempt to perform arithmetic on field 'startY' (a secret
--- number value, while execution tainted by 'RoadToForever')", 96 errors in a fight). Nothing of the
--- game's data or frames is written any more. Instead:
+-- number value, while execution tainted by 'RoadToForever')"). So nothing of the
+-- game's data or frames is written. Instead:
 --   * "Reactive alert (own text)": when the game announces a reactive ability (COMBAT_TEXT_UPDATE
 --     with "SPELL_ACTIVE", the same event its own text comes from) we show "<Revenge>" ourselves, in
 --     our own frame, at a marker you drag where you want it, for a couple of seconds.
@@ -385,7 +385,7 @@ local function spellNameOf(spellID)
   if ok and type(name) == "string" and not isSecret(name) then return name end
 end
 
--- Revenge-type abilities have no bar glow on this client (owner's /r2f reactlog 2026-10-10: only
+-- Revenge-type abilities have no bar glow on this client (/r2f debug reactlog shows only
 -- SPELL_ACTIVE with a hidden name, no GLOW_SHOW). So the name is found the other way round: the
 -- reactive spell that has just become usable. A spell is "reactive" if it only works after an event.
 local REACTIVE = { "Revenge", "Overpower", "Riposte", "Counterattack", "Mongoose Bite", "Victory Rush" }

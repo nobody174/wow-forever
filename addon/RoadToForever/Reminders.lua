@@ -1,5 +1,4 @@
--- Reminders.lua: what every reminder icon has in common (ADDON_PLAN.md 15.4,
--- v0.17.0). The Reminders tab (UI/Reminders.lua) lists the reminders that apply
+-- Reminders.lua: what every reminder icon has in common. The Reminders tab (UI/Reminders.lua) lists the reminders that apply
 -- to the player's class; each reminder is its own module (Stance.lua, Ammo.lua)
 -- with its own on/off, lock and size, kept in R2FDB under its own key.
 --

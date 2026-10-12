@@ -1,4 +1,4 @@
--- QuickSettings.lua: the Home tab's Quick settings (ADDON_PLAN.md 12.4, 12.4.1).
+-- QuickSettings.lua: the Home tab's Quick settings.
 --
 -- Three game settings the site offers as /console macros (data.py's
 -- Universal "Misc / UI" group), changed here directly with SetCVar instead,
@@ -101,10 +101,10 @@ function QuickSettings.IsOn(item)
 end
 
 -- Tick (on = true) or untick. Returns true when the game took the value.
--- Refused in combat, like every other write in this addon (6.4, 6.9): the
+-- Refused in combat, like every other write in this addon: the
 -- Home boxes are also greyed out then, this is the backstop. Refused, not
 -- queued: a click is not a confirmed popup, and a setting flipping by itself
--- after the fight would be a surprise (the drag rule, 6.7).
+-- after the fight would be a surprise (same rule as dragging).
 function QuickSettings.Set(item, on)
   if R2F.InCombat() then
     R2F.Error(L.QS_COMBAT)
@@ -130,7 +130,7 @@ function QuickSettings.Set(item, on)
 end
 
 -- Flip a box from the LIVE value (not from the button's own checked state),
--- then the caller redraws from the live value again (Settings' rule, 6.9).
+-- then the caller redraws from the live value again.
 function QuickSettings.Toggle(item)
   return QuickSettings.Set(item, not QuickSettings.IsOn(item))
 end

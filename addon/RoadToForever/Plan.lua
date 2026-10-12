@@ -1,4 +1,4 @@
--- Plan.lua: the Launch Plan in game (ADDON_PLAN.md 15.5, v0.18.0). Logic only; the tab
+-- Plan.lua: the Launch Plan in game. Logic only; the tab
 -- is UI/Plan.lua, the data is PlanData.lua (generated from the site, see below).
 --
 -- * Plans: the same group plans as launch-plan.html (hwd, hunter, h3d, trio) with the
@@ -17,7 +17,7 @@
 --   With TomTom loaded the button calls TomTom:AddWaypoint(mapID, x/100, y/100, {title});
 --   without it (or without a map id) it prints the "/way Zone x y label" line to chat.
 -- * /r2f here prints the zone, uiMapID and x / y you stand at, so a `check` point can be
---   filled in from the beta.
+--   filled in from the game.
 --
 -- Everything here is read-only game-wise (map getters, TomTom): it works in combat.
 

@@ -1,7 +1,7 @@
--- UI/Reminders.lua: the reminder sections of the Gameplay tab (ADDON_PLAN.md 15.4 / 17).
+-- UI/Reminders.lua: the reminder sections of the Gameplay tab.
 --
--- Until v0.20.1 these sections were a tab of their own (Reminders); since v0.21.0 they are
--- the right-hand column of the Gameplay tab (UI/Gameplay.lua calls Tab.BuildInto).
+-- They form the right-hand column of the Gameplay tab (UI/Gameplay.lua calls
+-- Tab.BuildInto).
 --
 -- One section per reminder that applies to the player's class (Reminders.ForPlayer):
 -- a heading, Show and Lock check boxes, a size slider, and for reminders that

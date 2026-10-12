@@ -1,14 +1,13 @@
--- UI/Home.lua: the Home tab of the main window (ADDON_PLAN.md 12.4).
+-- UI/Home.lua: the Home tab of the main window.
 --
--- "What's next" (15.2, v0.15.0; the launch plan's next step since v0.18.0): large entries in spellbook-slot style
+-- "What's next" (including the launch plan's next step): large entries in spellbook-slot style
 -- (big icon in the quick-slot border, gold name, white line under it): Talents
 -- with the free talent points, Macro Book with live counts, and the macro slot
--- use (12.4). Clicking an entry switches the main window to that tab. Below
+-- use. Clicking an entry switches the main window to that tab. Below
 -- them: the Import macros / Export professions buttons and one line on how to
--- get an import string. Quick settings (12.4.1) moved to the Settings tab.
--- At the very bottom, a version/author footer (12.4.2, added 2026-10-02 from
--- real in-game feedback: there was no in-game way to see the addon's version
--- or who made it short of opening the TOC file). Reads the TOC's own
+-- get an import string. Quick settings moved to the Settings tab.
+-- At the very bottom, a version/author footer, so the addon's version and
+-- author can be seen in game. Reads the TOC's own
 -- ## Version / ## Author fields through GetAddOnMetadata so the footer can
 -- never drift out of sync with the TOC the way a second hardcoded string
 -- would.
@@ -45,7 +44,7 @@ function Home.SlotLine()
   return L.HOME_SLOTS_LINE:format(char, maxChar, acc, maxAcc)
 end
 
--- 15.5: the next unticked step of the chosen launch plan, "Next: [12] Skycutter to Dalaran".
+-- The next unticked step of the chosen launch plan, "Next: [12] Skycutter to Dalaran".
 function Home.PlanLine()
   local s = R2F.Plan.Next(R2F.Plan.Selected())
   if not s then return L.HOME_PLAN_DONE end
@@ -57,9 +56,9 @@ function Home.MacroLine()
   return n == 1 and L.HOME_MACROS_COUNT_ONE:format(m) or L.HOME_MACROS_COUNT:format(n, m)
 end
 
--- 12.4: "5 free talent points", or "No free talent points" (step 9 replaced
--- the step-6 placeholder). Same wording as the minimap tooltip.
--- 13.12: a client that gives no usable answer says so instead of "No free
+-- "5 free talent points", or "No free talent points". Same wording as the
+-- minimap tooltip.
+-- A client that gives no usable answer says so instead of "No free
 -- talent points" (which is what hid 17 real points on WoW Forever).
 function Home.TalentLine()
   local n = R2F.Talents.FreePointsInfo()
@@ -97,7 +96,7 @@ local function entry(parent, y, icon, title, tab)
 end
 
 local function build(f)
-  -- 15.2: Home is a short "what's next" list: free talent points, library
+  -- Home is a short "what's next" list: free talent points, library
   -- and bar counts, macro slot use. Quick settings moved to the Settings tab.
   ui.head = f:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
   ui.head:SetPoint("TOPLEFT", 52, -56)
@@ -120,7 +119,7 @@ local function build(f)
   ui.hint:SetTextColor(0.7, 0.7, 0.7)
   ui.hint:SetText(L.HOME_IMPORT_HINT)
 
-  -- Export professions (v0.12.2): same as /r2f profs and the profession
+  -- Export professions: same as /r2f profs and the profession
   -- window's Export button. Read-only, so it stays enabled in combat.
   ui.profs = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   ui.profs:SetSize(160, 24)
@@ -145,7 +144,7 @@ end
 -- Reads the TOC's own ## Version / ## Author so the footer can't drift out of
 -- sync with a second hardcoded copy. The metadata API moved from a global
 -- function to C_AddOns sometime between Classic eras (same kind of API churn
--- already found with GetBuildInfo()'s return count, section 11), so try both
+-- already seen with GetBuildInfo()'s return count), so try both
 -- and fall back to a plain "no version info" line rather than erroring if
 -- this client has neither.
 local function addonMetadata(field)
@@ -194,7 +193,7 @@ function Home.Refresh()
   ui.talents.sub:SetText(Home.TalentLine())
   ui.slots.sub:SetText(Home.SlotLine())
   ui.plan.sub:SetText(Home.PlanLine())
-  -- Import is greyed out in combat, like the book's Import button (6.7):
+  -- Import is greyed out in combat, like the book's Import button:
   -- every import button behaves the same.
   local combat = R2F.InCombat()
   ui.import:SetEnabled(not combat)

@@ -1,7 +1,7 @@
--- Minimap.lua: the minimap button (ADDON_PLAN.md 12.2) and its right-click menu.
+-- Minimap.lua: the minimap button and its right-click menu.
 --
--- Why there is no LibDBIcon in libs\ (full findings in ADDON_PLAN 6.10):
--- the plan wanted LibDataBroker-1.1 + LibDBIcon-1.0 embedded. LibStub (public
+-- Why there is no LibDBIcon in libs\:
+-- embedding LibDataBroker-1.1 + LibDBIcon-1.0 would be the usual way. LibStub (public
 -- domain), CallbackHandler-1.0 (BSD) and LibDBIcon-1.0 (its CurseForge /
 -- WowAce project page: "Ace3 Style BSD") could be shipped, but LibDBIcon
 -- refuses to load without LibDataBroker-1.1, and LibDataBroker's own
@@ -18,11 +18,11 @@
 --                nothing. Benefit: minimap-button collector addons and
 --                LibDBIcon's own features see our button like any other.
 --   "own":       our button below, otherwise.
--- Both read and write the same R2FDB.minimap table (LibDBIcon's format, 6.3:
+-- Both read and write the same R2FDB.minimap table (LibDBIcon's format:
 -- hide, lock, minimapPos in degrees counter-clockwise from 3 o'clock), so
 -- the saved spot carries over if the backend changes between sessions.
 --
--- Taint (6.6): plain Button parented to Minimap (what every minimap button
+-- Taint: plain Button parented to Minimap (what every minimap button
 -- does); no secure templates, no hooks, Blizzard's frames are not changed.
 -- The only OnUpdate script runs while the button is being dragged.
 
@@ -46,7 +46,7 @@ local function db() return R2F.Library.db.minimap end
 -- Tooltip and clicks (shared by both backends)
 -- ---------------------------------------------------------------------------
 
--- Free talent points (12.2: "only when > 0"). Since 13.12 the one source is
+-- Free talent points (shown only when > 0). The one source is
 -- Talents.FreePointsInfo (C_Traits' tree currency on WoW Forever, Classic's
 -- UnitCharacterPoints elsewhere); "couldn't read" counts as 0 here, which
 -- just leaves the tooltip line out.
@@ -79,7 +79,7 @@ function Minimap_.OnClick(owner, mouseButton)
 end
 
 -- ---------------------------------------------------------------------------
--- Hide / lock (12.2, Settings 5.8, /r2f minimap 12.3)
+-- Hide / lock (Settings tab, /r2f minimap)
 -- ---------------------------------------------------------------------------
 
 -- Puts R2FDB.minimap on the button. Settings calls this after every change.
@@ -112,7 +112,7 @@ function Minimap_.ToggleLock()
 end
 
 -- ---------------------------------------------------------------------------
--- Right-click menu (12.2)
+-- Right-click menu
 -- ---------------------------------------------------------------------------
 
 -- The menu as data, so both menu backends draw the same thing (and the
@@ -133,11 +133,11 @@ function Minimap_.MenuItems()
   }
 end
 
--- Which menu API (ADDON_PLAN 11 left it open): Blizzard's MenuUtil when the
+-- Which menu API: Blizzard's MenuUtil when the
 -- client has it (newer engines, incl. recent Classic Era builds). It builds
 -- its menus without the shared UIDROPDOWNMENU_* state, so no taint. Older
 -- clients have only UIDropDownMenu / EasyMenu, which we deliberately skip
--- (that shared state is the known taint source, 6.7); UI.ContextMenu, our
+-- (that shared state is the known taint source); UI.ContextMenu, our
 -- own small frame, is the fallback there. Returns which one was used.
 function Minimap_.OpenMenu(owner)
   local items = Minimap_.MenuItems()
@@ -226,7 +226,7 @@ end
 
 local function buildButton()
   -- Named: minimap-button collector addons find buttons by scanning
-  -- Minimap's children and reading their names (R2F-prefixed, 6.7).
+  -- Minimap's children and reading their names (R2F-prefixed).
   local b = CreateFrame("Button", "R2FMinimapButton", Minimap)
   b:SetSize(31, 31)
   b:SetFrameStrata("MEDIUM")
@@ -257,7 +257,7 @@ local function buildButton()
     GameTooltip:Show()
   end)
   b:SetScript("OnLeave", function() GameTooltip:Hide() end)
-  -- Drag around the rim (12.2), not when locked. OnUpdate only during the drag.
+  -- Drag around the rim, not when locked. OnUpdate only during the drag.
   b:SetScript("OnDragStart", function(self)
     if db().lock then return end
     self.r2fDragging = true
@@ -298,7 +298,7 @@ function Minimap_.Init()
         OnClick = Minimap_.OnClick,
         OnTooltipShow = Minimap_.FillTooltip,
       })
-      -- R2FDB.minimap as-is (6.3 / 6.9): LibDBIcon keeps minimapPos in it.
+      -- R2FDB.minimap as-is: LibDBIcon keeps minimapPos in it.
       icon:Register(Minimap_.LDB_NAME, obj, db())
     end)
     if ok then

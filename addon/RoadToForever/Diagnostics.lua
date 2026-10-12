@@ -1,11 +1,10 @@
--- Diagnostics.lua: small read-only probes for questions about this client (v0.26.0).
+-- Diagnostics.lua: small read-only probes for questions about this client.
 --
 -- /r2f auras: can an addon read buffs here, on you and on your party, in or out of combat? The
 -- game's API files mark aura queries as restricted ("secret" values: C_Secrets.ShouldAurasBeSecret,
--- RequiresUnitAuraAccess), and the owner's old ForeverPlus notes say they were refused in combat.
--- A reminder for buffs the group can give you (ADDON_PLAN 17.1 step 5) only makes sense if this
--- says yes outside combat, so the answer is measured before anything is designed. Prints one block
--- of chat lines; paste them to us.
+-- RequiresUnitAuraAccess), and they can be refused in combat.
+-- The group-buff reminder only makes sense if this says yes outside combat. Prints one block
+-- of chat lines to include in a bug report.
 
 local _, R2F = ...
 local L = R2F.L

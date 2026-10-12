@@ -1,4 +1,4 @@
--- UI/BiZ.lua: the BiS tab of the main window, "Mr.BiZ" (ADDON_PLAN.md 19). Logic in BiZ.lua.
+-- UI/BiZ.lua: the BiS tab of the main window, "Mr.BiZ". Logic in BiZ.lua.
 --
 --   [Class v] [Spec v]                       [Best in slot] [Wishlist (n)]
 --   source filters (check boxes, two rows) + Known sources only
@@ -10,7 +10,7 @@
 --     Wishlist: grouped by where you get the items (a dungeon, a profession, a vendor),
 --       biggest group first; Export / Import share the list with the site (R2FW1:).
 --   footer: level, data source and build (Best in slot) or Export / Import (Wishlist).
--- Class / spec menus use UI.ContextMenu (no UIDropDownMenu: taint, 6.7).
+-- Class / spec menus use UI.ContextMenu (no UIDropDownMenu: taint).
 -- Everything is redrawn from the data on each refresh (17 slots, a few extra lines); the
 -- widgets are pooled per kind.
 

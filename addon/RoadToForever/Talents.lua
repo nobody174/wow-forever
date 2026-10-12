@@ -1,24 +1,21 @@
--- Talents.lua: talent links (ADDON_PLAN.md 13).
---   Step 8: read the character's talents in the site's link order, build the
---           link with its ~hash (Copy my build, 13.4).
---   Step 9: read a pasted link (13.2), check it against the game (13.3) and
---           work out the preview: per talent learned / now / later / not in
---           the build / conflict, plus the summary line (13.4).
---   Step 10: the learning engine (13.5, decisions in ADDON_PLAN 13.8), at the
---           end of this file.
+-- Talents.lua: talent links.
+--   * Reading: the character's talents in the site's link order, and the link
+--     with its ~hash (Copy my build).
+--   * Preview: a pasted link checked against the game, with a state per talent
+--     (learned / now / later / not in the build / conflict) and a summary line.
+--   * Learning: the engine at the end of this file.
 --
--- Steps 8 and 9 are read-only: they only call the C_Traits /
--- C_SpecializationInfo readers (13.10), GetTalentTabInfo, UnitCharacterPoints
--- and GetLocale and show our own copy box, which is all allowed in combat, so the
--- InCombatLockdown() / RunOrQueue pattern that guards macro writes (6.4, 6.9)
--- doesn't apply to them (ADDON_PLAN 13.6, 13.7).
--- Step 10 is the one irreversible write in the addon: the ONLY LearnTalent
--- call is learnPoint() below, every point is checked against combat first,
--- and nothing learns while R2F.InCombat() is true (13.8).
--- 13.12 adds the "traits" mode for WoW Forever: the ONLY C_Traits writes
--- (PurchaseRank, CommitConfig) are in purchasePoint() below, under the same
--- rules, plus a two-way read-back and a fall back to guided mode on anything
--- unexpected. It also moves the free-points source here (FreePointsInfo).
+-- Reading and preview are read-only: they only call the C_Traits /
+-- C_SpecializationInfo readers, GetTalentTabInfo, UnitCharacterPoints and
+-- GetLocale and show our own copy box, all allowed in combat, so the
+-- InCombatLockdown() / RunOrQueue pattern that guards macro writes doesn't
+-- apply to them.
+-- Learning is the one irreversible write in the addon. The ONLY LearnTalent
+-- call is learnPoint() and the ONLY C_Traits writes (PurchaseRank,
+-- CommitConfig) are in purchasePoint(); every point is checked against combat
+-- first, nothing learns while R2F.InCombat() is true, and the "traits" mode
+-- adds a two-way read-back and falls back to guided mode on anything
+-- unexpected. The free-points source (FreePointsInfo) lives here too.
 
 local _, R2F = ...
 local L = R2F.L
@@ -29,14 +26,13 @@ R2F.Talents = Talents
 Talents.SITE_URL = "https://nobody174.github.io/wow-forever/talents.html#"
 
 -- ---------------------------------------------------------------------------
--- Reading the talents: C_Traits (ADDON_PLAN 13.10)
+-- Reading the talents: C_Traits
 -- ---------------------------------------------------------------------------
 -- WoW Forever runs Classic's talent trees on the modern engine's trait
 -- system, so the Classic globals (GetNumTalentTabs / GetTalentInfo) don't
 -- exist at all -- not even after LoadAddOn("Blizzard_TalentUI"), which
--- answers false, "MISSING" there (13.9's premise was wrong; 13.10). The chain
--- below is the one WeakAuras Forever's Private.GetTalentData uses on the same
--- client, confirmed with live /dump output (13.10): active spec group ->
+-- answers false, "MISSING" there. The chain below is the one WeakAuras
+-- Forever's Private.GetTalentData uses on the same client: active spec group ->
 -- combat config -> config.treeIDs -> nodes -> entry -> definition -> spell.
 --
 -- Every call is guarded: the config may not exist yet right after login, and
@@ -66,9 +62,9 @@ local function spellIcon(id)
 end
 
 -- Distinct values of `key` over `nodes`, sorted ascending, as value -> rank
--- (1-based). Why ranks and not arithmetic: the 8 real Paladin nodes (13.10)
--- show posX/posY are Wowhead's col/row grid scaled by 600 with an offset, but
--- nothing promises the same scale or offset for every tree or class. Only the
+-- (1-based). Why ranks and not arithmetic: on real data posX/posY are
+-- Wowhead's col/row grid scaled by 600 with an offset, but nothing promises
+-- the same scale or offset for every tree or class. Only the
 -- ORDER of the distinct values is relied on, which survives any scale/offset.
 local function ranks(nodes, key)
   local seen, list = {}, {}
@@ -81,18 +77,16 @@ local function ranks(nodes, key)
   for i, v in ipairs(list) do out[v] = i end
   return out, #list
 end
-Talents.GridRanks = ranks   -- test hook (run_tests.py's real-data check, 13.10)
+Talents.GridRanks = ranks   -- test hook (run_tests.py's real-data check)
 
--- Jitter tolerance (ADDON_PLAN 13.11). Blizzard's own layout data is not
--- exactly on the grid: the full live dump of Paladin's tree 1100 (all 50
--- nodes) has 13 distinct posX values, and Protection's first column comes as
--- BOTH 5020 and 5030 -- 10 units apart, where every real column step in the
--- data is 590-600. Ranking raw values counted that as a fifth Protection
--- column, the "more than 4 columns" check refused the tree, and the player
--- got "couldn't read your talents". So before ranking, values that are much
--- closer together than a real grid step are snapped onto one grid line.
+-- Jitter tolerance. Blizzard's own layout data is not exactly on the grid:
+-- Paladin's tree 1100 (50 nodes) has its Protection first column at BOTH 5020
+-- and 5030 -- 10 units apart, where every real column step is 590-600.
+-- Ranking raw values would count a fifth column and refuse the tree ("couldn't
+-- read your talents"). So before ranking, values much closer together than a
+-- real grid step are snapped onto one grid line.
 --
--- Why relative and not a fixed number of units: 13.10 chose ranks precisely
+-- Why relative and not a fixed number of units: ranks are used precisely
 -- because nothing promises the same scale for every class and tree (a
 -- threshold of, say, 100 would swallow whole columns on a grid with a step of
 -- 60, and miss jitter of 300 on a step of 6000). The step is estimated from
@@ -107,9 +101,7 @@ Talents.GridRanks = ranks   -- test hook (run_tests.py's real-data check, 13.10)
 -- If jitter were ever the majority of gaps, the median would be a jitter gap,
 -- nothing would merge, and the column / tier count checks refuse: "can't
 -- read", never a wrong mapping.
--- Proven on real data: X jitter (5020 / 5030). Y is snapped the same way as a
--- precaution; Y jitter has not been seen (the 8 dumped Holy posY are exact,
--- the other panes' posY weren't in the report).
+-- X jitter is seen on real data; Y is snapped the same way as a precaution.
 -- Failing to snap is the safe direction: jitter is far below a step, so an
 -- unsnapped value still sorts between the same neighbours (one talent per
 -- cell), and the count checks refuse. Snapping two REAL lines together is the
@@ -140,7 +132,7 @@ local function snapGrid(nodes, key)
   end
   return out
 end
-Talents.GridSnap = snapGrid  -- test hook (13.11)
+Talents.GridSnap = snapGrid  -- test hook
 
 -- Sets n[to] = the snapped value of n[from] on every node.
 local function snapNodes(nodes, from, to)
@@ -149,8 +141,8 @@ local function snapNodes(nodes, from, to)
 end
 
 -- The three Classic panes (e.g. Holy / Protection / Retribution) inside ONE
--- trait tree. Paladin's config has a single treeID (1100) with 50 nodes, i.e.
--- all three panes in one tree (13.10); in the real Talents window they are
+-- trait tree. A class config has a single treeID (Paladin: 1100, 50 nodes),
+-- i.e. all three panes in one tree; in the game's Talents window they are
 -- three side-by-side column groups sharing the same rows. So the panes are
 -- found by X: the two widest gaps between consecutive distinct X values
 -- are the gutters between panes. Inside a pane neighbouring columns are one
@@ -159,9 +151,9 @@ end
 -- distinct X values, or a tie between the 2nd and 3rd widest gap) this
 -- returns nil: "can't read" is safe, a wrong split would map link digits onto
 -- the wrong talents (the ~hash would catch it, but nil says it earlier).
--- Reads the snapped gridX (13.11), so the panes are cut on exactly the values
+-- Reads the snapped gridX, so the panes are cut on exactly the values
 -- their columns are counted on. Jitter gaps are the smallest gaps of all, so
--- they could never be taken for a gutter either way (real data: gutters 2200
+-- they could never be taken for a gutter either way (Paladin: gutters 2200
 -- and 2260, columns 590-600, jitter 10).
 local function splitPanes(nodes)
   local xs, seen = {}, {}
@@ -224,18 +216,17 @@ end
 -- config isn't ready yet, or there are no talents.
 --   tier   = rank of the node's posY among the whole tree's distinct posY
 --            (rows are shared by all three panes; posY grows downwards:
---            tier 1 has the smallest posY, verified on the 8 real nodes).
+--            tier 1 has the smallest posY).
 --   column = rank of its posX among its own pane's distinct posX.
 --            (Both after snapping near-equal values onto one grid line,
---            13.11: Blizzard's data has a few units of jitter.)
+--            Blizzard's data has a few units of jitter.)
 --   index  = its position in its pane, in C_Traits.GetTreeNodes order (the
 --            trait API's own order, standing in for Classic's talent index).
--- Same shape as before 13.10, so encoding, hash, preview and learning order
--- keep working unchanged; nodeID / spellID are new extras.
--- Step 9's preview maps a pasted link onto exactly this list (13.2), so the
--- export and the import can never disagree about which digit is which talent.
+-- The preview maps a pasted link onto exactly this list, so the export and
+-- the import can never disagree about which digit is which talent.
+
 -- The live talent config id (active spec group -> combat config), or nil.
--- Shared by the reader, the free-points source (13.12) and the "traits"
+-- Shared by the reader, the free-points source and the "traits"
 -- learning mode, so all three always look at the same config.
 local function liveConfigID()
   if not (C_Traits and C_SpecializationInfo) then return nil end
@@ -252,14 +243,14 @@ function Talents.ReadTrees()
 
   local panes
   if #config.treeIDs == 1 then
-    -- The observed case (13.10): all three panes in one tree.
+    -- The usual case: all three panes in one tree.
     local nodes = {}
     for _, nodeID in ipairs(call(C_Traits.GetTreeNodes, config.treeIDs[1]) or {}) do
       local x = readNode(configID, nodeID, #nodes + 1)
       if x then nodes[#nodes + 1] = x end
     end
     if #nodes == 0 then return nil end
-    -- Snap X over the whole tree before the split (13.11).
+    -- Snap X over the whole tree before the split.
     snapNodes(nodes, "posX", "gridX")
     panes = splitPanes(nodes)
   elseif #config.treeIDs == 3 then
@@ -272,21 +263,21 @@ function Talents.ReadTrees()
         local x = readNode(configID, nodeID, #panes[p] + 1)
         if x then table.insert(panes[p], x) end
       end
-      -- Each tree is its own X space here, so snap per pane (13.11).
+      -- Each tree is its own X space here, so snap per pane.
       snapNodes(panes[p], "posX", "gridX")
     end
   end
   if not panes then return nil end
 
   -- Rows over every pane together: the panes share their rows on screen, and
-  -- a tier must mean the same thing in all three trees (13.5's learning order
+  -- a tier must mean the same thing in all three trees (the learning order
   -- runs tier by tier across all trees).
   local all = {}
   for _, pane in ipairs(panes) do
     for _, x in ipairs(pane) do all[#all + 1] = x end
   end
   if #all == 0 then return nil end
-  -- Ranks are taken on the snapped values (13.11), so jitter of a few units
+  -- Ranks are taken on the snapped values, so jitter of a few units
   -- can't pose as an extra tier or column.
   snapNodes(all, "posY", "gridY")
   local tierOf, numTiers = ranks(all, "gridY")
@@ -316,7 +307,7 @@ function Talents.ReadTrees()
   return trees
 end
 
--- The ~hash (13.3). MUST match talentcalc.js's treeHash() byte for byte:
+-- The ~hash. MUST match talentcalc.js's treeHash() byte for byte:
 -- djb2 over the talent names in link order ("," between talents, ";" between
 -- trees), as UTF-8 bytes (WoW's Lua strings already are UTF-8 bytes), 32-bit
 -- wrap, then mod 36^4 written in base36 and zero-padded to 4 characters.
@@ -354,7 +345,7 @@ end
 
 -- The share code exactly like talentcalc.js's code(): per tree one digit per
 -- talent (current rank) in sorted order, trailing zeros removed (a tree's
--- missing trailing digits mean 0, 13.2, so links stay short and match the
+-- missing trailing digits mean 0, so links stay short and match the
 -- site's own output), trees joined with "-", trailing "-" removed (empty
 -- trailing trees), e.g. "--05" -> "--05", "05--" -> "05", "" for no points.
 function Talents.Encode(trees)
@@ -388,7 +379,7 @@ function Talents.MyBuildLink()
   return Talents.SITE_URL .. Talents.LinkBody(classId, trees)
 end
 
--- Copy my build (13.4): the link in our copy box, text selected. Read-only,
+-- Copy my build: the link in our copy box, text selected. Read-only,
 -- so it works in combat too (see the header). Returns the link or nil.
 function Talents.CopyMyBuild()
   local link = Talents.MyBuildLink()
@@ -401,7 +392,7 @@ function Talents.CopyMyBuild()
 end
 
 -- ===========================================================================
--- Step 9: reading a pasted link and the preview (13.2 - 13.4)
+-- Reading a pasted link and the preview
 -- ===========================================================================
 
 -- talentcalc.js's CLASSES ids. A word before "/" that isn't one of these is
@@ -410,16 +401,16 @@ local CLASS_IDS = { warrior = true, paladin = true, hunter = true, rogue = true,
                     shaman = true, mage = true, warlock = true, druid = true }
 
 -- "warrior" -> "Warrior". English on purpose: every message around it is
--- English (5.9), and 13.2's message is "This is a Paladin build. You're
--- playing a Warrior." A localized class name would mix two languages.
+-- English ("This is a Paladin build. You're playing a Warrior."), and a
+-- localized class name would mix two languages.
 function Talents.ClassName(id)
   return id:sub(1, 1):upper() .. id:sub(2)
 end
 
--- Accepts all four forms of 13.2: a full URL, "talents.html#warrior/...",
--- "#warrior/..." and bare "warrior/...". Everything up to the last "#" is
--- dropped first: on a full URL 13.2's pattern alone would happily match
--- "io/" in "github.io/". Then the plan's pattern, anchored so trailing junk
+-- Accepts four forms: a full URL, "talents.html#warrior/...", "#warrior/..."
+-- and bare "warrior/...". Everything up to the last "#" is dropped first: on a
+-- full URL the pattern alone would happily match "io/" in "github.io/". Then
+-- the link pattern, anchored so trailing junk
 -- isn't silently ignored. Surrounding spaces, quotes and Discord's <...> are
 -- trimmed. Case is ignored (class ids and the base36 hash are lower case).
 -- Returns { class, code, hash (nil = old link without one), codes = {per
@@ -442,7 +433,7 @@ function Talents.ParseLink(text)
 end
 
 -- English client? The ~hash is over talent NAMES, and a non-English client
--- returns translated names, so its hash can never equal the site's (13.6).
+-- returns translated names, so its hash can never equal the site's.
 -- No GetLocale at all: assume English, i.e. keep the strict check.
 function Talents.IsEnglishClient()
   if not GetLocale then return true end
@@ -451,35 +442,33 @@ function Talents.IsEnglishClient()
 end
 
 -- ---------------------------------------------------------------------------
--- Unspent talent points (ADDON_PLAN 13.12): the ONE place the addon finds
+-- Unspent talent points: the ONE place the addon finds
 -- them. The Talents tab, the learning engine, Home and the minimap tooltip
 -- (Minimap.FreeTalentPoints) all come through here.
 -- ---------------------------------------------------------------------------
 -- Why C_Traits first: on WoW Forever the talents themselves live in a trait
--- config (13.10), and a real screenshot showed Blizzard's window at "Unspent
--- Talents: 17" while UnitCharacterPoints-based code said 0. In retail's trait
+-- config, and Blizzard's window can show "Unspent Talents: 17" while
+-- UnitCharacterPoints says 0. In retail's trait
 -- system (the API family Forever's client carries) unspent points are a trait
 -- CURRENCY of the tree: C_Traits.GetTreeCurrencyInfo(configID, treeID,
 -- excludeStagedChanges) returns a list of { traitCurrencyID, quantity,
 -- maxQuantity, spent }, and quantity is what's left to spend.
---   Note: C_Traits.GetTraitCurrencyInfo (seen in the live /dump) is NOT the
---   amount in retail: it takes a traitCurrencyID and describes the currency
+--   Note: C_Traits.GetTraitCurrencyInfo is NOT the amount in retail: it
+--   takes a traitCurrencyID and describes the currency
 --   (flags, type, icon). So it isn't used here.
 -- excludeStagedChanges = true: the rest of the addon reads activeRank, the
--- APPLIED rank (13.10), so the free points must be the applied ones too, not
+-- APPLIED rank, so the free points must be the applied ones too, not
 -- "what's left after the changes sitting un-applied in Blizzard's window".
--- Confidence: medium. The retail signature is well known; that Forever's
--- client has GetTreeCurrencyInfo with the same shape is NOT confirmed (the
--- dump excerpt didn't list it). Every step is guarded, and anything odd gives
--- "unknown", never a guess.
+-- The retail signature is assumed for Forever's client; every step is
+-- guarded, and anything odd gives "unknown", never a guess.
 -- excludeStaged: true for the applied amount (everything here); false only
--- to see how many points are staged (stagedPoints, 13.12).
+-- to see how many points are staged (stagedPoints).
 local function traitFreePoints(configID, excludeStaged)
   if not (C_Traits and type(C_Traits.GetTreeCurrencyInfo) == "function") then return nil end
   local config = call(C_Traits.GetConfigInfo, configID)
   if type(config) ~= "table" or type(config.treeIDs) ~= "table" or #config.treeIDs == 0 then return nil end
-  -- Per currency id, so a pool shared by several trees (one tree per pane,
-  -- 13.10's other layout) is counted once, not once per tree.
+  -- Per currency id, so a pool shared by several trees (the one-tree-per-pane
+  -- layout) is counted once, not once per tree.
   local byCurrency, n = {}, 0
   for _, treeID in ipairs(config.treeIDs) do
     local list = call(C_Traits.GetTreeCurrencyInfo, configID, treeID, excludeStaged)
@@ -518,7 +507,7 @@ function Talents.FreePointsInfo()
     local ok, n = pcall(UnitCharacterPoints, "player")
     if ok and type(n) == "number" then
       -- On a client whose talents are a trait config (configID found) this
-      -- legacy call is exactly what read 0 next to 17 real points. A positive
+      -- legacy call can read 0 next to 17 real points. A positive
       -- answer is still believable; a 0 there could be that bug, so it's
       -- "unknown" rather than a confident "no points".
       if configID and n <= 0 then return nil end
@@ -536,7 +525,7 @@ end
 
 -- Tree names per class in in-game tab order: the same names and order as
 -- talentcalc.js CLASSES (run_tests.py compares them), because WoW Forever's
--- C_Traits gives no tree names (15.2). Keyed by class token.
+-- C_Traits gives no tree names. Keyed by class token.
 Talents.TREE_NAMES = {
   PRIEST = { "Discipline", "Holy", "Shadow" },
   WARLOCK = { "Affliction", "Demonology", "Destruction" },
@@ -550,7 +539,7 @@ Talents.TREE_NAMES = {
 }
 
 -- Tree names for the mini-tree headers. GetTalentTabInfo's returns differ by
--- client generation (13.6 avoided it for that reason): Classic-era clients
+-- client generation (so the link mapping never uses it): Classic-era clients
 -- return name first, newer ones id (a number) then name. Take whichever is
 -- the first string; without one (missing API, error, odd shape, or WoW
 -- Forever's C_Traits client) use our own list for `class` (default: the
@@ -570,11 +559,11 @@ function Talents.TreeName(tab, class)
   return L.TALENT_TREE_N:format(tab)
 end
 
--- The order points would be learned in (13.5): tier 1 of all trees, then
+-- The order points would be learned in: tier 1 of all trees, then
 -- tier 2, ...; within a tier tree order, then column. With fewer free points
 -- than the build needs this fills from the top, which always satisfies the
--- 5-points-per-tier rule and prerequisites (they sit higher up). Step 9 uses
--- it to say which points come "now" and which "later"; step 10 learns in it.
+-- 5-points-per-tier rule and prerequisites (they sit higher up). The preview
+-- uses it to say which points come "now" and which "later"; learning follows it.
 function Talents.LearnOrder(plan)
   local list = {}
   for _, tree in ipairs(plan.trees) do
@@ -595,7 +584,7 @@ local function points(n)
   return n == 1 and L.TALENT_POINT_ONE or L.TALENT_POINTS:format(n)
 end
 
--- The summary line (13.4) for a plan. Returns text, kind:
+-- The summary line for a plan. Returns text, kind:
 --   "conflict" (red, Learn stays disabled), "nopoints", "done", "empty",
 --   "all", "partial". Link problems (over max rank, no such talent) come
 --   before "you have points this build doesn't use": a trainer reset can't
@@ -620,14 +609,14 @@ function Talents.Summary(plan)
   if plan.total == 0 then return L.TALENT_SUMMARY_EMPTY, "empty" end
   if plan.need == 0 then return L.TALENT_SUMMARY_DONE, "done" end
   if plan.free <= 0 then
-    -- 13.12: "couldn't read" is not "you have none"; say which one it is.
+    -- "couldn't read" is not "you have none"; say which one it is.
     if plan.freeKnown == false then return L.TALENT_SUMMARY_POINTS_UNKNOWN, "nopoints" end
     return L.TALENT_SUMMARY_NO_POINTS, "nopoints"
   end
-  -- 13.4's two wordings, exactly, when none of the build is learned yet
-  -- (the normal case). When part of it already is (a half-learned build
+  -- The plain wording when none of the build is learned yet (the normal
+  -- case). When part of it already is (a half-learned build
   -- after leveling), "uses 21 points ... All 21 will be learned" would be
-  -- wrong, so the head says how many are already learned (13.7).
+  -- wrong, so the head says how many are already learned.
   local head = plan.have > 0 and L.TALENT_USES_HAVE:format(points(plan.total), plan.have)
     or L.TALENT_USES:format(points(plan.total))
   if plan.need <= plan.free then
@@ -643,7 +632,7 @@ end
 -- any state.
 --   trees = ReadTrees() output, codes = ParseLink(...).codes (or {} = "no
 --   build": everything you have counts as kept), free = unspent points, or
---   nil = couldn't be read (13.12: planned as 0, so nothing is learnable,
+--   nil = couldn't be read (planned as 0, so nothing is learnable,
 --   and plan.freeKnown = false makes the summary say why).
 -- Per talent (on the ReadTrees entry's copy): planned, add (points to learn),
 -- now / later (of add), state:
@@ -654,7 +643,7 @@ end
 --   "conflict" you have more points than the build wants (red, blocks Learn)
 --   "overmax"  the link asks for more than the talent's max rank (red)
 -- Conflicts still get a preview (the trees show WHERE the problem is, which
--- is what the player needs to fix it); they only block learning (13.4).
+-- is what the player needs to fix it); they only block learning.
 function Talents.Plan(trees, codes, free)
   local plan = { trees = {}, conflicts = {}, total = 0, have = 0, need = 0,
                  free = math.max(tonumber(free) or 0, 0), freeKnown = tonumber(free) ~= nil }
@@ -663,7 +652,7 @@ function Talents.Plan(trees, codes, free)
     local code = codes[t] or ""
     local tree = { name = Talents.TreeName(t), talents = {}, current = 0, planned = 0 }
     for k, x in ipairs(list) do
-      -- Digit k = planned rank of the k-th talent in tier/column order (13.2).
+      -- Digit k = planned rank of the k-th talent in tier/column order.
       -- Missing trailing digits = 0: the site strips trailing zeros from every
       -- tree (and drops empty trailing trees), so a short code is normal.
       local planned = tonumber(code:sub(k, k)) or 0
@@ -675,8 +664,8 @@ function Talents.Plan(trees, codes, free)
       tree.planned = tree.planned + planned
       plan.total = plan.total + planned
       if planned > x.maxRank then
-        -- The hash covers names only (13.6), so a matching hash can't vouch
-        -- for max ranks: this check runs on every link (13.3).
+        -- The hash covers names only, so a matching hash can't vouch
+        -- for max ranks: this check runs on every link.
         e.state = "overmax"
         linkProblems[#linkProblems + 1] = { kind = "overmax", talent = e }
       elseif x.rank > planned then
@@ -690,8 +679,7 @@ function Talents.Plan(trees, codes, free)
       tree.talents[k] = e
     end
     -- Points for a position past the tree's last talent: the link was made
-    -- for a tree with more talents than the game's (13.3's "no points in a
-    -- tree position that doesn't exist"). Zeros there are harmless.
+    -- for a tree with more talents than the game's. Zeros there are harmless.
     if code:sub(#list + 1):find("[1-9]") then
       linkProblems[#linkProblems + 1] = { kind = "nospot", tab = t, treeName = tree.name }
     end
@@ -729,7 +717,7 @@ function Talents.Plan(trees, codes, free)
     end
   end
   plan.summary, plan.kind = Talents.Summary(plan)
-  -- Step 10's Learn button is enabled from exactly this (plus "not in combat,
+  -- The Learn button is enabled from exactly this (plus "not in combat,
   -- not already learning"), so a plan with ANY conflict can never be learned.
   plan.learnable = #plan.conflicts == 0 and plan.need > 0 and plan.free > 0
   return plan
@@ -749,14 +737,14 @@ function Talents.CurrentPlan()
   return Talents.Plan(trees, codes, (Talents.FreePointsInfo()))
 end
 
--- Preview (13.2 - 13.4): text -> result.
+-- Preview: text -> result.
 --   { error = text }               stop: nothing to preview (red). Bad link,
 --                                  wrong class, talents unreadable, or a hash
---                                  that doesn't match (13.3).
+--                                  that doesn't match.
 --   { plan = Plan(...), caution }  preview; caution = the yellow line for a
 --                                  link that couldn't be checked (no hash, or
 --                                  a non-English client), else nil.
--- Read-only, so no combat check (13.7): it parses a string and reads talent
+-- Read-only, so no combat check: it parses a string and reads talent
 -- info, both allowed in combat, and calls nothing protected.
 function Talents.Preview(text)
   local link = Talents.ParseLink(text)
@@ -771,19 +759,19 @@ function Talents.Preview(text)
   if not trees then return { error = L.TALENT_READ_FAILED_TAB, link = link } end
   local caution
   if not link.hash then
-    -- Old (pre-step-8) link: allowed, with 13.3's yellow line. The sanity
-    -- checks in Plan still run.
+    -- Old link without a hash: allowed, with a yellow caution line. The
+    -- sanity checks in Plan still run.
     caution = L.TALENT_NO_HASH
   elseif link.hash ~= Talents.Hash(trees) then
     if Talents.IsEnglishClient() then
-      -- 13.3: different trees -> stop, no preview, no plan. A digit can't be
+      -- Different trees -> stop, no preview, no plan. A digit can't be
       -- trusted to mean the same talent here as on the site.
       return { error = L.TALENT_HASH_MISMATCH, link = link }
     end
     -- Non-English client: the names are translated, so the hash can't match
-    -- even when the trees are identical (13.6). Refusing would lock every
+    -- even when the trees are identical. Refusing would lock every
     -- non-English player out for good, so this is treated exactly like an
-    -- old link without a hash (13.7): can't check, say so, sanity checks
+    -- old link without a hash: can't check, say so, sanity checks
     -- still apply.
     caution = L.TALENT_HASH_LOCALE
   end
@@ -791,7 +779,7 @@ function Talents.Preview(text)
 end
 
 -- ===========================================================================
--- Step 10: learning (13.5; decisions in ADDON_PLAN 13.8)
+-- Learning
 -- ===========================================================================
 --
 -- Why a state machine and not a loop: the game confirms a point
@@ -809,8 +797,8 @@ end
 -- new Learn click asks again. Resuming from saved data, possibly days later,
 -- would act on a confirmation the player gave in another situation.
 
-Talents.LEARN_TIMEOUT = 0.5   -- 13.5: how long to wait for the server's answer
--- "traits" mode (13.12): one point there is a purchase AND a commit, and the
+Talents.LEARN_TIMEOUT = 0.5   -- how long to wait for the server's answer
+-- "traits" mode: one point there is a purchase AND a commit, and the
 -- commit is a server round trip (Blizzard's own window shows an "applying"
 -- wait for it). A too-short wait only turns into a stop + guided mode (safe,
 -- but annoying), so it gets more room than Classic's single LearnTalent.
@@ -820,9 +808,9 @@ Talents.POLL = 0.1            -- how often a waiting point is looked for (see st
 local run            -- the current / last run (see Talents.StartLearn)
 -- worked: LearnTalent has landed a point this session (so addons may use it).
 -- blocked: it was refused with no other explanation before ever working, so
--- this client probably blocks it for addons -> guided mode (13.5's fallback).
+-- this client probably blocks it for addons -> guided mode.
 -- traitsWorked / traitsBlocked: the same two facts for the "traits" mode
--- (C_Traits.PurchaseRank, 13.12). Kept apart so one write path's trouble
+-- (C_Traits.PurchaseRank). Kept apart so one write path's trouble
 -- never says anything about the other. traitsBlocked, unlike blocked, is never
 -- cleared by a late success: anything unexpected in that mode means guided
 -- mode for the rest of the session (a /reload tries "traits" again).
@@ -840,11 +828,11 @@ local function notify()
   if R2F.TalentPanel then R2F.TalentPanel.Refresh() end
 end
 
--- The points the confirm popup promises, one entry per point, in 13.5's order:
--- Talents.LearnOrder, the very list step 9's preview hands its "now" points
--- out from (13.7), so the run learns exactly the gold +N cells, in that order.
+-- The points the confirm popup promises, one entry per point, in learning
+-- order: Talents.LearnOrder, the very list the preview hands its "now" points
+-- out from, so the run learns exactly the gold +N cells, in that order.
 -- target = the talent's rank once this point has landed. nodeID = its trait
--- node (13.10), the "traits" mode's address (13.12); the order is untouched.
+-- node, the "traits" mode's address; the order is untouched.
 function Talents.LearnPoints(plan)
   local out = {}
   for _, e in ipairs(Talents.LearnOrder(plan)) do
@@ -856,10 +844,10 @@ function Talents.LearnPoints(plan)
   return out
 end
 
--- Which way talents get learned on this client (13.5, 13.8):
+-- Which way talents get learned on this client:
 --   "preview"  Blizzard's own preview/commit API exists AND is switched on
---              (Wrath-style; the previewTalents CVar). 13.5: prefer it. We
---              only fill Blizzard's preview; its own Learn button commits.
+--              (Wrath-style; the previewTalents CVar). Preferred when there:
+--              we only fill Blizzard's preview; its own Learn button commits.
 --   "direct"   LearnTalent(tab, index), one point at a time (Classic).
 --   "guided"   no LearnTalent at all, or this session saw it refused with no
 --              other explanation before it ever worked: we point at the
@@ -867,15 +855,15 @@ end
 -- The CVar test matters: a client can carry the preview functions without
 -- the feature being on (shared code), and filling a preview nobody sees
 -- would learn nothing.
--- 13.10: the trees are read through C_Traits now, so a talent's (tab, index)
+-- The trees are read through C_Traits, so a talent's (tab, index)
 -- is OUR address (pane, position in GetTreeNodes order), not Classic's
 -- talent-table index. LearnTalent and AddPreviewTalentPoints take Classic's
 -- (tab, index). Both are irreversible-ish writes, so they are only used on a
 -- client that also has Classic's GetTalentInfo (the "preview" and "direct"
 -- modes require it) and, per point, only when GetTalentInfo names exactly this
--- talent at exactly this address. WoW Forever has no GetTalentInfo (13.10),
+-- talent at exactly this address. WoW Forever has no GetTalentInfo,
 -- so there neither of those modes applies.
---   "traits"   (13.12) C_Traits.PurchaseRank(configID, nodeID), one point at a
+--   "traits" C_Traits.PurchaseRank(configID, nodeID), one point at a
 --              time, committed and verified per point. The address is the
 --              trait node itself (no Classic index to translate), checked
 --              against the live config right before each write. Only when the
@@ -911,13 +899,13 @@ end
 
 local function packed(...) return { n = select("#", ...), ... } end
 
--- Prerequisites (13.5: "double-check ... GetTalentPrereqs"). Classic returns
+-- Prerequisites (GetTalentPrereqs). Classic returns
 -- tier, column, isLearnable per prerequisite. We look the prerequisite up in
 -- the live tree and require it maxed (the Classic rule) rather than trust
 -- isLearnable, whose exact meaning can't be confirmed outside the game.
 -- No API or an error: no extra check here; the server still refuses an
 -- illegal point and the rank re-read after LearnTalent stops the run then.
--- 13.12: only at an address Classic's API confirms (legacyMatches). Without
+-- Only at an address Classic's API confirms (legacyMatches). Without
 -- it (WoW Forever) (tab, index) is our C_Traits address and GetTalentPrereqs,
 -- if a client had it, would describe some other talent; the "traits" mode
 -- asks the trait node itself instead (purchasePoint's canPurchaseRank).
@@ -964,11 +952,11 @@ local function verify(r, p)
 end
 
 -- ---------------------------------------------------------------------------
--- C_Traits helpers for the "traits" mode (13.12)
+-- C_Traits helpers for the "traits" mode
 -- ---------------------------------------------------------------------------
 -- Node fields, retail meaning (the API family Forever's client carries; not
 -- every field is confirmed on Forever, so each one is optional here):
---   activeRank    the APPLIED rank (what the reader shows, 13.10)
+--   activeRank    the APPLIED rank (what the reader shows)
 --   currentRank   the rank INCLUDING changes staged in the client but not yet
 --                 applied (Blizzard's window shows those as pending)
 --   ranksPurchased  purchased ranks (staged included); older/other name
@@ -1033,7 +1021,7 @@ end
 
 -- The talent's APPLIED rank in the live game, or nil when it can't be
 -- confirmed to be this very talent. Classic: GetTalentInfo at the Classic
--- address (unchanged since step 10). "traits": the trait node in the run's
+-- address. "traits": the trait node in the run's
 -- config, through the reader's own readNode (activeRank + the name check).
 local function liveRank(r, p)
   if r.mode == "traits" then
@@ -1049,9 +1037,9 @@ local function liveRank(r, p)
   return rank or 0
 end
 
--- Did point p land? Classic: the rank re-read (13.5), unchanged. "traits"
--- (13.12): the applied rank AND, independently, the free points (read with
--- staged changes excluded, 13.12) having gone down since the send. Two
+-- Did point p land? Classic: the rank re-read. "traits": the applied rank
+-- AND, independently, the free points (read with staged changes excluded)
+-- having gone down since the send. Two
 -- different API answers must agree, because the one thing this mode must
 -- never do is call a point learned when it isn't. If activeRank turned out to
 -- count staged ranks on this client, the rank alone would say "yes" right
@@ -1068,8 +1056,8 @@ end
 
 -- Stops that "Learn talents" can pick up again from the same point. The
 -- others (no points, tier/prerequisite, trees changed) need a fresh preview,
--- so the next click starts over with a new popup. 13.12: "staged" (resumes in
--- guided mode) and "pending" (once Blizzard's window is applied or undone).
+-- so the next click starts over with a new popup. "staged" resumes in guided
+-- mode, "pending" once Blizzard's window is applied or undone.
 local RESUMABLE = { combat = true, user = true, rejected = true, staged = true, pending = true }
 
 -- The guided-mode hint goes on a refusal when the mode that refused is now
@@ -1134,37 +1122,37 @@ local function nextPoint(r)
   end
 end
 
--- The ONLY LearnTalent call in the addon (Taint & secure execution, 6.6).
+-- The ONLY LearnTalent call in the addon.
 -- Combat is checked here, at the write, not just when the button was clicked:
 -- a run spans many server round trips and combat can start between any two.
 -- R2F.InCombat() also covers the moment PLAYER_REGEN_DISABLED is handled,
--- when InCombatLockdown() is still false (6.7).
+-- when InCombatLockdown() is still false.
 local function learnPoint(p)
   if R2F.InCombat() then return false, "combat" end
-  -- 13.10: never send a point to an address Classic's API doesn't confirm is
+  -- Never send a point to an address Classic's API doesn't confirm is
   -- this very talent (see legacyMatches).
   if not legacyMatches(p.tab, p.index, p.name) then return false, "mismatch" end
   if not pcall(LearnTalent, p.tab, p.index) then return false, "rejected" end
   return true
 end
 
--- The ONLY C_Traits writes in the addon (13.12; Taint & secure execution,
--- 6.6): PurchaseRank, and CommitConfig when the purchase turned out to be
+-- The ONLY C_Traits writes in the addon: PurchaseRank, and CommitConfig when
+-- the purchase turned out to be
 -- staged. Same order as learnPoint: combat first, then the address, then the
 -- write; nothing is sent unless every check passes.
 --
 -- Signature: retail's C_Traits.PurchaseRank(configID, nodeID) -> success
 -- (boolean), on the same (configID, nodeID) pair every C_Traits reader here
--- already uses (13.10). Only `false` or an error count as "refused" at once;
+-- already uses. Only `false` or an error count as "refused" at once;
 -- `true` or nothing proves nothing: the read-back (landed) decides.
 --
 -- Staged or applied at once? In retail, PurchaseRank only STAGES the change
 -- in the client's copy of the config (Blizzard's window shows it pending and
 -- lights "Apply Changes"); C_Traits.CommitConfig(configID) sends what's
 -- staged to the server, which answers with TRAIT_CONFIG_UPDATED (or
--- CONFIG_COMMIT_FAILED). The "Apply Changes" button in the user's screenshot
--- of Forever's window points the same way. Not confirmed on Forever, so it is
--- read off the node right after the call instead of assumed. A server can't
+-- CONFIG_COMMIT_FAILED). Forever's window has the same "Apply Changes"
+-- button, but rather than assume, it is read off the node right after the
+-- call. A server can't
 -- answer inside the call, so ANY rank change visible right after it is the
 -- client's local (staged) copy:
 --   a rank moved      -> staged: commit exactly this one point, and only when
@@ -1174,11 +1162,10 @@ end
 --   nothing moved     -> the server may apply it later; wait, landed() decides
 --                        (this also catches a "true" that changed nothing).
 -- One commit per point, not one at the end: each point is then one server
--- round trip, exactly like Classic's LearnTalent, so every step-10 guard
--- (verify before each point, per-point combat check, read-back, timeout,
--- resume, no double send) applies unchanged, and at most one point is ever
--- un-applied. Confidence: medium on the signature, low-to-medium on staging
--- vs immediate on Forever; the read-back is what makes either answer safe.
+-- round trip, exactly like Classic's LearnTalent, so every guard (verify
+-- before each point, per-point combat check, read-back, timeout, resume, no
+-- double send) applies unchanged, and at most one point is ever un-applied.
+-- The read-back is what makes either answer (staged or immediate) safe.
 -- Returns true (sent; wait for the answer) or false, why: "combat" |
 -- "mismatch" | "pending" | "locked" | "rejected" | "staged" | "stopped" (the
 -- run was already stopped inside the call, e.g. ADDON_ACTION_FORBIDDEN).
@@ -1229,7 +1216,7 @@ end
 local stepSend, settle
 
 -- A point that didn't land. Classic: guided mode is only suspected when
--- LearnTalent never worked this session (13.8). "traits" (13.12): ANY refusal,
+-- LearnTalent never worked this session. "traits": ANY refusal,
 -- error, failed commit or unconfirmed point switches the session to guided
 -- mode at once; nothing more is fired at C_Traits until a /reload. If the
 -- point is sitting staged in Blizzard's window, the message says so: the
@@ -1281,10 +1268,10 @@ stepSend = function(r)
   if C_Timer and C_Timer.After then
     local wait = r.mode == "traits" and Talents.TRAITS_TIMEOUT or Talents.LEARN_TIMEOUT
     C_Timer.After(wait, function() settle(r, tok, true) end)
-    -- Also look every POLL seconds instead of only on the game's events and the timeout: when the
-    -- game sends no event for an applied point, every point used to cost the whole timeout (2 s in
-    -- "traits" mode: a 15-point build took half a minute; owner, 2026-10-11). A look that finds the
-    -- point continues at once; one that doesn't changes nothing (settle without `final` never stops).
+    -- Also look every POLL seconds, not only on the game's events and the timeout: when the game
+    -- sends no event for an applied point, each point would cost the whole timeout (2 s in "traits"
+    -- mode). A look that finds the point continues at once; one that doesn't changes nothing
+    -- (settle without `final` never stops).
     local function poll()
       C_Timer.After(Talents.POLL, function()
         if run ~= r or r.token ~= tok or r.phase ~= "learning" or not r.waiting then return end
@@ -1296,8 +1283,8 @@ stepSend = function(r)
   end
 end
 
--- Did the point land? (landed: the rank re-read, 13.5; "traits" also the
--- free points, 13.12.) Not yet on an event: keep waiting (the event also
+-- Did the point land? (landed: the rank re-read; "traits" also the free
+-- points.) Not yet on an event: keep waiting (the event also
 -- fires for other reasons, e.g. a level-up). Not yet when it's final (the
 -- timeout): stop, never continue past it.
 -- resend = this was a point from before a stop that we only waited for (see
@@ -1384,7 +1371,7 @@ local function begin(r)
   end
   r.mode, r.phase = mode == "traits" and "traits" or "direct", "learning"
   -- The config this (part of the) run writes to; every point checks the
-  -- live one still matches (13.12).
+  -- live one still matches.
   if r.mode == "traits" then r.configID = liveConfigID() end
   if pending and C_Timer and C_Timer.After then
     -- A point sent before the stop may still be on its way (Stop, then Learn
@@ -1394,7 +1381,7 @@ local function begin(r)
     -- exactly like for a point just sent; only if it's still not there after
     -- the timeout is it sent again (settle's resend; never in "traits").
     -- Without C_Timer there's no way to wait; it is sent again at once (every
-    -- Classic Era client has C_Timer, 13.8).
+    -- Classic Era client has C_Timer).
     r.waiting = pending
     r.token = r.token + 1
     local tok = r.token
@@ -1410,7 +1397,7 @@ end
 -- as counted in the popup: a run never learns more than the player agreed to,
 -- even if a level-up adds points meanwhile. Accepted in combat (popup opened
 -- before combat): the start waits for PLAYER_REGEN_ENABLED in
--- Macros.RunOrQueue, the queue every confirmed write in the addon uses (6.9),
+-- Macros.RunOrQueue, the queue every confirmed write in the addon uses,
 -- and begin() re-checks everything when it runs. Returns the run.
 function Talents.StartLearn(text, list)
   local r = { text = text, points = list, total = #list, done = 0, pos = 1,
@@ -1422,8 +1409,8 @@ function Talents.StartLearn(text, list)
   return r
 end
 
--- A stopped run for this exact link that Learn talents can continue (13.5:
--- "Click Learn talents to continue"); no second popup, same X of Y.
+-- A stopped run for this exact link that Learn talents can continue; no
+-- second popup, same X of Y.
 function Talents.CanResume(text)
   local r = run
   return r ~= nil and r.phase == "stopped" and r.resumable and r.text == text and r.pos <= r.total
@@ -1478,8 +1465,8 @@ function Talents.LearnMessage() return message end
 
 -- CHARACTER_POINTS_CHANGED, TRAIT_CONFIG_UPDATED and
 -- TRAIT_TREE_CURRENCY_INFO_UPDATED (Core.lua, before the tab's refresh).
--- Which of them Forever fires for an applied point isn't confirmed (13.12);
--- none of them is trusted on its own: each one only makes settle() re-read
+-- Clients differ in which of them fire for an applied point, so none is
+-- trusted on its own: each one only makes settle() re-read
 -- the game (landed), and the timeout is the final word.
 function Talents.OnPointsChanged()
   local r = run
@@ -1505,7 +1492,7 @@ function Talents.OnCommitFailed(configID)
   settle(r, r.token, true)
 end
 
--- PLAYER_REGEN_DISABLED (Core.lua): stop AT ONCE, mid-run (13.5), not only
+-- PLAYER_REGEN_DISABLED (Core.lua): stop AT ONCE, mid-run, not only
 -- refuse to start. The point already sent can't be called back; it is
 -- counted if it lands (lateCheck). No new write goes out after this:
 -- learnPoint and purchasePoint check R2F.InCombat(), which is true from this
@@ -1520,10 +1507,10 @@ end
 
 -- ADDON_ACTION_FORBIDDEN / ADDON_ACTION_BLOCKED (Core.lua, our addon only):
 -- the game's own word that it refused a call. For LearnTalent that is the
--- clearest "blocked for addons" signal there is (13.5's guided fallback), so
--- it switches this session to guided mode at once, even if a point worked
--- before, and the point in flight is settled as refused now. 13.12: the same
--- for the C_Traits writes (PurchaseRank / CommitConfig), on their own flag.
+-- clearest "blocked for addons" signal there is, so it switches this session
+-- to guided mode at once, even if a point worked before, and the point in
+-- flight is settled as refused now. The same for the C_Traits writes
+-- (PurchaseRank / CommitConfig), on their own flag.
 function Talents.OnActionBlocked(fn)
   if type(fn) ~= "string" then return end
   local r = run
@@ -1536,8 +1523,8 @@ function Talents.OnActionBlocked(fn)
   end
 end
 
--- "preview" mode (13.5: if the client has Blizzard's preview API, use it and
--- let Blizzard's own Learn button confirm): put the points into Blizzard's
+-- "preview" mode (the client has Blizzard's preview API, so Blizzard's own
+-- Learn button confirms): put the points into Blizzard's
 -- preview in the same order and open the talent window. Nothing is learned
 -- until the player clicks Blizzard's button, so our popup isn't shown, and
 -- LearnPreviewTalents (the commit) is never called by us. Returns the number

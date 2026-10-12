@@ -1,28 +1,28 @@
--- UI/MainWindow.lua: the one Road to Forever window (ADDON_PLAN.md 12.4).
+-- UI/MainWindow.lua: the one Road to Forever window.
 --
 -- PortraitFrameTemplate shell (UI.Window: same template checks and
--- fallbacks the Macro Book used since step 3), portrait = our logo, and
+-- fallbacks the Macro Book uses), portrait = our logo, and
 -- seven bottom tabs in the character frame's style: Home / Macros / Talents / Plan / BiS / Gameplay / Settings.
 -- Each tab is a page frame filling the window; the window shows one page at
 -- a time:
 --   Home    -> UI/Home.lua builds into it
---   Macros  -> UI/MacroBook.lua builds into it (the step-3 book, reparented)
---   Talents -> UI/TalentPanel.lua builds into it (step 9: link, preview,
---              Copy my build; step 10: Learn talents)
---   Plan    -> UI/Plan.lua builds into it (15.5, v0.18.0: the launch-day checklist
---              per group plan, tick boxes, TomTom waypoints)
---   BiS     -> UI/BiZ.lua builds into it (ADDON_PLAN 19, v0.30.0: Mr.BiZ, best in slot per
---              class / spec from the site's BiS data, item tooltips, the wishlist)
---   Gameplay-> UI/Gameplay.lua builds into it (ADDON_PLAN 17, v0.21.0: features that
---              act for you or change the screen, plus the reminder icons' options:
---              Warrior stance, Hunter ammo; this was the Reminders tab until 0.20.1)
---   Settings-> UI/Settings.lua builds into it (15.2, v0.15.0: slots, minimap,
---              Quick settings, stance icon; was a floating panel)
+--   Macros  -> UI/MacroBook.lua builds into it
+--   Talents -> UI/TalentPanel.lua builds into it (link, preview, Copy my build,
+--              Learn talents)
+--   Plan    -> UI/Plan.lua builds into it (the launch-day checklist per group
+--              plan, tick boxes, TomTom waypoints)
+--   BiS     -> UI/BiZ.lua builds into it (Mr.BiZ: best in slot per class / spec
+--              from the site's BiS data, item tooltips, the wishlist)
+--   Gameplay-> UI/Gameplay.lua builds into it (features that act for you or
+--              change the screen, plus the reminder icons' options: Warrior
+--              stance, Hunter ammo, tracking)
+--   Settings-> UI/Settings.lua builds into it (slots, minimap, Quick settings,
+--              bags)
 --
 -- Saved in R2FDB.settings: windowPos (by UI.Window when dragged) and
 -- lastTab. The size is fixed (540 x 500, the book's size): the book's grid is
 -- laid out for that size, so a resize handle would only show empty space.
--- Esc closes it (UISpecialFrames, via UI.Window). Spellbook sounds (12.4).
+-- Esc closes it (UISpecialFrames, via UI.Window). Spellbook sounds.
 
 local _, R2F = ...
 local L = R2F.L
@@ -71,13 +71,13 @@ end
 -- Bottom tabs
 -- ---------------------------------------------------------------------------
 
--- Blizzard's character-frame tab look (12.4): PanelTabButtonTemplate in
+-- Blizzard's character-frame tab look: PanelTabButtonTemplate in
 -- newer clients, CharacterFrameTabButtonTemplate in older Classic ones,
--- whichever the client has (checked like every template, 6.7). Without
+-- whichever the client has (checked like every template). Without
 -- either, plain UIPanelButtonTemplate buttons along the bottom edge.
 -- Tabs get global names <window>Tab<n> because the Classic template's
 -- textures are named $parentLeft etc. and PanelTemplates_* find tabs by
--- that name in older clients (all R2F-prefixed, 6.7's naming rule).
+-- that name in older clients (all R2F-prefixed).
 -- Offsets between tabs: the Classic template's art overlaps by design.
 local TAB_TEMPLATES = {
   { name = "PanelTabButtonTemplate", gap = 3 },
@@ -196,7 +196,7 @@ function MainWindow.SelectTab(key)
   if frame:IsShown() then refreshPage(key) end
 end
 
--- Open on `tab`, or on the tab used last (12.3 / 12.4).
+-- Open on `tab`, or on the tab used last.
 function MainWindow.Show(tab)
   MainWindow.SelectTab(tab or current or settings().lastTab)
   if not frame:IsShown() then frame:Show() end

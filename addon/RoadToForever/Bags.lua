@@ -1,5 +1,4 @@
--- Bags.lua: movable bags (ADDON_PLAN.md 15.3, v0.16.0; rebuilt in v0.20.0). Replaces
--- the Forever Bag Mover addon.
+-- Bags.lua: movable bags (does what the Forever Bag Mover addon does).
 --
 -- Two Quick settings on the Settings tab: Movable bags (take over the bag windows'
 -- position) and Lock bags (keep the position, stop dragging). Stored per character in
@@ -9,19 +8,17 @@
 --   bags[bagId]     saved point of one classic bag window (backpack = 0), or nil
 -- A saved point = { point, relPoint, x, y }, always relative to UIParent.
 --
--- HOLD SHIFT AND DRAG (v0.20.0). A drag that starts on a bag window's title never reached
--- 0.16.0's drag script: Blizzard lays an invisible button over the whole title bar that
--- opens the bag menu when the mouse goes down, so it swallowed the drag (found in game
--- 2026-10-09, and the same finding is in ForeverPlus' BagWindow module). So, like that
--- module: while Shift is held (and Movable is on, Lock off, out of combat) a grip of our
+-- HOLD SHIFT AND DRAG. A plain drag that starts on a bag window's title never reaches
+-- a drag script: Blizzard lays an invisible button over the whole title bar that
+-- opens the bag menu when the mouse goes down, so it swallows the drag. So: while Shift is held (and Movable is on, Lock off, out of combat) a grip of our
 -- own covers the title bar, and Shift+drag on the title or the empty background moves
 -- the window. Without Shift the title is the game's again (a click opens its menu).
 -- Item buttons keep their own drag (picking an item up).
 --
--- NEVER CALL THE GAME'S BAG PLACEMENT. 0.16.0 called UpdateContainerFrameAnchors() when
--- Movable was switched off. That runs the game's placement code in this addon's name and
--- taints the bag code until the game refuses a protected action ("blocked from an
--- action", UseContainerItem; ForeverPlus hit exactly that on 2026-10-04). Now the spot
+-- NEVER CALL THE GAME'S BAG PLACEMENT. Calling UpdateContainerFrameAnchors() when
+-- Movable is switched off would run the game's placement code in this addon's name and
+-- taint the bag code until the game refuses a protected action ("blocked from an
+-- action", UseContainerItem). Instead the spot
 -- the game last gave each window is read off the frame (noteGameAnchor, in a secure hook
 -- that runs after the game placed it) and switching Movable off puts the window back
 -- there itself.

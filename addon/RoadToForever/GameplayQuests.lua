@@ -1,4 +1,4 @@
--- GameplayQuests.lua: quest automation, Gameplay build order step 3 (ADDON_PLAN.md 17, v0.23.0).
+-- GameplayQuests.lua: quest automation.
 --
 --   Accept quests    accepts a quest when its window opens, and picks the next available quest
 --                    at a quest giver (gossip list or quest greeting).
@@ -8,10 +8,10 @@
 --   Reward values    shows what each reward choice sells for to a vendor, and marks the best.
 --
 -- All three are OFF until ticked. Holding Shift pauses the two that act, so you can read
--- a quest text or choose by hand without turning anything off. The quest APIs on this client
--- are partly unverified, so every call is guarded: modern C_GossipInfo first, the classic
+-- a quest text or choose by hand without turning anything off. Quest APIs differ between
+-- clients, so every call is guarded: modern C_GossipInfo first, the classic
 -- gossip functions as the fallback, and anything missing simply does nothing.
--- Written from scratch (ForeverPlus was only used to learn what these features do).
+-- Written from scratch.
 
 local _, R2F = ...
 local L = R2F.L
@@ -209,8 +209,7 @@ Gameplay.Register({
 -- C_QuestLog functions (AddQuestWatch / RemoveQuestWatch), not by calling the game's quest
 -- log code; the boxes are redrawn after the game redraws the list (hooksecurefunc on
 -- QuestLogQuests_Update). The header buttons come from QuestScrollFrame.headerFramePool and
--- carry questLogIndex (read in the game's UI code, 1.60.1.70291; the exact look in game is
--- unverified: TESTING.md 33).
+-- carry questLogIndex (read in the game's UI code).
 local zoneBoxes = {}   -- header button -> check button
 local zoneHooked = false
 

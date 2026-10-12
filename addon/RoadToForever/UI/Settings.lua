@@ -1,7 +1,4 @@
--- UI/Settings.lua: the Settings tab of the main window (ADDON_PLAN.md 5.8,
--- 15.2). Until v0.15.0 this was a small floating panel opened from the Macro
--- Book's Settings button; now it is the fourth tab (Home / Macros / Talents /
--- Settings) and the button is gone.
+-- UI/Settings.lua: the Settings tab of the main window.
 --
 -- Two columns:
 --   left   Macros  -> New macros go to: Character / Account slots first
@@ -9,13 +6,12 @@
 --                     CreateMacro), Remove all Road to Forever macros (confirm popup;
 --                     Macros.RemoveAll)
 --          Minimap -> Show / Lock the minimap button (R2FDB.minimap.hide / .lock,
---                     LibDBIcon's format, 6.3), then R2F.Minimap.Apply(). The minimap
+--                     LibDBIcon's format), then R2F.Minimap.Apply(). The minimap
 --                     button's own menu and /r2f minimap change the same values and
 --                     call Settings.Refresh.
---   right  Quick settings (moved from Home in 0.15.0, 12.4.1) -> check boxes that
---                     change game settings with SetCVar (QuickSettings.lua)
---          Movable bags / Lock bags (Bags.lua, 0.16.0)
---          (The Warrior stance icon options moved to the Reminders tab in 0.17.0.)
+--   right  Quick settings -> check boxes that change game settings with SetCVar
+--                     (QuickSettings.lua)
+--          Movable bags / Lock bags (Bags.lua)
 --
 -- Only Remove all and the Quick settings boxes are greyed out in combat
 -- (they delete macros / change CVars). The other settings only write
@@ -218,7 +214,7 @@ local function buildQuick(f)
     ui.quick[i] = b
   end
 
-  -- Movable bags / Lock bags (Bags.lua, v0.16.0): not CVars, so not in
+  -- Movable bags / Lock bags (Bags.lua): not CVars, so not in
   -- QuickSettings.ITEMS; same look and the same combat rule.
   local n = #R2F.QuickSettings.ITEMS
   local function bagBox(label, tip, y, onClick)
@@ -269,7 +265,7 @@ function Settings.IsShown()
   return R2F.MainWindow.CurrentTab() == "settings"
 end
 
--- PLAYER_REGEN_DISABLED / ENABLED (6.5): grey out / re-enable Remove all and
+-- PLAYER_REGEN_DISABLED / ENABLED: grey out / re-enable Remove all and
 -- the Quick settings boxes.
 function Settings.SetCombat()
   refresh()

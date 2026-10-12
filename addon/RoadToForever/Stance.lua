@@ -1,4 +1,4 @@
--- Stance.lua: Warrior stance indicator (v0.13.0; a reminder since v0.17.0).
+-- Stance.lua: Warrior stance indicator.
 --
 -- One icon on screen showing the current stance, with a coloured frame:
 -- Battle (Arms) blue, Defensive (tank) green, Berserker red. Warriors only; the

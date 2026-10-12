@@ -1,7 +1,6 @@
--- UI/Gameplay.lua: the Gameplay tab (ADDON_PLAN.md 17 / 18).
+-- UI/Gameplay.lua: the Gameplay tab.
 --
--- v0.28.0 redesign (UX pass, ADDON_PLAN 18): one long scrolling list of 17 boxes was too much to
--- read. The tab now has four small pages, picked with buttons along the top, grouped by what the
+-- The tab has four small pages (one long list of boxes was too much to read), picked with buttons along the top, grouped by what the
 -- player is doing:
 --   Quests            auto-accept, auto turn-in, skip the NPC chat, reward prices, track-all box
 --   Vendors & loot    auto-repair, auto-sell grey items, fast looting, free bag slots, mail list
@@ -101,7 +100,7 @@ function Tab.ShowPage(key)
   if not pages[key] then key = Tab.PAGES[1].key end
   for k, p in pairs(pages) do p:SetShown(k == key) end
   -- The page you are on stands out (gold text, a gold bar under it, the button kept lit) and stays
-  -- ENABLED: a greyed-out button reads as "not learned / not working" (owner, 0.28.0).
+  -- ENABLED: a greyed-out button reads as "not learned / not working".
   for k, b in pairs(pageButtons) do
     local on = (k == key)
     b.mark:SetShown(on)

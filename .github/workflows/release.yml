@@ -1,11 +1,10 @@
 # Builds the Road to Forever addon zip and publishes it as a GitHub Release.
-# Spec: ADDON_PLAN.md section 8 (decisions in 8.1).
+# Runs the addon checks first (ci.yml), then publishes.
 name: Release addon
 
 on:
   push:
-    # r2f-v* is the addon's one tag prefix (steps 3-6 shipped r2f-v0.1.0..0.4.0
-    # before this workflow existed; ADDON_PLAN.md 8.1). Pushing a tag is the
+    # r2f-v* is the addon's one tag prefix. Pushing a tag is the
     # release action: there is no branch/manual trigger, so a normal commit to
     # main never publishes anything.
     tags:
@@ -16,7 +15,12 @@ permissions:
   contents: write
 
 jobs:
+  # The same checks as every push (tests, luacheck, zip contents). A failing check stops the release.
+  checks:
+    uses: ./.github/workflows/ci.yml
+
   release:
+    needs: checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,9 +44,8 @@ jobs:
             echo "::error::Tag $GITHUB_REF_NAME says $version but RoadToForever.toc says '$toc_version'. Bump the TOC (and addon CHANGELOG.md) before tagging."
             exit 1
           fi
-          # 0.x = not yet tested in the real game client, so it must not look
-          # like a finished release on the Releases page. From 1.0.0 on, normal
-          # releases (ADDON_PLAN.md 8.1).
+          # 0.x = pre-release, so it must not look like a finished release on the
+          # Releases page. From 1.0.0 on, normal releases.
           case "$version" in
             0.*) prerelease=true ;;
             *)   prerelease=false ;;

@@ -1,0 +1,60 @@
+# Checks the Road to Forever addon: the test suite, luacheck, and what the release zip would contain.
+# Runs on every push and pull request that touches the addon or the data it is generated from, and
+# the release workflow calls it first, so a tag can't publish a build that fails any of these.
+name: Addon checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "addon/**"
+      - "launch-plan.html"
+      - "launch-plan-waypoints.json"
+      - "bis/**"
+      - "bis-data.json"
+      - "talentcalc.js"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - "addon/**"
+      - "launch-plan.html"
+      - "launch-plan-waypoints.json"
+      - "bis/**"
+      - "bis-data.json"
+      - "talentcalc.js"
+      - ".github/workflows/ci.yml"
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install lupa (real Lua 5.1 for the tests) and luacheck
+        run: |
+          set -euo pipefail
+          python -m pip install lupa
+          sudo apt-get update
+          sudo apt-get install -y lua-check
+          luacheck --version
+
+      - name: Addon test suite
+        run: python addon/tests/run_tests.py
+
+      - name: luacheck (must be 0 warnings)
+        run: luacheck addon/RoadToForever --config addon/.luacheckrc --no-color
+
+      - name: What the release zip contains
+        run: python addon/tests/check_release_tree.py

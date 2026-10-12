@@ -1923,7 +1923,7 @@ def test_gameplay():
     lua.execute("R2F.GameplayTab.ShowPage('vendors')")
     check(lua.eval("%s:IsEnabled()" % pagebtn("GP_PAGE_VENDORS")) is True and lua.eval("%s.mark.__shown" % pagebtn("GP_PAGE_VENDORS")) is True
           and lua.eval("%s.mark.__shown" % pagebtn("GP_PAGE_QUESTS")) is False, "17.1 the gold bar follows the page")
-    lua.execute("UnitName = function() return 'Venom' end UnitFullName = function() return 'Venom', 'Realm' end GetRealmName = function() return 'Realm' end TEST.chat = {} R2F.Gameplay.PrintWho()")
+    lua.execute("UnitName = function() return 'Thorin' end UnitFullName = function() return 'Thorin', 'Realm' end GetRealmName = function() return 'Realm' end TEST.chat = {} R2F.Gameplay.PrintWho()")
     check(lua.eval("#TEST.chat") >= 1, "17.1 /r2f who prints the ways the client names the character, without error")
     check(boxvis("GP_QACCEPT") is False and boxvis("GP_REPAIR") is True and lua.eval("R2FDB.settings.gameplayPage") == "vendors", "17.1 switching pages swaps the boxes and is remembered")
     lua.execute("R2F.GameplayTab.ShowPage('alerts')")
@@ -2090,7 +2090,7 @@ def test_gameplay():
 GAMEPLAY2_LUA = """
   GetRealmName = function() return 'Realm' end
   GetNormalizedRealmName = function() return 'RealmNorm' end
-  UnitName = function(unit) return 'Venom' end
+  UnitName = function(unit) return 'Thorin' end
   UnitFactionGroup = function() return 'Alliance' end
   UnitLevel = function() return TEST.level or 18 end
   RAID_CLASS_COLORS = { WARRIOR = { r = 0.78, g = 0.61, b = 0.43 }, HUNTER = { r = 0.67, g = 0.83, b = 0.45 } }
@@ -2132,13 +2132,13 @@ def test_gameplay_extras():
     # --- Characters are remembered ---------------------------------------------------------------------
     lua, T = gameplay2_runtime(preset="{ chars = { Realm = { Alice = { class = 'HUNTER', level = 30, faction = 'Alliance' }, "
                                "Bob = { class = 'MAGE', level = 5, faction = 'Horde' } }, Other = { Carl = { class = 'WARRIOR', level = 9, faction = 'Alliance' } } } }")
-    check(lua.eval("R2FDB.chars.Realm.Venom.class") == "WARRIOR" and lua.eval("R2FDB.chars.Realm.Venom.level") == 18
-          and lua.eval("R2FDB.chars.Realm.Venom.faction") == "Alliance", "17.2 this character is remembered at login")
+    check(lua.eval("R2FDB.chars.Realm.Thorin.class") == "WARRIOR" and lua.eval("R2FDB.chars.Realm.Thorin.level") == 18
+          and lua.eval("R2FDB.chars.Realm.Thorin.faction") == "Alliance", "17.2 this character is remembered at login")
     others = [lua.eval("R2F.Gameplay.OtherCharacters()[%d].name" % i) for i in range(1, lua.eval("#R2F.Gameplay.OtherCharacters()") + 1)]
     check(others == ["Alice"], "17.2 other characters: same realm and faction only, not yourself: %s" % others)
     lua.execute("TEST.level = 19")
     T.fire("PLAYER_LEVEL_UP")
-    check(lua.eval("R2FDB.chars.Realm.Venom.level") == 19, "17.2 the level is updated on level-up")
+    check(lua.eval("R2FDB.chars.Realm.Thorin.level") == 19, "17.2 the level is updated on level-up")
     # --- Mail ----------------------------------------------------------------------------------------------
     T.fire("MAIL_SHOW")
     check(lua.eval("R2FMailAltsButton == nil"), "17.2 mail off: no button")
@@ -2152,10 +2152,10 @@ def test_gameplay_extras():
     check("Alice" in txt and "30" in txt and "|cffabd473" in txt, "17.2 the entry shows name, level and the class colour: %r" % txt)
     lua.execute("MENU[2].func()")
     check(lua.eval("SendMailNameEditBox:GetText()") == "Alice-RealmNorm", "17.2 clicking a character fills in the FULL name, Name-Realm (a bare name does not arrive on this client)")
-    lua.execute("UnitName = function() return 'Zed' end GetUnitName = function() return 'Zed Oathbreaker' end R2F.Gameplay.RememberCharacter() UnitName = function() return 'Me' end")
-    check(lua.eval("R2FDB.chars[GetRealmName()].Zed.full") == "Zed Oathbreaker", "17.2 the character's full in-game name is remembered for mail")
-    check(any(lua.eval("R2F.Gameplay.OtherCharacters()[%d].full" % i) == "Zed Oathbreaker" for i in range(1, lua.eval("#R2F.Gameplay.OtherCharacters()") + 1)),
-          "17.2 the mail list uses the full in-game name (Zed Oathbreaker), not Name-Realm")
+    lua.execute("UnitName = function() return 'Zed' end GetUnitName = function() return 'Zed Stormborn' end R2F.Gameplay.RememberCharacter() UnitName = function() return 'Me' end")
+    check(lua.eval("R2FDB.chars[GetRealmName()].Zed.full") == "Zed Stormborn", "17.2 the character's full in-game name is remembered for mail")
+    check(any(lua.eval("R2F.Gameplay.OtherCharacters()[%d].full" % i) == "Zed Stormborn" for i in range(1, lua.eval("#R2F.Gameplay.OtherCharacters()") + 1)),
+          "17.2 the mail list uses the full in-game name (Zed Stormborn), not Name-Realm")
     lua.execute("GetUnitName = nil UnitName = function() return 'Me' end")
     lua.execute("GetNormalizedRealmName = nil R2F.Gameplay.OtherCharacters()")
     check(lua.eval("R2F.Gameplay.OtherCharacters()[1].full") == "Alice-Realm", "17.2 without a normalised realm name the realm name is used")

@@ -57,9 +57,7 @@ Not started yet:
 - [x] L3 promise line already gone (grep finds nothing)
 - [ ] (skipped, owner's call) L4 import doesn't flag `/run`/`/script` in macro bodies — low priority, likely skip
 - [x] L5 talentsaved.js and template.html/macros.html now use nobody174/wow-forever. addons.html still shows 0.29.1 pre-release: update when 1.0.0 is tagged.
-- [ ] Privacy/identity: 19 public GitHub commits authored with the real email
-      (vartdal@gmail.com) instead of the pseudonymous one — owner's call, flagged, not
-      actioned (rewriting public history is effectively irreversible)
+- [x] Privacy/identity: re-checked 2026-10-12. No commit carries vartdal@gmail.com (the earlier "19 commits" note was wrong). All 82 public commits use nobodylearn174@gmail.com (plus Claude's noreply). Owner's call whether to switch to GitHub's noreply address for new commits.
 
 Remaining workflow steps after Step 2 finishes: 3 Debugger (only if something unclear turns
 up), 4 Taint & Secure Execution + WoW API Compliance audit (M6 above), 4b Lua performance
@@ -132,7 +130,4 @@ verified point by point, 17,873 passing tests). What stands between it and a pub
 ### Privacy / identity
 
 - Code and data: covered by H4 (character and friend names). No email, real name, local paths or tokens found.
-- **Git history:** the public GitHub repo has 19 commits authored as `nobody174 <vartdal@gmail.com>` (the rest use
-  nobodylearn174@gmail.com). The release zip has no git history, but a CurseForge page that links the repo leads
-  there. Rewriting public history is irreversible in practice (forks, caches) and is the owner's call; setting the
-  repo's git email to the GitHub noreply address stops new ones.
+- **Git history:** re-checked 2026-10-12: no commit has vartdal@gmail.com. The public commits use nobodylearn174@gmail.com. Setting the repo's git email to the GitHub noreply address stops it showing on new commits.

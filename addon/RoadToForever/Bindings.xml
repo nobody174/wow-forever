@@ -1,5 +1,5 @@
 <!--
-  Road to Forever key bindings (ADDON_PLAN.md 6.1, 6.9).
+  Road to Forever key bindings.
 
   NOT listed in RoadToForever.toc on purpose: the client loads a file named
   exactly "Bindings.xml" from the addon's root folder by itself. Listed in the
@@ -10,8 +10,7 @@
   BINDING_HEADER_ROADTOFOREVER (from header="ROADTOFOREVER") and
   BINDING_NAME_<name> for each binding.
   category="ADDONS" files them under the menu's AddOns section in clients
-  with the newer key-binding menu; unverified in the Forever client
-  (TESTING.md 10).
+  with the newer key-binding menu.
 
   The text inside each <Binding> is Lua run on key down. It only calls into
   the addon's one global, R2F (functions in Core.lua).

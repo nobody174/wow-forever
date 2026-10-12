@@ -7,7 +7,7 @@ v0.4.0), 7 (release zip on GitHub Releases, v0.5.0), 8 (talent export + the site
 `~hash`, v0.6.0), 9 (talent import preview, v0.7.0), 10 (talent learning, v0.8.0)
 and Quick settings (Home tab, v0.9.0, 12.4.1) shipped. No addon version has been
 tested in the game yet: what's left is the in-game checks (section 11,
-`addon/RoadToForever/TESTING.md`); see `CHANGELOG.md`.
+`addon/dev/TESTING.md`); see `addon/dev/CHANGELOG.md`.
 Target: usable before the Nov 4 launch.
 
 | | |
@@ -676,7 +676,9 @@ addon/RoadToForever/
                     multi-line edit box, copy box (added in step 3, 6.7)
   UI\MacroBook.lua  frame, tabs, grid, paging, tooltip
   UI\ImportFrame.lua
-  TESTING.md        in-game beta checklist; CHANGELOG.md addon version history
+  (addon/dev/ holds TESTING.md, the in-game beta checklist, and CHANGELOG.md, the developer
+  version history; neither ships. addon/RoadToForever/ has README.md, LICENSE and the short
+  player CHANGELOG.md)
   UI\Settings.lua
   UI\MainWindow.lua shared window, bottom tabs Home / Macros / Talents
   UI\Home.lua       Home tab
@@ -1258,7 +1260,8 @@ Body keeps its real newlines. Empty icon = `""`.
 - Later: CurseForge project (auto-updates through the CurseForge app).
 
 **How to release a version:** bump `## Version:` in `RoadToForever.toc`, add the
-`## <version> (date): ...` section to `addon/RoadToForever/CHANGELOG.md`, commit,
+`## <version> (date): ...` section to `addon/RoadToForever/CHANGELOG.md` (the short player
+changelog; the detailed history is `addon/dev/CHANGELOG.md`), commit,
 then `git tag r2f-v<version>` and `git push origin main r2f-v<version>`. The run
 shows under the repo's Actions tab.
 
@@ -1277,10 +1280,10 @@ shows under the repo's Actions tab.
   tracked files only (no stray local files), `addon/tests` and `addon/art` are
   outside that tree, and the same command runs on a PC, which is how step 7
   checked the zip without GitHub (TESTING.md 12). No `zip` step, no extra script.
-- **Everything in `addon/RoadToForever/` ships**, including `CHANGELOG.md` and
-  `TESTING.md` (small, harmless in an AddOns folder, and they tell a tester what
-  the version is meant to do). `Bindings.xml` and `media/` ship because the client
-  needs them. No libraries (6.10).
+- **Everything in `addon/RoadToForever/` ships**: the Lua/XML/TOC, `media/`, and the
+  player-facing `README.md`, `LICENSE` and `CHANGELOG.md`. The developer files
+  (`TESTING.md`, the detailed `CHANGELOG.md`) live in `addon/dev/` and stay out of the zip.
+  No libraries (6.10).
 - **TOC keeps a literal `## Version:` (no `@project-version@`, 6.2).** That token
   is filled by the CurseForge/BigWigs packager, which we don't use; with plain
   `git archive` it would ship as the literal text `@project-version@`. Instead the

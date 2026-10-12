@@ -7,14 +7,12 @@
 ## SavedVariables: R2FDB
 ## SavedVariablesPerCharacter: R2FCharDB
 
-# Interface number confirmed 2026-10-02 against a real WoW Forever client:
-# GetBuildInfo() returns version="1.60.1", build="70170", tocversion=16001.
-# The original placeholder (11507, Classic Era 1.15.7) made the game flag the
-# addon "incompatible" and refuse to load it at all, with no Lua error to show
-# since nothing ever ran (ADDON_PLAN.md section 11, TESTING.md item 1).
+# Interface 16001 = WoW Forever: GetBuildInfo() returns version="1.60.1",
+# tocversion=16001. A Classic Era number (11507) makes the game flag the addon
+# "incompatible" and refuse to load it.
 #
 # Bindings.xml is deliberately NOT listed: the client loads it from the addon
-# folder on its own (ADDON_PLAN.md 6.9).
+# folder on its own.
 
 Locale.lua
 Base64.lua

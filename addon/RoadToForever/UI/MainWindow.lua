@@ -242,8 +242,15 @@ local function build()
 
   for _, key in ipairs(MainWindow.TABS) do
     local p = CreateFrame("Frame", nil, f)
-    p:SetSize(PAGE_W, PAGE_H)
-    p:SetPoint("TOPLEFT", f, "TOPLEFT", PAGE_X, PAGE_Y)
+    local custom = key == "bis" and R2F.BiZTab.PAGE
+    if custom then
+      -- Mr.BiZ uses the whole content area (paper doll + slot panel).
+      p:SetSize(custom.w, custom.h)
+      p:SetPoint("TOPLEFT", f, "TOPLEFT", SIDE_W + 12, -(TOP_H + 8))
+    else
+      p:SetSize(PAGE_W, PAGE_H)
+      p:SetPoint("TOPLEFT", f, "TOPLEFT", PAGE_X, PAGE_Y)
+    end
     p:Hide()
     pages[key] = p
   end

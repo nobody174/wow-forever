@@ -1,5 +1,13 @@
 # Road to Forever changelog
 
+## 0.32.0 (2026-10-12): Mr.BiZ paper doll
+
+- **Mr.BiZ redesigned**: your character's 3D model (turns slowly, drag to turn it) with the 17
+  gear slots around it. Each slot shows the best pick's icon in its quality colour. Click a slot
+  and the panel on the right lists its options (best pick and the next ranked ones, with source,
+  score and how far behind), each with a wishlist switch. Source filters are switches under the
+  doll. The Wishlist view is unchanged apart from the look.
+
 ## 0.31.1 (2026-10-12): look fixes
 
 - The window is a solid dark panel again (Opacity slider fades it, default 100%).

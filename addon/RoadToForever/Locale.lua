@@ -373,6 +373,7 @@ R2F.L = {
   BIZ_TIP_WISHED = "On your wishlist (%s, %s)",
   BIZ_TIP_FROM = "From: %s",
   BIZ_STANDIN = "%s, your filters hide the best",
+  BIZ_WISH_LABEL = "Wishlist",
   BIZ_WISH_ADD = "Add to your wishlist",
   BIZ_WISH_REMOVE = "Remove from your wishlist",
   BIZ_WISH_EMPTY = "Your wishlist is empty.\n\nTick the box next to an item on the Best in slot list, "

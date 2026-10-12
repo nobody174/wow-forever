@@ -1,18 +1,18 @@
 -- UI/BiZ.lua: the BiS tab of the main window, "Mr.BiZ". Logic in BiZ.lua.
 --
---   [Class v] [Spec v]                       [Best in slot] [Wishlist (n)]
---   source filters (check boxes, two rows) + Known sources only
---   scrolling list:
---     Best in slot: one row per slot (slot, icon, name in its quality colour, source,
---       score, confidence, wishlist box). Click the name: the next best picks open under
---       it (#2, #3 with how far behind they score). Hover any item: the game's tooltip
---       plus its rank. Shift-click: link in chat. Box ticked = on the wishlist.
---     Wishlist: grouped by where you get the items (a dungeon, a profession, a vendor),
---       biggest group first; Export / Import share the list with the site (R2FW1:).
---   footer: level, data source and build (Best in slot) or Export / Import (Wishlist).
--- Class / spec menus use UI.ContextMenu (no UIDropDownMenu: taint).
--- Everything is redrawn from the data on each refresh (17 slots, a few extra lines); the
--- widgets are pooled per kind.
+-- Best in slot view (paper doll):
+--   [Class v] [Spec v]                                   [Best in slot] [Wishlist (n)]
+--   left: your character's 3D model with the 17 gear slots around it (the best pick's icon in
+--     its quality colour; click a slot to select it, hover for the item tooltip), source
+--     filters under it (switches).
+--   right: the selected slot's options: the best pick and the next ranked ones (#2, #3 with how
+--     far behind they score), each with its source, score and a wishlist switch. Hover any item:
+--     the game's tooltip plus its rank. Shift-click: link in chat.
+-- Wishlist view: grouped by where you get the items (a dungeon, a profession, a vendor), biggest
+--   group first, in a scrolling list; Export / Import share the list with the site (R2FW1:).
+-- The model is the game's PlayerModel showing "player" (turns slowly, drag to turn it). Class /
+-- spec menus use UI.ContextMenu (no UIDropDownMenu: taint). Everything is redrawn from the data
+-- on each refresh; the widgets are pooled per host frame and kind.
 
 local _, R2F = ...
 local L = R2F.L
@@ -22,27 +22,42 @@ local BiZ = R2F.BiZ
 local Tab = {}
 R2F.BiZTab = Tab
 
-local page, scroll, content
+local page, scroll, content, side
 local ui = {}
 local typeBoxes = {}
-local view = "set"            -- "set" | "wish"
-local open = {}               -- "<spec>|<slot>" -> true while expanded
+local slotBtns = {}               -- slot key -> doll button
+local view = "set"                -- "set" | "wish"
+local selected                    -- slot key selected on the doll
 
-local CONTENT_W = 440
+-- The page is bigger than the old 540 x 500 book pages; MainWindow reads this.
+Tab.PAGE = { w = 650, h = 540 }
+
+local CONTENT_W = 620
+local SLOT = 40
 local CONF_COLOR = {
   seen = "|cff7fd6a4", client = "|cff8db7ee", classic = "|cffe0be77", clue = "|cffd9a1e0", unknown = "|cffb5b1a6",
+}
+-- Doll layout: two columns of slots around the model, weapons under it.
+local LEFT_SLOTS = { "head", "neck", "shoulder", "back", "chest", "wrist", "hands" }
+local RIGHT_SLOTS = { "waist", "legs", "feet", "finger1", "finger2", "trinket1", "trinket2" }
+local WEAPON_SLOTS = { "mainhand", "offhand", "ranged" }
+local DOLL_Y, DOLL_STEP, DOLL_RIGHT_X, MODEL_W = 40, 46, 264, 204
+local QUALITY_RGB = {
+  [0] = { 0.62, 0.62, 0.62 }, { 1, 1, 1 }, { 0.12, 1, 0 }, { 0, 0.44, 0.87 }, { 0.64, 0.21, 0.93 }, { 1, 0.5, 0 },
 }
 
 local function visible() return page ~= nil and page:IsVisible() end
 
 -- ---------------------------------------------------------------------------
--- Pools (one per widget kind; `used` counts what this layout pass took)
+-- Pools (one per widget kind and host frame; `used` counts what this pass took)
 -- ---------------------------------------------------------------------------
 
+local host                        -- the frame new widgets are created in / pooled for
 local pools = {}
 local function pool(kind, make)
-  local p = pools[kind]
-  if not p then p = { list = {}, used = 0, make = make }; pools[kind] = p end
+  local key = (host == side and "s:" or "c:") .. kind
+  local p = pools[key]
+  if not p then p = { list = {}, used = 0, make = make }; pools[key] = p end
   p.used = p.used + 1
   local w = p.list[p.used]
   if not w then w = p.make(); p.list[p.used] = w end
@@ -61,25 +76,25 @@ end
 
 local function text(font)
   return pool("fs:" .. font, function()
-    local fs = content:CreateFontString(nil, "ARTWORK", font)
+    local fs = host:CreateFontString(nil, "ARTWORK", font)
     fs:SetJustifyH("LEFT")
     fs:SetWordWrap(false)
     return fs
   end)
 end
 
-local function icon()
+local function icon(size)
   return pool("icon", function()
-    local t = content:CreateTexture(nil, "ARTWORK")
-    t:SetSize(22, 22)
+    local t = host:CreateTexture(nil, "ARTWORK")
+    t:SetSize(size or 22, size or 22)
     return t
   end)
 end
 
--- An item name: hover = tooltip, click = onClick (expand), shift-click = chat link.
+-- An item name: hover = tooltip, click = onClick, shift-click = chat link.
 local function itemButton()
   return pool("item", function()
-    local b = CreateFrame("Button", nil, content)
+    local b = CreateFrame("Button", nil, host)
     b:SetHeight(18)
     b.fs = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     b.fs:SetAllPoints(b)
@@ -98,11 +113,10 @@ local function itemButton()
   end)
 end
 
-local function wishBox()
-  return pool("wish", function()
-    local c = UI.CheckButton(content, "")
-    c:SetSize(20, 20)
-    c:SetHitRectInsets(0, 0, 0, 0)
+-- Wishlist switch. `label` shows next to it in the slot panel, none in the wishlist list.
+local function wishBox(label)
+  return pool("wish:" .. (label or ""), function()
+    local c = UI.CheckButton(host, label or "")
     c:SetScript("OnClick", function(self)
       if self.itemId then
         BiZ.ToggleWish(self.itemId, self.specId, self.slot)
@@ -119,21 +133,21 @@ local function wishBox()
   end)
 end
 
-local function placeItem(x, y, w, id, name, rankLine, onClick)
-  local ic = icon()
-  ic:SetPoint("TOPLEFT", content, "TOPLEFT", x, -y)
+local function placeItem(x, y, w, id, name, rankLine, onClick, iconSize)
+  local ic = icon(iconSize)
+  ic:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)
   ic:SetTexture(BiZ.Icon(id) or UI.FALLBACK_ICON)
   local b = itemButton()
-  b:SetPoint("TOPLEFT", content, "TOPLEFT", x + 22, -y - 1)
+  b:SetPoint("TOPLEFT", host, "TOPLEFT", x + (iconSize or 22), -y - 1)
   b:SetWidth(w)
   b.itemId, b.rankLine, b.onClick = id, rankLine, onClick
   b.fs:SetText(BiZ.ColoredName(id, name))
   return b
 end
 
-local function placeWish(x, y, id, specId, slot)
-  local c = wishBox()
-  c:SetPoint("TOPLEFT", content, "TOPLEFT", x, -y + 1)
+local function placeWish(x, y, id, specId, slot, label)
+  local c = wishBox(label)
+  c:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)
   c.itemId, c.specId, c.slot = id, specId, slot
   c:SetChecked(BiZ.IsWished(id))
   return c
@@ -141,7 +155,7 @@ end
 
 local function line(font, x, y, w, str)
   local fs = text(font)
-  fs:SetPoint("TOPLEFT", content, "TOPLEFT", x, -y)
+  fs:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)
   fs:SetWidth(w)
   fs:SetWordWrap(false)
   fs:SetTextColor(1, 1, 1)
@@ -166,98 +180,113 @@ local function rankLine(specName, rank, score, delta, gap, label, via)
   return s .. "\n" .. from
 end
 
-local function layoutSet()
+-- The slot entry of the current spec for a slot key (nil when the spec has none).
+local function slotOf(sp, key)
+  for _, sl in ipairs(sp.slots) do
+    if sl.slot == key then return sl end
+  end
+end
+
+-- The ranked picks of a slot: best first, then the next ones.
+local function allPicks(sl)
+  local all = { sl.best }
+  for _, n in ipairs(sl.next or {}) do all[#all + 1] = n end
+  return all
+end
+
+-- The pick the doll shows for a slot: the first rank the filters let through (a stand-in when
+-- the best is filtered out), its rank, or nil when nothing passes.
+local function shownPick(sl)
+  if not sl or not sl.best then return nil end
+  for i, it in ipairs(allPicks(sl)) do
+    if BiZ.Passes(it) then return it, i end
+  end
+end
+
+local function paintSlotButton(key, sp)
+  local b = slotBtns[key]
+  local sl = slotOf(sp, key)
+  local pick = shownPick(sl)
+  b.slotKey = key
+  b.itemId = pick and pick.id or nil
+  b.rankLine = nil
+  if pick then
+    b.icon:SetTexture(BiZ.Icon(pick.id) or UI.FALLBACK_ICON)
+    b.icon:SetVertexColor(1, 1, 1)
+    local q = BiZ.Quality(pick.id)
+    local c = QUALITY_RGB[q or 1]
+    b.border:SetColorTexture(c[1], c[2], c[3], 1)
+  else
+    b.icon:SetTexture(UI.FALLBACK_ICON)
+    b.icon:SetVertexColor(0.35, 0.35, 0.35)
+    b.border:SetColorTexture(0.25, 0.25, 0.28, 1)
+  end
+  if selected == key then
+    b.sel:Show()
+  else
+    b.sel:Hide()
+  end
+end
+
+-- The slot panel on the right: the selected slot's options.
+local function layoutSide()
+  host = side
   local specId = BiZ.SpecId()
   local sp = BiZ.Spec(specId)
-  local y = 0
   local shown, hidden = 0, 0
   for _, sl in ipairs(sp.slots) do
-    local key = specId .. "|" .. sl.slot
-    line("GameFontNormalSmall", 0, y + 3, 64, BiZ.SlotLabel(sl.slot))
-    local b = sl.best
-    if not b then
-      line("GameFontDisableSmall", 88, y, 300, L.BIZ_NOTHING)
-      line("GameFontDisableSmall", 88, y + 14, 320, (sl.note:gsub("^%l", string.upper)))
-    else
-      local nxt = sl.next or {}
-      local all = { b }
-      for _, n in ipairs(nxt) do all[#all + 1] = n end
-      -- The row shows the best, or when the filters hide it, the next rank they let through (a stand-in).
-      local pick
-      for i, it in ipairs(all) do
-        if BiZ.Passes(it) then pick = i; break end
-      end
-      local gapOf = function(rank) return rank == 1 and BiZ.IsTheBizz(sl) and -nxt[1].delta or nil end
-      local isOpen = open[key]
-      local toggle = function()
-        open[key] = (not open[key]) or nil
-        Tab.Refresh()
-      end
-      if pick then
-        shown = shown + 1
-        local p, gap = all[pick], gapOf(pick)
-        local fnote = BiZ.FactionNote(p)
-        local nb = placeItem(66, y, 226, p.id, p.name, rankLine(sp.name, pick, b.score, p.delta, gap, p.label, p.via), toggle)
-        if fnote then nb.fs:SetText(BiZ.ColoredName(p.id, p.name) .. " |cffe86a5a(" .. fnote .. ")|r") end
-        local prefix
-        if gap then
-          prefix = "|cffffd100" .. L.BIZ_THE_BIZZ .. "|r · "
-        elseif pick == 1 then
-          prefix = "|cffffd100" .. BiZ.RankName(1) .. "|r · "
-        else
-          prefix = "|cffd9d4c3" .. L.BIZ_STANDIN:format(BiZ.RankName(pick)) .. "|r · "
-        end
-        line("GameFontDisableSmall", 88, y + 19, 228, prefix .. (p.label or L.BIZ_TYPE_UNKNOWN))
-        local sc = line("GameFontHighlightSmall", 318, y + 3, 40,
-          pick == 1 and tostring(b.score) or ("|cffe39a79" .. (p.delta == 0 and "=" or (tostring(p.delta) .. "%")) .. "|r"))
-        sc:SetJustifyH("RIGHT")
-        local conf = p.conf or "unknown"
-        line("GameFontHighlightSmall", 366, y + 3, 46, (CONF_COLOR[conf] or "") .. L["BIZ_CONF_" .. conf:upper()] .. "|r")
-        placeWish(414, y, p.id, specId, sl.slot)
-      else
-        hidden = hidden + 1
-        local hb = itemButton()
-        hb:SetPoint("TOPLEFT", content, "TOPLEFT", 88, -y - 1)
-        hb:SetWidth(226)
-        hb.itemId, hb.rankLine, hb.onClick = nil, nil, toggle
-        hb.fs:SetText("|cff808080" .. L.BIZ_HIDDEN .. "|r")
-        line("GameFontDisableSmall", 88, y + 19, 228, L.BIZ_HIDDEN_HINT:format(L["BIZ_TYPE_" .. b.type:upper()]))
-      end
-      y = y + 38
-      if isOpen then
-        -- Every other rank, each with where it comes from (greyed when the filters hide it).
-        for rank, it in ipairs(all) do
-          if rank ~= pick then
-            local gap = gapOf(rank)
-            line("GameFontNormalSmall", 70, y + 3, 20, "#" .. rank)
-            placeItem(88, y, 210, it.id, it.name, rankLine(sp.name, rank, b.score, it.delta, gap, it.label, it.via))
-            local src = (it.label or L.BIZ_TYPE_UNKNOWN)
-            line("GameFontDisableSmall", 88, y + 19, 214, BiZ.Passes(it) and src or ("|cff707070" .. src .. "|r"))
-            local rn = gap and L.BIZ_THE_BIZZ or BiZ.RankName(rank)
-            local d = (it.delta == 0 and L.BIZ_SAME) or (it.delta and (it.delta .. "%")) or ""
-            local dl = line("GameFontHighlightSmall", 302, y + 3, 108,
-              "|cffffd100" .. rn .. "|r" .. (d ~= "" and ("  |cffe39a79" .. d .. "|r") or ""))
-            dl:SetJustifyH("RIGHT")
-            placeWish(414, y, it.id, specId, sl.slot)
-            y = y + 38
-          end
-        end
-        local ease = (b.ease and b.ease ~= "") and (" · " .. b.ease) or ""
-        local facts = line("GameFontHighlightSmall", 88, y + 2, 320, b.name .. ": " .. b.stats .. ease)
-        facts:SetTextColor(0.7, 0.7, 0.7)
-        y = y + 18
-        if #nxt == 0 then
-          line("GameFontDisableSmall", 88, y, 320, L.BIZ_NO_MORE)
-          y = y + 14
-        end
-        y = y + 6
-      end
+    if sl.best then
+      if shownPick(sl) then shown = shown + 1 else hidden = hidden + 1 end
     end
-    if not b then y = y + 38 end
   end
-  ui.footer:SetText(L.BIZ_FOOTER:format(R2F.BiZData.level, R2F.BiZData.source, sp.build))
   ui.summary:SetText(hidden > 0 and L.BIZ_SUMMARY_HIDDEN:format(shown, hidden) or L.BIZ_SUMMARY:format(shown))
-  return y
+  ui.footer:SetText(L.BIZ_FOOTER:format(R2F.BiZData.level, R2F.BiZData.source, sp.build))
+
+  local sl = slotOf(sp, selected)
+  line("GameFontNormalLarge", 0, 0, 320, BiZ.SlotLabel(selected))
+  if not (sl and sl.best) then
+    line("GameFontDisableSmall", 0, 30, 320, L.BIZ_NOTHING)
+    if sl and sl.note then
+      local n = line("GameFontDisableSmall", 0, 46, 320, (sl.note:gsub("^%l", string.upper)))
+      n:SetWordWrap(true)
+    end
+    return
+  end
+
+  local b = sl.best
+  local nxt = sl.next or {}
+  local all = allPicks(sl)
+  local gapOf = function(rank) return rank == 1 and BiZ.IsTheBizz(sl) and -nxt[1].delta or nil end
+  local y = 34
+  for rank, it in ipairs(all) do
+    local passes = BiZ.Passes(it)
+    local gap = gapOf(rank)
+    local fnote = BiZ.FactionNote(it)
+    local nb = placeItem(0, y, 270, it.id, it.name,
+      rankLine(sp.name, rank, b.score, it.delta, gap, it.label, it.via), nil, 32)
+    nb.optRank = rank
+    local name = BiZ.ColoredName(it.id, it.name)
+    if fnote then name = name .. " |cffe86a5a(" .. fnote .. ")|r" end
+    nb.fs:SetText(passes and name or ("|cff808080" .. it.name .. "|r"))
+    local rn = gap and L.BIZ_THE_BIZZ or BiZ.RankName(rank)
+    local d = rank == 1 and tostring(b.score)
+      or (it.delta == 0 and L.BIZ_SAME) or (it.delta and (it.delta .. "%")) or ""
+    line("GameFontHighlightSmall", 40, y + 19, 280,
+      "|cffffd100" .. rn .. "|r" .. (d ~= "" and ("  |cffe39a79" .. d .. "|r") or ""))
+    local src = it.label or L.BIZ_TYPE_UNKNOWN
+    local fs = line("GameFontDisableSmall", 40, y + 33, 280, passes and src or ("|cff707070" .. src .. "|r"))
+    fs:SetWordWrap(false)
+    local conf = it.conf or "unknown"
+    local cf = line("GameFontHighlightSmall", 250, y + 19, 70, (CONF_COLOR[conf] or "") .. L["BIZ_CONF_" .. conf:upper()] .. "|r")
+    cf:SetJustifyH("RIGHT")
+    placeWish(40, y + 50, it.id, specId, sl.slot, L.BIZ_WISH_LABEL)
+    y = y + 84
+  end
+  local ease = (b.ease and b.ease ~= "") and (" · " .. b.ease) or ""
+  local facts = line("GameFontHighlightSmall", 0, y, 320, b.name .. ": " .. b.stats .. ease)
+  facts:SetTextColor(0.7, 0.7, 0.7)
+  facts:SetWordWrap(true)
+  if #nxt == 0 then line("GameFontDisableSmall", 0, y + 30, 320, L.BIZ_NO_MORE) end
 end
 
 -- ---------------------------------------------------------------------------
@@ -265,6 +294,7 @@ end
 -- ---------------------------------------------------------------------------
 
 local function layoutWish()
+  host = content
   local y = 0
   local groups = BiZ.WishGroups()
   if #groups == 0 then
@@ -275,15 +305,15 @@ local function layoutWish()
   for _, g in ipairs(groups) do
     line("GameFontNormal", 0, y, 330, g.name)
     local fmt = #g.items == 1 and L.BIZ_ONE_ITEM or L.BIZ_N_ITEMS
-    local cnt = line("GameFontHighlightSmall", 340, y + 2, 96, fmt:format(#g.items))
+    local cnt = line("GameFontHighlightSmall", 500, y + 2, 96, fmt:format(#g.items))
     cnt:SetJustifyH("RIGHT")
     y = y + 20
     for _, it in ipairs(g.items) do
       local sp = it.spec and BiZ.Spec(it.spec)
-      placeItem(8, y, 230, it.id, it.name, sp and L.BIZ_TIP_WISHED:format(sp.name, BiZ.SlotLabel(it.slot or "")) or nil)
+      placeItem(8, y, 300, it.id, it.name, sp and L.BIZ_TIP_WISHED:format(sp.name, BiZ.SlotLabel(it.slot or "")) or nil)
       local detail = BiZ.SlotLabel(it.slot or "") .. (sp and (" · " .. sp.name) or "")
-      line("GameFontDisableSmall", 262, y + 3, 148, detail)
-      placeWish(414, y, it.id, it.spec, it.slot)
+      line("GameFontDisableSmall", 330, y + 3, 200, detail)
+      placeWish(560, y + 3, it.id, it.spec, it.slot)
       y = y + 22
     end
     y = y + 8
@@ -382,6 +412,20 @@ end
 -- Refresh / build
 -- ---------------------------------------------------------------------------
 
+local function setViewShown()
+  local isSet = view == "set"
+  for _, b in pairs(slotBtns) do b:SetShown(isSet) end
+  for _, w in pairs(typeBoxes) do w:SetShown(isSet) end
+  ui.known:SetShown(isSet)
+  ui.footer:SetShown(isSet)
+  ui.side:SetShown(isSet)
+  ui.modelBack:SetShown(isSet)
+  if ui.model then ui.model:SetShown(isSet) end
+  scroll:SetShown(not isSet)
+  ui.exportBtn:SetShown(not isSet)
+  ui.importBtn:SetShown(not isSet)
+end
+
 local function refresh()
   if not visible() then return end
   local sp = BiZ.Spec(BiZ.SpecId())
@@ -392,17 +436,28 @@ local function refresh()
   ui.wishBtn:SetText(L.BIZ_VIEW_WISH:format(BiZ.WishCount()))
   for t, box in pairs(typeBoxes) do box:SetChecked(BiZ.TypeOn(t)) end
   ui.known:SetChecked(BiZ.KnownOnly())
-  for _, w in pairs(typeBoxes) do w:SetShown(view == "set") end
-  ui.known:SetShown(view == "set")
-  ui.footer:SetShown(view == "set")
-  ui.exportBtn:SetShown(view == "wish")
-  ui.importBtn:SetShown(view == "wish")
+  setViewShown()
+
+  -- Keep the selected slot while the spec changes; fall back to the first slot with a pick.
+  if not (selected and slotOf(sp, selected) and slotOf(sp, selected).best) then
+    selected = nil
+    for _, sl in ipairs(sp.slots) do
+      if sl.best then selected = sl.slot; break end
+    end
+    selected = selected or "head"
+  end
 
   resetPools()
-  local h = view == "set" and layoutSet() or layoutWish()
+  if view == "set" then
+    for key in pairs(slotBtns) do paintSlotButton(key, sp) end
+    layoutSide()
+    ui.contentHeight = 0
+  else
+    local h = layoutWish()
+    content:SetHeight(math.max(h, 1))
+    ui.contentHeight = h
+  end
   hideUnused()
-  content:SetHeight(math.max(h, 1))
-  ui.contentHeight = h
 end
 Tab.Refresh = refresh
 
@@ -450,54 +505,151 @@ local function button(parent, w, label, fn)
   return b
 end
 
+-- One gear slot button of the doll: item icon in a quality-coloured frame, a gold ring when selected.
+local function buildSlotButton(f, key, x, y)
+  local b = CreateFrame("Button", nil, f)
+  b:SetSize(SLOT, SLOT)
+  b:SetPoint("TOPLEFT", f, "TOPLEFT", x, -y)
+  b.sel = b:CreateTexture(nil, "BACKGROUND")
+  b.sel:SetPoint("TOPLEFT", b, "TOPLEFT", -3, 3)
+  b.sel:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", 3, -3)
+  b.sel:SetColorTexture(1, 0.82, 0, 1)
+  b.border = b:CreateTexture(nil, "BORDER")
+  b.border:SetAllPoints(b)
+  b.border:SetColorTexture(0.25, 0.25, 0.28, 1)
+  b.icon = b:CreateTexture(nil, "ARTWORK")
+  b.icon:SetPoint("TOPLEFT", b, "TOPLEFT", 2, -2)
+  b.icon:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -2, 2)
+  b.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+  b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+  b.slotKey = key
+  b:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    if self.itemId then
+      BiZ.ShowTooltip(self, self.itemId, nil)
+    else
+      GameTooltip:AddLine(BiZ.SlotLabel(self.slotKey), 1, 1, 1)
+      GameTooltip:AddLine(L.BIZ_NOTHING, 0.6, 0.6, 0.6)
+      GameTooltip:Show()
+    end
+  end)
+  b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  b:SetScript("OnClick", function(self)
+    if IsShiftKeyDown() and self.itemId and BiZ.LinkInChat(self.itemId) then return end
+    selected = self.slotKey
+    refresh()
+  end)
+  slotBtns[key] = b
+  return b
+end
+
+-- The 3D model of the player's character. Turns slowly; drag with the left mouse button to
+-- turn it by hand. Everything is optional (a client without PlayerModel just shows the dark panel).
+local function buildModel(f, x, y, w, h)
+  local back = f:CreateTexture(nil, "BACKGROUND")
+  back:SetPoint("TOPLEFT", f, "TOPLEFT", x, -y)
+  back:SetSize(w, h)
+  back:SetColorTexture(0.03, 0.03, 0.05, 0.9)
+  ui.modelBack = back
+  local ok, m = pcall(CreateFrame, "PlayerModel", nil, f)
+  if not (ok and m) then return end
+  m:SetSize(w, h)
+  m:SetPoint("TOPLEFT", f, "TOPLEFT", x, -y)
+  local facing, dragX = 0, nil
+  local function face(v)
+    if m.SetFacing then m:SetFacing(v) elseif m.SetRotation then m:SetRotation(v) end
+  end
+  local function reset()
+    if m.SetUnit then pcall(m.SetUnit, m, "player") end
+    if m.SetPortraitZoom then pcall(m.SetPortraitZoom, m, 0) end
+    face(facing)
+  end
+  m:SetScript("OnShow", reset)
+  m:EnableMouse(true)
+  m:SetScript("OnMouseDown", function() if GetCursorPosition then dragX = GetCursorPosition() end end)
+  m:SetScript("OnMouseUp", function() dragX = nil end)
+  m:SetScript("OnUpdate", function(_, elapsed)
+    if dragX and GetCursorPosition then
+      local cx = GetCursorPosition()
+      facing = facing + (cx - dragX) * 0.012
+      dragX = cx
+    else
+      facing = facing + (elapsed or 0) * 0.35
+    end
+    face(facing)
+  end)
+  ui.model = m
+  ui.modelReset = reset
+  reset()
+end
+
 -- Called once by MainWindow with the BiS page frame.
 function Tab.Build(f)
   page = f
   ui.classBtn = dropButton(f, 124, classMenu)
-  ui.classBtn:SetPoint("TOPLEFT", 28, -54)
+  ui.classBtn:SetPoint("TOPLEFT", 0, 0)
   ui.specBtn = dropButton(f, 156, specMenu)
   ui.specBtn:SetPoint("LEFT", ui.classBtn, "RIGHT", 6, 0)
-  ui.setBtn = button(f, 96, L.BIZ_VIEW_SET, function() view = "set"; scroll:SetVerticalScroll(0); refresh() end)
-  ui.setBtn:SetPoint("TOPLEFT", 324, -54)
-  ui.wishBtn = button(f, 96, "", function() view = "wish"; scroll:SetVerticalScroll(0); refresh() end)
-  ui.wishBtn:SetPoint("LEFT", ui.setBtn, "RIGHT", 2, 0)
+  ui.wishBtn = button(f, 110, "", function() view = "wish"; scroll:SetVerticalScroll(0); refresh() end)
+  ui.wishBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -1)
+  ui.setBtn = button(f, 100, L.BIZ_VIEW_SET, function() view = "set"; refresh() end)
+  ui.setBtn:SetPoint("RIGHT", ui.wishBtn, "LEFT", -2, 0)
 
+  -- Paper doll: model in the middle, slots in two columns, weapons under it.
+  buildModel(f, 50, DOLL_Y, MODEL_W, DOLL_STEP * 7 - 6)
+  for i, key in ipairs(LEFT_SLOTS) do buildSlotButton(f, key, 0, DOLL_Y + (i - 1) * DOLL_STEP) end
+  for i, key in ipairs(RIGHT_SLOTS) do buildSlotButton(f, key, DOLL_RIGHT_X, DOLL_Y + (i - 1) * DOLL_STEP) end
+  local wy = DOLL_Y + 7 * DOLL_STEP + 4
+  for i, key in ipairs(WEAPON_SLOTS) do buildSlotButton(f, key, 84 + (i - 1) * 48, wy) end
+
+  -- Source filters (switches) under the doll.
+  local fy = wy + SLOT + 12
   for i, t in ipairs(BiZ.Types()) do
     local box = UI.CheckButton(f, L["BIZ_TYPE_" .. t:upper()])
-    local col, row = (i - 1) % 4, math.floor((i - 1) / 4)
-    box:SetPoint("TOPLEFT", 26 + col * 122, -82 - row * 22)
+    local col, row = (i - 1) % 2, math.floor((i - 1) / 2)
+    box:SetPoint("TOPLEFT", 4 + col * 150, -fy - row * 20)
     box:SetScript("OnClick", function(self) BiZ.SetTypeOn(t, self:GetChecked()); refresh() end)
     typeBoxes[t] = box
   end
   local n = #BiZ.Types()
   ui.known = UI.CheckButton(f, L.BIZ_KNOWN_ONLY)
-  ui.known:SetPoint("TOPLEFT", 26 + (n % 4) * 122, -82 - math.floor(n / 4) * 22)
+  ui.known:SetPoint("TOPLEFT", 4 + (n % 2) * 150, -fy - math.floor(n / 2) * 20)
   ui.known:SetScript("OnClick", function(self) BiZ.SetKnownOnly(self:GetChecked()); refresh() end)
 
-  ui.summary = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-  ui.summary:SetPoint("TOPRIGHT", -30, -132)
-  ui.summary:SetJustifyH("RIGHT")
+  -- Slot panel (right).
+  side = CreateFrame("Frame", nil, f)
+  side:SetPoint("TOPLEFT", f, "TOPLEFT", 332, -DOLL_Y)
+  side:SetSize(318, 440)
+  ui.side = side
 
+  ui.summary = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.summary:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -26)
+  ui.summary:SetJustifyH("RIGHT")
+  ui.footer = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+  ui.footer:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 332, 6)
+  ui.footer:SetWidth(318)
+  ui.footer:SetJustifyH("LEFT")
+
+  -- Wishlist view: a scrolling list over the whole page.
   scroll = UI.TryTemplate("ScrollFrame", "R2FBiZScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FBiZScrollPlain", f)
-  scroll:SetPoint("TOPLEFT", 22, -146)
-  scroll:SetSize(CONTENT_W + 8, 286)
+  scroll:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -DOLL_Y)
+  scroll:SetSize(CONTENT_W, 440)
   content = CreateFrame("Frame", nil, scroll)
   content:SetSize(CONTENT_W, 10)
   scroll:SetScrollChild(content)
   scroll:EnableMouseWheel(true)
   scroll:SetScript("OnMouseWheel", onWheel)
+  scroll:Hide()
 
-  ui.footer = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-  ui.footer:SetPoint("BOTTOMLEFT", 28, 34)
-  ui.footer:SetWidth(480)
-  ui.footer:SetJustifyH("LEFT")
   ui.exportBtn = button(f, 110, L.BIZ_EXPORT, function()
     UI.ShowCopy(BiZ.Export(), L.BIZ_EXPORT_HINT)
   end)
-  ui.exportBtn:SetPoint("BOTTOMLEFT", 28, 28)
+  ui.exportBtn:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 0, 4)
   ui.importBtn = button(f, 110, L.BIZ_IMPORT, showImport)
   ui.importBtn:SetPoint("LEFT", ui.exportBtn, "RIGHT", 6, 0)
+  ui.exportBtn:Hide()
+  ui.importBtn:Hide()
   return f
 end
 

@@ -1,6 +1,6 @@
 # Road to Forever changelog
 
-## Unreleased: new window (UI overhaul, phase 1)
+## 0.31.0 (2026-10-12): new window, phase 1 (test build)
 
 - **New window shell**: a larger flat window (820 x 600) with a sidebar instead of the bottom tabs
   (Home; Journey: Plan, Talents, BiZ; Tools: Macros, Gameplay; Options: Settings).

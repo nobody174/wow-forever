@@ -386,12 +386,22 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
-**Shadow Bolt + Imp Firebolt** (`ShadowBolt`) — Sends your pet in and, when the Imp is out, fires its Firebolt on the same press. Handy if you keep Firebolt autocast off to stop the Imp pulling or burning mana. With any other demon the Firebolt line is skipped.
+**Shadow Bolt (target / target's target)** (`ShadowBolt`) — Casts on your target if it is a living enemy; if your target is friendly (a tank, say), on what that target is attacking. No mouseover.
 ```
 #showtooltip Shadow Bolt
-/petattack [harm]
-/cast [pet:Imp, harm] Firebolt
-/cast [harm] Shadow Bolt
+/cast [harm, nodead][@targettarget, harm, nodead] Shadow Bolt
+```
+
+**Corruption mouseover** (`Corruption`) — Mouseover enemy first, then your enemy target, then your friendly target's enemy target. Nothing happens (no error) if none of them is a living enemy.
+```
+#showtooltip Corruption
+/cast [@mouseover, harm, nodead][harm, nodead][@targettarget, harm, nodead] Corruption
+```
+
+**Bane of Agony mouseover** (`BaneAgony`) — Same targeting as Corruption mouseover. Called Bane of Agony in Forever (Curse of Agony in Classic).
+```
+#showtooltip Bane of Agony
+/cast [@mouseover, harm, nodead][harm, nodead][@targettarget, harm, nodead] Bane of Agony
 ```
 
 **Drain Life (spam-safe)** (`DrainLife`)
@@ -455,6 +465,11 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /petattack [@targettarget, harm, exists][harm]
 ```
 
+**Pet attack mouseover** (`PetAtkMO`) — Mouseover enemy first, then your enemy target, then your friendly target's enemy target. No #showtooltip: /petattack is not a spell, so it would show a red ?. Pick the icon yourself in the macro window: the claw icon from the pet bar's Attack button (Ability_GhoulFrenzy).
+```
+/petattack [@mouseover, harm, nodead][harm, nodead][@targettarget, harm, nodead]
+```
+
 #### Focus
 
 **Fear focus** (`Fear F`)
@@ -503,17 +518,17 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@targettarget, harm, exists, nochanneling][harm, nochanneling] Wrack
 ```
 
-**Amplify Curse + Agony** (`AmpCurse`)
+**Amplify Curse + Bane of Agony** (`AmpCurse`)
 ```
-#showtooltip Curse of Agony
+#showtooltip Bane of Agony
 /cast Amplify Curse
-/cast [harm] Curse of Agony
+/cast [harm] Bane of Agony
 ```
 
 **DoT sequence (press to roll dots)** (`DoTSeq`)
 ```
 #showtooltip Corruption
-/castsequence [harm] reset=target Corruption, Curse of Agony, Siphon Life, Immolate
+/castsequence [harm] reset=target Corruption, Bane of Agony, Siphon Life, Immolate
 ```
 
 ### Warlock — Demonology

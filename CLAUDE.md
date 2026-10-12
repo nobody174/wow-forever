@@ -469,6 +469,12 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - Buffs: `/cast [@mouseover, help, exists][help][@player] SPELL`
 - Spam-safe channels (Warlock): `/cast [@targettarget, harm, exists, nochanneling][harm, nochanneling] SPELL`
   — chan() keeps TT; only the dps() helper was split by class, chan()/stance() were not.
+- Warlock (owner's tested macros, 2026-10-13): mouseover enemy, then your own enemy target, then your friendly
+  target's enemy target, never a corpse: `/cast [@mouseover, harm, nodead][harm, nodead][@targettarget, harm, nodead] SPELL`
+  (constants `WL_MO`, `WL_TGT` in data.py). Used by Corruption, Bane of Agony (the Forever name; Curse of Agony in
+  Classic) and Pet attack mouseover. Shadow Bolt uses `WL_TGT` (no mouseover). These replace the plain `[harm]` rule
+  for these Warlock spells only; the pet attack has no #showtooltip, icon `Ability_GhoulFrenzy` (Blizzard's own
+  pet-bar Attack icon, `PET_ATTACK_TEXTURE`).
 - Focus: `/cast [@focus, harm, exists][harm] SPELL`
 - Wand (must stay exactly two lines, never use !Shoot):
   ```

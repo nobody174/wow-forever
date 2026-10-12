@@ -88,6 +88,11 @@ MELEE = "/startattack [@targettarget, harm, exists][harm]"
 PETATK = "/petattack [@targettarget, harm, exists][harm]"
 PETATK_MO = "/petattack [@mouseover, harm, exists][harm]"
 PETATK_MO_TT = "/petattack [@mouseover, harm, exists][@targettarget, harm, exists][harm]"
+# Warlock (owner's tested macros, 2026-10-13): mouseover enemy, then your own enemy target,
+# then your friendly target's enemy target. nodead keeps it off corpses.
+WL_MO = "[@mouseover, harm, nodead][harm, nodead][@targettarget, harm, nodead]"
+WL_TGT = "[harm, nodead][@targettarget, harm, nodead]"
+PETATK_WL_MO = "/petattack " + WL_MO
 PETATK_SHIFT = (
     "/petfollow [mod:shift]\n"
     "/petattack [nomod:shift, @mouseover, harm, exists][nomod:shift, harm]"
@@ -288,15 +293,20 @@ CLASSES = [
 
         {"spec": "Shared", "groups": [
             G(DPS, [
-                M("Shadow Bolt + Imp Firebolt",
-                  "#showtooltip Shadow Bolt\n"
-                  "/petattack [harm]\n"
-                  "/cast [pet:Imp, harm] Firebolt\n"
-                  "/cast [harm] Shadow Bolt",
-                  "Sends your pet in and, when the Imp is out, fires its Firebolt on the "
-                  "same press. Handy if you keep Firebolt autocast off to stop the Imp "
-                  "pulling or burning mana. With any other demon the Firebolt line is skipped.",
+                M("Shadow Bolt (target / target's target)",
+                  "#showtooltip Shadow Bolt\n/cast " + WL_TGT + " Shadow Bolt",
+                  "Casts on your target if it is a living enemy; if your target is friendly (a tank, say), "
+                  "on what that target is attacking. No mouseover.",
                   short="ShadowBolt"),
+                M("Corruption mouseover",
+                  "#showtooltip Corruption\n/cast " + WL_MO + " Corruption",
+                  "Mouseover enemy first, then your enemy target, then your friendly target's enemy target. "
+                  "Nothing happens (no error) if none of them is a living enemy.",
+                  short="Corruption"),
+                M("Bane of Agony mouseover",
+                  "#showtooltip Bane of Agony\n/cast " + WL_MO + " Bane of Agony",
+                  "Same targeting as Corruption mouseover. Called Bane of Agony in Forever (Curse of Agony in Classic).",
+                  short="BaneAgony"),
                 M("Drain Life (spam-safe)", chan("Drain Life"), short="DrainLife"),
                 M("Drain Soul (spam-safe)", chan("Drain Soul"), short="DrainSoul"),
                 M("Drain Mana (spam-safe)", chan("Drain Mana"), short="DrainMana"),
@@ -316,6 +326,9 @@ CLASSES = [
             ]),
             G(QOL, [
                 M("Pet attack TT / target", PETATK, short="PetAtk", icon="Ability_GhoulFrenzy"),
+                M("Pet attack mouseover", PETATK_WL_MO,
+                  "Mouseover enemy first, then your enemy target, then your friendly target's enemy target. " + PET_ICON_NOTE,
+                  short="PetAtkMO", icon="Ability_GhoulFrenzy"),
             ]),
             G(FOCUS, [
                 M("Fear focus", foc("Fear"), short="Fear F"),
@@ -333,11 +346,11 @@ CLASSES = [
             G(DPS, [
                 M("Wrack (spam-safe)", chan("Wrack"),
                   "New in Forever. Channeled drain that makes the target take more Shadow DoT damage.", short="Wrack"),
-                M("Amplify Curse + Agony",
-                  "#showtooltip Curse of Agony\n/cast Amplify Curse\n/cast [harm] Curse of Agony", short="AmpCurse"),
+                M("Amplify Curse + Bane of Agony",
+                  "#showtooltip Bane of Agony\n/cast Amplify Curse\n/cast [harm] Bane of Agony", short="AmpCurse"),
                 M("DoT sequence (press to roll dots)",
                   "#showtooltip Corruption\n"
-                  "/castsequence [harm] reset=target Corruption, Curse of Agony, Siphon Life, Immolate",
+                  "/castsequence [harm] reset=target Corruption, Bane of Agony, Siphon Life, Immolate",
                   short="DoTSeq"),
             ]),
         ]},

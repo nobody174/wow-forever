@@ -4,6 +4,13 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-13 (Warlock macros)
+- Warlock Shared: "Shadow Bolt + Imp Firebolt" replaced by **Shadow Bolt (target / target's target)**; new
+  **Corruption mouseover** and **Bane of Agony mouseover**; new **Pet attack mouseover** (Class QoL, icon
+  Ability_GhoulFrenzy, no #showtooltip). All use the owner's tested order: mouseover, own enemy target, friendly
+  target's enemy target, with `nodead`. "Curse of Agony" renamed **Bane of Agony** everywhere (Forever's name): the
+  Affliction macros and the builds page rotations. The Imp Firebolt line is gone with the old Shadow Bolt macro.
+
 ## 2026-10-13 (Talented legacy perk switch)
 - talentcalc.js / talentcalc.css: a switch for the **Talented** legacy perk (+5 talent points; talent points start at
   level 5 instead of 10). Setting `wf-talented` ("5" or absent), shared by every calculator on a page and across tabs

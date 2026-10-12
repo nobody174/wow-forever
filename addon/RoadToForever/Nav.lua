@@ -29,6 +29,10 @@ Nav.ARRIVE_YARDS = 10
 local EPS = 0.01          -- map fraction used to probe east / south
 local THROTTLE = 0.05     -- seconds between arrow updates
 
+-- Arrow sizes (Tweaks > Alerts & HUD): frame scale per choice. Medium is the default.
+Nav.SIZES = { small = 1.0, medium = 1.4, large = 1.8 }
+Nav.SIZE_ORDER = { "small", "medium", "large" }
+
 local target              -- { mapID, x, y, label, zone, continent, wx, wy, ex, ey, sx, sy }
 
 -- ---------------------------------------------------------------------------
@@ -147,6 +151,7 @@ local function update(f, dt)
   if elapsed < THROTTLE then return end
   elapsed = 0
   if not target then f:Hide() return end
+  Nav.UpdatePin()
   local pc, px, py = Nav.PlayerWorld()
   local facing = _G.GetPlayerFacing and _G.GetPlayerFacing() or nil
   local state, yards, angle = Nav.Solve(pc, px, py, target, facing)
@@ -213,6 +218,8 @@ local function build()
 
   f:SetScript("OnUpdate", update)
   place(f)
+  local st = settings()
+  f:SetScale(Nav.SIZES[st and st.size] or Nav.SIZES.medium)
   f:Hide()
   frame = f
   return f
@@ -242,22 +249,38 @@ function Nav.Clear()
   local had = target ~= nil
   target = nil
   if frame then frame:Hide() end
+  Nav.UpdatePin()
   return had
 end
 
--- "/r2f way Zone Name 47.4 52.5 optional label": the TomTom-style command.
--- Returns true when the arrow was set.
-function Nav.WayCommand(rest)
-  rest = (rest or ""):gsub("^%s+", ""):gsub("%s+$", "")
-  local zone, xs, ys, label = rest:match("^(.-)[%s,]+([%d%.]+)[%s,]+([%d%.]+)%s*(.*)$")
-  local x, y = tonumber(xs), tonumber(ys)
-  if not (zone and zone ~= "" and x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100) then
-    R2F.Print(L.NAV_WAY_USAGE)
-    return false
+function Nav.Size()
+  local st = settings()
+  return st and Nav.SIZES[st.size] and st.size or "medium"
+end
+
+-- "small" / "medium" / "large": saved, applied at once.
+function Nav.SetSize(key)
+  if not Nav.SIZES[key] then return false end
+  local st = settings()
+  if st then st.size = key end
+  if frame then
+    -- Keep the arrow's centre where it is while the scale changes.
+    frame:SetScale(Nav.SIZES[key])
+    place(frame)
   end
-  local mapID = R2F.Plan.ResolveMap(zone)
-  if not mapID then R2F.Print(L.NAV_NO_MAP:format(zone)) return false end
-  if label == "" then label = ("%s %.1f, %.1f"):format(zone, x, y) end
+  return true
+end
+
+-- The zone the player is in: mapID, name (nil where the game gives no map).
+local function currentZone()
+  if not (C_Map and C_Map.GetBestMapForUnit) then return nil end
+  local id = C_Map.GetBestMapForUnit("player")
+  if not id then return nil end
+  local info = C_Map.GetMapInfo and C_Map.GetMapInfo(id)
+  return id, info and info.name or "?"
+end
+
+local function setAndSay(mapID, x, y, label, zone)
   if Nav.SetTarget(mapID, x, y, label, zone) then
     R2F.Print(L.NAV_SET:format(label))
     return true
@@ -265,3 +288,155 @@ function Nav.WayCommand(rest)
   R2F.Print(L.NAV_NO_WORLD)
   return false
 end
+
+local function inRange(x, y) return x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 end
+
+-- "/bizway" and "/r2f way". Accepted forms:
+--   <x> <y> [label]           in the zone you are in
+--   <zone> <x> <y> [label]    in that zone
+--   <label> <x> <y>           when the words before the numbers are not a zone: label, zone you are in
+--   clear  /  size small|medium|large
+-- Returns true when the arrow was set (or the size / clear done).
+function Nav.WayCommand(rest)
+  rest = (rest or ""):gsub("^%s+", ""):gsub("%s+$", "")
+  local lower = rest:lower()
+  if lower == "clear" then
+    if not Nav.Clear() then R2F.Print(L.NAV_NONE) end
+    return true
+  end
+  local sz = lower:match("^size%s+(%a+)$")
+  if sz then
+    if Nav.SetSize(sz) then R2F.Print(L.NAV_SIZE_SET:format(L["NAV_SIZE_" .. sz:upper()])) return true end
+    R2F.Print(L.NAV_WAY_USAGE)
+    return false
+  end
+  -- x y [label]: the zone you are in.
+  local xs, ys, label = rest:match("^([%d%.]+)[%s,]+([%d%.]+)%s*(.*)$")
+  if xs then
+    local x, y = tonumber(xs), tonumber(ys)
+    local mapID, zone = currentZone()
+    if not inRange(x, y) then R2F.Print(L.NAV_WAY_USAGE) return false end
+    if not mapID then R2F.Print(L.PLAN_HERE_NONE) return false end
+    if label == "" then label = ("%s %.1f, %.1f"):format(zone, x, y) end
+    return setAndSay(mapID, x, y, label, zone)
+  end
+  local words
+  words, xs, ys, label = rest:match("^(.-)[%s,]+([%d%.]+)[%s,]+([%d%.]+)%s*(.*)$")
+  local x, y = tonumber(xs), tonumber(ys)
+  if not (words and words ~= "" and inRange(x, y)) then
+    R2F.Print(L.NAV_WAY_USAGE)
+    return false
+  end
+  local mapID = R2F.Plan.ResolveMap(words)
+  if mapID then
+    if label == "" then label = ("%s %.1f, %.1f"):format(words, x, y) end
+    return setAndSay(mapID, x, y, label, words)
+  end
+  -- Not a zone name: with nothing after the numbers, the words are the label in this zone.
+  local here, zone = currentZone()
+  if label == "" and here then
+    return setAndSay(here, x, y, words, zone)
+  end
+  R2F.Print(L.NAV_NO_MAP:format(words))
+  return false
+end
+
+-- ---------------------------------------------------------------------------
+-- World map: a pin at the target, and Alt + right-click to set the arrow there.
+-- Our own pin frame is parented to the map canvas; the click is read with HookScript
+-- (runs after the game's own handler, like hooksecurefunc). Nothing is written into the
+-- map's own tables, no data provider is added.
+-- ---------------------------------------------------------------------------
+
+local pin, hooked
+
+local function mapFrame() return _G.WorldMapFrame end
+
+local function canvas()
+  local wm = mapFrame()
+  return wm and wm.ScrollContainer and wm.ScrollContainer.Child
+end
+
+-- Where the target sits on map `mapID`, as 0-1 fractions (nil if it isn't on that map).
+function Nav.PinPos(mapID)
+  if not (target and mapID) then return nil end
+  if mapID == target.mapID then return target.x / 100, target.y / 100 end
+  if not (C_Map and C_Map.GetMapPosFromWorldPos and _G.CreateVector2D) then return nil end
+  local ok, _, pos = pcall(C_Map.GetMapPosFromWorldPos, target.continent,
+    _G.CreateVector2D(target.wx, target.wy), mapID)
+  if not (ok and pos) then return nil end
+  local x, y
+  if pos.GetXY then x, y = pos:GetXY() else x, y = pos.x, pos.y end
+  if not (x and y) or x < 0 or x > 1 or y < 0 or y > 1 then return nil end
+  return x, y
+end
+
+local function buildPin(parent)
+  local p = CreateFrame("Frame", "R2FNavPin", parent)
+  p:SetSize(24, 24)
+  p:SetFrameStrata("HIGH")
+  p.icon = p:CreateTexture(nil, "OVERLAY")
+  p.icon:SetAllPoints()
+  p.icon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_3")
+  p:EnableMouse(true)
+  p:SetScript("OnEnter", function(self)
+    if not (GameTooltip and target) then return end
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetText(target.label or "")
+    GameTooltip:AddLine(L.NAV_PIN_TIP, 0.7, 0.7, 0.7)
+    GameTooltip:Show()
+  end)
+  p:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
+  p:Hide()
+  return p
+end
+
+function Nav.UpdatePin()
+  local wm, c = mapFrame(), canvas()
+  if not (wm and c) then return end
+  pin = pin or buildPin(c)
+  if not (target and wm:IsShown()) then pin:Hide() return end
+  local mapID = wm.GetMapID and wm:GetMapID()
+  local x, y = Nav.PinPos(mapID)
+  if not x then pin:Hide() return end
+  local w, h = c:GetWidth(), c:GetHeight()
+  local sc = c.GetScale and c:GetScale() or 1
+  pin:SetScale(sc > 0 and 1 / sc or 1)
+  local ps = pin:GetScale()
+  pin:ClearAllPoints()
+  pin:SetPoint("CENTER", c, "TOPLEFT", x * w / ps, -y * h / ps)
+  pin:Show()
+end
+
+-- Alt + right-click on the world map: point the arrow at that spot. Read on mouse-down,
+-- before the game's right-click zooms the map out.
+local function onMapMouseDown(self, button)
+  if button ~= "RightButton" or not (IsAltKeyDown and IsAltKeyDown()) then return end
+  local wm = mapFrame()
+  local mapID = wm and wm.GetMapID and wm:GetMapID()
+  if not (mapID and self.GetNormalizedCursorPosition) then return end
+  local x, y = self:GetNormalizedCursorPosition()
+  if not (x and y) or x < 0 or x > 1 or y < 0 or y > 1 then return end
+  local info = C_Map.GetMapInfo and C_Map.GetMapInfo(mapID)
+  local zone = info and info.name or "?"
+  setAndSay(mapID, x * 100, y * 100, ("%s %.1f, %.1f"):format(zone, x * 100, y * 100), zone)
+end
+
+-- Hooks the map once it exists (at login, or when the game loads its map addon).
+function Nav.HookMap()
+  if hooked then return true end
+  local wm = mapFrame()
+  local sc = wm and wm.ScrollContainer
+  if not (sc and sc.HookScript) then return false end
+  sc:HookScript("OnMouseDown", onMapMouseDown)
+  if wm.HookScript then wm:HookScript("OnShow", function() Nav.UpdatePin() end) end
+  hooked = true
+  return true
+end
+
+local ev = CreateFrame("Frame")
+ev:RegisterEvent("PLAYER_LOGIN")
+ev:RegisterEvent("ADDON_LOADED")
+ev:SetScript("OnEvent", function(_, event, name)
+  if event == "PLAYER_LOGIN" or name == "Blizzard_WorldMap" then Nav.HookMap() end
+end)

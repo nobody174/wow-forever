@@ -26,6 +26,7 @@ local pages = {}        -- page key -> container frame
 local pageButtons = {}  -- page key -> button
 local pageHeight = {}
 local outlineButtons = {}   -- "none" / "thin" / "thick" -> button (Alerts & HUD page)
+local arrowButtons = {}     -- BiZNav arrow size: "small" / "medium" / "large" -> button (Alerts & HUD page)
 local sizeSlider, sizeText
 local searchBox, results, resultRows = nil, nil, {}
 local bagBoxes = {}     -- Movable bags / Lock bags (Bags.lua), on the Bags page
@@ -66,6 +67,13 @@ local function refresh()
       local fs = b.GetFontString and b:GetFontString()
       if fs then
         if k == d.outline then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
+      end
+    end
+    local size = R2F.Nav.Size()
+    for k, b in pairs(arrowButtons) do
+      local fs = b.GetFontString and b:GetFontString()
+      if fs then
+        if k == size then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
       end
     end
   end
@@ -149,7 +157,7 @@ end
 -- { label, page } (up to 10). Options that are not plain features are listed in EXTRA.
 local EXTRA = {
   { "BAGS_MOVABLE", "bags" }, { "BAGS_LOCK", "bags" },
-  { "GP_ALERT_OUTLINE", "alerts" }, { "GP_ICONS", "alerts" },
+  { "GP_ALERT_OUTLINE", "alerts" }, { "GP_ICONS", "alerts" }, { "NAV_SIZE", "alerts" },
 }
 
 function Tab.Search(q)
@@ -235,6 +243,7 @@ function Tab.ResetPage()
         local d = R2F.Library.db.fct
         d.textScale, d.outline = 1, "none"
         Gameplay.ApplyAlertStyle()
+        R2F.Nav.SetSize("medium")
       end
     end
   end
@@ -374,7 +383,25 @@ function Tab.Build(f)
         outlineButtons[k] = ob
         bx = bx + 68
       end
-      y = y - 108
+      -- BiZNav arrow size.
+      local al = c:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+      al:SetPoint("TOPLEFT", LEFT + 4, y - 104)
+      al:SetText(L.NAV_SIZE)
+      bx = LEFT + 4
+      for _, k in ipairs(R2F.Nav.SIZE_ORDER) do
+        local ab = CreateFrame("Button", nil, c, "UIPanelButtonTemplate")
+        ab:SetSize(64, 22)
+        ab:SetPoint("TOPLEFT", bx, y - 122)
+        ab:SetText(L["NAV_SIZE_" .. k:upper()])
+        ab.navSize = k
+        ab:SetScript("OnClick", function()
+          R2F.Nav.SetSize(k)
+          refresh()
+        end)
+        arrowButtons[k] = ab
+        bx = bx + 68
+      end
+      y = y - 156
       local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
       note:SetPoint("TOPLEFT", LEFT + 4, y - 4)
       note:SetWidth(230)

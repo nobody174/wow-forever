@@ -3079,7 +3079,11 @@ Owner request 2026-10-13: navigation driven by our own data, no TomTom.
   without GetWorldPosFromMapPos falls back to printing the /way line. `/r2f way <zone> <x> <y> [label]`, `/r2f clear`.
 - **Steps (each its own release):**
   1. Arrow + Plan Waypoint button + /r2f way / clear. (0.39.0)
-  2. Map pin: the target drawn on the world map (and minimap edge) with our own frames, anchored through
-     `hooksecurefunc` on the map's refresh; never adding providers or writing into WorldMapFrame tables (taint rule).
+  2. (0.40.0) World map pin (own frame `R2FNavPin` parented to the map canvas, placed from the arrow's update; other maps
+     via `C_Map.GetMapPosFromWorldPos`), Alt + right-click on the map sets the arrow (`HookScript` on the scroll
+     container's OnMouseDown, read before the game's right-click zooms out), arrow size Small / Medium / Large
+     (`R2FDB.nav.size`, Tweaks > Alerts & HUD), `/bizway` (x y in your zone, label before the numbers, clear, size).
+     Owner 2026-10-13: no minimap pin. Ctrl + right-click on a quest objective (TomTom + Questie style) is not built:
+     Questie's map icons are its own frames and take the click.
   3. Mr.BiZ: places table + a "Go" option on BiZ rows (dungeon entrance / vendor / quartermaster); conf note as on Plan.
   4. Optional: Plan "next step" button that walks a step's points in order (next point on arrival).

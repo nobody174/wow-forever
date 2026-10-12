@@ -123,6 +123,7 @@ function Library.Init()
   if type(db.nav) ~= "table" then db.nav = {} end
   if type(db.nav.x) ~= "number" then db.nav.x = 0 end
   if type(db.nav.y) ~= "number" then db.nav.y = 220 end
+  if db.nav.size ~= "small" and db.nav.size ~= "medium" and db.nav.size ~= "large" then db.nav.size = "medium" end
   if type(db.fct) ~= "table" then db.fct = {} end
   local fc = db.fct
   if type(fc.x) ~= "number" then fc.x = 0 end

@@ -252,6 +252,10 @@ SlashCmdList.R2F = function(msg)
   end
 end
 
+-- BiZNav: /bizway (the arrow; Nav.WayCommand reads every form).
+_G.SLASH_R2FWAY1 = "/bizway"
+SlashCmdList.R2FWAY = function(msg) R2F.Nav.WayCommand(msg) end
+
 _G.SLASH_R2FT1 = "/r2ft"
 SlashCmdList.R2FT = function() R2F.MainWindow.Show("talents") end
 

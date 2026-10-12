@@ -26,7 +26,7 @@ read_globals = {
   -- Action bars, spells, items
   "GetActionInfo", "GetActionText", "GetSpellTexture", "GetItemInfo", "C_Spell", "C_Item",
   -- State
-  "InCombatLockdown", "UnitClass", "IsShiftKeyDown", "GetCursorPosition",
+  "InCombatLockdown", "UnitClass", "IsShiftKeyDown", "IsAltKeyDown", "GetCursorPosition",
   -- Frames / UI
   "CreateFrame", "UIParent", "GameTooltip", "UIErrorsFrame", "DEFAULT_CHAT_FRAME",
   "BackdropTemplateMixin", "C_XMLUtil", "C_Timer", "ChatFontNormal", "GameFontHighlight",

@@ -768,6 +768,7 @@ function methods:SetCheckedTexture(t) self.__checkedTex = self.__checkedTex or n
 function methods:GetCheckedTexture() return self.__checkedTex end
 function methods:SetBlendMode(m) self.__blend = m end
 function methods:SetScale(s) self.__scale = s end
+function methods:GetScale() return self.__scale or 1 end
 function methods:GetParent() return self.__parent end
 function methods:SetAlpha(v) self.__alpha = v end
 function methods:GetAlpha() return self.__alpha or 1 end

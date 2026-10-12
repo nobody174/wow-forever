@@ -1,5 +1,15 @@
 # Road to Forever changelog
 
+## 0.40.0 (2026-10-13)
+
+- BiZNav arrow size: Small / Medium / Large buttons in Tweaks > Alerts & HUD (also `/bizway size large`). Medium is the
+  new default and is bigger than before; Reset page puts it back to Medium.
+- `/bizway`: `/bizway 45 34` points the arrow at that spot in the zone you are in; `/bizway go here 45 34` does the same
+  with "go here" as the name; `/bizway Dun Morogh 47.4 52.5 Kharanos` sets a spot in another zone; `/bizway clear`
+  removes it. `/r2f way` still works the same way.
+- World map: Alt + right-click on the map sets the arrow on that spot, and the target shows as a diamond pin on the
+  world map (hover it for the name). No minimap pin.
+
 ## 0.39.0 (2026-10-13)
 
 - BiZNav, our own waypoint arrow (step 1; replaces TomTom for the Plan tab). The Waypoint button on a Plan step now

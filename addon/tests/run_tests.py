@@ -1465,6 +1465,10 @@ NAV_WORLD_LUA = """
     if mapID == 1426 then return 0, CreateVector2D(1000 * (1 - v.y), 1000 * (1 - v.x)) end
     if mapID == 1455 then return 1, CreateVector2D(1000 * (1 - v.y), 1000 * (1 - v.x)) end
   end
+  C_Map.GetMapPosFromWorldPos = function(cont, v, mapID)
+    if cont == 0 and mapID == 1426 then return 1426, CreateVector2D(1 - v.y / 1000, 1 - v.x / 1000) end
+    return nil
+  end
   TEST.facing = 0
   function GetPlayerFacing() return TEST.facing end
 """
@@ -1665,12 +1669,85 @@ def test_plan(templates=True):
         lua.execute('SlashCmdList.R2F("way dun morogh 10, 20")')
         check(lua.eval("R2F.Nav.Target().x") == 10 and "dun morogh 10.0, 20.0" in chat_all(lua), "BiZNav: /r2f way without a label names the spot")
         T.chat = lua.table()
-        lua.execute('SlashCmdList.R2F("way Nowhere 1 2")')
-        check("no map called Nowhere" in chat_all(lua), "BiZNav: /r2f way with an unknown zone says so")
+        lua.execute('SlashCmdList.R2F("way Nowhere 1 2 spot")')
+        check("no map called Nowhere" in chat_all(lua), "BiZNav: an unknown zone followed by a label says so")
         T.chat = lua.table()
         lua.execute('SlashCmdList.R2F("way")')
         lua.execute('SlashCmdList.R2F("way Dun Morogh 147 2")')
-        check(chat_all(lua).count("usage: /r2f way") == 2, "BiZNav: /r2f way without coordinates (or out of range) shows the usage")
+        check(chat_all(lua).count("usage: /bizway") == 2, "BiZNav: /r2f way without coordinates (or out of range) shows the usage")
+        # /bizway: x y in the zone you are in, a label before the numbers, clear, size
+        T.chat = lua.table()
+        lua.execute('SlashCmdList.R2FWAY("45 34")')
+        tgt = lua.eval("R2F.Nav.Target()")
+        check(tgt is not None and tgt.mapID == 1426 and tgt.x == 45 and tgt.y == 34 and tgt.label == "Dun Morogh 45.0, 34.0",
+              "BiZNav: /bizway x y points at that spot in the zone you are in")
+        lua.execute('SlashCmdList.R2FWAY("go here 45 34")')
+        tgt = lua.eval("R2F.Nav.Target()")
+        check(tgt.mapID == 1426 and tgt.label == "go here" and tgt.x == 45, "BiZNav: /bizway go here 45 34 = label + spot in your zone")
+        lua.execute('SlashCmdList.R2FWAY("12 13 Camp")')
+        check(lua.eval("R2F.Nav.Target().label") == "Camp", "BiZNav: /bizway x y label")
+        lua.execute('SlashCmdList.R2FWAY("Dun Morogh 47.4 52.5")')
+        check(lua.eval("R2F.Nav.Target().x") == 47.4, "BiZNav: /bizway zone x y still works")
+        lua.execute('SlashCmdList.R2FWAY("size large")')
+        check(lua.eval("R2FDB.nav.size") == "large" and abs(lua.eval("R2FNavFrame:GetScale()") - 1.8) < 1e-9
+              and "arrow size: Large" in chat_all(lua), "BiZNav: /bizway size large saves and scales the arrow")
+        lua.execute('SlashCmdList.R2FWAY("size huge")')
+        check(lua.eval("R2FDB.nav.size") == "large", "BiZNav: an unknown size changes nothing")
+        lua.execute('SlashCmdList.R2FWAY("clear")')
+        check(lua.eval("R2F.Nav.Target()") is None, "BiZNav: /bizway clear")
+        lua.execute("TEST.hereMap = nil")
+        T.chat = lua.table()
+        lua.execute('SlashCmdList.R2FWAY("45 34")')
+        check("couldn't read your position" in chat_all(lua) and lua.eval("R2F.Nav.Target()") is None,
+              "BiZNav: /bizway x y where the game gives no zone says so")
+        lua.execute("TEST.hereMap = 1426")
+
+        # World map: pin at the target, Alt + right-click sets the arrow.
+        lua.execute("""
+          local wm = CreateFrame('Frame', 'WorldMapFrame', UIParent)
+          wm.ScrollContainer = CreateFrame('Frame', nil, wm)
+          wm.ScrollContainer.Child = CreateFrame('Frame', nil, wm.ScrollContainer)
+          wm.ScrollContainer.Child.GetWidth = function() return 1000 end
+          wm.ScrollContainer.Child.GetHeight = function() return 600 end
+          wm.mapID = 1426
+          wm.GetMapID = function(self) return self.mapID end
+          wm.ScrollContainer.GetNormalizedCursorPosition = function() return TEST.cursor[1], TEST.cursor[2] end
+          TEST.alt = false
+          function IsAltKeyDown() return TEST.alt end
+        """)
+        check(lua.eval("R2F.Nav.HookMap()") is True, "BiZNav: the world map is hooked once it exists")
+        lua.execute("R2F.Nav.SetTarget(1426, 40, 25, 'Spot', 'Dun Morogh') WorldMapFrame:Show() R2F.Nav.UpdatePin()")
+        pt = lua.eval("R2FNavPin.__point")
+        check(lua.eval("R2FNavPin:IsShown()") is True and pt is not None and abs(pt[4] - 400) < 1e-6 and abs(pt[5] + 150) < 1e-6,
+              "BiZNav: the map pin sits at the target on its own map")
+        lua.execute("WorldMapFrame.mapID = 1455 R2F.Nav.UpdatePin()")
+        check(lua.eval("R2FNavPin:IsShown()") is False, "BiZNav: no pin on a map the target is not on")
+        lua.execute("WorldMapFrame.mapID = 1426 WorldMapFrame:Hide() R2F.Nav.UpdatePin()")
+        check(lua.eval("R2FNavPin:IsShown()") is False, "BiZNav: no pin while the map is closed")
+        lua.execute("WorldMapFrame:Show() R2F.Nav.Clear()")
+        check(lua.eval("R2FNavPin:IsShown()") is False, "BiZNav: clearing the arrow removes the pin")
+        lua.execute("TEST.cursor = { 0.3, 0.6 } WorldMapFrame.ScrollContainer:Fire('OnMouseDown', 'RightButton')")
+        check(lua.eval("R2F.Nav.Target()") is None, "BiZNav: a plain right-click on the map does nothing")
+        T.chat = lua.table()
+        lua.execute("TEST.alt = true WorldMapFrame.ScrollContainer:Fire('OnMouseDown', 'RightButton')")
+        tgt = lua.eval("R2F.Nav.Target()")
+        check(tgt is not None and tgt.mapID == 1426 and abs(tgt.x - 30) < 1e-9 and abs(tgt.y - 60) < 1e-9
+              and "arrow: Dun Morogh 30.0, 60.0" in chat_all(lua), "BiZNav: Alt + right-click on the map sets the arrow there")
+        lua.execute("R2F.Nav.Clear() WorldMapFrame.ScrollContainer:Fire('OnMouseDown', 'LeftButton')")
+        check(lua.eval("R2F.Nav.Target()") is None, "BiZNav: Alt + left-click does nothing")
+        lua.execute("TEST.alt = false R2F.Nav.SetTarget(1426, 50, 20, 'Spot', 'Dun Morogh')")
+
+        # Tweaks > Alerts & HUD: Small / Medium / Large buttons; Reset page puts Medium back.
+        lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
+        find_frames(lua, "f.__kind == 'Button' and f.navSize ~= nil", "SIZEBTN")
+        names = sorted(lua.eval("SIZEBTN[%d].navSize" % i) for i in range(1, lua.eval("#SIZEBTN") + 1))
+        check(names == ["large", "medium", "small"], "BiZNav: Tweaks has Small / Medium / Large arrow buttons: %r" % names)
+        lua.execute("for _, b in ipairs(SIZEBTN) do if b.navSize == 'small' then b:Click() end end")
+        check(lua.eval("R2FDB.nav.size") == "small" and abs(lua.eval("R2FNavFrame:GetScale()") - 1.0) < 1e-9,
+              "BiZNav: clicking Small saves and applies it")
+        lua.execute("R2F.GameplayTab.ResetPage()")
+        check(lua.eval("R2FDB.nav.size") == "medium", "BiZNav: Reset page on Alerts & HUD puts the arrow back to Medium")
+
         T.chat = lua.table()
         lua.execute('SlashCmdList.R2F("clear")')
         check(lua.eval("R2F.Nav.Target()") is None and chat_all(lua) == "", "BiZNav: /r2f clear removes the arrow")
@@ -3421,7 +3498,7 @@ def test_ui_smoke(templates, fx):
       local out = {}
       for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
-    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2"} | BINDING_GLOBALS
+    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1"} | BINDING_GLOBALS
     test_vars = {"EDIT", "PREVIEW", "IMPORTBTN", "BADTEXT", "TABS", "SLOTS", "PAGETEXT", "TIDY", "BOOKIMPORT",
                  "COMBATTEXT", "OTHER", "NS"}
     bad = [g for g in new_globals if g and g not in allowed_exact and g not in test_vars and not g.startswith("R2F")]
@@ -3660,7 +3737,7 @@ def test_step5_ui(templates, fx):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"SETBTN", "CHECKS", "REMOVEALL", "L", "APPLIED", "NS", "REAL_MM"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1") and not g.startswith("R2F")]
     check(not bad, "%s: step 5 adds no globals besides R2F* frames and the binding labels: %s" % (tag, bad))
 
 
@@ -4738,7 +4815,7 @@ def test_talent_preview(templates):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"NS", "TBTN", "PH", "SUM", "HEAD", "HN", "S21", "CAU", "ERR", "WC"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1") and not g.startswith("R2F")]
     check(not bad, "%s: step 9 adds no globals besides R2F* frames: %s" % (tag, bad))
 
     # ---- The last link comes back in a new session (6.3 lastTalentLink) ---------------
@@ -5374,7 +5451,7 @@ def test_talent_learning(templates):
     bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST", "NOTE", "BZ", "PREV", "GetCVarBool")
            and not g.startswith("TalentFrame")
            and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1") and not g.startswith("R2F")]
     check(not bad, "%s: step 10 adds no globals of its own: %s" % (tag, bad))
 
 
@@ -6263,7 +6340,7 @@ def test_talent_traits_learning(templates):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST")
            and not g.startswith("TalentFrame") and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1") and not g.startswith("R2F")]
     check(not bad, "%s: traits mode adds no globals: %s" % (tag, bad))
 
 
@@ -7036,7 +7113,7 @@ def test_class_picker(templates, fx):
     lua.execute("NEWG = {} for k in pairs(_G) do if not BEFORE[k] then NEWG[#NEWG + 1] = k end end")
     test_vars = {"EDIT", "IMPORTBTN", "BTABS", "PICKS", "BSLOTS", "FT", "NS", "NEWG", "CONFIRMSHOWN", "ENSURES"}
     bad = [g for g in lua_table_to_list(lua.eval("NEWG")) if g not in test_vars and not g.startswith("R2F")
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2") and g not in BINDING_GLOBALS]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1") and g not in BINDING_GLOBALS]
     check(not bad, "%s: the class picker adds no globals: %s" % (tag, bad))
 
 

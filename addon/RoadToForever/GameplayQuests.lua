@@ -148,7 +148,7 @@ end
 local function vendorPrice(link)
   local get = (C_Item and C_Item.GetItemInfo) or GetItemInfo
   if not (get and link) then return nil end
-  local ok, a, b, c, d, e, f, g, h, i, j, price = pcall(get, link)
+  local ok, a, _, _, _, _, _, _, _, _, _, price = pcall(get, link)
   if ok and type(a) ~= "table" then return tonumber(price) end
   if ok and type(a) == "table" then return tonumber(a.sellPrice) end
 end
@@ -347,7 +347,7 @@ function Gameplay.GossipPick()
   if o.status ~= nil and o.status ~= 0 then return nil end      -- 0 = Available
   if #gossipAvailable() > 0 or #gossipComplete() > 0 then return nil end
   if C_GossipInfo.GetActiveQuests then
-    for _ in ipairs(C_GossipInfo.GetActiveQuests() or {}) do return nil end
+    for _ in ipairs(C_GossipInfo.GetActiveQuests() or {}) do return nil end  -- luacheck: ignore 512
   end
   return o
 end

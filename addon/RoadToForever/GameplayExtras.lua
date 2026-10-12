@@ -53,12 +53,19 @@ function Gameplay.PrintWho()
   end
   if UnitName then try("UnitName", UnitName, "player") end
   if UnitFullName then try("UnitFullName", UnitFullName, "player") end
-  if GetUnitName then try("GetUnitName(player)", GetUnitName, "player") try("GetUnitName(player, true)", GetUnitName, "player", true) end
+  if GetUnitName then
+    try("GetUnitName(player)", GetUnitName, "player")
+    try("GetUnitName(player, true)", GetUnitName, "player", true)
+  end
   if UnitPVPName then try("UnitPVPName", UnitPVPName, "player") end
   if GetRealmName then try("GetRealmName", GetRealmName) end
   if GetNormalizedRealmName then try("GetNormalizedRealmName", GetNormalizedRealmName) end
-  if GetPlayerInfoByGUID and UnitGUID then try("GetPlayerInfoByGUID", function() return GetPlayerInfoByGUID(UnitGUID("player")) end) end
-  if CharacterFrameTitleText and CharacterFrameTitleText.GetText then try("Character window title", function() return CharacterFrameTitleText:GetText() end) end
+  if GetPlayerInfoByGUID and UnitGUID then
+    try("GetPlayerInfoByGUID", function() return GetPlayerInfoByGUID(UnitGUID("player")) end)
+  end
+  if CharacterFrameTitleText and CharacterFrameTitleText.GetText then
+    try("Character window title", function() return CharacterFrameTitleText:GetText() end)
+  end
   if C_PlayerInfo and C_PlayerInfo.GetName then try("C_PlayerInfo.GetName", C_PlayerInfo.GetName) end
 end
 
@@ -105,7 +112,7 @@ local function mailBox()
   return _G.SendMailNameEditBox
 end
 
-local function openAltMenu(owner)
+local function openAltMenu()
   local items = { { kind = "title", text = L.GP_MAIL_TITLE } }
   local alts = Gameplay.OtherCharacters()
   if #alts == 0 then
@@ -196,7 +203,9 @@ end
 
 Gameplay.Register({
   key = "bagslots", group = "screen", title = "GP_BAGSLOTS", tip = "GP_BAGSLOTS_TIP",
-  available = function() return backpackButton() ~= nil and C_Container ~= nil and C_Container.GetContainerNumFreeSlots ~= nil end,
+  available = function()
+    return backpackButton() ~= nil and C_Container ~= nil and C_Container.GetContainerNumFreeSlots ~= nil
+  end,
   events = {
     BAG_UPDATE_DELAYED = updateSlots,
     PLAYER_ENTERING_WORLD = updateSlots,
@@ -263,7 +272,7 @@ Gameplay.Register({
   key = "bagsort", group = "auto", title = "GP_SORT", tip = "GP_SORT_TIP2",
   available = function() return C_Container ~= nil and C_Container.SortBags ~= nil end,
   events = { PLAYER_ENTERING_WORLD = ensureSortButtons },
-  onToggle = function(on)
+  onToggle = function()
     ensureSortButtons()
   end,
 })

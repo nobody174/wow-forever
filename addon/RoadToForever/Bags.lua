@@ -10,7 +10,8 @@
 --
 -- HOLD SHIFT AND DRAG. A plain drag that starts on a bag window's title never reaches
 -- a drag script: Blizzard lays an invisible button over the whole title bar that
--- opens the bag menu when the mouse goes down, so it swallows the drag. So: while Shift is held (and Movable is on, Lock off, out of combat) a grip of our
+-- opens the bag menu when the mouse goes down, so it swallows the drag. So: while Shift
+-- is held (and Movable is on, Lock off, out of combat) a grip of our
 -- own covers the title bar, and Shift+drag on the title or the empty background moves
 -- the window. Without Shift the title is the game's again (a click opens its menu).
 -- Item buttons keep their own drag (picking an item up).

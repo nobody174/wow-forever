@@ -33,8 +33,10 @@ R2F.MainWindow = MainWindow
 
 MainWindow.TABS = { "home", "macros", "talents", "plan", "bis", "gameplay", "settings" }
 local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, bis = 5, gameplay = 6, settings = 7 }
-local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", plan = "TITLE_PLAN", bis = "TITLE_BIS", gameplay = "TITLE_GAMEPLAY", settings = "TITLE_SETTINGS" }
-local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", plan = "TAB_PLAN", bis = "TAB_BIS", gameplay = "TAB_GAMEPLAY", settings = "TAB_SETTINGS" }
+local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", plan = "TITLE_PLAN",
+                 bis = "TITLE_BIS", gameplay = "TITLE_GAMEPLAY", settings = "TITLE_SETTINGS" }
+local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", plan = "TAB_PLAN",
+                 bis = "TAB_BIS", gameplay = "TAB_GAMEPLAY", settings = "TAB_SETTINGS" }
 local LOGO = "Interface\\AddOns\\RoadToForever\\media\\logo128"
 
 local frame

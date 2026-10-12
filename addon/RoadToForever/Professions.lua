@@ -127,7 +127,9 @@ local function readModern()
   end
   if (not profName or profName == "") and T.GetChildProfessionInfo then
     local info = T.GetChildProfessionInfo()
-    if type(info) == "table" then profName, rank, max = info.parentProfessionName or info.professionName, info.skillLevel, info.maxSkillLevel end
+    if type(info) == "table" then
+      profName, rank, max = info.parentProfessionName or info.professionName, info.skillLevel, info.maxSkillLevel
+    end
   end
   if (not profName or profName == "") and T.GetTradeSkillLine then
     local _, n, r, m = T.GetTradeSkillLine()
@@ -304,7 +306,8 @@ function Professions.Debug()
   local function has(x) return x and "yes" or "no" end
   R2F.Print("profdebug: GetNumTradeSkills=" .. has(GetNumTradeSkills) .. ", GetNumCrafts=" .. has(GetNumCrafts) ..
     ", C_TradeSkillUI=" .. has(T) .. ", GetAllRecipeIDs=" .. has(T and T.GetAllRecipeIDs) ..
-    ", GetRecipeSchematic=" .. has(T and T.GetRecipeSchematic) .. ", GetBaseProfessionInfo=" .. has(T and T.GetBaseProfessionInfo))
+    ", GetRecipeSchematic=" .. has(T and T.GetRecipeSchematic) ..
+    ", GetBaseProfessionInfo=" .. has(T and T.GetBaseProfessionInfo))
   R2F.Print("profdebug: frames TradeSkillFrame=" .. has(_G.TradeSkillFrame) .. ", CraftFrame=" .. has(_G.CraftFrame) ..
     ", ProfessionsFrame=" .. has(_G.ProfessionsFrame))
   local n1 = GetNumTradeSkills and GetNumTradeSkills() or "-"
@@ -312,6 +315,8 @@ function Professions.Debug()
   local n3 = T and T.GetAllRecipeIDs and #(T.GetAllRecipeIDs() or {}) or "-"
   R2F.Print("profdebug: open window rows trade=" .. tostring(n1) .. ", craft=" .. tostring(n2) .. ", recipeIDs=" .. tostring(n3))
   local saved = {}
-  for name, e in pairs(R2F.Library.cdb.professions) do saved[#saved + 1] = name .. " " .. #(e.recipes or {}) .. " (" .. (e.api or "?") .. ")" end
+  for name, e in pairs(R2F.Library.cdb.professions) do
+    saved[#saved + 1] = name .. " " .. #(e.recipes or {}) .. " (" .. (e.api or "?") .. ")"
+  end
   R2F.Print("profdebug: saved " .. (#saved > 0 and table.concat(saved, ", ") or "none"))
 end

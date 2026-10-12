@@ -134,7 +134,7 @@ end
 local function sellPrice(link)
   local get = (C_Item and C_Item.GetItemInfo) or GetItemInfo
   if not (get and link) then return nil end
-  local ok, a, b, c, d, e, f, g, h, i, j, price = pcall(get, link)
+  local ok, a, _, _, _, _, _, _, _, _, _, price = pcall(get, link)
   if ok and type(a) ~= "table" then return tonumber(price) end
   if ok and type(a) == "table" then return tonumber(a.sellPrice) end
 end
@@ -268,7 +268,8 @@ Gameplay.Register({
   onToggle = setErrorFilter,
 })
 
--- The experience bar's numbers always visible, through the game's own setting (read and written via QuickSettings.Read / Write: every CVar call lives in that file). The value
+-- The experience bar's numbers always visible, through the game's own setting (read and
+-- written via QuickSettings.Read / Write: every CVar call lives in that file). The value
 -- the player had is remembered and put back when the box is unticked.
 local XP_CVAR = "xpBarText"
 Gameplay.Register({

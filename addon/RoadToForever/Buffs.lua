@@ -14,7 +14,6 @@
 -- and one true/false per buff in LIST.
 
 local _, R2F = ...
-local L = R2F.L
 
 local Buffs = {}
 R2F.Buffs = Buffs
@@ -218,7 +217,8 @@ end
 
 local checks = {}
 for _, b in ipairs(Buffs.LIST) do
-  checks[#checks + 1] = { label = b.label, get = function() return db()[b.key] end, set = function(v) Buffs.SetBuff(b.key, v) end }
+  checks[#checks + 1] = { label = b.label, get = function() return db()[b.key] end,
+                          set = function(v) Buffs.SetBuff(b.key, v) end }
 end
 
 R2F.Reminders.Register({

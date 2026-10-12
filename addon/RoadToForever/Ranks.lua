@@ -180,7 +180,8 @@ local function mapLine(line, fix)
     elseif cmd == "/castsequence" then
       if not rest:match("^%s") then return line end
       -- [conditions] reset=... Name1, Name2, ...
-      local head, names = "", rest
+      local head
+      local names = rest
       local pos = 1
       while true do
         local _, e = names:find("^%s*%b[]", pos)
@@ -286,14 +287,16 @@ function Ranks.Debug(spell)
   if spell == "" then R2F.Print(L.RANKS_DEBUG_USAGE) return end
   local function yn(v) if v == nil then return "-" end return v and "yes" or "no" end
   local function apis(id)
-    return ("IsPlayerSpell=%s IsSpellKnown=%s SpellBook.IsSpellKnown=%s SpellBook.IsSpellInSpellBook=%s KnownOrOverrides=%s"):format(
+    return ("IsPlayerSpell=%s IsSpellKnown=%s SpellBook.IsSpellKnown=%s SpellBook.IsSpellInSpellBook=%s "
+            .. "KnownOrOverrides=%s"):format(
       yn(safe(IsPlayerSpell, id)), yn(safe(IsSpellKnown, id)),
       yn(C_SpellBook and safe(C_SpellBook.IsSpellKnown, id)), yn(C_SpellBook and safe(C_SpellBook.IsSpellInSpellBook, id)),
       yn(safe(IsSpellKnownOrOverridesKnown, id)))
   end
   if not (C_Spell and C_Spell.GetSpellInfo) then R2F.Print(L.RANKS_NO_API) return end
   local info = getInfo(spell)
-  R2F.Print(("rankdebug %s: plain name -> spellID %s; %s"):format(spell, info and info.spellID or "none", info and apis(info.spellID) or ""))
+  R2F.Print(("rankdebug %s: plain name -> spellID %s; %s"):format(
+    spell, info and info.spellID or "none", info and apis(info.spellID) or ""))
   for n = 1, 8 do
     local ri = getInfo(spell .. "(Rank " .. n .. ")")
     if ri then
@@ -308,7 +311,8 @@ function Ranks.Debug(spell)
     R2F.Print("  spellbook: not listed under that name")
   end
   local best, id = Ranks.HighestKnown(spell)
-  R2F.Print(("  the addon would use: %s"):format(best and (spell .. "(Rank " .. best .. ")" .. (id and "" or " (from the spellbook)")) or "nothing (the plain name)"))
+  R2F.Print(("  the addon would use: %s"):format(
+    best and (spell .. "(Rank " .. best .. ")" .. (id and "" or " (from the spellbook)")) or "nothing (the plain name)"))
 end
 
 -- LEARNED_SPELL_IN_TAB / SPELLS_CHANGED (Core.lua): re-check the macros after a short

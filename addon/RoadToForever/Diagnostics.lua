@@ -44,7 +44,7 @@ function Diag.Auras()
     yn(InCombatLockdown()), yn(IsInInstance and (IsInInstance()))))
   for _, unit in ipairs({ "player", "party1", "party2", "party3", "party4", "target" }) do
     local r = probe(unit)
-    if r == nil then
+    if r == nil then  -- luacheck: ignore 542
       -- unit not present: say nothing
     elseif r.api == false then
       R2F.Print(L.DIAG_AURAS_NOAPI)

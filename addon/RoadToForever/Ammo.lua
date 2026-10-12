@@ -50,7 +50,7 @@ end
 local function instant(id)
   local get = (C_Item and C_Item.GetItemInfoInstant) or GetItemInfoInstant
   if not get then return nil end
-  local ok, a, b, c, d, icon, classID, subClassID = pcall(get, id)
+  local ok, a, _, _, _, icon, classID, subClassID = pcall(get, id)
   if not ok then return nil end
   if type(a) == "table" then return a.classID, a.subclassID, a.icon end
   return classID, subClassID, icon

@@ -14,7 +14,6 @@
 -- Names are matched in English (the game's spell names); other languages get no section.
 
 local _, R2F = ...
-local L = R2F.L
 
 local Tracking = {}
 R2F.Tracking = Tracking
@@ -80,7 +79,7 @@ end
 function Tracking.Update()
   if not frame then return end
   local d = db()
-  local needs, has, texture = Tracking.State()
+  local needs, _, texture = Tracking.State()
   -- Only while a tracking is needed (otherwise it would stay up, grey, while
   -- tracking is on). To place it, switch your tracking off: it appears and can be dragged.
   local show = Tracking.Applies() and d.shown and needs
@@ -138,8 +137,11 @@ R2F.Reminders.Register({
   key = "tracking", class = nil, applies = Tracking.Applies, module = Tracking,
   title = "REM_TRACKING_TITLE", show = "TRACKING_SHOW", lock = "TRACKING_LOCK", size = "TRACKING_SIZE",
   checks = {
-    { label = "TRACKING_MINERALS", get = function() return db().minerals end, set = function(v) Tracking.SetKind("minerals", v) end },
-    { label = "TRACKING_HERBS", get = function() return db().herbs end, set = function(v) Tracking.SetKind("herbs", v) end },
-    { label = "TRACKING_TREASURE", get = function() return db().treasure end, set = function(v) Tracking.SetKind("treasure", v) end },
+    { label = "TRACKING_MINERALS", get = function() return db().minerals end,
+      set = function(v) Tracking.SetKind("minerals", v) end },
+    { label = "TRACKING_HERBS", get = function() return db().herbs end,
+      set = function(v) Tracking.SetKind("herbs", v) end },
+    { label = "TRACKING_TREASURE", get = function() return db().treasure end,
+      set = function(v) Tracking.SetKind("treasure", v) end },
   },
 })

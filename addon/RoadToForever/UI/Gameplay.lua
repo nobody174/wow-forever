@@ -1,7 +1,7 @@
 -- UI/Gameplay.lua: the Gameplay tab.
 --
--- The tab has four small pages (one long list of boxes was too much to read), picked with buttons along the top, grouped by what the
--- player is doing:
+-- The tab has four small pages (one long list of boxes was too much to read), picked
+-- with buttons along the top, grouped by what the player is doing:
 --   Quests            auto-accept, auto turn-in, skip the NPC chat, reward prices, track-all box
 --   Vendors & loot    auto-repair, auto-sell grey items, fast looting, free bag slots, mail list
 --   Screen & chat     hide red errors, XP numbers, copy-chat button, decline duels
@@ -30,8 +30,10 @@ local LEFT, RIGHT, RIGHT_W = 22, 270, 214
 
 -- page key -> label key and the features on it (in this order)
 Tab.PAGES = {
-  { key = "quests", label = "GP_PAGE_QUESTS", features = { "questaccept", "questturnin", "gossipshop", "rewardvalue", "questzone" } },
-  { key = "vendors", label = "GP_PAGE_VENDORS", features = { "repair", "sellgray", "fastloot", "bagslots", "bagsort", "mailalts" } },
+  { key = "quests", label = "GP_PAGE_QUESTS",
+    features = { "questaccept", "questturnin", "gossipshop", "rewardvalue", "questzone" } },
+  { key = "vendors", label = "GP_PAGE_VENDORS",
+    features = { "repair", "sellgray", "fastloot", "bagslots", "bagsort", "mailalts" } },
   { key = "screen", label = "GP_PAGE_SCREEN", features = { "errorfilter", "xpbar", "copychat", "duels" } },
   { key = "alerts", label = "GP_PAGE_ALERTS", features = { "reactalert", "reactlock", "reactblizz" } },
 }
@@ -165,7 +167,7 @@ function Tab.Build(f)
     for _, key in ipairs(pg.features) do
       if defs[key] then y = addRow(c, defs[key], LEFT, y) end
     end
-    local bottom = y
+    local bottom = y  -- luacheck: ignore 311
     if pg.key == "alerts" then
       local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
       note:SetPoint("TOPLEFT", LEFT + 4, y - 4)

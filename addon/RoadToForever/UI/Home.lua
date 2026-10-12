@@ -16,7 +16,6 @@
 
 local _, R2F = ...
 local L = R2F.L
-local UI = R2F.UI
 local Library, Macros = R2F.Library, R2F.Macros
 
 local Home = {}

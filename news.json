@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-12",
+      "title": "Builds: level 30 and 60 only",
+      "text": "The level 20 builds are gone now that the beta goes to 30. Pick a class, then Level 30 (leveling) or Level 60. The gold buttons are readable again too.",
+      "link": "builds.html"
+    },
+    {
+      "date": "2026-10-12",
       "title": "Mr.BiZ: where every item comes from",
       "text": "Open a slot and every pick now says where to get it: dungeon and boss, quest, profession or vendor. Turn off a source type and the slot shows the best item that's left instead of going blank. Source icons have their own colours too.",
       "link": "bis.html"

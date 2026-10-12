@@ -196,11 +196,11 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   as `macros.html`) picks one class at a time; classes with more than one build
   (Mage: Arcane/Frost Ice Lance/Frost Piercing Ice/Fire; Paladin: Retribution/
   Protection; Warrior: Tank/Fury) get a second spec-picker row. All build+talent+
-  rotation content lives in the `DATA` object in the page's script — edit builds
+  rotation content lives in the `DATA30` / `DATA60` objects in the page's script (level 20 builds removed 2026-10-12) — edit builds
   there, not as hand-written HTML. Each build has a talent row (icons + hover
   tooltips, arrows between picks) and a Rotation section (single-target/AoE ability
   lists, same icon+arrow style, a repeat icon on loop-based rotations, plus a
-  confidence badge: "high" = matches a build-specific level-20 guide, "medium" =
+  confidence badge: "high" = matches a build-specific guide, "medium" =
   reasoned from mechanics/ability-level-gating with no exact build-matched source
   found — flagged for the user to double-check in beta). See `builds_page_pattern`
   project memory for the full pattern and icon-verification rules. Hand-edit

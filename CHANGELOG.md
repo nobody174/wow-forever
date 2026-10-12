@@ -4,6 +4,14 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-12 (Builds: level 20 removed)
+- builds.html: the Level 20 prebuilt builds are gone (the beta cap is 30, and level 30 builds include those points).
+  Level buttons are now 30 and 60; the page opens on 30; old `?level=20` links fall back to 30. Removed the `DATA`
+  (level 20) object from the script; builds live in `DATA30` / `DATA60`. Warlock 30's note no longer points at a
+  level-20 rotation.
+- builds.html: fixed the unreadable text on the active (gold) class / spec / level buttons: a leftover rule set
+  light text on the gold gradient; the dark text is back.
+
 ## 2026-10-12 (Addon versions checked)
 - addons.html: Leatrix Maps 1.60.12-forever -> 1.60.20-forever (Oct 10), Questie v12.0.3+v1.0.4 -> v12.0.4+v1.0.5
   (Oct 6), TomTom v4.3.11-release -> v4.3.12-release (Oct 6); Forever confirmed on each file page. "Versions checked"

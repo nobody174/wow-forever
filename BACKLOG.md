@@ -5,6 +5,20 @@ everything not shipped yet lives here, whether started or not. The moment
 something ships, it moves to [CHANGELOG.md](CHANGELOG.md), not left here as a
 stale checkmark.
 
+## Builds: level 30 gaps (2026-10-12)
+
+Level 20 builds were removed. Level 30 now has one or more builds for every class, but these specs have none
+(owner will supply the talent codes; each needs a rotation):
+
+- [ ] Warrior **Fury** (also had a level 20 build; level 60 has one)
+- [ ] Warlock **Destruction** (level 60 has one), Demonology
+- [ ] Priest **Discipline**
+- [ ] Hunter **Marksmanship** (level 60 has one), Survival
+- [ ] Rogue **Assassination**, Subtlety
+- [ ] Druid **Balance**
+- [ ] Re-check the 30 rotations flagged "medium" (15 of 19 are our own or reasoned proposals; only Priest Shadow, Druid Feral,
+      Paladin Retribution and Warrior Protection are "high", from Mobalytics).
+
 ## Launch-day refresh (WoW Forever launches 2026-11-04)
 
 Beta data on the site is level-30 data. Redo these once the live game is up:

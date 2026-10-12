@@ -9,6 +9,10 @@ user-facing release notes.
   (Oct 6), TomTom v4.3.11-release -> v4.3.12-release (Oct 6); Forever confirmed on each file page. "Versions checked"
   -> Oct 12, 2026. Road to Forever stays 0.29.1 (newest tag; 0.30.0 in the .toc isn't tagged yet).
 
+## 2026-10-12 (Mr.BiZ: source credit per item)
+- Every known source now says which site it was read from (`via`: ForeverDB / Wowhead), small grey text after the
+  source line on bis.html and "(ForeverDB)" after "From: ..." in the addon tooltip. Unknown sources credit nobody.
+
 ## 2026-10-12 (Mr.BiZ round 3: a source for every rank, stand-ins, icon colours)
 - `bis/sources.json`: where each rank 2-3 pick comes from, for the 193 that aren't a best pick in any spec, read from
   each item's ForeverDB page (124 found); 60 of the other 69 filled from Wowhead's Forever item pages in the owner's

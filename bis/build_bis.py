@@ -169,7 +169,7 @@ def parse_source(src):
 
 # Where a rank 2-3 pick comes from: its own best-pick entry in any spec, else bis/sources.json
 # (read from the item's ForeverDB page). Keys copied onto each next item:
-NEXT_SRC_KEYS = ["type", "label", "group", "prof", "skill", "instance", "chance", "faction", "conf"]
+NEXT_SRC_KEYS = ["type", "label", "group", "prof", "skill", "instance", "chance", "faction", "conf", "via"]
 
 
 def source_of(src, conf_word=None):
@@ -190,9 +190,14 @@ def source_index():
                 b = rs.get("best")
                 if b and int(b["id"]) not in idx:
                     idx[int(b["id"])] = source_of(b["src"], b.get("conf"))
+                    if idx[int(b["id"])]["type"] != "unknown":
+                        idx[int(b["id"])]["via"] = SOURCE_NAME
     with open(SOURCES, encoding="utf-8") as f:
         for iid, it in json.load(f)["items"].items():
-            idx.setdefault(int(iid), source_of(it["src"]))
+            src = source_of(it["src"])
+            if it.get("via"):
+                src["via"] = it["via"]   # the site we read it from, shown as a small credit
+            idx.setdefault(int(iid), src)
     return idx
 
 
@@ -220,6 +225,8 @@ def build():
                     best = {"id": int(b["id"]), "name": b["name"], "score": b["score"], "stats": b.get("stats", ""),
                             "conf": CONF.get(b.get("conf") or "", "unknown"), "ease": b.get("ease", "")}
                     best.update(src)
+                    if best["type"] != "unknown":
+                        best["via"] = SOURCE_NAME
                     if b.get("horde"):
                         best["horde"] = b["horde"]
                     entry["best"] = best
@@ -291,7 +298,7 @@ def wrap(prefix, parts, suffix, indent, width=120):
 
 
 BEST_KEYS = ["id", "name", "score", "stats", "conf", "ease", "type", "label", "group", "prof", "skill", "instance",
-             "chance", "faction", "horde"]
+             "chance", "faction", "horde", "via"]
 
 
 NEXT_KEYS = ["id", "name", "delta"] + NEXT_SRC_KEYS

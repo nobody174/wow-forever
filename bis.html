@@ -128,6 +128,7 @@ p.lede{color:var(--muted);max-width:68ch;margin:0 auto 26px;text-align:center}
 .item a.wh:hover{text-decoration:underline}
 .item .src{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden}
 .item .src > span{overflow:hidden;text-overflow:ellipsis}
+.item .src > span.via{flex:none;color:#6E7592;font-size:12px}
 .item .src .svgi{width:14px;height:14px}
 .item .src img.ic{width:14px;height:14px;border-radius:3px}
 .tag.stand{background:rgba(217,212,195,.12);color:#D9D4C3;border:1px solid rgba(217,212,195,.45)}
@@ -551,7 +552,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
       var bizzTag = pick === 0 && top ? '<span class="tag bizz" title="The best, and the next pick is ' + Math.abs(nxt[0].delta) + '% behind">The Bizz</span>' : "";
       var standTag = pick > 0 ? '<span class="tag stand" title="Your filters hide the ' + esc(top ? "The Bizz" : "Bizzest") + " pick (" + esc(TYPE_LABEL[b.type]) + '); this is the best one they let through">' + rankName(pick) + "</span>" : "";
       var nameHtml = ok ? whLink(p.id, p.name) + bizzTag + standTag + factionTag(p) : "Hidden by your filters";
-      var srcHtml = ok ? srcIcon(p) + "<span>" + esc(p.label) + "</span>"
+      var srcHtml = ok ? srcIcon(p) + "<span>" + esc(p.label) + "</span>" + viaTag(p)
         : (TYPE_ICON[b.type] || "") + "<span>" + esc(TYPE_LABEL[b.type]) + " pick, and nothing in ranks 2–3 passes your filters</span>";
       var scoreHtml = !ok ? "" : pick === 0 ? '<span title="Score with this spec\'s stat weights">' + esc(b.score) + "</span>"
         : '<span class="behind" title="How far behind the best it scores">' + (p.delta === 0 ? "=" : esc(p.delta) + "%") + "</span>";
@@ -564,7 +565,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
       if (isOpen) {
         var rk = function (i) { return '<span class="rk r' + (i + 1) + '">' + (i === 0 && top ? "The Bizz" : rankName(i)) + "<b>#" + (i + 1) + "</b></span>"; };
         var srcLine = function (it) {
-          return '<span class="src">' + srcIcon(it) + "<span>" + esc(it.label || "Source not known yet") + "</span>" + (it.conf ? '<i class="cf c-' + it.conf + '" title="' + esc(confTitle(it.conf)) + '">' + CONF_LABEL[it.conf] + "</i>" : "") + "</span>";
+          return '<span class="src">' + srcIcon(it) + "<span>" + esc(it.label || "Source not known yet") + "</span>" + viaTag(it) + (it.conf ? '<i class="cf c-' + it.conf + '" title="' + esc(confTitle(it.conf)) + '">' + CONF_LABEL[it.conf] + "</i>" : "") + "</span>";
         };
         var li = function (it, i, d) {
           return '<li class="' + (passes(it) ? "" : "filtered") + (i === pick ? " picked" : "") + '">' + rk(i) + '<span class="item"><span class="nm">' + whLink(it.id, it.name) + factionTag(it) + "</span>" + srcLine(it) + '</span><span class="dl">' + esc(d) + "</span>" + starBtn(it.id, it.name, sid, s.slot) + "</li>";
@@ -586,6 +587,8 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     paintQuality();
     refreshTooltips();
   }
+  // Which site the source line was read from (small grey credit next to it).
+  function viaTag(it) { return it.via ? '<span class="via" title="Where it comes from, as listed on ' + esc(it.via) + '">· ' + esc(it.via) + "</span>" : ""; }
   function confBadge(c) { c = c || "unknown"; return '<span class="badge b-' + c + '" title="' + esc(confTitle(c)) + '">' + CONF_LABEL[c] + "</span>"; }
   function capFirst(s) { s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
   function confTitle(c) {

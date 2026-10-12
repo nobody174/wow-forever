@@ -155,13 +155,15 @@ end
 
 -- gap: how far (%) the next pick is behind the best when the best is The Bizz.
 -- gap: how far (%) the next pick is behind the best when the best is The Bizz; label: where it comes from.
-local function rankLine(specName, rank, score, delta, gap, label)
+local function rankLine(specName, rank, score, delta, gap, label, via)
   local s
   if rank == 1 and gap then s = L.BIZ_TIP_BIZZ:format(specName, score, gap)
   elseif rank == 1 then s = L.BIZ_TIP_BEST:format(specName, score)
   elseif delta and delta ~= 0 then s = L.BIZ_TIP_RANK:format(BiZ.RankName(rank), specName, -delta)
   else s = L.BIZ_TIP_RANK_SAME:format(BiZ.RankName(rank), specName) end
-  return s .. "\n" .. L.BIZ_TIP_FROM:format(label or L.BIZ_TYPE_UNKNOWN)
+  local from = L.BIZ_TIP_FROM:format(label or L.BIZ_TYPE_UNKNOWN)
+  if via then from = from .. " |cff808080(" .. via .. ")|r" end
+  return s .. "\n" .. from
 end
 
 local function layoutSet()
@@ -195,7 +197,7 @@ local function layoutSet()
         shown = shown + 1
         local p, gap = all[pick], gapOf(pick)
         local fnote = BiZ.FactionNote(p)
-        local nb = placeItem(66, y, 226, p.id, p.name, rankLine(sp.name, pick, b.score, p.delta, gap, p.label), toggle)
+        local nb = placeItem(66, y, 226, p.id, p.name, rankLine(sp.name, pick, b.score, p.delta, gap, p.label, p.via), toggle)
         if fnote then nb.fs:SetText(BiZ.ColoredName(p.id, p.name) .. " |cffe86a5a(" .. fnote .. ")|r") end
         local prefix = ""
         if gap then
@@ -226,7 +228,7 @@ local function layoutSet()
           if rank ~= pick then
             local gap = gapOf(rank)
             line("GameFontNormalSmall", 70, y + 3, 20, "#" .. rank)
-            placeItem(88, y, 210, it.id, it.name, rankLine(sp.name, rank, b.score, it.delta, gap, it.label))
+            placeItem(88, y, 210, it.id, it.name, rankLine(sp.name, rank, b.score, it.delta, gap, it.label, it.via))
             local src = (it.label or L.BIZ_TYPE_UNKNOWN)
             line("GameFontDisableSmall", 88, y + 15, 214, BiZ.Passes(it) and src or ("|cff707070" .. src .. "|r"))
             local rn = gap and L.BIZ_THE_BIZZ or BiZ.RankName(rank)

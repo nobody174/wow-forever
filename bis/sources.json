@@ -4,623 +4,778 @@
  "items": {
   "888": {
    "name": "Naga Battle Gloves",
-   "src": "Drops from Lady Sarevess in Blackfathom Deeps, 40% (Classic data)."
+   "src": "Drops from Lady Sarevess in Blackfathom Deeps, 40% (Classic data).",
+   "via": "ForeverDB"
   },
   "1121": {
    "name": "Feet of the Lynx",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "1484": {
    "name": "Witching Stave",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "1717": {
    "name": "Double Link Tunic",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "1974": {
    "name": "Mindthrust Bracers",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "1978": {
    "name": "Wolfclaw Gloves",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "1998": {
    "name": "Bloodscalp Channeling Staff",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "2041": {
    "name": "Tunic of Westfall",
-   "src": "Quest reward: The Defias Brotherhood, level 22 · Alliance (Forever client)."
+   "src": "Quest reward: The Defias Brotherhood, level 22 · Alliance (Forever client).",
+   "via": "Wowhead"
   },
   "2098": {
    "name": "Double-barreled Shotgun",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "2264": {
    "name": "Mantle of Thieves",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "2277": {
    "name": "Necromancer Leggings",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "2280": {
    "name": "Kam's Walking Stick",
-   "src": "Drops from Kam Deepfury in Stormwind Stockade, 1% (Seen in Forever)."
+   "src": "Drops from Kam Deepfury in Stormwind Stockade, 1% (Seen in Forever).",
+   "via": "ForeverDB"
   },
   "2292": {
    "name": "Necrology Robes",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "2805": {
    "name": "Yeti Fur Cloak",
-   "src": "Quest reward: Bartolo's Yeti Fur Cloak, level 34 · Alliance (Classic data)."
+   "src": "Quest reward: Bartolo's Yeti Fur Cloak, level 34 · Alliance (Classic data).",
+   "via": "ForeverDB"
   },
   "2870": {
    "name": "Shining Silver Breastplate",
-   "src": "Crafted: Blacksmithing 145 (Forever client)."
+   "src": "Crafted: Blacksmithing 145 (Forever client).",
+   "via": "Wowhead"
   },
   "2943": {
    "name": "Eye of Paleth",
-   "src": "Quest reward: Cleansing the Eye, level 30 · Alliance (Classic data)."
+   "src": "Quest reward: Cleansing the Eye, level 30 · Alliance (Classic data).",
+   "via": "ForeverDB"
   },
   "2950": {
    "name": "Icicle Rod",
-   "src": "Quest reward: Return the Statuette, level 25 · Alliance (Classic data)."
+   "src": "Quest reward: Return the Statuette, level 25 · Alliance (Classic data).",
+   "via": "ForeverDB"
   },
   "3228": {
    "name": "Jimmied Handcuffs",
-   "src": "Drops from Bruegal Ironknuckle in Stormwind Stockade, 33% (Classic data)."
+   "src": "Drops from Bruegal Ironknuckle in Stormwind Stockade, 33% (Classic data).",
+   "via": "ForeverDB"
   },
   "3230": {
    "name": "Black Wolf Bracers",
-   "src": "Drops from Fenrus the Devourer in Shadowfang Keep, 30% (Seen in Forever)."
+   "src": "Drops from Fenrus the Devourer in Shadowfang Keep, 30% (Seen in Forever).",
+   "via": "ForeverDB"
   },
   "3341": {
    "name": "Gauntlets of Ogre Strength",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "3414": {
    "name": "Crested Scepter",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "3719": {
    "name": "Hillman's Cloak",
-   "src": "Crafted: Leatherworking 150 (Forever client)."
+   "src": "Crafted: Leatherworking 150 (Forever client).",
+   "via": "Wowhead"
   },
   "3765": {
    "name": "Brigand's Pauldrons",
-   "src": "Quest reward: Taretha's Gift, level 40 · Horde (Classic data)."
+   "src": "Quest reward: Taretha's Gift, level 40 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "4108": {
    "name": "Panther Hunter Leggings",
-   "src": "Quest reward: Panther Mastery, level 40 (Classic data)."
+   "src": "Quest reward: Panther Mastery, level 40 (Classic data).",
+   "via": "ForeverDB"
   },
   "4119": {
    "name": "Raptor Hunter Tunic",
-   "src": "Quest reward: Raptor Mastery, level 43 (Classic data)."
+   "src": "Quest reward: Raptor Mastery, level 43 (Classic data).",
+   "via": "ForeverDB"
   },
   "4122": {
    "name": "Bookmaker's Scepter",
-   "src": "Quest reward: The Hidden Key, level 37 · Alliance (Classic data)."
+   "src": "Quest reward: The Hidden Key, level 37 · Alliance (Classic data).",
+   "via": "ForeverDB"
   },
   "4127": {
    "name": "Shrapnel Blaster",
-   "src": "Quest reward: Colonel Kurzen, level 40 · Alliance (Classic data)."
+   "src": "Quest reward: Colonel Kurzen, level 40 · Alliance (Classic data).",
+   "via": "ForeverDB"
   },
   "4197": {
    "name": "Berylline Pads",
-   "src": "Quest reward: The Crone of the Kraul, level 34 · Alliance (Classic data)."
+   "src": "Quest reward: The Crone of the Kraul, level 34 · Alliance (Classic data).",
+   "via": "ForeverDB"
   },
   "4319": {
    "name": "Azure Silk Gloves",
-   "src": "Crafted: Tailoring 145 (Forever client)."
+   "src": "Crafted: Tailoring 145 (Forever client).",
+   "via": "Wowhead"
   },
   "4320": {
    "name": "Spidersilk Boots",
-   "src": "Crafted: Tailoring 125 (Forever client)."
+   "src": "Crafted: Tailoring 125 (Forever client).",
+   "via": "Wowhead"
   },
   "4464": {
    "name": "Trouncing Boots",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "4743": {
    "name": "Pulsating Crystalline Shard",
-   "src": "Quest reward: Summoning the Princess, level 50 (Classic data)."
+   "src": "Quest reward: Summoning the Princess, level 50 (Classic data).",
+   "via": "ForeverDB"
   },
   "4977": {
    "name": "Sword of Hammerfall",
-   "src": "Quest reward: The Real Threat, level 40 · Horde (Classic data)."
+   "src": "Quest reward: The Real Threat, level 40 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "5183": {
    "name": "Pulsating Hydra Heart",
-   "src": "Drops from Gesharahan, 25% (Classic data)."
+   "src": "Drops from Gesharahan, 25% (Classic data).",
+   "via": "ForeverDB"
   },
   "5214": {
    "name": "Wand of Eventide",
-   "src": "Drops from Dragonmaw Battlemaster, 0.5% (Classic data)."
+   "src": "Drops from Dragonmaw Battlemaster, 0.5% (Classic data).",
+   "via": "ForeverDB"
   },
   "5964": {
    "name": "Barbaric Shoulders",
-   "src": "Crafted: Leatherworking (Forever client)."
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
   },
   "6198": {
    "name": "Jurassic Wristguards",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "6204": {
    "name": "Tribal Worg Helm",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "6392": {
    "name": "Belt of Arugal",
-   "src": "Drops from Archmage Arugal in Shadowfang Keep, 40% (Classic data)."
+   "src": "Drops from Archmage Arugal in Shadowfang Keep, 40% (Classic data).",
+   "via": "ForeverDB"
   },
   "6408": {
    "name": "Insignia Gloves",
-   "src": "Drops from Mekgineer Thermaplugg in Gnomeregan, 0.5% (Classic data)."
+   "src": "Drops from Mekgineer Thermaplugg in Gnomeregan, 0.5% (Classic data).",
+   "via": "ForeverDB"
   },
   "6682": {
    "name": "Death Speaker Robes",
-   "src": "Drops from Death Speaker Jargba in Razorfen Kraul, 40% (Classic data)."
+   "src": "Drops from Death Speaker Jargba in Razorfen Kraul, 40% (Classic data).",
+   "via": "ForeverDB"
   },
   "6685": {
    "name": "Death Speaker Mantle",
-   "src": "Drops from Death Speaker Jargba in Razorfen Kraul, 40% (Classic data)."
+   "src": "Drops from Death Speaker Jargba in Razorfen Kraul, 40% (Classic data).",
+   "via": "ForeverDB"
   },
   "6686": {
    "name": "Tusken Helm",
-   "src": "Drops from Overlord Ramtusk in Razorfen Kraul, 60% (Classic data)."
+   "src": "Drops from Overlord Ramtusk in Razorfen Kraul, 60% (Classic data).",
+   "via": "ForeverDB"
   },
   "6692": {
    "name": "Pronged Reaver",
-   "src": "Drops from Charlga Razorflank in Razorfen Kraul, 20% (Classic data)."
+   "src": "Drops from Charlga Razorflank in Razorfen Kraul, 20% (Classic data).",
+   "via": "ForeverDB"
   },
   "6694": {
    "name": "Heart of Agamaggan",
-   "src": "Drops from Charlga Razorflank in Razorfen Kraul, 40% (Classic data)."
+   "src": "Drops from Charlga Razorflank in Razorfen Kraul, 40% (Classic data).",
+   "via": "ForeverDB"
   },
   "6695": {
    "name": "Stygian Bone Amulet",
-   "src": "Drops from Blind Hunter in Razorfen Kraul, 33% (Classic data)."
+   "src": "Drops from Blind Hunter in Razorfen Kraul, 33% (Classic data).",
+   "via": "ForeverDB"
   },
   "6697": {
    "name": "Batwing Mantle",
-   "src": "Drops from Blind Hunter in Razorfen Kraul, 33% (Classic data)."
+   "src": "Drops from Blind Hunter in Razorfen Kraul, 33% (Classic data).",
+   "via": "ForeverDB"
   },
   "6720": {
    "name": "Spirit Hunter Headdress",
-   "src": "Quest reward: Frostmaw, level 37 · Horde (Classic data)."
+   "src": "Quest reward: Frostmaw, level 37 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "6723": {
    "name": "Medal of Courage",
-   "src": "Quest reward: Saving Yenniku, level 46 · Horde (Classic data)."
+   "src": "Quest reward: Saving Yenniku, level 46 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "6742": {
    "name": "Stonefist Girdle",
-   "src": "Quest reward: The Crone of the Kraul, level 34 · Alliance (Classic data)."
+   "src": "Quest reward: The Crone of the Kraul, level 34 · Alliance (Classic data).",
+   "via": "ForeverDB"
   },
   "6745": {
    "name": "Swiftrunner Cape",
-   "src": "Quest reward: Alliance Relations, level 33 · Horde (Classic data)."
+   "src": "Quest reward: Alliance Relations, level 33 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "6747": {
    "name": "Enforcer Pauldrons",
-   "src": "Quest reward: The Corrupter, level 40 · Horde (Classic data)."
+   "src": "Quest reward: The Corrupter, level 40 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "6750": {
    "name": "Snake Hoop",
-   "src": "Quest reward: Willix the Importer, level 30 (Classic data)."
+   "src": "Quest reward: Willix the Importer, level 30 (Classic data).",
+   "via": "ForeverDB"
   },
   "6784": {
    "name": "Braced Handguards",
-   "src": "Quest reward: Centaur Bounty, level 31 · Horde (Classic data)."
+   "src": "Quest reward: Centaur Bounty, level 31 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "6798": {
    "name": "Blasting Hackbut",
-   "src": "Quest reward: Questioning Reethe, level 37 · Horde (Classic data)."
+   "src": "Quest reward: Questioning Reethe, level 37 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "6901": {
    "name": "Glowing Thresher Cape",
-   "src": "Drops from Old Serra'kis in Blackfathom Deeps, 40% (Classic data)."
+   "src": "Drops from Old Serra'kis in Blackfathom Deeps, 40% (Classic data).",
+   "via": "ForeverDB"
   },
   "6903": {
    "name": "Gaze Dreamer Pants",
-   "src": "Drops from Twilight Lord Kelris in Blackfathom Deeps, 40% (Classic data)."
+   "src": "Drops from Twilight Lord Kelris in Blackfathom Deeps, 40% (Classic data).",
+   "via": "ForeverDB"
   },
   "6911": {
    "name": "Moss Cinch",
-   "src": "Drops from Aku'mai in Blackfathom Deeps, 40% (Classic data)."
+   "src": "Drops from Aku'mai in Blackfathom Deeps, 40% (Classic data).",
+   "via": "ForeverDB"
   },
   "6975": {
    "name": "Whirlwind Axe",
-   "src": "Quest reward: Whirlwind Weapon, level 40 (Classic data)."
+   "src": "Quest reward: Whirlwind Weapon, level 40 (Classic data).",
+   "via": "ForeverDB"
   },
   "6977": {
    "name": "Whirlwind Sword",
-   "src": "Quest reward: Whirlwind Weapon, level 40 (Classic data)."
+   "src": "Quest reward: Whirlwind Weapon, level 40 (Classic data).",
+   "via": "ForeverDB"
   },
   "6998": {
    "name": "Nimbus Boots",
-   "src": "Quest reward: Twilight Falls, level 25 · Alliance (Forever client)."
+   "src": "Quest reward: Twilight Falls, level 25 · Alliance (Forever client).",
+   "via": "Wowhead"
   },
   "7065": {
    "name": "Green Silk Armor",
-   "src": "Crafted: Tailoring (Forever client)."
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
   },
   "7683": {
    "name": "Bloody Brass Knuckles",
-   "src": "Drops from Interrogator Vishas in Scarlet Monastery, 90% (Classic data)."
+   "src": "Drops from Interrogator Vishas in Scarlet Monastery, 90% (Classic data).",
+   "via": "ForeverDB"
   },
   "7690": {
    "name": "Ebon Vise",
-   "src": "Drops from Fallen Champion, 33% (Classic data)."
+   "src": "Drops from Fallen Champion, 33% (Classic data).",
+   "via": "ForeverDB"
   },
   "7691": {
    "name": "Embalmed Shroud",
-   "src": "Drops from Fallen Champion, 33% (Classic data)."
+   "src": "Drops from Fallen Champion, 33% (Classic data).",
+   "via": "ForeverDB"
   },
   "7729": {
    "name": "Chesterfall Musket",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "7746": {
    "name": "Explorers' League Commendation",
-   "src": "Quest reward: Mythology of the Titans, level 38 · Alliance (Classic data)."
+   "src": "Quest reward: Mythology of the Titans, level 38 · Alliance (Classic data).",
+   "via": "ForeverDB"
   },
   "7747": {
    "name": "Vile Protector",
-   "src": "Quest reward: Compendium of the Fallen, level 38 · Horde (Classic data)."
+   "src": "Quest reward: Compendium of the Fallen, level 38 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "7750": {
    "name": "Mantle of Woe",
-   "src": "Quest reward: Vorrel's Revenge, level 33 · Horde (Classic data)."
+   "src": "Quest reward: Vorrel's Revenge, level 33 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "7751": {
    "name": "Vorrel's Boots",
-   "src": "Quest reward: Vorrel's Revenge, level 33 · Horde (Classic data)."
+   "src": "Quest reward: Vorrel's Revenge, level 33 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "7913": {
    "name": "Barbaric Iron Shoulders",
-   "src": "Crafted: Blacksmithing 160 (Forever client)."
+   "src": "Crafted: Blacksmithing 160 (Forever client).",
+   "via": "Wowhead"
   },
   "8071": {
    "name": "Sizzle Stick",
-   "src": "Quest reward: Deviate Eradication, level 21 (Classic data)."
+   "src": "Quest reward: Deviate Eradication, level 21 (Classic data).",
+   "via": "ForeverDB"
   },
   "9454": {
    "name": "Acidic Walkers",
-   "src": "Drops from Viscous Fallout in Gnomeregan, 55% (Classic data)."
+   "src": "Drops from Viscous Fallout in Gnomeregan, 55% (Classic data).",
+   "via": "ForeverDB"
   },
   "9457": {
    "name": "Royal Diplomatic Scepter",
-   "src": "Drops from Dark Iron Ambassador in Gnomeregan, 33% (Classic data)."
+   "src": "Drops from Dark Iron Ambassador in Gnomeregan, 33% (Classic data).",
+   "via": "ForeverDB"
   },
   "9509": {
    "name": "Petrolspill Leggings",
-   "src": "Drops from Caverndeep Burrower (Classic data)."
+   "src": "Drops from Caverndeep Burrower (Classic data).",
+   "via": "ForeverDB"
   },
   "9521": {
    "name": "Skullsplitter",
-   "src": "Quest reward: Call to Arms, level 40 · Horde (Classic data)."
+   "src": "Quest reward: Call to Arms, level 40 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "9522": {
    "name": "Energized Stone Circle",
-   "src": "Quest reward: Power Stones, level 36 (Classic data)."
+   "src": "Quest reward: Power Stones, level 36 (Classic data).",
+   "via": "ForeverDB"
   },
   "9536": {
    "name": "Fairywing Mantle",
-   "src": "Quest reward: A Fine Mess, level 30 (Classic data)."
+   "src": "Quest reward: A Fine Mess, level 30 (Classic data).",
+   "via": "ForeverDB"
   },
   "9605": {
    "name": "Repairman's Cape",
-   "src": "Quest reward: Data Rescue, level 30 · Alliance (Classic data)."
+   "src": "Quest reward: Data Rescue, level 30 · Alliance (Classic data).",
+   "via": "ForeverDB"
   },
   "9609": {
    "name": "Shilly Mitts",
-   "src": "Quest reward: Gyrodrillmatic Excavationators, level 30 · Alliance (Forever client)."
+   "src": "Quest reward: Gyrodrillmatic Excavationators, level 30 · Alliance (Forever client).",
+   "via": "Wowhead"
   },
   "9622": {
    "name": "Reedknot Ring",
-   "src": "Quest reward: Jarl Needs a Blade, level 35 (Classic data)."
+   "src": "Quest reward: Jarl Needs a Blade, level 35 (Classic data).",
+   "via": "ForeverDB"
   },
   "10332": {
    "name": "Scarlet Boots",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "10359": {
    "name": "Everlast Boots",
-   "src": "Quest reward: Power Stones, level 36 (Classic data)."
+   "src": "Quest reward: Power Stones, level 36 (Classic data).",
+   "via": "ForeverDB"
   },
   "10654": {
    "name": "Jutebraid Gloves",
-   "src": "Quest reward: Horde Presence, level 29 · Horde (Classic data)."
+   "src": "Quest reward: Horde Presence, level 29 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "13045": {
    "name": "Viscous Hammer",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "13063": {
    "name": "Starfaller",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "13087": {
    "name": "River Pride Choker",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "13097": {
    "name": "Thunderbrow Ring",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "13114": {
    "name": "Troll's Bane Leggings",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "13124": {
    "name": "Ravasaur Scale Boots",
-   "src": "World drop (Classic data)."
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
   },
   "14764": {
    "name": "Enduring Gauntlets",
-   "src": "Drops from Mekgineer Thermaplugg in Gnomeregan, 0.5% (Classic data)."
+   "src": "Drops from Mekgineer Thermaplugg in Gnomeregan, 0.5% (Classic data).",
+   "via": "ForeverDB"
   },
   "15455": {
    "name": "Dustfall Robes",
-   "src": "Quest reward: Hints of a New Plague?, level 37 · Alliance (Classic data)."
+   "src": "Quest reward: Hints of a New Plague?, level 37 · Alliance (Classic data).",
+   "via": "ForeverDB"
   },
   "15468": {
    "name": "Windsong Drape",
-   "src": "Quest reward: Free at Last, level 29 · Horde (Classic data)."
+   "src": "Quest reward: Free at Last, level 29 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "15698": {
    "name": "Wrangling Spaulders",
-   "src": "Quest reward: Kodo Roundup, level 34 (Classic data)."
+   "src": "Quest reward: Kodo Roundup, level 34 (Classic data).",
+   "via": "ForeverDB"
   },
   "16741": {
    "name": "Oilrag Handwraps",
-   "src": "Quest reward: The Lost Pages, level 30 · Horde (Classic data)."
+   "src": "Quest reward: The Lost Pages, level 30 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "16789": {
    "name": "Captain Rackmore's Tiller",
-   "src": "Quest reward: Claim Rackmore's Treasure!, level 36 (Classic data)."
+   "src": "Quest reward: Claim Rackmore's Treasure!, level 36 (Classic data).",
+   "via": "ForeverDB"
   },
   "16975": {
    "name": "Warsong Sash",
-   "src": "Quest reward: Warsong Supplies, level 27 · Horde (Classic data)."
+   "src": "Quest reward: Warsong Supplies, level 27 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "16977": {
    "name": "Warsong Boots",
-   "src": "Quest reward: Warsong Supplies, level 27 · Horde (Classic data)."
+   "src": "Quest reward: Warsong Supplies, level 27 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "17039": {
    "name": "Skullbreaker",
-   "src": "Quest reward: An Unholy Alliance, level 36 · Horde (Classic data)."
+   "src": "Quest reward: An Unholy Alliance, level 36 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "17042": {
    "name": "Nail Spitter",
-   "src": "Quest reward: An Unholy Alliance, level 36 · Horde (Classic data)."
+   "src": "Quest reward: An Unholy Alliance, level 36 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "18585": {
    "name": "Band of Allegiance",
-   "src": "Quest reward: Service to the Horde, level 45 · Horde (Classic data)."
+   "src": "Quest reward: Service to the Horde, level 45 · Horde (Classic data).",
+   "via": "ForeverDB"
   },
   "19573": {
    "name": "Lorekeeper's Staff",
-   "src": "Sold by Illiyana Moonblaze in Ashenvale for 4g 48s 70c (Classic data)."
+   "src": "Sold by Illiyana Moonblaze in Ashenvale for 4g 48s 70c (Classic data).",
+   "via": "ForeverDB"
   },
   "20096": {
    "name": "Highlander's Cloth Boots",
-   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 6s 92c (Classic data)."
+   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 6s 92c (Classic data).",
+   "via": "ForeverDB"
   },
   "20102": {
    "name": "Highlander's Lizardhide Boots",
-   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 36s 61c (Classic data)."
+   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 36s 61c (Classic data).",
+   "via": "ForeverDB"
   },
   "20117": {
    "name": "Highlander's Leather Girdle",
-   "src": "Sold by Samuel Hawke in Arathi Highlands for 89s 41c (Classic data)."
+   "src": "Sold by Samuel Hawke in Arathi Highlands for 89s 41c (Classic data).",
+   "via": "ForeverDB"
   },
   "20123": {
    "name": "Highlander's Mail Greaves",
-   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 37s 10c (Classic data)."
+   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 37s 10c (Classic data).",
+   "via": "ForeverDB"
   },
   "20129": {
    "name": "Highlander's Plate Greaves",
-   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 56s 88c (Classic data)."
+   "src": "Sold by Samuel Hawke in Arathi Highlands for 1g 56s 88c (Classic data).",
+   "via": "ForeverDB"
   },
   "20428": {
    "name": "Caretaker's Cape",
-   "src": "Sold by Illiyana Moonblaze in Ashenvale for 36s 50c (Classic data)."
+   "src": "Sold by Illiyana Moonblaze in Ashenvale for 36s 50c (Classic data).",
+   "via": "ForeverDB"
   },
   "20431": {
    "name": "Lorekeeper's Ring",
-   "src": "Sold by Illiyana Moonblaze in Ashenvale for 2g (Classic data)."
+   "src": "Sold by Illiyana Moonblaze in Ashenvale for 2g (Classic data).",
+   "via": "ForeverDB"
   },
   "20444": {
    "name": "Sentinel's Medallion",
-   "src": "Sold by Illiyana Moonblaze in Ashenvale for 2g (Classic data)."
+   "src": "Sold by Illiyana Moonblaze in Ashenvale for 2g (Classic data).",
+   "via": "ForeverDB"
   },
   "21568": {
    "name": "Rune of Duty",
-   "src": "Sold by Illiyana Moonblaze in Ashenvale for 2g (Classic data)."
+   "src": "Sold by Illiyana Moonblaze in Ashenvale for 2g (Classic data).",
+   "via": "ForeverDB"
   },
   "249394": {
    "name": "Orb of Mystic Insight",
-   "src": "Crafted: Enchanting (Forever client)."
+   "src": "Crafted: Enchanting (Forever client).",
+   "via": "ForeverDB"
   },
   "250498": {
    "name": "Veteran's Chain Helm",
-   "src": "Crafted: Blacksmithing (Forever client)."
+   "src": "Crafted: Blacksmithing (Forever client).",
+   "via": "ForeverDB"
   },
   "250506": {
    "name": "Acolyte's Boots",
-   "src": "Crafted: Blacksmithing 85 (Forever client)."
+   "src": "Crafted: Blacksmithing 85 (Forever client).",
+   "via": "Wowhead"
   },
   "250509": {
    "name": "Guard's Gloves",
-   "src": "Crafted: Blacksmithing 80 (Forever client)."
+   "src": "Crafted: Blacksmithing 80 (Forever client).",
+   "via": "Wowhead"
   },
   "250510": {
    "name": "Protector's Gloves",
-   "src": "Crafted: Blacksmithing 80 (Forever client)."
+   "src": "Crafted: Blacksmithing 80 (Forever client).",
+   "via": "Wowhead"
   },
   "250518": {
    "name": "Veteran's Silvered Chain Shirt",
-   "src": "Crafted: Blacksmithing (Forever client)."
+   "src": "Crafted: Blacksmithing (Forever client).",
+   "via": "ForeverDB"
   },
   "250519": {
    "name": "Guard's Silvered Chain Shirt",
-   "src": "Crafted: Blacksmithing 110 (Forever client)."
+   "src": "Crafted: Blacksmithing 110 (Forever client).",
+   "via": "Wowhead"
   },
   "250521": {
    "name": "Acolyte's Silvered Chain Shirt",
-   "src": "Crafted: Blacksmithing 110 (Forever client)."
+   "src": "Crafted: Blacksmithing 110 (Forever client).",
+   "via": "Wowhead"
   },
   "250524": {
    "name": "Guard's Silvered Chain Leggings",
-   "src": "Crafted: Blacksmithing 125 (Forever client)."
+   "src": "Crafted: Blacksmithing 125 (Forever client).",
+   "via": "Wowhead"
   },
   "250530": {
    "name": "Protector's Silvered Chain Helm",
-   "src": "Crafted: Blacksmithing 95 (Forever client)."
+   "src": "Crafted: Blacksmithing 95 (Forever client).",
+   "via": "Wowhead"
   },
   "250603": {
    "name": "Bronze Dory",
-   "src": "Crafted: Blacksmithing (Forever client)."
+   "src": "Crafted: Blacksmithing (Forever client).",
+   "via": "ForeverDB"
   },
   "251486": {
    "name": "Tabitha's Cuffs",
-   "src": "Quest reward: A Frightened Request, level 22 · Horde (Forever client)."
+   "src": "Quest reward: A Frightened Request, level 22 · Horde (Forever client).",
+   "via": "Wowhead"
   },
   "252439": {
    "name": "Brawler's Leather Boots",
-   "src": "Crafted: Leatherworking 85 (Forever client)."
+   "src": "Crafted: Leatherworking 85 (Forever client).",
+   "via": "Wowhead"
   },
   "252451": {
    "name": "Totemic Leather Tunic",
-   "src": "Crafted: Leatherworking 110 (Forever client)."
+   "src": "Crafted: Leatherworking 110 (Forever client).",
+   "via": "Wowhead"
   },
   "252461": {
    "name": "Skirmisher's Leather Belt",
-   "src": "Crafted: Leatherworking (Forever client)."
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
   },
   "252502": {
    "name": "Stormrider's Leather Pants",
-   "src": "Crafted: Leatherworking 105 (Forever client)."
+   "src": "Crafted: Leatherworking 105 (Forever client).",
+   "via": "Wowhead"
   },
   "252503": {
    "name": "Wisdom's Leather Pants",
-   "src": "Crafted: Leatherworking (Forever client)."
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
   },
   "252504": {
    "name": "Brawler's Leather Hood",
-   "src": "Crafted: Leatherworking 100 (Forever client)."
+   "src": "Crafted: Leatherworking 100 (Forever client).",
+   "via": "Wowhead"
   },
   "252516": {
    "name": "Brawler's Leather Legguards",
-   "src": "Crafted: Leatherworking 125 (Forever client)."
+   "src": "Crafted: Leatherworking 125 (Forever client).",
+   "via": "Wowhead"
   },
   "252519": {
    "name": "Wisdom's Leather Leggings",
-   "src": "Crafted: Leatherworking (Forever client)."
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
   },
   "253913": {
    "name": "Pristine Gloves",
-   "src": "Crafted: Tailoring 75 (Forever client)."
+   "src": "Crafted: Tailoring 75 (Forever client).",
+   "via": "Wowhead"
   },
   "253915": {
    "name": "Silky Gloves",
-   "src": "Crafted: Tailoring 75 (Forever client)."
+   "src": "Crafted: Tailoring 75 (Forever client).",
+   "via": "Wowhead"
   },
   "253917": {
    "name": "Flame Gloves",
-   "src": "Crafted: Tailoring 75 (Forever client)."
+   "src": "Crafted: Tailoring 75 (Forever client).",
+   "via": "Wowhead"
   },
   "253919": {
    "name": "Shadow Gloves",
-   "src": "Crafted: Tailoring (Forever client)."
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
   },
   "253937": {
    "name": "Filigreed Pristine Leggings",
-   "src": "Crafted: Tailoring 100 (Forever client)."
+   "src": "Crafted: Tailoring 100 (Forever client).",
+   "via": "Wowhead"
   },
   "253939": {
    "name": "Filigreed Silky Leggings",
-   "src": "Crafted: Tailoring 100 (Forever client)."
+   "src": "Crafted: Tailoring 100 (Forever client).",
+   "via": "Wowhead"
   },
   "253941": {
    "name": "Filigreed Flame Leggings",
-   "src": "Crafted: Tailoring 100 (Forever client)."
+   "src": "Crafted: Tailoring 100 (Forever client).",
+   "via": "Wowhead"
   },
   "253951": {
    "name": "Silky Circlet",
-   "src": "Crafted: Tailoring 100 (Forever client)."
+   "src": "Crafted: Tailoring 100 (Forever client).",
+   "via": "Wowhead"
   },
   "253953": {
    "name": "Flame Circlet",
-   "src": "Crafted: Tailoring (Forever client)."
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
   },
   "253955": {
    "name": "Shadow Circlet",
-   "src": "Crafted: Tailoring 100 (Forever client)."
+   "src": "Crafted: Tailoring 100 (Forever client).",
+   "via": "Wowhead"
   },
   "253961": {
    "name": "Pristine Gown",
-   "src": "Crafted: Tailoring 110 (Forever client)."
+   "src": "Crafted: Tailoring 110 (Forever client).",
+   "via": "Wowhead"
   },
   "253983": {
    "name": "Filigreed Pearly Circlet",
-   "src": "Crafted: Tailoring 125 (Forever client)."
+   "src": "Crafted: Tailoring 125 (Forever client).",
+   "via": "Wowhead"
   },
   "253989": {
    "name": "Silky Leggings",
-   "src": "Crafted: Tailoring 125 (Forever client)."
+   "src": "Crafted: Tailoring 125 (Forever client).",
+   "via": "Wowhead"
   },
   "253993": {
    "name": "Shadow Leggings",
-   "src": "Crafted: Tailoring (Forever client)."
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
   },
   "253995": {
    "name": "Pearly Leggings",
-   "src": "Crafted: Tailoring 125 (Forever client)."
+   "src": "Crafted: Tailoring 125 (Forever client).",
+   "via": "Wowhead"
   },
   "253999": {
    "name": "Earthen Leggings",
-   "src": "Crafted: Tailoring (Forever client)."
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
   },
   "270030": {
    "name": "Tattered Mittens",
-   "src": "Quest reward: The Book of Ur, level 26 (Seen in Forever)."
+   "src": "Quest reward: The Book of Ur, level 26 (Seen in Forever).",
+   "via": "ForeverDB"
   },
   "270032": {
    "name": "Cultist's Armguards",
-   "src": "Quest reward: Blackfathom Villainy, level 27 (Seen in Forever)."
+   "src": "Quest reward: Blackfathom Villainy, level 27 (Seen in Forever).",
+   "via": "ForeverDB"
   },
   "270051": {
    "name": "Ladimore Heirloom Ring",
-   "src": "Quest reward: A Daughter's Love, level 35 · Alliance (Forever client)."
+   "src": "Quest reward: A Daughter's Love, level 35 · Alliance (Forever client).",
+   "via": "Wowhead"
   },
   "270052": {
    "name": "Swamp Ring",
-   "src": "Quest reward: Jarl Needs a Blade, level 35 (Forever client)."
+   "src": "Quest reward: Jarl Needs a Blade, level 35 (Forever client).",
+   "via": "Wowhead"
   },
   "270053": {
    "name": "Ring of Ruin",
-   "src": "Quest reward: The Legend of Stalvan, level 35 · Alliance (Forever client)."
+   "src": "Quest reward: The Legend of Stalvan, level 35 · Alliance (Forever client).",
+   "via": "Wowhead"
   },
   "271214": {
    "name": "Rotmender's Treads",
-   "src": "Drops from Rath'mael, 30% (Seen in Forever)."
+   "src": "Drops from Rath'mael, 30% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "271740": {
    "name": "Knife-Polishing Rag",
-   "src": "Quest reward: Open the Maw, level 31 · Horde (Forever client)."
+   "src": "Quest reward: Open the Maw, level 31 · Horde (Forever client).",
+   "via": "Wowhead"
   },
   "271766": {
    "name": "Heavehammer",
-   "src": "Quest reward: Earthen Echo, level 31 (Seen in Forever)."
+   "src": "Quest reward: Earthen Echo, level 31 (Seen in Forever).",
+   "via": "ForeverDB"
   },
   "271911": {
    "name": "Theramore Signet",
@@ -632,67 +787,83 @@
   },
   "273024": {
    "name": "Glinteye Slippers",
-   "src": "Drops from a creature new in Forever (Seen in Forever)."
+   "src": "Drops from a creature new in Forever (Seen in Forever).",
+   "via": "ForeverDB"
   },
   "273026": {
    "name": "Garb of Florid Feathers",
-   "src": "Drops from Shadetooth, 33% (Seen in Forever)."
+   "src": "Drops from Shadetooth, 33% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273027": {
    "name": "Raptor's Gaze",
-   "src": "Drops from Shadetooth, 33.8% (Seen in Forever)."
+   "src": "Drops from Shadetooth, 33.8% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273030": {
    "name": "Ring of Power Regulation",
-   "src": "Drops from a creature new in Forever (Seen in Forever)."
+   "src": "Drops from a creature new in Forever (Seen in Forever).",
+   "via": "ForeverDB"
   },
   "273031": {
    "name": "Runemender's Seal",
-   "src": "Drops from a creature new in Forever (Seen in Forever)."
+   "src": "Drops from a creature new in Forever (Seen in Forever).",
+   "via": "ForeverDB"
   },
   "273034": {
    "name": "Ephemeral Grips",
-   "src": "Drops from Arcane Anomaly in Alterac Mountains, 33.5% (Seen in Forever)."
+   "src": "Drops from Arcane Anomaly in Alterac Mountains, 33.5% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273036": {
    "name": "Graveweave Bindings",
-   "src": "Drops from Atrexis the Grave Knight in Alterac Mountains, 38.2% (Seen in Forever)."
+   "src": "Drops from Atrexis the Grave Knight in Alterac Mountains, 38.2% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273038": {
    "name": "Garb of Fallen Felbark",
-   "src": "Drops from Fel Ancient in Alterac Mountains, 34.8% (Seen in Forever)."
+   "src": "Drops from Fel Ancient in Alterac Mountains, 34.8% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273039": {
    "name": "Blightleaf Rope",
-   "src": "Drops from a creature new in Forever (Seen in Forever)."
+   "src": "Drops from a creature new in Forever (Seen in Forever).",
+   "via": "ForeverDB"
   },
   "273041": {
    "name": "Slitherwrap Girdle",
-   "src": "Drops from Mana Devourer in Alterac Mountains, 34.8% (Seen in Forever)."
+   "src": "Drops from Mana Devourer in Alterac Mountains, 34.8% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273044": {
    "name": "Violet Sorcerer's Robes",
-   "src": "Drops from Arcanic Enigma in Alterac Mountains, 32.8% (Seen in Forever)."
+   "src": "Drops from Arcanic Enigma in Alterac Mountains, 32.8% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273049": {
    "name": "Archmagister's Faceted Pendant",
-   "src": "Drops from Shade of the Archmage in Alterac Mountains, 32.3% (Seen in Forever)."
+   "src": "Drops from Shade of the Archmage in Alterac Mountains, 32.3% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273054": {
    "name": "Cartilage Shapers",
-   "src": "Drops from Lyn the Ignored in Alterac Mountains, 33% (Seen in Forever)."
+   "src": "Drops from Lyn the Ignored in Alterac Mountains, 33% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273806": {
    "name": "Dark Horde Band",
-   "src": "Drops from Targorr the Dread in Stormwind Stockade, 1.3% (Seen in Forever)."
+   "src": "Drops from Targorr the Dread in Stormwind Stockade, 1.3% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273808": {
    "name": "Bridgebreaker Bindings",
-   "src": "Drops from Kam Deepfury in Stormwind Stockade, 1.3% (Seen in Forever)."
+   "src": "Drops from Kam Deepfury in Stormwind Stockade, 1.3% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "273841": {
    "name": "Twilight Maul",
-   "src": "Drops from Lorgus Jett in Blackfathom Deeps, 11.2% (Seen in Forever)."
+   "src": "Drops from Lorgus Jett in Blackfathom Deeps, 11.2% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "276631": {
    "name": "Coldflame Saber",
@@ -700,27 +871,33 @@
   },
   "277042": {
    "name": "Cloudy Gustwoven Hood",
-   "src": "Crafted: Leatherworking (Forever client)."
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
   },
   "277043": {
    "name": "Cloudy Gustwoven Spaulders",
-   "src": "Crafted: Leatherworking (Forever client)."
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
   },
   "277050": {
    "name": "Azure Gustwoven Hood",
-   "src": "Crafted: Leatherworking 175 (Forever client)."
+   "src": "Crafted: Leatherworking 175 (Forever client).",
+   "via": "Wowhead"
   },
   "277051": {
    "name": "Azure Gustwoven Spaulders",
-   "src": "Crafted: Leatherworking (Forever client)."
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
   },
   "277210": {
    "name": "Pyrewood Signet Ring",
-   "src": "Quest reward: The Horn of Xelthos, level 23 (Forever client)."
+   "src": "Quest reward: The Horn of Xelthos, level 23 (Forever client).",
+   "via": "Wowhead"
   },
   "277213": {
    "name": "Dro'zem's Tunic",
-   "src": "Drops from Dro'zem the Blasphemous in Redridge Mountains, 33.3% (Seen in Forever)."
+   "src": "Drops from Dro'zem the Blasphemous in Redridge Mountains, 33.3% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "277219": {
    "name": "Solomon's Comfortable Hat",
@@ -728,19 +905,23 @@
   },
   "281295": {
    "name": "Pelt Pants",
-   "src": "Quest reward: Packaged Pristine Pelts, level 31 · Alliance (Forever client)."
+   "src": "Quest reward: Packaged Pristine Pelts, level 31 · Alliance (Forever client).",
+   "via": "Wowhead"
   },
   "281312": {
    "name": "Fallen Dragon's Scepter",
-   "src": "Quest reward: Stopping the Cycle, level 34 · Alliance (Forever client)."
+   "src": "Quest reward: Stopping the Cycle, level 34 · Alliance (Forever client).",
+   "via": "Wowhead"
   },
   "281319": {
    "name": "Golem War Cloak",
-   "src": "Quest reward: Gleaning Our Future, level 32 · Alliance (Forever client)."
+   "src": "Quest reward: Gleaning Our Future, level 32 · Alliance (Forever client).",
+   "via": "Wowhead"
   },
   "281321": {
    "name": "Giantstone Medallion",
-   "src": "Quest reward: Gleaning Our Future, level 32 · Alliance (Forever client)."
+   "src": "Quest reward: Gleaning Our Future, level 32 · Alliance (Forever client).",
+   "via": "Wowhead"
   },
   "282283": {
    "name": "Malignant Root",
@@ -756,11 +937,13 @@
   },
   "284382": {
    "name": "Budding Leaf Belt",
-   "src": "Drops from Vengeful Ancient in Stonetalon Mountains, 0.3% (Seen in Forever)."
+   "src": "Drops from Vengeful Ancient in Stonetalon Mountains, 0.3% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "284383": {
    "name": "Faerie Dragon's Skin",
-   "src": "Drops from Nal'taszar in Stonetalon Mountains, 0.4% (Seen in Forever)."
+   "src": "Drops from Nal'taszar in Stonetalon Mountains, 0.4% (Seen in Forever).",
+   "via": "Wowhead"
   },
   "284399": {
    "name": "Seared Grove Shoulderpads",
@@ -772,7 +955,8 @@
   },
   "285338": {
    "name": "Kodohide Legguards",
-   "src": "Drops from Brontus in The Barrens, 3.3% (Seen in Forever)."
+   "src": "Drops from Brontus in The Barrens, 3.3% (Seen in Forever).",
+   "via": "Wowhead"
   }
  }
 }

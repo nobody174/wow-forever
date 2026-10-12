@@ -152,7 +152,9 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Every rank has a source (best picks from raw/, ranks 2-3 from `bis/sources.json` when they aren't a best pick
   anywhere), shown as a line under each rank in the open list. Filters: when the best is filtered out the row shows
   the first rank that passes (stand-in, `.row.standin`, its rank name as tag, % behind instead of the score);
-  "Hidden by your filters" only when no rank passes. Source icons are coloured per type (`.ti-<type>`), text isn't. Filters: one chip per source
+  "Hidden by your filters" only when no rank passes. Source icons are coloured per type (`.ti-<type>`), text isn't.
+  Each known source carries `via` (the site it was read from: ForeverDB for best picks, ForeverDB or Wowhead per
+  entry in sources.json), shown as small grey "· ForeverDB" after the source line (`viaTag`) and in the addon tooltip. Filters: one chip per source
   type in the data (`types`; Raid is greyed until a raid item exists), Profession (crafted items only), Show = all /
   known sources / Forever data only (conf seen + client). A slot whose best pick is filtered out stays as "Hidden by
   your filters" (ranks 2-3 have no source in the data, so it can't fall back to them). Each row: slot, item name =

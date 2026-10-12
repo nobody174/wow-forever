@@ -15,6 +15,52 @@ Decisions (owner, 2026-10-12):
 - M3 debug commands: move under `/r2f debug`; `/r2f help` lists player commands only.
 - First public release: 1.0.0.
 
+## Progress (Step 2: Fixer)
+
+Done, committed (`2f7948d`), 17885 tests passing:
+- [x] H1 dead Copy-my-build URL
+- [x] H2 error filter rebuilt on RegisterEvent/UnregisterEvent (no Blizzard reassignment);
+      owner still needs to re-test in game
+- [x] H3 single-backslash icon path, plus a permanent regression test for the whole bug class
+- [x] H4 personal name stripped from GameplayExtras.lua comments, CHANGELOG.md, and
+      PlanData.lua (via launch-plan.html + `python build.py`)
+- [x] H5 Plan tab's example plans no longer name specific players ("this group" → "example
+      setup", the one "Venom + Trollmann" line reworded)
+- [x] M3 debug commands moved under `/r2f debug`, `/r2f help` trimmed to player commands,
+      old bare command names (`/r2f rankdebug` etc.) still work
+- [x] L1 Ammo reminder uses `BAG_UPDATE_DELAYED`, ignores other units' `UNIT_INVENTORY_CHANGED`
+
+Not started yet (next session):
+- [ ] M1 ~2,500 internal dev-comment lines across the addon (ADDON_PLAN refs, "owner test"
+      notes, version-history comments, stale claims) — big, mechanical
+- [ ] M2 TESTING.md (1,221 lines) and the dev CHANGELOG.md (853 lines, still has old
+      `/r2f who`-style command names from its own history — fine, it's a historical log, but
+      decide whether it ships at all) currently ship inside `addon/RoadToForever/` and so are
+      in the release zip; write a public README.md + short player CHANGELOG, decide how to
+      keep/exclude the dev files
+- [ ] M4 no CI runs tests/luacheck before a release tag
+- [ ] M5 luacheck globals (~355 warnings, mostly `.luacheckrc` missing WoW API globals)
+- [ ] M6 dedicated taint audit (Step 4): TalentGuide.lua `ToggleTalentFrame()`,
+      Professions.lua `prepare()`, re-check Bags.lua
+- [ ] M7 LICENSE file (All Rights Reserved text), README.md, `## X-Website` / `## X-License`
+      in the .toc, version bump 0.30.0 → 1.0.0 in .toc + CHANGELOG
+- [ ] L2 duplicated helpers (isSecret ×3, vendor price ×2, throttled-refresh ×5, two
+      context-menu implementations) — likely low priority
+- [ ] L3 "More are planned (pet, repairs, bags)" UI promise line — low priority, or fold into M1
+- [ ] L4 import doesn't flag `/run`/`/script` in macro bodies — low priority, likely skip
+- [ ] L5 site files (not the addon zip): `talentsaved.js` still uses
+      `nobody174/wow-forever-macros` for the Group Picks GitHub API, `template.html` has an
+      old-repo-name release link (works via GitHub's redirect, but should match)
+- [ ] Privacy/identity: 19 public GitHub commits authored with the real email
+      (vartdal@gmail.com) instead of the pseudonymous one — owner's call, flagged, not
+      actioned (rewriting public history is effectively irreversible)
+
+Remaining workflow steps after Step 2 finishes: 3 Debugger (only if something unclear turns
+up), 4 Taint & Secure Execution + WoW API Compliance audit (M6 above), 4b Lua performance
+pass, 5 QA/Playtester, 6 Devil's Advocate on the fixes just made, 7 Design Critic, 8 Docs
+(README/CHANGELOG, part of M2), 9 Release Manager/Versioning (M7) + 9b CI (M4), 10 Project
+Reviewer round 2 to close the loop. Then: set up the actual CurseForge project page/release.
+
 ## Step 1: Project Reviewer, full analysis (2026-10-12)
 
 Scope: every file the release zip contains (`addon/RoadToForever/`, 44 files, ~17,000 lines incl. the generated

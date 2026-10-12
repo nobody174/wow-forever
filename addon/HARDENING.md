@@ -52,13 +52,11 @@ Done in the second session (all committed, 17887 tests passing, luacheck 0 warni
   (no longer open the talent window by themselves).
 
 Not started yet:
-- [ ] L2 duplicated helpers (isSecret ×3, vendor price ×2, throttled-refresh ×5, two
+- [ ] (deferred, post-1.0 refactor) L2 duplicated helpers (isSecret ×3, vendor price ×2, throttled-refresh ×5, two
       context-menu implementations) — likely low priority
-- [ ] L3 "More are planned (pet, repairs, bags)" UI promise line — low priority, or fold into M1
-- [ ] L4 import doesn't flag `/run`/`/script` in macro bodies — low priority, likely skip
-- [ ] L5 site files (not the addon zip): `talentsaved.js` still uses
-      `nobody174/wow-forever-macros` for the Group Picks GitHub API, `template.html` has an
-      old-repo-name release link (works via GitHub's redirect, but should match)
+- [x] L3 promise line already gone (grep finds nothing)
+- [ ] (skipped, owner's call) L4 import doesn't flag `/run`/`/script` in macro bodies — low priority, likely skip
+- [x] L5 talentsaved.js and template.html/macros.html now use nobody174/wow-forever. addons.html still shows 0.29.1 pre-release: update when 1.0.0 is tagged.
 - [ ] Privacy/identity: 19 public GitHub commits authored with the real email
       (vartdal@gmail.com) instead of the pseudonymous one — owner's call, flagged, not
       actioned (rewriting public history is effectively irreversible)

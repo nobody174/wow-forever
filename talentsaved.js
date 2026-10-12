@@ -19,7 +19,7 @@
 (function () {
   "use strict";
 
-  var REPO = "nobody174/wow-forever-macros", BRANCH = "main", FILE = "group-builds.json";
+  var REPO = "nobody174/wow-forever", BRANCH = "main", FILE = "group-builds.json";
   var API = "https://api.github.com";
   var KEY = "wf-talent-builds-v1", TAB_KEY = "wf-talent-builds-tab", ACTIVE_KEY = "wf-talent-builds-active", OWNER_KEY = "wf-owner-gh";
   var TC = window.TalentCalc;

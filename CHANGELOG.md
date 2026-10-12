@@ -4,6 +4,12 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-13 (Addons page: Road to Forever follows the newest release)
+- addons.html: the Road to Forever card now looks up the newest `r2f-vX.Y.Z` release on GitHub when the page loads
+  (highest version, drafts ignored, answer cached 10 minutes) and updates its link, version tag, version/date line and
+  zip name. The written-in values (now 0.38.1, were stuck at 0.29.1) are the fallback if GitHub can't be reached. Tested in
+  headless Chrome with a deliberately stale copy: it moved from 0.29.1 to 0.38.1.
+
 ## 2026-10-13 (Warlock macros)
 - Warlock Shared: "Shadow Bolt + Imp Firebolt" replaced by **Shadow Bolt (target / target's target)**; new
   **Corruption mouseover** and **Bane of Agony mouseover**; new **Pet attack mouseover** (Class QoL, icon

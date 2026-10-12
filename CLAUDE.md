@@ -275,6 +275,12 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
      that 1.60.x / Forever is in its supported versions before using it.
      Watch the slugs: Forever Bestiary is `forever-bestiary-pet-hunter`,
      AtlasLoot is `atlasloot-continued`.
+     **Since 2026-10-13 the Road to Forever card updates itself in the browser:** a small script in
+     addons.html asks GitHub's releases API (`/repos/nobody174/wow-forever/releases`, cached 10 min in
+     localStorage `wf-r2f-release-v1`) for the highest `r2f-vX.Y.Z` that is not a draft and rewrites the card's link, `v<ver>` tag,
+     version/date line and the zip name (`code[data-zip]`). The values written in the HTML are only the fallback when GitHub
+     can't be reached, so a release no longer needs an addons.html commit; refresh the fallback now and then
+     (link, `.ver-tag`, `.ver` line, zip name). The manual rules below still describe how the fallback is read.
      `roadtoforever` is ours and not on CurseForge: its version is the newest
      `r2f-v*` tag (`git ls-remote --tags origin 'r2f-*' | sort -V`), cross-checked
      with `## Version` in `addon/RoadToForever/RoadToForever.toc`, its date is

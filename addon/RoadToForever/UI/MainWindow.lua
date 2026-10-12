@@ -164,6 +164,15 @@ local function topSlider(parent, label, min, max, get, set, x)
     self.r2fDown = false
     commit(self:GetValue())
   end)
+  -- Tick marks under the bar, one per step, so the steps can be seen. The thumb's centre travels
+  -- about 8 px in from each end of the bar.
+  local n = (max - min) / STEP
+  for i = 0, n do
+    local t = parent:CreateTexture(nil, "ARTWORK")
+    t:SetSize(1, (i % 5 == 0) and 6 or 4)
+    t:SetPoint("TOP", sl, "BOTTOMLEFT", 8 + (84 - 16) * i / n, 2)
+    t:SetColorTexture(0.75, 0.75, 0.78, 0.8)
+  end
   sl.r2fLabel = fs
   return sl
 end

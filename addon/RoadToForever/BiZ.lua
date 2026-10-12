@@ -316,9 +316,18 @@ function BiZ.ShowTooltip(owner, id, rankLine)
   GameTooltip:Show()
 end
 
--- Shift-click: the item's link in the chat box (like clicking a bag item).
-function BiZ.LinkInChat(id)
+-- Shift-click: the item's link in the chat box (like clicking a bag item). An item the client
+-- doesn't know yet (Forever-only items) has no link from GetItemInfo, so one is built from the id
+-- and the name in our data; the game fills in the rest when the chat line is shown.
+function BiZ.LinkInChat(id, name)
   local link = GetItemInfo and select(2, GetItemInfo(id))
-  if link and ChatEdit_InsertLink then ChatEdit_InsertLink(link) end
-  return link ~= nil
+  if not link then
+    local q = BiZ.Quality(id) or 1
+    local hex = (ITEM_QUALITY_COLORS and ITEM_QUALITY_COLORS[q] and ITEM_QUALITY_COLORS[q].hex) or ("|cff" .. QUALITY_HEX[q])
+    link = ("%s|Hitem:%d::::::::60:::::|h[%s]|h|r"):format(hex, id, name or BiZ.ItemName(id))
+  end
+  -- With no chat box open, ChatEdit_InsertLink does nothing; open one with the link in it.
+  local done = ChatEdit_InsertLink and ChatEdit_InsertLink(link)
+  if not done and ChatFrame_OpenChat then ChatFrame_OpenChat(link) end
+  return true
 end

@@ -10,7 +10,7 @@
 --     the game's tooltip plus its rank. Shift-click: link in chat.
 -- Wishlist view: grouped by where you get the items (a dungeon, a profession, a vendor), biggest
 --   group first, in a scrolling list; Export / Import share the list with the site (R2FW1:).
--- The model is the game's PlayerModel showing "player" (turns slowly, drag to turn it). Class /
+-- The model is the game's PlayerModel showing "player" (drag to turn it). Class /
 -- spec menus use UI.ContextMenu (no UIDropDownMenu: taint). Everything is redrawn from the data
 -- on each refresh; the widgets are pooled per host frame and kind.
 
@@ -106,7 +106,7 @@ local function itemButton()
     end)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
     b:SetScript("OnClick", function(self)
-      if IsShiftKeyDown() and self.itemId and BiZ.LinkInChat(self.itemId) then return end
+      if IsShiftKeyDown() and self.itemId and BiZ.LinkInChat(self.itemId, self.linkName) then return end
       if self.onClick then self.onClick() end
     end)
     return b
@@ -140,7 +140,7 @@ local function placeItem(x, y, w, id, name, rankLine, onClick, iconSize)
   local b = itemButton()
   b:SetPoint("TOPLEFT", host, "TOPLEFT", x + (iconSize or 22), -y - 1)
   b:SetWidth(w)
-  b.itemId, b.rankLine, b.onClick = id, rankLine, onClick
+  b.itemId, b.rankLine, b.onClick, b.linkName = id, rankLine, onClick, name
   b.fs:SetText(BiZ.ColoredName(id, name))
   return b
 end
@@ -209,6 +209,7 @@ local function paintSlotButton(key, sp)
   local pick = shownPick(sl)
   b.slotKey = key
   b.itemId = pick and pick.id or nil
+  b.linkName = pick and pick.name or nil
   b.rankLine = nil
   if pick then
     b.icon:SetTexture(BiZ.Icon(pick.id) or UI.FALLBACK_ICON)
@@ -535,7 +536,7 @@ local function buildSlotButton(f, key, x, y)
   end)
   b:SetScript("OnLeave", function() GameTooltip:Hide() end)
   b:SetScript("OnClick", function(self)
-    if IsShiftKeyDown() and self.itemId and BiZ.LinkInChat(self.itemId) then return end
+    if IsShiftKeyDown() and self.itemId and BiZ.LinkInChat(self.itemId, self.linkName) then return end
     selected = self.slotKey
     refresh()
   end)
@@ -543,8 +544,8 @@ local function buildSlotButton(f, key, x, y)
   return b
 end
 
--- The 3D model of the player's character. Turns slowly; drag with the left mouse button to
--- turn it by hand. Everything is optional (a client without PlayerModel just shows the dark panel).
+-- The 3D model of the player's character. It stands still; drag with the left mouse button to
+-- turn it. Everything is optional (a client without PlayerModel just shows the dark panel).
 local function buildModel(f, x, y, w, h)
   local back = f:CreateTexture(nil, "BACKGROUND")
   back:SetPoint("TOPLEFT", f, "TOPLEFT", x, -y)
@@ -568,13 +569,11 @@ local function buildModel(f, x, y, w, h)
   m:EnableMouse(true)
   m:SetScript("OnMouseDown", function() if GetCursorPosition then dragX = GetCursorPosition() end end)
   m:SetScript("OnMouseUp", function() dragX = nil end)
-  m:SetScript("OnUpdate", function(_, elapsed)
+  m:SetScript("OnUpdate", function()
     if dragX and GetCursorPosition then
       local cx = GetCursorPosition()
       facing = facing + (cx - dragX) * 0.012
       dragX = cx
-    else
-      facing = facing + (elapsed or 0) * 0.35
     end
     face(facing)
   end)

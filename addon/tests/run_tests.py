@@ -2926,6 +2926,9 @@ def test_biz(templates=True):
     # shift-click = link in chat
     lua.execute("TEST.shift = true; HELM[1]:Click(); TEST.shift = false")
     check("Hitem:252512" in (lua.eval("TEST.chatInsert") or ""), "%s: shift-click links the item in chat" % tag)
+    lua.execute('R2F.BiZ.LinkInChat(999999, "Unknown Thing")')
+    ins = lua.eval("TEST.chatInsert") or ""
+    check("Hitem:999999" in ins and "[Unknown Thing]" in ins, "%s: an item the client doesn't know still gets a chat link: %r" % (tag, ins))
     # clicking another slot selects it and shows its options
     find_frames(lua, "f.__kind == 'Button' and f.slotKey == 'chest'", "CHESTBTN")
     lua.execute("CHESTBTN[1]:Click()")

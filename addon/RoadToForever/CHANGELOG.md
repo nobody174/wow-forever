@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.32.1 (2026-10-12)
+
+- Shift-click on a Mr.BiZ item now links it in chat even when the game doesn't know the item yet
+  (opens the chat box if none is open).
+- The Mr.BiZ model stands still; drag it to turn it.
+- Size and Opacity sliders have tick marks for each 10% step.
+
 ## 0.32.0 (2026-10-12): Mr.BiZ paper doll
 
 - **Mr.BiZ redesigned**: your character's 3D model (turns slowly, drag to turn it) with the 17

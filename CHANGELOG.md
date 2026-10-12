@@ -11,7 +11,8 @@ user-facing release notes.
 
 ## 2026-10-12 (Mr.BiZ round 3: a source for every rank, stand-ins, icon colours)
 - `bis/sources.json`: where each rank 2-3 pick comes from, for the 193 that aren't a best pick in any spec, read from
-  each item's ForeverDB page (124 found, 69 not known yet). `build_bis.py` puts type / label / group / conf on every
+  each item's ForeverDB page (124 found); 60 of the other 69 filled from Wowhead's Forever item pages in the owner's
+  Chrome (crafted skill, quest + faction, drops with Wowhead's count/outof %); 9 still unknown. `build_bis.py` puts type / label / group / conf on every
   next pick (best picks' own sources first); a next pick with no entry stops the build. Vendor sentences without
   coordinates parse; Fallen Champion = Scarlet Monastery.
 - bis.html: every rank in the open list shows its source line (icon, where, confidence). When filters hide the best,

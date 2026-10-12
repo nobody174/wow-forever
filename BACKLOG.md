@@ -27,10 +27,15 @@ Beta data on the site is level-30 data. Redo these once the live game is up:
 
 - [ ] **Release addon 0.30.0** (tag `r2f-v0.30.0`): owner's call, after he has tried the BiZ tab in game
       (TESTING.md 41).
-- [ ] **159 rank 2-3 picks with no source** (`bis/sources.json`, "isn't known yet"): mostly items that are new in
-      Forever, plus a few Classic crafts ForeverDB's item pages don't list (e.g. Azure Silk Gloves 4319, Spidersilk
-      Boots 4320). Fill from Wowhead Forever in the owner's Chrome, or from our own addon's loot log once it exists.
-      Four come from creatures ForeverDB doesn't name yet (NPC 245999, 246003, 260322, 260326).
+- [ ] **9 rank 2-3 items still with no source** (`bis/sources.json`, "isn't known yet": 271911, 271920, 276631,
+      277219, 282283, 282653, 282658, 284399, 284401): neither ForeverDB nor Wowhead knows them yet (2026-10-12).
+      Two drop zones are Forever-new ids Wowhead didn't name for us (16611 Rath'mael, 16732 Shadetooth).
+- [ ] **Data pipeline (owner's goal, 2026-10-12):** the site list stays current from trusted sites (ForeverDB,
+      Wowhead Forever) and from what addon users report; the addon gets the same list. Constraints found: the addon
+      can't reach the internet (data goes in by release or by paste string); Wowhead answers scripted page fetches
+      from the owner's Chrome but throttles (403 after ~70 quick pages), so refreshes must be slow and spread out;
+      ForeverDB is readable from the cloud. Reuse permission from ForeverDB / Wowhead for republishing their data is
+      still an open question. Design: ADDON_PLAN 19 (to write).
 - [ ] **Our own ranking (after the beta data settles; owner wants it, 2026-10-12).** Plan, so we don't depend on
       ForeverDB or any addon:
       1. *Items:* every equippable item's stats from the game files (owner already extracts the client with

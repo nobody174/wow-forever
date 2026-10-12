@@ -1,6 +1,6 @@
 {
  "updated": "2026-10-12",
- "about": "Sources for the rank 2-3 picks that aren't a best pick anywhere, read from each item's ForeverDB page (https://foreverdb.net/item/<id>) and written in the BiS-page wording parse_source reads. Best picks keep their own source from raw/.",
+ "about": "Sources for the rank 2-3 picks that aren't a best pick anywhere, in the BiS-page wording parse_source reads. Read from each item's ForeverDB page (https://foreverdb.net/item/<id>); the ones ForeverDB didn't know were filled from Wowhead's Forever item pages (created-by / reward-from / dropped-by, drop % = Wowhead's count/outof) in the owner's Chrome, 2026-10-12. Best picks keep their own source from raw/.",
  "items": {
   "888": {
    "name": "Naga Battle Gloves",
@@ -32,7 +32,7 @@
   },
   "2041": {
    "name": "Tunic of Westfall",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: The Defias Brotherhood, level 22 · Alliance (Forever client)."
   },
   "2098": {
    "name": "Double-barreled Shotgun",
@@ -60,7 +60,7 @@
   },
   "2870": {
    "name": "Shining Silver Breastplate",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Blacksmithing 145 (Forever client)."
   },
   "2943": {
    "name": "Eye of Paleth",
@@ -88,7 +88,7 @@
   },
   "3719": {
    "name": "Hillman's Cloak",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Leatherworking 150 (Forever client)."
   },
   "3765": {
    "name": "Brigand's Pauldrons",
@@ -116,11 +116,11 @@
   },
   "4319": {
    "name": "Azure Silk Gloves",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 145 (Forever client)."
   },
   "4320": {
    "name": "Spidersilk Boots",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 125 (Forever client)."
   },
   "4464": {
    "name": "Trouncing Boots",
@@ -244,7 +244,7 @@
   },
   "6998": {
    "name": "Nimbus Boots",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: Twilight Falls, level 25 · Alliance (Forever client)."
   },
   "7065": {
    "name": "Green Silk Armor",
@@ -284,7 +284,7 @@
   },
   "7913": {
    "name": "Barbaric Iron Shoulders",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Blacksmithing 160 (Forever client)."
   },
   "8071": {
    "name": "Sizzle Stick",
@@ -320,7 +320,7 @@
   },
   "9609": {
    "name": "Shilly Mitts",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: Gyrodrillmatic Excavationators, level 30 · Alliance (Forever client)."
   },
   "9622": {
    "name": "Reedknot Ring",
@@ -456,15 +456,15 @@
   },
   "250506": {
    "name": "Acolyte's Boots",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Blacksmithing 85 (Forever client)."
   },
   "250509": {
    "name": "Guard's Gloves",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Blacksmithing 80 (Forever client)."
   },
   "250510": {
    "name": "Protector's Gloves",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Blacksmithing 80 (Forever client)."
   },
   "250518": {
    "name": "Veteran's Silvered Chain Shirt",
@@ -472,19 +472,19 @@
   },
   "250519": {
    "name": "Guard's Silvered Chain Shirt",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Blacksmithing 110 (Forever client)."
   },
   "250521": {
    "name": "Acolyte's Silvered Chain Shirt",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Blacksmithing 110 (Forever client)."
   },
   "250524": {
    "name": "Guard's Silvered Chain Leggings",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Blacksmithing 125 (Forever client)."
   },
   "250530": {
    "name": "Protector's Silvered Chain Helm",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Blacksmithing 95 (Forever client)."
   },
   "250603": {
    "name": "Bronze Dory",
@@ -492,15 +492,15 @@
   },
   "251486": {
    "name": "Tabitha's Cuffs",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: A Frightened Request, level 22 · Horde (Forever client)."
   },
   "252439": {
    "name": "Brawler's Leather Boots",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Leatherworking 85 (Forever client)."
   },
   "252451": {
    "name": "Totemic Leather Tunic",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Leatherworking 110 (Forever client)."
   },
   "252461": {
    "name": "Skirmisher's Leather Belt",
@@ -508,7 +508,7 @@
   },
   "252502": {
    "name": "Stormrider's Leather Pants",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Leatherworking 105 (Forever client)."
   },
   "252503": {
    "name": "Wisdom's Leather Pants",
@@ -516,11 +516,11 @@
   },
   "252504": {
    "name": "Brawler's Leather Hood",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Leatherworking 100 (Forever client)."
   },
   "252516": {
    "name": "Brawler's Leather Legguards",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Leatherworking 125 (Forever client)."
   },
   "252519": {
    "name": "Wisdom's Leather Leggings",
@@ -528,15 +528,15 @@
   },
   "253913": {
    "name": "Pristine Gloves",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 75 (Forever client)."
   },
   "253915": {
    "name": "Silky Gloves",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 75 (Forever client)."
   },
   "253917": {
    "name": "Flame Gloves",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 75 (Forever client)."
   },
   "253919": {
    "name": "Shadow Gloves",
@@ -544,19 +544,19 @@
   },
   "253937": {
    "name": "Filigreed Pristine Leggings",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 100 (Forever client)."
   },
   "253939": {
    "name": "Filigreed Silky Leggings",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 100 (Forever client)."
   },
   "253941": {
    "name": "Filigreed Flame Leggings",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 100 (Forever client)."
   },
   "253951": {
    "name": "Silky Circlet",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 100 (Forever client)."
   },
   "253953": {
    "name": "Flame Circlet",
@@ -564,19 +564,19 @@
   },
   "253955": {
    "name": "Shadow Circlet",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 100 (Forever client)."
   },
   "253961": {
    "name": "Pristine Gown",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 110 (Forever client)."
   },
   "253983": {
    "name": "Filigreed Pearly Circlet",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 125 (Forever client)."
   },
   "253989": {
    "name": "Silky Leggings",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 125 (Forever client)."
   },
   "253993": {
    "name": "Shadow Leggings",
@@ -584,7 +584,7 @@
   },
   "253995": {
    "name": "Pearly Leggings",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Tailoring 125 (Forever client)."
   },
   "253999": {
    "name": "Earthen Leggings",
@@ -600,23 +600,23 @@
   },
   "270051": {
    "name": "Ladimore Heirloom Ring",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: A Daughter's Love, level 35 · Alliance (Forever client)."
   },
   "270052": {
    "name": "Swamp Ring",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: Jarl Needs a Blade, level 35 (Forever client)."
   },
   "270053": {
    "name": "Ring of Ruin",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: The Legend of Stalvan, level 35 · Alliance (Forever client)."
   },
   "271214": {
    "name": "Rotmender's Treads",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Rath'mael, 30% (Seen in Forever)."
   },
   "271740": {
    "name": "Knife-Polishing Rag",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: Open the Maw, level 31 · Horde (Forever client)."
   },
   "271766": {
    "name": "Heavehammer",
@@ -636,11 +636,11 @@
   },
   "273026": {
    "name": "Garb of Florid Feathers",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Shadetooth, 33% (Seen in Forever)."
   },
   "273027": {
    "name": "Raptor's Gaze",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Shadetooth, 33.8% (Seen in Forever)."
   },
   "273030": {
    "name": "Ring of Power Regulation",
@@ -652,15 +652,15 @@
   },
   "273034": {
    "name": "Ephemeral Grips",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Arcane Anomaly in Alterac Mountains, 33.5% (Seen in Forever)."
   },
   "273036": {
    "name": "Graveweave Bindings",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Atrexis the Grave Knight in Alterac Mountains, 38.2% (Seen in Forever)."
   },
   "273038": {
    "name": "Garb of Fallen Felbark",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Fel Ancient in Alterac Mountains, 34.8% (Seen in Forever)."
   },
   "273039": {
    "name": "Blightleaf Rope",
@@ -668,31 +668,31 @@
   },
   "273041": {
    "name": "Slitherwrap Girdle",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Mana Devourer in Alterac Mountains, 34.8% (Seen in Forever)."
   },
   "273044": {
    "name": "Violet Sorcerer's Robes",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Arcanic Enigma in Alterac Mountains, 32.8% (Seen in Forever)."
   },
   "273049": {
    "name": "Archmagister's Faceted Pendant",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Shade of the Archmage in Alterac Mountains, 32.3% (Seen in Forever)."
   },
   "273054": {
    "name": "Cartilage Shapers",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Lyn the Ignored in Alterac Mountains, 33% (Seen in Forever)."
   },
   "273806": {
    "name": "Dark Horde Band",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Targorr the Dread in Stormwind Stockade, 1.3% (Seen in Forever)."
   },
   "273808": {
    "name": "Bridgebreaker Bindings",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Kam Deepfury in Stormwind Stockade, 1.3% (Seen in Forever)."
   },
   "273841": {
    "name": "Twilight Maul",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Lorgus Jett in Blackfathom Deeps, 11.2% (Seen in Forever)."
   },
   "276631": {
    "name": "Coldflame Saber",
@@ -708,7 +708,7 @@
   },
   "277050": {
    "name": "Azure Gustwoven Hood",
-   "src": "Where it comes from isn't known yet"
+   "src": "Crafted: Leatherworking 175 (Forever client)."
   },
   "277051": {
    "name": "Azure Gustwoven Spaulders",
@@ -716,11 +716,11 @@
   },
   "277210": {
    "name": "Pyrewood Signet Ring",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: The Horn of Xelthos, level 23 (Forever client)."
   },
   "277213": {
    "name": "Dro'zem's Tunic",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Dro'zem the Blasphemous in Redridge Mountains, 33.3% (Seen in Forever)."
   },
   "277219": {
    "name": "Solomon's Comfortable Hat",
@@ -728,19 +728,19 @@
   },
   "281295": {
    "name": "Pelt Pants",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: Packaged Pristine Pelts, level 31 · Alliance (Forever client)."
   },
   "281312": {
    "name": "Fallen Dragon's Scepter",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: Stopping the Cycle, level 34 · Alliance (Forever client)."
   },
   "281319": {
    "name": "Golem War Cloak",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: Gleaning Our Future, level 32 · Alliance (Forever client)."
   },
   "281321": {
    "name": "Giantstone Medallion",
-   "src": "Where it comes from isn't known yet"
+   "src": "Quest reward: Gleaning Our Future, level 32 · Alliance (Forever client)."
   },
   "282283": {
    "name": "Malignant Root",
@@ -756,11 +756,11 @@
   },
   "284382": {
    "name": "Budding Leaf Belt",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Vengeful Ancient in Stonetalon Mountains, 0.3% (Seen in Forever)."
   },
   "284383": {
    "name": "Faerie Dragon's Skin",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Nal'taszar in Stonetalon Mountains, 0.4% (Seen in Forever)."
   },
   "284399": {
    "name": "Seared Grove Shoulderpads",
@@ -772,7 +772,7 @@
   },
   "285338": {
    "name": "Kodohide Legguards",
-   "src": "Where it comes from isn't known yet"
+   "src": "Drops from Brontus in The Barrens, 3.3% (Seen in Forever)."
   }
  }
 }

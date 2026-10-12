@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.36.0 (2026-10-13)
+
+- All macros from the site now ship inside the addon (207 macros). They are installed at login, so the Macros page is full from the first start and a new addon version updates them (macros you edited yourself are kept). Nothing to copy and paste any more. The Import option stays in Options for custom picks.
+
 ## 0.35.1 (2026-10-13)
 
 - Size / Opacity sliders: pressing the bar away from the thumb no longer changes anything (the previous fix still let the click through). Only dragging the thumb applies.

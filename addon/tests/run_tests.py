@@ -85,6 +85,9 @@ def new_runtime(templates=True, before_load=None):
         path = os.path.join(ADDON, rel).replace("\\", "/")
         check(os.path.exists(path), "TOC file exists: " + rel)
         lua.execute('assert(loadfile("%s"))("RoadToForever", NS)' % path)
+    # The bundled macro set would fill the library at login in every test; it is parked here and
+    # restored by test_bundle (NS = the addon's namespace table).
+    lua.execute("NS.MacroDataReal = NS.MacroData NS.MacroData = nil")
     return lua
 
 
@@ -864,6 +867,31 @@ def test_talented_perk():
     js = open(os.path.join(ROOT, "talentcalc.js"), encoding="utf-8").read()
     check("points + 9 - perkRank()" in js and "TALENTED_RANK = 5" in js,
           "perk: talentcalc.js uses points + 9 - 5, the same as Talents.LevelFor")
+
+
+def test_bundle(fx):
+    """The macros inside the addon (MacroData.lua): current with data.py, same as the site's export of
+    everything, installed once per version at login."""
+    r = subprocess.run([sys.executable, "build.py", "--check-macro-data"], cwd=ROOT, capture_output=True, text=True)
+    check(r.returncode == 0, "MacroData.lua matches data.py (run python build.py)")
+    lua = new_runtime()
+    check(lua.eval("NS.MacroDataReal ~= nil and NS.MacroDataReal.string == nil") is False, "MacroData.lua defines the bundle")
+    check(lua.eval("NS.MacroDataReal.string") == fx["everything"]["string"],
+          "the bundled string is byte-identical to what the site's export tray writes for every macro")
+    lua.execute("R2FDB = nil R2FCharDB = nil R2F.Library.Init() R2F.playerClass = 'WARRIOR'")
+    check(lua.eval("R2F.Bundle.Pending()") is False, "no bundle in the runtime: nothing pending")
+    lua.execute("R2F.MacroData = NS.MacroDataReal")
+    check(lua.eval("R2F.Bundle.Pending()") is True, "fresh install: the bundle is pending")
+    lua.execute("R2F.Bundle.Run()")
+    total = len(fx["everything"]["records"])
+    check(lua.eval("R2F.Library.Count()") == total, "bundle installs all %d macros" % total)
+    check(lua.eval("R2FDB.bundleVersion") == lua.eval("R2F.MacroData.version") and lua.eval("R2F.Bundle.Pending()") is False,
+          "the installed version is remembered")
+    lua.execute("R2F.Library.Remove('ANY/Zoom')")
+    lua.execute("R2F.Bundle.Run()")
+    check(lua.eval("R2F.Library.Get('ANY/Zoom')") is None, "same version: login does not reinstall")
+    lua.execute("R2FDB.bundleVersion = 'old' R2F.Bundle.Run()")
+    check(lua.eval("R2F.Library.Get('ANY/Zoom') ~= nil"), "a new bundled version restores / updates the macros")
 
 
 def test_tree_names():
@@ -6987,6 +7015,7 @@ def main():
     test_settings_tab(True, fx)
     test_settings_tab(False, fx)
     test_tree_names()
+    test_bundle(fx)
     test_talented_perk()
     test_bags()
     test_reminders()

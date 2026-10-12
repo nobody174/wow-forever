@@ -10,7 +10,6 @@ stale checkmark.
 - [ ] Talents tab: play around with points (click to spend, same rules as talents.html), save as named loadouts per
       character, and share with the group (link/paste, same R2FT link format). Today the tab only previews a pasted
       build and learns it.
-- [ ] Bundle all site macros in the addon (MacroData.lua) so the Import option can go.
 
 ## Builds: level 30 gaps (2026-10-12)
 

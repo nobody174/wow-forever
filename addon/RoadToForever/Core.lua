@@ -18,6 +18,8 @@ end
 
 handlers.PLAYER_LOGIN = function()
   R2F.playerClass = select(2, UnitClass("player"))
+  -- The macros that ship inside the addon (MacroData.lua) go into the library first.
+  R2F.Bundle.Run()
   -- An import on another character updated the shared library but not this
   -- character's macros; catch up now (combat-safe: queued if in combat,
   -- e.g. after a /reload mid-fight).

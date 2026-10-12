@@ -166,6 +166,8 @@ function Library.Init()
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
   -- Talents tab: show build levels as if the Talented legacy perk (+5 points) is on. Display only.
   if type(s.talented) ~= "boolean" then s.talented = false end
+  -- The bundled macro set (MacroData.lua) that is installed in the library; Bundle.lua compares it.
+  if type(s.bundleVersion) ~= "string" then s.bundleVersion = "" end
   -- Alerts & HUD page: which class groups of group buffs are folded open (class token -> true).
   if type(s.hudOpen) ~= "table" then s.hudOpen = {} end
   -- Main window: the tab /r2f reopens. Home on first use.

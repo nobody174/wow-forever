@@ -34,7 +34,7 @@ R2F.L = {
   BTN_TIDY = "Tidy up",
   BTN_SETTINGS = "Settings",
   EMPTY_LIBRARY = "Your macro library is empty.\n\nClick Import and paste the import string from the Macros page.",
-  EMPTY_CLASS = "No macros for your class or Universal yet.\n\nPick some on the Macros page and import them.",
+  EMPTY_CLASS = "No macros for your class or Universal yet.\n\nThey install at login; if this stays empty, type /reload.",
   OTHER_CLASSES = "You also have macros for %s. Click a class icon at the top to look at them; "
     .. "log in on that character to use them.",
   OTHER_CLASS_ENTRY = "%s (%d)",
@@ -443,7 +443,7 @@ R2F.L = {
   -- Version/author footer at the bottom of Home. %s/%s = version, author.
   HOME_FOOTER = "Road to Forever v%s \194\183 by %s \194\183 nobody174.github.io/wow-forever",
   HOME_FOOTER_FALLBACK = "Road to Forever \194\183 nobody174.github.io/wow-forever",
-  HOME_FOOTER_TIP = "Import macros and talent builds from the Road to Forever site.",
+  HOME_FOOTER_TIP = "Macros, talent builds and best in slot gear from the Road to Forever site.",
 
   -- Quick settings (Settings tab): game settings via SetCVar, no macro
   QS_TITLE = "Quick settings",

@@ -9,13 +9,14 @@ Made by nobody174. All Rights Reserved (see `LICENSE`).
 
 ## What it does
 
-Open it with `/r2f` (or the minimap button). It has seven tabs:
+Open it with `/r2f` (or the minimap button). It has six pages:
 
-- **Home**: what to do next: free talent points, your macro library and slot use, and the next
-  step of your launch plan.
-- **Macros**: a spellbook-style book of the macros you imported. Drag one to your bars to
-  create the real game macro. Imports update the macros the addon made, but never one you
-  edited yourself.
+- **Home**: the next step of your launch plan, a share card for your professions, and the
+  quick settings (game options, minimap button, movable bags).
+- **Macros**: a spellbook-style book of every macro on the site, built into the addon. Drag
+  one to your bars to create the real game macro. New addon versions update the macros the
+  addon made, but never one you edited yourself. The Options button holds which slots new
+  macros use, Import (for a custom pick from the site) and Remove all.
 - **Talents**: paste a talent link from the site's calculator, preview it against your
   character (what you have, what comes now, what comes later), and learn the points one by
   one. A confirmation comes first, and it never learns in combat.
@@ -23,12 +24,10 @@ Open it with `/r2f` (or the minimap button). It has seven tabs:
   (TomTom, if you have it).
 - **BiS (Mr.BiZ)**: best in slot gear for every class and spec at level 30, with where it
   drops, how sure the source is, and a per-character wishlist.
-- **Gameplay**: small optional helpers, all **off until you tick them**: auto-repair, sell
+- **Tweaks**: small optional helpers, all **off until you tick them**: auto-repair, sell
   grey items, quest auto-accept and turn-in, fast looting, free bag slots, a copy-chat box,
   an "ability ready" alert, and on-screen icons for your class (Warrior stance, Hunter ammo,
   missing tracking, missing group buffs).
-- **Settings**: which slots new macros use, the minimap button, movable bags and a few game
-  settings (camera zoom, guild names, PvP titles).
 
 It also keeps spell ranks right in the macros it makes: on WoW Forever a plain spell name can
 resolve to a rank you haven't learned, so the addon writes in the highest rank you know.

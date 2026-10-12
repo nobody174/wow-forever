@@ -1254,19 +1254,22 @@ def test_reminders():
     # --- Events and combat -------------------------------------------------------------------------
     lua, T = reminder_runtime("HUNTER")
     lua.execute("TEST.ammoItem = 11285 TEST.ammoCount = 1500 R2F.Ammo.SetLock(true)")
-    for event in ("BAG_UPDATE", "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED"):
+    for event in ("BAG_UPDATE_DELAYED", "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED"):
         lua.execute("TEST.ammoCount = 1500 R2F.Ammo.Update()")
         lua.execute("TEST.ammoCount = 10")
         T.fire(event, "player")
         check(lua.eval("R2FAmmoFrame:IsShown()") is True, "15.4 %s updates the icon" % event)
+    lua.execute("TEST.ammoCount = 1500 R2F.Ammo.Update() TEST.ammoCount = 10")
+    T.fire("UNIT_INVENTORY_CHANGED", "party1")
+    check(lua.eval("R2FAmmoFrame:IsShown()") is False, "15.4 a party member's inventory change doesn't recount your bags")
     T.combat = True
     T.errors = lua.table()
     lua.execute("TEST.ammoCount = 1500")
-    T.fire("BAG_UPDATE")
+    T.fire("BAG_UPDATE_DELAYED")
     check(lua.eval("R2FAmmoFrame:IsShown()") is False and lua_table_to_list(lua.eval("TEST.errors")) == [],
           "15.4 works in combat: updates with no errors")
     lua.execute("TEST.ammoCount = 20")
-    T.fire("BAG_UPDATE")
+    T.fire("BAG_UPDATE_DELAYED")
     check(lua.eval("R2FAmmoFrame:IsShown()") is True, "15.4 shows in combat when ammo runs low")
     T.combat = False
 
@@ -1829,7 +1832,7 @@ def test_ranks():
     check("spellbook: not listed under that name" in txt and "the addon would use: Charge(Rank 1)" in txt, "16.1 rankdebug: spellbook line and the rank the addon would use")
     T.chat = lua.table()
     lua.execute('SlashCmdList.R2F("rankdebug")')
-    check("usage: /r2f rankdebug Charge" in chat_all(lua), "16.1 rankdebug without a spell name prints the usage")
+    check("usage: /r2f debug rank Charge" in chat_all(lua), "16.1 rankdebug without a spell name prints the usage")
 
 
 GAMEPLAY_API_LUA = """
@@ -1865,6 +1868,10 @@ GAMEPLAY_API_LUA = """
   SHOWN = {}
   UIErrorsFrame = CreateFrame('Frame', 'UIErrorsFrame', UIParent)
   UIErrorsFrame.AddMessage = function(self, msg) table.insert(SHOWN, msg) end
+  ERRORS_ADDMESSAGE = UIErrorsFrame.AddMessage
+  -- Blizzard's own frame shows UI_ERROR_MESSAGE itself.
+  UIErrorsFrame:RegisterEvent('UI_ERROR_MESSAGE')
+  UIErrorsFrame:SetScript('OnEvent', function(self, event, errorType, msg) self:AddMessage(msg) end)
   TEST.cvars.xpBarText = '0'
 """
 
@@ -1972,13 +1979,17 @@ def test_gameplay():
     check(lua.eval("DUELS_CANCELED") == 1 and lua.eval("POPUPS[1]") == "DUEL_REQUESTED" and "declined a duel from Bob." in chat_all(lua),
           "17 block duels on: declined, popup closed, says who")
     # --- Error filter ---------------------------------------------------------------------------------------------
-    lua.execute("UIErrorsFrame:AddMessage('Not enough rage')")
+    T.fire("UI_ERROR_MESSAGE", 51, "Not enough rage")
     check(lua_table_to_list(lua.eval("SHOWN")) == ["Not enough rage"], "17 error filter off: the message shows")
     lua.execute("SHOWN = {}" + " " + box("GP_ERRORFILTER") + ":Click()")
-    lua.execute("UIErrorsFrame:AddMessage('Not enough rage') UIErrorsFrame:AddMessage('Ability is not ready yet') UIErrorsFrame:AddMessage('You are being attacked')")
-    check(lua_table_to_list(lua.eval("SHOWN")) == ["You are being attacked"], "17 error filter on: the spam is hidden, other messages pass: %s" % lua_table_to_list(lua.eval("SHOWN")))
-    lua.execute("SHOWN = {}" + " " + box("GP_ERRORFILTER") + ":Click() UIErrorsFrame:AddMessage('Not enough rage')")
-    check(lua_table_to_list(lua.eval("SHOWN")) == ["Not enough rage"], "17 error filter off again: shows again (the wrapper asks every time)")
+    for m in ("Not enough rage", "Ability is not ready yet", "You are being attacked"):
+        T.fire("UI_ERROR_MESSAGE", 51, m)
+    check(lua_table_to_list(lua.eval("SHOWN")) == ["You are being attacked"], "17 error filter on: the spam is hidden, other messages pass once: %s" % lua_table_to_list(lua.eval("SHOWN")))
+    check(lua.eval("rawequal(UIErrorsFrame.AddMessage, ERRORS_ADDMESSAGE)") is True, "17 error filter never replaces Blizzard's AddMessage")
+    check(lua.eval("UIErrorsFrame.__events.UI_ERROR_MESSAGE") is None, "17 error filter on: Blizzard's frame has handed the event to ours")
+    lua.execute("SHOWN = {}" + " " + box("GP_ERRORFILTER") + ":Click()")
+    T.fire("UI_ERROR_MESSAGE", 51, "Not enough rage")
+    check(lua_table_to_list(lua.eval("SHOWN")) == ["Not enough rage"], "17 error filter off again: Blizzard's frame shows it again, once")
     # --- XP bar text ---------------------------------------------------------------------------------------------------
     lua2, T2 = gameplay_runtime()
     lua2.execute("TEST.cvars.xpBarText = '0'")
@@ -1995,7 +2006,7 @@ def test_gameplay():
 
     # --- Persistence across login: on-state is applied again -----------------------------------------------------------------
     lua3, T3 = gameplay_runtime(preset="{ gameplay = { errorfilter = true, xpbar = true, repair = true }, gameplayXpWas = '0' }")
-    lua3.execute("UIErrorsFrame:AddMessage('Not enough rage')")
+    T3.fire("UI_ERROR_MESSAGE", 51, "Not enough rage")
     check(lua_table_to_list(lua3.eval("SHOWN")) == [], "17 relog: the error filter is active again without opening the tab")
     check(lua3.eval("TEST.cvars.xpBarText") == "1", "17 relog: the XP bar setting is applied again")
     check(lua3.eval("R2FDB.gameplay.sellgray") is False, "17 relog: missing flags are filled in as off")
@@ -3605,6 +3616,21 @@ def test_step6_ui(templates, fx):
     check(len(chat) == len(help_lines) and all(c.endswith(h) for c, h in zip(chat, help_lines)), "/r2f help prints the list")
     for cmd in ("/r2f macros", "/r2ft", "/r2f talents", "/r2f minimap", "/r2f help"):
         check(any(h.startswith(cmd) or ("or " + cmd) in h for h in help_lines), "help lists " + cmd)
+    check(not any(w in " ".join(help_lines) for w in ("rankdebug", "gossip", "reactlog", "auras", "profdebug", "/r2f who")),
+          "/r2f help lists player commands only (troubleshooting tools are under /r2f debug)")
+    T.chat = lua.table()
+    slash("debug")
+    debug_lines = lua_table_to_list(L.DEBUG_LINES)
+    check(len(chat_lines(lua)) == len(debug_lines), "/r2f debug prints the troubleshooting list")
+    T.chat = lua.table()
+    slash("debug nosuchtool")
+    check(any('unknown debug tool "nosuchtool"' in c for c in chat_lines(lua)), "/r2f debug with an unknown tool says so")
+    T.chat = lua.table()
+    slash("debug bags")
+    bags_new = chat_lines(lua)
+    T.chat = lua.table()
+    slash("bags")
+    check(bags_new != [] and chat_lines(lua) == bags_new, "/r2f debug bags and the old /r2f bags print the same")
     lua.execute("R2F.MainWindow.Hide()")
     slash("  MACROS ")
     check(MW.IsShown() is True and MW.CurrentTab() == "macros" and lua.eval("R2F.MacroBook.IsShown()") is True,
@@ -3872,10 +3898,23 @@ def test_media():
               "logo%d: transparent corners" % size)
         check(alpha(w // 2, h // 2) == 255, "logo%d: opaque centre" % size)
     check(not os.path.exists(os.path.join(ADDON, "libs")), "no libs folder shipped (6.10: nothing vendored)")
+    # A lone backslash before a letter in a Lua string is silently dropped by Lua 5.1 ("Interface\Icons" with one
+    # backslash becomes "InterfaceIcons", a missing texture). Every path must use "\\".
+    bad = []
+    for root, _, files in os.walk(ADDON):
+        for fn in files:
+            if fn.endswith(".lua"):
+                with open(os.path.join(root, fn), encoding="utf-8") as fh:
+                    for no, line in enumerate(fh, 1):
+                        code = line.split("--", 1)[0]
+                        for lit in re.findall(r'"((?:[^"\\]|\\.)*)"', code):
+                            if any(c not in "abfnrtv\\\"'0123456789" for c in re.findall(r"\\(.)", lit)):
+                                bad.append("%s:%d" % (fn, no))
+    check(bad == [], "no single-backslash escapes in Lua strings (paths need \\\\): %s" % bad)
 
 
 TALENT_FIXTURE = os.path.join(HERE, "talent_fixture.json")
-SITE_TALENTS = "https://nobody174.github.io/wow-forever-macros/talents.html#"
+SITE_TALENTS = "https://nobody174.github.io/wow-forever/talents.html#"
 
 
 def ref_talent_hash(text):
@@ -4145,7 +4184,7 @@ def test_talent_preview(templates):
     for s, want in forms.items():
         check(parsed(s) == want, "%s: ParseLink(%r) = %s, want %s" % (tag, s, parsed(s), want))
     for s in ("", "   ", "hello", "warrior", "foo/123", "warrior/32a", "warrior/32~ab~c", "warrior/3 2",
-              "https://nobody174.github.io/wow-forever-macros/talents.html", "https://github.io/x"):
+              "https://nobody174.github.io/wow-forever/talents.html", "https://github.io/x"):
         check(parse(s) is None, "%s: ParseLink(%r) refused" % (tag, s))
     check(parse(None) is None and lua.eval("R2F.Talents.ParseLink(42)") is None, "%s: non-string -> nil" % tag)
     # Every link the real site makes, bare and as a full URL, parses back to it.

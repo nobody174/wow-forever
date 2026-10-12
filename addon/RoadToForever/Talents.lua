@@ -26,7 +26,7 @@ local L = R2F.L
 local Talents = {}
 R2F.Talents = Talents
 
-Talents.SITE_URL = "https://nobody174.github.io/wow-forever-macros/talents.html#"
+Talents.SITE_URL = "https://nobody174.github.io/wow-forever/talents.html#"
 
 -- ---------------------------------------------------------------------------
 -- Reading the talents: C_Traits (ADDON_PLAN 13.10)

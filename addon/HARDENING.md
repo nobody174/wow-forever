@@ -8,7 +8,12 @@ Privacy / Identity check (published as nobody174).
 
 This file sits outside `addon/RoadToForever/`, so it never ships in the addon zip.
 
-Decisions so far: author nobody174, name "Road to Forever" (R2F), license All Rights Reserved (2026-10-12).
+Decisions (owner, 2026-10-12):
+- Author nobody174, name "Road to Forever" (R2F), license All Rights Reserved.
+- H5 Plan tab: make it generic (no names, plans read as example setups).
+- H2 error filter: rebuild it without touching Blizzard's frame (owner re-tests in game).
+- M3 debug commands: move under `/r2f debug`; `/r2f help` lists player commands only.
+- First public release: 1.0.0.
 
 ## Step 1: Project Reviewer, full analysis (2026-10-12)
 

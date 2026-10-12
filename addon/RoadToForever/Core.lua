@@ -159,21 +159,13 @@ local COMMANDS = {
   talents = function() R2F.MainWindow.Show("talents") end,
   settings = function() R2F.MainWindow.Show("settings") end,
   gameplay = function() R2F.MainWindow.Show("gameplay") end,
-  reminders = function() R2F.MainWindow.Show("gameplay") end,   -- the old tab name
+  reminders = function() R2F.MainWindow.Show("gameplay") end,   -- the tab's former name
   plan = function() R2F.MainWindow.Show("plan") end,
   bis = function() R2F.MainWindow.Show("bis") end,
   biz = function() R2F.MainWindow.Show("bis") end,
-  here = function() R2F.Plan.Here() end,
-  ranks = function() R2F.Ranks.Print() end,
   copychat = function() R2F.CopyChat.Command() end,
-  gossip = function() R2F.Gameplay.PrintGossip() end,
-  who = function() R2F.Gameplay.PrintWho() end,
-  reactlog = function() R2F.Gameplay.PrintReactLog() end,
-  auras = function() R2F.Diag.Auras() end,
-  rankdebug = function() R2F.Ranks.Debug("") end,
   ammo = function() R2F.Ammo.ToggleShown() end,
   ["ammo lock"] = function() R2F.Ammo.ToggleLock() end,
-  bags = function() R2F.Bags.Report() end,
   minimap = function() R2F.Minimap.ToggleHidden() end,
   stance = function() R2F.Stance.ToggleShown() end,
   ["stance lock"] = function() R2F.Stance.ToggleLock() end,
@@ -182,15 +174,45 @@ local COMMANDS = {
     R2F.MainWindow.Show("macros")
     R2F.ImportFrame.Show()
   end,
-  -- Copy my build (step 8). Since step 9 it's also a button on the Talents
-  -- tab; the command stays as a shortcut (ADDON_PLAN 13.7). Read-only, so no
-  -- combat check.
+  -- Read-only, so these work in combat.
   copybuild = function() R2F.Talents.CopyMyBuild() end,
-  -- Professions export (14, v0.12.0). Read-only, works in combat.
   profs = function() R2F.Professions.Export() end,
   professions = function() R2F.Professions.Export() end,
-  profdebug = function() R2F.Professions.Debug() end,
 }
+
+-- Troubleshooting tools: "/r2f debug <tool>". Each prints what the addon sees, so a bug report
+-- can show it. They are also accepted without "debug" (the names they had before).
+local DEBUG = {
+  ranks = function() R2F.Ranks.Print() end,
+  rank = function(arg) R2F.Ranks.Debug(arg) end,
+  bags = function() R2F.Bags.Report() end,
+  profs = function() R2F.Professions.Debug() end,
+  auras = function() R2F.Diag.Auras() end,
+  reactlog = function() R2F.Gameplay.PrintReactLog() end,
+  gossip = function() R2F.Gameplay.PrintGossip() end,
+  who = function() R2F.Gameplay.PrintWho() end,
+  here = function() R2F.Plan.Here() end,
+}
+local DEBUG_ALIASES = { rankdebug = "rank", profdebug = "profs" }
+R2F.DEBUG = DEBUG
+
+local function printDebugHelp()
+  for _, line in ipairs(L.DEBUG_LINES) do R2F.Print(line) end
+end
+
+-- The line was lower-cased; give a spell name its capitals back (lookups ignore case anyway).
+local function titleCase(s)
+  return (s:gsub("(%a)([%w']*)", function(c, rest) return c:upper() .. rest end))
+end
+
+-- Runs a debug tool if `name` is one (or an old alias). Returns true if it was.
+local function runDebug(name, arg)
+  name = DEBUG_ALIASES[name] or name
+  local fn = DEBUG[name]
+  if not fn then return false end
+  fn(name == "rank" and titleCase(arg or "") or arg)
+  return true
+end
 R2F.COMMANDS = COMMANDS
 
 -- SLASH_R2F1 / SLASH_R2FT1 and the R2F / R2FT fields in SlashCmdList are the
@@ -201,16 +223,20 @@ _G.SLASH_R2F1 = "/r2f"
 SlashCmdList.R2F = function(msg)
   msg = (msg or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
   local fn = COMMANDS[msg]
-  local debugArg = msg:match("^rankdebug%s+(.+)$")
   local chatArg = msg:match("^copychat%s+(%d+)$")
-  if chatArg then
-    R2F.CopyChat.Command(chatArg)
-  elseif debugArg then
-    -- The line was lower-cased above; give the words capitals back (lookups ignore case anyway).
-    R2F.Ranks.Debug((debugArg:gsub("(%a)([%w']*)", function(c, rest) return c:upper() .. rest end)))
-  elseif fn then
+  local word, rest = msg:match("^(%S+)%s*(.*)$")
+  if fn then
     fn()
-  else
+  elseif chatArg then
+    R2F.CopyChat.Command(chatArg)
+  elseif word == "debug" then
+    local tool, arg = rest:match("^(%S+)%s*(.*)$")
+    if not tool then
+      printDebugHelp()
+    elseif not runDebug(tool, arg) then
+      R2F.Print(L.UNKNOWN_DEBUG:format(tool))
+    end
+  elseif not (word and runDebug(word, rest)) then
     R2F.Print(L.UNKNOWN_COMMAND:format(msg))
   end
 end

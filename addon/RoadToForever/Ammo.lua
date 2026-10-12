@@ -112,9 +112,14 @@ function Ammo.Init()
   frame = R2F.Reminders.NewIcon("R2FAmmoFrame", db, "REM_DRAG_TIP")
   frame:Place()
   local ev = CreateFrame("Frame")
-  ev:SetScript("OnEvent", Ammo.Update)
-  -- BAG_UPDATE fires when a shot uses up ammo; the others cover swapping ammo.
-  for _, e in ipairs({ "BAG_UPDATE", "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED", "PLAYER_ENTERING_WORLD" }) do
+  ev:SetScript("OnEvent", function(_, event, unit)
+    if event == "UNIT_INVENTORY_CHANGED" and unit ~= "player" then return end
+    Ammo.Update()
+  end)
+  -- BAG_UPDATE_DELAYED comes once after a burst of bag changes (a shot uses up ammo, looting,
+  -- moving stacks), so the bags are counted once per burst, not once per bag; the others cover
+  -- swapping the ranged weapon or ammunition.
+  for _, e in ipairs({ "BAG_UPDATE_DELAYED", "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED", "PLAYER_ENTERING_WORLD" }) do
     pcall(ev.RegisterEvent, ev, e)
   end
   Ammo.Update()

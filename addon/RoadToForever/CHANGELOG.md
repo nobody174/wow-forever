@@ -59,15 +59,15 @@ repo's root `CHANGELOG.md`.
 
 ## 0.28.3 (2026-10-10): the mail list uses the full in-game name
 
-- **Fix:** the mail button filled in "Venom-ClassicBetaPvE2"; this client names characters "Venom Oathbreaker"
-  (UnitName's second value is a surname, found with `/r2f who`). Each character now remembers that full name and the
+- **Fix:** the mail button filled in the account-style login name; this client names some characters with a
+  surname as UnitName's second value instead of a realm (found with `/r2f debug who`). Each character now remembers that full name and the
   list fills it in. **Log in once on each alt with this version** so it is remembered; alts not seen again keep the old form.
 
 ## 0.28.2 (2026-10-10): /r2f who
 
 - **`/r2f who`** lists every way the client names your character (UnitName, UnitFullName, PvP name, realm names,
-  the character window title...). Used to find where a two-part name such as "Venom Oathbreaker" comes from, so the
-  mail list can fill in the right name for every alt. Run it on the paladin and send us the lines.
+  the character window title...). Used to find where a two-part name comes from, so the mail list can fill in the
+  right name for every alt.
 
 ## 0.28.1 (2026-10-10): the active Gameplay page stands out
 

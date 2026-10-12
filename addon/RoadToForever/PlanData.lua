@@ -11,7 +11,7 @@ R2F.PlanData = {
   order = { "hwd", "hunter", "h3d", "trio" },
   plans = {
     hwd = { label = "2 Hunters · Warrior · Druid", short = "2× Hunter + Warrior + Druid", base = "hunter", race = "Skyborne (High Order)", extra = "Warrior tanks, Druid heals" },
-    hunter = { label = "2 Hunters", short = "2× Hunter", base = nil, race = "Skyborne (High Order)", extra = "Venom + Trollmann; others join when they're on" },
+    hunter = { label = "2 Hunters", short = "2× Hunter", base = nil, race = "Skyborne (High Order)", extra = "Two hunters leveling together; others can join as they come online" },
     h3d = { label = "3 Hunters · Druid", short = "3× Hunter + Druid", base = "hunter", race = "Skyborne (High Order)", extra = "Druid tanks or heals" },
     trio = { label = "Paladin · Hunter · Shaman", short = "Paladin + Hunter + Shaman", base = "hunter", race = "Dwarf", extra = "Own tank + healer" },
   },

@@ -202,9 +202,14 @@ Gameplay.Register({
 -- ---------------------------------------------------------------------------
 
 -- The red lines above the action bar that say nothing new ("Not enough rage", "Ability is
--- not ready yet", "Out of range"...). Matched against the client's own strings, so it
--- works in any language. The game's UIErrorsFrame:AddMessage on the FRAME OBJECT is
--- wrapped once; the wrapper asks whether the filter is on every time.
+-- not ready yet", "Out of range"...). Matched against the client's own strings, so it works
+-- in any language.
+--
+-- Blizzard's UIErrorsFrame shows these from the UI_ERROR_MESSAGE event. While the filter is
+-- on, that frame stops listening to the event and a frame of ours takes it instead: a
+-- filtered message is dropped, every other one is passed on with UIErrorsFrame:AddMessage
+-- (the public call any addon uses to show a message there). Nothing on Blizzard's frame is
+-- replaced or assigned; switching the filter off hands the event back.
 local FILTERED = {
   "ERR_OUT_OF_MANA", "ERR_OUT_OF_RAGE", "ERR_OUT_OF_ENERGY", "ERR_OUT_OF_FOCUS", "ERR_OUT_OF_RUNIC_POWER",
   "SPELL_FAILED_NOT_READY", "ERR_ABILITY_COOLDOWN", "ERR_SPELL_COOLDOWN", "ERR_ITEM_COOLDOWN",
@@ -225,24 +230,42 @@ local function filtered(msg)
 end
 Gameplay.IsFilteredError = filtered
 
-local errorsWrapped = false
-local function wrapErrors()
-  if errorsWrapped then return true end
-  local f = _G.UIErrorsFrame
-  if not (f and f.AddMessage) then return false end
-  local original = f.AddMessage
-  f.AddMessage = function(self, msg, ...)
-    if Gameplay.IsOn("errorfilter") and filtered(msg) then return end
-    return original(self, msg, ...)
+local errorFrame   -- our listener, created the first time the filter is switched on
+
+-- UI_ERROR_MESSAGE: (errorType, message) on modern clients, (message) on older ones.
+local function onErrorMessage(_, _, a, b)
+  local msg = type(a) == "string" and a or b
+  if type(msg) ~= "string" or filtered(msg) then return end
+  local frame = _G.UIErrorsFrame
+  if frame and frame.AddMessage then frame:AddMessage(msg, 1.0, 0.1, 0.1, 1.0) end
+  if type(a) == "number" and type(_G.PlayVocalErrorSoundID) == "function" then
+    pcall(_G.PlayVocalErrorSoundID, a)
   end
-  errorsWrapped = true
-  return true
+end
+
+local function setErrorFilter(on)
+  local frame = _G.UIErrorsFrame
+  if not (frame and frame.RegisterEvent and frame.UnregisterEvent) then return end
+  if on then
+    if not errorFrame then
+      errorFrame = CreateFrame("Frame")
+      errorFrame:SetScript("OnEvent", onErrorMessage)
+    end
+    frame:UnregisterEvent("UI_ERROR_MESSAGE")
+    errorFrame:RegisterEvent("UI_ERROR_MESSAGE")
+  elseif errorFrame then
+    errorFrame:UnregisterEvent("UI_ERROR_MESSAGE")
+    frame:RegisterEvent("UI_ERROR_MESSAGE")
+  end
 end
 
 Gameplay.Register({
   key = "errorfilter", group = "screen", title = "GP_ERRORFILTER", tip = "GP_ERRORFILTER_TIP",
-  available = function() return _G.UIErrorsFrame ~= nil and _G.UIErrorsFrame.AddMessage ~= nil end,
-  onToggle = function(on) if on then wrapErrors() end end,
+  available = function()
+    local f = _G.UIErrorsFrame
+    return f ~= nil and f.AddMessage ~= nil and f.UnregisterEvent ~= nil
+  end,
+  onToggle = setErrorFilter,
 })
 
 -- The experience bar's numbers always visible, through the game's own setting (read and written via QuickSettings.Read / Write: every CVar call lives in that file). The value

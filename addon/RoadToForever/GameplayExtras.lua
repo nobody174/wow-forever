@@ -22,8 +22,8 @@ function Gameplay.RememberCharacter()
   db.chars = db.chars or {}
   db.chars[realm] = db.chars[realm] or {}
   local _, class = UnitClass("player")
-  -- What the client calls him in full ("Venom Oathbreaker": on this client UnitName's second value
-  -- is a surname, not the realm). Mail wants exactly this form. /r2f who showed it (owner, 0.28.2).
+  -- What the client calls the character in full (on this client, some names have a surname as
+  -- UnitName's second value instead of a realm). Mail wants exactly this form.
   local full = GetUnitName and GetUnitName("player", true)
   if type(full) ~= "string" or full == "" or (issecretvalue and issecretvalue(full)) then full = nil end
   db.chars[realm][name] = {
@@ -35,8 +35,8 @@ function Gameplay.RememberCharacter()
   }
 end
 
--- /r2f who: every way the client can name this character (to find where a two-part name such as
--- "Venom Oathbreaker" comes from). Prints one line per candidate; secret values are shown as such.
+-- /r2f debug who: every way the client can name this character (useful for finding where a
+-- two-part name comes from). Prints one line per candidate; secret values are shown as such.
 function Gameplay.PrintWho()
   local function show(label, ...)
     local parts = {}
@@ -336,7 +336,7 @@ local function updateAlertMarker()
   alertMarker:SetShown(show)
   if show then
     alertMarker.border:SetColorTexture(0.95, 0.75, 0.1, 1)
-    alertMarker.icon:SetTexture("Interface\Icons\Ability_Warrior_Revenge")
+    alertMarker.icon:SetTexture("Interface\\Icons\\Ability_Warrior_Revenge")
     alertMarker.count:SetText(L.GP_REACT_MARKER)
     alertMarker:EnableMouse(true)
   end

@@ -197,6 +197,19 @@ R2F.L = {
   BIZ_ENCHANT = "Enchant: %s",
   BIZ_ENCHANT_SUB = "%s · %s %d",
   BIZ_ENCHANT_2H = "two-hand weapons",
+  -- What to train next (Training.lua)
+  TRAIN_HEAD = "Training",
+  TRAIN_UNKNOWN = "Open your class trainer once (with Unavailable shown) and this lists what to train now and next.",
+  TRAIN_NOW = "Train now: %d spells, %s (%s)",
+  TRAIN_NOW_ONE = "Train now: 1 spell, %s (%s)",
+  TRAIN_NOW_NONE = "Nothing new to train at your level.",
+  TRAIN_NEXT = "Next: level %d: %s",
+  TRAIN_NEXT_NONE = "Nothing later known. Show Unavailable at your trainer to list later spells.",
+  TRAIN_MORE = "and %d more",
+  TRAIN_LEVELUP = "level %d: new at your class trainer: %s",
+  TRAIN_TITLE = "Training reminder",
+  TRAIN_TITLE_TIP = "On level-up, says in chat which spells your class trainer now offers. Uses the list read the last " ..
+    "time you opened your trainer.",
   -- GearScore (GearScore.lua)
   GS_TITLE = "Upgrade arrows",
   GS_TITLE_TIP = "A green arrow on bag items that are better than what you wear (red: worse), and the item's BiZ " ..

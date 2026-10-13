@@ -7385,6 +7385,7 @@ def main():
     test_remove_from_library(True, fx)
     test_remove_from_library(False, fx)
     test_gearscore()
+    test_training()
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
 
@@ -7500,6 +7501,68 @@ def test_gearscore():
     find = lua.eval("(function() for _, p in ipairs(R2F.GameplayTab.PAGES) do if p.key == 'bags' then for _, k in ipairs(p.features) do if k == 'upgrades' then return true end end end end end)()")
     check(find is True, "gs: the switch is on Tweaks > Bags")
     check(lua.eval("R2F.Library.db.gameplay.upgrades") is False, "gs: off by default (like every Tweaks feature)")
+
+
+def test_training():
+    """What to train next: read from the class trainer window, Home lines, level-up reminder."""
+    lua = new_runtime(True)
+    lua.execute("TEST.reset()")
+    lua.execute("""
+      TEST.level = 20
+      TEST.trainer = {
+        { 'Class Skills', '', 'header', 0, 0 },
+        { 'Arcane Shot', 'Rank 3', 'available', 20, 1200 },
+        { 'Serpent Sting', 'Rank 3', 'available', 18, 900 },
+        { 'Aspect of the Cheetah', '', 'unavailable', 22, 2000 },
+        { 'Multi-Shot', 'Rank 2', 'unavailable', 22, 2200 },
+        { 'Raptor Strike', 'Rank 4', 'unavailable', 24, 3000 },
+        { 'Track Beasts', '', 'used', 4, 100 },
+      }
+      GetNumTrainerServices = function() return #TEST.trainer end
+      GetTrainerServiceInfo = function(i) local t = TEST.trainer[i] return t[1], t[2], t[3] end
+      GetTrainerServiceLevelReq = function(i) return TEST.trainer[i][4] end
+      GetTrainerServiceCost = function(i) return TEST.trainer[i][5] end
+      TEST.profTrainer = false
+      IsTradeskillTrainer = function() return TEST.profTrainer end
+    """)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    a, b = lua.eval("R2F.Training.Lines()")
+    check(a.startswith("Open your class trainer once") and b is None, "train: before a trainer visit Home says to open it: %r" % a)
+    lua.execute("TEST.profTrainer = true")
+    T.fire("TRAINER_SHOW")
+    check(lua.eval("#R2FCharDB.training.spells") == 0, "train: a profession trainer is not read")
+    lua.execute("TEST.profTrainer = false")
+    T.fire("TRAINER_SHOW")
+    check(lua.eval("#R2FCharDB.training.spells") == 6, "train: the class trainer's spells are saved, headers skipped")
+    a, b = lua.eval("R2F.Training.Lines()")
+    check(a == "Train now: 2 spells, 21s (Serpent Sting (Rank 3), Arcane Shot (Rank 3))",
+          "train: 'Train now' with count, total cost and names, by level: %r" % a)
+    check(b == "Next: level 22: Aspect of the Cheetah, Multi-Shot (Rank 2)", "train: 'Next' = the next level with spells: %r" % b)
+    lua.execute("R2F.Training.MarkLearned('Arcane Shot', 'Rank 3')")
+    a, _ = lua.eval("R2F.Training.Lines()")
+    check(a == "Train now: 1 spell, 9s (Serpent Sting (Rank 3))", "train: a learned spell leaves the list: %r" % a)
+    lua.execute("TEST.level = 24")
+    _, b = lua.eval("R2F.Training.Lines(24)")
+    check(b.startswith("Nothing later known"), "train: nothing above your level known -> hint about Unavailable: %r" % b)
+    # Level-up line (only with the Tweaks switch on)
+    T.chat = lua.table()
+    T.fire("PLAYER_LEVEL_UP", 22)
+    check(chat_all(lua) == "", "train: no level-up line while Training reminder is off")
+    lua.execute("R2F.Gameplay.SetOn('training', true)")
+    T.fire("PLAYER_LEVEL_UP", 22)
+    txt = chat_all(lua)
+    check("level 22: new at your class trainer: Aspect of the Cheetah, Multi-Shot (Rank 2)" in txt, "train: level-up names the new spells: %r" % txt)
+    T.chat = lua.table()
+    T.fire("PLAYER_LEVEL_UP", 23)
+    check(chat_all(lua) == "", "train: a level with nothing new says nothing")
+    # Home shows the lines
+    lua.execute("TEST.level = 20 R2F.MainWindow.Show('home') R2F.Home.Refresh()")
+    check(font_text(lua, "^Train now: 1 spell,") is not None and font_text(lua, "^Next: level 22") is not None,
+          "train: Home shows Train now and Next")
+    check(lua.eval("(function() for _, p in ipairs(R2F.GameplayTab.PAGES) do if p.key == 'alerts' then for _, k in ipairs(p.features) do if k == 'training' then return true end end end end end)()") is True,
+          "train: the reminder switch is on Tweaks > Alerts & HUD")
 
 
 if __name__ == "__main__":

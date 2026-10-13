@@ -107,6 +107,20 @@ local function build(f)
 
   ui.plan = entry(f, -52, "INV_Misc_Map_01", L.HOME_PLAN, "plan", 650)
 
+  -- What to train next (Training.lua), right column.
+  ui.trainHead = f:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+  ui.trainHead:SetPoint("TOPLEFT", 340, -150)
+  ui.trainHead:SetText(L.TRAIN_HEAD)
+  ui.trainNow = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.trainNow:SetPoint("TOPLEFT", 344, -176)
+  ui.trainNow:SetWidth(300)
+  ui.trainNow:SetJustifyH("LEFT")
+  ui.trainNext = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.trainNext:SetPoint("TOPLEFT", ui.trainNow, "BOTTOMLEFT", 0, -6)
+  ui.trainNext:SetWidth(300)
+  ui.trainNext:SetJustifyH("LEFT")
+  ui.trainNext:SetTextColor(0.7, 0.7, 0.7)
+
   -- Share with the site (right column, under the bag switches).
   ui.shareHead = f:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
   ui.shareHead:SetPoint("TOPLEFT", 340, -250)
@@ -190,6 +204,9 @@ end
 function Home.Refresh()
   if not page or not page:IsVisible() then return end
   ui.plan.sub:SetText(Home.PlanLine())
+  local now, nxt = R2F.Training.Lines()
+  ui.trainNow:SetText(now)
+  ui.trainNext:SetText(nxt or "")
   ui.combat:SetShown(R2F.InCombat())
   R2F.Settings.Refresh()
 end

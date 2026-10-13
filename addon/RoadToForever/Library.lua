@@ -194,6 +194,9 @@ function Library.Init()
   -- Professions: what Professions.lua read from the profession
   -- windows, keyed by profession name. Rebuilt each time a window opens.
   if type(cdb.professions) ~= "table" then cdb.professions = {} end
+  -- What the class trainer offers (Training.lua): read each time the trainer window opens.
+  if type(cdb.training) ~= "table" then cdb.training = {} end
+  if type(cdb.training.spells) ~= "table" then cdb.training.spells = {} end
   -- Movable bags (Bags.lua): per character, because the bag windows
   -- are placed on THIS character's screen layout.
   if type(cdb.bags) ~= "table" then cdb.bags = {} end

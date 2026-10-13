@@ -1,5 +1,13 @@
 # Road to Forever changelog
 
+## 0.46.0 (2026-10-13)
+
+- What to train next, on Home: "Train now" (the spells your level allows, with the total cost) and "Next" (the next
+  level that brings something). The list is read from your own class trainer each time you open it, so it is
+  Forever's real list with your prices. Open your trainer once (with "Unavailable" shown) to fill it in.
+- Tweaks > Alerts & HUD > Training reminder (off until switched on): on level-up, chat says which spells your trainer
+  now offers.
+
 ## 0.45.0 (2026-10-13)
 
 - Mr.BiZ: each slot now shows its best enchant for the spec under the picks ("Enchant: Enchant Necklace - Agility",

@@ -55,6 +55,9 @@ read_globals = {
   "GetItemIcon", "GetItemInfoInstant", "ITEM_QUALITY_COLORS", "UnitFactionGroup", "GameFontDisableSmall",
   -- GearScore: worn items (read), the item tooltip post-call hook (modern clients)
   "GetInventoryItemLink", "TooltipDataProcessor",
+  -- What to train next: the class trainer window (read only)
+  "GetNumTrainerServices", "GetTrainerServiceInfo", "GetTrainerServiceLevelReq", "GetTrainerServiceCost",
+  "IsTradeskillTrainer",
   -- API namespaces
   "C_Container", "C_GossipInfo", "C_Map", "C_PlayerInfo", "C_QuestLog", "C_SpellBook", "C_TradeSkillUI",
   "Enum",

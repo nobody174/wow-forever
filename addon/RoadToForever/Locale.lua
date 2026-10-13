@@ -194,6 +194,9 @@ R2F.L = {
   -- BiZNav arrow (Nav.lua)
   NAV_SET = "arrow: %s",
   BIZ_GO_TIP = "Alt + click: arrow to %s",
+  BIZ_ENCHANT = "Enchant: %s",
+  BIZ_ENCHANT_SUB = "%s · %s %d",
+  BIZ_ENCHANT_2H = "two-hand weapons",
   -- GearScore (GearScore.lua)
   GS_TITLE = "Upgrade arrows",
   GS_TITLE_TIP = "A green arrow on bag items that are better than what you wear (red: worse), and the item's BiZ " ..

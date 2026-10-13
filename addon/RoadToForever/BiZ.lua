@@ -95,6 +95,12 @@ function BiZ.SetSpec(specId)
   end
 end
 
+-- BiS enchants for a spec's slot (from the site's Professions page), {} when none.
+function BiZ.Enchants(specId, slot)
+  local sp = data().specs[specId]
+  return sp and sp.enchants and sp.enchants[slot] or {}
+end
+
 -- Biz rank names (the site uses the same): 1 Bizzest, 2 Bizzer, 3 Biz, lower Almost biz.
 BiZ.THE_BIZZ_GAP = 20
 function BiZ.RankName(rank)

@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-13",
+      "title": "Enchants on Mr.BiZ",
+      "text": "Open a slot on Mr.BiZ to see its best enchant for your spec, with the effect and the skill it needs. The name links to the Professions page. The front page's Best-in-Slot link now opens Mr.BiZ too.",
+      "link": "bis.html"
+    },
+    {
+      "date": "2026-10-13",
       "title": "New Warlock macros",
       "text": "Shadow Bolt, Corruption and Bane of Agony now cast on your mouseover, then your target, then your friendly target's target. A new pet attack mouseover macro is there too. Curse of Agony is called Bane of Agony everywhere now.",
       "link": "macros.html"

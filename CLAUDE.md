@@ -180,7 +180,13 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   wording as the BiS pages); the build stops if a next pick has no source. `bis/places.json` = where a source is
   (dungeon entrance by instance name, vendor by name, reputation by faction; zone + x/y + conf like the plan
   waypoints) for the addon's BiZNav arrow: the build adds `place` to matching rows and a `places` table to both outputs,
-  and stops on a place no row uses. Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
+  and stops on a place no row uses. Enchants: the build also reads professions.html's `DATA` (BiS enchants, via
+  `node bis/enchants_from_professions.js`) and adds `enchants` (per gear slot) + `enchantPage` to every spec, using
+  `ENCHANT_PAGE` (our spec -> ForeverChanges page name, always a PvE page; Feral = Druid Tank, Fury = Warrior Arms,
+  Subtlety = Rogue Combat, Discipline = Priest Holy) and `ENCHANT_SLOTS`; it stops on an unknown slot or page. So an
+  enchant edit on professions.html needs `python bis/build_bis.py` (the addon tests catch a stale BiZData). bis.html
+  shows them as an "Enchant:" line in an opened row (links to professions.html#bis/<class>), the addon under a slot's
+  picks. Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
   add a rule to `parse_source`, don't hand-edit the outputs.
 - `news.html` + `news.json` + `footer.js` — **What's new** page (latest changes, Coming
   next, Discord ideas button) rendered from `news.json` (`{discord, news: [{date, title,

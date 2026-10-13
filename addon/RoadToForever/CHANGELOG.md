@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.45.0 (2026-10-13)
+
+- Mr.BiZ: each slot now shows its best enchant for the spec under the picks ("Enchant: Enchant Necklace - Agility",
+  with the effect and the Enchanting / Leatherworking skill it needs). Same list as the site's Professions page
+  (ForeverChanges' level 30 spec pages); the site's Mr.BiZ shows it too when you open a slot.
+
 ## 0.44.0 (2026-10-13)
 
 - Upgrade arrows (Tweaks > Bags, off until you switch it on): a small green arrow on bag items that are better than

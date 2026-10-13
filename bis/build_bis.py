@@ -256,6 +256,7 @@ def build():
         raise ValueError("raw files with no spec in CLASSES: %s" % sorted(extra))
     places = load_places()
     tag_places(specs_out, places)
+    add_enchants(specs_out)
     return {"updated": UPDATED, "level": LEVEL, "source": {"name": SOURCE_NAME, "url": SOURCE_URL},
             "slots": [{"key": k, "label": v} for k, v in SLOTS], "types": TYPES,
             "classes": classes_out, "specs": specs_out, "places": places}
@@ -305,6 +306,71 @@ def tag_places(specs, places):
     unused = sorted(set(places) - used)
     if unused:
         raise ValueError("places.json entries no BiZ row uses: %s" % unused)
+
+
+# ---------------------------------------------------------------------------
+# Enchants: professions.html's BiS enchant list (ForeverChanges' spec pages), per spec and slot
+# ---------------------------------------------------------------------------
+
+# ForeverChanges page (as professions.html names it) for each of our specs: always a PvE page. Feral uses the
+# tank page (ForeverDB's Feral list is the bear tank), Fury the Arms page, Subtlety Combat, Discipline Holy
+# (those three only have PvP pages or none).
+ENCHANT_PAGE = {
+    "priest/discipline": "Priest Holy", "priest/holy": "Priest Holy", "priest/shadow": "Priest Shadow PvE",
+    "warlock/affliction": "Warlock PvE", "warlock/demonology": "Warlock PvE", "warlock/destruction": "Warlock PvE",
+    "mage/arcane": "Mage Arcane PvE", "mage/fire": "Mage Fire PvE", "mage/frost": "Mage Frost PvE",
+    "rogue/assassination": "Rogue Assassination PvE", "rogue/combat": "Rogue Combat PvE", "rogue/subtlety": "Rogue Combat PvE",
+    "druid/feral": "Druid Tank", "druid/balance": "Druid Balance PvE", "druid/restoration": "Druid Restoration",
+    "shaman/elemental": "Shaman Elemental PvE", "shaman/enhancement": "Shaman Enhancement PvE",
+    "shaman/restoration": "Shaman Restoration",
+    "hunter/beast-mastery": "Hunter PvE", "hunter/marksmanship": "Hunter PvE", "hunter/survival": "Hunter PvE",
+    "paladin/protection": "Paladin Tank", "paladin/retribution": "Paladin Retribution PvE", "paladin/holy": "Paladin Holy PvE",
+    "warrior/protection": "Warrior Tank", "warrior/arms": "Warrior Arms PvE", "warrior/fury": "Warrior Arms PvE",
+}
+# Enchant slot (professions.html) -> our gear slots.
+ENCHANT_SLOTS = {
+    "Neck": ["neck"], "Back": ["back"], "Chest": ["chest"], "Wrist": ["wrist"], "Hands": ["hands"], "Legs": ["legs"],
+    "Feet": ["feet"], "Hands, Legs": ["hands", "legs"], "Shield": ["offhand"], "Weapon": ["mainhand"],
+    "2H Weapon": ["mainhand"], "Ranged": ["ranged"],
+}
+ENCHANT_KEYS = ["name", "eff", "prof", "skill", "kind"]
+
+
+def load_enchants():
+    import subprocess
+    script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "enchants_from_professions.js")
+    out = subprocess.run(["node", script, os.path.join(ROOT, "professions.html")], capture_output=True, text=True,
+                         check=True)
+    return json.loads(out.stdout)
+
+
+def add_enchants(specs):
+    data = load_enchants()
+    pages = {lbl for e in data for lbl in e["specs"]}
+    for sid, page in ENCHANT_PAGE.items():
+        if sid not in specs:
+            raise ValueError("ENCHANT_PAGE: no spec %r" % sid)
+        if page not in pages:
+            raise ValueError("ENCHANT_PAGE %r: professions.html has no page %r" % (sid, page))
+    missing = sorted(set(specs) - set(ENCHANT_PAGE))
+    if missing:
+        raise ValueError("ENCHANT_PAGE has no page for %s" % missing)
+    for e in data:
+        if e["slot"] not in ENCHANT_SLOTS:
+            raise ValueError("enchant %r: unknown slot %r (add it to ENCHANT_SLOTS)" % (e["name"], e["slot"]))
+    for sid, sp in specs.items():
+        page = ENCHANT_PAGE[sid]
+        by_slot = {}
+        for e in data:
+            if page not in e["specs"]:
+                continue
+            row = {"name": e["name"], "eff": e["eff"], "prof": e["prof"], "skill": e["skill"]}
+            if e["slot"] == "2H Weapon":
+                row["kind"] = "2h"
+            for key in ENCHANT_SLOTS[e["slot"]]:
+                by_slot.setdefault(key, []).append(row)
+        sp["enchants"] = by_slot
+        sp["enchantPage"] = page
 
 
 # ---------------------------------------------------------------------------
@@ -406,6 +472,17 @@ def to_lua(data):
                 out.append("        },")
             else:
                 out.append("        { slot = %s, note = %s }," % (lua_str(sl["slot"]), lua_str(sl["note"])))
+        out.append("      },")
+        # BiS enchants per slot (professions.html, ForeverChanges' page named in enchantPage).
+        out.append("      enchantPage = %s," % lua_str(sp["enchantPage"]))
+        out.append("      enchants = {")
+        for slot in [k for k, _ in SLOTS if k in sp["enchants"]]:
+            rows = sp["enchants"][slot]
+            out.append("        %s = {" % slot)
+            for r in rows:
+                out.extend(wrap("          {", ["%s = %s" % (k, lua_val(r[k])) for k in ENCHANT_KEYS if k in r],
+                                " },", "            "))
+            out.append("        },")
         out.append("      },")
         out.append("    },")
     out.append("  },")

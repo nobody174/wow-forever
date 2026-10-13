@@ -3255,6 +3255,19 @@ def test_biz(templates=True):
               "%s: 60 = any level again, nothing saved, the best shows" % tag)
         lua.execute("GetItemInfo = function() return nil end")
 
+    # Enchants from the Professions page, per spec and slot.
+    if templates:
+        check(all(len(sp.get("enchants", {})) >= 3 for sp in site["specs"].values()),
+              "%s: every spec has BiS enchants for several slots" % tag)
+        check(site["specs"]["druid/feral"]["enchantPage"] == "Druid Tank", "%s: Feral (bear) uses the tank enchant page" % tag)
+        check(lua.eval("R2F.BiZ.Enchants('hunter/beast-mastery', 'neck')[1].name") == "Enchant Necklace - Agility",
+              "%s: Hunter neck = Enchant Necklace - Agility" % tag)
+        check(lua.eval("#R2F.BiZ.Enchants('hunter/beast-mastery', 'trinket1')") == 0, "%s: no enchant for trinkets" % tag)
+        lua.execute("R2F.BiZ.SetSpec('hunter/beast-mastery') for _, b in ipairs(DOLL) do if b.slotKey == 'neck' then b:Click() end end")
+        check(font_text(lua, "^Enchant: Enchant Necklace %- Agility") is not None, "%s: the neck panel shows its enchant" % tag)
+        check(font_text(lua, "^Agility %+5 .+ Enchanting 210") is not None, "%s: with effect, profession and skill" % tag)
+        lua.execute("for _, b in ipairs(DOLL) do if b.slotKey == 'head' then b:Click() end end")
+
     # BiZNav: rows whose source has a place (bis/places.json) get a tooltip line and Alt + click.
     if templates:
         places = site["places"]

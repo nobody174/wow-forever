@@ -580,6 +580,10 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
         }).join("");
         more = '<div class="more"><ol>' + list + "</ol>" +
           '<p class="facts"><b>' + esc(b.name) + "</b>: " + esc(b.stats) + (b.ease ? " · " + esc(b.ease) : "") + "</p>" +
+          ((sp.enchants && sp.enchants[s.slot]) || []).map(function (e) {
+            return '<p class="facts ench">Enchant: <a href="professions.html#bis/' + esc(sp.class) + '">' + esc(e.name) + "</a> · " + esc(e.eff) +
+              " · " + esc(e.prof) + " " + esc(e.skill) + (e.kind === "2h" ? " (two-hand weapons)" : "") + "</p>";
+          }).join("") +
           '<p class="facts links"><a href="https://www.wowhead.com/forever/item=' + b.id + '" target="_blank" rel="noopener">Wowhead</a><a href="https://foreverdb.net/item/' + b.id + '" target="_blank" rel="noopener">ForeverDB</a><a href="' + esc(sp.url) + '" target="_blank" rel="noopener">Full ' + esc(sp.name) + " list</a></p>" +
           (nxt.length < 2 ? '<p class="note">No more ranked picks for this slot at level 30.</p>' : '<p class="note">Bizzer and Biz show how far behind the best they score; greyed picks are hidden by your filters. Almost biz picks (4th and lower) come when our own ranking is done.</p>') + "</div>";
       }

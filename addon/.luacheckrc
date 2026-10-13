@@ -89,4 +89,5 @@ read_globals = {
 
 -- Generated and long-text files: long lines are expected there.
 files["**/PlanData.lua"] = { ignore = { "631" } }
+files["**/TalentData.lua"] = { ignore = { "631" } }
 files["**/Locale.lua"] = { ignore = { "631" } }

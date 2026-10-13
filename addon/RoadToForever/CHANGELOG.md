@@ -1,5 +1,17 @@
 # Road to Forever changelog
 
+## 0.54.0 (2026-10-14)
+
+- **Talents tab rebuilt as a calculator.** Click talents freely on any class: the class icons along the top switch between all nine
+  classes' trees (try your friend's Warrior while you play a Priest). Nothing you click changes your real talents, and the board no
+  longer mirrors what you have learned. Left-click adds a point, right-click takes one away, Shift goes all the way. The same rules
+  as the site's calculator (51 points, 5 points per row, prerequisites), with the talent text on hover for every class.
+- **Save loadout, Loadouts, Share** (Party, Raid or Guild; teammates with the addon get it under Loadouts) and **Copy link** work for any class.
+- **Recommended**: our Tank, DPS and Healer builds for the class on the board, one click to put them on it.
+- **Learn this build** works only for your own class and only when the build fits your talents (after a trainer reset), as before.
+- The old Preview / Copy my build / Edit build buttons are gone: **Load** puts a pasted link on the board; `/r2f copybuild` still copies your own talents.
+- Tweaks tab: the search box at the bottom is gone (not needed).
+
 ## 0.53.1 (2026-10-13)
 
 - Plan tab: hover a "Weapon:" line for the item's own tooltip plus "BiZ score +N over what you wear (your spec)", the quest it is the

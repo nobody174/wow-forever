@@ -3,7 +3,7 @@
 Generated 2026-10-13 from `bis/quest-weapons.json` (Wowhead Forever item lists, `bis/tools/wh_quest_weapons.py`) by filtering to the zones
 and dungeons named in `launch-plan-waypoints.json`, Alliance or neutral rewards, green or better. Weapon proficiencies are the **Classic**
 table (unverified for Forever). dps is the item's listed dps (shields have none). Not a ranking against what you already have: that needs
-the stat score (see `quest-weapons-research.md`).
+the stat score (see `quest-weapons-research.md` (same folder)).
 
 ## Hunter: 58 quest weapons on the route
 

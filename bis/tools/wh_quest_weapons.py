@@ -6,7 +6,7 @@ Only green or better items up to MAXLEVEL are kept. Run it by hand when the beta
 
     python bis/tools/wh_quest_weapons.py [maxlevel]
 
-Needs the internet (www.wowhead.com/forever), nothing else. Part of bis/quest-weapons-research.md.
+Needs the internet (www.wowhead.com/forever), nothing else. Part of bis/archive/quest-weapons-research.md.
 """
 import json, os, re, subprocess, sys
 

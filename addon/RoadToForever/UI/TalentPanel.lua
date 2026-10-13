@@ -1,27 +1,25 @@
--- UI/TalentPanel.lua: the Talents tab of the main window.
+-- UI/TalentPanel.lua: the Talents tab of the main window, a sandbox talent calculator.
 --
--- A talent-link box + Preview, Copy my build, three mini trees side by
--- side, the summary line. Learn talents -> confirm popup -> Talents.lua's
--- learning engine. This file only shows its state: "Learning X / N" on the
--- button, the rest of the tab locked meanwhile (Cancel becomes Stop), the
--- stop / done message in the status line, guided mode's "Click ..." in the
--- note line. The engine runs on events, not on this tab: closing the window
--- doesn't stop a run.
+-- Click talents freely on any class's three trees without spending anything (the trees come from
+-- TalentData.lua, the rules from TalentCalc.lua, the same as the site's calculator). It does NOT mirror the
+-- character's real talents. Save a build as a loadout, share it with teammates who run the addon, or, for
+-- your own class and only after a trainer reset, learn it with Talents.lua's learning engine ("Learn this
+-- build"). This file only shows state: "Learning X / N" on the button, the rest of the tab locked meanwhile
+-- (Stop appears), the stop / done message in the status line, guided mode's "Click ..." in the note line.
+-- The engine runs on events, not on this tab: closing the window doesn't stop a run.
 --
--- Layout (page = the 540 x 500 main window):
---   Talent link [ talents.html#warrior/...               ] [Preview]
---   hint line                                          [Copy my build]
+-- Layout (page = PAGE, 650 x 566):
+--   [class circles x 9]  Warrior (your class)                        [Talented perk]
+--   Talent link [ talents.html#warrior/...              ] [Load]
+--   hint line                                                        [Copy link]
 --   status line (yellow caution / red stop message)
---   Arms  0 -> 0       Fury  0 -> 0        Protection  0 -> 21
---   [4 x 7 mini tree]  [4 x 7 mini tree]   [4 x 7 mini tree]
---   summary line
---   learning note                            [Cancel] [Learn talents]
+--   Arms  12           Fury  0            Protection  0
+--   [4 x 7 tree]       [4 x 7 tree]       [4 x 7 tree]
+--   12 of 51 points spent, 39 left.  / needs level  / learn info
+--   [Reset] [Save] [Loadouts] [Recommended] [Share]                  [Stop] [Learn this build]
 --
--- Look: Blizzard textures only, the talent frame's own pieces: the
--- UI-EmptySlot-White ring behind each icon tinted per state (the talent frame
--- tints the same texture green/gold/grey), TalentFrame-RankBorder for the rank
--- badge, the action-button glow for "learned now", ButtonHilight-Square on
--- hover like the Macro Book's grid.
+-- Look: Blizzard textures only: the UI-EmptySlot-White ring behind each icon tinted per state,
+-- TalentFrame-RankBorder for the rank badge, ButtonHilight-Square on hover.
 
 local _, R2F = ...
 local L = R2F.L
@@ -31,65 +29,87 @@ local TalentPanel = {}
 R2F.TalentPanel = TalentPanel
 
 local Talents = R2F.Talents
+local Calc = R2F.TalentCalc
 
 local TREES, COLS, ROWS = 3, 4, 7    -- Three trees, each a 4 x 7 grid
 local CELL, STEP_X, STEP_Y = 34, 42, 38
-local TREE_W, TREE_TOP = 204, -150
-TalentPanel.PAGE = { w = 650, h = 540 }
+local TREE_W, TREE_TOP = 204, -170
+TalentPanel.PAGE = { w = 650, h = 566 }
+
+local CLASS_CIRCLES = "Interface\\TargetingFrame\\UI-Classes-Circles"
+local PICK_SIZE, PICK_STEP = 26, 31
 
 local page
 local ui = {}
 local cells = {}           -- cells[tree][row][col]
 local heads = {}           -- heads[tree] = { name, counts }
+local picks = {}           -- picks[i] = class circle button
 local readTries = 0   -- retries of a talent read that failed (names not loaded yet)
-local state = { text = nil, editing = false }   -- the link being previewed (nil = none)
+-- The sandbox: the class on the board, its calc (ranks per talent), and the share link of that build.
+local state = { class = nil, calc = nil, text = nil }
 
 local function cdb() return R2F.Library.cdb end
 
--- Colours (r, g, b) per preview state: the slot ring and the badge text.
-local GOLD, WHITE, RED = { 1, 0.82, 0 }, { 1, 1, 1 }, { 1, 0.15, 0.15 }
+local function ownClass()
+  return Talents.ClassId()
+end
+
+-- Colours (r, g, b) per talent state: the slot ring and the badge text.
+local GOLD, WHITE, GREEN = { 1, 0.82, 0 }, { 1, 1, 1 }, { 0.1, 1, 0.1 }
 local LOOK = {
-  learned  = { slot = { 0.75, 0.75, 0.75 } },
-  now      = { slot = GOLD, glow = true },
-  later    = { slot = { 0.6, 0.49, 0 }, dim = true },
-  off      = { slot = { 0.4, 0.4, 0.4 }, desat = true },
-  conflict = { slot = RED },
-  overmax  = { slot = RED },
+  full    = { slot = GOLD, badge = GOLD },                          -- all ranks taken
+  partial = { slot = GREEN, badge = GREEN },                        -- some ranks taken
+  open    = { slot = { 0.85, 0.85, 0.85 } },                        -- can take a point now
+  locked  = { slot = { 0.4, 0.4, 0.4 }, desat = true, dim = true }, -- tier points or prerequisite missing
 }
 
 -- ---------------------------------------------------------------------------
--- Mini-tree cells
+-- The board
 -- ---------------------------------------------------------------------------
 
--- Hover: the game's own talent tooltip plus "Build: 3 / 3".
--- Talents are read through C_Traits and carry their spell id, so
--- the tooltip is GameTooltip:SetSpellByID(spellID): our (tab, index) is no
--- longer Classic's talent index, and SetTalent(tab, index) could show another
--- talent's text. SetTalent stays only for an entry without a spell id. Both
--- guarded: missing, an error, or an empty tooltip all fall back to the name.
+local function className(id)
+  return Talents.ClassName(id)
+end
+
+-- The sandbox entry (what a cell shows) for talent k of tree t.
+local function entryFor(t, k)
+  local x = Calc.Trees(state.class)[t].talents[k]
+  local rank = Calc.Rank(state.calc, t, k)
+  local st
+  if rank >= x.m then st = "full"
+  elseif rank > 0 then st = "partial"
+  elseif Calc.CanAdd(state.calc, t, k) then st = "open"
+  else st = "locked" end
+  return { tab = t, pos = k, name = x.n, icon = x.i, rank = rank, maxRank = x.m, tier = x.r + 1, column = x.c + 1,
+           state = st, talent = x }
+end
+
+-- Hover: the talent's name, rank, what it needs and what it does (our own text from TalentData: it works
+-- for every class, whether or not you know the spell).
 local function cellTooltip(b)
   local e = b.entry
   if not e then return end
+  local x = e.talent
+  local tree = Calc.Trees(state.class)[e.tab]
   GameTooltip:SetOwner(b, "ANCHOR_RIGHT")
-  local shown = false
-  if e.spellID then
-    if GameTooltip.SetSpellByID then
-      shown = pcall(GameTooltip.SetSpellByID, GameTooltip, e.spellID)
-      if shown and GameTooltip.NumLines then shown = GameTooltip:NumLines() > 0 end
+  GameTooltip:AddLine(e.name, 1, 1, 1)
+  GameTooltip:AddLine(L.TALENT_TIP_RANK:format(e.rank, e.maxRank), 1, 0.82, 0)
+  if x.p > 0 and not Calc.TierMet(state.calc, e.tab, e.pos) then
+    GameTooltip:AddLine(L.TALENT_TIP_NEEDS_POINTS:format(x.p, tree.name), 1, 0.15, 0.15, true)
+  end
+  for _, q in ipairs(x.q) do
+    if Calc.Rank(state.calc, e.tab, q[1]) < q[2] then
+      local need = tree.talents[q[1]]
+      GameTooltip:AddLine(L.TALENT_TIP_NEEDS_TALENT:format(q[2], need.n), 1, 0.15, 0.15, true)
     end
-  elseif GameTooltip.SetTalent then
-    shown = pcall(GameTooltip.SetTalent, GameTooltip, e.tab, e.index)
-    if shown and GameTooltip.NumLines then shown = GameTooltip:NumLines() > 0 end
   end
-  if not shown then GameTooltip:AddLine(e.name, 1, 1, 1) end
-  if b.withBuild then
-    GameTooltip:AddLine(L.TALENT_TIP_BUILD:format(e.planned, e.maxRank), 1, 0.82, 0)
-    if e.now > 0 then GameTooltip:AddLine(L.TALENT_TIP_NOW:format(e.now), 1, 0.82, 0) end
-    if e.later > 0 then GameTooltip:AddLine(L.TALENT_TIP_LATER:format(e.later), 0.7, 0.7, 0.7) end
-    if e.state == "conflict" then GameTooltip:AddLine(L.TALENT_TIP_CONFLICT, 1, 0.15, 0.15, true) end
-    if e.state == "overmax" then GameTooltip:AddLine(L.TALENT_TIP_OVERMAX, 1, 0.15, 0.15, true) end
+  local text = x.d[e.rank > 0 and e.rank or 1]
+  if text and text ~= "" then GameTooltip:AddLine(text, 1, 0.82, 0, true) end
+  if e.rank > 0 and e.rank < e.maxRank and x.d[e.rank + 1] then
+    GameTooltip:AddLine(L.TALENT_TIP_NEXT, 1, 1, 1)
+    GameTooltip:AddLine(x.d[e.rank + 1], 0.1, 1, 0.1, true)
   end
-  if state.editing then GameTooltip:AddLine(L.TALENT_EDIT_HOW, 0.6, 0.85, 1) end
+  GameTooltip:AddLine(L.TALENT_EDIT_HOW, 0.6, 0.85, 1)
   GameTooltip:Show()
 end
 
@@ -105,23 +125,12 @@ local function buildCell(parent, x, y)
   b.slot:SetPoint("CENTER", 0, 0)
   b.icon = b:CreateTexture(nil, "BORDER")
   b.icon:SetAllPoints()
-  b.glow = b:CreateTexture(nil, "OVERLAY")
-  b.glow:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
-  b.glow:SetBlendMode("ADD")
-  b.glow:SetSize(CELL * 1.77, CELL * 1.77)
-  b.glow:SetPoint("CENTER", 0, 0)
-  b.glow:SetVertexColor(1, 0.82, 0)
-  b.glow:Hide()
   b.badge = b:CreateTexture(nil, "OVERLAY")
   b.badge:SetTexture("Interface\\TalentFrame\\TalentFrame-RankBorder")
   b.badge:SetSize(22, 22)
   b.badge:SetPoint("CENTER", b, "BOTTOMRIGHT", 0, 0)
   b.rank = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   b.rank:SetPoint("CENTER", b.badge, "CENTER", 0, 0)
-  b.later = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  b.later:SetPoint("BOTTOM", b, "BOTTOM", 0, -1)
-  b.later:SetText(L.TALENT_LATER)
-  b.later:SetTextColor(0.8, 0.65, 0)
   b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
   b:SetScript("OnEnter", cellTooltip)
   b:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -137,32 +146,16 @@ local function setBadge(b, text, color)
   if text then b.rank:SetTextColor(color[1], color[2], color[3]) end
 end
 
--- One talent's look. withBuild = false is the "your talents, no build" view
--- (before a preview, after Cancel, behind a stop message): rank badges only.
-local function paintCell(b, e, withBuild)
-  b.entry, b.withBuild = e, withBuild
-  b.icon:SetTexture(e.icon or "Interface\\Icons\\INV_Misc_QuestionMark")
-  local look = LOOK[e.state] or LOOK.off
+local function paintCell(b, e)
+  b.entry = e
+  b.icon:SetTexture("Interface\\Icons\\" .. (e.icon or "INV_Misc_QuestionMark"))
+  local look = LOOK[e.state] or LOOK.locked
   b.slot:SetVertexColor(look.slot[1], look.slot[2], look.slot[3])
   b.icon:SetDesaturated(look.desat or false)
   if look.dim then b.icon:SetVertexColor(0.55, 0.55, 0.55) else b.icon:SetVertexColor(1, 1, 1) end
-  b.glow:SetShown(look.glow or false)
-  b.later:SetShown(e.state == "later")
-  if e.state == "now" then
-    setBadge(b, "+" .. e.now, GOLD)                -- "+2 in gold"
-  elseif e.state == "overmax" then
-    setBadge(b, tostring(e.planned), RED)
-  elseif e.rank > 0 then
-    setBadge(b, tostring(e.rank), WHITE)           -- learned / conflict / later
-  else
-    setBadge(b, nil)
-  end
+  if e.rank > 0 then setBadge(b, tostring(e.rank), look.badge or WHITE) else setBadge(b, nil) end
   b:Show()
 end
-
--- ---------------------------------------------------------------------------
--- Building
--- ---------------------------------------------------------------------------
 
 local function buildTrees(f)
   for t = 1, TREES do
@@ -174,7 +167,7 @@ local function buildTrees(f)
     counts:SetPoint("LEFT", name, "RIGHT", 6, 0)
     heads[t] = { name = name, counts = counts }
     cells[t] = {}
-    -- Grid centred in the column: 4 cells, 32 px apart.
+    -- Grid centred in the column: 4 cells, 42 px apart.
     local gx = x0 + math.floor((TREE_W - (CELL + (COLS - 1) * STEP_X)) / 2)
     for row = 1, ROWS do
       cells[t][row] = {}
@@ -184,6 +177,47 @@ local function buildTrees(f)
     end
   end
 end
+
+-- ---------------------------------------------------------------------------
+-- Class circles
+-- ---------------------------------------------------------------------------
+
+local function buildPick(parent, i, id)
+  local p = CreateFrame("CheckButton", nil, parent)
+  p:SetSize(PICK_SIZE, PICK_SIZE)
+  p:SetPoint("TOPLEFT", parent, "TOPLEFT", 24 + (i - 1) * PICK_STEP, -44)
+  p:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+  UI.CheckedGlow(p)
+  p.talentClass = id
+  local coords = CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[Calc.Token(id)]
+  if coords then
+    p:SetNormalTexture(CLASS_CIRCLES)
+    p:GetNormalTexture():SetTexCoord(unpack(coords))
+  else
+    UI.SetNormalIcon(p, UI.FALLBACK_ICON)
+  end
+  p:SetScript("OnClick", function(self)
+    UI.PlaySound("IG_ABILITY_PAGE_TURN")
+    TalentPanel.SelectClass(self.talentClass)
+  end)
+  p:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:AddLine(className(self.talentClass), 1, 1, 1)
+    if self.talentClass == ownClass() then
+      GameTooltip:AddLine(L.TALENT_PICK_YOURS, 0.1, 1, 0.1, true)
+    else
+      local name = className(self.talentClass)
+      GameTooltip:AddLine(L.TALENT_PICK_OTHER:format(name, name), 0.7, 0.7, 0.7, true)
+    end
+    GameTooltip:Show()
+  end)
+  p:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  return p
+end
+
+-- ---------------------------------------------------------------------------
+-- Building
+-- ---------------------------------------------------------------------------
 
 -- Single-line link box: InputBoxTemplate (Blizzard's standard text field)
 -- if the client has it, else a plain EditBox on a tooltip backdrop; checked
@@ -219,13 +253,25 @@ local function button(f, label, w)
   return b
 end
 
+local function tip(b, title, text)
+  b:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_TOP")
+    GameTooltip:AddLine(title, 1, 1, 1)
+    GameTooltip:AddLine(text, 1, 0.82, 0, true)
+    GameTooltip:Show()
+  end)
+  b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+end
+
 local function build(f)
-  -- Free talent points (moved here from Home): same wording as the minimap tooltip.
-  ui.points = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  ui.points:SetPoint("TOPLEFT", 24, -52)
+  -- Class circles: pick any class's trees.
+  for i, id in ipairs(Calc.ORDER) do picks[i] = buildPick(f, i, id) end
+  ui.classLabel = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  ui.classLabel:SetPoint("LEFT", picks[#picks], "RIGHT", 12, 0)
+
   -- Talented legacy perk (+5 points): only changes the level line under a build.
   ui.perk = UI.Switch(f, L.TALENT_PERK)
-  ui.perk:SetPoint("TOPRIGHT", -190, -52)
+  ui.perk:SetPoint("TOPRIGHT", -190, -76)
   ui.perk:SetScript("OnClick", function(self)
     R2F.Library.db.settings.talented = self:GetChecked() and true or false
     TalentPanel.Refresh()
@@ -237,8 +283,9 @@ local function build(f)
     GameTooltip:Show()
   end)
   ui.perk:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
   ui.label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  ui.label:SetPoint("TOPLEFT", 24, -74)
+  ui.label:SetPoint("TOPLEFT", 24, -100)
   ui.label:SetText(L.TALENT_LINK_LABEL)
 
   ui.edit = buildLinkBox(f)
@@ -252,42 +299,46 @@ local function build(f)
   ui.edit:SetScript("OnEnterPressed", function() TalentPanel.Preview() end)
   ui.edit:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
 
-  ui.preview = button(f, L.BTN_PREVIEW, 90)
+  ui.preview = button(f, L.BTN_LOAD_LINK, 70)
   ui.preview:SetPoint("LEFT", ui.edit, "RIGHT", 8, 0)
   ui.preview:SetScript("OnClick", function() TalentPanel.Preview() end)
 
-  -- Copy my build lives on this tab. Read-only, so it works in
-  -- combat too, like /r2f copybuild.
-  ui.copy = button(f, L.BTN_COPY_BUILD, 130)
-  ui.copy:SetPoint("TOPRIGHT", f, "TOPRIGHT", -20, -100)
-  ui.copy:SetScript("OnClick", function() Talents.CopyMyBuild() end)
+  -- Copy link: the board's link for the site or Discord. Pure text, works in combat.
+  ui.copy = button(f, L.BTN_COPY_LINK, 100)
+  ui.copy:SetPoint("TOPRIGHT", f, "TOPRIGHT", -20, -124)
+  ui.copy:SetScript("OnClick", function() TalentPanel.CopyLink() end)
 
   ui.hint = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-  ui.hint:SetPoint("TOPLEFT", 24, -102)
-  ui.hint:SetWidth(340)
+  ui.hint:SetPoint("TOPLEFT", 24, -128)
+  ui.hint:SetWidth(480)
   ui.hint:SetJustifyH("LEFT")
   ui.hint:SetTextColor(0.7, 0.7, 0.7)
   ui.hint:SetText(L.TALENT_TAB_HINT)
 
   ui.status = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-  ui.status:SetPoint("TOPLEFT", 24, -134)
+  ui.status:SetPoint("TOPLEFT", 24, -152)
   ui.status:SetWidth(600)
   ui.status:SetJustifyH("LEFT")
 
   buildTrees(f)
 
+  local below = TREE_TOP - 24 - (ROWS - 1) * STEP_Y - CELL - 14
   ui.summary = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-  ui.summary:SetPoint("TOPLEFT", 24, TREE_TOP - 24 - (ROWS - 1) * STEP_Y - CELL - 16)
+  ui.summary:SetPoint("TOPLEFT", 24, below)
   ui.summary:SetWidth(600)
   ui.summary:SetJustifyH("LEFT")
   ui.level = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-  ui.level:SetPoint("TOPLEFT", ui.summary, "BOTTOMLEFT", 0, -4)
+  ui.level:SetPoint("TOPLEFT", ui.summary, "BOTTOMLEFT", 0, -3)
   ui.level:SetTextColor(0.7, 0.7, 0.7)
+  -- Learning info: what learning this build would do on your character (your own class only).
+  ui.learnInfo = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.learnInfo:SetPoint("TOPLEFT", ui.level, "BOTTOMLEFT", 0, -3)
+  ui.learnInfo:SetWidth(600)
+  ui.learnInfo:SetJustifyH("LEFT")
 
-  -- Learn talents. Enabled only for a plan with zero conflicts and
-  -- points to learn now (plan.learnable), out of combat, while no run is
-  -- active. The tooltip shows while disabled too (SetMotionScriptsWhileDisabled)
-  -- so "why is it grey" has an answer in combat.
+  -- Learn this build. Enabled only for your own class, a plan with zero conflicts and points to learn now
+  -- (plan.learnable), out of combat, while no run is active. The tooltip shows while disabled too
+  -- (SetMotionScriptsWhileDisabled) so "why is it grey" has an answer.
   ui.learn = button(f, L.BTN_LEARN, 130)
   ui.learn:SetPoint("BOTTOMRIGHT", -20, 16)
   ui.learn:SetEnabled(false)
@@ -304,13 +355,12 @@ local function build(f)
   end)
   ui.learn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-  -- Cancel; while a run is active it reads Stop (a way out of a run that is
-  -- waiting on the server or on the player's clicks in guided mode).
-  ui.cancel = button(f, L.BTN_CANCEL, 70)
+  -- Stop: only while a run is active (a way out of a run that is waiting on the server or on the
+  -- player's clicks in guided mode).
+  ui.cancel = button(f, L.BTN_STOP, 70)
   ui.cancel:SetPoint("RIGHT", ui.learn, "LEFT", -8, 0)
-  ui.cancel:SetScript("OnClick", function()
-    if Talents.LearnBusy() then Talents.StopLearn() else TalentPanel.Cancel() end
-  end)
+  ui.cancel:SetScript("OnClick", function() Talents.StopLearn() end)
+  ui.cancel:Hide()
 
   -- Guided mode's "Click Cruelty (2 of 21)"; empty otherwise.
   ui.note = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -318,54 +368,78 @@ local function build(f)
   ui.note:SetWidth(270)
   ui.note:SetJustifyH("LEFT")
 
-  -- Planner: edit switch, loadouts, sharing.
-  ui.editMode = UI.Switch(f, L.TALENT_EDIT)
-  ui.editMode:SetPoint("BOTTOMLEFT", 22, 20)
-  ui.editMode:SetScript("OnClick", function(self)
-    state.editing = self:GetChecked() and true or false
-    TalentPanel.Refresh()
-  end)
-  ui.editMode:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    GameTooltip:AddLine(L.TALENT_EDIT, 1, 1, 1)
-    GameTooltip:AddLine(L.TALENT_EDIT_TIP, 1, 0.82, 0, true)
-    GameTooltip:Show()
-  end)
-  ui.editMode:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  -- Reset, loadouts, recommended builds, sharing.
+  ui.clear = button(f, L.BTN_RESET_TALENTS, 58)
+  ui.clear:SetPoint("BOTTOMLEFT", 24, 16)
+  ui.clear:SetScript("OnClick", function() TalentPanel.Clear() end)
+  tip(ui.clear, L.BTN_RESET_TALENTS, L.TALENT_CLEAR_TIP)
   ui.saveLoadout = button(f, L.BTN_SAVE_LOADOUT, 84)
-  ui.saveLoadout:SetPoint("BOTTOMLEFT", 130, 16)
+  ui.saveLoadout:SetPoint("LEFT", ui.clear, "RIGHT", 4, 0)
   ui.saveLoadout:SetScript("OnClick", function() TalentPanel.SaveLoadout() end)
   ui.loadouts = button(f, L.BTN_LOADOUTS, 74)
   ui.loadouts:SetPoint("LEFT", ui.saveLoadout, "RIGHT", 4, 0)
   ui.loadouts:SetScript("OnClick", function() TalentPanel.LoadoutsMenu() end)
+  ui.recommended = button(f, L.BTN_RECOMMENDED, 104)
+  ui.recommended:SetPoint("LEFT", ui.loadouts, "RIGHT", 4, 0)
+  ui.recommended:SetScript("OnClick", function() TalentPanel.RecommendedMenu() end)
+  tip(ui.recommended, L.BTN_RECOMMENDED, L.TALENT_RECOMMENDED_TIP)
   ui.share = button(f, L.BTN_SHARE, 56)
-  ui.share:SetPoint("LEFT", ui.loadouts, "RIGHT", 4, 0)
+  ui.share:SetPoint("LEFT", ui.recommended, "RIGHT", 4, 0)
   ui.share:SetScript("OnClick", function() TalentPanel.ShareMenu() end)
-  -- Clear: an empty board to build from (switches Edit build on). Does not touch your real talents.
-  ui.clear = button(f, L.BTN_CLEAR_TALENTS, 58)
-  ui.clear:SetPoint("LEFT", ui.share, "RIGHT", 4, 0)
-  ui.clear:SetScript("OnClick", function() TalentPanel.Clear() end)
-  ui.clear:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    GameTooltip:AddLine(L.BTN_CLEAR_TALENTS, 1, 1, 1)
-    GameTooltip:AddLine(L.TALENT_CLEAR_TIP, 1, 0.82, 0, true)
-    GameTooltip:Show()
-  end)
-  ui.clear:SetScript("OnLeave", function() GameTooltip:Hide() end)
   return f
+end
+
+-- ---------------------------------------------------------------------------
+-- The board's state
+-- ---------------------------------------------------------------------------
+
+-- Puts a class on the board with an empty (or the given) code. Returns true when a class was set.
+local function setBoard(classId, code)
+  local calc, ok = Calc.FromCode(classId, code)
+  if not calc then return false end
+  state.class, state.calc = classId, calc
+  return true, ok
+end
+
+local function linkText()
+  return Talents.SITE_URL .. Calc.Body(state.calc)
+end
+
+local function remember()
+  local c = cdb()
+  if c then c.lastTalentLink = linkText() end
 end
 
 -- Called once by MainWindow with the Talents page frame.
 function TalentPanel.Build(f)
   page = build(f)
-  -- The last link previewed on this character (lastTalentLink) comes
-  -- back in the box and is previewed again, against the live talents.
-  state.text = cdb() and cdb().lastTalentLink or nil
-  ui.edit:SetText(state.text or "")
-  ui.placeholder:SetText(L.TALENT_LINK_PLACEHOLDER:format(Talents.ClassId() or "warrior"))
-  ui.placeholder:SetShown((state.text or "") == "")
+  -- The last board on this character (lastTalentLink) comes back; none = an empty board of your own class.
+  local last = cdb() and cdb().lastTalentLink
+  local link = last and Talents.ParseLink(last)
+  if not (link and setBoard(link.class, link.code)) then
+    setBoard(ownClass() or "warrior", "")
+  end
+  state.text = linkText()
+  ui.edit:SetText("")
+  ui.placeholder:SetText(L.TALENT_LINK_PLACEHOLDER:format(state.class))
+  ui.placeholder:SetShown(true)
   return page
 end
+
+-- Click a class circle: that class's trees, an empty board.
+function TalentPanel.SelectClass(id)
+  if Talents.LearnBusy() or id == state.class then return end
+  Talents.ResetLearn()
+  if setBoard(id, "") then
+    ui.edit:SetText("")
+    ui.placeholder:SetText(L.TALENT_LINK_PLACEHOLDER:format(id))
+    remember()
+  end
+  TalentPanel.Refresh()
+end
+
+function TalentPanel.Class() return state.class end
+function TalentPanel.Calc() return state.calc end
 
 -- ---------------------------------------------------------------------------
 -- Refresh
@@ -376,9 +450,9 @@ local function showStatus(text, r, g, b)
   if text then ui.status:SetTextColor(r, g, b) end
 end
 
-local function drawTrees(plan, withBuild)
+local function drawTrees()
+  local trees = Calc.Trees(state.class)
   for t = 1, TREES do
-    local tree = plan and plan.trees[t]
     for row = 1, ROWS do
       for col = 1, COLS do
         local b = cells[t][row][col]
@@ -386,15 +460,15 @@ local function drawTrees(plan, withBuild)
         b:Hide()
       end
     end
+    local tree = trees and trees[t]
     if tree then
       heads[t].name:SetText(tree.name)
-      heads[t].counts:SetText(withBuild and L.TALENT_TREE_HEAD:format(tree.current, tree.planned)
-        or tostring(tree.current))
-      for _, e in ipairs(tree.talents) do
-        -- A talent outside the 4 x 7 grid can't be drawn (no Classic tree has
-        -- one); it still counts in the plan and the summary.
+      heads[t].counts:SetText(tostring(Calc.TreePoints(state.calc, t)))
+      for k = 1, #tree.talents do
+        local e = entryFor(t, k)
+        -- A talent outside the 4 x 7 grid can't be drawn (no Classic tree has one).
         local b = cells[t][e.tier] and cells[t][e.tier][e.column]
-        if b then paintCell(b, e, withBuild) end
+        if b then paintCell(b, e) end
       end
     else
       heads[t].name:SetText("")
@@ -403,18 +477,16 @@ local function drawTrees(plan, withBuild)
   end
 end
 
--- The last result shown (for the tests).
+-- The last learn preview (your own class's board against your real talents), for the tests.
 function TalentPanel.Result() return state.result end
 
--- The Learn / Cancel buttons and the locks from the learning engine's state
--- (while learning the button reads "Learning 7 / 21" and everything else is
--- locked). `plan` = the build preview, nil when there is none.
--- Locked while a run is active: the link box, Preview, Copy my build. They
--- would be harmless (read-only), but changing the link mid-run would make
--- the trees show another build than the one being learned. Cancel turns into
--- Stop, the one way out.
+-- The Learn / Stop buttons and the locks from the learning engine's state (while learning the button reads
+-- "Learning 7 / 21" and the board is locked): the board would show another build than the one being learned.
 local function setLocked(locked)
-  for _, w in ipairs({ ui.preview, ui.copy }) do w:SetEnabled(not locked) end
+  for _, w in ipairs({ ui.preview, ui.copy, ui.clear, ui.saveLoadout, ui.loadouts, ui.recommended, ui.share }) do
+    w:SetEnabled(not locked)
+  end
+  for _, p in ipairs(picks) do p:SetEnabled(not locked) end
   if locked then
     ui.edit:ClearFocus()
     if ui.edit.Disable then ui.edit:Disable() end
@@ -431,41 +503,41 @@ local function applyLearnState(plan)
     ui.learn:SetText(st.phase == "queued" and L.TALENT_LEARN_WAITING
       or L.TALENT_LEARNING:format(st.current, st.total))
     ui.learn:SetEnabled(false)
-    ui.cancel:SetText(L.BTN_STOP)
+    ui.cancel:Show()
     ui.cancel:SetEnabled(true)
   else
     ui.learn:SetText(L.BTN_LEARN)
     -- plan.learnable = zero conflicts AND points needed AND points free
     -- (Talents.Plan). Nothing else can enable this button.
     ui.learn:SetEnabled(plan ~= nil and plan.learnable == true and not R2F.InCombat())
-    ui.cancel:SetText(L.BTN_CANCEL)
-    ui.cancel:SetEnabled(state.text ~= nil)
+    ui.cancel:Hide()
   end
   ui.note:SetText(st.phase == "guided" and R2F.TalentGuide.Text() or "")
 end
 
 function TalentPanel.Refresh()
-  if not page or not page:IsVisible() then return end
-  ui.points:SetText(R2F.Home.TalentLine())
-  -- Re-run the preview every time: it's cheap and read-only, and the free
-  -- points / learned talents may have changed since (CHARACTER_POINTS_CHANGED,
-  -- PLAYER_LEVEL_UP, learning in Blizzard's own talent window).
-  local res = state.text and Talents.Preview(state.text) or nil
+  if not page or not page:IsVisible() or not state.calc then return end
+  state.text = linkText()
+  drawTrees()
+  for _, p in ipairs(picks) do p:SetChecked(p.talentClass == state.class) end
+  local own = state.class == ownClass()
+  ui.classLabel:SetText(own and L.TALENT_CLASS_YOURS:format(className(state.class))
+    or L.TALENT_CLASS_OTHER:format(className(state.class)))
+  if own then ui.classLabel:SetTextColor(1, 0.82, 0) else ui.classLabel:SetTextColor(0.7, 0.7, 0.7) end
+
+  -- Your own class with points on the board: check it against your real talents (read-only), for the Learn
+  -- button and the line under the board. No points yet = nothing to check.
+  local total = Calc.Total(state.calc)
+  local res = (own and total > 0) and Talents.Preview(state.text) or nil
   state.result = res
-  local plan, withBuild = res and res.plan, true
-  if not plan then
-    -- No preview (none asked for, or a stop message): show the character's
-    -- own trees, no plan: a stop means no preview.
-    plan, withBuild = Talents.CurrentPlan(), false
-  end
-  drawTrees(plan, withBuild)
+  local plan = res and res.plan
 
   local msg = Talents.LearnMessage()
   if res and res.error then
     showStatus(res.error, 1, 0.15, 0.15)
   elseif msg then
-    -- A learning stop (red) / done (green) / preview-filled (gold) message
-    -- outranks the yellow caution: it's what just happened to the character.
+    -- A learning stop (red) / done (green) / preview-filled (gold) message outranks the yellow caution:
+    -- it's what just happened to the character.
     if msg.kind == "stop" then
       showStatus(msg.text, 1, 0.15, 0.15)
     elseif msg.kind == "done" then
@@ -475,51 +547,46 @@ function TalentPanel.Refresh()
     end
   elseif res and res.caution then
     showStatus(res.caution, 1, 0.82, 0)            -- yellow caution line
-  elseif not plan then
-    -- Soon after login the game may not have the talent names loaded yet: say so and try again a few times.
-    if readTries < 8 and C_Timer and C_Timer.After then
-      readTries = readTries + 1
-      showStatus(L.TALENT_READING, 1, 0.82, 0)
-      C_Timer.After(0.8, function() if page and page:IsVisible() then TalentPanel.Refresh() end end)
-    else
-      showStatus(L.TALENT_READ_FAILED_TAB, 1, 0.15, 0.15)
-    end
   else
-    readTries = 0
     showStatus(nil)
+  end
+  -- Soon after login the game may not have the talent names loaded yet: try again a few times.
+  if res and res.error == L.TALENT_READ_FAILED_TAB and readTries < 8 and C_Timer and C_Timer.After then
+    readTries = readTries + 1
+    C_Timer.After(0.8, function() if page and page:IsVisible() then TalentPanel.Refresh() end end)
+  elseif not (res and res.error) then
+    readTries = 0
   end
 
   local perk = R2F.Library.db.settings.talented == true
   ui.perk:SetChecked(perk)
-  if withBuild and plan.total and plan.total > 0 then
-    local n, lvl = plan.total, Talents.LevelFor(plan.total, perk)
-    ui.level:SetText((perk and L.TALENT_NEEDS_LEVEL_PERK or L.TALENT_NEEDS_LEVEL):format(n, lvl))
+  ui.summary:SetText(L.TALENT_SB_SUMMARY:format(total, Calc.MAX_POINTS, Calc.MAX_POINTS - total))
+  if total > 0 then
+    ui.level:SetText((perk and L.TALENT_NEEDS_LEVEL_PERK or L.TALENT_NEEDS_LEVEL):format(total, Calc.Level(state.calc, perk)))
   else
     ui.level:SetText("")
   end
-  if withBuild then
-    ui.summary:SetText(plan.summary)
-    -- Red only for the conflict line; the rest are plain information.
-    if plan.kind == "conflict" then ui.summary:SetTextColor(1, 0.15, 0.15) else ui.summary:SetTextColor(1, 1, 1) end
+  if not own then
+    ui.learnInfo:SetText(L.TALENT_PREVIEW_ONLY:format(className(state.class)))
+    ui.learnInfo:SetTextColor(0.7, 0.7, 0.7)
+  elseif plan then
+    ui.learnInfo:SetText(plan.summary)
+    if plan.kind == "conflict" then ui.learnInfo:SetTextColor(1, 0.15, 0.15) else ui.learnInfo:SetTextColor(1, 1, 1) end
   else
-    ui.summary:SetText("")
+    ui.learnInfo:SetText("")
   end
-  ui.editMode:SetChecked(state.editing)
-  applyLearnState(withBuild and plan or nil)
+  applyLearnState(plan)
 end
 
--- Learn talents. The preview is re-run here rather than taking
--- the one on screen (it may be up to 0.2 s old). Then, by client:
---   preview mode -> fill Blizzard's own preview (its Learn button commits,
---                   so no popup of ours);
---   a stopped run for this same link -> continue it ("Click Learn
---                   talents to continue"), no second popup;
---   otherwise    -> the confirm popup, the commit step on a client
---                   that learns a talent the moment it's sent. The same
---                   popup for "direct", "traits" and "guided".
+-- Learn this build (your own class only). The preview is re-run here rather than taking the one on
+-- screen (it may be up to 0.2 s old). Then, by client:
+--   preview mode -> fill Blizzard's own preview (its Learn button commits, so no popup of ours);
+--   a stopped run for this same link -> continue it ("Click Learn talents to continue"), no second popup;
+--   otherwise    -> the confirm popup, the commit step on a client that learns a talent the moment it's
+--                   sent. The same popup for "direct", "traits" and "guided".
 function TalentPanel.Learn()
-  if Talents.LearnBusy() or R2F.InCombat() or not state.text then return end
-  local text = state.text
+  if Talents.LearnBusy() or R2F.InCombat() or not state.calc or state.class ~= ownClass() then return end
+  local text = linkText()
   local plan = Talents.Preview(text).plan
   if not (plan and plan.learnable) then TalentPanel.Refresh(); return end
   local mode = Talents.LearnMode()
@@ -536,49 +603,44 @@ function TalentPanel.Learn()
   local question = n == 1 and L.TALENT_CONFIRM_ONE or L.TALENT_CONFIRM:format(n)
   if mode == "guided" then question = question .. "\n\n" .. L.TALENT_CONFIRM_GUIDED end
   UI.Confirm(question, L.BTN_LEARN_CONFIRM, L.BTN_CANCEL, function()
-    -- The link may have been changed or cancelled while the popup was open.
-    if state.text ~= text or Talents.LearnBusy() then return end
+    -- The board may have been changed while the popup was open.
+    if linkText() ~= text or Talents.LearnBusy() then return end
     Talents.StartLearn(text, points)
   end)
 end
 
--- Preview button / Enter in the link box. Reads the box, remembers the link
--- for this character, redraws. Read-only, so it isn't greyed out or queued
--- in combat: nothing it calls is protected. Locked during a run.
+-- Loads a pasted link onto the board (any class). Returns true, or false and the reason shown to the player.
+-- A link with a hash that differs from this addon's own talent data is refused: its digits could mean other
+-- talents than the ones shown here (the site changed after this addon version was made).
+local function loadLink(text)
+  local link = Talents.ParseLink(text)
+  if not link then return false, L.TALENT_BAD_LINK end
+  if not Calc.Class(link.class) then return false, L.TALENT_BAD_LINK end
+  if link.hash and link.hash ~= Calc.Hash(link.class) then return false, L.TALENT_HASH_MISMATCH_SB end
+  local calc, ok = Calc.FromCode(link.class, link.code)
+  if not ok then return false, L.TALENT_LINK_INVALID end
+  Talents.ResetLearn()
+  state.class, state.calc = link.class, calc
+  return true
+end
+
+-- Load button / Enter in the link box: reads the box and puts that build on the board.
+-- Read-only, so it isn't greyed out in combat. Locked during a run.
 function TalentPanel.Preview()
   if Talents.LearnBusy() then return end
   local text = (ui.edit:GetText() or ""):gsub("^%s+", ""):gsub("%s+$", "")
   ui.edit:ClearFocus()
-  if text == "" then
-    TalentPanel.Cancel()
-    return
+  if text == "" then return end
+  local ok, why = loadLink(text)
+  if ok then
+    remember()
+    ui.edit:SetText("")
+    showStatus(nil)
+    TalentPanel.Refresh()
+  else
+    TalentPanel.Refresh()
+    showStatus(why, 1, 0.15, 0.15)
   end
-  -- Another link: a stopped run (and its message) belonged to the old one.
-  if text ~= state.text then Talents.ResetLearn() end
-  state.text = text
-  -- Only a readable link is remembered; junk would come back on every open.
-  if Talents.ParseLink(text) then cdb().lastTalentLink = text end
-  TalentPanel.Refresh()
-  -- The trait config (C_SpecializationInfo / C_Traits) may not be
-  -- readable in the first moments after login. One retry a moment later
-  -- covers that without turning ReadTrees() into an async API for every
-  -- other caller.
-  if state.result and state.result.error == L.TALENT_READ_FAILED_TAB and C_Timer and C_Timer.After then
-    C_Timer.After(0.5, function()
-      if state.text == text then TalentPanel.Refresh() end
-    end)
-  end
-end
-
--- Cancel: drop the previewed build, back to the character's own trees.
-function TalentPanel.Cancel()
-  if Talents.LearnBusy() then return end
-  Talents.ResetLearn()
-  state.text = nil
-  cdb().lastTalentLink = nil
-  ui.edit:SetText("")
-  ui.edit:ClearFocus()
-  TalentPanel.Refresh()
 end
 
 -- MainWindow: the Talents page was hidden (tab switch or window closed).
@@ -597,65 +659,74 @@ function TalentPanel.RequestRefresh()
   C_Timer.After(0.2, function() pending = false; TalentPanel.Refresh() end)
 end
 
--- PLAYER_REGEN_DISABLED / ENABLED (MainWindow.SetCombat): Learn talents greys
--- out in combat and comes back after (same for every destructive
--- button). A run in progress was already stopped by Talents.OnCombat.
+-- PLAYER_REGEN_DISABLED / ENABLED (MainWindow.SetCombat): Learn greys out in combat and comes back after.
+-- A run in progress was already stopped by Talents.OnCombat. The sandbox itself works in combat.
 function TalentPanel.SetCombat()
   TalentPanel.Refresh()
 end
 
 -- ---------------------------------------------------------------------------
--- Planner: cell clicks, loadouts, sharing
+-- Clicks, loadouts, recommended builds, sharing
 -- ---------------------------------------------------------------------------
 
--- Shows `link` in the box and redraws (like pressing Preview, without reading the box).
+-- Shows `link` on the board (any class), like pressing Load without reading the box. Returns true / false.
 local function setLink(link)
-  Talents.ResetLearn()
-  state.text = link
-  if Talents.ParseLink(link) then cdb().lastTalentLink = link end
-  ui.edit:SetText(link)
+  local ok = loadLink(link)
+  if ok then remember() end
   TalentPanel.Refresh()
+  return ok
 end
 TalentPanel.SetLink = setLink
 
--- The "class/code~hash" of the build on screen, or nil.
+-- The "class/code~hash" of the board, or nil.
 function TalentPanel.CurrentBody()
-  local link = state.text and Talents.ParseLink(state.text)
-  if not link then return nil end
-  return link.class .. "/" .. link.code .. (link.hash and ("~" .. link.hash) or "")
+  if not state.calc then return nil end
+  return Calc.Body(state.calc)
 end
 
--- Left click +1, right click -1, while "Edit build" is on and no learn run is active.
+-- Left click +1 (Shift: to the maximum), right click -1 (Shift: all the way down), unless a learn run is active.
 function TalentPanel.CellClick(cell, mouse)
-  if not state.editing or Talents.LearnBusy() then return end
+  if Talents.LearnBusy() then return end
   local e = cell.entry
-  if not e then return end
-  local plan = state.result and state.result.plan or Talents.CurrentPlan()
-  if not plan then return end
-  local codes, why = Talents.EditPlan(plan, e.tab, e.pos, mouse == "RightButton" and -1 or 1)
-  if not codes then
-    if why == "cap" then R2F.Print(L.TALENT_EDIT_NOPOINTS:format(Talents.MAX_POINTS))
+  if not (e and state.calc) then return end
+  local shift = IsShiftKeyDown and IsShiftKeyDown() or false
+  Talents.ResetLearn()   -- a stopped run belonged to the build as it was
+  if mouse == "RightButton" then
+    Calc.Remove(state.calc, e.tab, e.pos, shift)
+  else
+    local why = Calc.AddBlock(state.calc, e.tab, e.pos)
+    if why == "cap" then R2F.Print(L.TALENT_EDIT_NOPOINTS:format(Calc.MAX_POINTS))
     elseif why == "tier" then R2F.Print(L.TALENT_EDIT_TIER)
+    elseif why == "prereq" then R2F.Print(L.TALENT_EDIT_PREREQ)
     elseif why == "max" then R2F.Print(L.TALENT_EDIT_MAX) end
-    return
+    if not why then Calc.Add(state.calc, e.tab, e.pos, shift) end
   end
-  local link = Talents.LinkFromCodes(codes)
-  if link then setLink(link) end
-  if GameTooltip:IsShown() then cellTooltip(cell) end
+  remember()
+  TalentPanel.Refresh()
+  if GameTooltip:IsShown() then
+    local entry = entryFor(e.tab, e.pos)
+    cell.entry = entry
+    cellTooltip(cell)
+  end
 end
 
--- An empty board: a link with no points for your class, with Edit build on, to build from scratch.
+-- Reset: an empty board of the same class. Your real talents are not touched.
 function TalentPanel.Clear()
   if Talents.LearnBusy() then return end
-  local link = Talents.LinkFromCodes({})
-  if not link then R2F.Print(L.TALENT_READ_FAILED_TAB) return end
-  state.editing = true
-  setLink(link)
+  Talents.ResetLearn()
+  Calc.Reset(state.calc)
+  remember()
+  TalentPanel.Refresh()
+end
+
+function TalentPanel.CopyLink()
+  if not state.calc then return end
+  R2F.UI.ShowCopy(linkText(), L.TALENT_COPY_HINT)
 end
 
 function TalentPanel.SaveLoadout()
   local body = TalentPanel.CurrentBody()
-  if not body then R2F.Print(L.TALENT_LOADOUT_NEED_BUILD) return end
+  if not body or Calc.Total(state.calc) == 0 then R2F.Print(L.TALENT_LOADOUT_NEED_BUILD) return end
   UI.Prompt(L.TALENT_LOADOUT_NAME, "", L.BTN_PROMPT_OK, L.BTN_CANCEL, function(name)
     local l, why = Talents.SaveLoadout(name, body)
     if l then R2F.Print(L.TALENT_LOADOUT_SAVED:format(l.name))
@@ -666,7 +737,7 @@ end
 -- Deleting lives in its own menu and always asks first.
 function TalentPanel.DeleteMenu()
   local items = { { kind = "title", text = L.TALENT_LOADOUT_DELETE_TITLE } }
-  for _, l in ipairs(Talents.Loadouts(Talents.ClassId())) do
+  for _, l in ipairs(Talents.Loadouts(state.class)) do
     items[#items + 1] = { kind = "button", text = l.by and L.TALENT_LOADOUT_BY:format(l.name, l.by) or l.name,
                           func = function()
                             UI.Confirm(L.TALENT_LOADOUT_CONFIRM:format(l.name), L.BTN_DELETE, L.BTN_CANCEL, function()
@@ -678,7 +749,7 @@ function TalentPanel.DeleteMenu()
 end
 
 function TalentPanel.LoadoutsMenu()
-  local list = Talents.Loadouts(Talents.ClassId())
+  local list = Talents.Loadouts(state.class)
   local items = {}
   if #list == 0 then
     items[1] = { kind = "title", text = L.TALENT_LOADOUT_NONE }
@@ -695,11 +766,34 @@ function TalentPanel.LoadoutsMenu()
   UI.ContextMenu(items)
 end
 
+-- Our recommended builds for the class on the board (builds.html), grouped Tank / DPS / Healer. A pick
+-- puts it on the board; nothing is learned.
+function TalentPanel.RecommendedMenu()
+  local list = Calc.Recommended(state.class)
+  local items = {}
+  if #list == 0 then
+    items[1] = { kind = "title", text = L.TALENT_RECOMMENDED_NONE }
+  else
+    local role
+    for _, b in ipairs(list) do
+      if b.role ~= role then
+        role = b.role
+        items[#items + 1] = { kind = "title", text = L["TALENT_ROLE_" .. role:upper()] }
+      end
+      items[#items + 1] = { kind = "button", text = L.TALENT_RECOMMENDED_ITEM:format(b.name, b.level),
+                            func = function()
+                              setLink(Talents.SITE_URL .. state.class .. "/" .. b.code .. "~" .. Calc.Hash(state.class))
+                            end }
+    end
+  end
+  UI.ContextMenu(items)
+end
+
 function TalentPanel.ShareMenu()
   local body = TalentPanel.CurrentBody()
-  if not body then R2F.Print(L.TALENT_LOADOUT_NEED_BUILD) return end
-  local name = Talents.ClassName(body:match("^(%a+)/")) .. " build"
-  for _, l in ipairs(Talents.Loadouts(Talents.ClassId())) do
+  if not body or Calc.Total(state.calc) == 0 then R2F.Print(L.TALENT_LOADOUT_NEED_BUILD) return end
+  local name = Talents.ClassName(state.class) .. " build"
+  for _, l in ipairs(Talents.Loadouts(state.class)) do
     if l.body == body then name = l.name end
   end
   local items = { { kind = "title", text = L.TALENT_SHARE_TITLE },
@@ -720,3 +814,20 @@ end
 
 -- Test hook: the cell drawn for tree t, tier row, column col.
 function TalentPanel.Cell(t, row, col) return cells[t] and cells[t][row] and cells[t][row][col] end
+
+-- Test hook: puts a board on screen WITHOUT the validity checks (the learning-engine tests build boards from a small
+-- fixture tree whose tier points and prerequisites don't follow the real rules).
+function TalentPanel.SetBoardUnchecked(classId, code)
+  local calc = Calc.New(classId)
+  if not calc then return end
+  local n = 0
+  for part in ((code or "") .. "-"):gmatch("([^%-]*)%-") do
+    n = n + 1
+    local r = calc.ranks[n]
+    if r then for k = 1, #r do r[k] = tonumber(part:sub(k, k)) or 0 end end
+  end
+  Talents.ResetLearn()
+  state.class, state.calc = classId, calc
+  remember()
+  TalentPanel.Refresh()
+end

@@ -17,9 +17,11 @@ Open it with `/r2f` (or the minimap button). It has six pages:
   one to your bars to create the real game macro. New addon versions update the macros the
   addon made, but never one you edited yourself. The Options button holds which slots new
   macros use, Import (for a custom pick from the site) and Remove all.
-- **Talents**: paste a talent link from the site's calculator, preview it against your
-  character (what you have, what comes now, what comes later), and learn the points one by
-  one. A confirmation comes first, and it never learns in combat.
+- **Talents**: a talent calculator for every class. Click freely without spending anything,
+  pick any class by its icon (try your friend's Warrior while you play a Priest), save the
+  build, share it with teammates who also have the addon, start from our recommended Tank /
+  DPS / Healer builds, and, only on your own class after a trainer reset, learn it one point
+  at a time. A confirmation comes first, and it never learns in combat.
 - **Plan**: the launch-day checklist from the site, with tick boxes and map waypoints
   (TomTom, if you have it).
 - **BiS (Mr.BiZ)**: best in slot gear for every class and spec at level 30, with where it
@@ -43,8 +45,9 @@ connections: everything moves between the site and the game by copy and paste.
 
 1. On the site, tick macros in **Export macros** and copy the import string. In game, type
    `/r2f import` and paste it.
-2. For talents: build one in the site's talent calculator, copy its link, open the
-   **Talents** tab, paste, **Preview**, then **Learn talents**.
+2. For talents: open the **Talents** tab and click a build together (or paste a link from
+   the site's calculator and press **Load**). **Save loadout**, **Share** it, or **Learn this
+   build** (your own class, after a trainer reset).
 3. `/r2f copybuild` copies your current talents as a link for the site.
 4. Open each profession window once, then `/r2f profs` copies your recipes for the site's
    Professions page.

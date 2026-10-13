@@ -28,7 +28,6 @@ local pageHeight = {}
 local outlineButtons = {}   -- "none" / "thin" / "thick" -> button (Alerts & HUD page)
 local arrowButtons = {}     -- BiZNav arrow size: "small" / "medium" / "large" -> button (Alerts & HUD page)
 local sizeSlider, sizeText
-local searchBox, results, resultRows = nil, nil, {}
 local bagBoxes = {}     -- Movable bags / Lock bags (Bags.lua), on the Bags page
 local scroll, content
 local LEFT, RIGHT, RIGHT_W = 22, 270, 214
@@ -154,61 +153,6 @@ local function onWheel(self, delta)
   self:SetVerticalScroll(math.max(0, math.min(v, maxScroll)))
 end
 
--- Search: matches the option names, their hints and tooltips, and the page names. Returns a list of
--- { label, page } (up to 10). Options that are not plain features are listed in EXTRA.
-local EXTRA = {
-  { "BAGS_MOVABLE", "bags" }, { "BAGS_LOCK", "bags" },
-  { "GP_ALERT_OUTLINE", "alerts" }, { "GP_ICONS", "alerts" }, { "NAV_SIZE", "alerts" },
-}
-
-function Tab.Search(q)
-  q = tostring(q or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
-  local out = {}
-  if q == "" then return out end
-  local function hit(...)
-    for i = 1, select("#", ...) do
-      local t = select(i, ...)
-      if t and tostring(t):lower():find(q, 1, true) then return true end
-    end
-  end
-  for _, pg in ipairs(Tab.PAGES) do
-    for _, key in ipairs(pg.features) do
-      local def
-      for _, d in ipairs(Gameplay.FEATURES) do if d.key == key then def = d end end
-      if def and #out < 10 and hit(L[def.title], L[def.title .. "_HINT"], L[def.tip], L[pg.label]) then
-        out[#out + 1] = { label = L[def.title], page = pg.key }
-      end
-    end
-  end
-  for _, e in ipairs(EXTRA) do
-    if #out < 10 and hit(L[e[1]], L[e[1] .. "_TIP"]) then out[#out + 1] = { label = L[e[1]], page = e[2] } end
-  end
-  return out
-end
-
-local function showResults(list, q)
-  for _, r in ipairs(resultRows) do r:Hide() end
-  results:SetShown(q ~= "")
-  results.none:SetShown(q ~= "" and #list == 0)
-  for i, item in ipairs(list) do
-    local r = resultRows[i]
-    if not r then
-      r = CreateFrame("Button", nil, results, "UIPanelButtonTemplate")
-      r:SetSize(300, 24)
-      r:SetPoint("TOPLEFT", 16, -10 - (i - 1) * 28)
-      r:SetScript("OnClick", function(self)
-        searchBox:SetText("")
-        searchBox:ClearFocus()
-        Tab.ShowPage(self.page)
-      end)
-      resultRows[i] = r
-    end
-    r.page = item.page
-    r:SetText(item.label .. "  |cff999999(" .. L["GP_PAGE_" .. item.page:upper()] .. ")|r")
-    r:Show()
-  end
-end
-
 function Tab.ShowPage(key)
   if not pages[key] then key = Tab.PAGES[1].key end
   for k, p in pairs(pages) do p:SetShown(k == key) end
@@ -290,23 +234,6 @@ function Tab.Build(f)
   end)
   reset:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-  -- Search box (bottom left): lists the options that match; a click opens the page they are on.
-  searchBox = CreateFrame("EditBox", "R2FGameplaySearch", f, "InputBoxTemplate")
-  searchBox:SetSize(200, 22)
-  searchBox:SetPoint("BOTTOMLEFT", 24, 12)
-  searchBox:SetAutoFocus(false)
-  searchBox:SetMaxLetters(40)
-  local hint = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-  hint:SetPoint("LEFT", searchBox, "LEFT", 6, 0)
-  hint:SetText(L.GP_SEARCH)
-  searchBox:SetScript("OnTextChanged", function(self)
-    local q = self:GetText() or ""
-    hint:SetShown(q == "")
-    showResults(Tab.Search(q), q)
-  end)
-  searchBox:SetScript("OnEscapePressed", function(self) self:SetText("") self:ClearFocus() end)
-  searchBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
-
   scroll = UI.TryTemplate("ScrollFrame", "R2FGameplayScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FGameplayScrollPlain", f)
   scroll:SetPoint("TOPLEFT", 6, -76)
@@ -316,18 +243,6 @@ function Tab.Build(f)
   scroll:SetScrollChild(content)
   scroll:EnableMouseWheel(true)
   scroll:SetScript("OnMouseWheel", onWheel)
-
-  results = CreateFrame("Frame", nil, f)
-  results:SetPoint("TOPLEFT", 6, -76)
-  results:SetSize(500, 390)
-  results:SetFrameLevel(scroll:GetFrameLevel() + 5)
-  results.bg = results:CreateTexture(nil, "BACKGROUND")
-  results.bg:SetAllPoints()
-  results.bg:SetColorTexture(0.04, 0.04, 0.05, 0.97)
-  results:Hide()
-  results.none = results:CreateFontString(nil, "ARTWORK", "GameFontDisable")
-  results.none:SetPoint("TOPLEFT", 20, -14)
-  results.none:SetText(L.GP_SEARCH_NONE)
 
   for _, pg in ipairs(Tab.PAGES) do
     local c = CreateFrame("Frame", nil, content)

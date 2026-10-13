@@ -7,7 +7,7 @@ v0.4.0), 7 (release zip on GitHub Releases, v0.5.0), 8 (talent export + the site
 `~hash`, v0.6.0), 9 (talent import preview, v0.7.0), 10 (talent learning, v0.8.0)
 and Quick settings (Home tab, v0.9.0, 12.4.1) shipped. No addon version has been
 tested in the game yet: what's left is the in-game checks (section 11,
-`addon/dev/TESTING.md`); see `addon/dev/CHANGELOG.md`.
+`addon/dev/TESTING.md`); see `the root CHANGELOG.md (addon section)`.
 Target: usable before the Nov 4 launch.
 
 | | |
@@ -1261,7 +1261,7 @@ Body keeps its real newlines. Empty icon = `""`.
 
 **How to release a version:** bump `## Version:` in `RoadToForever.toc`, add the
 `## <version> (date): ...` section to `addon/RoadToForever/CHANGELOG.md` (the short player
-changelog; the detailed history is `addon/dev/CHANGELOG.md`), commit,
+changelog; the detailed history is `the root CHANGELOG.md (addon section)`), commit,
 then `git tag r2f-v<version>` and `git push origin main r2f-v<version>`. The run
 shows under the repo's Actions tab.
 
@@ -3117,3 +3117,35 @@ Owner request 2026-10-13: navigation driven by our own data, no TomTom.
   highest rank, earliest step. Plan tab "Weapon:" lines.
 - **Open:** ForeverChanges as a second Mr.BiZ source (fetch of foreverchanges.pro needs the owner's OK); quality
   baking (owner's yes); logo / ornament (optional).
+
+## 20. Talents tab as a sandbox calculator (owner, 2026-10-13) -- built as v0.54.0, 2026-10-14
+
+**Why.** Today the tab mirrors the game's own talent window (your learned talents) and previews site links. The owner wants it to be a
+calculator like the site's `talents.html`: click freely, spend nothing, see what you might want, save it, share it, and only then maybe learn it.
+
+**Decisions (owner):**
+1. The sandbox starts EMPTY with the full point pool for the level (51 at level 60; the beta cap's pool at 30). It does not show or mirror the points
+   already spent in game. Clicking never spends anything.
+2. A class-icon row on top picks ANY class's tree (default: the logged-in character's class). Example: a Priest opens the Warrior trees, builds as
+   he would in his friend's shoes, and shares it.
+3. Share with teammates who also run the addon (party / whisper / guild channel by addon message; the existing `~hash` link as the payload).
+   Receiver sees "<name> shared a <class> build: Preview / Save / Ignore". Link-by-chat copy stays as the fallback.
+4. Learning is optional and last: only for a saved or current sandbox build of the character's own class, after a trainer reset, through the
+   existing one-click `C_Traits` mode (section 13.12). Nothing in the sandbox ever calls it by itself.
+5. Recommended builds ship inside the addon as ready loadouts (our own, from `builds.html`), grouped Tank / DPS / Healer per class; the player
+   picks one as the sandbox's starting point. Players keep their own saved loadouts as today.
+
+**Reuse.** Rules, grid and code format are the site's (`talentcalc.js`: 7x4 grid, 51 points, tier gates, prerequisites, `<class>/<digits>~hash`);
+the addon already has the mini-tree drawing, Edit build, loadouts and Share to Party (0.37.0) and the link parser. Talent data for other
+classes: the addon can only read the logged-in class's trees from `C_Traits`, so other classes need a bundled tree table, generated at build
+time from Wowhead's Forever talent data like `PlanData.lua` (generated, never hand-edited).
+
+**Built:** `addon/tools/gen_talent_data.py` -> `TalentData.lua` (all classes + recommended builds, tooltip text per rank from the same Wowhead data),
+`TalentCalc.lua` (rules, codes, hash), `UI/TalentPanel.lua` (class circles, board, loadouts, recommended, share, learn). Prerequisite arrows are not drawn yet.
+
+**Answered questions (kept for history):** where the bundled tree data comes from at build time (same Wowhead script the site loads, fetched in a browser); whether
+other classes' talent icons/tooltips can show without the spell being known (icons by id yes, tooltips probably need our own text);
+addon-message size limits (a build code is short, so fine); whether sharing needs a version handshake.
+
+**Removes / changes:** the "mirror my talents" view goes; "Copy my build" stays (it reads real talents); TalentGuide.lua and the old
+guided-learning mode become deletion candidates.

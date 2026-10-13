@@ -108,8 +108,8 @@ end
 local function layout()
   local planId = Plan.Selected()
   local arrow = R2F.Nav.Supported()
-  -- Mr.BiZ weapon picks you can get at a step (your class's spec from Mr.BiZ).
-  local route = R2F.BiZ.RouteWeapons(R2F.GearScore.SpecId(), planId)
+  -- Weapons you can get at a step that beat what you wear (quest rewards, Mr.BiZ dungeon / vendor picks).
+  local route = R2F.QuestWeapons.StepLines(planId)
   local y, nHead, nRow = 0, 0, 0
   for _, ph in ipairs(Plan.Phases(planId)) do
     nHead = nHead + 1
@@ -176,7 +176,7 @@ local function layout()
       end
       r.gears = r.gears or {}
       local gear = route[s.id] or {}
-      for j, m in ipairs(gear) do
+      for j, w in ipairs(gear) do
         local g = r.gears[j]
         if not g then
           g = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
@@ -186,10 +186,7 @@ local function layout()
         end
         g:ClearAllPoints()
         g:SetPoint("TOPLEFT", content, "TOPLEFT", 78, -(y + used))
-        local text = L.PLAN_WEAPON:format(R2F.BiZ.ColoredName(m.row.id, m.row.name), R2F.BiZ.RankName(m.rank),
-          R2F.BiZ.SlotLabel(m.slot):lower())
-        if m.best then text = text .. " |cffffd100" .. L.PLAN_WEAPON_BEST .. "|r" end
-        g:SetText(text)
+        g:SetText(w.text)
         g:Show()
         used = used + 16
       end
@@ -253,6 +250,15 @@ function Tab.Build(f)
 end
 
 Tab.Refresh = refresh
+
+-- GET_ITEM_INFO_RECEIVED: a weapon the Plan tab asked for has loaded; redraw once, a moment later (many arrive together).
+local pendingInfo = false
+function Tab.OnItemInfo()
+  if not visible() or pendingInfo then return end
+  pendingInfo = true
+  local function run() pendingInfo = false; refresh() end
+  if C_Timer and C_Timer.After then C_Timer.After(0.5, run) else run() end
+end
 
 function Tab.Show()
   R2F.MainWindow.Show("plan")

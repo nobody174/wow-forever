@@ -1288,3 +1288,19 @@ on, Questie keeps using TomTom's arrow). Have Questie on. A character of level 2
 6. If the arrow shows as a green square, or as a stack of tiny arrows, tell me (the texture did not load or the sheet is read wrong):
    the file is media/arrow3d.tga, 100 frames in 10 columns of 102 px.
 7. Right-click clears it, left-drag moves it (as before). Does dragging still grab the 3D arrow easily?
+
+## 45. Weapons along the route (v0.53.0)
+
+1. Open the Plan tab with a fresh character at level 1: steps in Zephras Isle (1-12) show at most one "Weapon: <item> (quest: <quest>)"
+   line per slot, only for a weapon type your class uses and only if it beats what you wear (an empty hand counts as 0).
+   Do the item names show their rarity colour (green / blue)? Hover is not needed; the lines are plain text.
+2. Wear a better weapon in that slot (or `/run` nothing): the line for that slot disappears after the Plan tab redraws (switch tab and back).
+3. Alliance and Horde: a reward locked to the other faction never shows.
+4. The first time you open the Plan tab after login, are there no lines for a moment and then some appear (the game loads the items)?
+   If the lines never appear, tell me which step.
+5. Hall of Thanes: the step "Hall of Thanes - one clear" (not the "collect quests" step before it) shows the reward, for example Calibrated
+   Blunderbuss (Old Ironforge Incursion) for a Hunter or Warrior who does not already wear a better gun.
+6. Wetlands (level 22-26 step): a Hunter sees Raptor's End (Ormer's Revenge) if it beats the worn bow.
+7. Do the lines fit between the steps, or do they push the list too long? Mr.BiZ dungeon / vendor weapon lines now read
+   "Weapon: <item> (Bizzest main hand)" without "best on route".
+8. Another class (a Mage, a Priest): only wands, daggers, staffs and one-handed swords / maces they can use; no bows.

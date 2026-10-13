@@ -1,5 +1,15 @@
 # Road to Forever changelog
 
+## 0.53.0 (2026-10-13)
+
+- Plan tab, weapons along the route: a step now shows "Weapon: <item> (quest: <quest name>)" when a weapon you can use is the reward of a quest
+  in that step's zone (matched by the zone named in the step title and the step's level range; the reward's level must be reached by
+  the end of the step) AND it beats what you wear in that slot (BiZ score with your own spec's weights; an empty slot counts as 0).
+  Only the best weapon per slot (main hand, off hand, ranged) is shown on a step, and nothing that is not an upgrade, so the plan does not
+  fill up. Mr.BiZ's dungeon and vendor weapon picks follow the same rules ("best on route" is gone). Your class's weapon types (the
+  Classic table, unverified for Forever) and your faction are respected. The table of 233 quest weapons up to level 32 is bundled
+  (QuestWeaponData.lua, from Wowhead's Forever item lists, credited in the README).
+
 ## 0.52.0 (2026-10-13)
 
 - The BiZNav arrow is a 3D arrow now (TomTom "crazy arrow" style): a gold dart with a raised ridge, seen in perspective, picked from

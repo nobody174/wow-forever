@@ -12,8 +12,7 @@ row (site), the Talents tab has Clear and a more patient talent read, and dungeo
 
 - [ ] **Talents tab like the site's calculator**: Clear is in (0.50.0). Ask whether anything else is missing before rebuilding.
 - [ ] **Mr.BiZ at a lower level**: dropped. Lists are for the beta cap (30), later 60.
-- [ ] **Weapons from quests along the route**: researched for all five plan classes, see `bis/quest-weapons-research.md` and
-      `bis/quest-weapons-by-class.md`. Needs a per-spec score and a quest-to-step match; the owner has not answered the three open questions yet.
+- [x] **Weapons from quests along the route**: shipped in 0.53.0 (QuestWeapons.lua, TESTING.md section 45). Open: check the Classic weapon table against Forever, and extend past level 32 when the beta does.
 - [ ] **Plan points still without a position**: the Skycutter / Dalaran portal (no NPC on the zone map), the Stormwind boat, Riverglades and
       Shen'dralas, Mount Hyjal (zones, not dungeons). Use `/r2f here` at the spot in game, then paste the line.
 

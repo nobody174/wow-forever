@@ -253,3 +253,4 @@ subprocess.run([sys.executable, "bis/build_bis.py"], check=True)
 with open(MACRO_DATA_PATH, "w", encoding="utf-8", newline="\n") as f:
     f.write(macro_data_lua())
 print("MacroData.lua written")
+subprocess.run([sys.executable, "bis/build_quest_weapons.py"], check=True)

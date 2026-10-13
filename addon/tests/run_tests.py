@@ -1131,6 +1131,77 @@ def test_arrow_3d():
     check(abs(lua.eval("R2FNavFrame.arrow.__rotation") + math.pi / 2) < 1e-9, "3D arrow: the flat dart turns by the angle again")
     lua.execute("R2F.Gameplay.SetOn('arrow3d', true)")
     check(lua.eval("string.sub(R2FNavFrame.arrow.__tex, -7)") == "arrow3d", "3D arrow: back to the sprite sheet")
+def test_quest_weapons():
+    """Weapons along the route: quest rewards matched to plan steps by zone and level, class and faction, upgrades only."""
+    lua, T = plan_runtime()
+    lua.execute("QW = R2F.QuestWeapons")
+    for text, want in (("12\u201314", [12, 14]), ("~5", [5, 5]), ("16", [16, 16]), ("29\u201331", [29, 31])):
+        got = lua.eval("{ QW.LevelRange(%r) }" % text)
+        check([got[1], got[2]] == want, "quest weapons: level range %r -> %s" % (text, want))
+    check(lua.eval("QW.LevelRange('Early')") is None and lua.eval("QW.LevelRange('Thu\u2013Fri')") is None, "quest weapons: no level in the step -> nil")
+    check(lua.eval("QW.ZoneInTitle('The Hall of Thanes', 'Hall of Thanes \u2014 one clear')") is True
+          and lua.eval("QW.ZoneInTitle('Wetlands', 'Darkshore \u2014 quest against the flow')") is False,
+          "quest weapons: a zone is matched in the step title (a leading 'The' is ignored)")
+    check(lua.eval("QW.CanUse('HUNTER', 'bow')") is True and lua.eval("QW.CanUse('MAGE', 'bow')") is False
+          and lua.eval("QW.CanUse('PRIEST', 'wand')") is True and lua.eval("QW.CanUse('WARRIOR', 'wand')") is False
+          and lua.eval("QW.CanUse('DRUID', 'shield')") is False, "quest weapons: class weapon use")
+    lua.execute("""
+      R2F.QuestWeaponData = { items = {
+        { 101, 'Ally Bow', 'bow', 5, 'Quest A', 'Zephras Isle', 1, 2 },
+        { 102, 'Horde Bow', 'bow', 5, 'Quest H', 'Zephras Isle', 2, 2 },
+        { 103, 'High Bow', 'bow', 30, 'Quest B', 'Zephras Isle', 0, 2 },
+        { 104, 'Mace', '1h mace', 5, 'Quest C', 'Zephras Isle', 0, 2 },
+        { 105, 'Elsewhere Bow', 'bow', 5, 'Quest D', 'Wetlands', 0, 2 },
+        { 106, 'Dagger', 'dagger', 6, 'Quest E', 'Zephras Isle', 0, 2 },
+        { 107, 'Staff', 'staff', 6, 'Quest F', 'Zephras Isle', 0, 3 },
+        { 108, 'Thanes Gun', 'gun', 9, 'Old Incursion', 'The Hall of Thanes', 0, 3 },
+      } }
+      ZSTEP = { t = 'Zephras Isle together, share every quest', lvl = '1\u201312' }
+    """)
+    ids = lambda cls, side: sorted(c["id"] for c in lua.eval("QW.Candidates(ZSTEP, '%s', %d)" % (cls, side)).values())
+    check(ids("HUNTER", 1) == [101, 106, 107], "quest weapons: Alliance Hunter at Zephras: its own faction, level and weapon types: %s" % ids("HUNTER", 1))
+    check(ids("HUNTER", 2) == [102, 106, 107], "quest weapons: a Horde Hunter gets the Horde reward instead: %s" % ids("HUNTER", 2))
+    check(ids("MAGE", 1) == [106, 107], "quest weapons: a Mage can use neither the bow nor the mace: %s" % ids("MAGE", 1))
+    check(lua.eval("#QW.Candidates({ t = 'Tram to Ironforge, collect all Hall of Thanes quests', lvl = '12' }, 'HUNTER', 1)") == 0,
+          "quest weapons: a step that only collects quests gets none")
+    check(lua.eval("#QW.Candidates({ t = 'Hall of Thanes \u2014 one clear', lvl = '13\u201315' }, 'HUNTER', 1)") == 1,
+          "quest weapons: the dungeon clear gets its quest reward")
+    check(lua.eval("#QW.Candidates({ t = 'Hall of Thanes \u2014 one clear', lvl = '' }, 'HUNTER', 1)") == 0,
+          "quest weapons: a step with no level range gets none")
+
+    # Upgrades only, best per slot, from the live stats.
+    install_item_stubs(lua)
+    lua.execute("""
+      UnitFactionGroup = function() return 'Alliance' end
+      R2F.playerClass = 'HUNTER'
+      TEST.gsItems['item:101'] = { stats = { ITEM_MOD_AGILITY_SHORT = 10, ITEM_MOD_INTELLECT_SHORT = 10 }, loc = 'INVTYPE_RANGEDRIGHT', cls = 2, sub = 2 }
+      TEST.gsItems['item:106'] = { stats = { ITEM_MOD_AGILITY_SHORT = 4, ITEM_MOD_INTELLECT_SHORT = 4 }, loc = 'INVTYPE_WEAPON', cls = 2, sub = 15 }
+      TEST.gsItems['item:107'] = { stats = { ITEM_MOD_AGILITY_SHORT = 8, ITEM_MOD_INTELLECT_SHORT = 8 }, loc = 'INVTYPE_2HWEAPON', cls = 2, sub = 10 }
+      R2F.Plan.Select('hwd')
+      ZID = nil
+      for _, st in ipairs(R2F.Plan.Steps('hwd')) do if st.t:find('Zephras Isle together', 1, true) then ZID = st.id end end
+    """)
+    lua.execute("LINES = R2F.QuestWeapons.StepLines('hwd')[ZID] or {}")
+    by_slot = {lua.eval("LINES[%d].slot" % i): lua.eval("LINES[%d].id" % i) for i in range(1, lua.eval("#LINES") + 1)}
+    check(by_slot == {"ranged": 101, "mainhand": 107}, "quest weapons: one line per slot, the better main hand wins: %s" % by_slot)
+    check("(quest: Quest A)" in lua.eval("LINES[1].text") or "(quest: Quest F)" in lua.eval("LINES[1].text"), "quest weapons: the line names the quest: %r" % lua.eval("LINES[1].text"))
+    lua.execute("TEST.gsItems['item:900'] = { stats = { ITEM_MOD_AGILITY_SHORT = 50, ITEM_MOD_INTELLECT_SHORT = 50 }, loc = 'INVTYPE_2HWEAPON', cls = 2, sub = 10 } TEST.worn[16] = 'item:900' TEST.worn[17] = 'item:900'")
+    lua.execute("LINES = R2F.QuestWeapons.StepLines('hwd')[ZID] or {}")
+    check(lua.eval("#LINES") == 1 and lua.eval("LINES[1].slot") == "ranged", "quest weapons: nothing that beats the worn main hand shows, the ranged one still does")
+    lua.execute("TEST.worn[16] = nil TEST.worn[17] = nil TEST.gsItems['item:101'].stats = nil TEST.requested = {}")
+    check(lua.eval("#(R2F.QuestWeapons.StepLines('hwd')[ZID] or {})") == 1 and lua.eval("#TEST.requested") >= 1,
+          "quest weapons: an item whose stats are not loaded yet shows no line and is asked for")
+    lua.execute("TEST.gsItems['item:101'].stats = { ITEM_MOD_AGILITY_SHORT = 10, ITEM_MOD_INTELLECT_SHORT = 10 } R2F.playerClass = 'MAGE'")
+    lua.execute("LINES = R2F.QuestWeapons.StepLines('hwd')[ZID] or {}")
+    check(lua.eval("#LINES") == 1 and lua.eval("LINES[1].slot") == "mainhand", "quest weapons: a Mage gets no bow line (class weapon use)")
+    # On the Plan tab
+    lua.execute("R2F.playerClass = 'HUNTER' R2F.MainWindow.Show('plan') R2F.PlanTab.Refresh()")
+    check(font_text(lua, "^Weapon: .*Ally Bow.* %(quest: Quest A%)") is not None, "quest weapons: the Plan tab shows 'Weapon: <item> (quest: <quest>)'")
+    # The real data
+    lua.execute("R2F.QuestWeaponData = nil")
+    check(lua.eval("R2F.QuestWeaponData == nil"), "quest weapons: (data reset)")
+
+
 def test_tweaks_search():
     """0.38.0: the Tweaks search box lists matching options and opens their page."""
     lua = new_runtime()
@@ -7596,6 +7667,7 @@ def main():
     test_own_spec()
     test_arrow_follows_plan()
     test_route_weapons()
+    test_quest_weapons()
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
 
@@ -7928,6 +8000,23 @@ def test_training():
           "train: the reminder switch is on Tweaks > Alerts & HUD")
 
 
+def install_item_stubs(lua):
+    """Fake item info keyed by 'item:<id>' links (the Plan tab asks for items by link): stats, equip location, worn gear."""
+    lua.execute("""
+      TEST.gsItems = TEST.gsItems or {}
+      TEST.worn = TEST.worn or {}
+      TEST.requested = {}
+      GetItemStats = function(link) local it = TEST.gsItems[link] return it and it.stats end
+      GetItemInfoInstant = function(x)
+        local it = TEST.gsItems[type(x) == 'number' and ('item:' .. x) or x]
+        if it then return 1, '', '', it.loc, '', it.cls, it.sub end
+      end
+      GetInventoryItemLink = function(unit, slot) return TEST.worn[slot] end
+      C_Item = C_Item or {}
+      C_Item.RequestLoadItemDataByID = function(id) TEST.requested[#TEST.requested + 1] = id end
+    """)
+
+
 def test_route_weapons():
     """On-route weapons: Mr.BiZ weapon picks matched to launch-plan step titles, best per slot marked."""
     lua, T = plan_runtime()
@@ -7943,11 +8032,19 @@ def test_route_weapons():
       for _, m in ipairs(l) do if m.best then n = n + 1 end end end return n end)()""")
     check(best == 2, "route: one 'best on route' per weapon slot that has a match (Combat: main + off hand = %d)" % best)
     check(lua.eval("next(R2F.BiZ.RouteWeapons('nope/spec', 'hwd'))") is None, "route: unknown spec = nothing")
-    # The Plan tab line, for a Fury Warrior (the stub player is a Warrior).
-    lua.execute("R2F.BiZ.SetSpec('warrior/fury') R2F.Plan.Select('hwd') R2F.MainWindow.Show('plan') R2F.PlanTab.Refresh()")
-    line = font_text(lua, "^Weapon: .+best on route")
-    check(line is not None and "Ironspine's Fist" in line, "route: the Plan tab shows the weapon line with 'best on route': %r" % line)
-    lua.execute("R2F.BiZ.SetSpec('warrior/protection') R2F.PlanTab.Refresh()")
+    # The Plan tab line, for a Fury Warrior (the stub player is a Warrior): shown when it beats what is worn, not otherwise.
+    lua.execute("R2F.BiZ.SetSpec('warrior/fury') R2F.Plan.Select('hwd')")
+    fid = lua.eval("""(function() for _, l in pairs(R2F.BiZ.RouteWeapons('warrior/fury', 'hwd')) do
+      for _, m in ipairs(l) do if m.row.name == "Ironspine's Fist" then return m.row.id end end end end)()""")
+    install_item_stubs(lua)
+    lua.execute("TEST.gsItems['item:%d'] = { stats = { ITEM_MOD_STRENGTH_SHORT = 20 }, loc = 'INVTYPE_WEAPON', cls = 2, sub = 13 }" % fid)
+    lua.execute("R2F.MainWindow.Show('plan') R2F.PlanTab.Refresh()")
+    line = font_text(lua, "^Weapon: .*Ironspine's Fist")
+    check(line is not None and "best on route" not in line, "route: the Plan tab shows the weapon line when it is an upgrade: %r" % line)
+    lua.execute("TEST.gsItems['item:999'] = { stats = { ITEM_MOD_STRENGTH_SHORT = 99 }, loc = 'INVTYPE_WEAPON', cls = 2, sub = 13 } "
+                "TEST.worn[16] = 'item:999' TEST.worn[17] = 'item:999' R2F.PlanTab.Refresh()")
+    check(font_text(lua, "^Weapon: .*Ironspine's Fist") is None, "route: not an upgrade over what is worn -> no line")
+    lua.execute("TEST.worn[16] = nil TEST.worn[17] = nil R2F.BiZ.SetSpec('warrior/protection') R2F.PlanTab.Refresh()")
     check(font_text(lua, "^Weapon: .*Ironspine") is None, "route: another spec, other lines (the old ones are hidden)")
 
 

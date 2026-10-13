@@ -82,4 +82,5 @@ your report. `/r2f copychat` is handy for copying Lua errors out of chat.
 ## Credits
 
 Best in slot data comes from [ForeverDB](https://foreverdb.net/) and Wowhead; the addon
-shows the source next to each pick.
+shows the source next to each pick. The quest-reward weapons on the Plan tab (and the
+item rarity colours) come from [Wowhead](https://www.wowhead.com/forever)'s Forever item data.

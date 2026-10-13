@@ -30,6 +30,14 @@ Cliffrunner's Aim (20), Precision Bow (23), Lunaris Bow (25), Master Hunter's Bo
 
 So the Hall of Thanes (plan step `p1-hot`, Ironforge) and Wetlands are both steps of the launch plan, and both have a ranged weapon that the Mr.BiZ lists do not mention.
 
+## All five plan classes (script run 2026-10-13)
+
+`bis/tools/wh_quest_weapons.py` now reads every weapon type and writes `bis/quest-weapons.json` (273 quest-reward weapons, green or better, required level
+32 or less). `bis/quest-weapons-by-class.md` filters that to the zones and dungeons of the plan and to what each class can use (Classic proficiencies,
+unverified for Forever): **Hunter 58, Warrior 97, Paladin 67, Shaman 70, Druid 42** quest weapons on the route. Examples beyond the Hunter ones above:
+Phytoblade (Wetlands, 1h sword 12.9 dps), Edge of the People's Militia (Westfall, 2h sword), Mountaineer's Greataxe (Loch Modan, 2h axe 11.2), Woodsman Sword
+(Darkshore, 2h sword 13.0), Daryl's Shortsword (Loch Modan), and several dagger and staff rewards for Druids and Shamans on Zephras Isle.
+
 ## What a real fix needs (not built)
 
 1. A script, `bis/quest_weapons.py`, reading every weapon page (guns, bows, crossbows, 1h/2h swords, axes, maces, daggers, staves, polearms,

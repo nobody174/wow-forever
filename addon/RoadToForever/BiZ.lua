@@ -125,6 +125,41 @@ function BiZ.SetSpec(specId)
   end
 end
 
+-- Inventory slot ids for Mr.BiZ's slot keys (what GetInventoryItemLink wants).
+BiZ.INV_SLOT = { head = 1, neck = 2, shoulder = 3, back = 15, chest = 5, wrist = 9, hands = 10, waist = 6, legs = 7,
+                 feet = 8, finger1 = 11, finger2 = 12, trinket1 = 13, trinket2 = 14, mainhand = 16, offhand = 17,
+                 ranged = 18 }
+
+-- The enchantment id of what you wear in a slot (0 = no enchant), or nil when the slot is empty / unknown.
+-- An item link is item:<itemID>:<enchantID>:...
+function BiZ.WornEnchant(slotKey)
+  local inv = BiZ.INV_SLOT[slotKey]
+  if not (inv and GetInventoryItemLink) then return nil end
+  local link = GetInventoryItemLink("player", inv)
+  if type(link) ~= "string" then return nil end
+  local id = link:match("item:%d+:(%d*)")
+  return tonumber(id) or 0
+end
+
+-- How the worn enchant ranks against a slot's list (rows from BiZ.Enchants): "best" (and the row), "alt" (and its
+-- rank, 2 or 3), "other" (an enchant that is not listed), or "none". nil when nothing is worn there.
+function BiZ.EnchantState(rows, enchantId)
+  if enchantId == nil then return nil end
+  if enchantId == 0 then return "none" end
+  local function has(list)
+    for _, id in ipairs(list or {}) do if id == enchantId then return true end end
+  end
+  for _, r in ipairs(rows) do
+    if has(r.ids) then return "best", r, 1 end
+  end
+  for _, r in ipairs(rows) do
+    for i, a in ipairs(r.alts or {}) do
+      if has(a.ids) then return "alt", a, i + 1 end
+    end
+  end
+  return "other"
+end
+
 -- BiS enchants for a spec's slot (from the site's Professions page), {} when none.
 function BiZ.Enchants(specId, slot)
   local sp = data().specs[specId]
@@ -229,35 +264,9 @@ end
 function BiZ.KnownOnly() return cdb().known == true end
 function BiZ.SetKnownOnly(on) cdb().known = on and true or false end
 
--- Level filter ("Up to level"): 60 = any level (the default). Saved per character.
-BiZ.MAX_LEVEL = 60
-function BiZ.MaxLevel()
-  local v = cdb().maxLevel
-  return type(v) == "number" and v >= 1 and v <= BiZ.MAX_LEVEL and v or BiZ.MAX_LEVEL
-end
-function BiZ.SetMaxLevel(v)
-  v = math.floor(tonumber(v) or BiZ.MAX_LEVEL)
-  v = math.max(1, math.min(BiZ.MAX_LEVEL, v))
-  cdb().maxLevel = v < BiZ.MAX_LEVEL and v or nil
-end
-
--- The item's required level from the game (nil until the item is loaded; then it is asked for,
--- and GET_ITEM_INFO_RECEIVED redraws the tab). 0 / 1 = no requirement.
-function BiZ.ReqLevel(id)
-  if not (id and R2F.Item.Available()) then return nil end
-  local lvl = select(5, R2F.Item.Info(id))
-  if lvl == nil and C_Item and C_Item.RequestLoadItemDataByID then C_Item.RequestLoadItemDataByID(id) end
-  return lvl
-end
-
 function BiZ.Passes(best)
   if best.type ~= "unknown" and cdb().types[best.type] == false then return false end
   if cdb().known and best.type == "unknown" then return false end
-  local max = BiZ.MaxLevel()
-  if max < BiZ.MAX_LEVEL then
-    local req = BiZ.ReqLevel(best.id)
-    if req and req > max then return false end   -- an item not loaded yet still counts
-  end
   return true
 end
 

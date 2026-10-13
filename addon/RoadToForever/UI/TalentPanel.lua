@@ -41,6 +41,7 @@ local page
 local ui = {}
 local cells = {}           -- cells[tree][row][col]
 local heads = {}           -- heads[tree] = { name, counts }
+local readTries = 0   -- retries of a talent read that failed (names not loaded yet)
 local state = { text = nil, editing = false }   -- the link being previewed (nil = none)
 
 local function cdb() return R2F.Library.cdb end
@@ -305,7 +306,7 @@ local function build(f)
 
   -- Cancel; while a run is active it reads Stop (a way out of a run that is
   -- waiting on the server or on the player's clicks in guided mode).
-  ui.cancel = button(f, L.BTN_CANCEL, 90)
+  ui.cancel = button(f, L.BTN_CANCEL, 70)
   ui.cancel:SetPoint("RIGHT", ui.learn, "LEFT", -8, 0)
   ui.cancel:SetScript("OnClick", function()
     if Talents.LearnBusy() then Talents.StopLearn() else TalentPanel.Cancel() end
@@ -331,15 +332,26 @@ local function build(f)
     GameTooltip:Show()
   end)
   ui.editMode:SetScript("OnLeave", function() GameTooltip:Hide() end)
-  ui.saveLoadout = button(f, L.BTN_SAVE_LOADOUT, 96)
+  ui.saveLoadout = button(f, L.BTN_SAVE_LOADOUT, 84)
   ui.saveLoadout:SetPoint("BOTTOMLEFT", 130, 16)
   ui.saveLoadout:SetScript("OnClick", function() TalentPanel.SaveLoadout() end)
-  ui.loadouts = button(f, L.BTN_LOADOUTS, 86)
+  ui.loadouts = button(f, L.BTN_LOADOUTS, 74)
   ui.loadouts:SetPoint("LEFT", ui.saveLoadout, "RIGHT", 4, 0)
   ui.loadouts:SetScript("OnClick", function() TalentPanel.LoadoutsMenu() end)
-  ui.share = button(f, L.BTN_SHARE, 66)
+  ui.share = button(f, L.BTN_SHARE, 56)
   ui.share:SetPoint("LEFT", ui.loadouts, "RIGHT", 4, 0)
   ui.share:SetScript("OnClick", function() TalentPanel.ShareMenu() end)
+  -- Clear: an empty board to build from (switches Edit build on). Does not touch your real talents.
+  ui.clear = button(f, L.BTN_CLEAR_TALENTS, 58)
+  ui.clear:SetPoint("LEFT", ui.share, "RIGHT", 4, 0)
+  ui.clear:SetScript("OnClick", function() TalentPanel.Clear() end)
+  ui.clear:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_TOP")
+    GameTooltip:AddLine(L.BTN_CLEAR_TALENTS, 1, 1, 1)
+    GameTooltip:AddLine(L.TALENT_CLEAR_TIP, 1, 0.82, 0, true)
+    GameTooltip:Show()
+  end)
+  ui.clear:SetScript("OnLeave", function() GameTooltip:Hide() end)
   return f
 end
 
@@ -464,8 +476,16 @@ function TalentPanel.Refresh()
   elseif res and res.caution then
     showStatus(res.caution, 1, 0.82, 0)            -- yellow caution line
   elseif not plan then
-    showStatus(L.TALENT_READ_FAILED_TAB, 1, 0.15, 0.15)
+    -- Soon after login the game may not have the talent names loaded yet: say so and try again a few times.
+    if readTries < 8 and C_Timer and C_Timer.After then
+      readTries = readTries + 1
+      showStatus(L.TALENT_READING, 1, 0.82, 0)
+      C_Timer.After(0.8, function() if page and page:IsVisible() then TalentPanel.Refresh() end end)
+    else
+      showStatus(L.TALENT_READ_FAILED_TAB, 1, 0.15, 0.15)
+    end
   else
+    readTries = 0
     showStatus(nil)
   end
 
@@ -622,6 +642,15 @@ function TalentPanel.CellClick(cell, mouse)
   local link = Talents.LinkFromCodes(codes)
   if link then setLink(link) end
   if GameTooltip:IsShown() then cellTooltip(cell) end
+end
+
+-- An empty board: a link with no points for your class, with Edit build on, to build from scratch.
+function TalentPanel.Clear()
+  if Talents.LearnBusy() then return end
+  local link = Talents.LinkFromCodes({})
+  if not link then R2F.Print(L.TALENT_READ_FAILED_TAB) return end
+  state.editing = true
+  setLink(link)
 end
 
 function TalentPanel.SaveLoadout()

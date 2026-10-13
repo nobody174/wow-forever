@@ -135,6 +135,9 @@ p.lede{color:var(--muted);max-width:68ch;margin:0 auto 26px;text-align:center}
 .item .src > span{overflow:hidden;text-overflow:ellipsis}
 .item .src > span.via{flex:none;color:#6E7592;font-size:12px}
 .item .src .svgi{width:14px;height:14px}
+.item .enc{display:block;font-size:12.5px;color:#9fb4e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .enc b{font-weight:600;color:#c3d1f5}
+.facts.ench .alt{display:block;color:var(--muted);font-size:12.5px}
 .item .src img.ic{width:14px;height:14px;border-radius:3px}
 .tag.stand{background:rgba(217,212,195,.12);color:#D9D4C3;border:1px solid rgba(217,212,195,.45)}
 .row.standin > .row-main{box-shadow:inset 3px 0 0 rgba(217,212,195,.5)}
@@ -518,6 +521,12 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     return '<button type="button" class="icon-btn star' + (on ? " on" : "") + '" data-star="' + id + '" data-spec="' + esc(specId) + '" data-slot="' + esc(slot) +
       '" data-name="' + esc(name) + '" aria-pressed="' + on + '" aria-label="' + (on ? "Remove " : "Add ") + esc(name) + (on ? " from" : " to") + ' your wishlist">' + (on ? ICON.starOn : ICON.star) + "</button>";
   }
+  // The best enchant for a slot, shown on the closed row so you need not open it (the 2nd and 3rd best are in the open row).
+  function encLine(sp, slot) {
+    var list = sp.enchants && sp.enchants[slot];
+    if (!list || !list.length) return "";
+    return '<span class="enc" title="' + esc(list[0].eff) + '"><b>Enchant:</b> ' + esc(list[0].name.replace(/^Enchant /, "")) + "</span>";
+  }
   function factionTag(b) {
     if (b.faction && b.faction !== prefs.faction) return '<span class="tag fac">' + (b.faction === "horde" ? "Horde only" : "Alliance only") + "</span>";
     if (b.horde && prefs.faction === "horde") return '<span class="tag alt" title="The Horde version">Horde: ' + esc(b.horde) + "</span>";
@@ -562,7 +571,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
         : (TYPE_ICON[b.type] || "") + "<span>" + esc(TYPE_LABEL[b.type]) + " pick, and nothing in ranks 2–3 passes your filters</span>";
       var scoreHtml = !ok ? "" : pick === 0 ? '<span title="Score with this spec\'s stat weights">' + esc(b.score) + "</span>"
         : '<span class="behind" title="How far behind the best it scores">' + (p.delta === 0 ? "=" : esc(p.delta) + "%") + "</span>";
-      var main = '<div class="row-main" data-toggle="' + esc(key) + '"><span class="slot">' + esc(label) + '</span><span class="item"><span class="nm">' + nameHtml + '</span><span class="src">' + srcHtml + "</span></span>" +
+      var main = '<div class="row-main" data-toggle="' + esc(key) + '"><span class="slot">' + esc(label) + '</span><span class="item"><span class="nm">' + nameHtml + '</span><span class="src">' + srcHtml + "</span>" + encLine(sp, s.slot) + "</span>" +
         '<span class="score">' + scoreHtml + "</span>" +
         (ok ? confBadge(p.conf) : "<span></span>") +
         '<button type="button" class="icon-btn chev" aria-expanded="' + isOpen + '" aria-label="' + (isOpen ? "Hide" : "Show") + " the next best " + esc(label.toLowerCase()) + ' picks" data-toggle="' + esc(key) + '">' + ICON.chev + "</button>" +
@@ -583,7 +592,8 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
           '<p class="facts"><b>' + esc(b.name) + "</b>: " + esc(b.stats) + (b.ease ? " · " + esc(b.ease) : "") + "</p>" +
           ((sp.enchants && sp.enchants[s.slot]) || []).map(function (e) {
             return '<p class="facts ench">Enchant: <a href="professions.html#bis/' + esc(sp.class) + '">' + esc(e.name) + "</a> · " + esc(e.eff) +
-              " · " + esc(e.prof) + " " + esc(e.skill) + (e.kind === "2h" ? " (two-hand weapons)" : "") + "</p>";
+              " · " + esc(e.prof) + " " + esc(e.skill) + (e.kind === "2h" ? " (two-hand weapons)" : "") +
+              (e.alts || []).map(function (a, i) { return '<span class="alt">#' + (i + 2) + ": " + esc(a.name) + " · " + esc(a.eff) + " · " + esc(a.prof) + " " + esc(a.skill) + "</span>"; }).join("") + "</p>";
           }).join("") +
           '<p class="facts links"><a href="https://www.wowhead.com/forever/item=' + b.id + '" target="_blank" rel="noopener">Wowhead</a><a href="https://foreverdb.net/item/' + b.id + '" target="_blank" rel="noopener">ForeverDB</a><a href="' + esc(sp.url) + '" target="_blank" rel="noopener">Full ' + esc(sp.name) + " list</a></p>" +
           (nxt.length < 2 ? '<p class="note">No more ranked picks for this slot at level 30.</p>' : '<p class="note">Bizzer and Biz show how far behind the best they score; greyed picks are hidden by your filters. Almost biz picks (4th and lower) come when our own ranking is done.</p>') + "</div>";

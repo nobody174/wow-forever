@@ -16,6 +16,18 @@ user-facing release notes.
   zip name. The written-in values (now 0.38.1, were stuck at 0.29.1) are the fallback if GitHub can't be reached. Tested in
   headless Chrome with a deliberately stale copy: it moved from 0.29.1 to 0.38.1.
 
+## 2026-10-13 (Mr.BiZ enchants, game entrances, quest weapons per class)
+- bis.html: the best enchant shows on the closed slot row ("Enchant: Chest - Lesser Stats"); the open row lists the 2nd and 3rd best stand-ins
+  (professions.html's LADDER) under it.
+- bis/enchants_from_professions.js now also prints each enchant's `alts` (and `--names`); bis/build_bis.py adds `ids` (enchantment ids, from the new
+  bis/enchant_ids.json) and `alts` to every enchant row (bis-data.json and BiZData.lua; one alt per line, luacheck's 130 columns).
+- bis/tools/wago_enchant_ids.py (new): writes bis/enchant_ids.json from wago.tools' DB2 tables for the Forever beta build (SpellName + SpellEffect
+  Effect 53). The addon reads the enchant id from your worn item's link and compares it. Rerun it when professions.html gets new enchants.
+- launch-plan-waypoints.json: dungeon points have `dungeon` = the entrance's name; the addon asks `C_EncounterJournal.GetDungeonEntrancesForMap`
+  for the position (gen_plan_data.js passes the field through).
+- bis/tools/wh_quest_weapons.py, bis/quest-weapons.json (273 quest-reward weapons up to level 32) and bis/quest-weapons-by-class.md (the plan's five
+  classes on the plan's zones). Research only, nothing in the addon yet.
+
 ## 2026-10-13 (Plan positions, quest-weapon research)
 - launch-plan-waypoints.json: 6 of the 19 "position not known yet" points filled from Wowhead Forever's zone maps (Zephras Isle trainers,
   vendors and The Great Outdoors giver; the Ironforge Paladin trainer), conf `approx`, sources `wh-zephras` / `wh-ironforge`. PlanData.lua regenerated.

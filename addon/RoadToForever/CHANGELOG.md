@@ -1,5 +1,18 @@
 # Road to Forever changelog
 
+## 0.50.0 (2026-10-13)
+
+- Talents tab: a **Clear** button empties the board so you can build from scratch (Edit build switches on); your real talents are not
+  touched. "Couldn't read your talents yet" should be rare now: when the game has not loaded the talent names yet, the tab says
+  "Reading your talents..." and tries again a few times, and it falls back to the last good structure (saved per character, every talent
+  checked against the live config before use).
+- Mr.BiZ enchants: the slot panel lists the best enchant, the #2 and #3 stand-ins under it, and what you wear there now ("Your chest
+  has the best enchant" / "the #2 enchant" / "a different enchant" / "no enchant"), read from the enchant id in your item link.
+- Mr.BiZ: the "Required level" slider and "My level" button are gone (there is not enough data for a lower level; the lists are for the
+  beta cap, 30, and later 60).
+- Plan tab: the dungeon entrances that had no position (City of Dalaran, The Drowned City, Krol'dok Stronghold, Blackmaw Hold, Shaper's
+  Terrace) now take it from the game's own world map (the entrances Leatrix Maps draws), looked up when you press Waypoint.
+
 ## 0.49.0 (2026-10-13)
 
 - Plan tab: positions found for steps that said "position not known yet". The Zephras Isle steps now point at the real NPCs

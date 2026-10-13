@@ -50,8 +50,16 @@ local function spellName(id)
     local n = call(C_Spell.GetSpellName, id)
     if n then return n end
   end
-  return call(GetSpellInfo, id)
+  local n = call(GetSpellInfo, id)
+  if n then return n end
+  -- Not loaded yet: ask for it, so a retry a moment later can read it.
+  if C_Spell and C_Spell.RequestLoadSpellData then call(C_Spell.RequestLoadSpellData, id) end
+  return nil
 end
+
+-- Set while a read skipped a talent only because its spell name was not loaded yet (the usual reason for
+-- "couldn't read your talents" when the tab is opened soon after login).
+local namesPending = false
 
 local function spellIcon(id)
   if C_Spell and C_Spell.GetSpellTexture then
@@ -195,7 +203,7 @@ local function readNode(configID, nodeID, order)
   local spellID = def.spellID
   local name = def.overrideName
   if type(name) ~= "string" or name == "" then name = spellID and spellName(spellID) end
-  if type(name) ~= "string" or name == "" then return nil end
+  if type(name) ~= "string" or name == "" then namesPending = true; return nil end
   -- activeRank = what's learned (WeakAuras Forever reads the same field);
   -- ranksPurchased is the older/other name for it.
   local rank = node.activeRank or node.ranksPurchased or 0
@@ -235,7 +243,7 @@ local function liveConfigID()
   return call(C_SpecializationInfo.GetCombatConfigIDForSpecGroup, group)
 end
 
-function Talents.ReadTrees()
+local function readTreesLive()
   local configID = liveConfigID()
   if not configID then return nil end
   local config = call(C_Traits.GetConfigInfo, configID)
@@ -305,6 +313,78 @@ function Talents.ReadTrees()
     trees[p] = list
   end
   return trees
+end
+
+-- ---- a read that fails only because names are not loaded yet falls back to the last good structure -------
+-- The structure (names, icons, tier, column, node ids) does not change while the game build stays the same;
+-- only the ranks do, and those are read fresh. Kept in memory and per character, and every node is checked against
+-- the live config before it is used, so a wrong cache is dropped, never trusted.
+local lastGood
+
+local function leanCopy(trees)
+  local out = {}
+  for p, list in ipairs(trees) do
+    out[p] = {}
+    for i, x in ipairs(list) do
+      out[p][i] = { name = x.name, icon = x.icon, tier = x.tier, column = x.column, maxRank = x.maxRank,
+                    index = x.index, nodeID = x.nodeID, entryID = x.entryID, spellID = x.spellID }
+    end
+  end
+  return out
+end
+
+local function buildNumber()
+  if not GetBuildInfo then return "" end
+  return tostring(select(2, GetBuildInfo()) or "")
+end
+
+local function remember(trees)
+  if lastGood then return end
+  lastGood = leanCopy(trees)
+  local cdb = R2F.Library and R2F.Library.cdb
+  if cdb then cdb.talentCache = { build = buildNumber(), class = select(2, UnitClass("player")), trees = lastGood } end
+end
+
+local function fromCache()
+  local configID = liveConfigID()
+  if not configID then return nil end
+  local saved = lastGood
+  if not saved then
+    local cdb = R2F.Library and R2F.Library.cdb
+    local c = cdb and cdb.talentCache
+    if type(c) == "table" and c.build == buildNumber() and c.class == select(2, UnitClass("player"))
+       and type(c.trees) == "table" then
+      saved = c.trees
+    end
+  end
+  if not saved then return nil end
+  local trees = {}
+  for p, list in ipairs(saved) do
+    trees[p] = {}
+    for i, x in ipairs(list) do
+      local node = call(C_Traits.GetNodeInfo, configID, x.nodeID)
+      if type(node) ~= "table" or node.ID ~= x.nodeID then return nil end
+      local ok = node.activeEntry and node.activeEntry.entryID == x.entryID
+      if not ok and type(node.entryIDs) == "table" then
+        for _, id in ipairs(node.entryIDs) do if id == x.entryID then ok = true end end
+      end
+      if not ok then return nil end
+      local y = {}
+      for k, v in pairs(x) do y[k] = v end
+      y.rank = node.activeRank or node.ranksPurchased or 0
+      y.configID = configID
+      trees[p][i] = y
+    end
+  end
+  return trees
+end
+
+function Talents.ReadTrees()
+  namesPending = false
+  local trees = readTreesLive()
+  if trees then remember(trees); return trees end
+  if namesPending then return fromCache() end
+  return nil
 end
 
 -- The ~hash. MUST match talentcalc.js's treeHash() byte for byte:

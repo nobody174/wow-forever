@@ -71,20 +71,20 @@
     "p2-fill": { "default": [
       { "zone": "Duskwood", "mapHint": 1431, "x": 73.8, "y": 44.4, "label": "Darkshire", "conf": "classic", "src": "classic" } ] },
     "p2-dal": { "default": [
-      { "zone": "Alterac Mountains", "mapHint": 1416, "label": "City of Dalaran (through the sewers into the Underbelly)", "conf": "check", "src": "wt-dungeons (no position)" } ] },
+      { "zone": "Alterac Mountains", "mapHint": 1416, "label": "City of Dalaran (through the sewers into the Underbelly)", "dungeon": "City of Dalaran", "conf": "check", "src": "wt-dungeons (no position); the game's map gives the entrance" } ] },
     "p3-stv": { "default": [
       { "zone": "Stranglethorn Vale", "mapHint": 1434, "x": 35.6, "y": 10.6, "label": "Nesingwary's Expedition", "conf": "classic", "src": "classic" },
       { "zone": "Arathi Highlands", "mapHint": 1417, "x": 45.8, "y": 46.1, "label": "Refuge Pointe", "conf": "classic", "src": "classic" },
       { "zone": "Tirisfal Glades", "mapHint": 1420, "x": 82.6, "y": 33.8, "label": "Scarlet Monastery", "conf": "classic", "src": "classic" } ] },
     "p3-drowned": { "default": [
-      { "zone": "Stranglethorn Vale", "mapHint": 1434, "label": "The Drowned City (off the coast, dive at Zin'aka)", "conf": "check", "src": "wt-dungeons (no position)" } ] },
+      { "zone": "Stranglethorn Vale", "mapHint": 1434, "label": "The Drowned City (off the coast, dive at Zin'aka)", "dungeon": "The Drowned City", "conf": "check", "src": "wt-dungeons (no position); the game's map gives the entrance" } ] },
     "p3-deso": { "default": [
       { "zone": "Desolace", "mapHint": 1443, "x": 66.2, "y": 6.6, "label": "Nijel's Point", "conf": "classic", "src": "classic" } ] },
     "p3-river": { "default": [
       { "zone": "Tanaris", "mapHint": 1446, "label": "Steamwheedle Port, boat to Powderfuse Port (Riverglades)", "conf": "check", "src": "iv-boats (no position)" },
       { "zone": "Riverglades", "label": "Riverglades", "conf": "check", "src": "new zone" } ] },
     "p3-krol": { "default": [
-      { "zone": "Riverglades", "label": "Krol'dok Stronghold", "conf": "check", "src": "wh-dungeons (no position)" } ] },
+      { "zone": "Riverglades", "label": "Krol'dok Stronghold", "dungeon": "Krol'dok Stronghold", "conf": "check", "src": "wh-dungeons (no position); the game's map gives the entrance" } ] },
     "p3-shen": { "default": [
       { "zone": "Feralas", "mapHint": 1444, "label": "Shen'dralas", "conf": "check", "src": "not published" } ] },
     "p3-mid": { "default": [
@@ -107,9 +107,9 @@
       { "zone": "Eastern Plaguelands", "mapHint": 1423, "x": 75.7, "y": 53.8, "label": "Light's Hope Chapel", "conf": "classic", "src": "classic" } ] },
     "p3-blackmaw": { "default": [
       { "zone": "Azshara", "mapHint": 1447, "x": 11.9, "y": 77.6, "label": "Talrendis Point (Alliance camp)", "conf": "classic", "src": "classic" },
-      { "zone": "Azshara", "mapHint": 1447, "label": "Blackmaw Hold, behind the Furbolg Gates in the north", "conf": "check", "src": "wh-dungeons (area only)" } ] },
+      { "zone": "Azshara", "mapHint": 1447, "label": "Blackmaw Hold, behind the Furbolg Gates in the north", "dungeon": "Blackmaw Hold", "conf": "check", "src": "wh-dungeons (area only); the game's map gives the entrance" } ] },
     "p3-shaper": { "default": [
       { "zone": "Un'Goro Crater", "mapHint": 1449, "x": 43.6, "y": 8.3, "label": "Marshal's Refuge (staging)", "conf": "classic", "src": "classic" },
-      { "zone": "Un'Goro Crater", "mapHint": 1449, "label": "Shaper's Terrace", "conf": "check", "src": "wh-dungeons (no position)" } ] }
+      { "zone": "Un'Goro Crater", "mapHint": 1449, "label": "Shaper's Terrace", "dungeon": "Shaper's Terrace", "conf": "check", "src": "wh-dungeons (no position); the game's map gives the entrance" } ] }
   }
 }

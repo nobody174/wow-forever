@@ -43,7 +43,9 @@ read_globals = {
   -- TOC metadata for the Home footer
   "C_AddOns", "GetAddOnMetadata",
   -- Talent import preview (read-only)
-  "GetTalentTabInfo", "GetLocale",
+  "GetTalentTabInfo", "GetLocale", "GetBuildInfo",
+  -- Dungeon entrances the game's world map knows (Plan.lua), read only
+  "C_EncounterJournal",
   -- Talent learning (the one talent write: LearnTalent), preview-API detection, guided
   -- mode (Blizzard talent window, read only)
   "LearnTalent", "GetTalentPrereqs", "AddPreviewTalentPoints", "LearnPreviewTalents", "GetCVarBool",

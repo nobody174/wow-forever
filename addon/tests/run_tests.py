@@ -941,6 +941,109 @@ def test_planner():
     check(lua.eval("#TL.Loadouts('warrior')") == 1, "planner: bad body, own name and wrong prefix are ignored")
 
 
+def test_talent_cache_and_clear():
+    """The Talents tab's "couldn't read your talents": names not loaded yet must not fail the read once a good read
+    exists, and the Clear button gives an empty board to build from."""
+    fxt = json.load(open(TALENT_FIXTURE, encoding="utf-8"))
+    js = talent_js()
+    lua = new_runtime()
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    set_game_talents(lua, fxt["talents"], js["classes"]["warrior"], {})
+    lua.execute("TL = R2F.Talents")
+    lua.execute("GOOD = TL.ReadTrees() GOODHASH = TL.Hash(GOOD)")
+    check(lua.eval("GOOD ~= nil and #GOOD") == 3, "talent cache: a normal read gives 3 panes")
+    check(lua.eval("R2FCharDB.talentCache ~= nil and #R2FCharDB.talentCache.trees") == 3, "talent cache: the structure is saved per character")
+    # Names not loaded yet (the spell data is missing): the live read cannot finish...
+    lua.execute("""
+      REAL_NAME, REAL_INFO = C_Spell.GetSpellName, GetSpellInfo
+      C_Spell.GetSpellName = function() return nil end
+      GetSpellInfo = nil
+      C_Traits.GetNodeInfo_real = C_Traits.GetNodeInfo
+    """)
+    check(lua.eval("TL.ReadTrees() ~= nil and #TL.ReadTrees()") == 3, "talent cache: with names not loaded, the last good structure is used")
+    check(lua.eval("TL.Hash(TL.ReadTrees())") == lua.eval("GOODHASH"), "talent cache: same names in the same order (same ~hash)")
+    # ... but a config that is really unreadable is still nil, not a stale guess
+    lua.execute("TEST.traitsReady = false")
+    check(lua.eval("TL.ReadTrees()") is None, "talent cache: no config -> nil even with a cache")
+    lua.execute("TEST.traitsReady = true C_Spell.GetSpellName = REAL_NAME GetSpellInfo = REAL_INFO")
+    # Clear
+    lua.execute("R2F.MainWindow.Show('talents')")
+    lua.execute("R2F.TalentPanel.Clear()")
+    check(lua.eval("R2F.TalentPanel.CurrentBody() ~= nil"), "talent clear: Clear sets an empty build link")
+    check(lua.eval("TL.Preview(R2F.TalentPanel.CurrentBody()).plan.total") == 0, "talent clear: the cleared board has no points")
+    check(lua.eval("R2FCharDB.lastTalentLink ~= nil"), "talent clear: the cleared link is remembered")
+    lua.execute("PLC = TL.Preview(R2F.TalentPanel.CurrentBody()).plan C = TL.EditPlan(PLC, 1, 1, 1)")
+    check(lua.eval("C ~= nil and C[1]:sub(1, 1)") == "1", "talent clear: you can build from the cleared board")
+
+
+def test_dungeon_entrances():
+    """A plan point with `dungeon` takes its position from the game's own map (the entrances Leatrix Maps draws)."""
+    lua, T = plan_runtime(True, True, True)
+    # Dun Morogh (1426) gets an entrance called "City of Dalaran", position as the game gives it (0..1 vector).
+    lua.execute("""
+      C_EncounterJournal = { GetDungeonEntrancesForMap = function(id)
+        if id == 1426 then
+          return { { areaPoiID = 1, name = 'City of Dalaran', position = { GetXY = function() return 0.25, 0.5 end } } }
+        end
+        return {}
+      end }
+      PT = { zone = 'Alterac Mountains', label = 'City of Dalaran (sewers)', dungeon = 'City of Dalaran', conf = 'check' }
+    """)
+    check(lua.eval("R2F.Plan.HasPosition(PT)") is True, "entrance: a dungeon point has a position once the game's map knows the entrance")
+    check(lua.eval("R2F.Plan.EntranceFor('city of dalaran').mapID") == 1426 and lua.eval("R2F.Plan.EntranceFor('City of Dalaran').x") == 25,
+          "entrance: the game's 0..1 position becomes map percent (25, 50)")
+    check(lua.eval("R2F.Plan.EntranceFor('Dalaran').y") == 50, "entrance: a name that is part of the entrance's name still finds it")
+    check(lua.eval("R2F.Plan.EntranceFor('Gnomeregan')") is None, "entrance: an unknown dungeon has none")
+    lua.execute("R = R2F.Plan.Waypoint(PT, 'x')")
+    check(lua.eval("R") == "arrow" and lua.eval("R2F.Nav.Target().x") == 25 and lua.eval("R2F.Nav.Target().label") == "City of Dalaran (sewers)",
+          "entrance: the Waypoint button points the arrow at the entrance")
+    # The generated plan data carries `dungeon` for the five unknown dungeons.
+    n = lua.eval("(function() local c = 0 for _, st in pairs(R2F.PlanData.waypoints) do for _, pts in pairs(st) do for _, p in ipairs(pts) do if p.dungeon then c = c + 1 end end end end return c end)()")
+    check(n == 5, "entrance: five plan dungeon points ask the game for their entrance: %s" % n)
+    # No such API (a client without it): no position, no error.
+    lua2, _ = plan_runtime(True, True, True)
+    lua2.execute("C_EncounterJournal = nil PT = { zone = 'Alterac Mountains', label = 'x', dungeon = 'City of Dalaran', conf = 'check' }")
+    check(lua2.eval("R2F.Plan.HasPosition(PT)") is False and lua2.eval("R2F.Plan.Waypoint(PT)") is None,
+          "entrance: without the API the point stays 'position not known yet'")
+
+
+def test_worn_enchant():
+    """Mr.BiZ says which enchant you wear in a slot (from the item link) against the slot's list, and lists the 2nd / 3rd best."""
+    lua = new_runtime()
+    lua.execute("R2FDB = nil R2FCharDB = nil R2F.Library.Init()")
+    lua.execute("BZ = R2F.BiZ ROWS = BZ.Enchants('hunter/beast-mastery', 'chest')")
+    check(lua.eval("#ROWS") >= 1 and lua.eval("ROWS[1].ids ~= nil and #ROWS[1].ids") >= 1, "worn enchant: the best chest enchant carries its enchantment id")
+    check(lua.eval("ROWS[1].alts ~= nil and #ROWS[1].alts") >= 1 and lua.eval("ROWS[1].alts[1].ids ~= nil"), "worn enchant: the 2nd best is listed with its id")
+    lua.execute("BEST, ALT = ROWS[1].ids[1], ROWS[1].alts[1].ids[1]")
+    check(lua.eval("(BZ.EnchantState(ROWS, BEST))") == "best", "worn enchant: the id of the best enchant = best")
+    check(lua.eval("(select(3, BZ.EnchantState(ROWS, ALT)))") == 2 and lua.eval("(BZ.EnchantState(ROWS, ALT))") == "alt", "worn enchant: the 2nd best's id = #2")
+    check(lua.eval("(BZ.EnchantState(ROWS, 99999))") == "other" and lua.eval("(BZ.EnchantState(ROWS, 0))") == "none" and lua.eval("(BZ.EnchantState(ROWS, nil))") is None,
+          "worn enchant: another id = other, 0 = none, nothing worn = nil")
+    lua.execute("""
+      TEST.worn = {}
+      GetInventoryItemLink = function(unit, slot) return TEST.worn[slot] end
+    """)
+    check(lua.eval("BZ.WornEnchant('chest')") is None, "worn enchant: an empty slot gives nil")
+    lua.execute("TEST.worn[5] = '|cff1eff00|Hitem:1488:' .. BEST .. ':0:0:0:0:0:0:0:0|h[Avenger]|h|r'")
+    check(lua.eval("BZ.WornEnchant('chest')") == lua.eval("BEST"), "worn enchant: the enchant id is read from the item link")
+    lua.execute("TEST.worn[5] = '|Hitem:1488::0:0|h[Avenger]|h'")
+    check(lua.eval("BZ.WornEnchant('chest')") == 0, "worn enchant: a link with no enchant = 0")
+    check(lua.eval("BZ.WornEnchant('nonsense')") is None, "worn enchant: an unknown slot gives nil")
+    # In the panel: the lines show up for the selected slot.
+    lua.execute("BZ.SetSpec('hunter/beast-mastery') R2F.MainWindow.Show('bis') R2F.BiZTab.Refresh()")
+    lua.execute("TEST.worn[5] = '|Hitem:1488:' .. ALT .. ':0:0|h[Avenger]|h'")
+    lua.execute("for _, b in ipairs(DOLL or {}) do end")
+    find_frames(lua, "f.__kind == 'Button' and f.slotKey == 'chest'", "CHESTBTN")
+    lua.execute("CHESTBTN[1]:Click()")
+    check(font_text(lua, "^Enchant: ") is not None, "worn enchant: the panel lists the best enchant")
+    check(font_text(lua, "^#2: ") is not None, "worn enchant: and the 2nd best under it")
+    check(font_text(lua, "^Your chest has the #2 enchant") is not None, "worn enchant: and says you wear the #2 enchant")
+    lua.execute("TEST.worn[5] = '|Hitem:1488:' .. BEST .. ':0:0|h[Avenger]|h' R2F.BiZTab.Refresh()")
+    check(font_text(lua, "^Your chest has the best enchant") is not None, "worn enchant: the best one is recognised")
+
+
 def test_tweaks_search():
     """0.38.0: the Tweaks search box lists matching options and opens their page."""
     lua = new_runtime()
@@ -3262,36 +3365,6 @@ def test_biz(templates=True):
     lua.execute("NEXT2[1]:Fire('OnEnter')")
     lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
     check(any("Bizzer for Beast Mastery, 12% behind" in (l or "") for l in lines), "%s: rank 2 tooltip says how far behind: %s" % (tag, lines))
-    # Level filter: a best pick that needs a higher level falls back to the next rank; unloaded items count.
-    if templates:
-        lua.execute("TEST.reqLevel = { [252512] = 40 } GetItemInfo = function(id) local l = TEST.reqLevel[id] "
-                    "if l then return 'x', 'link', 2, 30, l end end")
-        check(lua.eval("R2F.BiZ.MaxLevel()") == 60 and lua.eval("R2F.BiZ.Passes({ id = 252512, type = 'crafted' })") is True,
-              "%s: level filter off by default (any level)" % tag)
-        find_frames(lua, "f.__kind == 'Slider' and f.GetValue ~= nil and f:GetParent() ~= nil", "SLIDERS")
-        lua.execute("R2F.BiZ.SetMaxLevel(30) R2F.BiZTab.Refresh()")
-        check(lua.eval("R2F.BiZ.Passes({ id = 252512, type = 'crafted' })") is False
-              and lua.eval("R2F.BiZ.Passes({ id = 6720, type = 'quest' })") is True,
-              "%s: up to level 30 skips a level 40 item, keeps one whose level isn't loaded yet" % tag)
-        check(lua.eval("HEADBTN[1].itemId") == 6720, "%s: the head slot shows rank 2 instead: %s" % (tag, lua.eval("HEADBTN[1].itemId")))
-        check(font_text(lua, "^Required level: up to 30") is not None, "%s: the slider label says the level" % tag)
-        lua.execute("TEST.level = 22 R2F.BiZ.SetMaxLevel(UnitLevel('player'))")
-        check(lua.eval("R2F.BiZ.MaxLevel()") == 22, "%s: My level sets it to your level" % tag)
-        lua.execute("R2F.BiZ.SetMaxLevel(60) R2F.BiZTab.Refresh()")
-        check(lua.eval("R2F.BiZ.MaxLevel()") == 60 and lua.eval("R2FCharDB.biz.maxLevel") is None
-              and lua.eval("HEADBTN[1].itemId") == 252512 and font_text(lua, "^Required level: any") is not None,
-              "%s: 60 = any level again, nothing saved, the best shows" % tag)
-        lua.execute("GetItemInfo = function() return nil end")
-
-    # Baked quality (bis/quality.json): known before the game loads the item.
-    if templates:
-        check(len(site["quality"]) == len({r["id"] for sp in site["specs"].values() for sl in sp["slots"] if "best" in sl
-                                            for r in [sl["best"]] + sl.get("next", [])}),
-              "%s: every Mr.BiZ item has a baked quality" % tag)
-        lua.execute("R2FDB.bizQuality = {} OLDQ = C_Item and C_Item.GetItemQualityByID if C_Item then C_Item.GetItemQualityByID = nil end")
-        check(lua.eval("R2F.BiZ.Quality(7684)") == 3 and lua.eval("R2F.BiZ.Quality(6720)") == 2,
-              "%s: with nothing from the game, the baked quality colours the name (blue / green)" % tag)
-        lua.execute("if C_Item then C_Item.GetItemQualityByID = OLDQ end")
 
     # Enchants from the Professions page, per spec and slot.
     if templates:
@@ -7373,6 +7446,9 @@ def main():
     test_unknown_events()
     test_bundle(fx)
     test_planner()
+    test_talent_cache_and_clear()
+    test_dungeon_entrances()
+    test_worn_enchant()
     test_tweaks_search()
     test_talented_perk()
     test_bags()
@@ -7685,11 +7761,6 @@ def test_item_api_modern():
     T.fire("PLAYER_LOGIN")
     check(lua.eval("R2F.Item.Available()") is True, "item api: available through C_Item alone")
     check(lua.eval("(select(5, R2F.Item.Info(252512)))") == 40, "item api: the required level comes from C_Item.GetItemInfo")
-    check(lua.eval("R2F.BiZ.ReqLevel(252512)") == 40, "item api: BiZ.ReqLevel reads it with no global GetItemInfo")
-    lua.execute("R2F.BiZ.SetMaxLevel(30)")
-    check(lua.eval("R2F.BiZ.Passes({ id = 252512, type = 'crafted' })") is False
-          and lua.eval("R2F.BiZ.Passes({ id = 6720, type = 'quest' })") is True,
-          "item api: the level slider skips a level 40 item and keeps a level 10 one, with no global GetItemInfo")
     lua.execute("R2F.playerClass = 'MAGE' TEST.level = 30")
     check(lua.eval("R2F.GearScore.CanWear(777)") is False and lua.eval("R2F.GearScore.CanWear(778)") is True,
           "item api: upgrade arrows know a Mage can't wear plate, from C_Item.GetItemInfoInstant alone")

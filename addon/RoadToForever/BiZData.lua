@@ -249,31 +249,66 @@ R2F.BiZData = {
       enchants = {
         neck = {
           {name = "Enchant Necklace - Healing Power", eff = "Healing +11, Damage Spells +4", prof = "Enchanting",
-            skill = 210 },
+            skill = 210, ids = { 8219 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
           {name = "Enchant Bracer - Lesser Healing Power", eff = "Healing +16, Damage Spells +6", prof = "Enchanting",
-            skill = 205 },
+            skill = 205, ids = { 8209 },
+            alts = {
+              {name = "Enchant Bracer - Minor Healing Power", eff = "Healing +8, Damage Spells +3", prof = "Enchanting",
+                skill = 90, ids = { 8208 } },
+              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+                ids = { 723 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225,
+            ids = { 911 } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -484,31 +519,66 @@ R2F.BiZData = {
       enchants = {
         neck = {
           {name = "Enchant Necklace - Healing Power", eff = "Healing +11, Damage Spells +4", prof = "Enchanting",
-            skill = 210 },
+            skill = 210, ids = { 8219 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
           {name = "Enchant Bracer - Lesser Healing Power", eff = "Healing +16, Damage Spells +6", prof = "Enchanting",
-            skill = 205 },
+            skill = 205, ids = { 8209 },
+            alts = {
+              {name = "Enchant Bracer - Minor Healing Power", eff = "Healing +8, Damage Spells +3", prof = "Enchanting",
+                skill = 90, ids = { 8208 } },
+              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+                ids = { 723 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225,
+            ids = { 911 } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -695,30 +765,65 @@ R2F.BiZData = {
       enchantPage = "Priest Shadow PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210,
+            ids = { 8218 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150 },
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+            ids = { 723 },
+            alts = {
+              {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
+                ids = { 246 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225,
+            ids = { 911 } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -904,30 +1009,70 @@ R2F.BiZData = {
       enchantPage = "Warlock PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210,
+            ids = { 8218 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150 },
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+            ids = { 723 },
+            alts = {
+              {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
+                ids = { 246 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215 },
+          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215, ids = { 852 },
+            alts = {
+              {name = "Enchant Boots - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 170,
+                ids = { 254 } },
+              {name = "Enchant Boots - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 125,
+                ids = { 66 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -1126,30 +1271,70 @@ R2F.BiZData = {
       enchantPage = "Warlock PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210,
+            ids = { 8218 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150 },
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+            ids = { 723 },
+            alts = {
+              {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
+                ids = { 246 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215 },
+          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215, ids = { 852 },
+            alts = {
+              {name = "Enchant Boots - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 170,
+                ids = { 254 } },
+              {name = "Enchant Boots - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 125,
+                ids = { 66 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -1328,30 +1513,70 @@ R2F.BiZData = {
       enchantPage = "Warlock PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210,
+            ids = { 8218 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150 },
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+            ids = { 723 },
+            alts = {
+              {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
+                ids = { 246 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215 },
+          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215, ids = { 852 },
+            alts = {
+              {name = "Enchant Boots - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 170,
+                ids = { 254 } },
+              {name = "Enchant Boots - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 125,
+                ids = { 66 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -1563,30 +1788,70 @@ R2F.BiZData = {
       enchantPage = "Mage Arcane PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210,
+            ids = { 8218 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150 },
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+            ids = { 723 },
+            alts = {
+              {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
+                ids = { 246 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215 },
+          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215, ids = { 852 },
+            alts = {
+              {name = "Enchant Boots - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 170,
+                ids = { 254 } },
+              {name = "Enchant Boots - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 125,
+                ids = { 66 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -1794,30 +2059,70 @@ R2F.BiZData = {
       enchantPage = "Mage Fire PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210,
+            ids = { 8218 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150 },
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+            ids = { 723 },
+            alts = {
+              {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
+                ids = { 246 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215 },
+          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215, ids = { 852 },
+            alts = {
+              {name = "Enchant Boots - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 170,
+                ids = { 254 } },
+              {name = "Enchant Boots - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 125,
+                ids = { 66 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -2014,30 +2319,70 @@ R2F.BiZData = {
       enchantPage = "Mage Frost PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210,
+            ids = { 8218 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150 },
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+            ids = { 723 },
+            alts = {
+              {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
+                ids = { 246 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215 },
+          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215, ids = { 852 },
+            alts = {
+              {name = "Enchant Boots - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 170,
+                ids = { 254 } },
+              {name = "Enchant Boots - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 125,
+                ids = { 66 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -2234,28 +2579,47 @@ R2F.BiZData = {
       enchantPage = "Rogue Assassination PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210, ids = { 904 } },
         },
         back = {
-          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110 },
+          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110, ids = { 247 } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80 },
+          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80, ids = { 247 } },
         },
         hands = {
-          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210, ids = { 1887 } },
         },
         legs = {
-          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8486 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160 },
+          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160, ids = { 8204 },
+            alts = {
+              {name = "Enchant Boots - Minor Agility", eff = "+3 Agility", prof = "Enchanting", skill = 125,
+                ids = { 247 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Striking", eff = "Weapon Damage +3", prof = "Enchanting", skill = 195 },
+          {name = "Enchant Weapon - Striking", eff = "Weapon Damage +3", prof = "Enchanting", skill = 195, ids = { 943 },
+            alts = {
+              {name = "Enchant Weapon - Lesser Striking", eff = "+2 Weapon Damage", prof = "Enchanting", skill = 140,
+                ids = { 241 } },
+              {name = "Enchant Weapon - Minor Striking", eff = "+1 Weapon Damage", prof = "Enchanting", skill = 90,
+                ids = { 250 } },
+            } },
         },
       },
     },
@@ -2452,28 +2816,47 @@ R2F.BiZData = {
       enchantPage = "Rogue Combat PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210, ids = { 904 } },
         },
         back = {
-          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110 },
+          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110, ids = { 247 } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80 },
+          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80, ids = { 247 } },
         },
         hands = {
-          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210, ids = { 1887 } },
         },
         legs = {
-          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8486 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160 },
+          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160, ids = { 8204 },
+            alts = {
+              {name = "Enchant Boots - Minor Agility", eff = "+3 Agility", prof = "Enchanting", skill = 125,
+                ids = { 247 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Striking", eff = "Weapon Damage +3", prof = "Enchanting", skill = 195 },
+          {name = "Enchant Weapon - Striking", eff = "Weapon Damage +3", prof = "Enchanting", skill = 195, ids = { 943 },
+            alts = {
+              {name = "Enchant Weapon - Lesser Striking", eff = "+2 Weapon Damage", prof = "Enchanting", skill = 140,
+                ids = { 241 } },
+              {name = "Enchant Weapon - Minor Striking", eff = "+1 Weapon Damage", prof = "Enchanting", skill = 90,
+                ids = { 250 } },
+            } },
         },
       },
     },
@@ -2684,28 +3067,47 @@ R2F.BiZData = {
       enchantPage = "Rogue Combat PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210, ids = { 904 } },
         },
         back = {
-          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110 },
+          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110, ids = { 247 } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80 },
+          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80, ids = { 247 } },
         },
         hands = {
-          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210, ids = { 1887 } },
         },
         legs = {
-          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8486 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160 },
+          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160, ids = { 8204 },
+            alts = {
+              {name = "Enchant Boots - Minor Agility", eff = "+3 Agility", prof = "Enchanting", skill = 125,
+                ids = { 247 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Striking", eff = "Weapon Damage +3", prof = "Enchanting", skill = 195 },
+          {name = "Enchant Weapon - Striking", eff = "Weapon Damage +3", prof = "Enchanting", skill = 195, ids = { 943 },
+            alts = {
+              {name = "Enchant Weapon - Lesser Striking", eff = "+2 Weapon Damage", prof = "Enchanting", skill = 140,
+                ids = { 241 } },
+              {name = "Enchant Weapon - Minor Striking", eff = "+1 Weapon Damage", prof = "Enchanting", skill = 90,
+                ids = { 250 } },
+            } },
         },
       },
     },
@@ -2893,29 +3295,67 @@ R2F.BiZData = {
       enchantPage = "Druid Tank",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Deflection", eff = "Defense +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Deflection", eff = "Defense +5", prof = "Enchanting", skill = 210, ids = { 925 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Superior Stamina", eff = "Stamina +8", prof = "Enchanting", skill = 220 },
+          {name = "Enchant Chest - Superior Stamina", eff = "Stamina +8", prof = "Enchanting", skill = 220,
+            ids = { 908 },
+            alts = {
+              {name = "Enchant Chest - Greater Stamina", eff = "+6 Stamina", prof = "Enchanting", skill = 160,
+                ids = { 850 } },
+              {name = "Enchant Chest - Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 120, ids = { 254 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 170 },
+          {name = "Enchant Bracer - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 170, ids = { 852 },
+            alts = {
+              {name = "Enchant Bracer - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 130,
+                ids = { 254 } },
+              {name = "Enchant Bracer - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 50,
+                ids = { 66 } },
+            } },
         },
         hands = {
-          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210 },
-          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200 },
+          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210, ids = { 1887 } },
+          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200, ids = { 8487 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200 },
+          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200, ids = { 8487 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215 },
+          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215, ids = { 852 },
+            alts = {
+              {name = "Enchant Boots - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 170,
+                ids = { 254 } },
+              {name = "Enchant Boots - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 125,
+                ids = { 66 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant 2H Weapon - Impact", eff = "Weapon Damage +6", prof = "Enchanting", skill = 200, kind = "2h" },
+          {name = "Enchant 2H Weapon - Impact", eff = "Weapon Damage +6", prof = "Enchanting", skill = 200, kind = "2h",
+            ids = { 8205 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Impact", eff = "+5 Weapon Damage", prof = "Enchanting", skill = 145,
+                ids = { 1897 } },
+              {name = "Enchant 2H Weapon - Minor Impact", eff = "+4 Weapon Damage", prof = "Enchanting", skill = 100,
+                ids = { 805 } },
+            } },
         },
       },
     },
@@ -3116,30 +3556,65 @@ R2F.BiZData = {
       enchantPage = "Druid Balance PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210,
+            ids = { 8218 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150 },
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+            ids = { 723 },
+            alts = {
+              {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
+                ids = { 246 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225,
+            ids = { 911 } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -3342,31 +3817,66 @@ R2F.BiZData = {
       enchants = {
         neck = {
           {name = "Enchant Necklace - Healing Power", eff = "Healing +11, Damage Spells +4", prof = "Enchanting",
-            skill = 210 },
+            skill = 210, ids = { 8219 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
           {name = "Enchant Bracer - Lesser Healing Power", eff = "Healing +16, Damage Spells +6", prof = "Enchanting",
-            skill = 205 },
+            skill = 205, ids = { 8209 },
+            alts = {
+              {name = "Enchant Bracer - Minor Healing Power", eff = "Healing +8, Damage Spells +3", prof = "Enchanting",
+                skill = 90, ids = { 8208 } },
+              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+                ids = { 723 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225,
+            ids = { 911 } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
       },
     },
@@ -3548,33 +4058,72 @@ R2F.BiZData = {
       enchantPage = "Shaman Elemental PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210,
+            ids = { 8218 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150 },
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+            ids = { 723 },
+            alts = {
+              {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
+                ids = { 246 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225,
+            ids = { 911 } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
         offhand = {
-          {name = "Enchant Shield - Lesser Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 155 },
+          {name = "Enchant Shield - Lesser Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 155, ids = { 852 },
+            alts = {
+              {name = "Enchant Shield - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 105,
+                ids = { 66 } },
+            } },
         },
       },
     },
@@ -3742,32 +4291,65 @@ R2F.BiZData = {
       enchantPage = "Shaman Enhancement PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Strength", eff = "Strength +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Strength", eff = "Strength +5", prof = "Enchanting", skill = 210, ids = { 856 } },
         },
         back = {
-          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110 },
+          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110, ids = { 247 } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Strength", eff = "Strength +5", prof = "Enchanting", skill = 180 },
+          {name = "Enchant Bracer - Strength", eff = "Strength +5", prof = "Enchanting", skill = 180, ids = { 856 },
+            alts = {
+              {name = "Enchant Bracer - Lesser Strength", eff = "+4 Strength", prof = "Enchanting", skill = 140,
+                ids = { 823 } },
+              {name = "Enchant Bracer - Minor Strength", eff = "+3 Strength", prof = "Enchanting", skill = 80,
+                ids = { 248 } },
+            } },
         },
         hands = {
-          {name = "Enchant Gloves - Strength", eff = "Strength +7", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Gloves - Strength", eff = "Strength +7", prof = "Enchanting", skill = 225, ids = { 927 } },
         },
         legs = {
-          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8486 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225,
+            ids = { 911 } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Striking", eff = "Weapon Damage +3", prof = "Enchanting", skill = 195 },
-          {name = "Enchant 2H Weapon - Impact", eff = "Weapon Damage +6", prof = "Enchanting", skill = 200, kind = "2h" },
+          {name = "Enchant Weapon - Striking", eff = "Weapon Damage +3", prof = "Enchanting", skill = 195, ids = { 943 },
+            alts = {
+              {name = "Enchant Weapon - Lesser Striking", eff = "+2 Weapon Damage", prof = "Enchanting", skill = 140,
+                ids = { 241 } },
+              {name = "Enchant Weapon - Minor Striking", eff = "+1 Weapon Damage", prof = "Enchanting", skill = 90,
+                ids = { 250 } },
+            } },
+          {name = "Enchant 2H Weapon - Impact", eff = "Weapon Damage +6", prof = "Enchanting", skill = 200, kind = "2h",
+            ids = { 8205 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Impact", eff = "+5 Weapon Damage", prof = "Enchanting", skill = 145,
+                ids = { 1897 } },
+              {name = "Enchant 2H Weapon - Minor Impact", eff = "+4 Weapon Damage", prof = "Enchanting", skill = 100,
+                ids = { 805 } },
+            } },
         },
         offhand = {
-          {name = "Enchant Shield - Lesser Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 155 },
+          {name = "Enchant Shield - Lesser Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 155, ids = { 852 },
+            alts = {
+              {name = "Enchant Shield - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 105,
+                ids = { 66 } },
+            } },
         },
       },
     },
@@ -3967,34 +4549,73 @@ R2F.BiZData = {
       enchants = {
         neck = {
           {name = "Enchant Necklace - Healing Power", eff = "Healing +11, Damage Spells +4", prof = "Enchanting",
-            skill = 210 },
+            skill = 210, ids = { 8219 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
           {name = "Enchant Bracer - Lesser Healing Power", eff = "Healing +16, Damage Spells +6", prof = "Enchanting",
-            skill = 205 },
+            skill = 205, ids = { 8209 },
+            alts = {
+              {name = "Enchant Bracer - Minor Healing Power", eff = "Healing +8, Damage Spells +3", prof = "Enchanting",
+                skill = 90, ids = { 8208 } },
+              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+                ids = { 723 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225,
+            ids = { 911 } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
         offhand = {
-          {name = "Enchant Shield - Spirit", eff = "Spirit +5", prof = "Enchanting", skill = 180 },
+          {name = "Enchant Shield - Spirit", eff = "Spirit +5", prof = "Enchanting", skill = 180, ids = { 851 },
+            alts = {
+              {name = "Enchant Shield - Lesser Spirit", eff = "+3 Spirit", prof = "Enchanting", skill = 130,
+                ids = { 255 } },
+            } },
         },
       },
     },
@@ -4179,32 +4800,49 @@ R2F.BiZData = {
       enchantPage = "Hunter PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210, ids = { 904 } },
         },
         back = {
-          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110 },
+          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110, ids = { 247 } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80 },
+          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80, ids = { 247 } },
         },
         hands = {
-          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210, ids = { 1887 } },
         },
         legs = {
-          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8486 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160 },
+          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160, ids = { 8204 },
+            alts = {
+              {name = "Enchant Boots - Minor Agility", eff = "+3 Agility", prof = "Enchanting", skill = 125,
+                ids = { 247 } },
+            } },
         },
         mainhand = {
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
         ranged = {
-          {name = "Deadly Scope", eff = "Scope +5 Damage", prof = "Engineering", skill = 210 },
+          {name = "Deadly Scope", eff = "Scope +5 Damage", prof = "Engineering", skill = 210, ids = { 663 } },
         },
       },
     },
@@ -4391,32 +5029,49 @@ R2F.BiZData = {
       enchantPage = "Hunter PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210, ids = { 904 } },
         },
         back = {
-          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110 },
+          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110, ids = { 247 } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80 },
+          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80, ids = { 247 } },
         },
         hands = {
-          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210, ids = { 1887 } },
         },
         legs = {
-          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8486 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160 },
+          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160, ids = { 8204 },
+            alts = {
+              {name = "Enchant Boots - Minor Agility", eff = "+3 Agility", prof = "Enchanting", skill = 125,
+                ids = { 247 } },
+            } },
         },
         mainhand = {
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
         ranged = {
-          {name = "Deadly Scope", eff = "Scope +5 Damage", prof = "Engineering", skill = 210 },
+          {name = "Deadly Scope", eff = "Scope +5 Damage", prof = "Engineering", skill = 210, ids = { 663 } },
         },
       },
     },
@@ -4600,32 +5255,49 @@ R2F.BiZData = {
       enchantPage = "Hunter PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Agility", eff = "Agility +5", prof = "Enchanting", skill = 210, ids = { 904 } },
         },
         back = {
-          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110 },
+          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110, ids = { 247 } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80 },
+          {name = "Enchant Bracer - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 80, ids = { 247 } },
         },
         hands = {
-          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210, ids = { 1887 } },
         },
         legs = {
-          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8486 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160 },
+          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160, ids = { 8204 },
+            alts = {
+              {name = "Enchant Boots - Minor Agility", eff = "+3 Agility", prof = "Enchanting", skill = 125,
+                ids = { 247 } },
+            } },
         },
         mainhand = {
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
         ranged = {
-          {name = "Deadly Scope", eff = "Scope +5 Damage", prof = "Engineering", skill = 210 },
+          {name = "Deadly Scope", eff = "Scope +5 Damage", prof = "Engineering", skill = 210, ids = { 663 } },
         },
       },
     },
@@ -4828,33 +5500,72 @@ R2F.BiZData = {
       enchantPage = "Paladin Tank",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Spell Power", eff = "+6 Spell Power", prof = "Enchanting", skill = 210,
+            ids = { 8218 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Superior Stamina", eff = "Stamina +8", prof = "Enchanting", skill = 220 },
+          {name = "Enchant Chest - Superior Stamina", eff = "Stamina +8", prof = "Enchanting", skill = 220,
+            ids = { 908 },
+            alts = {
+              {name = "Enchant Chest - Greater Stamina", eff = "+6 Stamina", prof = "Enchanting", skill = 160,
+                ids = { 850 } },
+              {name = "Enchant Chest - Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 120, ids = { 254 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 170 },
+          {name = "Enchant Bracer - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 170, ids = { 852 },
+            alts = {
+              {name = "Enchant Bracer - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 130,
+                ids = { 254 } },
+              {name = "Enchant Bracer - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 50,
+                ids = { 66 } },
+            } },
         },
         hands = {
-          {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150 },
-          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200 },
+          {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150, ids = { 8484 } },
+          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200, ids = { 8487 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150 },
-          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200 },
+          {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150, ids = { 8484 } },
+          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200, ids = { 8487 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215 },
+          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215, ids = { 852 },
+            alts = {
+              {name = "Enchant Boots - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 170,
+                ids = { 254 } },
+              {name = "Enchant Boots - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 125,
+                ids = { 66 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Recovery", eff = "Recovery (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Recovery", eff = "Recovery (proc)", prof = "Enchanting", skill = 140, ids = { 8721 },
+            alts = {
+              {name = "Enchant Weapon - Striking", eff = "Weapon Damage +3", prof = "Enchanting", skill = 195,
+                ids = { 943 } },
+              {name = "Enchant Weapon - Lesser Striking", eff = "+2 Weapon Damage", prof = "Enchanting", skill = 140,
+                ids = { 241 } },
+            } },
         },
         offhand = {
-          {name = "Iron Shield Spike", eff = "Iron Spike (8-12 damage)", prof = "Blacksmithing", skill = 125 },
+          {name = "Iron Shield Spike", eff = "Iron Spike (8-12 damage)", prof = "Blacksmithing", skill = 125,
+            ids = { 43 } },
         },
       },
     },
@@ -5017,28 +5728,54 @@ R2F.BiZData = {
       enchantPage = "Paladin Retribution PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Strength", eff = "Strength +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Strength", eff = "Strength +5", prof = "Enchanting", skill = 210, ids = { 856 } },
         },
         back = {
-          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110 },
+          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110, ids = { 247 } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Strength", eff = "Strength +5", prof = "Enchanting", skill = 180 },
+          {name = "Enchant Bracer - Strength", eff = "Strength +5", prof = "Enchanting", skill = 180, ids = { 856 },
+            alts = {
+              {name = "Enchant Bracer - Lesser Strength", eff = "+4 Strength", prof = "Enchanting", skill = 140,
+                ids = { 823 } },
+              {name = "Enchant Bracer - Minor Strength", eff = "+3 Strength", prof = "Enchanting", skill = 80,
+                ids = { 248 } },
+            } },
         },
         hands = {
-          {name = "Enchant Gloves - Strength", eff = "Strength +7", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Gloves - Strength", eff = "Strength +7", prof = "Enchanting", skill = 225, ids = { 927 } },
         },
         legs = {
-          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8486 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160 },
+          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160, ids = { 8204 },
+            alts = {
+              {name = "Enchant Boots - Minor Agility", eff = "+3 Agility", prof = "Enchanting", skill = 125,
+                ids = { 247 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant 2H Weapon - Impact", eff = "Weapon Damage +6", prof = "Enchanting", skill = 200, kind = "2h" },
+          {name = "Enchant 2H Weapon - Impact", eff = "Weapon Damage +6", prof = "Enchanting", skill = 200, kind = "2h",
+            ids = { 8205 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Impact", eff = "+5 Weapon Damage", prof = "Enchanting", skill = 145,
+                ids = { 1897 } },
+              {name = "Enchant 2H Weapon - Minor Impact", eff = "+4 Weapon Damage", prof = "Enchanting", skill = 100,
+                ids = { 805 } },
+            } },
         },
       },
     },
@@ -5240,34 +5977,73 @@ R2F.BiZData = {
       enchants = {
         neck = {
           {name = "Enchant Necklace - Healing Power", eff = "Healing +11, Damage Spells +4", prof = "Enchanting",
-            skill = 210 },
+            skill = 210, ids = { 8219 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
           {name = "Enchant Bracer - Lesser Healing Power", eff = "Healing +16, Damage Spells +6", prof = "Enchanting",
-            skill = 205 },
+            skill = 205, ids = { 8209 },
+            alts = {
+              {name = "Enchant Bracer - Minor Healing Power", eff = "Healing +8, Damage Spells +3", prof = "Enchanting",
+                skill = 90, ids = { 8208 } },
+              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+                ids = { 723 } },
+            } },
         },
         hands = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Mystic Heavy Armor Kit", eff = "Spell Power +4, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8485 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Boots - Minor Speed", eff = "Minor Speed Increase", prof = "Enchanting", skill = 225,
+            ids = { 911 } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Revelation", eff = "Revelation (proc)", prof = "Enchanting", skill = 140,
+            ids = { 8217 },
+            alts = {
+              {name = "Enchant Weapon - Insight", eff = "Chance on spell cast: +100% Spirit for 10 sec",
+                prof = "Enchanting", skill = 140, ids = { 8216 } },
+            } },
           {name = "Enchant 2H Weapon - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 100,
-            kind = "2h" },
+            kind = "2h", ids = { 723 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Spirit", eff = "+5 Spirit", prof = "Enchanting", skill = 110,
+                ids = { 851 } },
+            } },
         },
         offhand = {
-          {name = "Enchant Shield - Lesser Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 155 },
+          {name = "Enchant Shield - Lesser Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 155, ids = { 852 },
+            alts = {
+              {name = "Enchant Shield - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 105,
+                ids = { 66 } },
+            } },
         },
       },
     },
@@ -5478,32 +6254,70 @@ R2F.BiZData = {
       enchantPage = "Warrior Tank",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Deflection", eff = "Defense +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Deflection", eff = "Defense +5", prof = "Enchanting", skill = 210, ids = { 925 } },
         },
         back = {
-          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205 },
+          {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
+            alts = {
+              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
+                skill = 115, ids = { 744 } },
+            } },
         },
         chest = {
-          {name = "Enchant Chest - Superior Stamina", eff = "Stamina +8", prof = "Enchanting", skill = 220 },
+          {name = "Enchant Chest - Superior Stamina", eff = "Stamina +8", prof = "Enchanting", skill = 220,
+            ids = { 908 },
+            alts = {
+              {name = "Enchant Chest - Greater Stamina", eff = "+6 Stamina", prof = "Enchanting", skill = 160,
+                ids = { 850 } },
+              {name = "Enchant Chest - Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 120, ids = { 254 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 170 },
+          {name = "Enchant Bracer - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 170, ids = { 852 },
+            alts = {
+              {name = "Enchant Bracer - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 130,
+                ids = { 254 } },
+              {name = "Enchant Bracer - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 50,
+                ids = { 66 } },
+            } },
         },
         hands = {
-          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210 },
-          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200 },
+          {name = "Enchant Gloves - Agility", eff = "Agility +7", prof = "Enchanting", skill = 210, ids = { 1887 } },
+          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200, ids = { 8487 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         legs = {
-          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200 },
+          {name = "Thick Armor Kit", eff = "Stamina +4, Armor +32", prof = "Leatherworking", skill = 200, ids = { 8487 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215 },
+          {name = "Enchant Boots - Stamina", eff = "Stamina +5", prof = "Enchanting", skill = 215, ids = { 852 },
+            alts = {
+              {name = "Enchant Boots - Lesser Stamina", eff = "+4 Stamina", prof = "Enchanting", skill = 170,
+                ids = { 254 } },
+              {name = "Enchant Boots - Minor Stamina", eff = "+3 Stamina", prof = "Enchanting", skill = 125,
+                ids = { 66 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant Weapon - Recovery", eff = "Recovery (proc)", prof = "Enchanting", skill = 140 },
+          {name = "Enchant Weapon - Recovery", eff = "Recovery (proc)", prof = "Enchanting", skill = 140, ids = { 8721 },
+            alts = {
+              {name = "Enchant Weapon - Striking", eff = "Weapon Damage +3", prof = "Enchanting", skill = 195,
+                ids = { 943 } },
+              {name = "Enchant Weapon - Lesser Striking", eff = "+2 Weapon Damage", prof = "Enchanting", skill = 140,
+                ids = { 241 } },
+            } },
         },
         offhand = {
-          {name = "Iron Shield Spike", eff = "Iron Spike (8-12 damage)", prof = "Blacksmithing", skill = 125 },
+          {name = "Iron Shield Spike", eff = "Iron Spike (8-12 damage)", prof = "Blacksmithing", skill = 125,
+            ids = { 43 } },
         },
       },
     },
@@ -5678,28 +6492,54 @@ R2F.BiZData = {
       enchantPage = "Warrior Arms PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Strength", eff = "Strength +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Strength", eff = "Strength +5", prof = "Enchanting", skill = 210, ids = { 856 } },
         },
         back = {
-          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110 },
+          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110, ids = { 247 } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Strength", eff = "Strength +5", prof = "Enchanting", skill = 180 },
+          {name = "Enchant Bracer - Strength", eff = "Strength +5", prof = "Enchanting", skill = 180, ids = { 856 },
+            alts = {
+              {name = "Enchant Bracer - Lesser Strength", eff = "+4 Strength", prof = "Enchanting", skill = 140,
+                ids = { 823 } },
+              {name = "Enchant Bracer - Minor Strength", eff = "+3 Strength", prof = "Enchanting", skill = 80,
+                ids = { 248 } },
+            } },
         },
         hands = {
-          {name = "Enchant Gloves - Strength", eff = "Strength +7", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Gloves - Strength", eff = "Strength +7", prof = "Enchanting", skill = 225, ids = { 927 } },
         },
         legs = {
-          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8486 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160 },
+          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160, ids = { 8204 },
+            alts = {
+              {name = "Enchant Boots - Minor Agility", eff = "+3 Agility", prof = "Enchanting", skill = 125,
+                ids = { 247 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant 2H Weapon - Impact", eff = "Weapon Damage +6", prof = "Enchanting", skill = 200, kind = "2h" },
+          {name = "Enchant 2H Weapon - Impact", eff = "Weapon Damage +6", prof = "Enchanting", skill = 200, kind = "2h",
+            ids = { 8205 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Impact", eff = "+5 Weapon Damage", prof = "Enchanting", skill = 145,
+                ids = { 1897 } },
+              {name = "Enchant 2H Weapon - Minor Impact", eff = "+4 Weapon Damage", prof = "Enchanting", skill = 100,
+                ids = { 805 } },
+            } },
         },
       },
     },
@@ -5892,28 +6732,54 @@ R2F.BiZData = {
       enchantPage = "Warrior Arms PvE",
       enchants = {
         neck = {
-          {name = "Enchant Necklace - Strength", eff = "Strength +5", prof = "Enchanting", skill = 210 },
+          {name = "Enchant Necklace - Strength", eff = "Strength +5", prof = "Enchanting", skill = 210, ids = { 856 } },
         },
         back = {
-          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110 },
+          {name = "Enchant Cloak - Minor Agility", eff = "Agility +3", prof = "Enchanting", skill = 110, ids = { 247 } },
         },
         chest = {
-          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200 },
+          {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
+            alts = {
+              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
+                prof = "Enchanting", skill = 150, ids = { 847 } },
+            } },
         },
         wrist = {
-          {name = "Enchant Bracer - Strength", eff = "Strength +5", prof = "Enchanting", skill = 180 },
+          {name = "Enchant Bracer - Strength", eff = "Strength +5", prof = "Enchanting", skill = 180, ids = { 856 },
+            alts = {
+              {name = "Enchant Bracer - Lesser Strength", eff = "+4 Strength", prof = "Enchanting", skill = 140,
+                ids = { 823 } },
+              {name = "Enchant Bracer - Minor Strength", eff = "+3 Strength", prof = "Enchanting", skill = 80,
+                ids = { 248 } },
+            } },
         },
         hands = {
-          {name = "Enchant Gloves - Strength", eff = "Strength +7", prof = "Enchanting", skill = 225 },
+          {name = "Enchant Gloves - Strength", eff = "Strength +7", prof = "Enchanting", skill = 225, ids = { 927 } },
         },
         legs = {
-          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135 },
+          {name = "Forceful Heavy Armor Kit", eff = "Attack Power +6, Armor +24", prof = "Leatherworking", skill = 135,
+            ids = { 8486 },
+            alts = {
+              {name = "Heavy Armor Kit", eff = "Stamina +3, Armor +24", prof = "Leatherworking", skill = 150,
+                ids = { 8484 } },
+            } },
         },
         feet = {
-          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160 },
+          {name = "Enchant Boots - Lesser Agility", eff = "Agility +4", prof = "Enchanting", skill = 160, ids = { 8204 },
+            alts = {
+              {name = "Enchant Boots - Minor Agility", eff = "+3 Agility", prof = "Enchanting", skill = 125,
+                ids = { 247 } },
+            } },
         },
         mainhand = {
-          {name = "Enchant 2H Weapon - Impact", eff = "Weapon Damage +6", prof = "Enchanting", skill = 200, kind = "2h" },
+          {name = "Enchant 2H Weapon - Impact", eff = "Weapon Damage +6", prof = "Enchanting", skill = 200, kind = "2h",
+            ids = { 8205 },
+            alts = {
+              {name = "Enchant 2H Weapon - Lesser Impact", eff = "+5 Weapon Damage", prof = "Enchanting", skill = 145,
+                ids = { 1897 } },
+              {name = "Enchant 2H Weapon - Minor Impact", eff = "+4 Weapon Damage", prof = "Enchanting", skill = 100,
+                ids = { 805 } },
+            } },
         },
       },
     },

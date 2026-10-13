@@ -11,7 +11,9 @@
 -- * Waypoints: PlanData.waypoints[stepId] = { default = {points}, <plan> = {points} }; a
 --   plan's own list replaces the default for that plan. A point has zone (English name),
 --   x / y in map percent, label and conf: exact | classic | approx | check. `check` = no
---   position known yet (label only, no button); classic / approx = "may have moved".
+--   position known yet (label only, no button), unless the point has `dungeon` = the dungeon's name: then
+--   the position is the dungeon entrance the game's own world map shows (C_EncounterJournal.GetDungeonEntrancesForMap,
+--   what Leatrix Maps draws), looked up at run time (Plan.EntranceFor); classic / approx = "may have moved".
 --   The zone name is turned into a uiMapID at run time (Plan.ResolveMap) by walking
 --   C_Map.GetMapChildrenInfo, because the ids are not known for Forever's new zones.
 --   The button points our own arrow (Nav.lua, BiZNav) at it; without a map id, or on a
@@ -244,9 +246,71 @@ function Plan.WayLine(pt)
   return ("/way %s %s %s %s"):format(pt.zone, pt.x, pt.y, pt.label)
 end
 
--- A point with a position (not `check`).
+-- Dungeon entrances the game's own world map knows, by lower-case name: { mapID, x, y (map percent), name }.
+-- Built once from every zone map (the same call Blizzard's map pins use); an empty answer is not kept, so a client
+-- that has not loaded its maps yet is asked again (at most every 30 seconds).
+local entranceCache, entranceTried
+
+local function buildEntrances()
+  if not (C_EncounterJournal and C_EncounterJournal.GetDungeonEntrancesForMap) then return nil end
+  mapCache = mapCache or buildMapCache()
+  if not mapCache then return nil end
+  local out, any = {}, false
+  for _, list in pairs(mapCache) do
+    for _, m in ipairs(list) do
+      local ok, entrances = pcall(C_EncounterJournal.GetDungeonEntrancesForMap, m.id)
+      if ok and type(entrances) == "table" then
+        for _, e in ipairs(entrances) do
+          local pos = e.position
+          local x, y
+          if type(pos) == "table" then
+            if pos.GetXY then x, y = pos:GetXY() else x, y = pos.x, pos.y end
+          end
+          if type(e.name) == "string" and x and y then
+            local key = e.name:lower()
+            if not out[key] then out[key] = { mapID = m.id, x = x * 100, y = y * 100, name = e.name } end
+            any = true
+          end
+        end
+      end
+    end
+  end
+  return any and out or nil
+end
+
+-- The game's entrance for a dungeon name (exact, else one name containing the other), or nil.
+function Plan.EntranceFor(name)
+  if type(name) ~= "string" or name == "" then return nil end
+  if not entranceCache then
+    local now = GetTime and GetTime() or 0
+    if entranceTried and now - entranceTried < 30 then return nil end
+    entranceTried = now
+    entranceCache = buildEntrances()
+    if not entranceCache then return nil end
+  end
+  local key = name:lower()
+  if entranceCache[key] then return entranceCache[key] end
+  for k, e in pairs(entranceCache) do
+    if k:find(key, 1, true) or key:find(k, 1, true) then return e end
+  end
+end
+
+function Plan.ResetEntrances() entranceCache, entranceTried = nil, nil end
+
+-- Where a point is: mapID, x, y (map percent), or nil when no position is known.
+local function spot(pt)
+  if pt.conf ~= "check" and pt.x ~= nil and pt.y ~= nil then
+    return Plan.ResolveMap(pt.zone, pt.mapHint), pt.x, pt.y, true
+  end
+  local e = pt.dungeon and Plan.EntranceFor(pt.dungeon)
+  if e then return e.mapID, e.x, e.y, false end
+end
+Plan.Spot = spot
+
+-- A point with a position (not `check`), or a dungeon whose entrance the game's map knows.
 function Plan.HasPosition(pt)
-  return pt.conf ~= "check" and pt.x ~= nil and pt.y ~= nil
+  if pt.conf ~= "check" and pt.x ~= nil and pt.y ~= nil then return true end
+  return pt.dungeon ~= nil and Plan.EntranceFor(pt.dungeon) ~= nil
 end
 
 -- "may have moved" for positions copied from Classic or only roughly known.
@@ -258,15 +322,19 @@ end
 -- this game has no such map or can't place it. Returns "arrow", "line", or nil for a
 -- point with no position.
 function Plan.Waypoint(pt, stepId)
-  if not Plan.HasPosition(pt) then return nil end
-  local mapID = Plan.ResolveMap(pt.zone, pt.mapHint)
-  if mapID and R2F.Nav.SetTarget(mapID, pt.x, pt.y, pt.label, pt.zone) then
+  local mapID, x, y, explicit = spot(pt)
+  if not (x and y) then return nil end
+  if mapID and R2F.Nav.SetTarget(mapID, x, y, pt.label, pt.zone) then
     arrowStep = stepId
     R2F.Print(L.NAV_SET:format(pt.label))
     return "arrow"
   end
   if not mapID then R2F.Print(L.NAV_NO_MAP:format(pt.zone)) end
-  R2F.Print(Plan.WayLine(pt))
+  if explicit then
+    R2F.Print(Plan.WayLine(pt))
+  else
+    R2F.Print(Plan.WayLine({ zone = pt.zone, x = ("%.1f"):format(x), y = ("%.1f"):format(y), label = pt.label }))
+  end
   return "line"
 end
 

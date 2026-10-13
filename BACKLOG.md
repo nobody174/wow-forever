@@ -7,15 +7,15 @@ stale checkmark.
 
 ## Open from the owner's 0.47.3 feedback (2026-10-13)
 
-- [ ] **Talents tab like the site's calculator**: clear the board, play with builds, save and share loadouts. A planner, saved loadouts and sharing
-      exist since 0.37.0 ("Edit build"), but the owner says it does not feel like the calculator. Ask what is missing before rebuilding.
-- [ ] **Enchant already on the item** in Mr.BiZ, plus the 2nd and 3rd best enchant listed under the slot. Reading the worn enchant needs an
-      enchant-id to name table (the item link carries an id; we only have names), or reading the tooltip line.
-- [ ] **Mr.BiZ at a lower level** ("show me BiS for level 15"): not possible with the data we have (ForeverDB gives 3 items per slot, ForeverChanges 6,
-      all top-level). It would need a deeper per-slot list with required levels. The level slider only skips picks that need a higher level.
-- [ ] **Weapons from quests along the route**: researched, see `bis/quest-weapons-research.md`. Needs a script, a per-spec score and a quest-to-step match.
-- [ ] **13 plan points still without a position**: Skycutter / Dalaran portal (no NPC on the zone map), Stormwind boat, and all level 35-60 zones and
-      dungeons (Wowhead has no entrances yet). Use `/r2f here` at the spot in game, then paste the line.
+Done in 0.50.0: the level slider is dropped, Mr.BiZ shows the worn enchant and the #2 / #3 enchants (addon) and the best enchant on the closed
+row (site), the Talents tab has Clear and a more patient talent read, and dungeon entrances come from the game's map.
+
+- [ ] **Talents tab like the site's calculator**: Clear is in (0.50.0). Ask whether anything else is missing before rebuilding.
+- [ ] **Mr.BiZ at a lower level**: dropped. Lists are for the beta cap (30), later 60.
+- [ ] **Weapons from quests along the route**: researched for all five plan classes, see `bis/quest-weapons-research.md` and
+      `bis/quest-weapons-by-class.md`. Needs a per-spec score and a quest-to-step match; the owner has not answered the three open questions yet.
+- [ ] **Plan points still without a position**: the Skycutter / Dalaran portal (no NPC on the zone map), the Stormwind boat, Riverglades and
+      Shen'dralas, Mount Hyjal (zones, not dungeons). Use `/r2f here` at the spot in game, then paste the line.
 
 ## Owner decisions, 2026-10-13 (answers to Claude Desktop's open questions)
 

@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-13",
+      "title": "Mr.BiZ shows the best enchant on every slot",
+      "text": "The best enchant for each slot is now on the closed row, and opening a slot lists the 2nd and 3rd best stand-ins. In the addon, Mr.BiZ also tells you which of them you wear right now.",
+      "link": "bis.html"
+    },
+    {
+      "date": "2026-10-13",
       "title": "Road to Forever addon: own arrow, upgrade arrows, training",
       "text": "The addon now has its own waypoint arrow (Plan steps, Mr.BiZ items, /bizway, Alt + right-click on the map, Ctrl + click on Questie icons), green / red upgrade arrows on bag items scored with your spec's weights, best enchants on Mr.BiZ, a required-level slider, what to train next, a 24-hour clock switch and weapon upgrades along the launch plan.",
       "link": "addons.html"

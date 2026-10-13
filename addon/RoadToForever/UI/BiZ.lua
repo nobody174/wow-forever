@@ -262,16 +262,41 @@ local function layoutSide()
   local all = allPicks(sl)
   local gapOf = function(rank) return rank == 1 and BiZ.IsTheBizz(sl) and -nxt[1].delta or nil end
   -- BiS enchant for this slot (the site's Professions page; ForeverChanges' spec pages), right under the
-  -- slot name so it is never pushed off the bottom by a long list of picks.
+  -- slot name so it is never pushed off the bottom by a long list of picks: the best one, the 2nd / 3rd best
+  -- stand-ins under it, and what you wear there now.
   local y = 30
-  for i, e in ipairs(BiZ.Enchants(specId, sl.slot)) do
+  local rows = BiZ.Enchants(specId, sl.slot)
+  local altLines = 0
+  for i, e in ipairs(rows) do
     if i > 2 then break end
     local head = line("GameFontNormalSmall", 0, y, 320, L.BIZ_ENCHANT:format(e.name))
     head:SetWordWrap(false)
     local kind = e.kind == "2h" and (" · " .. L.BIZ_ENCHANT_2H) or ""
     local sub = line("GameFontDisableSmall", 12, y + 14, 308, L.BIZ_ENCHANT_SUB:format(e.eff, e.prof, e.skill) .. kind)
     sub:SetWordWrap(false)
-    y = y + 32
+    y = y + 28
+    for n, a in ipairs(e.alts or {}) do
+      if altLines >= 3 then break end
+      altLines = altLines + 1
+      local al = line("GameFontDisableSmall", 12, y, 308, L.BIZ_ENCHANT_ALT:format(n + 1, a.name, a.prof, a.skill))
+      al:SetWordWrap(false)
+      y = y + 14
+    end
+  end
+  if #rows > 0 then
+    local state, _, rank = BiZ.EnchantState(rows, BiZ.WornEnchant(sl.slot))
+    if state then
+      local label = BiZ.SlotLabel(sl.slot):lower()
+      local msg, cr, cg, cb
+      if state == "best" then msg, cr, cg, cb = L.BIZ_WORN_BEST:format(label), 0.3, 1, 0.3
+      elseif state == "alt" then msg, cr, cg, cb = L.BIZ_WORN_ALT:format(label, rank), 1, 0.82, 0
+      elseif state == "other" then msg, cr, cg, cb = L.BIZ_WORN_OTHER:format(label), 0.7, 0.7, 0.7
+      else msg, cr, cg, cb = L.BIZ_WORN_NONE:format(label), 1, 0.4, 0.4 end
+      local wl = line("GameFontHighlightSmall", 0, y + 2, 320, msg)
+      wl:SetTextColor(cr, cg, cb)
+      wl:SetWordWrap(false)
+      y = y + 18
+    end
   end
   y = y + 6
   for rank, it in ipairs(all) do
@@ -433,9 +458,6 @@ local function setViewShown()
   for _, b in pairs(slotBtns) do b:SetShown(isSet) end
   for _, w in pairs(typeBoxes) do w:SetShown(isSet) end
   ui.known:SetShown(isSet)
-  ui.level:SetShown(isSet)
-  ui.levelText:SetShown(isSet)
-  ui.myLevel:SetShown(isSet)
   ui.footer:SetShown(isSet)
   ui.side:SetShown(isSet)
   ui.modelBack:SetShown(isSet)
@@ -455,13 +477,6 @@ local function refresh()
   ui.wishBtn:SetText(L.BIZ_VIEW_WISH:format(BiZ.WishCount()))
   for t, box in pairs(typeBoxes) do box:SetChecked(BiZ.TypeOn(t)) end
   ui.known:SetChecked(BiZ.KnownOnly())
-  local maxL = BiZ.MaxLevel()
-  ui.levelText:SetText(maxL >= BiZ.MAX_LEVEL and L.BIZ_LEVEL_ANY or L.BIZ_LEVEL_UPTO:format(maxL))
-  if math.floor((ui.level:GetValue() or 0) + 0.5) ~= maxL then
-    ui.levelSync = true
-    ui.level:SetValue(maxL)
-    ui.levelSync = false
-  end
   setViewShown()
 
   -- Keep the selected slot while the spec changes; fall back to the first slot with a pick.
@@ -640,33 +655,6 @@ function Tab.Build(f)
   ui.known = UI.CheckButton(f, L.BIZ_KNOWN_ONLY)
   ui.known:SetPoint("TOPLEFT", 4 + (n % 2) * 150, -fy - math.floor(n / 2) * 20)
   ui.known:SetScript("OnClick", function(self) BiZ.SetKnownOnly(self:GetChecked()); refresh() end)
-
-  -- Level filter: picks that need a higher level are skipped, so rank 2 or 3 shows instead.
-  local ly = -fy - (math.floor(n / 2) + 1) * 20 - 6
-  ui.levelText = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-  ui.levelText:SetPoint("TOPLEFT", 8, ly)
-  ui.level = CreateFrame("Slider", nil, f, "OptionsSliderTemplate")
-  ui.level:SetPoint("TOPLEFT", 8, ly - 16)
-  ui.level:SetWidth(200)
-  ui.level:SetMinMaxValues(1, BiZ.MAX_LEVEL)
-  ui.level:SetValueStep(1)
-  if ui.level.SetObeyStepOnDrag then ui.level:SetObeyStepOnDrag(true) end
-  for _, part in ipairs({ "Low", "High", "Text" }) do
-    if ui.level[part] then ui.level[part]:SetText("") end
-  end
-  ui.level:SetScript("OnValueChanged", function(_, v)
-    if ui.levelSync then return end
-    v = math.floor(v + 0.5)
-    if v ~= BiZ.MaxLevel() then
-      BiZ.SetMaxLevel(v)
-      refresh()
-    end
-  end)
-  ui.myLevel = button(f, 76, L.BIZ_LEVEL_MINE, function()
-    BiZ.SetMaxLevel(UnitLevel and UnitLevel("player") or BiZ.MAX_LEVEL)
-    refresh()
-  end)
-  ui.myLevel:SetPoint("LEFT", ui.level, "RIGHT", 10, 0)
 
   -- Slot panel (right).
   side = CreateFrame("Frame", nil, f)

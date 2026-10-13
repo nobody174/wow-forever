@@ -95,7 +95,9 @@ function pointLua(p) {
   let s = "{ zone = " + lstr(p.zone);
   if (p.mapHint != null) s += ", mapHint = " + lnum(p.mapHint);
   if (p.x != null) s += ", x = " + lnum(p.x) + ", y = " + lnum(p.y);
-  s += ", label = " + lstr(p.label) + ", conf = " + lstr(p.conf) + " }";
+  s += ", label = " + lstr(p.label);
+  if (p.dungeon) s += ", dungeon = " + lstr(p.dungeon);
+  s += ", conf = " + lstr(p.conf) + " }";
   return s;
 }
 

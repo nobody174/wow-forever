@@ -354,7 +354,8 @@ ENCHANT_SLOTS = {
     "Feet": ["feet"], "Hands, Legs": ["hands", "legs"], "Shield": ["offhand"], "Weapon": ["mainhand"],
     "2H Weapon": ["mainhand"], "Ranged": ["ranged"],
 }
-ENCHANT_KEYS = ["name", "eff", "prof", "skill", "kind"]
+ENCHANT_KEYS = ["name", "eff", "prof", "skill", "kind", "ids"]
+ALT_KEYS = ["name", "eff", "prof", "skill", "ids"]
 
 
 def load_enchants():
@@ -365,8 +366,23 @@ def load_enchants():
     return json.loads(out.stdout)
 
 
+ENCHANT_IDS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "enchant_ids.json")
+
+
+def load_enchant_ids():
+    """name -> [enchantment ids] from bis/enchant_ids.json (bis/tools/wago_enchant_ids.py); {} when the file is absent."""
+    try:
+        with open(ENCHANT_IDS, encoding="utf-8") as f:
+            return json.load(f)["ids"]
+    except FileNotFoundError:
+        print("note: bis/enchant_ids.json is missing, so Mr.BiZ cannot tell which enchant you wear "
+              "(run bis/tools/wago_enchant_ids.py)", file=sys.stderr)
+        return {}
+
+
 def add_enchants(specs):
     data = load_enchants()
+    ids = load_enchant_ids()
     pages = {lbl for e in data for lbl in e["specs"]}
     for sid, page in ENCHANT_PAGE.items():
         if sid not in specs:
@@ -388,6 +404,16 @@ def add_enchants(specs):
             row = {"name": e["name"], "eff": e["eff"], "prof": e["prof"], "skill": e["skill"]}
             if e["slot"] == "2H Weapon":
                 row["kind"] = "2h"
+            if e["name"] in ids:
+                row["ids"] = ids[e["name"]]
+            alts = []
+            for a in e.get("alts", []):
+                alt = {"name": a["name"], "eff": a["eff"], "prof": a["prof"], "skill": a["skill"]}
+                if a["name"] in ids:
+                    alt["ids"] = ids[a["name"]]
+                alts.append(alt)
+            if alts:
+                row["alts"] = alts
             for key in ENCHANT_SLOTS[e["slot"]]:
                 by_slot.setdefault(key, []).append(row)
         sp["enchants"] = by_slot
@@ -410,6 +436,10 @@ def lua_val(v):
     if isinstance(v, str):
         return lua_str(v)
     raise TypeError(v)
+
+
+def lua_ids(ids):
+    return "{ " + ", ".join(str(int(i)) for i in ids) + " }"
 
 
 def lua_item(d, keys):
@@ -501,8 +531,17 @@ def to_lua(data):
             rows = sp["enchants"][slot]
             out.append("        %s = {" % slot)
             for r in rows:
-                out.extend(wrap("          {", ["%s = %s" % (k, lua_val(r[k])) for k in ENCHANT_KEYS if k in r],
-                                " },", "            "))
+                parts = ["%s = %s" % (k, lua_ids(r[k]) if k == "ids" else lua_val(r[k])) for k in ENCHANT_KEYS if k in r]
+                if not r.get("alts"):
+                    out.extend(wrap("          {", parts, " },", "            "))
+                    continue
+                out.extend(wrap("          {", parts, ",", "            "))
+                out.append("            alts = {")
+                for alt in r["alts"]:
+                    aparts = ["%s = %s" % (k, lua_ids(alt[k]) if k == "ids" else lua_val(alt[k]))
+                              for k in ALT_KEYS if k in alt]
+                    out.extend(wrap("              {", aparts, " },", "                "))
+                out.append("            } },")
             out.append("        },")
         out.append("      },")
         out.append("    },")

@@ -41,7 +41,8 @@ Tab.PAGES = {
     features = { "repair", "sellgray", "fastloot", "mailalts" } },
   { key = "screen", label = "GP_PAGE_SCREEN", features = { "errorfilter", "xpbar", "copychat", "duels" } },
   { key = "bags", label = "GP_PAGE_BAGS", features = { "bagslots", "bagsort", "upgrades" } },
-  { key = "alerts", label = "GP_PAGE_ALERTS", features = { "reactalert", "reactlock", "reactblizz", "training", "navfollow" } },
+  { key = "alerts", label = "GP_PAGE_ALERTS",
+    features = { "reactalert", "reactlock", "reactblizz", "training", "navfollow", "corpsearrow" } },
 }
 
 local function visible()

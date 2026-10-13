@@ -45,7 +45,7 @@ read_globals = {
   -- Talent import preview (read-only)
   "GetTalentTabInfo", "GetLocale", "GetBuildInfo",
   -- Dungeon entrances the game's world map knows (Plan.lua), read only
-  "C_EncounterJournal",
+  "C_EncounterJournal", "C_DeathInfo",
   -- Talent learning (the one talent write: LearnTalent), preview-API detection, guided
   -- mode (Blizzard talent window, read only)
   "LearnTalent", "GetTalentPrereqs", "AddPreviewTalentPoints", "LearnPreviewTalents", "GetCVarBool",

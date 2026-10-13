@@ -1260,3 +1260,19 @@ on, Questie keeps using TomTom's arrow). Have Questie on. A character of level 2
 **E. Plan tab weapons (0.47.0)**
 16. Pick your spec in Mr.BiZ, open the Plan tab: steps where one of your weapon picks drops (a dungeon run) or is sold
     (Ashenvale) get a "Weapon: <item> (Bizzest main hand)" line; one per slot says "best on route". Do the lines fit?
+
+## 43. Corpse arrow (v0.51.0)
+
+(The "Required level" slider of section 42 step 11 was removed in 0.50.0; skip it.)
+
+1. Tweaks > Alerts & HUD: "Arrow to corpse when you die" is ticked on a fresh character. Hover it: the tooltip explains it.
+2. Set an arrow first (Plan tab > any Waypoint button, or `/bizway 45 34`). Die somewhere outdoors (a fall, a high-level mob).
+   The arrow jumps to "Your corpse" and chat says "arrow: your corpse". Do the yards count down as you run back?
+3. Release your spirit: the arrow stays on the corpse (you run from the graveyard). If it did not appear while you were still a
+   corpse, does it appear after you release?
+4. Run to the corpse (or let a priest resurrect you): when you are alive the corpse arrow disappears and the arrow from step 2
+   comes back. If you had none before, no arrow is left.
+5. While dead, set another arrow (`/bizway 20 20 Mine`). Revive: "Mine" stays, nothing is replaced.
+6. Reload the UI while you are a ghost: the arrow points at the corpse again.
+7. Untick the switch, die again: no arrow appears.
+8. Die inside a dungeon (corpse inside): the game may give no corpse position there. Is there an error, or just no arrow?

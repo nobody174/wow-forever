@@ -194,6 +194,11 @@ R2F.L = {
   -- BiZNav arrow (Nav.lua)
   NAV_SET = "arrow: %s",
   NAV_NEXT_STEP = "step done, next: %s",
+  NAV_CORPSE = "Your corpse",
+  NAV_CORPSE_SET = "arrow: your corpse",
+  NAV_CORPSE_TITLE = "Arrow to corpse when you die",
+  NAV_CORPSE_TIP = "When you die (or release your spirit) the arrow points at your corpse; when you are alive again the arrow you had before comes back. Only works on the map you are standing on.",
+  NAV_CORPSE_HINT = "Dead? The arrow points at your corpse.",
   NAV_FOLLOW = "Arrow follows the plan",
   NAV_FOLLOW_TIP = "When you tick the plan step you are on, the arrow moves on to the next step that has a known position. Does nothing until you tick a step; steps with no known position are skipped.",
   NAV_FOLLOW_HINT = "Tick a step, the arrow points at the next.",

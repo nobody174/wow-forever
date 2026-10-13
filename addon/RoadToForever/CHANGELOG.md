@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.51.0 (2026-10-13)
+
+- Corpse arrow: when you die the BiZNav arrow points at your corpse ("Your corpse"); when you are alive again the arrow you had before
+  comes back. A target you set yourself while dead is left alone. Works on the map you are standing on. Tweaks > Alerts & HUD > "Arrow to
+  corpse when you die" turns it off (on by default).
+
 ## 0.50.0 (2026-10-13)
 
 - Talents tab: a **Clear** button empties the board so you can build from scratch (Edit build switches on); your real talents are not

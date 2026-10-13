@@ -16,6 +16,10 @@ user-facing release notes.
   zip name. The written-in values (now 0.38.1, were stuck at 0.29.1) are the fallback if GitHub can't be reached. Tested in
   headless Chrome with a deliberately stale copy: it moved from 0.29.1 to 0.38.1.
 
+## 2026-10-13 (BiZNav corpse arrow)
+- addon 0.51.0: the BiZNav arrow points at your corpse when you die and restores the previous arrow when you are alive again (Nav.lua,
+  Tweaks switch on by default, TESTING.md section 43).
+
 ## 2026-10-13 (Mr.BiZ enchants, game entrances, quest weapons per class)
 - bis.html: the best enchant shows on the closed slot row ("Enchant: Chest - Lesser Stats"); the open row lists the 2nd and 3rd best stand-ins
   (professions.html's LADDER) under it.

@@ -1044,6 +1044,61 @@ def test_worn_enchant():
     check(font_text(lua, "^Your chest has the best enchant") is not None, "worn enchant: the best one is recognised")
 
 
+def test_corpse_arrow():
+    """On death the arrow points at the corpse; alive again, the arrow from before comes back."""
+    lua, T = plan_runtime(True, True, True)
+    lua.execute("""
+      TEST.hereMap = 1426
+      TEST.ghost = false
+      UnitIsGhost = function() return TEST.ghost end
+      TEST.corpse = { 0.3, 0.6 }
+      C_DeathInfo = { GetCorpseMapPosition = function(id)
+        if id == 1426 and TEST.corpse then return { GetXY = function() return TEST.corpse[1], TEST.corpse[2] end } end
+      end }
+      R2F.Library.db.gameplay.corpsearrow = true
+      R2F.Nav.Clear()
+      R2F.Nav.SetTarget(1426, 40, 50, 'Anvilmar', 'Dun Morogh')
+    """)
+    check(lua.eval("R2F.Gameplay.IsOn('corpsearrow')") is True, "corpse arrow: on by default for a new character")
+    T.fire("PLAYER_DEAD")
+    check(lua.eval("R2F.Nav.Target().label") == "Your corpse" and lua.eval("R2F.Nav.Target().x") == 30 and lua.eval("R2F.Nav.Target().y") == 60,
+          "corpse arrow: dying points the arrow at the corpse (map percent 30, 60)")
+    lua.execute("TEST.ghost = true")
+    T.fire("PLAYER_ALIVE")
+    check(lua.eval("R2F.Nav.Target().label") == "Your corpse", "corpse arrow: releasing (a ghost) keeps it on the corpse")
+    lua.execute("TEST.ghost = false")
+    T.fire("PLAYER_UNGHOST")
+    check(lua.eval("R2F.Nav.Target().label") == "Anvilmar" and lua.eval("R2F.Nav.Target().x") == 40,
+          "corpse arrow: alive again, the arrow from before is back")
+    # Nothing was set before: alive again clears the arrow.
+    lua.execute("R2F.Nav.Clear()")
+    T.fire("PLAYER_DEAD")
+    check(lua.eval("R2F.Nav.Target().label") == "Your corpse", "corpse arrow: works with no arrow set before")
+    T.fire("PLAYER_ALIVE")
+    check(lua.eval("R2F.Nav.Target()") is None, "corpse arrow: alive again with nothing before leaves no arrow")
+    # A target you set while dead is left alone.
+    lua.execute("R2F.Nav.Clear() R2F.Nav.SetTarget(1426, 40, 50, 'Anvilmar', 'Dun Morogh')")
+    T.fire("PLAYER_DEAD")
+    lua.execute("R2F.Nav.SetTarget(1426, 10, 10, 'Mine', 'Dun Morogh')")
+    T.fire("PLAYER_UNGHOST")
+    check(lua.eval("R2F.Nav.Target().label") == "Mine", "corpse arrow: an arrow you set yourself while dead stays")
+    # No corpse position (not released yet / another map): no arrow, no error.
+    lua.execute("R2F.Nav.Clear() TEST.corpse = nil")
+    T.fire("PLAYER_DEAD")
+    check(lua.eval("R2F.Nav.Target()") is None, "corpse arrow: no corpse position known -> no arrow")
+    lua.execute("TEST.corpse = { 0.3, 0.6 } TEST.ghost = true")
+    T.fire("PLAYER_ALIVE")
+    check(lua.eval("R2F.Nav.Target().label") == "Your corpse", "corpse arrow: released later, the corpse position is found then")
+    # Reload as a ghost.
+    lua.execute("TEST.ghost = false R2F.Nav.RestoreAfterCorpse() R2F.Nav.Clear() TEST.ghost = true")
+    T.fire("PLAYER_ENTERING_WORLD")
+    check(lua.eval("R2F.Nav.Target().label") == "Your corpse", "corpse arrow: logging in as a ghost points at the corpse")
+    # Switched off.
+    lua.execute("TEST.ghost = false R2F.Nav.RestoreAfterCorpse() R2F.Nav.Clear() R2F.Library.db.gameplay.corpsearrow = false")
+    T.fire("PLAYER_DEAD")
+    check(lua.eval("R2F.Nav.Target()") is None, "corpse arrow: switched off, dying does nothing")
+
+
 def test_tweaks_search():
     """0.38.0: the Tweaks search box lists matching options and opens their page."""
     lua = new_runtime()
@@ -7449,6 +7504,7 @@ def main():
     test_talent_cache_and_clear()
     test_dungeon_entrances()
     test_worn_enchant()
+    test_corpse_arrow()
     test_tweaks_search()
     test_talented_perk()
     test_bags()

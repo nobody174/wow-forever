@@ -483,6 +483,68 @@ function Nav.InstallTomTomShim()
   return true
 end
 
+-- ---------------------------------------------------------------------------
+-- Corpse arrow: when you die the arrow points at your corpse; when you are alive again the arrow you had comes back.
+-- ---------------------------------------------------------------------------
+
+local corpse = { active = false, prev = nil }
+
+-- mapID, x, y (map percent) of your corpse on the map you are on, or nil (not released yet, other map, no API).
+local function corpsePos()
+  if not (C_DeathInfo and C_DeathInfo.GetCorpseMapPosition and C_Map and C_Map.GetBestMapForUnit) then return nil end
+  local mapID = C_Map.GetBestMapForUnit("player")
+  if not mapID then return nil end
+  local ok, pos = pcall(C_DeathInfo.GetCorpseMapPosition, mapID)
+  if not (ok and pos) then return nil end
+  local x, y
+  if pos.GetXY then x, y = pos:GetXY() else x, y = pos.x, pos.y end
+  if not (x and y) or (x == 0 and y == 0) then return nil end
+  return mapID, x * 100, y * 100
+end
+
+-- Point the arrow at the corpse (keeps the arrow you had to bring back later). True when it is set.
+function Nav.ShowCorpse()
+  if target and target.isCorpse then return true end
+  local mapID, x, y = corpsePos()
+  if not mapID then return false end
+  local prev = target
+  if not Nav.SetTarget(mapID, x, y, L.NAV_CORPSE, nil) then return false end
+  target.isCorpse = true
+  if not corpse.active and prev then
+    corpse.prev = { mapID = prev.mapID, x = prev.x, y = prev.y, label = prev.label, zone = prev.zone }
+  end
+  corpse.active = true
+  R2F.Print(L.NAV_CORPSE_SET)
+  return true
+end
+
+-- Alive again: drop the corpse arrow and put the one from before back (if any). A target you set yourself
+-- while dead is left alone.
+function Nav.RestoreAfterCorpse()
+  if not corpse.active then return end
+  local prev = corpse.prev
+  corpse.active, corpse.prev = false, nil
+  if target and not target.isCorpse then return end
+  if target then Nav.Clear() end
+  if prev then Nav.SetTarget(prev.mapID, prev.x, prev.y, prev.label, prev.zone) end
+end
+
+local function isGhost() return _G.UnitIsGhost and _G.UnitIsGhost("player") end
+
+-- Tweaks > Alerts & HUD: "Arrow to corpse when you die" (on by default, Library.lua).
+R2F.Gameplay.Register({
+  key = "corpsearrow", group = "screen", title = "NAV_CORPSE_TITLE", tip = "NAV_CORPSE_TIP",
+  events = {
+    PLAYER_DEAD = function() Nav.ShowCorpse() end,
+    -- Releasing the spirit and being resurrected both fire PLAYER_ALIVE: a ghost has a corpse to find, anyone else is back.
+    PLAYER_ALIVE = function() if isGhost() then Nav.ShowCorpse() else Nav.RestoreAfterCorpse() end end,
+    PLAYER_UNGHOST = function() Nav.RestoreAfterCorpse() end,
+    -- Reload or login as a ghost.
+    PLAYER_ENTERING_WORLD = function() if isGhost() then Nav.ShowCorpse() end end,
+    CORPSE_POSITION_UPDATE = function() if isGhost() or (_G.UnitIsDead and _G.UnitIsDead("player")) then Nav.ShowCorpse() end end,
+  },
+})
+
 local ev = CreateFrame("Frame")
 ev:RegisterEvent("PLAYER_LOGIN")
 ev:RegisterEvent("ADDON_LOADED")

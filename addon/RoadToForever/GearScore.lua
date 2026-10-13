@@ -176,25 +176,32 @@ local function equipLoc(link)
 end
 
 -- Score of what is worn where this item would go (the weaker of two slots), or 0 if empty.
--- Returns nil when the item doesn't go in a slot we compare.
+-- Returns nil when the item doesn't go in a slot we compare, false while a worn item isn't loaded.
 function GS.EquippedScore(link, specId)
   local slots = GS.SLOTS[equipLoc(link) or ""]
   if not slots then return nil end
   local worst
   for _, slot in ipairs(slots) do
     local worn = GetInventoryItemLink and GetInventoryItemLink("player", slot)
-    local s = worn and GS.Score(worn, specId) or 0
+    local s = 0
+    if worn then
+      s = GS.Score(worn, specId)
+      if s == nil then return false end   -- worn item not loaded yet: don't compare (no false arrows)
+    end
     if worst == nil or s < worst then worst = s end
   end
   return worst or 0
 end
 
 -- link -> score, delta vs equipped (nil when not comparable).
+-- Only gear (an item with a slot in GS.SLOTS) is scored: potions and quest items give an empty
+-- stats table, which would read "BiZ score 0.0".
 function GS.Compare(link, specId)
+  if not GS.SLOTS[equipLoc(link) or ""] then return nil end
   local s = GS.Score(link, specId)
   if not s then return nil end
   local eq = GS.EquippedScore(link, specId)
-  if eq == nil then return s, nil end
+  if not eq then return s, nil end
   return s, math.floor((s - eq) * 10 + 0.5) / 10
 end
 

@@ -7402,6 +7402,8 @@ GS_LUA = """
     ringLo = { stats = { ITEM_MOD_AGILITY_SHORT = 2 }, loc = 'INVTYPE_FINGER', cls = 4, sub = 0 },
     ringHi = { stats = { ITEM_MOD_AGILITY_SHORT = 20 }, loc = 'INVTYPE_FINGER', cls = 4, sub = 0 },
     odd = { stats = { ITEM_MOD_NEW_THING = 5 }, loc = 'INVTYPE_NECK', cls = 4, sub = 0 },
+    potion = { stats = {}, loc = '', cls = 0, sub = 1 },
+    helmNotLoaded = { loc = 'INVTYPE_HEAD', cls = 4, sub = 2 },
   }
   TEST.worn = {}
   GetItemStats = function(link) local it = TEST.gsItems[link] return it and it.stats end
@@ -7455,6 +7457,13 @@ def test_gearscore():
     check(lua.eval("R2F.GearScore.Direction('ringLo')") == 1, "gs: an empty slot counts as 0, so anything is an upgrade")
     lua.execute("TEST.worn[1] = 'helmA'")
     check(lua.eval("R2F.GearScore.Direction('helmB')") == -1, "gs: worse than worn = downgrade")
+
+    check(lua.eval("R2F.GearScore.Compare('potion')") is None, "gs: a potion (no gear slot) gets no score")
+    lua.execute("TEST.worn[1] = 'helmNotLoaded'")
+    s2, d2 = lua.eval("R2F.GearScore.Compare('helmA')")
+    check(s2 is not None and d2 is None and lua.eval("R2F.GearScore.Direction('helmA')") is None,
+          "gs: a worn item the game hasn't loaded yet = no comparison, no arrow")
+    lua.execute("TEST.worn[1] = 'helmA'")
 
     # Armor rules
     lua.execute("TEST.level = 30")
@@ -7541,6 +7550,15 @@ def test_training():
     check(a == "Train now: 2 spells, 21s (Serpent Sting (Rank 3), Arcane Shot (Rank 3))",
           "train: 'Train now' with count, total cost and names, by level: %r" % a)
     check(b == "Next: level 22: Aspect of the Cheetah, Multi-Shot (Rank 2)", "train: 'Next' = the next level with spells: %r" % b)
+    # Re-read with "Unavailable" hidden and Serpent Sting learned (gone from the list): later spells are kept,
+    # the learned one goes.
+    lua.execute("TEST.saved = TEST.trainer TEST.trainer = { TEST.saved[2] }")
+    T.fire("TRAINER_UPDATE")
+    names = sorted(lua.eval("R2FCharDB.training.spells[%d].n" % i) for i in range(1, lua.eval("#R2FCharDB.training.spells") + 1))
+    check(names == ["Arcane Shot", "Aspect of the Cheetah", "Multi-Shot", "Raptor Strike"],
+          "train: a filtered re-read keeps hidden later spells, drops a learned one: %s" % names)
+    lua.execute("TEST.trainer = TEST.saved")
+    T.fire("TRAINER_SHOW")
     lua.execute("R2F.Training.MarkLearned('Arcane Shot', 'Rank 3')")
     a, _ = lua.eval("R2F.Training.Lines()")
     check(a == "Train now: 1 spell, 9s (Serpent Sting (Rank 3))", "train: a learned spell leaves the list: %r" % a)

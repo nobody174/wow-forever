@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-13",
+      "title": "Road to Forever addon: own arrow, upgrade arrows, training",
+      "text": "The addon now has its own waypoint arrow (Plan steps, Mr.BiZ items, /bizway, Alt + right-click on the map, Ctrl + click on Questie icons), green / red upgrade arrows on bag items scored with your spec's weights, best enchants on Mr.BiZ, a required-level slider, what to train next, a 24-hour clock switch and weapon upgrades along the launch plan.",
+      "link": "addons.html"
+    },
+    {
+      "date": "2026-10-13",
       "title": "Enchants on Mr.BiZ",
       "text": "Open a slot on Mr.BiZ to see its best enchant for your spec, with the effect and the skill it needs. The name links to the Professions page. The front page's Best-in-Slot link now opens Mr.BiZ too.",
       "link": "bis.html"

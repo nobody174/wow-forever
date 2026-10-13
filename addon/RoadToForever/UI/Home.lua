@@ -120,6 +120,10 @@ local function build(f)
   ui.trainNext:SetWidth(300)
   ui.trainNext:SetJustifyH("LEFT")
   ui.trainNext:SetTextColor(0.7, 0.7, 0.7)
+  -- At most two lines each, so the Share card below never gets covered.
+  for _, fs in ipairs({ ui.trainNow, ui.trainNext }) do
+    if fs.SetMaxLines then fs:SetMaxLines(2) end
+  end
 
   -- Share with the site (right column, under the bag switches).
   ui.shareHead = f:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")

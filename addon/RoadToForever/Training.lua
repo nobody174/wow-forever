@@ -43,6 +43,17 @@ function Training.Read()
   end
   if #list == 0 then return 0 end
   local d = db()
+  -- Merge with what we knew: a later-level spell the trainer no longer lists was hidden by its
+  -- "Unavailable" filter, so keep it. One that was trainable and is gone was learned (the trainer
+  -- hides learned spells by default), so it goes.
+  local seen = {}
+  for _, e in ipairs(list) do seen[e.n .. "\0" .. e.r] = true end
+  local level = UnitLevel("player")
+  for _, old in ipairs(d.spells or {}) do
+    if not seen[old.n .. "\0" .. old.r] and old.s == "unavailable" and (old.lvl or 0) > level then
+      list[#list + 1] = old
+    end
+  end
   d.spells = list
   d.when = time and time() or 0
   d.level = UnitLevel("player")
@@ -107,11 +118,11 @@ function Training.Lines(level)
   if not known then return L.TRAIN_UNKNOWN, nil end
   local a = L.TRAIN_NOW_NONE
   if #now == 1 then
-    a = L.TRAIN_NOW_ONE:format(R2F.Gameplay.Money(cost(now)), names(now, 3))
+    a = L.TRAIN_NOW_ONE:format(R2F.Gameplay.Money(cost(now)), names(now, 2))
   elseif #now > 1 then
-    a = L.TRAIN_NOW:format(#now, R2F.Gameplay.Money(cost(now)), names(now, 3))
+    a = L.TRAIN_NOW:format(#now, R2F.Gameplay.Money(cost(now)), names(now, 2))
   end
-  local b = nextLevel and L.TRAIN_NEXT:format(nextLevel, names(later, 3)) or L.TRAIN_NEXT_NONE
+  local b = nextLevel and L.TRAIN_NEXT:format(nextLevel, names(later, 2)) or L.TRAIN_NEXT_NONE
   return a, b
 end
 

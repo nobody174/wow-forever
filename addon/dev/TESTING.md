@@ -1219,3 +1219,44 @@ Both OFF until ticked on the Gameplay tab, Screen section.
    game); then Copy for the addon on the site and Import list in game. `/reload`: the wishlist is still there.
 6. Class and Spec buttons: the menus open under the cursor and switch the list.
 
+
+## 42. Everything since v0.35 in one pass (v0.35.1, v0.37.0 – v0.47.0)
+
+Set up once: unzip the newest release, `/console scriptErrors 1`, **disable TomTom** (BiZNav replaces it; with TomTom
+on, Questie keeps using TomTom's arrow). Have Questie on. A character of level 20+ is best (trainer, gear).
+
+**A. Older items still open**
+1. (0.35.1) Window Size / Opacity sliders: press the bar away from the thumb: nothing changes. Drag the thumb: it changes on release.
+2. (0.37.0) Talents tab: Edit build, left-click adds a point, right-click removes one; Save loadout, load it, share to Party.
+3. (0.37.1) Loadouts: "Delete a loadout..." asks before removing.
+4. (0.38.0) Tweaks: type "bags" in the search box (bottom left): the Bags options are listed; click one, its page opens.
+
+**B. BiZNav arrow (0.39.0 – 0.40.1)**
+5. Plan tab: Waypoint on a step with a position: the gold arrow shows, points the right way as you turn, yards count down,
+   "arrived" within 10 yards. Inside a dungeon: "no position here". Is the new arrow sharp at Medium and Large?
+6. Tweaks > Alerts & HUD: arrow Small / Medium / Large. Drag the arrow, `/reload`: it stays where you put it. Right-click: gone.
+7. `/bizway 45 34`, `/bizway go here 45 34`, `/bizway Dun Morogh 47 52 Kharanos`, `/bizway clear`, `/bizway size large`.
+8. World map: Alt + right-click a spot: arrow set there; the small diamond pin shows on the map (also zoomed out to the continent).
+9. Questie: Ctrl + click a quest icon on the world map: the arrow points there (chat "arrow: <name>"); Ctrl + click it again: cleared.
+
+**C. Mr.BiZ (0.41.0, 0.43.0, 0.45.0)**
+10. Hover a Scarlet Monastery item: blue line "Alt + click: arrow to Scarlet Monastery entrance (may have moved)". Alt + click:
+    arrow set. Same from a gear slot icon and from the wishlist.
+11. "Required level" slider under the filters: drag to your level (or "My level"): slots whose best needs a higher level show
+    rank 2 / 3. Back to 60: "any". Does the slider fit above the window's bottom edge?
+12. Open a slot (e.g. Neck): under the picks "Enchant: Enchant Necklace - ..." with effect and skill. Does it fit, or run into
+    the bottom with three ranks shown?
+
+**D. Home and Tweaks (0.42.0, 0.44.0, 0.46.0)**
+13. Home > Quick settings: "24-hour clock": the minimap clock shows 18:30. Untick: back to 6:30 PM. Does the box fit above
+    the Minimap heading?
+14. Tweaks > Bags > "Upgrade arrows": small green arrows on better bag items, red on worse; item tooltips get a "BiZ score"
+    line ("+5.1 vs equipped"). Hover an item, `/r2f debug gear`: paste what it prints if a stat shows "not used" that should
+    count (Forever may name a stat differently).
+15. Visit your class trainer (with "Unavailable" shown). Home > Training: "Train now: N spells, cost (names)" and "Next: level
+    X: ...". Learn one: it leaves the list. Tweaks > Alerts & HUD > Training reminder on: at the next level-up chat names the
+    new spells.
+
+**E. Plan tab weapons (0.47.0)**
+16. Pick your spec in Mr.BiZ, open the Plan tab: steps where one of your weapon picks drops (a dungeon run) or is sold
+    (Ashenvale) get a "Weapon: <item> (Bizzest main hand)" line; one per slot says "best on route". Do the lines fit?

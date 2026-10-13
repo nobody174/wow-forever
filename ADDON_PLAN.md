@@ -3092,3 +3092,28 @@ Owner request 2026-10-13: navigation driven by our own data, no TomTom.
      and a `TomTom` stand-in (AddWaypoint / RemoveWaypoint) when TomTom isn't installed, so Questie's Ctrl + click on
      its map icons points BiZNav (Questie checks `TomTom and TomTom.AddWaypoint`, QuestieFrame.lua).
   4. Optional: Plan "next step" button that walks a step's points in order (next point on arrival).
+
+## 18. After BiZNav: roadmap items (built 2026-10-13, v0.42.0 – v0.47.1)
+- **24-hour clock** (0.42.0): Quick settings item `clock24` = CVar `timeMgrUseMilitaryTime` 1/0, the only item with no
+  site macro (`macro = nil`; `byMacro` and the Macro Book skip it).
+- **Mr.BiZ level slider** (0.43.0): `BiZ.MaxLevel` (per character, 60 = any, nothing saved); `BiZ.Passes` fails a pick
+  whose required level (GetItemInfo 5th return, loaded on demand) is above it, so the existing stand-in logic shows
+  rank 2 / 3. Unloaded items pass.
+- **Upgrade arrows / BiZ score** (`GearScore.lua`, 0.44.0, Tweaks > Bags `upgrades`, off by default): score = item stats
+  (GetItemStats) x the weights of the Mr.BiZ spec picked for the player's class (`GS.SpecId`). `GS.KEYS` maps
+  ForeverDB weight names to ITEM_MOD_* keys; a stat whose `_G[key]` label equals a weight name also counts (school
+  damage). Compared with the worn item (weaker of two for rings / trinkets / one-handers); a worn item not loaded
+  yet = no comparison (0.47.1). Only gear (an INVTYPE in `GS.SLOTS`) is scored (0.47.1). Armor the class can't wear
+  at its level gets no marker; weapon skills unchecked. Tooltip: TooltipDataProcessor post-call or HookScript
+  OnTooltipSetItem. Markers: our textures on the bag item buttons (`GS.MarkerOf`), never stored on game frames.
+  `/r2f debug gear` lists the game's stat keys for the hovered item.
+- **Enchants on Mr.BiZ** (0.45.0): see CLAUDE.md `bis/` (build_bis reads professions.html via node).
+- **What to train next** (`Training.lua`, 0.46.0): read from the open class trainer (TRAINER_SHOW / UPDATE, read-only
+  getters), saved in `R2FCharDB.training`; a re-read merges (hidden later spells kept, vanished trainable ones =
+  learned, 0.47.1). Home "Training" block (two lines max); Tweaks > Alerts `training` = level-up chat line. No bundled
+  spell data: the What's Training? (Forever) addon bundles one from wowforevertalents / Wowhead; we don't copy it.
+- **On-route weapons** (0.47.0): `BiZ.RouteWeapons(spec, plan)` matches weapon picks (all ranks; dungeon = instance
+  name, vendor = zone) to plan step TITLES (not notes; not a "... quests" step for dungeon drops); best per slot =
+  highest rank, earliest step. Plan tab "Weapon:" lines.
+- **Open:** ForeverChanges as a second Mr.BiZ source (fetch of foreverchanges.pro needs the owner's OK); quality
+  baking (owner's yes); logo / ornament (optional).

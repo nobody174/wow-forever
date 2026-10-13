@@ -1,5 +1,13 @@
 # Road to Forever changelog
 
+## 0.47.1 (2026-10-13)
+
+- Upgrade arrows: potions, quest items and other non-gear no longer get a "BiZ score 0.0" tooltip line, and right after
+  login an item you wear that the game hasn't loaded yet no longer makes every bag item look like an upgrade.
+- Training: reopening the trainer with "Unavailable" unticked no longer forgets the later spells; spells you learned
+  leave the list.
+- Home > Training: each line is at most two lines long (two spell names, then "and N more").
+
 ## 0.47.0 (2026-10-13)
 
 - Plan tab: weapons along the route. Under a step where you can get one of Mr.BiZ's weapon picks for your spec (main

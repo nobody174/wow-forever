@@ -101,6 +101,58 @@ function BiZ.Enchants(specId, slot)
   return sp and sp.enchants and sp.enchants[slot] or {}
 end
 
+-- ---------------------------------------------------------------------------
+-- On-route weapons: Mr.BiZ weapon picks you can get at a launch-plan step
+-- ---------------------------------------------------------------------------
+
+BiZ.WEAPON_SLOTS = { "mainhand", "offhand", "ranged" }
+
+-- The words a step's TITLE must contain for a row's source to be "at" that step: the dungeon, or the
+-- vendor's zone. Quests, world drops and crafting name no place, so they never match.
+function BiZ.RouteKey(row)
+  if (row.type == "dungeon" or row.type == "raid") and row.instance then return row.instance end
+  if row.type == "vendor" and row.label then
+    local zone = row.label:match("^[^,]+,%s*([^%(]+)")
+    return zone and zone:gsub("%s+$", "") or nil
+  end
+  return nil
+end
+
+-- stepId -> { { slot =, rank =, row =, best = true|nil }, ... } for a spec and plan. `best` marks, per
+-- weapon slot, the highest-ranked pick found on the route (the earliest step on a tie).
+function BiZ.RouteWeapons(specId, planId)
+  local sp = specId and data().specs[specId]
+  local out = {}
+  if not sp then return out end
+  local steps = R2F.Plan.Steps(planId)
+  for _, key in ipairs(BiZ.WEAPON_SLOTS) do
+    local sl
+    for _, x in ipairs(sp.slots) do if x.slot == key then sl = x end end
+    if sl and sl.best then
+      local best
+      local rows = { sl.best }
+      for _, n in ipairs(sl.next or {}) do rows[#rows + 1] = n end
+      for si, st in ipairs(steps) do
+        -- Titles only: notes often mention a place you are not going to yet ("City of Dalaran opens at 28").
+        local text = st.t or ""
+        for rank, row in ipairs(rows) do
+          local where = BiZ.RouteKey(row)
+          -- A dungeon drop is not "at" the step that only collects the dungeon's quests.
+          local questStep = row.type ~= "vendor" and text:lower():find("quests", 1, true)
+          if where and not questStep and text:find(where, 1, true) then
+            local m = { slot = key, rank = rank, row = row, step = si }
+            out[st.id] = out[st.id] or {}
+            table.insert(out[st.id], m)
+            if not best or rank < best.rank or (rank == best.rank and si < best.step) then best = m end
+          end
+        end
+      end
+      if best then best.best = true end
+    end
+  end
+  return out
+end
+
 -- Biz rank names (the site uses the same): 1 Bizzest, 2 Bizzer, 3 Biz, lower Almost biz.
 BiZ.THE_BIZZ_GAP = 20
 function BiZ.RankName(rank)

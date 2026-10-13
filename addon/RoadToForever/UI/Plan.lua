@@ -93,6 +93,7 @@ local function hideRowsFrom(i)
     local r = rows[k]
     r.check:Hide(); r.lvl:Hide(); r.title:Hide(); r.note:Hide()
     for _, p in ipairs(r.points) do p.btn:Hide(); p.text:Hide() end
+    for _, g in ipairs(r.gears or {}) do g:Hide() end
   end
 end
 
@@ -107,6 +108,8 @@ end
 local function layout()
   local planId = Plan.Selected()
   local arrow = R2F.Nav.Supported()
+  -- Mr.BiZ weapon picks you can get at a step (your class's spec from Mr.BiZ).
+  local route = R2F.BiZ.RouteWeapons(R2F.GearScore.SpecId(), planId)
   local y, nHead, nRow = 0, 0, 0
   for _, ph in ipairs(Plan.Phases(planId)) do
     nHead = nHead + 1
@@ -170,6 +173,26 @@ local function layout()
       for j = #pts + 1, #r.points do
         r.points[j].btn:Hide(); r.points[j].text:Hide()
       end
+      r.gears = r.gears or {}
+      local gear = route[s.id] or {}
+      for j, m in ipairs(gear) do
+        local g = r.gears[j]
+        if not g then
+          g = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+          g:SetJustifyH("LEFT")
+          g:SetWidth(TEXT_W)
+          r.gears[j] = g
+        end
+        g:ClearAllPoints()
+        g:SetPoint("TOPLEFT", content, "TOPLEFT", 78, -(y + used))
+        local text = L.PLAN_WEAPON:format(R2F.BiZ.ColoredName(m.row.id, m.row.name), R2F.BiZ.RankName(m.rank),
+          R2F.BiZ.SlotLabel(m.slot):lower())
+        if m.best then text = text .. " |cffffd100" .. L.PLAN_WEAPON_BEST .. "|r" end
+        g:SetText(text)
+        g:Show()
+        used = used + 16
+      end
+      for j = #gear + 1, #r.gears do r.gears[j]:Hide() end
       y = y + used + 8
     end
   end

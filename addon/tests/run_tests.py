@@ -7386,6 +7386,7 @@ def main():
     test_remove_from_library(False, fx)
     test_gearscore()
     test_training()
+    test_route_weapons()
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
 
@@ -7563,6 +7564,29 @@ def test_training():
           "train: Home shows Train now and Next")
     check(lua.eval("(function() for _, p in ipairs(R2F.GameplayTab.PAGES) do if p.key == 'alerts' then for _, k in ipairs(p.features) do if k == 'training' then return true end end end end end)()") is True,
           "train: the reminder switch is on Tweaks > Alerts & HUD")
+
+
+def test_route_weapons():
+    """On-route weapons: Mr.BiZ weapon picks matched to launch-plan step titles, best per slot marked."""
+    lua, T = plan_runtime()
+    check(lua.eval("R2F.BiZ.RouteKey({ type = 'dungeon', instance = 'Blackfathom Deeps' })") == "Blackfathom Deeps"
+          and lua.eval("R2F.BiZ.RouteKey({ type = 'vendor', label = 'Illiyana Moonblaze, Ashenvale (1g 7s 72c)' })") == "Ashenvale"
+          and lua.eval("R2F.BiZ.RouteKey({ type = 'quest', label = 'Quest: X (level 30)' })") is None,
+          "route: dungeon -> instance, vendor -> zone, quest -> nothing")
+
+    check(lua.eval("R2F.BiZ.RouteWeapons('shaman/elemental', 'hwd')['p1-bfdq']") is None
+          and lua.eval("R2F.BiZ.RouteWeapons('shaman/elemental', 'hwd')['p2-bfd'][1].row.name") == "Twilight Maul",
+          "route: a dungeon drop shows at the run, not at the step that collects its quests")
+    best = lua.eval("""(function() local n = 0 for _, l in pairs(R2F.BiZ.RouteWeapons('rogue/combat', 'hwd')) do
+      for _, m in ipairs(l) do if m.best then n = n + 1 end end end return n end)()""")
+    check(best == 2, "route: one 'best on route' per weapon slot that has a match (Combat: main + off hand = %d)" % best)
+    check(lua.eval("next(R2F.BiZ.RouteWeapons('nope/spec', 'hwd'))") is None, "route: unknown spec = nothing")
+    # The Plan tab line, for a Fury Warrior (the stub player is a Warrior).
+    lua.execute("R2F.BiZ.SetSpec('warrior/fury') R2F.Plan.Select('hwd') R2F.MainWindow.Show('plan') R2F.PlanTab.Refresh()")
+    line = font_text(lua, "^Weapon: .+best on route")
+    check(line is not None and "Ironspine's Fist" in line, "route: the Plan tab shows the weapon line with 'best on route': %r" % line)
+    lua.execute("R2F.BiZ.SetSpec('warrior/protection') R2F.PlanTab.Refresh()")
+    check(font_text(lua, "^Weapon: .*Ironspine") is None, "route: another spec, other lines (the old ones are hidden)")
 
 
 if __name__ == "__main__":

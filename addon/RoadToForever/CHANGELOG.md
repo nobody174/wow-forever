@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.47.0 (2026-10-13)
+
+- Plan tab: weapons along the route. Under a step where you can get one of Mr.BiZ's weapon picks for your spec (main
+  hand, off hand, ranged: a dungeon run, or a vendor in that zone), a "Weapon:" line names it with its rank. The best
+  one along the route for each slot is marked "best on route". Your spec is the one picked in Mr.BiZ for your class.
+  Quest rewards and world drops don't name a place in our data, so they don't show yet.
+
 ## 0.46.0 (2026-10-13)
 
 - What to train next, on Home: "Train now" (the spells your level allows, with the total cost) and "Next" (the next

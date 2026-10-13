@@ -72,6 +72,8 @@ you got:
 
 ## 4. Macro Book
 
+**Owner 2026-10-10 (Hunter / Warrior, launch-checklist test run):** hover tooltips are good; spells not learned yet show greyed with the "?" icon and get their own icon once learned. Not reported one by one: tab order, paging, Shift-click, right-click menu.
+
 - [ ] Tabs on the right edge: Universal (book icon), then your class's sections in
       site order (Warrior: General = class icon, Tank = shield, DPS = dual wield).
       Hover a tab: section name + `N macros`.
@@ -91,6 +93,8 @@ you got:
       since v0.10.0: section 17.)
 
 ## 5. Creating real macros (the important part)
+
+**Owner 2026-10-10 (Hunter / Warrior, launch-checklist test run):** macros removed from the book disappear; dragging the same macro again makes no duplicate (a warning says it is already there); the Replace popup appears. Not reported: the 30-slot overflow and the relog check.
 
 - [ ] **CreateMacro + PickupMacro in the same click (section 11).** Drag `VR` (or any
       macro) from the book. **Pass:** the macro is on your cursor right away and
@@ -124,6 +128,8 @@ you got:
 
 ## 6. Combat (section 6.4 / 6.6)
 
+**Owner 2026-10-10 (Hunter / Warrior, launch-checklist test run):** **not checked yet** (combat steps still open).
+
 - [ ] Open the book, attack a training dummy or a mob. **Pass:** `In combat` appears
       at the bottom, Import and Tidy up grey out immediately.
 - [ ] Drag a macro from the book in combat. **Pass:** red
@@ -136,6 +142,8 @@ you got:
       `Logs\taint.log` for `RoadToForever`. **Pass:** no entries blaming the addon.
 
 ## 7. Tidy up
+
+**Owner 2026-10-10 (Hunter / Warrior, launch-checklist test run):** Tidy up first said "nothing to tidy"; after dragging a new macro it removed it as it should. Pass.
 
 - [ ] Create 3 macros from the book, put 1 on a bar, edit 1 in `/macro`. Tidy up.
       **Pass:** the popup lists only the one that's unedited and not on a bar
@@ -204,6 +212,8 @@ string only changes after a site update, so fake an "older version" first:
 
 ## 9. Settings and Remove all (v0.3.0, step 5)
 
+**Owner 2026-10-10 (Hunter / Warrior, launch-checklist test run):** settings "all seem good" (no step-by-step list). Pass on what was tried.
+
 Out of the game, `run_tests.py` covers the logic (the setting steering
 `CreateMacro`, Remove all's delete/keep split, tracking cleared, library kept,
 combat refusal + queue) on both the template and fallback UI paths. What only the
@@ -246,6 +256,8 @@ game can show:
 
 ## 10. Key bindings (v0.3.0, step 5)
 
+**Owner 2026-10-10 (Hunter / Warrior, launch-checklist test run):** reported good together with Settings and the minimap. Pass on what was tried.
+
 Not testable outside the game at all: the tests only check that `Bindings.xml` is
 valid XML, each binding calls a real function and the label globals exist.
 
@@ -264,6 +276,8 @@ valid XML, each binding calls a real function and the label globals exist.
 - [ ] Bindings survive a `/reload` and a relog.
 
 ## 11. Main window, minimap button, logo (v0.4.0, step 6)
+
+**Owner 2026-10-10 (Hunter / Warrior, launch-checklist test run):** window, help and tabs work; the minimap menu works; `/dump MenuUtil ~= nil` = `true` (Blizzard's own menu is used). Logo kept as it is (owner).
 
 Out of the game, `run_tests.py` covers tab switching, the saved last tab and
 position, the Home counts, the reparented book (slots, tabs, drag, tooltip,
@@ -561,6 +575,8 @@ everything looks. ADDON_PLAN 13.8 has the reasoning.
 
 ## 16. Quick settings (v0.9.0)
 
+**Owner 2026-10-10 (Hunter / Warrior, launch-checklist test run):** all three Quick settings tested and working (zoom, hide guild names, hide PvP titles). The combat greying was not checked.
+
 Out of the game, `run_tests.py` checks the three boxes against a fake CVar store: they
 read values set elsewhere, write exactly `4` / the game default / `0` / `1`, refuse in
 combat, report a refused or clamped value, and the Macro Book hides exactly `ANY/Zoom`,
@@ -716,6 +732,8 @@ that addon is `MISSING` on WoW Forever. v0.10.4 reads talents through `C_Traits`
 
 ## 20. Free talent points and one-click learning on WoW Forever (v0.11.0) -- READ ALL OF THIS FIRST
 
+**Owner 2026-10-10 (Hunter / Warrior, launch-checklist test run):** `/dump R2F.Talents.FreePointsInfo()` answered with "traits"; the four C_Traits functions (PurchaseRank, CommitConfig, CanEditConfig, GetTreeCurrencyInfo) all exist. Home said "No free talent points" (not yet compared with Blizzard's window). **Still open:** the one-point learning test (step C), the copybuild hash check against the site, and the talent preview.
+
 ADDON_PLAN.md 13.12 has the reasoning and the full "not verified" list. Two changes:
 the free-points count now comes from `C_Traits` (it said 0 next to Blizzard's
 "Unspent Talents: 17"), and Learn talents can now spend points itself through
@@ -843,6 +861,8 @@ nothing pending in Blizzard's window:
   read-only (section 17).
 
 ## 21. Profession export (v0.12.0)
+
+**Owner 2026-10-10 (Hunter / Warrior, launch-checklist test run):** profession export works; `/r2f profdebug` (now `/r2f debug profs`) printed its lines. Pass.
 
 1. Log in on a character with professions. Open **Enchanting** (or any profession).
    - Chat: `Road to Forever: saved N Enchanting recipes (skill X)...` with N = the
@@ -982,6 +1002,8 @@ count switches arrows <-> bullets. Unequip the ranged weapon: the icon disappear
 and no ammunition: red 0. (0.17.0 to 0.24.0 read a slot this client doesn't have and showed "1".)
 
 ## 26. Launch Plan in game, waypoints (v0.18.0, ADDON_PLAN 15.5)
+
+**Owner 2026-10-13:** the Plan tab's Waypoint buttons work; since 0.39.0 they point the BiZNav arrow (not TomTom), see section 42 B.
 
 1. Six tabs now: Home, Macros, Talents, **Plan**, Reminders, Settings. Do they all fit on the
    window's bottom edge without overlapping or running off? (Note it if not.) `/r2f plan` opens Plan.
@@ -1227,13 +1249,22 @@ on, Questie keeps using TomTom's arrow). Have Questie on. A character of level 2
 
 **A. Older items still open**
 1. (0.35.1) Window Size / Opacity sliders: press the bar away from the thumb: nothing changes. Drag the thumb: it changes on release.
+   - **Owner 2026-10-12/13:** the earlier versions failed (a click anywhere on the bar moved it); the 0.35.1 fix is **not confirmed yet**.
 2. (0.37.0) Talents tab: Edit build, left-click adds a point, right-click removes one; Save loadout, load it, share to Party.
    - **Owner 2026-10-13:** the Save loadout, Loadouts and Share buttons are there. Loading and sharing to a party were not reported. The Talents tab
      lacked a Clear button (added in 0.50.0) and sometimes said "Couldn't read your talents yet" (made patient in 0.50.0): re-test both.
 3. (0.37.1) Loadouts: "Delete a loadout..." asks before removing.
+   - **Owner 2026-10-13:** on 0.37.0 a loadout was deleted by accident (which is why the confirmation was added). The confirmation itself is not confirmed yet.
 4. (0.38.0) Tweaks: type "bags" in the search box (bottom left): the Bags options are listed; click one, its page opens.
 
 **B. BiZNav arrow (0.39.0 – 0.40.1)**
+
+**Owner 2026-10-13 (on 0.40.0 / 0.40.1):** the Plan tab's Waypoint buttons set the arrow; `/r2f way Dun Morogh 47.4 52.5 Kharanos` and
+`/bizway` with own coordinates work; Alt + right-click on the world map works; the arrow turns with you and shows the direction as you
+move. The diamond pin appeared on a custom spot but was too big (made smaller in 0.40.1, not re-checked). Small arrow looked fine,
+Medium / Large looked blurry (new image in 0.40.1, then the 3D arrow in 0.52.0: see section 44). Questie Ctrl + click did **not** work on
+0.40.0 (TomTom stand-in added in 0.40.1): **re-test step 9 with TomTom disabled.** Not reported: "arrived" at 10 yards, "no position
+here" in a dungeon, `/reload` keeping the arrow's position, `/bizway clear` and `size`.
 5. Plan tab: Waypoint on a step with a position: the gold arrow shows, points the right way as you turn, yards count down,
    "arrived" within 10 yards. Inside a dungeon: "no position here". Is the new arrow sharp at Medium and Large?
 6. Tweaks > Alerts & HUD: arrow Small / Medium / Large. Drag the arrow, `/reload`: it stays where you put it. Right-click: gone.

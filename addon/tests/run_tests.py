@@ -961,6 +961,33 @@ def test_tweaks_search():
           "search: clicking a result opens its page and clears the box")
 
 
+def test_unknown_events():
+    """Forever has no LEARNED_SPELL_IN_TAB (it is LEARNED_SPELL_IN_SKILL_LINE) and RegisterEvent errors on an
+    unknown event: loading must not fail, and the new name must reach the same handlers."""
+    before = """
+      local realCreate = CreateFrame
+      CreateFrame = function(...)
+        local f = realCreate(...)
+        local reg = f.RegisterEvent
+        f.RegisterEvent = function(self, e)
+          if e == 'LEARNED_SPELL_IN_TAB' then error('Attempt to register unknown event "' .. e .. '"', 2) end
+          return reg(self, e)
+        end
+        return f
+      end
+    """
+    lua = new_runtime(before_load=before)
+    T = lua.eval("TEST")
+    check(lua.eval("R2F ~= nil"), "unknown event: the addon loads although LEARNED_SPELL_IN_TAB is refused")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    lua.execute("R2FCharDB.training = R2FCharDB.training or {} CALLS_OK = 0")
+    # The new event reaches the Ranks / refresh handler without an error.
+    lua.execute("R2F.Ranks.OnLearned = function() CALLS_OK = CALLS_OK + 1 end")
+    T.fire("LEARNED_SPELL_IN_SKILL_LINE", 101, 1, False)
+    check(lua.eval("CALLS_OK") == 1, "unknown event: LEARNED_SPELL_IN_SKILL_LINE runs the learned-spell handler")
+
+
 def test_tree_names():
     """15.2: the Talents tab's tree names = talentcalc.js CLASSES (same names, same order)."""
     js = open(os.path.join(ROOT, "talentcalc.js"), encoding="utf-8").read()
@@ -7332,6 +7359,7 @@ def main():
     test_settings_tab(True, fx)
     test_settings_tab(False, fx)
     test_tree_names()
+    test_unknown_events()
     test_bundle(fx)
     test_planner()
     test_tweaks_search()

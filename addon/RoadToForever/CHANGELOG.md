@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.47.2 (2026-10-13)
+
+- Fixed the login error "Attempt to register unknown event LEARNED_SPELL_IN_TAB" (from the new training list). Forever has
+  no such event: Blizzard renamed it LEARNED_SPELL_IN_SKILL_LINE. Both names are now tried, and the one the client lacks is
+  skipped. This also fixes a quiet gap: spell ranks in the macros and the Macros page now refresh when you learn a
+  spell on Forever, which the old name never did there.
+
 ## 0.47.1 (2026-10-13)
 
 - Upgrade arrows: potions, quest items and other non-gear no longer get a "BiZ score 0.0" tooltip line, and right after

@@ -10,7 +10,7 @@
 --
 -- Home shows "Train now" (affordable by level, not learned) and "Next" (the next level that brings
 -- something). The Tweaks switch "Training reminder" prints, on level-up, what just became trainable.
--- A spell learned since (LEARNED_SPELL_IN_TAB) is marked so it leaves the lists.
+-- A spell learned since (LEARNED_SPELL_IN_SKILL_LINE, LEARNED_SPELL_IN_TAB on older clients) is marked so it leaves the lists.
 --
 -- Read-only game calls only (GetNumTrainerServices / GetTrainerServiceInfo / ...LevelReq / ...Cost);
 -- the trainer's filters are never touched.
@@ -137,14 +137,17 @@ function Training.NewAt(old, level)
 end
 
 local ev = CreateFrame("Frame")
-ev:RegisterEvent("TRAINER_SHOW")
-ev:RegisterEvent("TRAINER_UPDATE")
-ev:RegisterEvent("LEARNED_SPELL_IN_TAB")
+-- pcall: the game errors on an event it does not know. Forever has no LEARNED_SPELL_IN_TAB (Blizzard's own
+-- 11.0 transition guide renames it to LEARNED_SPELL_IN_SKILL_LINE; both pass the spell id first), older
+-- clients have only the old name, so each is tried and the one the client lacks is skipped.
+for _, event in ipairs({ "TRAINER_SHOW", "TRAINER_UPDATE", "LEARNED_SPELL_IN_SKILL_LINE", "LEARNED_SPELL_IN_TAB" }) do
+  pcall(ev.RegisterEvent, ev, event)
+end
 ev:SetScript("OnEvent", function(_, event, a1)
   if event == "TRAINER_SHOW" or event == "TRAINER_UPDATE" then
     Training.Read()
     if R2F.Home and R2F.Home.Refresh then R2F.Home.Refresh() end
-  elseif event == "LEARNED_SPELL_IN_TAB" and a1 then
+  elseif (event == "LEARNED_SPELL_IN_SKILL_LINE" or event == "LEARNED_SPELL_IN_TAB") and a1 then
     local name = GetSpellInfo and GetSpellInfo(a1)
     local rank = _G.GetSpellSubtext and _G.GetSpellSubtext(a1) or nil
     Training.MarkLearned(name, rank)

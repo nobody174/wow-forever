@@ -70,11 +70,14 @@ handlers.CHAT_MSG_ADDON = function(...) R2F.Talents.OnAddonMessage(...) end
 
 handlers.UPDATE_MACROS = function() R2F.MainWindow.RequestRefresh() end
 handlers.ACTIONBAR_SLOT_CHANGED = function() R2F.MainWindow.RequestRefresh() end
--- Newly learned spells: icons and "Learn later" states change.
+-- Newly learned spells: icons and "Learn later" states change. Forever has only
+-- LEARNED_SPELL_IN_SKILL_LINE (the old LEARNED_SPELL_IN_TAB was renamed, and registering the old name
+-- is an error there), older clients only the old one; whichever exists is registered below.
 handlers.LEARNED_SPELL_IN_TAB = function()
   R2F.MainWindow.RequestRefresh()
   R2F.Ranks.OnLearned()
 end
+handlers.LEARNED_SPELL_IN_SKILL_LINE = handlers.LEARNED_SPELL_IN_TAB
 -- A new spell rank can raise the ranks in the macros the addon made (Ranks.lua, 16).
 handlers.SPELLS_CHANGED = function() R2F.Ranks.OnLearned() end
 -- Talent points spent (here or in Blizzard's talent window) or gained on a

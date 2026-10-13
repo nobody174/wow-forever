@@ -4,6 +4,12 @@ Authoritative history of what's actually shipped on wow-forever-macro. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-13 (Addon version check: CurseForge not reached)
+- addons.html: Road to Forever fallback values refreshed 0.38.1 → 0.41.0 (link, `v` tag, version/date line, zip name;
+  r2f-v0.41.0 published Oct 13, 2026). The scheduled CurseForge check couldn't run (WebFetch permission for
+  curseforge.com timed out in the unattended run), so the other seven cards and the "Versions checked on CurseForge"
+  date (Oct 12, 2026) were left as they were.
+
 ## 2026-10-13 (Addons page: Road to Forever follows the newest release)
 - addons.html: the Road to Forever card now looks up the newest `r2f-vX.Y.Z` release on GitHub when the page loads
   (highest version, drafts ignored, answer cached 10 minutes) and updates its link, version tag, version/date line and

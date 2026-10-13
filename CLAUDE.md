@@ -186,7 +186,12 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   Subtlety = Rogue Combat, Discipline = Priest Holy) and `ENCHANT_SLOTS`; it stops on an unknown slot or page. So an
   enchant edit on professions.html needs `python bis/build_bis.py` (the addon tests catch a stale BiZData). bis.html
   shows them as an "Enchant:" line in an opened row (links to professions.html#bis/<class>), the addon under a slot's
-  picks. Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
+  picks. Item rarity is baked in (owner, 2026-10-13): `bis/quality.json` (`{quality: {id: 0-5}}`, read from Wowhead's
+  Forever tooltip API in a browser on the live site, since the shell can't reach Wowhead) -> a top-level `quality`
+  table in both outputs; bis.html's `whLink` and the addon's `BiZ.Quality` use it when the live lookup has nothing
+  (the live lookups stay as they were). The build only notes ids missing from the file; refresh it when items
+  change (in Chrome on bis.html: fetch `https://nether.wowhead.com/forever/tooltip/item/<id>` for every id,
+  field `quality`). Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
   add a rule to `parse_source`, don't hand-edit the outputs.
 - `news.html` + `news.json` + `footer.js` — **What's new** page (latest changes, Coming
   next, Discord ideas button) rendered from `news.json` (`{discord, news: [{date, title,

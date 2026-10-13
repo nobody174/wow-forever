@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.48.1 (2026-10-13)
+
+- Mr.BiZ: item names have their rarity colour (green / blue / purple) from the first open, also for items the game
+  hasn't loaded yet. The colours ship with the addon (all 340 Mr.BiZ items); what the game says still wins. The site's
+  Mr.BiZ page does the same.
+
 ## 0.48.0 (2026-10-13)
 
 - Upgrade arrows, the "BiZ score" tooltip line and the Plan's weapon lines now use the spec you really play (your talent

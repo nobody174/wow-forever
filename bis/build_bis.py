@@ -257,9 +257,10 @@ def build():
     places = load_places()
     tag_places(specs_out, places)
     add_enchants(specs_out)
+    quality = load_quality(specs_out)
     return {"updated": UPDATED, "level": LEVEL, "source": {"name": SOURCE_NAME, "url": SOURCE_URL},
             "slots": [{"key": k, "label": v} for k, v in SLOTS], "types": TYPES,
-            "classes": classes_out, "specs": specs_out, "places": places}
+            "classes": classes_out, "specs": specs_out, "places": places, "quality": quality}
 
 
 # ---------------------------------------------------------------------------
@@ -306,6 +307,26 @@ def tag_places(specs, places):
     unused = sorted(set(places) - used)
     if unused:
         raise ValueError("places.json entries no BiZ row uses: %s" % unused)
+
+
+# ---------------------------------------------------------------------------
+# Item quality (rarity colour) baked in from bis/quality.json, so names are coloured before the game /
+# Wowhead answers. Owner decision 2026-10-13. Ids missing from the file are left out (live lookup then).
+# ---------------------------------------------------------------------------
+
+QUALITY_IN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "quality.json")
+
+
+def load_quality(specs):
+    with open(QUALITY_IN, encoding="utf-8") as f:
+        known = {int(k): v for k, v in json.load(f)["quality"].items()}
+    ids = sorted({r["id"] for sp in specs.values() for sl in sp["slots"] if "best" in sl
+                  for r in [sl["best"]] + sl.get("next", [])})
+    missing = [i for i in ids if i not in known]
+    if missing:
+        print("note: no baked quality for %d items (refresh bis/quality.json): %s" % (len(missing), missing[:10]),
+              file=sys.stderr)
+    return {str(i): known[i] for i in ids if i in known}
 
 
 # ---------------------------------------------------------------------------
@@ -485,6 +506,12 @@ def to_lua(data):
             out.append("        },")
         out.append("      },")
         out.append("    },")
+    out.append("  },")
+    # Item quality by id (bis/quality.json), 8 per line (luacheck: 130 columns).
+    out.append("  quality = {")
+    qs = sorted(data["quality"].items(), key=lambda kv: int(kv[0]))
+    for i in range(0, len(qs), 8):
+        out.append("    " + " ".join("[%s] = %d," % (k, v) for k, v in qs[i:i + 8]))
     out.append("  },")
     # BiZNav: where a source is (bis/places.json); rows point here with `place = "<key>"`.
     out.append("  places = {")

@@ -7,8 +7,8 @@ stale checkmark.
 
 ## Owner decisions, 2026-10-13 (answers to Claude Desktop's open questions)
 
-- **Item rarity colours baked into the Mr.BiZ data: YES.** The owner always wants item rarity colours (so they show
-  before the game has the item cached). Do it in `bis/build_bis.py` and keep `BiZ.Quality` as the fallback.
+- **Item rarity colours baked into the Mr.BiZ data: YES. DONE 2026-10-13 (addon 0.48.1 + site)**: `bis/quality.json`,
+  all 340 items; live lookups stay first, the baked value fills in.
 - **Logo / ornament: fine as it is for now.** Leave it.
 - **CurseForge upload and sharing: HOLD** until the owner says the addon works 100% for him and his friends.
 - **ForeverChanges as a Mr.BiZ source: compared**, see `bis/foreverchanges-compare.md` (their #1 equals ours on 28% of

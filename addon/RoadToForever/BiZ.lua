@@ -396,8 +396,10 @@ function BiZ.Quality(id)
     return q
   end
   if cache and cache[id] ~= nil then return cache[id] end
+  -- Baked into the data (bis/quality.json): coloured before the game has loaded the item.
+  local baked = data().quality and data().quality[id]
   if C_Item and C_Item.RequestLoadItemDataByID then C_Item.RequestLoadItemDataByID(id) end
-  return nil
+  return baked
 end
 
 -- "|cffRRGGBBname|r" in the item's quality colour (white until it's known).

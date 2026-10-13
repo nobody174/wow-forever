@@ -3282,6 +3282,16 @@ def test_biz(templates=True):
               "%s: 60 = any level again, nothing saved, the best shows" % tag)
         lua.execute("GetItemInfo = function() return nil end")
 
+    # Baked quality (bis/quality.json): known before the game loads the item.
+    if templates:
+        check(len(site["quality"]) == len({r["id"] for sp in site["specs"].values() for sl in sp["slots"] if "best" in sl
+                                            for r in [sl["best"]] + sl.get("next", [])}),
+              "%s: every Mr.BiZ item has a baked quality" % tag)
+        lua.execute("R2FDB.bizQuality = {} OLDQ = C_Item and C_Item.GetItemQualityByID if C_Item then C_Item.GetItemQualityByID = nil end")
+        check(lua.eval("R2F.BiZ.Quality(7684)") == 3 and lua.eval("R2F.BiZ.Quality(6720)") == 2,
+              "%s: with nothing from the game, the baked quality colours the name (blue / green)" % tag)
+        lua.execute("if C_Item then C_Item.GetItemQualityByID = OLDQ end")
+
     # Enchants from the Professions page, per spec and slot.
     if templates:
         check(all(len(sp.get("enchants", {})) >= 3 for sp in site["specs"].values()),

@@ -377,13 +377,14 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
 
   function whLink(id, name, cls) {
     var q = quality[id];
+    if (typeof q !== "number" && DATA && DATA.quality) q = DATA.quality[id];   // baked in (bis/quality.json)
     return '<a class="wh' + (typeof q === "number" ? " q" + q : "") + (cls ? " " + cls : "") + '" href="https://www.wowhead.com/forever/item=' + id +
       '" data-wowhead="item=' + id + '&amp;domain=forever" target="_blank" rel="noopener">' + esc(name) + "</a>";
   }
 
   // ---- quality colours: Wowhead's Forever tooltip JSON (CORS ok, same as the Crafters view) ----
   var qQueue = [], qBusy = 0, qTimer = null;
-  function wantQuality(id) { if (id && !(id in quality) && qQueue.indexOf(id) === -1) { qQueue.push(id); pumpQ(); } }
+  function wantQuality(id) { if (id && !(id in quality) && !(DATA && DATA.quality && id in DATA.quality) && qQueue.indexOf(id) === -1) { qQueue.push(id); pumpQ(); } }
   function pumpQ() {
     while (qBusy < 4 && qQueue.length) {
       var id = qQueue.shift(); qBusy++;

@@ -1748,6 +1748,29 @@ def test_plan(templates=True):
         lua.execute("R2F.GameplayTab.ResetPage()")
         check(lua.eval("R2FDB.nav.size") == "medium", "BiZNav: Reset page on Alerts & HUD puts the arrow back to Medium")
 
+        # Questie: Ctrl + click on a map icon calls TomTom:AddWaypoint(uiMapId, x/100, y/100, {title, crazy, from})
+        # and, on the next click, TomTom:RemoveWaypoint(saved) first (same icon = toggle off).
+        check(lua.eval("TomTom == R2F.Nav.TomTomShim") is True, "BiZNav: without TomTom the stand-in is installed at login")
+        T.chat = lua.table()
+        lua.execute("QWP = TomTom:AddWaypoint(1426, 0.3, 0.7, { title = 'Wendigo', crazy = true, from = 'Questie' })")
+        tgt = lua.eval("R2F.Nav.Target()")
+        check(tgt is not None and tgt.mapID == 1426 and abs(tgt.x - 30) < 1e-9 and abs(tgt.y - 70) < 1e-9 and tgt.label == "Wendigo"
+              and lua.eval("QWP[1] == 1426 and QWP[2] == 0.3 and QWP[3] == 0.7 and QWP.title == 'Wendigo' and QWP.from == 'Questie'")
+              and "arrow: Wendigo" in chat_all(lua), "BiZNav: Questie's AddWaypoint points the arrow and returns the waypoint it keeps")
+        lua.execute("TomTom:RemoveWaypoint({ 1426, 0.1, 0.1 })")
+        check(lua.eval("R2F.Nav.Target() ~= nil"), "BiZNav: removing a different waypoint keeps the arrow")
+        lua.execute("TomTom:RemoveWaypoint(QWP)")
+        check(lua.eval("R2F.Nav.Target()") is None, "BiZNav: Questie's RemoveWaypoint (same icon again) clears the arrow")
+        check(lua.eval("TomTom:AddWaypoint(9999, 0.5, 0.5, { title = 'X' })") is None, "BiZNav: a map with no world position returns nil")
+        lua.execute("TomTom = nil C_AddOns = C_AddOns or {} OLD_LOADED = C_AddOns.IsAddOnLoaded "
+                    "C_AddOns.IsAddOnLoaded = function(n) return n == 'TomTom' end")
+        check(lua.eval("R2F.Nav.InstallTomTomShim()") is False and lua.eval("TomTom") is None,
+              "BiZNav: no stand-in when the real TomTom addon is loaded")
+        lua.execute("REAL = { AddWaypoint = function() end } TomTom = REAL C_AddOns.IsAddOnLoaded = OLD_LOADED")
+        check(lua.eval("R2F.Nav.InstallTomTomShim()") is False and lua.eval("TomTom == REAL"), "BiZNav: never replaces an existing TomTom table")
+        lua.execute("TomTom = R2F.Nav.TomTomShim")
+        lua.execute("R2F.Nav.SetTarget(1426, 50, 20, 'Spot', 'Dun Morogh')")
+
         T.chat = lua.table()
         lua.execute('SlashCmdList.R2F("clear")')
         check(lua.eval("R2F.Nav.Target()") is None and chat_all(lua) == "", "BiZNav: /r2f clear removes the arrow")
@@ -3498,7 +3521,8 @@ def test_ui_smoke(templates, fx):
       local out = {}
       for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
-    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1"} | BINDING_GLOBALS
+    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1",
+                     "TomTom"} | BINDING_GLOBALS  # TomTom = BiZNav's stand-in for Questie
     test_vars = {"EDIT", "PREVIEW", "IMPORTBTN", "BADTEXT", "TABS", "SLOTS", "PAGETEXT", "TIDY", "BOOKIMPORT",
                  "COMBATTEXT", "OTHER", "NS"}
     bad = [g for g in new_globals if g and g not in allowed_exact and g not in test_vars and not g.startswith("R2F")]
@@ -3737,7 +3761,7 @@ def test_step5_ui(templates, fx):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"SETBTN", "CHECKS", "REMOVEALL", "L", "APPLIED", "NS", "REAL_MM"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "TomTom") and not g.startswith("R2F")]
     check(not bad, "%s: step 5 adds no globals besides R2F* frames and the binding labels: %s" % (tag, bad))
 
 
@@ -4815,7 +4839,7 @@ def test_talent_preview(templates):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"NS", "TBTN", "PH", "SUM", "HEAD", "HN", "S21", "CAU", "ERR", "WC"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "TomTom") and not g.startswith("R2F")]
     check(not bad, "%s: step 9 adds no globals besides R2F* frames: %s" % (tag, bad))
 
     # ---- The last link comes back in a new session (6.3 lastTalentLink) ---------------
@@ -5451,7 +5475,7 @@ def test_talent_learning(templates):
     bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST", "NOTE", "BZ", "PREV", "GetCVarBool")
            and not g.startswith("TalentFrame")
            and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "TomTom") and not g.startswith("R2F")]
     check(not bad, "%s: step 10 adds no globals of its own: %s" % (tag, bad))
 
 
@@ -6340,7 +6364,7 @@ def test_talent_traits_learning(templates):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST")
            and not g.startswith("TalentFrame") and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "TomTom") and not g.startswith("R2F")]
     check(not bad, "%s: traits mode adds no globals: %s" % (tag, bad))
 
 
@@ -7113,7 +7137,7 @@ def test_class_picker(templates, fx):
     lua.execute("NEWG = {} for k in pairs(_G) do if not BEFORE[k] then NEWG[#NEWG + 1] = k end end")
     test_vars = {"EDIT", "IMPORTBTN", "BTABS", "PICKS", "BSLOTS", "FT", "NS", "NEWG", "CONFIRMSHOWN", "ENSURES"}
     bad = [g for g in lua_table_to_list(lua.eval("NEWG")) if g not in test_vars and not g.startswith("R2F")
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1") and g not in BINDING_GLOBALS]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "TomTom") and g not in BINDING_GLOBALS]
     check(not bad, "%s: the class picker adds no globals: %s" % (tag, bad))
 
 

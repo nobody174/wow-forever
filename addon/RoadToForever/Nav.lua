@@ -18,6 +18,8 @@
 -- false and the caller prints the /way line instead.
 --
 -- Only our own frame, read-only map getters and SavedVariables: works in combat, no taint.
+-- Without TomTom installed, a small `TomTom` table with AddWaypoint / RemoveWaypoint lets
+-- Questie's Ctrl + click on its map icons point this arrow (see the end of the file).
 
 local _, R2F = ...
 local L = R2F.L
@@ -205,10 +207,10 @@ local function build()
   f:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
 
   f.arrow = f:CreateTexture(nil, "ARTWORK")
-  f.arrow:SetTexture("Interface\\Minimap\\MinimapArrow")
+  -- Our own 128 px dart (addon/art/export_arrow.py), so it stays sharp at Large.
+  f.arrow:SetTexture("Interface\\AddOns\\RoadToForever\\media\\arrow")
   f.arrow:SetSize(48, 48)
   f.arrow:SetPoint("TOP", f, "TOP", 0, 0)
-  f.arrow:SetVertexColor(1, 0.82, 0)
 
   f.dist = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   f.dist:SetPoint("TOP", f.arrow, "BOTTOM", 0, -2)
@@ -373,7 +375,7 @@ end
 
 local function buildPin(parent)
   local p = CreateFrame("Frame", "R2FNavPin", parent)
-  p:SetSize(24, 24)
+  p:SetSize(14, 14)
   p:SetFrameStrata("HIGH")
   p.icon = p:CreateTexture(nil, "OVERLAY")
   p.icon:SetAllPoints()
@@ -434,9 +436,57 @@ function Nav.HookMap()
   return true
 end
 
+-- ---------------------------------------------------------------------------
+-- Questie: Ctrl + click on a Questie map icon (and its "Set TomTom Target" buttons) calls
+-- TomTom:AddWaypoint / TomTom:RemoveWaypoint when a TomTom table exists. When the real TomTom
+-- is not installed we provide those two calls and point BiZNav instead. Only set at login,
+-- after every addon has loaded, and never when TomTom itself is there.
+-- ---------------------------------------------------------------------------
+
+local function zoneName(mapID)
+  local info = C_Map and C_Map.GetMapInfo and C_Map.GetMapInfo(mapID)
+  return info and info.name or "?"
+end
+
+Nav.TomTomShim = {
+  r2f = true,
+  -- (mapID, x 0-1, y 0-1, { title = }) -> a waypoint table Questie keeps, or nil.
+  AddWaypoint = function(_, mapID, x, y, opts)
+    if not (mapID and x and y) then return nil end
+    local title = opts and opts.title or ("%s %.1f, %.1f"):format(zoneName(mapID), x * 100, y * 100)
+    if not Nav.SetTarget(mapID, x * 100, y * 100, title, zoneName(mapID)) then return nil end
+    R2F.Print(L.NAV_SET:format(title))
+    return { mapID, x, y, title = title, from = opts and opts.from }
+  end,
+  -- Clears the arrow if it still points at that waypoint.
+  RemoveWaypoint = function(_, wp)
+    local t = target
+    if type(wp) == "table" and t and t.mapID == wp[1] and math.abs(t.x - (wp[2] or -1) * 100) < 1e-6
+        and math.abs(t.y - (wp[3] or -1) * 100) < 1e-6 then
+      Nav.Clear()
+    end
+  end,
+}
+
+local function tomTomInstalled()
+  local loaded = C_AddOns and C_AddOns.IsAddOnLoaded or _G.IsAddOnLoaded
+  if not loaded then return false end
+  local ok, yes = pcall(loaded, "TomTom")
+  return ok and yes and true or false
+end
+
+-- Returns true when the stand-in is in place.
+function Nav.InstallTomTomShim()
+  if _G.TomTom ~= nil then return _G.TomTom == Nav.TomTomShim end
+  if tomTomInstalled() then return false end
+  _G.TomTom = Nav.TomTomShim
+  return true
+end
+
 local ev = CreateFrame("Frame")
 ev:RegisterEvent("PLAYER_LOGIN")
 ev:RegisterEvent("ADDON_LOADED")
 ev:SetScript("OnEvent", function(_, event, name)
+  if event == "PLAYER_LOGIN" then Nav.InstallTomTomShim() end
   if event == "PLAYER_LOGIN" or name == "Blizzard_WorldMap" then Nav.HookMap() end
 end)

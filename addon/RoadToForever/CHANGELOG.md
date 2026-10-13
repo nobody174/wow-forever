@@ -1,5 +1,14 @@
 # Road to Forever changelog
 
+## 0.40.1 (2026-10-13)
+
+- BiZNav arrow: a new, sharper arrow image (our own 128 px gold dart with a dark outline), so Medium and Large look
+  clean instead of blurry.
+- The diamond pin on the world map is smaller.
+- Questie: Ctrl + click on a Questie icon on the world map points the BiZNav arrow at it, the same way it works with
+  TomTom (click the same icon again to clear). Questie's "Set TomTom Target" buttons work too. This only works when
+  TomTom itself is not installed; with TomTom installed, Questie keeps using TomTom's arrow.
+
 ## 0.40.0 (2026-10-13)
 
 - BiZNav arrow size: Small / Medium / Large buttons in Tweaks > Alerts & HUD (also `/bizway size large`). Medium is the

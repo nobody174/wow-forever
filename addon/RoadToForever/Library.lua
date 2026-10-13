@@ -121,6 +121,8 @@ function Library.Init()
   if db.gameplay.navfollow == nil then db.gameplay.navfollow = true end
   -- "Arrow to corpse when you die" (Nav.lua) starts ON as well: it only acts when you die.
   if db.gameplay.corpsearrow == nil then db.gameplay.corpsearrow = true end
+  -- The 3D arrow (Nav.lua) starts ON; switching it off gives the flat dart.
+  if db.gameplay.arrow3d == nil then db.gameplay.arrow3d = true end
   -- Where the floating combat text starts (GameplayExtras.lua): offset from the screen centre, UIParent units.
   if type(db.loadouts) ~= "table" then db.loadouts = {} end
   -- BiZNav arrow position (Nav.lua): offset from the screen centre, UIParent units.

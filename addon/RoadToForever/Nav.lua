@@ -142,13 +142,67 @@ local function place(f)
   f:SetPoint("CENTER", UIParent, "CENTER", s and s.x or 0, s and s.y or 220)
 end
 
+local elapsed, update   -- the arrow's OnUpdate state, defined below
+
+-- The 3D look: addon/art/export_arrow3d.py renders the arrow from FRAMES turn angles into one sprite sheet
+-- (media/arrow3d.tga, CELL px cells in a SHEET px square, COLS per row). Frame k = the arrow turned counter-clockwise
+-- by k * 360 / FRAMES degrees, which is what Nav.Solve's angle means. The game has no height for waypoints, so
+-- this is a ground-plane perspective only.
+Nav.FRAMES, Nav.COLS, Nav.CELL, Nav.SHEET = 100, 10, 102, 1024
+local ARROW_FLAT = "Interface\\AddOns\\RoadToForever\\media\\arrow"
+local ARROW_3D = "Interface\\AddOns\\RoadToForever\\media\\arrow3d"
+
+-- Sprite frame (0 .. FRAMES - 1) for a turn angle in radians (counter-clockwise, any size).
+function Nav.FrameFor(angle)
+  local k = math.floor(angle / (2 * math.pi) * Nav.FRAMES + 0.5)
+  return k % Nav.FRAMES
+end
+
+-- left, right, top, bottom texture coordinates of frame k.
+function Nav.FrameCoords(k)
+  local c, r = k % Nav.COLS, math.floor(k / Nav.COLS)
+  local u = Nav.CELL / Nav.SHEET
+  return c * u, (c + 1) * u, r * u, (r + 1) * u
+end
+
+function Nav.Is3D()
+  return R2F.Gameplay ~= nil and R2F.Gameplay.IsOn("arrow3d") and true or false
+end
+
+-- Switch the arrow's picture between the flat dart and the 3D sheet (also when the Tweaks switch changes).
+local function applyStyle(f)
+  local three = Nav.Is3D()
+  if f.style == three then return end
+  f.style = three
+  if three then
+    f.arrow:SetTexture(ARROW_3D)
+    f.arrow:SetSize(64, 64)
+    f.arrow:SetRotation(0)
+    f:SetSize(120, 108)
+  else
+    f.arrow:SetTexture(ARROW_FLAT)
+    f.arrow:SetTexCoord(0, 1, 0, 1)
+    f.arrow:SetSize(48, 48)
+    f:SetSize(120, 92)
+  end
+end
+
+function Nav.ApplyStyle()
+  if frame then
+    frame.style = nil
+    applyStyle(frame)
+    elapsed = THROTTLE
+    if target then update(frame, 0) end
+  end
+end
+
 local function fmtYards(y)
   if y >= 1000 then return ("%.1fk yd"):format(y / 1000) end
   return ("%d yd"):format(math.floor(y + 0.5))
 end
 
-local elapsed = 0
-local function update(f, dt)
+elapsed = 0
+update = function(f, dt)
   elapsed = elapsed + (dt or THROTTLE)
   if elapsed < THROTTLE then return end
   elapsed = 0
@@ -163,7 +217,12 @@ local function update(f, dt)
     return
   end
   if state == "ok" and angle then
-    f.arrow:SetRotation(angle)
+    applyStyle(f)
+    if f.style then
+      f.arrow:SetTexCoord(Nav.FrameCoords(Nav.FrameFor(angle)))
+    else
+      f.arrow:SetRotation(angle)
+    end
     f.arrow:Show()
     f.dist:SetText(fmtYards(yards))
   else
@@ -207,10 +266,11 @@ local function build()
   f:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
 
   f.arrow = f:CreateTexture(nil, "ARTWORK")
-  -- Our own 128 px dart (addon/art/export_arrow.py), so it stays sharp at Large.
-  f.arrow:SetTexture("Interface\\AddOns\\RoadToForever\\media\\arrow")
+  -- Our own 128 px dart (addon/art/export_arrow.py) or the 3D sprite sheet (export_arrow3d.py), so it stays sharp at Large.
+  f.arrow:SetTexture(ARROW_FLAT)
   f.arrow:SetSize(48, 48)
   f.arrow:SetPoint("TOP", f, "TOP", 0, 0)
+  applyStyle(f)
 
   f.dist = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   f.dist:SetPoint("TOP", f.arrow, "BOTTOM", 0, -2)
@@ -530,6 +590,10 @@ function Nav.RestoreAfterCorpse()
 end
 
 local function isGhost() return _G.UnitIsGhost and _G.UnitIsGhost("player") end
+
+-- Tweaks > Alerts & HUD: "3D arrow" (on by default, Library.lua); off = the flat dart.
+R2F.Gameplay.Register({ key = "arrow3d", group = "screen", title = "NAV_3D_TITLE", tip = "NAV_3D_TIP",
+  onToggle = function() Nav.ApplyStyle() end })
 
 -- Tweaks > Alerts & HUD: "Arrow to corpse when you die" (on by default, Library.lua).
 R2F.Gameplay.Register({

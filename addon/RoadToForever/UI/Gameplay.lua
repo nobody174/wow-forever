@@ -42,7 +42,7 @@ Tab.PAGES = {
   { key = "screen", label = "GP_PAGE_SCREEN", features = { "errorfilter", "xpbar", "copychat", "duels" } },
   { key = "bags", label = "GP_PAGE_BAGS", features = { "bagslots", "bagsort", "upgrades" } },
   { key = "alerts", label = "GP_PAGE_ALERTS",
-    features = { "reactalert", "reactlock", "reactblizz", "training", "navfollow", "corpsearrow" } },
+    features = { "reactalert", "reactlock", "reactblizz", "training", "navfollow", "corpsearrow", "arrow3d" } },
 }
 
 local function visible()

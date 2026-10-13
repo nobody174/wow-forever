@@ -194,6 +194,9 @@ R2F.L = {
   -- BiZNav arrow (Nav.lua)
   NAV_SET = "arrow: %s",
   NAV_NEXT_STEP = "step done, next: %s",
+  NAV_3D_TITLE = "3D arrow",
+  NAV_3D_TIP = "The waypoint arrow is drawn as a 3D arrow seen in perspective (100 turn angles). Untick for the flat dart. The game has no height for waypoints, so it only shows the direction on the ground.",
+  NAV_3D_HINT = "The waypoint arrow looks 3D.",
   NAV_CORPSE = "Your corpse",
   NAV_CORPSE_SET = "arrow: your corpse",
   NAV_CORPSE_TITLE = "Arrow to corpse when you die",

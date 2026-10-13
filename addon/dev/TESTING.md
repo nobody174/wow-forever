@@ -1276,3 +1276,15 @@ on, Questie keeps using TomTom's arrow). Have Questie on. A character of level 2
 6. Reload the UI while you are a ghost: the arrow points at the corpse again.
 7. Untick the switch, die again: no arrow appears.
 8. Die inside a dungeon (corpse inside): the game may give no corpse position there. Is there an error, or just no arrow?
+
+## 44. 3D arrow (v0.52.0)
+
+1. Tweaks > Alerts & HUD: "3D arrow" is ticked on a fresh character.
+2. `/bizway 45 34` (any spot in your zone). The arrow is a gold 3D dart seen from above at an angle, with a dark underside. Turn your
+   character in a full circle: it turns smoothly (in steps of 3.6 degrees), always pointing at the spot, and points up when you face it.
+3. Zone and walk toward the spot: the yards count down; the label and the distance are not covered by the arrow.
+4. Tweaks > Alerts & HUD: Small / Medium / Large. Is the 3D arrow sharp at Large? Does it overlap anything at Small?
+5. Untick "3D arrow": the flat dart is back and turns (not stepped). Tick it again: 3D again.
+6. If the arrow shows as a green square, or as a stack of tiny arrows, tell me (the texture did not load or the sheet is read wrong):
+   the file is media/arrow3d.tga, 100 frames in 10 columns of 102 px.
+7. Right-click clears it, left-drag moves it (as before). Does dragging still grab the 3D arrow easily?

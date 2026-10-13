@@ -1099,6 +1099,38 @@ def test_corpse_arrow():
     check(lua.eval("R2F.Nav.Target()") is None, "corpse arrow: switched off, dying does nothing")
 
 
+def test_arrow_3d():
+    """The 3D arrow: a sprite sheet of 100 turn angles; the frame follows the turn angle, the flat dart is the switch-off."""
+    import math
+    lua, T = plan_runtime(True, True, True)
+    check(lua.eval("R2F.Nav.FRAMES") == 100 and lua.eval("R2F.Nav.COLS") == 10, "3D arrow: 100 frames, 10 per row")
+    check(lua.eval("R2F.Gameplay.IsOn('arrow3d')") is True, "3D arrow: on by default for a new character")
+    for angle, frame in ((0, 0), (math.pi / 2, 25), (math.pi, 50), (-math.pi / 2, 75), (-0.01, 0), (0.0377, 1), (2 * math.pi + 0.0377, 1), (-math.pi, 50)):
+        got = lua.eval("R2F.Nav.FrameFor(%r)" % angle)
+        check(got == frame, "3D arrow: angle %.4f -> frame %d (got %s)" % (angle, frame, got))
+    l, r, t, b = lua.eval("R2F.Nav.FrameCoords(0)")
+    check(abs(l) < 1e-9 and abs(r - 102 / 1024) < 1e-9 and abs(t) < 1e-9 and abs(b - 102 / 1024) < 1e-9, "3D arrow: frame 0 is the top-left cell")
+    l, r, t, b = lua.eval("R2F.Nav.FrameCoords(37)")
+    check(abs(l - 7 * 102 / 1024) < 1e-9 and abs(t - 3 * 102 / 1024) < 1e-9 and abs(r - 8 * 102 / 1024) < 1e-9 and abs(b - 4 * 102 / 1024) < 1e-9,
+          "3D arrow: frame 37 is column 7, row 3")
+    # In the arrow frame: the 3D texture and a frame follow the target; the dart rotation stays 0.
+    lua.execute("TEST.hereMap = 1426 TEST.herePos = { 0.5, 0.5 } TEST.facing = 0 R2F.Nav.SetTarget(1426, 60, 50, 'Spot', 'Dun Morogh')")
+    lua.execute("R2FNavFrame:Fire('OnUpdate', 1)")
+    tex = lua.eval("R2FNavFrame.arrow.__tex")
+    check(tex is not None and tex.endswith("arrow3d"), "3D arrow: the sprite sheet is the texture: %r" % tex)
+    check(lua.eval("R2FNavFrame.arrow.__texcoord ~= nil"), "3D arrow: a texture coordinate window is set")
+    got = lua.eval("{ unpack(R2FNavFrame.arrow.__texcoord) }")
+    want = lua.eval("{ R2F.Nav.FrameCoords(R2F.Nav.FrameFor(-math.pi / 2)) }")
+    check(all(abs(got[i] - want[i]) < 1e-9 for i in range(1, 5)), "3D arrow: target east of a north-facing player -> frame 75 (pointing right)")
+    check(abs(lua.eval("R2FNavFrame.arrow.__rotation or 0")) < 1e-9, "3D arrow: the picture is not rotated, the frame carries the angle")
+    # Switching it off gives the flat dart back.
+    lua.execute("R2F.Gameplay.SetOn('arrow3d', false)")
+    tex = lua.eval("R2FNavFrame.arrow.__tex")
+    check(tex is not None and tex.endswith("arrow") and not tex.endswith("arrow3d"), "3D arrow: switched off, the flat dart texture is back: %r" % tex)
+    lua.execute("R2FNavFrame:Fire('OnUpdate', 1)")
+    check(abs(lua.eval("R2FNavFrame.arrow.__rotation") + math.pi / 2) < 1e-9, "3D arrow: the flat dart turns by the angle again")
+    lua.execute("R2F.Gameplay.SetOn('arrow3d', true)")
+    check(lua.eval("string.sub(R2FNavFrame.arrow.__tex, -7)") == "arrow3d", "3D arrow: back to the sprite sheet")
 def test_tweaks_search():
     """0.38.0: the Tweaks search box lists matching options and opens their page."""
     lua = new_runtime()
@@ -1809,6 +1841,7 @@ def test_plan(templates=True):
 
         # --- The arrow: direction, distance, other continent, no position, arrival, clear --------------------
         lua, T = plan_runtime(nav=True)
+        lua.execute("R2F.Library.db.gameplay.arrow3d = false")   # the flat dart rotates; the 3D arrow picks a frame
         lua.execute("TEST.hereMap = 1426 TEST.herePos = { 0.5, 0.5 }")
         def arrow(facing, x, y):
             lua.execute("TEST.facing = %r R2F.Nav.SetTarget(1426, %r, %r, 'Spot', 'Dun Morogh')" % (facing, x, y))
@@ -7505,6 +7538,7 @@ def main():
     test_dungeon_entrances()
     test_worn_enchant()
     test_corpse_arrow()
+    test_arrow_3d()
     test_tweaks_search()
     test_talented_perk()
     test_bags()

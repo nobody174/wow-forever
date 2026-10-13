@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.52.0 (2026-10-13)
+
+- The BiZNav arrow is a 3D arrow now (TomTom "crazy arrow" style): a gold dart with a raised ridge, seen in perspective, picked from
+  100 pre-rendered turn angles (media/arrow3d.tga, a 1024 x 1024 sprite sheet made by addon/art/export_arrow3d.py with headless Blender).
+  Small, Medium and Large work as before. The game has no height for waypoints, so it shows the direction on the ground only.
+  Tweaks > Alerts & HUD > "3D arrow" (on by default); untick it for the flat dart.
+
 ## 0.51.0 (2026-10-13)
 
 - Corpse arrow: when you die the BiZNav arrow points at your corpse ("Your corpse"); when you are alive again the arrow you had before

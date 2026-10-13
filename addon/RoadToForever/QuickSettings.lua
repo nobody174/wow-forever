@@ -6,6 +6,8 @@
 --   Max camera zoom   cameraDistanceMaxZoomFactor 4  (off = the game's default)
 --   Hide guild names  UnitNamePlayerGuild 0          (off = 1)
 --   Hide PvP titles   UnitNamePlayerPVPTitle 0       (off = 1)
+-- plus one with no site macro:
+--   24-hour clock     timeMgrUseMilitaryTime 1       (off = 0; the game clock on the minimap)
 --
 -- Nothing is stored in SavedVariables: the game saves CVars itself, and the
 -- boxes always show the LIVE value (GetCVar), so a value set by /console,
@@ -33,10 +35,15 @@ QuickSettings.ITEMS = {
     macro = "ANY/HideGuild", label = L.QS_GUILD, tip = L.QS_GUILD_TIP },
   { key = "pvp", cvar = "UnitNamePlayerPVPTitle", on = "0", off = "1",
     macro = "ANY/HidePvP", label = L.QS_PVP, tip = L.QS_PVP_TIP },
+  -- No site macro for this one (macro = nil): the game clock's own 12 / 24-hour setting.
+  { key = "clock24", cvar = "timeMgrUseMilitaryTime", on = "1", off = "0",
+    label = L.QS_CLOCK24, tip = L.QS_CLOCK24_TIP },
 }
 
 local byMacro = {}
-for _, item in ipairs(QuickSettings.ITEMS) do byMacro[item.macro] = item end
+for _, item in ipairs(QuickSettings.ITEMS) do
+  if item.macro then byMacro[item.macro] = item end
+end
 
 -- The CVar API, looked up at call time (the tests swap it out). Classic Era
 -- has the old globals; newer clients keep them as aliases of C_CVar, and a

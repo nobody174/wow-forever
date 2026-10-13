@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.42.0 (2026-10-13)
+
+- Home > Quick settings: a "24-hour clock" switch. The game clock by the minimap shows 18:30 instead of 6:30 PM. It is
+  the game's own setting, so it also matches what Blizzard's clock options show.
+
 ## 0.41.0 (2026-10-13)
 
 - Mr.BiZ + BiZNav: Alt + click an item (in the slot list, on the gear icons or in the wishlist) to point the arrow at

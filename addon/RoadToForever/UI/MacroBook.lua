@@ -617,7 +617,7 @@ end
 -- so a player who imported them knows where they went.
 local function quickSettingsNote()
   for _, item in ipairs(R2F.QuickSettings.ITEMS) do
-    if Library.Get(item.macro) and R2F.QuickSettings.HidesMacro(item.macro) then
+    if item.macro and Library.Get(item.macro) and R2F.QuickSettings.HidesMacro(item.macro) then
       return L.BOOK_QUICK_SETTINGS
     end
   end

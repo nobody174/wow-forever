@@ -149,7 +149,7 @@ local function readModern()
           if slot.reagentType == nil or slot.reagentType == 1 then
             local first = slot.reagents and slot.reagents[1]
             if first and first.itemID then
-              local nm = GetItemInfo and GetItemInfo(first.itemID)
+              local nm = R2F.Item.Info(first.itemID)
               mats[#mats + 1] = { id = first.itemID, count = slot.quantityRequired or 1, name = nm }
             end
           end

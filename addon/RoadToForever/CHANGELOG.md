@@ -1,5 +1,23 @@
 # Road to Forever changelog
 
+## 0.47.3 (2026-10-13)
+
+Found by reading Blizzard's own UI code for Forever (the extracted interface files): several things did nothing in game because
+the addon asked the game in the old Classic way.
+
+- Mr.BiZ "Required level" slider, Upgrade arrows and the "BiZ score" tooltip line did nothing: they used the global
+  GetItemInfo / GetItemInfoInstant, which Forever does not have (Blizzard's own UI only uses C_Item.GetItemInfo). All item
+  lookups now go through one helper (ItemApi.lua) that uses C_Item first. The slider now skips picks that need a higher level,
+  and the arrows and the score line can appear (Tweaks > Bags > Upgrade arrows, off until you switch it on).
+- What to train next did nothing: Forever's class trainer returns the spell's state, level and rank in different places than
+  Classic's. It now reads them the way Blizzard's own trainer window does, so Home shows "Train now" and "Next" after you open
+  your class trainer once (with "Unavailable" shown, to see spells above your level).
+- Mr.BiZ: the best enchant for the selected slot now sits right under the slot's name instead of at the bottom of the list
+  (it could be pushed out of view). Click a slot like Neck, Back, Chest, Wrist, Hands, Legs, Feet or a weapon.
+- Weapons along the route (Plan tab) only appear for the 9 of 27 specs whose Mr.BiZ weapon comes from a dungeon or vendor on
+  the launch plan (Druid Restoration, Mage Frost, Priest Discipline and Holy, all three Rogues, Shaman Elemental, Warrior Fury);
+  that is how it was built, not a bug.
+
 ## 0.47.2 (2026-10-13)
 
 - Fixed the login error "Attempt to register unknown event LEARNED_SPELL_IN_TAB" (from the new training list). Forever has

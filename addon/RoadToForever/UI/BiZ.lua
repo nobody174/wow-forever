@@ -261,7 +261,19 @@ local function layoutSide()
   local nxt = sl.next or {}
   local all = allPicks(sl)
   local gapOf = function(rank) return rank == 1 and BiZ.IsTheBizz(sl) and -nxt[1].delta or nil end
-  local y = 34
+  -- BiS enchant for this slot (the site's Professions page; ForeverChanges' spec pages), right under the
+  -- slot name so it is never pushed off the bottom by a long list of picks.
+  local y = 30
+  for i, e in ipairs(BiZ.Enchants(specId, sl.slot)) do
+    if i > 2 then break end
+    local head = line("GameFontNormalSmall", 0, y, 320, L.BIZ_ENCHANT:format(e.name))
+    head:SetWordWrap(false)
+    local kind = e.kind == "2h" and (" · " .. L.BIZ_ENCHANT_2H) or ""
+    local sub = line("GameFontDisableSmall", 12, y + 14, 308, L.BIZ_ENCHANT_SUB:format(e.eff, e.prof, e.skill) .. kind)
+    sub:SetWordWrap(false)
+    y = y + 32
+  end
+  y = y + 6
   for rank, it in ipairs(all) do
     local passes = BiZ.Passes(it)
     local gap = gapOf(rank)
@@ -291,17 +303,6 @@ local function layoutSide()
   facts:SetTextColor(0.7, 0.7, 0.7)
   facts:SetWordWrap(true)
   if #nxt == 0 then line("GameFontDisableSmall", 0, y + 30, 320, L.BIZ_NO_MORE) end
-  -- BiS enchant for this slot (the site's Professions page; ForeverChanges' spec pages).
-  local ey = y + 50
-  for i, e in ipairs(BiZ.Enchants(specId, sl.slot)) do
-    if i > 2 then break end
-    local head = line("GameFontNormalSmall", 0, ey, 320, L.BIZ_ENCHANT:format(e.name))
-    head:SetWordWrap(false)
-    local kind = e.kind == "2h" and (" · " .. L.BIZ_ENCHANT_2H) or ""
-    local sub = line("GameFontDisableSmall", 12, ey + 14, 308, L.BIZ_ENCHANT_SUB:format(e.eff, e.prof, e.skill) .. kind)
-    sub:SetWordWrap(false)
-    ey = ey + 32
-  end
 end
 
 -- ---------------------------------------------------------------------------

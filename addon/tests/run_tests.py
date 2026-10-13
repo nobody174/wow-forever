@@ -7414,6 +7414,8 @@ def main():
     test_remove_from_library(False, fx)
     test_gearscore()
     test_training()
+    test_training_forever_shape()
+    test_item_api_modern()
     test_route_weapons()
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
@@ -7539,6 +7541,73 @@ def test_gearscore():
     find = lua.eval("(function() for _, p in ipairs(R2F.GameplayTab.PAGES) do if p.key == 'bags' then for _, k in ipairs(p.features) do if k == 'upgrades' then return true end end end end end)()")
     check(find is True, "gs: the switch is on Tweaks > Bags")
     check(lua.eval("R2F.Library.db.gameplay.upgrades") is False, "gs: off by default (like every Tweaks feature)")
+
+
+def test_training_forever_shape():
+    """Forever's trainer API (Blizzard's own trainer window, blizzard_trainerui): GetTrainerServiceInfo returns
+    name, serviceType ('available' | 'unavailable' | 'used'), texture, reqLevel, subText (the rank), category.
+    There is no GetTrainerServiceLevelReq. The level must come from the 4th return, the rank from the 5th."""
+    lua = new_runtime(True)
+    lua.execute("TEST.reset()")
+    lua.execute("""
+      TEST.level = 20
+      TEST.trainer = {
+        { 'Corruption', 'available', 'tex1', 14, 'Rank 2', 'Affliction', 600 },
+        { 'Curse of Doom', 'unavailable', 'tex2', 60, '', 'Affliction', 90000 },
+        { 'Shadow Bolt', 'unavailable', 'tex3', 22, 'Rank 4', 'Shadow', 1500 },
+        { 'Immolate', 'used', 'tex4', 1, 'Rank 1', 'Fire', 50 },
+      }
+      GetNumTrainerServices = function() return #TEST.trainer end
+      GetTrainerServiceInfo = function(i) local t = TEST.trainer[i] return t[1], t[2], t[3], t[4], t[5], t[6] end
+      GetTrainerServiceLevelReq = nil
+      GetTrainerServiceCost = function(i) return TEST.trainer[i][7], false end
+      IsTradeskillTrainer = function() return false end
+    """)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    T.fire("TRAINER_SHOW")
+    check(lua.eval("#R2FCharDB.training.spells") == 4, "train (Forever API): all four services are saved")
+    check(lua.eval("R2FCharDB.training.spells[1].lvl") == 14 and lua.eval("R2FCharDB.training.spells[1].r") == "Rank 2"
+          and lua.eval("R2FCharDB.training.spells[1].s") == "available",
+          "train (Forever API): level from the 4th return, rank from the 5th, state from the 2nd")
+    a, b = lua.eval("R2F.Training.Lines()")
+    check(a.startswith("Train now: 1 spell") and "Corruption (Rank 2)" in a, "train (Forever API): level 14 spell is trainable at 20: %r" % a)
+    check(b == "Next: level 22: Shadow Bolt (Rank 4)", "train (Forever API): next = the level 22 spell: %r" % b)
+
+
+def test_item_api_modern():
+    """Forever has no global GetItemInfo / GetItemInfoInstant (Blizzard's own UI only calls C_Item.*). Everything
+    that needs an item's required level, slot or class must work through C_Item alone."""
+    lua = new_runtime(True)
+    lua.execute("TEST.reset()")
+    lua.execute("""
+      GetItemInfo = nil
+      GetItemInfoInstant = nil
+      C_Item = C_Item or {}
+      C_Item.GetItemInfo = function(id)
+        if id == 252512 then return 'Biz Blade', 'link', 3, 30, 40, 'Weapon', 'Swords', 1, 'INVTYPE_WEAPON' end
+        if id == 6720 then return 'Old Helm', 'link', 2, 20, 10, 'Armor', 'Cloth', 1, 'INVTYPE_HEAD' end
+      end
+      C_Item.GetItemInfoInstant = function(id)
+        if id == 777 then return 777, 'Armor', 'Plate', 'INVTYPE_CHEST', 12345, 4, 4 end
+        if id == 778 then return 778, 'Armor', 'Cloth', 'INVTYPE_CHEST', 12346, 4, 1 end
+      end
+    """)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    check(lua.eval("R2F.Item.Available()") is True, "item api: available through C_Item alone")
+    check(lua.eval("(select(5, R2F.Item.Info(252512)))") == 40, "item api: the required level comes from C_Item.GetItemInfo")
+    check(lua.eval("R2F.BiZ.ReqLevel(252512)") == 40, "item api: BiZ.ReqLevel reads it with no global GetItemInfo")
+    lua.execute("R2F.BiZ.SetMaxLevel(30)")
+    check(lua.eval("R2F.BiZ.Passes({ id = 252512, type = 'crafted' })") is False
+          and lua.eval("R2F.BiZ.Passes({ id = 6720, type = 'quest' })") is True,
+          "item api: the level slider skips a level 40 item and keeps a level 10 one, with no global GetItemInfo")
+    lua.execute("R2F.playerClass = 'MAGE' TEST.level = 30")
+    check(lua.eval("R2F.GearScore.CanWear(777)") is False and lua.eval("R2F.GearScore.CanWear(778)") is True,
+          "item api: upgrade arrows know a Mage can't wear plate, from C_Item.GetItemInfoInstant alone")
+    check(lua.eval("(select(4, R2F.Item.Instant(777)))") == "INVTYPE_CHEST", "item api: the equip slot comes from C_Item.GetItemInfoInstant")
 
 
 def test_training():

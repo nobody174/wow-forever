@@ -31,11 +31,21 @@ function Training.Read()
   local n = GetNumTrainerServices() or 0
   local list = {}
   for i = 1, n do
-    local name, rank, state = GetTrainerServiceInfo(i)
+    local name, a2, a3, a4, a5 = GetTrainerServiceInfo(i)
+    -- Forever (modern engine, Blizzard's own trainer window): name, serviceType, texture, reqLevel, subText.
+    -- serviceType is "available" | "unavailable" | "used"; subText is the rank ("Rank 2"). Classic returns
+    -- name, rank, category ("header" for a heading) and has a separate GetTrainerServiceLevelReq.
+    local rank, state, lvl
+    if a2 == "available" or a2 == "unavailable" or a2 == "used" then
+      rank, state, lvl = a5, a2, tonumber(a4)
+    else
+      rank, state = a2, a3
+      lvl = GetTrainerServiceLevelReq and GetTrainerServiceLevelReq(i)
+    end
     if name and state ~= "header" then
       list[#list + 1] = {
         n = name, r = rank or "",
-        lvl = GetTrainerServiceLevelReq and GetTrainerServiceLevelReq(i) or 0,
+        lvl = lvl or 0,
         cost = GetTrainerServiceCost and GetTrainerServiceCost(i) or 0,
         s = state,
       }

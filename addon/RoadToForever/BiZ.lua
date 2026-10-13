@@ -214,8 +214,8 @@ end
 -- The item's required level from the game (nil until the item is loaded; then it is asked for,
 -- and GET_ITEM_INFO_RECEIVED redraws the tab). 0 / 1 = no requirement.
 function BiZ.ReqLevel(id)
-  if not (id and GetItemInfo) then return nil end
-  local lvl = select(5, GetItemInfo(id))
+  if not (id and R2F.Item.Available()) then return nil end
+  local lvl = select(5, R2F.Item.Info(id))
   if lvl == nil and C_Item and C_Item.RequestLoadItemDataByID then C_Item.RequestLoadItemDataByID(id) end
   return lvl
 end
@@ -285,7 +285,7 @@ end
 
 function BiZ.ItemName(id)
   local i = itemIndex()[id]
-  return (i and i.name) or ((GetItemInfo and GetItemInfo(id)) or ("item " .. id))
+  return (i and i.name) or (R2F.Item.Info(id) or ("item " .. id))
 end
 
 -- { { name = group, items = { { id, name, label, spec, slot }, ... } }, ... }, the biggest
@@ -359,7 +359,7 @@ end
 function BiZ.Quality(id)
   local q
   if C_Item and C_Item.GetItemQualityByID then q = C_Item.GetItemQualityByID(id) end
-  if q == nil and GetItemInfo then q = select(3, GetItemInfo(id)) end
+  if q == nil then q = select(3, R2F.Item.Info(id)) end
   local cache = qualityCache()
   if q ~= nil then
     if cache then cache[id] = q end
@@ -383,7 +383,7 @@ function BiZ.Icon(id)
   local icon
   if C_Item and C_Item.GetItemIconByID then icon = C_Item.GetItemIconByID(id) end
   if not icon and GetItemIcon then icon = GetItemIcon(id) end
-  if not icon and GetItemInfoInstant then icon = select(5, GetItemInfoInstant(id)) end
+  if not icon then icon = select(5, R2F.Item.Instant(id)) end
   return icon
 end
 
@@ -446,7 +446,7 @@ end
 -- doesn't know yet (Forever-only items) has no link from GetItemInfo, so one is built from the id
 -- and the name in our data; the game fills in the rest when the chat line is shown.
 function BiZ.LinkInChat(id, name)
-  local link = GetItemInfo and select(2, GetItemInfo(id))
+  local link = select(2, R2F.Item.Info(id))
   if not link then
     local q = BiZ.Quality(id) or 1
     local hex = (ITEM_QUALITY_COLORS and ITEM_QUALITY_COLORS[q] and ITEM_QUALITY_COLORS[q].hex) or ("|cff" .. QUALITY_HEX[q])

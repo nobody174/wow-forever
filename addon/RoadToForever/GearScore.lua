@@ -4,7 +4,7 @@
 -- same line Mr.BiZ shows for each spec (BiZData.specs[id].weights, "hit 1.2, Agility 1, ...").
 -- The spec is the one picked in Mr.BiZ for YOUR class (its first spec until you pick one).
 --
--- Stats come from the game (GetItemStats). Each weight name is matched to the game's stat keys
+-- Stats come from the game (C_Item.GetItemStats). Each weight name is matched to the game's stat keys
 -- (ITEM_MOD_AGILITY_SHORT ...); where Forever uses a key this file doesn't know, the stat's own
 -- label (_G[key], "Agility") is compared with the weight name as a fallback. `/r2f debug gear`
 -- prints what the game gives for the item under the mouse, so a missing stat can be added.
@@ -154,8 +154,8 @@ end
 
 -- Can the player wear this armor? (cloth / leather / mail / plate by class and level; shields)
 function GS.CanWear(link)
-  if not GetItemInfoInstant then return true end
-  local _, _, _, equipLoc, _, classID, subID = GetItemInfoInstant(link)
+  if not R2F.Item.Instant(link) then return true end
+  local _, _, _, equipLoc, _, classID, subID = R2F.Item.Instant(link)
   if classID ~= 4 then return true end              -- not armor: weapons are not checked
   local token = R2F.playerClass or select(2, UnitClass("player"))
   if subID == 6 or equipLoc == "INVTYPE_SHIELD" then return SHIELD[token] == true end
@@ -168,11 +168,9 @@ function GS.CanWear(link)
 end
 
 local function equipLoc(link)
-  if GetItemInfoInstant then
-    local loc = select(4, GetItemInfoInstant(link))
-    if loc then return loc end
-  end
-  return GetItemInfo and select(9, GetItemInfo(link)) or nil
+  local loc = select(4, R2F.Item.Instant(link))
+  if loc then return loc end
+  return select(9, R2F.Item.Info(link))
 end
 
 -- Score of what is worn where this item would go (the weaker of two slots), or 0 if empty.

@@ -1304,3 +1304,6 @@ on, Questie keeps using TomTom's arrow). Have Questie on. A character of level 2
 7. Do the lines fit between the steps, or do they push the list too long? Mr.BiZ dungeon / vendor weapon lines now read
    "Weapon: <item> (Bizzest main hand)" without "best on route".
 8. Another class (a Mage, a Priest): only wands, daggers, staffs and one-handed swords / maces they can use; no bows.
+
+(0.53.1) 9. Hover a "Weapon:" line on the Plan tab: the normal item tooltip, then a green "BiZ score +N over what you wear (<spec>)", the quest
+   it rewards (with its zone) and a grey note. Does the +N match your feeling (an empty slot gives a large number)? Leaving hides it.

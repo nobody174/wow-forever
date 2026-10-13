@@ -121,20 +121,27 @@ function QW.StepLines(planId)
   local class, side = playerClass(), playerSide()
   local specId = R2F.GearScore.SpecId()
   local route = specId and R2F.BiZ.RouteWeapons(specId, planId) or {}
+  local spec = specId and R2F.BiZ.Spec(specId)
+  local specName = spec and spec.name
   for _, st in ipairs(R2F.Plan.Steps(planId)) do
     local best = {}   -- slot -> { delta =, text =, id = }
-    local function offer(slot, id, text)
+    local function offer(slot, id, text, info)
       if not slot then return end
       local delta = upgradeOf(id)
       if not delta or delta <= 0 then return end
-      if not best[slot] or delta > best[slot].delta then best[slot] = { slot = slot, id = id, delta = delta, text = text } end
+      if not best[slot] or delta > best[slot].delta then
+        best[slot] = { slot = slot, id = id, delta = delta, text = text, specName = specName }
+        for k, v in pairs(info or {}) do best[slot][k] = v end
+      end
     end
     for _, m in ipairs(route[st.id] or {}) do
+      local rankText = R2F.BiZ.RankName(m.rank) .. " " .. R2F.BiZ.SlotLabel(m.slot):lower()
       offer(m.slot, m.row.id, L.PLAN_WEAPON:format(R2F.BiZ.ColoredName(m.row.id, m.row.name), R2F.BiZ.RankName(m.rank),
-        R2F.BiZ.SlotLabel(m.slot):lower()))
+        R2F.BiZ.SlotLabel(m.slot):lower()), { name = m.row.name, rankText = rankText, source = m.row.label })
     end
     for _, c in ipairs(QW.Candidates(st, class, side)) do
-      offer(QW.SlotOf(c.id), c.id, L.PLAN_WEAPON_QUEST:format(colored(c.name, c.q), c.quest))
+      offer(QW.SlotOf(c.id), c.id, L.PLAN_WEAPON_QUEST:format(colored(c.name, c.q), c.quest),
+        { name = c.name, quest = c.quest, zone = c.zone })
     end
     local lines = {}
     for _, slot in ipairs({ "mainhand", "offhand", "ranged" }) do

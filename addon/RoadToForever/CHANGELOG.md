@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.53.1 (2026-10-13)
+
+- Plan tab: hover a "Weapon:" line for the item's own tooltip plus "BiZ score +N over what you wear (your spec)", the quest it is the
+  reward of (or the Mr.BiZ source), and a note on how it was compared. You can now see how much of an upgrade it is.
+
 ## 0.53.0 (2026-10-13)
 
 - Plan tab, weapons along the route: a step now shows "Weapon: <item> (quest: <quest name>)" when a weapon you can use is the reward of a quest

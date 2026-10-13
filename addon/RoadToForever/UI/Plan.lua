@@ -88,12 +88,32 @@ local function pointLine(r, j)
   return p
 end
 
+-- Hover on a weapon line: the item's own tooltip, then how much better it scores than what you wear and where it comes from.
+local function weaponTip(hit)
+  local w = hit.w
+  if not w then return end
+  GameTooltip:SetOwner(hit, "ANCHOR_RIGHT")
+  local shown = false
+  if GameTooltip.SetHyperlink then shown = pcall(GameTooltip.SetHyperlink, GameTooltip, "item:" .. w.id) end
+  if shown and GameTooltip.NumLines then shown = GameTooltip:NumLines() > 0 end
+  if not shown then GameTooltip:AddLine(w.name or "", 1, 1, 1) end
+  GameTooltip:AddLine(" ")
+  GameTooltip:AddLine(L.PLAN_WEAPON_TIP_UP:format(w.delta, w.specName or "?"), 0.3, 1, 0.3)
+  if w.quest then
+    GameTooltip:AddLine(L.PLAN_WEAPON_TIP_QUEST:format(w.quest, w.zone or "?"), 1, 0.82, 0, true)
+  elseif w.rankText then
+    GameTooltip:AddLine(L.PLAN_WEAPON_TIP_BIZ:format(w.rankText, w.source or "?"), 1, 0.82, 0, true)
+  end
+  GameTooltip:AddLine(L.PLAN_WEAPON_TIP_NOTE, 0.6, 0.6, 0.6, true)
+  GameTooltip:Show()
+end
+
 local function hideRowsFrom(i)
   for k = i, #rows do
     local r = rows[k]
     r.check:Hide(); r.lvl:Hide(); r.title:Hide(); r.note:Hide()
     for _, p in ipairs(r.points) do p.btn:Hide(); p.text:Hide() end
-    for _, g in ipairs(r.gears or {}) do g:Hide() end
+    for _, g in ipairs(r.gears or {}) do g:Hide(); if g.hit then g.hit:Hide() end end
   end
 end
 
@@ -182,15 +202,22 @@ local function layout()
           g = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
           g:SetJustifyH("LEFT")
           g:SetWidth(TEXT_W)
+          g.hit = CreateFrame("Frame", nil, content)
+          g.hit:SetAllPoints(g)
+          g.hit:EnableMouse(true)
+          g.hit:SetScript("OnEnter", weaponTip)
+          g.hit:SetScript("OnLeave", function() GameTooltip:Hide() end)
           r.gears[j] = g
         end
+        g.hit.w = w
+        g.hit:Show()
         g:ClearAllPoints()
         g:SetPoint("TOPLEFT", content, "TOPLEFT", 78, -(y + used))
         g:SetText(w.text)
         g:Show()
         used = used + 16
       end
-      for j = #gear + 1, #r.gears do r.gears[j]:Hide() end
+      for j = #gear + 1, #r.gears do r.gears[j]:Hide(); r.gears[j].hit:Hide() end
       y = y + used + 8
     end
   end

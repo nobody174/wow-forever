@@ -1197,6 +1197,15 @@ def test_quest_weapons():
     # On the Plan tab
     lua.execute("R2F.playerClass = 'HUNTER' R2F.MainWindow.Show('plan') R2F.PlanTab.Refresh()")
     check(font_text(lua, "^Weapon: .*Ally Bow.* %(quest: Quest A%)") is not None, "quest weapons: the Plan tab shows 'Weapon: <item> (quest: <quest>)'")
+    # Hover: the item tooltip, the score gain over what is worn, and where it comes from.
+    find_frames(lua, "f.w ~= nil and f.w.id == 101 and f.__shown", "WTIP")
+    check(lua.eval("#WTIP") == 1, "quest weapons: the Ally Bow line has a hover frame")
+    lua.execute("WTIP[1]:Fire('OnEnter')")
+    tip = " | ".join(str(x) for x in lua_table_to_list(lua.eval("GameTooltip.lines")))
+    check("BiZ score +" in tip and "Reward of the quest Quest A (Zephras Isle)" in tip and "Compared with the item you wear" in tip,
+          "quest weapons: the tooltip says the score gain and the quest: %s" % tip)
+    lua.execute("WTIP[1]:Fire('OnLeave')")
+    check(lua.eval("GameTooltip.__shown") is False, "quest weapons: leaving hides the tooltip")
     # The real data
     lua.execute("R2F.QuestWeaponData = nil")
     check(lua.eval("R2F.QuestWeaponData == nil"), "quest weapons: (data reset)")

@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.43.0 (2026-10-13)
+
+- Mr.BiZ: a "Required level" slider under the source filters (and a "My level" button). Picks that need a higher level
+  are skipped, so the slot shows rank 2 or 3 instead, the same way the source filters work. 60 = any level (the
+  default); the choice is saved per character. The level comes from the game, so an item the game hasn't loaded yet
+  still shows until its level is known.
+
 ## 0.42.0 (2026-10-13)
 
 - Home > Quick settings: a "24-hour clock" switch. The game clock by the minimap shows 18:30 instead of 6:30 PM. It is

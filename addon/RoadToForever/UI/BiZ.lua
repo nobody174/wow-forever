@@ -421,6 +421,9 @@ local function setViewShown()
   for _, b in pairs(slotBtns) do b:SetShown(isSet) end
   for _, w in pairs(typeBoxes) do w:SetShown(isSet) end
   ui.known:SetShown(isSet)
+  ui.level:SetShown(isSet)
+  ui.levelText:SetShown(isSet)
+  ui.myLevel:SetShown(isSet)
   ui.footer:SetShown(isSet)
   ui.side:SetShown(isSet)
   ui.modelBack:SetShown(isSet)
@@ -440,6 +443,13 @@ local function refresh()
   ui.wishBtn:SetText(L.BIZ_VIEW_WISH:format(BiZ.WishCount()))
   for t, box in pairs(typeBoxes) do box:SetChecked(BiZ.TypeOn(t)) end
   ui.known:SetChecked(BiZ.KnownOnly())
+  local maxL = BiZ.MaxLevel()
+  ui.levelText:SetText(maxL >= BiZ.MAX_LEVEL and L.BIZ_LEVEL_ANY or L.BIZ_LEVEL_UPTO:format(maxL))
+  if math.floor((ui.level:GetValue() or 0) + 0.5) ~= maxL then
+    ui.levelSync = true
+    ui.level:SetValue(maxL)
+    ui.levelSync = false
+  end
   setViewShown()
 
   -- Keep the selected slot while the spec changes; fall back to the first slot with a pick.
@@ -618,6 +628,33 @@ function Tab.Build(f)
   ui.known = UI.CheckButton(f, L.BIZ_KNOWN_ONLY)
   ui.known:SetPoint("TOPLEFT", 4 + (n % 2) * 150, -fy - math.floor(n / 2) * 20)
   ui.known:SetScript("OnClick", function(self) BiZ.SetKnownOnly(self:GetChecked()); refresh() end)
+
+  -- Level filter: picks that need a higher level are skipped, so rank 2 or 3 shows instead.
+  local ly = -fy - (math.floor(n / 2) + 1) * 20 - 6
+  ui.levelText = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.levelText:SetPoint("TOPLEFT", 8, ly)
+  ui.level = CreateFrame("Slider", nil, f, "OptionsSliderTemplate")
+  ui.level:SetPoint("TOPLEFT", 8, ly - 16)
+  ui.level:SetWidth(200)
+  ui.level:SetMinMaxValues(1, BiZ.MAX_LEVEL)
+  ui.level:SetValueStep(1)
+  if ui.level.SetObeyStepOnDrag then ui.level:SetObeyStepOnDrag(true) end
+  for _, part in ipairs({ "Low", "High", "Text" }) do
+    if ui.level[part] then ui.level[part]:SetText("") end
+  end
+  ui.level:SetScript("OnValueChanged", function(_, v)
+    if ui.levelSync then return end
+    v = math.floor(v + 0.5)
+    if v ~= BiZ.MaxLevel() then
+      BiZ.SetMaxLevel(v)
+      refresh()
+    end
+  end)
+  ui.myLevel = button(f, 76, L.BIZ_LEVEL_MINE, function()
+    BiZ.SetMaxLevel(UnitLevel and UnitLevel("player") or BiZ.MAX_LEVEL)
+    refresh()
+  end)
+  ui.myLevel:SetPoint("LEFT", ui.level, "RIGHT", 10, 0)
 
   -- Slot panel (right).
   side = CreateFrame("Frame", nil, f)

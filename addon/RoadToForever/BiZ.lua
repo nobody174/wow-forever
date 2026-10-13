@@ -140,9 +140,35 @@ end
 function BiZ.KnownOnly() return cdb().known == true end
 function BiZ.SetKnownOnly(on) cdb().known = on and true or false end
 
+-- Level filter ("Up to level"): 60 = any level (the default). Saved per character.
+BiZ.MAX_LEVEL = 60
+function BiZ.MaxLevel()
+  local v = cdb().maxLevel
+  return type(v) == "number" and v >= 1 and v <= BiZ.MAX_LEVEL and v or BiZ.MAX_LEVEL
+end
+function BiZ.SetMaxLevel(v)
+  v = math.floor(tonumber(v) or BiZ.MAX_LEVEL)
+  v = math.max(1, math.min(BiZ.MAX_LEVEL, v))
+  cdb().maxLevel = v < BiZ.MAX_LEVEL and v or nil
+end
+
+-- The item's required level from the game (nil until the item is loaded; then it is asked for,
+-- and GET_ITEM_INFO_RECEIVED redraws the tab). 0 / 1 = no requirement.
+function BiZ.ReqLevel(id)
+  if not (id and GetItemInfo) then return nil end
+  local lvl = select(5, GetItemInfo(id))
+  if lvl == nil and C_Item and C_Item.RequestLoadItemDataByID then C_Item.RequestLoadItemDataByID(id) end
+  return lvl
+end
+
 function BiZ.Passes(best)
   if best.type ~= "unknown" and cdb().types[best.type] == false then return false end
   if cdb().known and best.type == "unknown" then return false end
+  local max = BiZ.MaxLevel()
+  if max < BiZ.MAX_LEVEL then
+    local req = BiZ.ReqLevel(best.id)
+    if req and req > max then return false end   -- an item not loaded yet still counts
+  end
   return true
 end
 

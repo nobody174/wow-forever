@@ -3234,6 +3234,27 @@ def test_biz(templates=True):
     lua.execute("NEXT2[1]:Fire('OnEnter')")
     lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
     check(any("Bizzer for Beast Mastery, 12% behind" in (l or "") for l in lines), "%s: rank 2 tooltip says how far behind: %s" % (tag, lines))
+    # Level filter: a best pick that needs a higher level falls back to the next rank; unloaded items count.
+    if templates:
+        lua.execute("TEST.reqLevel = { [252512] = 40 } GetItemInfo = function(id) local l = TEST.reqLevel[id] "
+                    "if l then return 'x', 'link', 2, 30, l end end")
+        check(lua.eval("R2F.BiZ.MaxLevel()") == 60 and lua.eval("R2F.BiZ.Passes({ id = 252512, type = 'crafted' })") is True,
+              "%s: level filter off by default (any level)" % tag)
+        find_frames(lua, "f.__kind == 'Slider' and f.GetValue ~= nil and f:GetParent() ~= nil", "SLIDERS")
+        lua.execute("R2F.BiZ.SetMaxLevel(30) R2F.BiZTab.Refresh()")
+        check(lua.eval("R2F.BiZ.Passes({ id = 252512, type = 'crafted' })") is False
+              and lua.eval("R2F.BiZ.Passes({ id = 6720, type = 'quest' })") is True,
+              "%s: up to level 30 skips a level 40 item, keeps one whose level isn't loaded yet" % tag)
+        check(lua.eval("HEADBTN[1].itemId") == 6720, "%s: the head slot shows rank 2 instead: %s" % (tag, lua.eval("HEADBTN[1].itemId")))
+        check(font_text(lua, "^Required level: up to 30") is not None, "%s: the slider label says the level" % tag)
+        lua.execute("TEST.level = 22 R2F.BiZ.SetMaxLevel(UnitLevel('player'))")
+        check(lua.eval("R2F.BiZ.MaxLevel()") == 22, "%s: My level sets it to your level" % tag)
+        lua.execute("R2F.BiZ.SetMaxLevel(60) R2F.BiZTab.Refresh()")
+        check(lua.eval("R2F.BiZ.MaxLevel()") == 60 and lua.eval("R2FCharDB.biz.maxLevel") is None
+              and lua.eval("HEADBTN[1].itemId") == 252512 and font_text(lua, "^Required level: any") is not None,
+              "%s: 60 = any level again, nothing saved, the best shows" % tag)
+        lua.execute("GetItemInfo = function() return nil end")
+
     # BiZNav: rows whose source has a place (bis/places.json) get a tooltip line and Alt + click.
     if templates:
         places = site["places"]

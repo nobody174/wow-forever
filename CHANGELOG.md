@@ -16,6 +16,13 @@ user-facing release notes.
   zip name. The written-in values (now 0.38.1, were stuck at 0.29.1) are the fallback if GitHub can't be reached. Tested in
   headless Chrome with a deliberately stale copy: it moved from 0.29.1 to 0.38.1.
 
+## 2026-10-13 (Plan positions, quest-weapon research)
+- launch-plan-waypoints.json: 6 of the 19 "position not known yet" points filled from Wowhead Forever's zone maps (Zephras Isle trainers,
+  vendors and The Great Outdoors giver; the Ironforge Paladin trainer), conf `approx`, sources `wh-zephras` / `wh-ironforge`. PlanData.lua regenerated.
+- bis/quest-weapons-research.md + bis/tools/wh_items.py, wh_zone.py: research for weapons from quests along the route (the Hall of Thanes gun and the
+  Wetlands bow the owner remembered are real: Calibrated Blunderbuss, Raptor's End). Nothing built yet; decisions listed in the note.
+- Item rarity colours baked into Mr.BiZ (Claude Desktop, 0.48.1): all 340 values re-checked against Wowhead's tooltip API, 0 mismatches.
+
 ## 2026-10-13 (Warlock macros)
 - Warlock Shared: "Shadow Bolt + Imp Firebolt" replaced by **Shadow Bolt (target / target's target)**; new
   **Corruption mouseover** and **Bane of Agony mouseover**; new **Pet attack mouseover** (Class QoL, icon

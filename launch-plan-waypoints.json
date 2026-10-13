@@ -3,6 +3,8 @@
   "_sources": {
     "wt-hot": "https://www.warcrafttavern.com/forever/news/how-to-find-the-hall-of-thanes-dungeon-quests/",
     "wh-dungeons": "https://www.wowhead.com/forever/guide/dungeons-overview-locations-details",
+    "wh-zephras": "https://www.wowhead.com/forever/zone=16593 (the zone page's map list of trainers, vendors and quest givers, read 2026-10-13; the island has three towns, so a step lists the middle and the southern one)",
+    "wh-ironforge": "https://www.wowhead.com/forever/zone=1537 (Ironforge paladin trainers, read 2026-10-13)",
     "wt-dungeons": "https://www.warcrafttavern.com/forever/guides/dungeons/",
     "iv-boats": "https://www.icy-veins.com/wow/news/here-is-how-to-skip-the-infamous-wetlands-death-run-in-wow-forever/",
     "classic": "Classic (1.12) positions of towns, inns and dungeon entrances that exist in both games"
@@ -15,16 +17,23 @@
     "tr-dunmorogh": { "trio": [
       { "zone": "Dun Morogh", "mapHint": 1426, "x": 47.4, "y": 52.5, "label": "Kharanos inn (Thunderbrew Distillery)", "conf": "classic", "src": "classic" } ] },
     "h-pet": {
-      "default": [ { "zone": "Zephras Isle", "label": "Hunter trainer (taming quests)", "conf": "check", "src": "confirmed on Zephras by the owner, position unknown" } ],
+      "default": [
+        { "zone": "Zephras Isle", "x": 45.2, "y": 44.2, "label": "Elayaa Easewind, hunter trainer (middle village; Taming the Beast)", "conf": "approx", "src": "wh-zephras" },
+        { "zone": "Zephras Isle", "x": 59.6, "y": 72.6, "label": "Quel'ana Quickgale, hunter trainer (southern town; Taming the Beast)", "conf": "approx", "src": "wh-zephras" } ],
       "trio": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 45.8, "y": 53.0, "label": "Grif Wildheart, hunter trainer in Kharanos", "conf": "classic", "src": "classic" } ] },
     "wd-bear": { "default": [
-      { "zone": "Zephras Isle", "label": "Druid trainer (Bear Form quest)", "conf": "check", "src": "not published" } ] },
+      { "zone": "Zephras Isle", "x": 45.2, "y": 44.2, "label": "Naeluna Swiftmend, druid trainer (middle village)", "conf": "approx", "src": "wh-zephras" },
+      { "zone": "Zephras Isle", "x": 64.0, "y": 75.0, "label": "Lotheluum Starbreeze, druid trainer (southern town)", "conf": "approx", "src": "wh-zephras" } ] },
     "wd-def": { "default": [
-      { "zone": "Zephras Isle", "label": "Warrior trainer (Defensive Stance quest)", "conf": "check", "src": "not published" } ] },
+      { "zone": "Zephras Isle", "x": 44.8, "y": 45.2, "label": "Corsan Earthrazer, warrior trainer (middle village)", "conf": "approx", "src": "wh-zephras" },
+      { "zone": "Zephras Isle", "x": 59.8, "y": 72.8, "label": "Seena Skybreaker, warrior trainer (southern town)", "conf": "approx", "src": "wh-zephras" } ] },
     "n-camp": { "default": [
-      { "zone": "Zephras Isle", "label": "The Great Outdoors quest giver", "conf": "check", "src": "new quest, not published" } ] },
+      { "zone": "Zephras Isle", "x": 41.6, "y": 44.8, "label": "Raan Wildwind, The Great Outdoors", "conf": "approx", "src": "wh-zephras" },
+      { "zone": "Zephras Isle", "x": 43.8, "y": 43.8, "label": "Zerril Softbreeze, cooking trainer (middle village)", "conf": "approx", "src": "wh-zephras" } ] },
     "h-ammo": {
-      "default": [ { "zone": "Zephras Isle", "label": "Ammo and food vendor before the skycutter", "conf": "check", "src": "not published" } ],
+      "default": [
+        { "zone": "Zephras Isle", "x": 44.6, "y": 45.4, "label": "Veena Vericloud, general goods (middle village)", "conf": "approx", "src": "wh-zephras" },
+        { "zone": "Zephras Isle", "x": 63.0, "y": 77.8, "label": "Antelariaa Cloudgaze, general goods (southern town)", "conf": "approx", "src": "wh-zephras" } ],
       "trio": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 47.4, "y": 52.5, "label": "Kharanos vendors", "conf": "classic", "src": "classic" } ] },
     "n-dalaran": { "default": [
       { "zone": "Zephras Isle", "label": "Skycutter to Dalaran", "conf": "check", "src": "not published" },
@@ -35,7 +44,7 @@
     "p1-filler": { "default": [
       { "zone": "Loch Modan", "mapHint": 1432, "x": 35.5, "y": 48.4, "label": "Thelsamar", "conf": "classic", "src": "classic" } ] },
     "tr-rf": { "trio": [
-      { "zone": "Ironforge", "mapHint": 1455, "label": "Paladin trainer (Mystic Ward)", "conf": "check", "src": "trainer position not verified" } ] },
+      { "zone": "Ironforge", "mapHint": 1455, "x": 23.4, "y": 6.2, "label": "Brandur Ironhammer, paladin trainer", "conf": "approx", "src": "wh-ironforge" } ] },
     "p1-hot": { "default": [
       { "zone": "Ironforge", "mapHint": 1455, "x": 43.5, "y": 52.0, "label": "Hall of Thanes entrance", "conf": "exact", "src": "wt-hot" },
       { "zone": "Dun Morogh", "mapHint": 1426, "x": 64.8, "y": 58.5, "label": "Earthseer Farsen", "conf": "exact", "src": "wt-hot" } ] },

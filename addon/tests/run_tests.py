@@ -1575,7 +1575,8 @@ def test_plan(templates=True):
         # --- Waypoint lists: plan list replaces the default ---------------------------------------
         check(lua.eval("#R2F.Plan.Points('tr-coldridge', 'trio')") == 1 and lua.eval("#R2F.Plan.Points('tr-coldridge', 'hwd')") == 0,
               "15.5 a step's per-plan points (trio) do not leak into other plans")
-        check(lua.eval("R2F.Plan.Points('h-pet', 'hwd')[1].conf") == "check" and lua.eval("R2F.Plan.Points('h-pet', 'trio')[1].zone") == "Dun Morogh",
+        check(lua.eval("R2F.Plan.Points('h-pet', 'hwd')[1].zone") == "Zephras Isle" and lua.eval("R2F.Plan.Points('h-pet', 'hwd')[1].x") == 45.2
+              and lua.eval("R2F.Plan.Points('h-pet', 'trio')[1].zone") == "Dun Morogh",
               "15.5 per-plan list replaces the default for that plan only")
         check(lua.eval("#R2F.Plan.Points('nope', 'hwd')") == 0, "15.5 steps without points give an empty list")
         wp = json.load(open(os.path.join(ROOT, "launch-plan-waypoints.json"), encoding="utf-8"))["steps"]

@@ -1,5 +1,14 @@
 # Road to Forever changelog
 
+## 0.49.0 (2026-10-13)
+
+- Plan tab: positions found for steps that said "position not known yet". The Zephras Isle steps now point at the real NPCs
+  (hunter, druid and warrior trainers, the general-goods vendors, Raan Wildwind for The Great Outdoors, the cooking trainer), and the
+  Paladin trainer in Ironforge. The island has three towns, so most steps list the middle and the southern one. The data comes from
+  Wowhead's Forever zone maps (read 2026-10-13); they show "may have moved" until you have been there. 13 points still have no position:
+  the Skycutter and Dalaran portal, the Stormwind boat, and every zone and dungeon of levels 35 to 60 (not in the beta yet; Wowhead
+  says "we don't know all the details yet").
+
 ## 0.48.1 (2026-10-13)
 
 - Mr.BiZ: item names have their rarity colour (green / blue / purple) from the first open, also for items the game

@@ -91,6 +91,7 @@ function BiZ.SetSpec(specId)
   if s then
     cdb().class = s.class
     cdb().spec[s.class] = specId
+    if R2F.GearScore and R2F.GearScore.Soon then R2F.GearScore.Soon() end   -- upgrade markers follow the spec
   end
 end
 

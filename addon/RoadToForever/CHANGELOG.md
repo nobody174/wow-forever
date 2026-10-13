@@ -1,5 +1,16 @@
 # Road to Forever changelog
 
+## 0.44.0 (2026-10-13)
+
+- Upgrade arrows (Tweaks > Bags, off until you switch it on): a small green arrow on bag items that are better than
+  what you wear in that slot, a red one on worse ones, and a "BiZ score" line in item tooltips ("+5.1 vs equipped").
+  Items are scored with the stat weights of the spec you picked in Mr.BiZ for your own class (the same weights Mr.BiZ
+  ranks with). Rings, trinkets and one-handers compare with the weaker of your two. Armor your class can't wear yet
+  (mail before 40 for Hunters and Shamans, plate before 40 for Warriors and Paladins) gets no arrow; weapon skills are
+  not checked.
+- `/r2f debug gear`: hover an item and type it to see the stats the game gives and how they were scored, so a stat
+  Forever names differently can be added.
+
 ## 0.43.0 (2026-10-13)
 
 - Mr.BiZ: a "Required level" slider under the source filters (and a "My level" button). Picks that need a higher level

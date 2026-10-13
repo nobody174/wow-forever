@@ -194,6 +194,18 @@ R2F.L = {
   -- BiZNav arrow (Nav.lua)
   NAV_SET = "arrow: %s",
   BIZ_GO_TIP = "Alt + click: arrow to %s",
+  -- GearScore (GearScore.lua)
+  GS_TITLE = "Upgrade arrows",
+  GS_TITLE_TIP = "A green arrow on bag items that are better than what you wear (red: worse), and the item's BiZ " ..
+    "score in tooltips. Scored with the stat weights of the spec you picked in Mr.BiZ for your class.",
+  GS_TIP = "BiZ score %.1f (%s)",
+  GS_TIP_UP = "+%.1f vs equipped",
+  GS_TIP_DOWN = "%.1f vs equipped",
+  GS_TIP_SAME = "same as equipped",
+  GS_DEBUG_NONE = "hover over an item first (bag, character window or a link), then type /r2f debug gear.",
+  GS_DEBUG_HEAD = "%s, spec %s. The game gives:",
+  GS_DEBUG_UNUSED = "not used by this spec's weights",
+  GS_DEBUG_SCORE = "BiZ score %s, vs equipped %s",
   NAV_ARRIVED = "arrived: %s",
   NAV_FAR = "on another continent (%s)",
   NAV_NOPOS = "no position here",
@@ -653,6 +665,7 @@ R2F.L = {
     "/r2f debug gossip  what the open NPC window offers (icon ids)",
     "/r2f debug who  every name the game gives your character",
     "/r2f debug here  your zone, map id and x, y",
+    "/r2f debug gear  the stats the game gives for the item under the mouse, and its BiZ score",
   },
 
   UNKNOWN_COMMAND = "unknown command \"%s\". Type /r2f help for the list.",

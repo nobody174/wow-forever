@@ -4,6 +4,8 @@ A swept-back dart pointing up: dark outline, gold fill, a lighter left half and 
 reads as a raised ridge at any angle. Drawn at 8x and scaled down (LANCZOS), so the edges stay sharp when the
 game scales the arrow to Large. 128x128, uncompressed 32-bit TGA with alpha (same checks as export_logo.py).
 
+Also writes media/upgrade.tga: the same dart, 32 px, white (tinted green / red in game) for the bag upgrade markers.
+
 Usage (repo root):  python addon/art/export_arrow.py [--preview <dir>]
 """
 import os
@@ -53,8 +55,8 @@ def px(p, big):
     return (p[0] * big, p[1] * big)
 
 
-def render():
-    big = SIZE * SS
+def render(size=SIZE, light=LIGHT, dark=DARK, edge=EDGE):
+    big = size * SS
     img = Image.new("RGBA", (big, big), (0, 0, 0, 0))
     # Outline: the dart's mask grown by a few pixels, filled dark.
     mask = Image.new("L", (big, big), 0)
@@ -62,10 +64,16 @@ def render():
     grown = mask.filter(ImageFilter.MaxFilter(6 * SS + 1))
     img.paste(Image.new("RGBA", (big, big), OUTLINE), (0, 0), grown)
     d = ImageDraw.Draw(img)
-    d.polygon([px(p, big) for p in (TIP, NOTCH, LEFT)], fill=LIGHT)
-    d.polygon([px(p, big) for p in (TIP, RIGHT, NOTCH)], fill=DARK)
-    d.line([px(TIP, big), px(LEFT, big)], fill=EDGE, width=2 * SS)
-    return img.resize((SIZE, SIZE), Image.LANCZOS)
+    d.polygon([px(p, big) for p in (TIP, NOTCH, LEFT)], fill=light)
+    d.polygon([px(p, big) for p in (TIP, RIGHT, NOTCH)], fill=dark)
+    d.line([px(TIP, big), px(LEFT, big)], fill=edge, width=max(1, 2 * SS * size // SIZE))
+    return img.resize((size, size), Image.LANCZOS)
+
+
+# The small upgrade marker on bag icons: the same dart in white / light grey, so the game can
+# tint it green (upgrade) or red (downgrade) with SetVertexColor.
+UPGRADE_SIZE = 32
+WHITE, GREY, BRIGHT = (255, 255, 255, 255), (200, 200, 200, 255), (255, 255, 255, 255)
 
 
 def main():
@@ -73,6 +81,12 @@ def main():
     path = os.path.join(MEDIA, "arrow.tga")
     render().save(path, format="TGA")
     _, problems = check_tga(path, SIZE)
+    up = os.path.join(MEDIA, "upgrade.tga")
+    render(UPGRADE_SIZE, WHITE, GREY, BRIGHT).save(up, format="TGA")
+    _, p2 = check_tga(up, UPGRADE_SIZE)
+    print("%s  %d bytes  %s" % (os.path.relpath(up, os.path.join(HERE, "..", "..")), os.path.getsize(up),
+                                "OK" if not p2 else "FAIL: " + "; ".join(p2)))
+    problems = problems + p2
     print("%s  %d bytes  %s" % (os.path.relpath(path, os.path.join(HERE, "..", "..")), os.path.getsize(path),
                                 "OK" if not problems else "FAIL: " + "; ".join(problems)))
     if "--preview" in sys.argv:

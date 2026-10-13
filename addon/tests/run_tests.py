@@ -7371,8 +7371,122 @@ def main():
     test_class_picker(False, fx)
     test_remove_from_library(True, fx)
     test_remove_from_library(False, fx)
+    test_gearscore()
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
+
+
+GS_LUA = """
+  -- Items by link: stats, equip location, armor class / subclass.
+  TEST.gsItems = {
+    helmA = { stats = { ITEM_MOD_AGILITY_SHORT = 10, ITEM_MOD_STAMINA_SHORT = 10 }, loc = 'INVTYPE_HEAD', cls = 4, sub = 2 },
+    helmB = { stats = { ITEM_MOD_AGILITY_SHORT = 4, ITEM_MOD_STAMINA_SHORT = 6 }, loc = 'INVTYPE_HEAD', cls = 4, sub = 2 },
+    plate = { stats = { ITEM_MOD_AGILITY_SHORT = 30 }, loc = 'INVTYPE_CHEST', cls = 4, sub = 4 },
+    mail = { stats = { ITEM_MOD_AGILITY_SHORT = 30 }, loc = 'INVTYPE_CHEST', cls = 4, sub = 3 },
+    ringA = { stats = { ITEM_MOD_AGILITY_SHORT = 8 }, loc = 'INVTYPE_FINGER', cls = 4, sub = 0 },
+    ringLo = { stats = { ITEM_MOD_AGILITY_SHORT = 2 }, loc = 'INVTYPE_FINGER', cls = 4, sub = 0 },
+    ringHi = { stats = { ITEM_MOD_AGILITY_SHORT = 20 }, loc = 'INVTYPE_FINGER', cls = 4, sub = 0 },
+    odd = { stats = { ITEM_MOD_NEW_THING = 5 }, loc = 'INVTYPE_NECK', cls = 4, sub = 0 },
+  }
+  TEST.worn = {}
+  GetItemStats = function(link) local it = TEST.gsItems[link] return it and it.stats end
+  GetItemInfoInstant = function(link) local it = TEST.gsItems[link]
+    if it then return 1, '', '', it.loc, '', it.cls, it.sub end end
+  GetInventoryItemLink = function(unit, slot) return TEST.worn[slot] end
+  ITEM_MOD_NEW_THING = 'Agility'
+  TEST.className, TEST.classToken = 'Hunter', 'HUNTER'
+"""
+
+
+def test_gearscore():
+    """GearScore (BiZ score): weights, scoring, equipped comparison, armor rules, tooltip line, bag markers."""
+    lua = new_runtime(True)
+    lua.execute("TEST.reset()")
+    lua.execute(GS_LUA)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    GS = lua.eval("R2F.GearScore")
+    w = lua.eval("R2F.GearScore.ParseWeights('hit 1.2, mana per 5 sec 1.8, Agility 1')")
+    check(w["hit"] == 1.2 and w["mana per 5 sec"] == 1.8 and w["Agility"] == 1, "gs: weights parsed from ForeverDB's line")
+    names = set()
+    for sp in json.load(open(os.path.join(ROOT, "bis-data.json"), encoding="utf-8"))["specs"].values():
+        for part in sp["weights"].split(", "):
+            names.add(part.rsplit(" ", 1)[0])
+    school = {n for n in names if n.endswith("Damage Done")}
+    missing = sorted(n for n in names - school if lua.eval("R2F.GearScore.KEYS[%r]" % n) is None)
+    check(not missing, "gs: every weight name in the data has stat keys (school damage uses the label fallback): %s" % missing)
+
+    spec = lua.eval("R2F.GearScore.SpecId()")
+    check(spec == "hunter/beast-mastery", "gs: scores with your class's spec from Mr.BiZ (first until picked): %s" % spec)
+    lua.execute("R2F.BiZ.SetSpec('hunter/marksmanship') R2F.BiZ.SetClass('mage')")
+    check(lua.eval("R2F.GearScore.SpecId()") == "hunter/marksmanship", "gs: browsing another class in Mr.BiZ doesn't change it")
+    wts = lua.eval("R2F.GearScore.ParseWeights(R2F.BiZData.specs['hunter/marksmanship'].weights)")
+    agi, sta = wts["Agility"] or 0, wts["Stamina"] or 0
+    want = round(10 * agi + 10 * sta, 1)
+    check(abs(lua.eval("R2F.GearScore.Score('helmA')") - want) < 0.051, "gs: score = stats x weights (%s)" % want)
+    check(abs(lua.eval("R2F.GearScore.Score('odd')") - round(5 * agi, 1)) < 0.051,
+          "gs: an unknown stat key whose label is a weight name still counts")
+    check(lua.eval("R2F.GearScore.Score('nothing')") is None, "gs: no stats from the game = no score")
+
+    # Equipped comparison
+    lua.execute("TEST.worn[1] = 'helmB'")
+    s, d = lua.eval("R2F.GearScore.Compare('helmA')")
+    check(d is not None and d > 0 and lua.eval("R2F.GearScore.Direction('helmA')") == 1, "gs: better than the worn head = upgrade (+%s)" % d)
+    check(lua.eval("R2F.GearScore.Direction('helmB')") is None, "gs: the same item as worn = no marker")
+    lua.execute("TEST.worn[11] = 'ringHi' TEST.worn[12] = 'ringLo'")
+    check(lua.eval("R2F.GearScore.Direction('ringA')") == 1, "gs: rings compare with the weaker of the two")
+    lua.execute("TEST.worn[11] = nil TEST.worn[12] = nil")
+    check(lua.eval("R2F.GearScore.Direction('ringLo')") == 1, "gs: an empty slot counts as 0, so anything is an upgrade")
+    lua.execute("TEST.worn[1] = 'helmA'")
+    check(lua.eval("R2F.GearScore.Direction('helmB')") == -1, "gs: worse than worn = downgrade")
+
+    # Armor rules
+    lua.execute("TEST.level = 30")
+    check(lua.eval("R2F.GearScore.CanWear('mail')") is False and lua.eval("R2F.GearScore.CanWear('plate')") is False
+          and lua.eval("R2F.GearScore.Direction('mail')") is None, "gs: a level 30 Hunter gets no marker on mail or plate")
+    lua.execute("TEST.level = 40")
+    check(lua.eval("R2F.GearScore.CanWear('mail')") is True and lua.eval("R2F.GearScore.CanWear('plate')") is False,
+          "gs: from 40 a Hunter wears mail, never plate")
+    check(lua.eval("R2F.GearScore.CanWear('ringA')") is True, "gs: rings / necks are for everyone")
+
+    # Tooltip line (only with the switch on)
+    lua.execute("TIP = { lines = {}, GetItem = function() return 'Helm', 'helmB' end, "
+                "AddLine = function(self, t, r, g, b) table.insert(self.lines, { t, r, g, b }) end, Show = function() end }")
+    lua.execute("R2F.GearScore.OnTooltip(TIP)")
+    check(lua.eval("#TIP.lines") == 0, "gs: no tooltip line while Upgrade arrows is off")
+    lua.execute("R2F.Gameplay.SetOn('upgrades', true) R2F.GearScore.OnTooltip(TIP)")
+    line = lua.eval("TIP.lines[1] and TIP.lines[1][1]") or ""
+    check(line.startswith("BiZ score ") and "Marksmanship" in line and "vs equipped" in line and lua.eval("TIP.lines[1][2]") > 0.9,
+          "gs: tooltip line with the score, the spec and a red 'vs equipped': %r" % line)
+
+    # Bag markers on a classic bag window
+    lua.execute("""
+      ContainerFrame1 = CreateFrame('Frame', 'ContainerFrame1', UIParent)
+      ContainerFrame1.GetID = function() return 0 end
+      for j = 1, 3 do
+        local b = CreateFrame('Button', 'ContainerFrame1Item' .. j, ContainerFrame1)
+        b.GetID = function() return j end
+      end
+      ContainerFrame1Item3:Hide()
+      TEST.bagLinks = { [0] = { 'helmA', 'mail', 'ringLo' } }
+      C_Container = C_Container or {}
+      C_Container.GetContainerItemLink = function(bag, slot) return TEST.bagLinks[bag] and TEST.bagLinks[bag][slot] end
+      TEST.worn[1] = 'helmB' TEST.level = 30
+    """)
+    n = len(lua_table_to_list(lua.eval("R2F.GearScore.BagButtons()")))
+    check(n == 2, "gs: only shown item buttons are scanned (%d)" % n)
+    lua.execute("R2F.GearScore.UpdateBags()")
+    def shown(j):
+        return lua.eval("(function() local m = R2F.GearScore.MarkerOf(ContainerFrame1Item%d) return m and m:IsShown() end)()" % j)
+    check(shown(1) is True, "gs: the better helm gets a marker")
+    check(shown(2) in (None, False), "gs: mail a level 30 Hunter can't wear gets none")
+    check(lua.eval("R2F.GearScore.MarkerOf(ContainerFrame1Item3)") is None, "gs: a hidden button gets nothing")
+    lua.execute("R2F.Gameplay.SetOn('upgrades', false) R2F.GearScore.UpdateBags()")
+    check(shown(1) is False, "gs: switching Upgrade arrows off hides the markers")
+    find = lua.eval("(function() for _, p in ipairs(R2F.GameplayTab.PAGES) do if p.key == 'bags' then for _, k in ipairs(p.features) do if k == 'upgrades' then return true end end end end end)()")
+    check(find is True, "gs: the switch is on Tweaks > Bags")
+    check(lua.eval("R2F.Library.db.gameplay.upgrades") is False, "gs: off by default (like every Tweaks feature)")
 
 
 if __name__ == "__main__":

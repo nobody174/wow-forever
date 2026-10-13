@@ -53,6 +53,8 @@ read_globals = {
   "C_CVar",
   -- Mr.BiZ: item quality / icon / links, faction for faction-only quest rewards
   "GetItemIcon", "GetItemInfoInstant", "ITEM_QUALITY_COLORS", "UnitFactionGroup", "GameFontDisableSmall",
+  -- GearScore: worn items (read), the item tooltip post-call hook (modern clients)
+  "GetInventoryItemLink", "TooltipDataProcessor",
   -- API namespaces
   "C_Container", "C_GossipInfo", "C_Map", "C_PlayerInfo", "C_QuestLog", "C_SpellBook", "C_TradeSkillUI",
   "Enum",

@@ -628,6 +628,8 @@ C_ChatInfo = { RegisterAddonMessagePrefix = function() return true end,
 if not UnitName then function UnitName() return T.playerName or "Me" end end
 function UnitClass() return T.className or "Warrior", T.classToken or "WARRIOR", 1 end
 function IsShiftKeyDown() return T.shift or false end
+-- BiZNav (v0.40.0): Alt + click on map and Mr.BiZ rows.
+function IsAltKeyDown() return T.alt == true end
 function IsMouseButtonDown() return T.mouseDown == true end
 function GetCursorPosition() return T.cursorX or 500, T.cursorY or 400 end
 function UnitCharacterPoints() return T.talentPoints or 0 end

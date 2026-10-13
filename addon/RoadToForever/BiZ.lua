@@ -18,6 +18,7 @@
 -- Read-only game-wise (item getters, the tooltip): everything works in combat.
 
 local _, R2F = ...
+local L = R2F.L
 
 local BiZ = {}
 R2F.BiZ = BiZ
@@ -302,7 +303,7 @@ function BiZ.Icon(id)
 end
 
 -- The game's own item tooltip on `owner`, plus Mr.BiZ's line (rank in the spec shown).
-function BiZ.ShowTooltip(owner, id, rankLine)
+function BiZ.ShowTooltip(owner, id, rankLine, place)
   GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
   if GameTooltip.SetItemByID then
     GameTooltip:SetItemByID(id)
@@ -313,7 +314,47 @@ function BiZ.ShowTooltip(owner, id, rankLine)
     GameTooltip:AddLine(" ")
     GameTooltip:AddLine(rankLine, 1, 0.82, 0, true)
   end
+  local pt = BiZ.Place(place)
+  if pt then
+    local moved = R2F.Plan.MayHaveMoved(pt) and (" (" .. L.PLAN_MAY_MOVE .. ")") or ""
+    GameTooltip:AddLine(L.BIZ_GO_TIP:format(pt.label) .. moved, 0.4, 0.8, 1, true)
+  end
   GameTooltip:Show()
+end
+
+-- ---------------------------------------------------------------------------
+-- BiZNav: where a source is (BiZData.places, from bis/places.json). Rows carry `place = key`.
+-- ---------------------------------------------------------------------------
+
+function BiZ.Place(key)
+  local places = R2F.BiZData.places
+  return key and places and places[key] or nil
+end
+
+-- The place of an item's source (any spec's row for that item; the source is the same item-wide).
+local placeOfItem
+function BiZ.PlaceOfItem(id)
+  if not id then return nil end
+  if not placeOfItem then
+    placeOfItem = {}
+    for _, sp in pairs(R2F.BiZData.specs) do
+      for _, sl in ipairs(sp.slots) do
+        if sl.best then
+          for _, row in ipairs({ sl.best, unpack(sl.next or {}) }) do
+            if row.place and not placeOfItem[row.id] then placeOfItem[row.id] = row.place end
+          end
+        end
+      end
+    end
+  end
+  return placeOfItem[id]
+end
+
+-- Alt + click on a BiZ item: point the BiZNav arrow at its source. Returns "arrow", "line" or nil.
+function BiZ.Go(key)
+  local pt = BiZ.Place(key)
+  if not pt then return nil end
+  return R2F.Plan.Waypoint(pt)
 end
 
 -- Shift-click: the item's link in the chat box (like clicking a bag item). An item the client

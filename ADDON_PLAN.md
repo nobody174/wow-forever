@@ -3085,5 +3085,10 @@ Owner request 2026-10-13: navigation driven by our own data, no TomTom.
      (`R2FDB.nav.size`, Tweaks > Alerts & HUD), `/bizway` (x y in your zone, label before the numbers, clear, size).
      Owner 2026-10-13: no minimap pin. Ctrl + right-click on a quest objective (TomTom + Questie style) is not built:
      Questie's map icons are its own frames and take the click.
-  3. Mr.BiZ: places table + a "Go" option on BiZ rows (dungeon entrance / vendor / quartermaster); conf note as on Plan.
+  3. (0.41.0) Mr.BiZ: `bis/places.json` (dungeon entrances, the two vendors, Booty Bay; conf classic / approx)
+     -> build_bis.py tags rows with `place` and writes `places` into BiZData.lua / bis-data.json (the build fails on a
+     place no row uses). Alt + click on a rank row, a doll slot or a wishlist item calls `BiZ.Go` (= Plan.Waypoint);
+     the tooltip says where it goes. Also 0.40.1: own arrow image (addon/art/export_arrow.py -> media/arrow.tga),
+     and a `TomTom` stand-in (AddWaypoint / RemoveWaypoint) when TomTom isn't installed, so Questie's Ctrl + click on
+     its map icons points BiZNav (Questie checks `TomTom and TomTom.AddWaypoint`, QuestieFrame.lua).
   4. Optional: Plan "next step" button that walks a step's points in order (next point on arrival).

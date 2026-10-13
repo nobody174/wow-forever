@@ -1,5 +1,13 @@
 # Road to Forever changelog
 
+## 0.41.0 (2026-10-13)
+
+- Mr.BiZ + BiZNav: Alt + click an item (in the slot list, on the gear icons or in the wishlist) to point the arrow at
+  where you get it: the dungeon entrance (Scarlet Monastery, Shadowfang Keep, Gnomeregan, Razorfen Kraul, Blackfathom
+  Deeps, the Stockade), the vendor (Illiyana Moonblaze, Samuel Hawke) or Booty Bay. The item tooltip says where the
+  arrow will go. Positions are from Classic, so they're marked "may have moved" until checked in Forever. Quests and
+  world drops have no spot yet.
+
 ## 0.40.1 (2026-10-13)
 
 - BiZNav arrow: a new, sharper arrow image (our own 128 px gold dart with a dark outline), so Medium and Large look

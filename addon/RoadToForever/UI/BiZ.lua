@@ -102,10 +102,11 @@ local function itemButton()
     b.fs:SetWordWrap(false)
     b:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
     b:SetScript("OnEnter", function(self)
-      if self.itemId then BiZ.ShowTooltip(self, self.itemId, self.rankLine) end
+      if self.itemId then BiZ.ShowTooltip(self, self.itemId, self.rankLine, self.place) end
     end)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
     b:SetScript("OnClick", function(self)
+      if IsAltKeyDown() and self.place and BiZ.Go(self.place) then return end
       if IsShiftKeyDown() and self.itemId and BiZ.LinkInChat(self.itemId, self.linkName) then return end
       if self.onClick then self.onClick() end
     end)
@@ -141,6 +142,7 @@ local function placeItem(x, y, w, id, name, rankLine, onClick, iconSize)
   b:SetPoint("TOPLEFT", host, "TOPLEFT", x + (iconSize or 22), -y - 1)
   b:SetWidth(w)
   b.itemId, b.rankLine, b.onClick, b.linkName = id, rankLine, onClick, name
+  b.place = BiZ.PlaceOfItem(id)
   b.fs:SetText(BiZ.ColoredName(id, name))
   return b
 end
@@ -210,6 +212,7 @@ local function paintSlotButton(key, sp)
   b.slotKey = key
   b.itemId = pick and pick.id or nil
   b.linkName = pick and pick.name or nil
+  b.place = pick and pick.place or nil
   b.rankLine = nil
   if pick then
     b.icon:SetTexture(BiZ.Icon(pick.id) or UI.FALLBACK_ICON)
@@ -527,7 +530,7 @@ local function buildSlotButton(f, key, x, y)
   b:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     if self.itemId then
-      BiZ.ShowTooltip(self, self.itemId, nil)
+      BiZ.ShowTooltip(self, self.itemId, nil, self.place)
     else
       GameTooltip:AddLine(BiZ.SlotLabel(self.slotKey), 1, 1, 1)
       GameTooltip:AddLine(L.BIZ_NOTHING, 0.6, 0.6, 0.6)
@@ -536,6 +539,7 @@ local function buildSlotButton(f, key, x, y)
   end)
   b:SetScript("OnLeave", function() GameTooltip:Hide() end)
   b:SetScript("OnClick", function(self)
+    if IsAltKeyDown() and self.place and BiZ.Go(self.place) then return end
     if IsShiftKeyDown() and self.itemId and BiZ.LinkInChat(self.itemId, self.linkName) then return end
     selected = self.slotKey
     refresh()

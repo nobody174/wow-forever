@@ -254,9 +254,57 @@ def build():
     extra = {os.path.basename(p) for p in glob.glob(os.path.join(RAW, "*.json"))} - seen_files
     if extra:
         raise ValueError("raw files with no spec in CLASSES: %s" % sorted(extra))
+    places = load_places()
+    tag_places(specs_out, places)
     return {"updated": UPDATED, "level": LEVEL, "source": {"name": SOURCE_NAME, "url": SOURCE_URL},
             "slots": [{"key": k, "label": v} for k, v in SLOTS], "types": TYPES,
-            "classes": classes_out, "specs": specs_out}
+            "classes": classes_out, "specs": specs_out, "places": places}
+
+
+# ---------------------------------------------------------------------------
+# Places (BiZNav): bis/places.json -> `place` on each row whose source has a known spot
+# ---------------------------------------------------------------------------
+
+PLACES_IN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "places.json")
+PLACE_KEYS = ["zone", "mapHint", "x", "y", "label", "conf"]
+
+
+def load_places():
+    with open(PLACES_IN, encoding="utf-8") as f:
+        places = json.load(f)["places"]
+    for key, p in places.items():
+        missing = [k for k in ("zone", "x", "y", "label", "conf") if k not in p]
+        if missing or p["conf"] not in ("exact", "classic", "approx"):
+            raise ValueError("places.json %r: missing %s or bad conf" % (key, missing))
+        if not (0 <= p["x"] <= 100 and 0 <= p["y"] <= 100):
+            raise ValueError("places.json %r: x / y must be map percent" % key)
+    return places
+
+
+def place_key(row):
+    """The places.json key a source would use: instance, vendor name or reputation faction."""
+    t = row.get("type")
+    if t in ("dungeon", "raid") and row.get("instance"):
+        return row["instance"]
+    if t == "vendor" and row.get("label"):
+        return row["label"].split(",")[0].strip()
+    if t == "reputation" and row.get("group", "").startswith("Reputation: "):
+        return row["group"][len("Reputation: "):]
+    return None
+
+
+def tag_places(specs, places):
+    used = set()
+    for sp in specs.values():
+        for sl in sp["slots"]:
+            for row in ([sl["best"]] if "best" in sl else []) + sl.get("next", []):
+                key = place_key(row)
+                if key in places:
+                    row["place"] = key
+                    used.add(key)
+    unused = sorted(set(places) - used)
+    if unused:
+        raise ValueError("places.json entries no BiZ row uses: %s" % unused)
 
 
 # ---------------------------------------------------------------------------
@@ -298,10 +346,10 @@ def wrap(prefix, parts, suffix, indent, width=120):
 
 
 BEST_KEYS = ["id", "name", "score", "stats", "conf", "ease", "type", "label", "group", "prof", "skill", "instance",
-             "chance", "faction", "horde", "via"]
+             "chance", "faction", "horde", "via", "place"]
 
 
-NEXT_KEYS = ["id", "name", "delta"] + NEXT_SRC_KEYS
+NEXT_KEYS = ["id", "name", "delta"] + NEXT_SRC_KEYS + ["place"]
 
 
 def to_lua(data):
@@ -360,6 +408,13 @@ def to_lua(data):
                 out.append("        { slot = %s, note = %s }," % (lua_str(sl["slot"]), lua_str(sl["note"])))
         out.append("      },")
         out.append("    },")
+    out.append("  },")
+    # BiZNav: where a source is (bis/places.json); rows point here with `place = "<key>"`.
+    out.append("  places = {")
+    for key in sorted(data["places"]):
+        p = data["places"][key]
+        out.extend(wrap("    [%s] = {" % lua_str(key), ["%s = %s" % (k, lua_val(p[k])) for k in PLACE_KEYS if k in p],
+                        " },", "      "))
     out.append("  },")
     out.append("}")
     return "\n".join(out) + "\n"

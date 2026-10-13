@@ -3234,6 +3234,33 @@ def test_biz(templates=True):
     lua.execute("NEXT2[1]:Fire('OnEnter')")
     lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
     check(any("Bizzer for Beast Mastery, 12% behind" in (l or "") for l in lines), "%s: rank 2 tooltip says how far behind: %s" % (tag, lines))
+    # BiZNav: rows whose source has a place (bis/places.json) get a tooltip line and Alt + click.
+    if templates:
+        places = site["places"]
+        check(len(places) >= 9 and all(lua.eval("R2F.BiZ.Place(%r).label" % k) == v["label"] for k, v in places.items()),
+              "%s: every place from bis/places.json is in the addon" % tag)
+        tagged = [r for sp in site["specs"].values() for sl in sp["slots"] if "best" in sl
+                  for r in [sl["best"]] + sl.get("next", []) if "place" in r]
+        check(len(tagged) > 300 and all(r["place"] in places for r in tagged), "%s: %d rows point at a known place" % (tag, len(tagged)))
+        check(lua.eval("R2F.BiZ.PlaceOfItem(7684)") == "Scarlet Monastery" and lua.eval("R2F.BiZ.PlaceOfItem(6720)") is None,
+              "%s: an item's place comes from its source (dungeon yes, quest no)" % tag)
+        lua.execute("for _, b in ipairs(DOLL) do if b.slotKey == 'shoulder' then b:Click() end end")
+        find_frames(lua, "f.__kind == 'Button' and f.optRank ~= nil and f.place ~= nil and f.__shown", "PLACED")
+        check(lua.eval("#PLACED") >= 1, "%s: the shoulder list has a row with a place" % tag)
+        lua.execute("PLACED[1]:Fire('OnEnter')")
+        lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
+        want = lua.eval("R2F.BiZ.Place(PLACED[1].place).label")
+        check(any(("Alt + click: arrow to " + want) in (l or "") for l in lines), "%s: tooltip offers the arrow: %s" % (tag, lines))
+        T.chat = lua.table()
+        lua.execute("TEST.alt = true PLACED[1]:Click() TEST.alt = false")
+        check("/way " in chat_all(lua), "%s: Alt + click without an arrow-capable map prints the /way line: %r" % (tag, chat_all(lua)))
+        lua.execute(PLAN_MAPS_LUA)
+        lua.execute(NAV_WORLD_LUA)
+        lua.execute("R2F.Plan.ResetMapCache()")
+        check(lua.eval("R2F.BiZ.Go('Gnomeregan')") == "arrow" and lua.eval("R2F.Nav.Target().label") == "Gnomeregan entrance",
+              "%s: BiZ.Go points the arrow at the dungeon entrance" % tag)
+        lua.execute("for _, b in ipairs(DOLL) do if b.slotKey == 'head' then b:Click() end end")
+
     # shift-click = link in chat
     lua.execute("TEST.shift = true; HELM[1]:Click(); TEST.shift = false")
     check("Hitem:252512" in (lua.eval("TEST.chatInsert") or ""), "%s: shift-click links the item in chat" % tag)

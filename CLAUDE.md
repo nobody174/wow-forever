@@ -177,7 +177,10 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   sentence (type, label, group, profession / skill, instance, drop %, faction) and writes `bis-data.json` +
   `addon/RoadToForever/BiZData.lua`; `--check` = exit 1 if stale (the addon tests run it). `build.py` runs it too.
   `bis/sources.json` = sources for rank 2-3 picks that are no spec's best pick (ForeverDB item pages, same sentence
-  wording as the BiS pages); the build stops if a next pick has no source. Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
+  wording as the BiS pages); the build stops if a next pick has no source. `bis/places.json` = where a source is
+  (dungeon entrance by instance name, vendor by name, reputation by faction; zone + x/y + conf like the plan
+  waypoints) for the addon's BiZNav arrow: the build adds `place` to matching rows and a `places` table to both outputs,
+  and stops on a place no row uses. Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
   add a rule to `parse_source`, don't hand-edit the outputs.
 - `news.html` + `news.json` + `footer.js` — **What's new** page (latest changes, Coming
   next, Discord ideas button) rendered from `news.json` (`{discord, news: [{date, title,

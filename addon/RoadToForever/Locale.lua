@@ -193,6 +193,7 @@ R2F.L = {
   PLAN_MAY_MOVE = "may have moved",
   -- BiZNav arrow (Nav.lua)
   NAV_SET = "arrow: %s",
+  BIZ_GO_TIP = "Alt + click: arrow to %s",
   NAV_ARRIVED = "arrived: %s",
   NAV_FAR = "on another continent (%s)",
   NAV_NOPOS = "no position here",

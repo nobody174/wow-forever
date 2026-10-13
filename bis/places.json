@@ -1,0 +1,20 @@
+{
+  "_about": "Where Mr.BiZ sources are, for the addon's BiZNav arrow (Alt + click on a BiZ row). Keyed by what build_bis.py reads from a source: the instance name (dungeon rows), the vendor's name (text before the first comma of a vendor label) or the faction (reputation rows). Same point format as launch-plan-waypoints.json: zone = English zone name (resolved to a uiMapID in game, mapHint only a hint), x/y in map percent, label, conf: 'exact' (Forever source), 'classic' (Classic position of a place that still exists; may have moved in Forever), 'approx' (rough spot). Quests and world drops get no place (no position in our data). Researched 2026-10-13.",
+  "_sources": {
+    "plan": "launch-plan-waypoints.json (Scarlet Monastery, Blackfathom Deeps)",
+    "wiki": "warcraft.wiki.gg / wowpedia: Shadowfang Keep 45,68; Gnomeregan 24,40; Illiyana Moonblaze 61.5,83.9; Samuel Hawke stands in Refuge Pointe",
+    "icy-veins": "https://icy-veins.com/wow-classic/league-of-arathor-reputation-farming-guide (Refuge Pointe around 46,45)",
+    "classic": "Classic (1.12) positions: Razorfen Kraul entrance in the southern Barrens, the Stockade on the canal in Stormwind, Booty Bay"
+  },
+  "places": {
+    "Scarlet Monastery": { "zone": "Tirisfal Glades", "mapHint": 1420, "x": 82.6, "y": 33.8, "label": "Scarlet Monastery entrance", "conf": "classic" },
+    "Blackfathom Deeps": { "zone": "Ashenvale", "mapHint": 1440, "x": 14.4, "y": 14.0, "label": "Blackfathom Deeps entrance", "conf": "classic" },
+    "Shadowfang Keep": { "zone": "Silverpine Forest", "mapHint": 1421, "x": 45.0, "y": 68.0, "label": "Shadowfang Keep entrance", "conf": "classic" },
+    "Gnomeregan": { "zone": "Dun Morogh", "mapHint": 1426, "x": 24.0, "y": 40.0, "label": "Gnomeregan entrance", "conf": "classic" },
+    "Razorfen Kraul": { "zone": "The Barrens", "mapHint": 1413, "x": 42.3, "y": 89.9, "label": "Razorfen Kraul entrance", "conf": "approx" },
+    "Stormwind Stockade": { "zone": "Stormwind City", "mapHint": 1453, "x": 40.5, "y": 55.9, "label": "The Stockade entrance (canal)", "conf": "approx" },
+    "Illiyana Moonblaze": { "zone": "Ashenvale", "mapHint": 1440, "x": 61.5, "y": 83.9, "label": "Illiyana Moonblaze, Silverwing Grove", "conf": "classic" },
+    "Samuel Hawke": { "zone": "Arathi Highlands", "mapHint": 1417, "x": 46.0, "y": 45.0, "label": "Samuel Hawke, Refuge Pointe", "conf": "approx" },
+    "Booty Bay": { "zone": "Stranglethorn Vale", "mapHint": 1434, "x": 27.0, "y": 77.0, "label": "Booty Bay", "conf": "approx" }
+  }
+}

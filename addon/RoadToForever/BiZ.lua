@@ -78,11 +78,41 @@ function BiZ.Spec(specId)
   return data().specs[specId]
 end
 
--- The spec id shown for the current class: the one picked last for it, else its first.
+-- The spec you really play: the talent tree with the most points, as a Mr.BiZ spec id (nil with no
+-- points, or when the talents can't be read yet). Cached once found; dropped when points change.
+local ownSpec
+function BiZ.ForgetOwnSpec() ownSpec = nil end
+function BiZ.OwnSpec()
+  if ownSpec then return ownSpec end
+  local T = R2F.Talents
+  local panes = T and T.ReadTrees and T.ReadTrees()
+  if type(panes) ~= "table" then return nil end
+  local best, bestN = nil, 0
+  for t, list in ipairs(panes) do
+    local n = 0
+    for _, x in ipairs(list) do n = n + (x.rank or 0) end
+    if n > bestN then best, bestN = t, n end
+  end
+  if not best then return nil end
+  local token = R2F.playerClass or select(2, UnitClass("player"))
+  local names = T.TREE_NAMES and T.TREE_NAMES[token or ""]
+  local name = names and names[best]
+  if not name then return nil end
+  -- "Feral Combat" -> feral, "Beast Mastery" -> beast-mastery
+  local key = name:lower():gsub(" combat$", ""):gsub("%s+", "-")
+  local id = BiZ.PlayerClassKey() .. "/" .. key
+  if data().specs[id] then ownSpec = id; return id end
+end
+
+-- The spec id shown for the current class: the one picked last for it, else (for your own class) the
+-- spec you play, else its first.
 function BiZ.SpecId()
   local cls = BiZ.Class()
   local id = cdb().spec[cls]
-  if not (id and data().specs[id] and data().specs[id].class == cls) then id = BiZ.SpecsOf(cls)[1] end
+  if not (id and data().specs[id] and data().specs[id].class == cls) then
+    id = cls == BiZ.PlayerClassKey() and BiZ.OwnSpec() or nil
+    if not id then id = BiZ.SpecsOf(cls)[1] end
+  end
   return id
 end
 

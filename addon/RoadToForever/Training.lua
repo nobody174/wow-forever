@@ -128,11 +128,11 @@ function Training.Lines(level)
   if not known then return L.TRAIN_UNKNOWN, nil end
   local a = L.TRAIN_NOW_NONE
   if #now == 1 then
-    a = L.TRAIN_NOW_ONE:format(R2F.Gameplay.Money(cost(now)), names(now, 2))
+    a = L.TRAIN_NOW_ONE:format(R2F.Gameplay.Money(cost(now)), names(now, 12))
   elseif #now > 1 then
-    a = L.TRAIN_NOW:format(#now, R2F.Gameplay.Money(cost(now)), names(now, 2))
+    a = L.TRAIN_NOW:format(#now, R2F.Gameplay.Money(cost(now)), names(now, 12))
   end
-  local b = nextLevel and L.TRAIN_NEXT:format(nextLevel, names(later, 2)) or L.TRAIN_NEXT_NONE
+  local b = nextLevel and L.TRAIN_NEXT:format(nextLevel, names(later, 12)) or L.TRAIN_NEXT_NONE
   return a, b
 end
 

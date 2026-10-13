@@ -7416,6 +7416,8 @@ def main():
     test_training()
     test_training_forever_shape()
     test_item_api_modern()
+    test_own_spec()
+    test_arrow_follows_plan()
     test_route_weapons()
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
     sys.exit(1 if FAILS else 0)
@@ -7543,6 +7545,75 @@ def test_gearscore():
     check(lua.eval("R2F.Library.db.gameplay.upgrades") is False, "gs: off by default (like every Tweaks feature)")
 
 
+def test_own_spec():
+    """The spec the arrows, the tooltip score and Mr.BiZ's first view use is the one you play (your most-spent
+    talent tree), not the first spec in the Mr.BiZ list (Warrior: Protection)."""
+    lua = new_runtime()
+    lua.execute("R2FDB = nil R2FCharDB = nil R2F.Library.Init() R2F.playerClass = 'WARRIOR'")
+    def trees(a, b, c):
+        return ("R2F.Talents.ReadTrees = function() return { { {rank=%d} }, { {rank=%d} }, { {rank=%d} } } end "
+                "R2F.BiZ.ForgetOwnSpec()") % (a, b, c)
+    lua.execute(trees(0, 0, 0))
+    check(lua.eval("R2F.BiZ.OwnSpec()") is None and lua.eval("R2F.GearScore.SpecId()") == "warrior/protection",
+          "own spec: with no talent points it falls back to the list's first spec")
+    lua.execute(trees(21, 3, 0))
+    check(lua.eval("R2F.BiZ.OwnSpec()") == "warrior/arms", "own spec: most points in the first tree = Arms")
+    check(lua.eval("R2F.GearScore.SpecId()") == "warrior/arms", "own spec: the upgrade arrows compare against Arms")
+    check(lua.eval("R2F.BiZ.SpecId()") == "warrior/arms", "own spec: Mr.BiZ opens on Arms for an Arms warrior")
+    lua.execute("R2F.BiZ.SetSpec('warrior/protection')")
+    check(lua.eval("R2F.BiZ.SpecId()") == "warrior/protection" and lua.eval("R2F.GearScore.SpecId()") == "warrior/arms",
+          "own spec: browsing Protection in Mr.BiZ does not change what the arrows use")
+    lua.execute(trees(0, 26, 0))
+    check(lua.eval("R2F.GearScore.SpecId()") == "warrior/fury", "own spec: points change -> Fury once the cache is dropped")
+    lua.execute("R2F.playerClass = 'DRUID'")
+    lua.execute(trees(0, 9, 3))
+    check(lua.eval("R2F.BiZ.OwnSpec()") == "druid/feral", "own spec: 'Feral Combat' maps to druid/feral")
+    lua.execute("R2F.playerClass = 'HUNTER'")
+    lua.execute(trees(4, 0, 0))
+    check(lua.eval("R2F.BiZ.OwnSpec()") == "hunter/beast-mastery", "own spec: 'Beast Mastery' maps to hunter/beast-mastery")
+
+
+def test_arrow_follows_plan():
+    """Ticking the plan step you are on points the arrow at the next step that has a known position."""
+    lua, T = plan_runtime(True, True, True)
+    lua.execute("""
+      PLAN = R2F.Plan.Selected()
+      FOUND = nil
+      local steps = R2F.Plan.Steps(PLAN)
+      local function first(s)
+        for _, pt in ipairs(R2F.Plan.Points(s.id, PLAN)) do
+          if R2F.Plan.HasPosition(pt) and R2F.Plan.ResolveMap(pt.zone, pt.mapHint) then return pt end
+        end
+      end
+      for i = 1, #steps do
+        local a = first(steps[i])
+        if a then
+          -- everything before step i is ticked, so step i is the one you are on
+          for j = 1, i - 1 do R2F.Plan.SetDone(steps[j].id, true) end
+          for k = i + 1, #steps do
+            local b = first(steps[k])
+            if b and b.label ~= a.label then FOUND = { a = a, b = b, sa = steps[i], sb = steps[k], mid = { i + 1, k - 1 } } break end
+          end
+          break
+        end
+      end
+    """)
+    check(lua.eval("FOUND ~= nil"), "arrow follows: found two plan steps with known positions")
+    lua.execute("R2F.Library.db.gameplay.navfollow = true R2F.Nav.Clear() R2F.Plan.Waypoint(FOUND.a, FOUND.sa.id)")
+    check(lua.eval("R2F.Nav.Target().label") == lua.eval("FOUND.a.label"), "arrow follows: the Waypoint button points at the step")
+    # steps between a and b that have no position are passed over, everything between is ticked first
+    lua.execute("for i = FOUND.mid[1], FOUND.mid[2] do R2F.Plan.SetDone(R2F.Plan.Steps(PLAN)[i].id, true) end")
+    lua.execute("R2F.Plan.SetDone(FOUND.sa.id, true)")
+    check(lua.eval("R2F.Nav.Target() ~= nil and R2F.Nav.Target().label") == lua.eval("FOUND.b.label"),
+          "arrow follows: ticking the step moves the arrow to the next one with a position")
+    # off: ticking does nothing to the arrow
+    lua.execute("R2F.Library.db.gameplay.navfollow = false R2F.Nav.Clear() R2F.Plan.Waypoint(FOUND.a, FOUND.sa.id) R2F.Plan.SetDone(FOUND.sa.id, false) R2F.Plan.SetDone(FOUND.sa.id, true)")
+    check(lua.eval("R2F.Nav.Target().label") == lua.eval("FOUND.a.label"), "arrow follows: switched off, ticking leaves the arrow alone")
+    check(lua.eval("R2F.Gameplay.IsOn('navfollow')") is False, "arrow follows: the switch reads off")
+    lua2, _ = plan_runtime(True, True, True)
+    check(lua2.eval("R2F.Gameplay.IsOn('navfollow')") is True, "arrow follows: on by default for a new character")
+
+
 def test_training_forever_shape():
     """Forever's trainer API (Blizzard's own trainer window, blizzard_trainerui): GetTrainerServiceInfo returns
     name, serviceType ('available' | 'unavailable' | 'used'), texture, reqLevel, subText (the rank), category.
@@ -7555,6 +7626,9 @@ def test_training_forever_shape():
         { 'Corruption', 'available', 'tex1', 14, 'Rank 2', 'Affliction', 600 },
         { 'Curse of Doom', 'unavailable', 'tex2', 60, '', 'Affliction', 90000 },
         { 'Shadow Bolt', 'unavailable', 'tex3', 22, 'Rank 4', 'Shadow', 1500 },
+        { 'Siphon Life', 'unavailable', 'tex5', 22, 'Rank 1', 'Affliction', 2200 },
+        { 'Fear', 'unavailable', 'tex6', 22, 'Rank 2', 'Fear', 1800 },
+        { 'Drain Soul', 'unavailable', 'tex7', 22, 'Rank 2', 'Affliction', 1700 },
         { 'Immolate', 'used', 'tex4', 1, 'Rank 1', 'Fire', 50 },
       }
       GetNumTrainerServices = function() return #TEST.trainer end
@@ -7567,13 +7641,14 @@ def test_training_forever_shape():
     T.fire("ADDON_LOADED", "RoadToForever")
     T.fire("PLAYER_LOGIN")
     T.fire("TRAINER_SHOW")
-    check(lua.eval("#R2FCharDB.training.spells") == 4, "train (Forever API): all four services are saved")
+    check(lua.eval("#R2FCharDB.training.spells") == 7, "train (Forever API): all seven services are saved")
     check(lua.eval("R2FCharDB.training.spells[1].lvl") == 14 and lua.eval("R2FCharDB.training.spells[1].r") == "Rank 2"
           and lua.eval("R2FCharDB.training.spells[1].s") == "available",
           "train (Forever API): level from the 4th return, rank from the 5th, state from the 2nd")
     a, b = lua.eval("R2F.Training.Lines()")
     check(a.startswith("Train now: 1 spell") and "Corruption (Rank 2)" in a, "train (Forever API): level 14 spell is trainable at 20: %r" % a)
-    check(b == "Next: level 22: Shadow Bolt (Rank 4)", "train (Forever API): next = the level 22 spell: %r" % b)
+    check(b.startswith("Next: level 22: ") and all(n in b for n in ("Drain Soul (Rank 2)", "Fear (Rank 2)", "Shadow Bolt (Rank 4)", "Siphon Life (Rank 1)"))
+          and "more" not in b, "train (Forever API): next lists every spell of the next level, no 'and N more': %r" % b)
 
 
 def test_item_api_modern():

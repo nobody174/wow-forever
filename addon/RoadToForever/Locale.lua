@@ -193,6 +193,10 @@ R2F.L = {
   PLAN_MAY_MOVE = "may have moved",
   -- BiZNav arrow (Nav.lua)
   NAV_SET = "arrow: %s",
+  NAV_NEXT_STEP = "step done, next: %s",
+  NAV_FOLLOW = "Arrow follows the plan",
+  NAV_FOLLOW_TIP = "When you tick the plan step you are on, the arrow moves on to the next step that has a known position. Does nothing until you tick a step; steps with no known position are skipped.",
+  NAV_FOLLOW_HINT = "Tick a step, the arrow points at the next.",
   BIZ_GO_TIP = "Alt + click: arrow to %s",
   BIZ_ENCHANT = "Enchant: %s",
   BIZ_ENCHANT_SUB = "%s · %s %d",

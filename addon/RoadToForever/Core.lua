@@ -86,6 +86,8 @@ handlers.SPELLS_CHANGED = function() R2F.Ranks.OnLearned() end
 -- (or the player's click in guided mode); the engine checks it first, then
 -- the tab redraws.
 handlers.CHARACTER_POINTS_CHANGED = function()
+  R2F.BiZ.ForgetOwnSpec()
+  if R2F.GearScore and R2F.GearScore.Soon then R2F.GearScore.Soon() end
   R2F.Talents.OnPointsChanged()
   R2F.MainWindow.RequestRefresh()
 end

@@ -79,7 +79,7 @@ local function pointLine(r, j)
   p.btn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
   p.btn:SetSize(96, 18)
   p.btn:SetScript("OnClick", function(self)
-    if self.point then Plan.Waypoint(self.point) end
+    if self.point then Plan.Waypoint(self.point, self.stepId) end
   end)
   p.text = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
   p.text:SetJustifyH("LEFT")
@@ -158,6 +158,7 @@ local function layout()
           text = text .. " |cffff8040(" .. L.PLAN_UNKNOWN_POS .. ")|r"
         else
           p.btn.point = pt
+          p.btn.stepId = s.id
           p.btn:SetText(arrow and L.PLAN_WAYPOINT or L.PLAN_WAYLINE_BTN)
           p.btn:ClearAllPoints()
           p.btn:SetPoint("TOPLEFT", content, "TOPLEFT", 78, py)

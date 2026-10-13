@@ -114,8 +114,35 @@ function Plan.IsDone(stepId)
   return cdb().done[stepId] == true
 end
 
+-- The step whose Waypoint button last pointed the arrow (so ticking it moves the arrow on).
+local arrowStep
+
 function Plan.SetDone(stepId, done)
+  -- Was this the step you were on (the first one not ticked), or the one the arrow points from?
+  local cur = done and Plan.Next(Plan.Selected())
+  local onIt = done and ((cur and cur.id == stepId) or arrowStep == stepId)
   cdb().done[stepId] = done and true or nil
+  if onIt and R2F.Gameplay and R2F.Gameplay.IsOn("navfollow") and R2F.Nav and R2F.Nav.Supported() then
+    Plan.AdvanceArrow()
+  end
+end
+
+-- Point the arrow at the first step not ticked yet that has a known position. Returns true when it did.
+-- A step with no known position is passed over; if nothing is left the arrow is cleared.
+function Plan.AdvanceArrow()
+  local planId = Plan.Selected()
+  for _, s in ipairs(Plan.Steps(planId)) do
+    if not Plan.IsDone(s.id) then
+      for _, pt in ipairs(Plan.Points(s.id, planId)) do
+        if Plan.HasPosition(pt) then
+          R2F.Print(L.NAV_NEXT_STEP:format(s.t or pt.label))
+          return Plan.Waypoint(pt, s.id) == "arrow"
+        end
+      end
+    end
+  end
+  if R2F.Nav.Target() then R2F.Nav.Clear() end
+  return false
 end
 
 -- done, total for the plan.
@@ -230,10 +257,11 @@ end
 -- The Waypoint button: point our arrow (Nav.lua) at the spot, or print the /way line when
 -- this game has no such map or can't place it. Returns "arrow", "line", or nil for a
 -- point with no position.
-function Plan.Waypoint(pt)
+function Plan.Waypoint(pt, stepId)
   if not Plan.HasPosition(pt) then return nil end
   local mapID = Plan.ResolveMap(pt.zone, pt.mapHint)
   if mapID and R2F.Nav.SetTarget(mapID, pt.x, pt.y, pt.label, pt.zone) then
+    arrowStep = stepId
     R2F.Print(L.NAV_SET:format(pt.label))
     return "arrow"
   end
@@ -258,3 +286,7 @@ function Plan.Here()
   R2F.Print(("/way %s %.1f %.1f"):format(name, x, y))
   return mapID, x, y
 end
+
+-- Tweaks > Alerts & HUD: "Arrow follows the plan". Ticking the step you are on points the arrow at the next one.
+-- On by default (Library.lua), because it only ever acts on your own tick.
+R2F.Gameplay.Register({ key = "navfollow", group = "screen", title = "NAV_FOLLOW", tip = "NAV_FOLLOW_TIP" })

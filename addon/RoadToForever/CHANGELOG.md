@@ -1,5 +1,16 @@
 # Road to Forever changelog
 
+## 0.48.0 (2026-10-13)
+
+- Upgrade arrows, the "BiZ score" tooltip line and the Plan's weapon lines now use the spec you really play (your talent
+  tree with the most points), not the first spec in Mr.BiZ's list. For a warrior that list starts with Protection, which is why an
+  Arms warrior saw Protection upgrades. Browsing another spec in the Mr.BiZ tab no longer changes what the arrows compare against.
+  Mr.BiZ also opens on your own spec now.
+- What to train next: "Train now" and "Next" list every spell (no more "and 1 more").
+- The BiZNav arrow follows the plan: tick the step you are on and the arrow moves to the next step that has a known position
+  (chat says "step done, next: ..."). Steps with no known position are skipped. Tweaks > Alerts & HUD > "Arrow follows the plan"
+  turns it off. It only reacts to the step you are on (the first one not ticked, or the one you pointed the arrow from).
+
 ## 0.47.3 (2026-10-13)
 
 Found by reading Blizzard's own UI code for Forever (the extracted interface files): several things did nothing in game because

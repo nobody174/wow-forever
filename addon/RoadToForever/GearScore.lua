@@ -90,9 +90,13 @@ function GS.ParseWeights(text)
   return w
 end
 
--- The spec scoring uses: the one picked in Mr.BiZ for the player's own class.
+-- The spec scoring uses: the spec you really play (your most-spent talent tree). Only when no talents
+-- can be read yet: the one picked in Mr.BiZ for your class, or its first. Browsing another spec in the
+-- Mr.BiZ tab does not change what the arrows and the tooltip line compare against.
 function GS.SpecId()
   local BiZ = R2F.BiZ
+  local own = BiZ.OwnSpec()
+  if own then return own end
   local cls = BiZ.PlayerClassKey()
   local cdb = R2F.Library.cdb and R2F.Library.cdb.biz
   local id = cdb and cdb.spec and cdb.spec[cls]

@@ -117,6 +117,8 @@ function Library.Init()
     "reactblizz", "gossipshop" }) do
     if type(db.gameplay[key]) ~= "boolean" then db.gameplay[key] = false end
   end
+  -- "Arrow follows the plan" (Plan.lua) starts ON: it only acts on your own tick of a plan step.
+  if db.gameplay.navfollow == nil then db.gameplay.navfollow = true end
   -- Where the floating combat text starts (GameplayExtras.lua): offset from the screen centre, UIParent units.
   if type(db.loadouts) ~= "table" then db.loadouts = {} end
   -- BiZNav arrow position (Nav.lua): offset from the screen centre, UIParent units.

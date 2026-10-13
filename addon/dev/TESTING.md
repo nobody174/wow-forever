@@ -1228,6 +1228,8 @@ on, Questie keeps using TomTom's arrow). Have Questie on. A character of level 2
 **A. Older items still open**
 1. (0.35.1) Window Size / Opacity sliders: press the bar away from the thumb: nothing changes. Drag the thumb: it changes on release.
 2. (0.37.0) Talents tab: Edit build, left-click adds a point, right-click removes one; Save loadout, load it, share to Party.
+   - **Owner 2026-10-13:** the Save loadout, Loadouts and Share buttons are there. Loading and sharing to a party were not reported. The Talents tab
+     lacked a Clear button (added in 0.50.0) and sometimes said "Couldn't read your talents yet" (made patient in 0.50.0): re-test both.
 3. (0.37.1) Loadouts: "Delete a loadout..." asks before removing.
 4. (0.38.0) Tweaks: type "bags" in the search box (bottom left): the Bags options are listed; click one, its page opens.
 
@@ -1244,27 +1246,38 @@ on, Questie keeps using TomTom's arrow). Have Questie on. A character of level 2
     arrow set. Same from a gear slot icon and from the wishlist.
 11. "Required level" slider under the filters: drag to your level (or "My level"): slots whose best needs a higher level show
     rank 2 / 3. Back to 60: "any". Does the slider fit above the window's bottom edge?
+   - **Owner 2026-10-13:** the slider moved and greyed out the picks that needed a higher level (0.47.3), but it could not show "BiS for level 15": there is no
+     data for that. **Slider removed in 0.50.0**, nothing left to test here.
 12. Open a slot (e.g. Neck): under the picks "Enchant: Enchant Necklace - ..." with effect and skill. Does it fit, or run into
     the bottom with three ranks shown?
 
+   - **Owner 2026-10-13:** the enchant lines show on the SITE (an opened chest slot). In the addon they were not seen at first; since 0.47.3 they sit under the slot
+     name and since 0.50.0 the panel also lists the #2 / #3 enchant and what you wear: **re-test in the addon** (click Chest, Neck, Back...).
 **D. Home and Tweaks (0.42.0, 0.44.0, 0.46.0)**
 13. Home > Quick settings: "24-hour clock": the minimap clock shows 18:30. Untick: back to 6:30 PM. Does the box fit above
     the Minimap heading?
 14. Tweaks > Bags > "Upgrade arrows": small green arrows on better bag items, red on worse; item tooltips get a "BiZ score"
     line ("+5.1 vs equipped"). Hover an item, `/r2f debug gear`: paste what it prints if a stat shows "not used" that should
     count (Forever may name a stat differently).
+   - **Owner 2026-10-13:** the green up arrows show on bag items (0.47.3). Not reported yet: the red downgrade arrows and the "BiZ score" tooltip line. It first compared
+     against the wrong spec (Protection for an Arms warrior); **fixed in 0.48.0** (your own talent tree), owner will re-check.
 15. Visit your class trainer (with "Unavailable" shown). Home > Training: "Train now: N spells, cost (names)" and "Next: level
     X: ...". Learn one: it leaves the list. Tweaks > Alerts & HUD > Training reminder on: at the next level-up chat names the
     new spells.
 
+   - **Owner 2026-10-13:** Home shows "Train now" and "Next" (seen on a Paladin: Blessing of Might rank 4). The "and 1 more" cut-off was **fixed in 0.48.0**.
+     Not reported yet: learning a spell making it leave the list, and the level-up reminder.
 **E. Plan tab weapons (0.47.0)**
 16. Pick your spec in Mr.BiZ, open the Plan tab: steps where one of your weapon picks drops (a dungeon run) or is sold
     (Ashenvale) get a "Weapon: <item> (Bizzest main hand)" line; one per slot says "best on route". Do the lines fit?
 
+   - **Owner 2026-10-13:** not seen in 0.47.x: only 9 of 27 specs ever had a dungeon / vendor weapon on the route, so a Hunter saw none. Quest-reward weapons
+     arrived in 0.53.0 (section 45).
 ## 43. Corpse arrow (v0.51.0)
 
 (The "Required level" slider of section 42 step 11 was removed in 0.50.0; skip it.)
 
+**Owner 2026-10-13: not tested yet (has not died since 0.51.0).** Every step below is still open.
 1. Tweaks > Alerts & HUD: "Arrow to corpse when you die" is ticked on a fresh character. Hover it: the tooltip explains it.
 2. Set an arrow first (Plan tab > any Waypoint button, or `/bizway 45 34`). Die somewhere outdoors (a fall, a high-level mob).
    The arrow jumps to "Your corpse" and chat says "arrow: your corpse". Do the yards count down as you run back?
@@ -1282,6 +1295,7 @@ on, Questie keeps using TomTom's arrow). Have Questie on. A character of level 2
 1. Tweaks > Alerts & HUD: "3D arrow" is ticked on a fresh character.
 2. `/bizway 45 34` (any spot in your zone). The arrow is a gold 3D dart seen from above at an angle, with a dark underside. Turn your
    character in a full circle: it turns smoothly (in steps of 3.6 degrees), always pointing at the spot, and points up when you face it.
+   - **Owner 2026-10-13:** "the arrow seems nice now" (the 3D look is liked). Smooth turning in 3.6 degree steps and the three sizes were not reported one by one.
 3. Zone and walk toward the spot: the yards count down; the label and the distance are not covered by the arrow.
 4. Tweaks > Alerts & HUD: Small / Medium / Large. Is the 3D arrow sharp at Large? Does it overlap anything at Small?
 5. Untick "3D arrow": the flat dart is back and turns (not stepped). Tick it again: 3D again.
@@ -1293,7 +1307,9 @@ on, Questie keeps using TomTom's arrow). Have Questie on. A character of level 2
 
 1. Open the Plan tab with a fresh character at level 1: steps in Zephras Isle (1-12) show at most one "Weapon: <item> (quest: <quest>)"
    line per slot, only for a weapon type your class uses and only if it beats what you wear (an empty hand counts as 0).
-   Do the item names show their rarity colour (green / blue)? Hover is not needed; the lines are plain text.
+   Do the item names show their rarity colour (green / blue)? (Hover a line for the upgrade amount: 0.53.1, step 9.)
+   - **Owner 2026-10-13:** the "Weapon:" lines show on the Plan tab with the item names. The owner could not tell whether an item was an upgrade, which is why
+     a hover tooltip was added in 0.53.1 (step 9).
 2. Wear a better weapon in that slot (or `/run` nothing): the line for that slot disappears after the Plan tab redraws (switch tab and back).
 3. Alliance and Horde: a reward locked to the other faction never shows.
 4. The first time you open the Plan tab after login, are there no lines for a moment and then some appear (the game loads the items)?

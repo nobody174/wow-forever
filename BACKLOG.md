@@ -8,8 +8,7 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
    didn't save it; macro there but bar slot empty = ours).
 
 ## 2. Addon
-1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): prerequisite arrows between talents; maybe a "start from my current talents" button;
-   re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build; then delete TalentGuide.lua and the old guided mode.
+1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): maybe a "start from my current talents" button; re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build; then delete TalentGuide.lua and the old guided mode.
 2. **Plan points without a position** (19 `check` points in `launch-plan-waypoints.json`: Skycutter / Dalaran portal, Stormwind boat, Riverglades,
    Shen'dralas, Mount Hyjal, new dungeons): `/r2f here` at the spot, send the lines, set `zone/x/y/conf: "exact"`, run `python build.py`. Also re-check the
    `classic` points ("may have moved").
@@ -21,7 +20,6 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 8. **CurseForge upload / sharing**: HOLD until the owner says the addon works 100% for him and his friends.
 9. Releases: push tags ONE OR TWO at a time (GitHub starts no build for more than three).
 
-9. **Mr.BiZ enchant on the item, next step**: the tooltip line shipped in 0.54.2. Sixty Upgrades also shows a green enchant line under each item name in its gear list: the same could go under the item name in the BiZ tab's rows (not built).
 10. **3D arrow redesign** (owner, 2026-10-14): more like a bow-and-arrow arrow and a better design; use the design skill, then re-render with `addon/art/blender_arrow3d.py` and `export_arrow3d.py`.
 
 ## 3. Mr.BiZ data

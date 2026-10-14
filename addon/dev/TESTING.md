@@ -43,6 +43,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 ## 9. Mr.BiZ (BiZ tab)
 8. **Retest (0.55.3):** the enchant line on item tooltips is now pink (it was lost among the green stats). Hover gear: pink "Mr.BiZ enchant: ..." / "in place", gold for a stand-in. Readable enough?
 
+11. **New in 0.56.3:** hover a gear slot on the doll: under the item tooltip a pink "Enchant: ..." line (rings and trinkets have none); the opened slot's enchant lines are pink too.
+
 ## 10. Corpse arrow (1 and 2 confirmed; 3 to 8 not tested yet)
 3. Release spirit: the arrow stays on the corpse (does it appear only after release?).
 4. Alive again: corpse arrow goes, the earlier arrow returns (none before = none left).

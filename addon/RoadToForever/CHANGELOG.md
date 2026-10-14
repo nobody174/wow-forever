@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.56.3 (2026-10-14)
+
+- Mr.BiZ tab: hovering a gear slot on the doll now also shows the slot's best enchant, in pink, under the item. The enchant lines in an opened slot are pink too, matching the item tooltip.
+
 ## 0.56.2 (2026-10-14)
 
 - "Next talent point: X (point n, level L)" now also shows on Home (right column, under Training) and in chat after each level-up, following the build you last put on the Talents board on this character.

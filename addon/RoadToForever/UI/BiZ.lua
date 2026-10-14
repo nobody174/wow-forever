@@ -271,7 +271,7 @@ local function layoutSide()
     if i > 2 then break end
     local head = line("GameFontNormalSmall", 0, y, 320, L.BIZ_ENCHANT:format(e.name))
     head:SetWordWrap(false)
-    head:SetTextColor(0.1, 1, 0.1)   -- the game's enchant colour
+    head:SetTextColor(1, 0.5, 0.85)   -- pink, like the item tooltip line
     local kind = e.kind == "2h" and (" · " .. L.BIZ_ENCHANT_2H) or ""
     local sub = line("GameFontDisableSmall", 12, y + 14, 308, L.BIZ_ENCHANT_SUB:format(e.eff, e.prof, e.skill) .. kind)
     sub:SetWordWrap(false)
@@ -569,6 +569,12 @@ local function buildSlotButton(f, key, x, y)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     if self.itemId then
       BiZ.ShowTooltip(self, self.itemId, nil, self.place)
+      -- The slot's best enchant under the item, like Sixty Upgrades' gear list (pink: green is the stats' colour).
+      local best = BiZ.Enchants(BiZ.SpecId(), self.slotKey)[1]
+      if best then
+        GameTooltip:AddLine(L.BIZ_ENCHANT:format(best.name), 1, 0.5, 0.85, true)
+        GameTooltip:Show()
+      end
     else
       GameTooltip:AddLine(BiZ.SlotLabel(self.slotKey), 1, 1, 1)
       GameTooltip:AddLine(L.BIZ_NOTHING, 0.6, 0.6, 0.6)

@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.59.0 (2026-10-15)
+
+- New 3D looks "block" and "needle" (blender_arrow3d_block.py, blender_arrow3d_needle.py; shared helpers blender_arrow_parts.py and blender_arrow_render.py; media/arrow3d_block.tga and arrow3d_needle.tga; exporter STYLES, Nav.STYLES / STYLE_ORDER, Library nav.style, Locale NAV_STYLE_BLOCK / NAV_STYLE_NEEDLE; the picker wraps to a second row). Owner wanted home-made looks instead of the downloaded icon packs (Smashicons / Vecteezy, not used). The earlier two scripts still carry their own copy of the helpers.
+
 ## 0.58.0 (2026-10-14)
 
 - blender_arrow3d.py: stone point (notched flint, flake scars, sinew lashing) and barb-by-barb vanes; the previous gold dart model is kept as blender_arrow3d_dart.py -> media/arrow3d_dart.tga. export_arrow3d.py `--style arrow|dart|all`. Nav.STYLES / Nav.Style / Nav.SetStyle, db.nav.style, Tweaks buttons Flat / Gold dart / Stone arrow (the arrow3d switch stays as the flat on/off underneath; its tick box is gone from the page). A new look = a script, a STYLES line in the exporter, a Nav.STYLES entry and a NAV_STYLE_ text.

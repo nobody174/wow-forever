@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.59.0 (2026-10-15)
+
+- Two more looks for the waypoint arrow in Tweaks > Alerts & HUD > "Waypoint arrow look": **Block** (a thick orange signpost arrow) and **Needle** (a compass needle, red at the pointing end). Both are our own designs, like the others.
+
 ## 0.58.0 (2026-10-14)
 
 - The 3D arrow has a stone head now (a chipped flint point lashed on with sinew) and feathers made of single barbs, so the tail looks feathery.

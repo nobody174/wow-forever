@@ -46,6 +46,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 
 6. **New in 0.58.0:** Tweaks > Alerts & HUD > "Waypoint arrow look": Flat / Gold dart / Stone arrow: each switches the arrow at once (set one with `/bizway`), the chosen button is gold, it stays after `/reload`, Reset page brings back the stone arrow. Is the stone head readable at Small and Medium, are the feathers feathery enough, and is it still turning smoothly?
 
+7. **New in 0.59.0:** the arrow look picker has two more buttons on a second row, Block and Needle: each switches the arrow at once. Do they read at Small and Medium? Is the Needle's red end clearly the pointing end?
+
 ## 9. Mr.BiZ (BiZ tab)
 8. **Retest (0.55.3):** the enchant line on item tooltips is now pink (it was lost among the green stats). Hover gear: pink "Mr.BiZ enchant: ..." / "in place", gold for a stand-in. Readable enough?
 

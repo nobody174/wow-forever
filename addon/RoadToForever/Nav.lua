@@ -161,11 +161,13 @@ local ARROW_3D = "Interface\\AddOns\\RoadToForever\\media\\arrow3d"
 -- The looks to choose from (Tweaks > Alerts & HUD): the flat dart, and a sprite sheet per 3D look
 -- (all share FRAMES / COLS / CELL).
 -- A new look: render it with addon/art/export_arrow3d.py, add it here and a NAV_STYLE_<KEY> text in Locale.lua.
-Nav.STYLE_ORDER = { "flat", "dart", "arrow" }
+Nav.STYLE_ORDER = { "flat", "dart", "arrow", "block", "needle" }
 Nav.STYLES = {
   flat = {},
   dart = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_dart" },
   arrow = { tex = ARROW_3D },
+  block = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_block" },
+  needle = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_needle" },
 }
 
 -- Sprite frame (0 .. FRAMES - 1) for a turn angle in radians (counter-clockwise, any size).

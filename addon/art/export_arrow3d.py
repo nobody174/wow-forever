@@ -6,7 +6,7 @@ downsamples each frame to 102 px and packs them 10 x 10 into one 1024 x 1024 unc
 needs). Frame k = the arrow turned counter-clockwise by k * 3.6 degrees; the addon (Nav.lua) picks the frame from the turn angle:
 column = k % 10, row = k // 10, texture coordinates (col * 102 / 1024, (col + 1) * 102 / 1024, row * 102 / 1024, (row + 1) * 102 / 1024).
 
-Usage (repo root):  python addon/art/export_arrow3d.py [--style arrow|dart|all] [--preview <dir>]   (default: all)
+Usage (repo root):  python addon/art/export_arrow3d.py [--style arrow|dart|block|needle|all] [--preview <dir>]   (default: all)
 A new look = a new blender_arrow3d_<name>.py plus a line in STYLES (and in Nav.lua's Nav.STYLES).
 Blender: set BLENDER to its blender.exe, or install it in the default place (C:/Program Files/Blender Foundation/Blender */) or on the PATH.
 """
@@ -28,6 +28,8 @@ RENDER = CELL * 2          # rendered at 2x and scaled down: smooth edges
 STYLES = {
     "arrow": ("blender_arrow3d.py", "arrow3d.tga"),
     "dart": ("blender_arrow3d_dart.py", "arrow3d_dart.tga"),
+    "block": ("blender_arrow3d_block.py", "arrow3d_block.tga"),
+    "needle": ("blender_arrow3d_needle.py", "arrow3d_needle.tga"),
 }
 
 

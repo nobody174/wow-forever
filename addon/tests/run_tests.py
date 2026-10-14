@@ -1131,6 +1131,10 @@ def test_arrow_3d():
     lua.execute("R2F.Nav.SetStyle('arrow')")
     check(lua.eval("R2F.Nav.Style()") == "arrow" and lua.eval("R2FNavFrame.arrow.__tex").endswith("arrow3d"), "3D arrow: the stone arrow look")
     check(lua.eval("R2F.Nav.SetStyle('nonsense')") is False, "3D arrow: an unknown look is refused")
+    for look in ("block", "needle"):
+        lua.execute("R2F.Nav.SetStyle('%s')" % look)
+        check(lua.eval("R2F.Nav.Style()") == look and lua.eval("R2FNavFrame.arrow.__tex").endswith("arrow3d_" + look), "3D arrow: the %s look" % look)
+    lua.execute("R2F.Nav.SetStyle('arrow')")
 def test_quest_weapons():
     """Weapons along the route: quest rewards matched to plan steps by zone and level, class and faction, upgrades only."""
     lua, T = plan_runtime()

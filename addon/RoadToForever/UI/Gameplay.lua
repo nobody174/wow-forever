@@ -331,11 +331,13 @@ function Tab.Build(f)
       sl:SetPoint("TOPLEFT", LEFT + 4, y - 156)
       sl:SetText(L.NAV_STYLE)
       bx = LEFT + 4
-      local widths = { flat = 54, dart = 80, arrow = 94 }
+      local widths = { flat = 54, dart = 80, arrow = 94, block = 64, needle = 70 }
+      local by = y - 174
       for _, k in ipairs(R2F.Nav.STYLE_ORDER) do
+        if k == "block" then bx, by = LEFT + 4, by - 26 end   -- a second row
         local sb = CreateFrame("Button", nil, c, "UIPanelButtonTemplate")
         sb:SetSize(widths[k], 22)
-        sb:SetPoint("TOPLEFT", bx, y - 174)
+        sb:SetPoint("TOPLEFT", bx, by)
         sb:SetText(L["NAV_STYLE_" .. k:upper()])
         sb:SetScript("OnClick", function()
           R2F.Nav.SetStyle(k)
@@ -344,7 +346,7 @@ function Tab.Build(f)
         styleButtons[k] = sb
         bx = bx + widths[k] + 4
       end
-      y = y - 208
+      y = y - 234
       local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
       note:SetPoint("TOPLEFT", LEFT + 4, y - 4)
       note:SetWidth(230)

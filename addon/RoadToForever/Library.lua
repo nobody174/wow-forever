@@ -131,8 +131,10 @@ function Library.Init()
   if type(db.nav.x) ~= "number" then db.nav.x = 0 end
   if type(db.nav.y) ~= "number" then db.nav.y = 220 end
   if db.nav.size ~= "small" and db.nav.size ~= "medium" and db.nav.size ~= "large" then db.nav.size = "medium" end
-  -- Which 3D look the arrow has ("dart" = the gold dart, "arrow" = the stone arrow); the flat dart is the arrow3d switch off.
-  if db.nav.style ~= "dart" and db.nav.style ~= "arrow" then db.nav.style = "arrow" end
+  -- Which 3D look the arrow has ("dart" = gold dart, "arrow" = stone arrow, "block", "needle");
+  -- the flat dart is the arrow3d switch off.
+  local looks = { dart = true, arrow = true, block = true, needle = true }
+  if not looks[db.nav.style] then db.nav.style = "arrow" end
   if type(db.fct) ~= "table" then db.fct = {} end
   local fc = db.fct
   if type(fc.x) ~= "number" then fc.x = 0 end

@@ -14,7 +14,7 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
    `classic` points ("may have moved").
 3. **Weapons along the route**: check the Classic weapon table against Forever; extend past level 32 when the beta does.
 4. **More reminders**: pet missing / dead / unhappy and repair needed shipped in 0.62.0 (verify in game); still open: pet food, rested XP (bags: the backpack counter exists).
-5. **Buff "upper display"** for the group's class buffs: waits on the `/r2f auras` probe results (TESTING 7.12).
+5. **Buff "upper display"**: built (Buffs.lua). The aura probe (TESTING 7.12) showed the game hands out your buffs readably out of combat; what it does in a fight / in a dungeon is still to be sent, the reminder stays silent when the list is unreadable.
 6. **Rank-aware macros**: verify in game (TESTING 2.9), then decide whether the three `Charge(Rank 1)` site macros go back to plain `Charge`.
 8. **CurseForge upload / sharing**: HOLD until the owner says the addon works 100% for him and his friends.
 9. Releases: push tags ONE OR TWO at a time (GitHub starts no build for more than three).

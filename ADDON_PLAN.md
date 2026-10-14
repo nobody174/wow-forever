@@ -3141,7 +3141,7 @@ classes: the addon can only read the logged-in class's trees from `C_Traits`, so
 time from Wowhead's Forever talent data like `PlanData.lua` (generated, never hand-edited).
 
 **Built:** `addon/tools/gen_talent_data.py` -> `TalentData.lua` (all classes + recommended builds, tooltip text per rank from the same Wowhead data),
-`TalentCalc.lua` (rules, codes, hash), `UI/TalentPanel.lua` (class circles, board, loadouts, recommended, share, learn). Prerequisite arrows are not drawn yet.
+`TalentCalc.lua` (rules, codes, hash), `UI/TalentPanel.lua` (class circles, board, loadouts, recommended, share, learn). Prerequisite arrows: drawn since 0.55.5 (see section 21).
 
 **Answered questions (kept for history):** where the bundled tree data comes from at build time (same Wowhead script the site loads, fetched in a browser); whether
 other classes' talent icons/tooltips can show without the spell being known (icons by id yes, tooltips probably need our own text);
@@ -3149,3 +3149,30 @@ addon-message size limits (a build code is short, so fine); whether sharing need
 
 **Removes / changes:** the "mirror my talents" view goes; "Copy my build" stays (it reads real talents); TalentGuide.lua and the old
 guided-learning mode become deletion candidates.
+
+## 21. Since 0.55: what was built after the sandbox (2026-10-14 / 15, v0.55.3 - v0.62.x)
+
+**Talents tab.** Prerequisite arrows (`drawLinks`, grey until the needed ranks are taken, gold after; the board and the window grew to make
+room: STEP_Y 44, page 630, window 664). **Build in order:** `Calc.Order` (tier by tier, tree by tree, column by column, a same-row prerequisite
+first; the same order Learn this build uses) and `Calc.Prefix`; `<` `>` under the board walk a build one point (= one level) at a time, the
+tooltip says which points / levels a talent is taken at, and "Next point in this build" (`Calc.NextPoint` against the real ranks) shows on the
+tab, on Home and in chat after a level-up. The followed build is `cdb.followLink` (own class). The order is computed at runtime from the board,
+so it works for any link or loadout; a guide's own pick order would need data (BACKLOG). Loadouts menu: "My current talents". Group picks from
+`group-builds.json` are baked into `TalentData.lua` by `gen_talent_data.py` and listed in the Recommended menu.
+
+**Waypoint arrow looks** (Tweaks > Alerts & HUD > "Waypoint arrow look"; `Nav.STYLES`, `db.nav.style`, `Gameplay.IsOn("arrow3d")` is the flat
+dart switch underneath). Eight looks: Flat dart, Gold dart, Stone arrow, Block, Needle, Gilded, Plate, Stone slab. Every 3D look is a 1024 px
+sprite sheet of 100 turn angles (`media/arrow3d*.tga`, 4 MB on disk, about 0.5 MB zipped). They are rendered in Blender by
+`addon/art/export_arrow3d.py` (`--style <key>|all`): modelled ones from `blender_arrow3d*.py` (shared helpers `blender_arrow_parts.py`, shared
+camera / render loop `blender_arrow_render.py`), painted ones by laying a cut-out picture on the ground (`blender_arrow3d_picture.py`; the
+pictures are AI-generated, kept in `addon/art/sources/`, cut out by `make_image_looks.py`). The camera is 40 degrees up, lens 28 and close
+(`R2F_ELEV` / `R2F_LENS` / `R2F_DIST` for experiments), so an arrow pointing ahead recedes into the scene (the owner's wish: "forward is
+forward, not up"). A new look = a model script or a picture + a line in `STYLES` (exporter), `Nav.STYLES`, `NAV_STYLE_<KEY>`. The picture
+looks were made with Gemini: check its terms before any CurseForge upload (BACKLOG hold).
+
+**Reminders** (icons in the Reminders registry): gear repair (every class) and pet missing / dead / unhappy (Hunter, Warlock), next to the
+stance and ammo icons. Level-30 builds for every missing spec were added to `builds.html` (all "medium" until tested in the beta).
+
+**Release discipline (owner, 2026-10-14):** every check green before a tag (`run_tests.py`, `check_release_tree.py`, luacheck in CI, the
+Actions run on the tagged commit); any red = stop, find the cause, fix, run again. luacheck is not installed locally: CI is the gate, so push
+the commit, wait for the "Addon checks" run on that exact commit, then tag.

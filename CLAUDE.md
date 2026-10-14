@@ -420,6 +420,9 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
   click +1, right-click −1, Shift = max, hover tooltip; touch: tap opens a bottom
   sheet with −/+/Close. Test locally by routing the Wowhead URL to a fixture in the
   same `WH.setPageData(...)` format (the cloud session can't reach Wowhead).
+- `addon/art/` — the addon's art pipeline: `export_arrow3d.py` renders the waypoint arrow looks in Blender into `media/arrow3d*.tga` sprite sheets
+  (models `blender_arrow3d*.py`, shared `blender_arrow_parts.py` / `blender_arrow_render.py`, painted pictures via `make_image_looks.py` +
+  `sources/`), `export_arrow.py` the flat dart, `export_logo.py` the logo. Details in ADDON_PLAN section 21. Release = all checks green first.
 - `assets/hero-1.webp` … `hero-4.webp` — landing page backgrounds (painted road-to-a-gate
   scenes, made by the owner with free outside image tools, not Claude). `index.html`'s inline
   script right after `<div class="hero" id="hero">` rotates them every 2 days (UTC day / 2,

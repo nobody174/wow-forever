@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.57.1 (2026-10-14)
+
+- Import.Commit message with new / updated / unchanged counts; Home nextTalentHead + gold line; TalentPanel PAGE.h 630 / WIN_H 664, nextHint on its own row; removed the doll-slot enchant line added in 0.56.3 (duplicate of the item tooltip's Mr.BiZ line, owner 2026-10-14).
+
 ## 0.57.0 (2026-10-14)
 
 - addon/art/blender_arrow3d.py rewritten (shaft cylinder, barbed gold broadhead with ridge, two flat vanes + one upright fin, nock, dark outline plate; camera dist 5.3), media/arrow3d.tga re-exported with export_arrow3d.py (100 frames, none clipped at the cell edge). Owner asked for "an arrow like you shoot", no bow. The flat 2D arrow (export_arrow.py) is unchanged.

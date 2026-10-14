@@ -18,6 +18,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 
 15. **New in 0.56.1, split macros:** import the site string again. Hunter: Raptor Strike (starts auto-attack in melee), Wing Clip; Survival: Raptor Strike, Mongoose Bite (needs a dodge first), Strider Kick; Rogue: Sap. Each does its one thing on a hostile target. The old combined macros stay on your bars until you remove them.
 
+16. **0.57.1:** import the same string twice: the second chat line says "0 new, 0 updated, N unchanged".
+
 ## 4. Talent learning (TEST CHAR, never a main)
 2. One point: click ONE tier-1 talent on the board (after a trainer reset), Learn this build, Cancel (nothing changes), Learn: applied within ~2 s, chat "Learned 1 talent point.", free points one lower, no "Interface action failed", survives `/reload`.
 3. If it stops with "didn't accept" or "waiting in Blizzard's window": note the exact message and what Blizzard's window shows.

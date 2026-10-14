@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.57.1 (2026-10-14)
+
+- The import line in chat now says what changed: "imported 61 macros: 0 new, 0 updated, 61 unchanged."
+- Home: "Next talent point" has its own heading and the line is gold, so it is no longer easy to overlook.
+- Talents tab: more room (the window is 28 px taller); "Next point in this build" has a line of its own under the level line.
+- Mr.BiZ doll: hovering a slot no longer shows a second enchant line (the item tooltip's Mr.BiZ line is the one).
+
 ## 0.57.0 (2026-10-14)
 
 - The 3D waypoint arrow (Tweaks > Alerts & HUD > 3D arrow) is now a real arrow, the kind you shoot: a wooden shaft, a gold barbed head and red and cream feathers at the tail, with a dark outline under it so it reads on any ground. Small / Medium / Large work as before.

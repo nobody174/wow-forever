@@ -8,7 +8,7 @@
 -- (Stop appears), the stop / done message in the status line, guided mode's "Click ..." in the note line.
 -- The engine runs on events, not on this tab: closing the window doesn't stop a run.
 --
--- Layout (page = PAGE, 650 x 602):
+-- Layout (page = PAGE, 650 x 630):
 --   [class circles x 9]  Warrior (your class)                        [Talented perk]
 --   Talent link [ talents.html#warrior/...              ] [Load]
 --   hint line                                                        [Copy link]
@@ -34,7 +34,7 @@ local Calc = R2F.TalentCalc
 local TREES, COLS, ROWS = 3, 4, 7    -- Three trees, each a 4 x 7 grid
 local CELL, STEP_X, STEP_Y = 34, 42, 44   -- 44 leaves room for the prerequisite arrowheads (was 38)
 local TREE_W, TREE_TOP = 204, -170
-TalentPanel.PAGE = { w = 650, h = 602 }
+TalentPanel.PAGE = { w = 650, h = 630 }
 
 local CLASS_CIRCLES = "Interface\\TargetingFrame\\UI-Classes-Circles"
 local PICK_SIZE, PICK_STEP = 26, 31
@@ -360,15 +360,15 @@ local function build(f)
   ui.stepText:SetWidth(152)
   ui.stepText:SetJustifyH("CENTER")
   ui.nextHint = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-  ui.nextHint:SetPoint("TOPLEFT", 300, below - 17)
-  ui.nextHint:SetWidth(340)
-  ui.nextHint:SetJustifyH("RIGHT")
+  ui.nextHint:SetPoint("TOPLEFT", 24, below - 38)
+  ui.nextHint:SetWidth(600)
+  ui.nextHint:SetJustifyH("LEFT")
   ui.level = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
   ui.level:SetPoint("TOPLEFT", ui.summary, "BOTTOMLEFT", 0, -3)
   ui.level:SetTextColor(0.7, 0.7, 0.7)
   -- Learning info: what learning this build would do on your character (your own class only).
   ui.learnInfo = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-  ui.learnInfo:SetPoint("TOPLEFT", ui.level, "BOTTOMLEFT", 0, -3)
+  ui.learnInfo:SetPoint("TOPLEFT", ui.level, "BOTTOMLEFT", 0, -20)
   ui.learnInfo:SetWidth(600)
   ui.learnInfo:SetJustifyH("LEFT")
 

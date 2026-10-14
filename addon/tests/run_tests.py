@@ -3719,7 +3719,7 @@ def test_ui_smoke(templates, fx):
     lua.execute("IMPORTBTN:Click()")
     check(lua.eval("R2FImport:IsShown()") is False, "import window closes after import")
     check(lua.eval("R2F.Library.Count()") == n, "library filled")
-    check(any("imported %d macros." % n in lua.eval("TEST.chat")[i] for i in range(1, len(lua.eval("TEST.chat")) + 1)), "chat confirms import")
+    check(any("imported %d macros: %d new" % (n, n) in lua.eval("TEST.chat")[i] for i in range(1, len(lua.eval("TEST.chat")) + 1)), "chat confirms import")
 
     # Bad string shows the error and keeps Import disabled.
     lua.execute('SlashCmdList.R2F("import")')

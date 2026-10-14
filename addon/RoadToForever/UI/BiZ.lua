@@ -569,12 +569,6 @@ local function buildSlotButton(f, key, x, y)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     if self.itemId then
       BiZ.ShowTooltip(self, self.itemId, nil, self.place)
-      -- The slot's best enchant under the item, like Sixty Upgrades' gear list (pink: green is the stats' colour).
-      local best = BiZ.Enchants(BiZ.SpecId(), self.slotKey)[1]
-      if best then
-        GameTooltip:AddLine(L.BIZ_ENCHANT:format(best.name), 1, 0.5, 0.85, true)
-        GameTooltip:Show()
-      end
     else
       GameTooltip:AddLine(BiZ.SlotLabel(self.slotKey), 1, 1, 1)
       GameTooltip:AddLine(L.BIZ_NOTHING, 0.6, 0.6, 0.6)

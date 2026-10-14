@@ -72,7 +72,7 @@ end
 -- Layout
 -- ---------------------------------------------------------------------------
 
-local WIN_W, WIN_H = 820, 636   -- 36 taller than before: the Talents board's prerequisite arrows need room
+local WIN_W, WIN_H = 820, 664   -- 36 taller than before: the Talents board's prerequisite arrows need room
 local TOP_H, SIDE_W = 50, 150
 -- The pages were laid out for the old 540 x 500 book and keep that size until
 -- they are reflowed; they sit centred in the content area, shifted up because

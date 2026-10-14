@@ -173,7 +173,7 @@ R2F.Gameplay.Register({
       local list = Training.NewAt(level - 1, level)
       if #list > 0 then R2F.Print(L.TRAIN_LEVELUP:format(level, names(list, 6))) end
       local np = R2F.Talents.NextPointLine()
-      if np then R2F.Print(np) end
+      if np then R2F.Print(L.HOME_NEXT_TALENT .. ": " .. np) end
     end,
   },
 })

@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.54.1 (2026-10-14)
+
+- gen_talent_data.py lists a "Bear tank / Cat" build under Tank and DPS; UI/BiZ.lua colours the enchant line green (0.1, 1, 0.1).
+
 ## 0.54.0 (2026-10-14): Talents tab rebuilt as a sandbox calculator
 
 - **TalentData.lua (new, generated)**: all nine classes' trees (466 talents: name, icon, row, column, max rank, tier points, prerequisites, a

@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.54.1 (2026-10-14)
+
+- Talents tab, Recommended: the Druid Feral build (bear tank / cat) is listed under both Tank and DPS.
+- Mr.BiZ: the enchant name is green, like the game's own enchant text.
+
 ## 0.54.0 (2026-10-14)
 
 - **Talents tab rebuilt as a calculator.** Click talents freely on any class: the class icons along the top switch between all nine

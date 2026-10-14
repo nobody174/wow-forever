@@ -271,6 +271,7 @@ local function layoutSide()
     if i > 2 then break end
     local head = line("GameFontNormalSmall", 0, y, 320, L.BIZ_ENCHANT:format(e.name))
     head:SetWordWrap(false)
+    head:SetTextColor(0.1, 1, 0.1)   -- the game's enchant colour
     local kind = e.kind == "2h" and (" · " .. L.BIZ_ENCHANT_2H) or ""
     local sub = line("GameFontDisableSmall", 12, y + 14, 308, L.BIZ_ENCHANT_SUB:format(e.eff, e.prof, e.skill) .. kind)
     sub:SetWordWrap(false)

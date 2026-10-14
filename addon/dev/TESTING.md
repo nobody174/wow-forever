@@ -34,18 +34,7 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 14. Black squares: click every class circle and side tab (incl. Universal): gold glow, never a black square.
 
 ## 3. Talents tab (sandbox calculator, 0.54.0)
-1. The tab opens on your own class with an EMPTY board (your real talents are not shown); nine class circles along the top; hover one for the tooltip.
-2. Click a talent: +1 (gold / green ring, rank badge), right-click: -1, Shift: all the way. A locked talent is grey; blocked clicks say why (5 points per row, prerequisite, 51 cap).
-3. Hover a talent: name, rank, what it needs (red) and the text for the rank; "Next rank" when part-way. Check for a class you do NOT play (click a circle).
-4. Click another class's circle (try Priest on a Warrior): its three trees, real names and icons; a "Preview only" line; Learn is off.
-5. Counters: "N of 51 points spent, M left", the level the build needs, the Talented perk switch changes that level.
-6. Load: paste a link from the site's talent calculator (any class) and press Load / Enter: the board switches to that class and build. A garbage link, an old-trees link and an invalid build each give a red message and keep the board.
-7. Copy link gives the site link of the board; opened on the site it shows the same build (same talents, same `~hash`).
-8. Save loadout (asks a name), Loadouts (load / delete asks first), Reset empties the board. The board is remembered over `/reload`.
-9. Recommended: menu grouped Tank / DPS / Healer for the class on the board, level 60 first; picking one fills the board. Do the builds look right for your class?
 10. Share > Party (with a teammate who has the addon): they get a chat line and find it under Loadouts for that class. Also for a class the sender does not play.
-11. Works in combat (clicking, Load, Copy link); only Learn is off.
-12. Your friend's class on your tab: do all nine classes show every talent, with sensible text (any talent missing, wrong icon, wrong requirement)?
 
 ## 4. Talent learning (TEST CHAR, never a main)
 1. Read-only: the free-points number equals Blizzard's "Unspent Talents" (the source says `"traits"` and all four C_Traits functions exist, 2026-10-10; Home said "No free talent points", not yet compared); `/dump R2F.Talents.LearnMode()` says `traits`.
@@ -61,14 +50,6 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 2. Settings tab: Remove all (popup lists what goes and what is kept; edited ones kept; in combat finishes after); "New macros go to" Account first. (Settings in general passed 2026-10-10.)
 3. Warrior stance icon: Show, Lock, size; colour and icon follow the stance.
 4. Tweaks > Training reminder: at level-up chat names the new spells.
-
-## 6. Bags
-1. `/r2f bags` reports the bag windows; with ForeverPlus loaded it warns (test with its Bag module off).
-2. Movable bags: Shift + drag moves the window (title or background), release keeps it; plain click opens the game's menu; position kept over reopen / reload / relog, own per character.
-3. Lock bags blocks Shift + drag; far-left drag keeps a second bag on screen; in combat nothing moves or jumps; untick returns the game's layout; no "blocked from an action" after using items.
-4. Sort button above the backpack (and combined bag): sorts, says it can't in combat, does not cover anything.
-5. Upgrade arrows: green on better bag items (seen), red on worse (not reported), "BiZ score" tooltip line, compared against your own talent spec (fixed 0.48.0). Unknown stat: `/r2f debug gear` and paste.
-6. Free-bag-slots number on the backpack button: red at 3 or less, no overlap with the game's own number (what is the other one, "178"? give the frame name from `/fstack`).
 
 ## 7. Gameplay tab (everything OFF until ticked; turn off ForeverPlus' matching modules)
 1. Four page buttons (Quests, Vendors & loot, Screen & chat, Alerts); the current one is gold with a bar; the last page is remembered; wording clear.
@@ -96,9 +77,6 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 4. Arrow size Small / Medium / Large; drag keeps position over `/reload`; right-click clears.
 5. `/bizway clear` and `/bizway size large` (own coordinates and the named form passed 2026-10-13).
 6. World map: the small diamond pin shows (also zoomed out to the continent). Alt + right-click on the map sets the arrow (**passed**, incl. Questie objectives).
-7. Weapon lines on the Plan tab: rarity colours; only usable types that beat what you wear; disappear after you wear a better one (switch tab and back); other faction's rewards never show; first open may fill in a moment later (tell me if never); Hall of Thanes "one clear" shows the Calibrated Blunderbuss for Hunter / Warrior; Wetlands 22-26 shows Raptor's End for a Hunter; a Mage / Priest sees only wands, daggers, staffs, 1H swords / maces.
-8. Hover a "Weapon:" line: item tooltip, green "BiZ score +N over what you wear", the quest and zone; does +N match your feeling?
-9. Lines fit between steps without making the list too long.
 
 ## 9. Mr.BiZ (BiZ tab)
 1. `/biz` opens the tab on your class and first spec; item names in quality colours (white with "?" only for a moment); item tooltip with the gold "Mr.BiZ:" line; Shift-click links in chat.
@@ -106,7 +84,7 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 3. Wishlist: tick items, grouped by dungeon / profession / vendor, Export list pastes on the site, Import list from the site works, survives `/reload`.
 4. Class and Spec menus open under the cursor and switch the list.
 5. Alt + click a Scarlet Monastery item (list, gear slot icon, wishlist): arrow to the entrance; the blue hint line shows on hover.
-6. Open a slot: enchant lines (best, #2 / #3, what you wear) sit under the slot name and fit with three ranks shown (re-test: Chest, Neck, Back).
+6. Enchant lines: shown on the right but white (should be coloured like enchant text, see BACKLOG 2.9); still to check they fit with three ranks shown.
 
 ## 10. Corpse arrow (not tested yet, you have not died since 0.51.0)
 1. Tweaks > Alerts & HUD "Arrow to corpse when you die" is ticked on a fresh character; tooltip explains it.
@@ -118,12 +96,6 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 7. Switch unticked: no arrow on death.
 8. Death inside a dungeon: error, or just no arrow?
 
-## 11. 3D arrow
-1. "3D arrow" is ticked on a fresh character; turning in a full circle is smooth (3.6 degree steps) and points up when you face the spot (look liked).
-2. Sharp at Large, no overlap at Small; label and distance not covered; dragging still grabs it easily.
-3. Untick: the flat dart returns and turns smoothly; tick: 3D again.
-4. Green square or stack of tiny arrows = texture problem (`media/arrow3d.tga`, 100 frames, 10 columns of 102 px): tell me.
-
 ## 12. Release and exports
 1. Each new release: the tag's Actions run is green; release named `Road to Forever <version>`, pre-release for 0.x, notes from the addon CHANGELOG, exactly one zip asset; unzipping gives `AddOns\RoadToForever\RoadToForever.toc` (no nested folder) and the addon shows on the character screen.
 2. The Macros page's "How to import" Download link opens the Releases page with that release on top.
@@ -132,5 +104,5 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 5. Interface templates (`/dump R2FMain ~= nil`, `R2FMainTab1.r2fTemplate`, `MenuUtil ~= nil`, `R2F.Minimap.backend`): note the answers in ADDON_PLAN 11 if not already there.
 
 ---
-**Confirmed working (kept for the record):** window, help, tabs, minimap menu (Blizzard's own menu, `MenuUtil` = true), macro tooltips, no duplicate on re-drag, Replace popup, basic Tidy up, Settings, three Quick settings, profession export, Plan Waypoint buttons, `/bizway` with coordinates; Interface number 16001; slot limits 120 + 30; Home footer line; Plan weapon lines show; green bag upgrade arrows; Train now / Next on Home; Alt + right-click map arrow incl. Questie; 24-hour clock box (Quick settings).
+**Confirmed working (kept for the record):** all of Bags (section 6), Plan weapon lines; Talents tab 3.1-3.9, 3.11, 3.12 (0.54.0); 3D arrow; bag upgrade arrows and tweaks; Plan weapon lines; window, help, tabs, minimap menu (Blizzard's own menu, `MenuUtil` = true), macro tooltips, no duplicate on re-drag, Replace popup, basic Tidy up, Settings, three Quick settings, profession export, Plan Waypoint buttons, `/bizway` with coordinates; Interface number 16001; slot limits 120 + 30; Home footer line; Plan weapon lines show; green bag upgrade arrows; Train now / Next on Home; Alt + right-click map arrow incl. Questie; 24-hour clock box (Quick settings).
 **Dropped by the owner:** combat drag steps of the old section 6, Questie Ctrl + click (TomTom stand-in code stays, harmless), TomTom waypoint tests, "Required level" slider (removed 0.50.0), the old Classic-API talent learning checks (replaced by section 4).

@@ -557,6 +557,7 @@ R2F.TalentData = {
     {"mage",30,"DPS","Frost AoE","--0531300101321001"},
     {"mage",30,"DPS","Fire","-203520301301001"},
     {"druid",30,"Tank","Feral (Bear tank / Cat)","-5320000212003201"},
+    {"druid",30,"DPS","Feral (Bear tank / Cat)","-5320000212003201"},
     {"druid",30,"Healer","Restoration","--0550035003"},
     {"shaman",30,"DPS","Enhancement","-0500321310051"},
     {"shaman",30,"Healer","Restoration","--5000503305"},

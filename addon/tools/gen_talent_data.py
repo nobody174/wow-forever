@@ -69,6 +69,8 @@ def builds():
         role = "Healer" if "(Healer" in title else "Tank" if "(Tank" in title or "tank" in title else "DPS"
         name = re.sub(r"\s*\((Healer|Tank|DPS)\)\s*$", "", rest).strip()
         out.append((cls, int(lvl.group(1)), role, name, code))
+        if role == "Tank" and "Cat" in title:   # Feral (Bear tank / Cat): one spec, listed under both roles
+            out.append((cls, int(lvl.group(1)), "DPS", name, code))
     return out
 
 

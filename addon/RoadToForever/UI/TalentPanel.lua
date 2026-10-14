@@ -932,11 +932,11 @@ function TalentPanel.RecommendedMenu()
                             end }
     end
   end
-  local picks = Calc.GroupPicks(state.class)
-  if #picks > 0 then
+  local groupPicks = Calc.GroupPicks(state.class)
+  if #groupPicks > 0 then
     items[#items + 1] = { kind = "divider" }
     items[#items + 1] = { kind = "title", text = L.TALENT_GROUP_PICKS }
-    for _, g in ipairs(picks) do
+    for _, g in ipairs(groupPicks) do
       local label = g.by ~= "" and L.TALENT_LOADOUT_BY:format(g.name, g.by) or g.name
       items[#items + 1] = { kind = "button", text = label, func = function()
         setLink(Talents.SITE_URL .. state.class .. "/" .. g.code .. "~" .. Calc.Hash(state.class))

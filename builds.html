@@ -366,15 +366,37 @@ const DATA30 = {
     spec: "Holy", title: "Priest — Level 30 Holy (Healer)", code: "003-0321510303", meta: "Our proposal from the live Forever talent trees (no guide has a Forever build for this yet): re-check it after launch.",
     talents: t30([["Twin Disciplines","3","spell_holy_sealofvengeance"], ["Improved Renew","3","spell_holy_renew"], ["Holy Specialization","2","spell_holy_sealofsalvation"], ["Spell Warding","1","spell_holy_spellwarding"], ["Divine Fury","5","spell_holy_sealofwrath"], ["Holy Nova","1","spell_holy_holynova"], ["Inspiration","3","spell_holy_layonhands"], ["Improved Healing","3","spell_holy_heal02"]]),
     rotation: {"confidence": "medium", "note": "Our dungeon-healer proposal: faster heals (Divine Fury), stronger Renew, Inspiration armor on the tank.", "single": [{"name": "Renew", "icon": "spell_holy_renew", "note": "Keep it on the tank."}, {"name": "Power Word: Shield", "icon": "spell_holy_powerwordshield", "note": "Before big hits."}, {"name": "Heal", "icon": "spell_holy_heal", "note": "Main efficient heal."}, {"name": "Flash Heal", "icon": "spell_holy_flashheal", "note": "Only for emergencies: expensive."}], "aoe": [{"name": "Holy Nova", "icon": "spell_holy_holynova", "note": "Small group heal; careful, it can pull."}], "aoeNote": "Power Word: Fortitude on everyone; Dispel Magic and Cure Disease."},
-  }],
+  },
+    {
+      spec: "Discipline", title: "Priest — Level 30 Discipline (wand and Smite leveler)", code: "5200300303--005", meta: "From Mobalytics' and wowforever.gg's Forever builds (they agree).",
+      talents: t30([["Power in Light","5/5","spell_holy_searinglight"], ["Wand Specialization","2/2","inv_wand_01"], ["Holy Precision","3/3","spell_holy_divineillumination"], ["Mental Agility","3/3","ability_hibernation"], ["Meditation","3/3","spell_nature_sleep"], ["Spirit Tap","5/5","spell_shadow_requiem"]]),
+      rotation: {"confidence": "medium", "note": "Shield, Smite, wand.", "single": [{"name": "Power Word: Shield", "icon": "spell_holy_powerwordshield", "note": "Before the pull."}, {"name": "Smite", "icon": "spell_holy_holysmite", "note": "Main spell."}, {"name": "Shadow Word: Pain", "icon": "spell_shadow_shadowwordpain", "note": "Long fights."}, {"name": "Wand", "icon": "inv_wand_01", "note": "Finish with the wand."}], "aoeNote": "Mana Burn and Inner Focus come later."},
+    },
+    {
+      spec: "Healer / PvP", title: "Priest — Level 30 Discipline (Healer / PvP, 26 points)", code: "023303131300121-3", meta: "From ForeverChanges. 26 points: turn the Talented perk on (+5 points).",
+      talents: t30([["Wand Specialization","2/2","inv_wand_01"], ["Twin Disciplines","3/5","spell_holy_sealofvengeance"], ["Silent Resolve","3/3","spell_nature_manaregentotem"], ["Improved Power Word: Shield","3/3","spell_holy_powerwordshield"], ["Martyrdom","1/2","spell_nature_tranquility"], ["Mental Agility","3/3","ability_hibernation"], ["Inner Focus","1/1","spell_frost_windwalkon"], ["Meditation","3/3","spell_nature_sleep"], ["Soul Warding","1/1","spell_holy_pureofheart"], ["Improved Mana Burn","2/2","spell_shadow_manaburn"], ["Penance","1/1","spell_holy_penance"], ["Twilight Focus","3/3","spell_holy_healingfocus"]]),
+      rotation: {"confidence": "medium", "note": "Shield and heal, Penance when it is up.", "single": [{"name": "Power Word: Shield", "icon": "spell_holy_powerwordshield", "note": "Before big hits."}, {"name": "Renew", "icon": "spell_holy_renew", "note": "On the tank."}, {"name": "Heal", "icon": "spell_holy_heal", "note": "Main heal."}, {"name": "Flash Heal", "icon": "spell_holy_flashheal", "note": "Emergencies."}], "aoeNote": "Power Word: Fortitude on everyone."},
+    },
+  ],
   Warlock: [{
-    title: "Warlock — Level 30 Affliction", code: "045300000342", rotation: {"confidence": "medium", "note": "Voidwalker tanks, two DoTs, Nightfall procs for instant Shadow Bolts.", "single": [{"name": "Summon Voidwalker", "icon": "spell_shadow_summonvoidwalker", "note": "Your tank."}, {"name": "Corruption", "icon": "spell_shadow_abominationexplosion", "note": "Near-instant: first."}, {"name": "Bane of Agony", "icon": "spell_shadow_curseofsargeras", "note": "Second DoT."}, {"name": "Shadow Bolt", "icon": "spell_shadow_shadowbolt", "note": "Only on Nightfall procs (instant)."}, {"name": "Drain Life", "icon": "spell_shadow_lifedrain02", "note": "Finish while the DoTs tick (our spam-safe macro)."}], "aoeNote": "Tag extra mobs with Corruption; Life Tap between pulls."},
+    spec: "Affliction", title: "Warlock — Level 30 Affliction", code: "045300000342", rotation: {"confidence": "medium", "note": "Voidwalker tanks, two DoTs, Nightfall procs for instant Shadow Bolts.", "single": [{"name": "Summon Voidwalker", "icon": "spell_shadow_summonvoidwalker", "note": "Your tank."}, {"name": "Corruption", "icon": "spell_shadow_abominationexplosion", "note": "Near-instant: first."}, {"name": "Bane of Agony", "icon": "spell_shadow_curseofsargeras", "note": "Second DoT."}, {"name": "Shadow Bolt", "icon": "spell_shadow_shadowbolt", "note": "Only on Nightfall procs (instant)."}, {"name": "Drain Life", "icon": "spell_shadow_lifedrain02", "note": "Finish while the DoTs tick (our spam-safe macro)."}], "aoeNote": "Tag extra mobs with Corruption; Life Tap between pulls."},
     talents: t30([
       ["Suppression","4/5","spell_shadow_unsummonbuilding"], ["Improved Corruption","5/5","spell_shadow_abominationexplosion"],
       ["Malediction","3/5","spell_shadow_curseofachimonde"], ["Pandemic","3/3","spell_shadow_unstableaffliction_2"],
       ["Malevolence","4/5","spell_shadow_focusedpower"], ["Nightfall","2/2","spell_shadow_twilight"],
     ]),
-  }],
+  },
+    {
+      spec: "Demonology", title: "Warlock — Level 30 Demonology", code: "03-00050032302003", meta: "Reasoned from the guides' picks and our talent data (sources differ): re-check in beta. The sources share 18 points and differ on the last 3; this takes Mobalytics' Suppression.",
+      talents: t30([["Suppression","3/5","spell_shadow_unsummonbuilding"], ["Unholy Power","5/5","spell_shadow_shadowworddominate"], ["Fel Vitality","3/3","spell_shadow_demonictactics"], ["Demonic Energies","2/2","spell_shadow_felmending"], ["Improved Sayaad","3/3","ability_warlock_randomizesuccubusincubus"], ["Master Summoner","2/2","spell_shadow_impphaseshift"], ["Demonic Brand","3/3","ability_demonhunter_chaoticimprint_fire"]]),
+      rotation: {"confidence": "medium", "note": "The pet does the work; you keep DoTs up and drain.", "single": [{"name": "Summon Voidwalker", "icon": "spell_shadow_summonvoidwalker", "note": "Your tank."}, {"name": "Corruption", "icon": "spell_shadow_abominationexplosion", "note": "Near-instant: first."}, {"name": "Bane of Agony", "icon": "spell_shadow_curseofsargeras", "note": "Second DoT."}, {"name": "Shadow Bolt", "icon": "spell_shadow_shadowbolt", "note": "Filler."}, {"name": "Life Tap", "icon": "spell_shadow_burningspirit", "note": "When mana is low."}], "aoeNote": "Soul Link comes later."},
+    },
+    {
+      spec: "Destruction", title: "Warlock — Level 30 Destruction", code: "--2050305103101", meta: "From Mobalytics' and LepreStore's Forever builds (the 21-point core they share). Mobalytics adds Suppression and Fire and Brimstone with the Talented perk.",
+      talents: t30([["Destructive Reach","2/2","spell_shadow_corpseexplode"], ["Bane","5/5","spell_shadow_deathpact"], ["Cataclysm","3/3","spell_fire_windsofwoe"], ["Ruin","5/5","spell_shadow_shadowwordpain"], ["Shadowburn","1/1","spell_shadow_scourgebuild"], ["Agonizing Flames","3/3","spell_fire_soulburn"], ["Conflagrate","1/1","spell_fire_fireball"], ["Bane of Havoc","1/1","ability_warlock_baneofhavoc"]]),
+      rotation: {"confidence": "medium", "note": "Voidwalker tanks, Shadow Bolt and Conflagrate do the damage.", "single": [{"name": "Summon Voidwalker", "icon": "spell_shadow_summonvoidwalker", "note": "Your tank."}, {"name": "Corruption", "icon": "spell_shadow_abominationexplosion", "note": "Near-instant: first."}, {"name": "Shadow Bolt", "icon": "spell_shadow_shadowbolt", "note": "Main spell."}, {"name": "Conflagrate", "icon": "spell_fire_fireball", "note": "On cooldown while Immolate is up."}], "aoeNote": "Life Tap between pulls."},
+    },
+  ],
   Mage: [
     {
       spec: "Arcane", title: "Mage — Level 30 Arcane", code: "250005003100311", rotation: {"confidence": "medium", "note": "Arcane Blast build with Missile Barrage and Presence of Mind.", "single": [{"name": "Arcane Blast", "icon": "spell_arcane_blast", "note": "Main nuke."}, {"name": "Arcane Missiles", "icon": "spell_nature_starfall", "note": "On Missile Barrage procs."}, {"name": "Presence of Mind", "icon": "spell_nature_enchantarmor", "note": "Instant big cast on cooldown (our PoM macros)."}, {"name": "Fire Blast", "icon": "spell_fire_fireball", "note": "Finisher while moving."}], "aoe": [{"name": "Frost Nova", "icon": "spell_frost_frostnova", "note": "Root the pack."}, {"name": "Arcane Explosion", "icon": "spell_nature_wispsplode", "note": "Spam in the middle."}]},
@@ -416,7 +438,7 @@ const DATA30 = {
     },
   ],
   Rogue: [{
-    title: "Rogue — Level 30 Combat", code: "-3200332110051", rotation: {"confidence": "medium", "note": "Sinister Strike build with Blade Flurry.", "single": [{"name": "Slice and Dice", "icon": "ability_rogue_slicedice", "note": "At 1-2 combo points on longer fights."}, {"name": "Sinister Strike", "icon": "spell_shadow_ritualofsacrifice", "note": "Builder."}, {"name": "Eviscerate", "icon": "ability_rogue_eviscerate", "note": "At 4-5 combo points."}], "aoe": [{"name": "Blade Flurry", "icon": "ability_warrior_punishingblow", "note": "Two mobs."}], "aoeNote": "Riposte after a parry; Evasion and Sprint to escape."},
+    spec: "Combat", title: "Rogue — Level 30 Combat", code: "-3200332110051", rotation: {"confidence": "medium", "note": "Sinister Strike build with Blade Flurry.", "single": [{"name": "Slice and Dice", "icon": "ability_rogue_slicedice", "note": "At 1-2 combo points on longer fights."}, {"name": "Sinister Strike", "icon": "spell_shadow_ritualofsacrifice", "note": "Builder."}, {"name": "Eviscerate", "icon": "ability_rogue_eviscerate", "note": "At 4-5 combo points."}], "aoe": [{"name": "Blade Flurry", "icon": "ability_warrior_punishingblow", "note": "Two mobs."}], "aoeNote": "Riposte after a parry; Evasion and Sprint to escape."},
     talents: t30([
       ["Improved Eviscerate","3/3","ability_rogue_eviscerate"], ["Improved Sinister Strike","2/2","spell_shadow_ritualofsacrifice"],
       ["Deflection","3/3","ability_parry"], ["Precision","3/3","ability_marksmanship"],
@@ -424,7 +446,18 @@ const DATA30 = {
       ["Improved Sprint","1/2","ability_rogue_sprint"], ["Dual Wield Specialization","5/5","ability_dualwield"],
       ["Blade Flurry","1/1","ability_warrior_punishingblow"],
     ]),
-  }],
+  },
+    {
+      spec: "Assassination", title: "Rogue — Level 30 Assassination", code: "02530310501001", meta: "Reasoned from the guides' picks and our talent data (sources differ): re-check in beta. The first 14 points agree everywhere; treat the last 7 as flexible.",
+      talents: t30([["Remorseless Attacks","2/2","ability_fiegndead"], ["Malice","5/5","ability_racial_bloodrage"], ["Ruthlessness","3/3","ability_druid_disembowel"], ["Improved Slice and Dice","3/3","ability_rogue_slicedice"], ["Relentless Strikes","1/1","ability_warrior_decisivestrike"], ["Lethality","5/5","ability_criticalstrike"], ["Cold Blood","1/1","spell_ice_lament"], ["Mutilate","1/1","ability_rogue_deadlybrew"]]),
+      rotation: {"confidence": "medium", "note": "Daggers: Mutilate to build, spend on Eviscerate.", "single": [{"name": "Slice and Dice", "icon": "ability_rogue_slicedice", "note": "At 1-2 combo points on long fights."}, {"name": "Mutilate", "icon": "ability_rogue_deadlybrew", "note": "Builder."}, {"name": "Cold Blood", "icon": "spell_ice_lament", "note": "Before a big Eviscerate."}, {"name": "Eviscerate", "icon": "ability_rogue_eviscerate", "note": "At 4-5 combo points."}], "aoeNote": "Blade Flurry is not in this build; Sprint or Evasion if it goes wrong."},
+    },
+    {
+      spec: "Subtlety", title: "Rogue — Level 30 Subtlety", code: "--4023003310013001", meta: "From Mobalytics' and wowvendor's Forever builds (identical).",
+      talents: t30([["Camouflage","4/5","ability_stealth"], ["Opportunity","2/2","ability_warrior_warcry"], ["Setup","3/3","spell_nature_mirrorimage"], ["Improved Ambush","3/3","ability_rogue_ambush"], ["Initiative","3/3","spell_shadow_fumble"], ["Ghostly Strike","1/1","spell_shadow_curse"], ["Premeditation","1/1","spell_shadow_possession"], ["Serrated Blades","3/3","inv_sword_17"], ["Hemorrhage","1/1","spell_shadow_lifedrain"]]),
+      rotation: {"confidence": "medium", "note": "Opener from stealth, then Hemorrhage.", "single": [{"name": "Premeditation", "icon": "spell_shadow_possession", "note": "Before opening from stealth."}, {"name": "Ambush", "icon": "ability_rogue_ambush", "note": "Opener."}, {"name": "Hemorrhage", "icon": "spell_shadow_lifedrain", "note": "Builder."}, {"name": "Eviscerate", "icon": "ability_rogue_eviscerate", "note": "At 4-5 combo points."}], "aoeNote": "Ghostly Strike when you need to dodge more."},
+    },
+  ],
   Druid: [
     {
       spec: "Feral", title: "Druid — Level 30 Feral (Bear tank / Cat)", code: "-5320000212003201", meta: "From Mobalytics' Forever leveling guide.",
@@ -435,6 +468,11 @@ const DATA30 = {
       spec: "Restoration", title: "Druid — Level 30 Restoration (Healer)", code: "--0550035003", meta: "Our proposal from the live Forever talent trees (no guide has a Forever build for this yet): re-check it after launch.",
       talents: t30([["Furor","5","spell_holy_blessingofstamina"], ["Naturalist","5","spell_nature_healingtouch"], ["Gift of Nature","5","spell_nature_protectionformnature"], ["Reflection","3","spell_frost_windwalkon"], ["Improved Rejuvenation","3","spell_nature_rejuvenation"]]),
       rotation: {"confidence": "medium", "note": "Our dungeon-healer proposal: stronger heals (Gift of Nature), mana while casting (Reflection) and better Rejuvenation.", "single": [{"name": "Rejuvenation", "icon": "spell_nature_rejuvenation", "note": "Keep it on the tank."}, {"name": "Regrowth", "icon": "spell_nature_resistnature", "note": "Bigger hit plus a HoT."}, {"name": "Healing Touch", "icon": "spell_nature_healingtouch", "note": "Big heal; downrank to save mana."}], "aoeNote": "Mark of the Wild on everyone, Thorns on the tank, Abolish Poison / Remove Curse."},
+    },
+    {
+      spec: "Balance", title: "Druid — Level 30 Balance", code: "5032220114001", meta: "Reasoned from the guides' picks and our talent data (sources differ): re-check in beta. Mobalytics calls Nature's Grace the level 30 power spike; Balance is a low-priority leveler.",
+      talents: t30([["Improved Wrath","5/5","spell_nature_abolishmagic"], ["Moonglow","3/3","spell_nature_sentinal"], ["Improved Moonfire","2/2","spell_nature_starfall"], ["Nature's Majesty","2/2","inv_staff_01"], ["Nature's Reach","2/2","spell_nature_naturetouchgrow"], ["Nature's Splendor","1/1","spell_nature_natureresistancetotem"], ["Insect Swarm","1/1","spell_nature_insectswarm"], ["Vengeance","4/5","ability_racial_avatar"], ["Nature's Grace","1/1","spell_nature_naturesblessing"]]),
+      rotation: {"confidence": "medium", "note": "Wrath and Moonfire, Insect Swarm on long fights.", "single": [{"name": "Moonfire", "icon": "spell_nature_starfall", "note": "Opener."}, {"name": "Insect Swarm", "icon": "spell_nature_insectswarm", "note": "Long fights."}, {"name": "Wrath", "icon": "spell_nature_abolishmagic", "note": "Main spell."}], "aoeNote": "Entangling Roots if a mob reaches you; Hurricane under groups."},
     },
   ],
   Shaman: [{
@@ -457,7 +495,7 @@ const DATA30 = {
     rotation: {"confidence": "medium", "note": "Our proposal: stronger and cheaper shocks and Lightning Bolt, better fire totems.", "single": [{"name": "Flame Shock", "icon": "spell_fire_flameshock", "note": "Pull with it."}, {"name": "Searing Totem", "icon": "spell_fire_searingtotem", "note": "Drop it for free damage."}, {"name": "Lightning Bolt", "icon": "spell_nature_lightning", "note": "Main nuke."}, {"name": "Earth Shock", "icon": "spell_nature_earthshock", "note": "Interrupt or finisher."}], "aoe": [{"name": "Fire Nova Totem", "icon": "spell_fire_sealoffire", "note": "Two or more mobs."}, {"name": "Chain Lightning", "icon": "spell_nature_chainlightning", "note": "From level 32."}], "aoeNote": "Front-load spells on the pull, then melee while mana regenerates."},
   }],
   Hunter: [{
-    title: "Hunter — Level 30 Beast Mastery", code: "5020221502101", rotation: {"confidence": "medium", "note": "Pet does the tanking; you shoot.", "single": [{"name": "Hunter's Mark", "icon": "ability_hunter_snipershot", "note": "Our HMark + pet macro sends the pet."}, {"name": "Serpent Sting", "icon": "ability_hunter_quickshot", "note": "Longer fights."}, {"name": "Arcane Shot", "icon": "ability_impalingbolt", "note": "On cooldown."}, {"name": "Auto Shot", "icon": "ability_whirlwind", "note": "Never clip it."}], "aoe": [{"name": "Multi-Shot", "icon": "ability_upgrademoonglaive", "note": "On cooldown."}], "aoeNote": "Intimidation stuns a mob off you; Raptor Strike + Wing Clip in melee."},
+    spec: "Beast Mastery", title: "Hunter — Level 30 Beast Mastery", code: "5020221502101", rotation: {"confidence": "medium", "note": "Pet does the tanking; you shoot.", "single": [{"name": "Hunter's Mark", "icon": "ability_hunter_snipershot", "note": "Our HMark + pet macro sends the pet."}, {"name": "Serpent Sting", "icon": "ability_hunter_quickshot", "note": "Longer fights."}, {"name": "Arcane Shot", "icon": "ability_impalingbolt", "note": "On cooldown."}, {"name": "Auto Shot", "icon": "ability_whirlwind", "note": "Never clip it."}], "aoe": [{"name": "Multi-Shot", "icon": "ability_upgrademoonglaive", "note": "On cooldown."}], "aoeNote": "Intimidation stuns a mob off you; Raptor Strike + Wing Clip in melee."},
     talents: t30([
       ["Deadly Aspects","5/5","spell_nature_ravenform"], ["Focused Fire","2/2","inv_weapon_crossbow_10"],
       ["Pathfinding","2/2","ability_mount_jungletiger"], ["Improved Revive Pet","2/2","ability_hunter_beastsoothe"],
@@ -465,7 +503,18 @@ const DATA30 = {
       ["Ferocity","2/5","inv_misc_monsterclaw_04"], ["Summon Hawk","1/1","ability_hunter_animalhandler"],
       ["Intimidation","1/1","ability_devour"],
     ]),
-  }],
+  },
+    {
+      spec: "Marksmanship", title: "Hunter — Level 30 Marksmanship", code: "-30500520015", meta: "From Mobalytics' and LepreStore's Forever builds (identical). Trueshot Aura helps the whole group.",
+      talents: t30([["Hawk Eye","3/3","ability_townwatch"], ["Lethal Attacks","5/5","ability_searingarrow"], ["Careful Aim","5/5","ability_hunter_zenarchery"], ["Rapid Killing","2/2","ability_hunter_rapidkilling"], ["Trueshot Aura","1/1","ability_trueshot"], ["Mortal Shots","5/5","ability_piercedamage"]]),
+      rotation: {"confidence": "medium", "note": "Mark, shoot, keep the pet on the target.", "single": [{"name": "Hunter's Mark", "icon": "ability_hunter_snipershot", "note": "Before the pull."}, {"name": "Auto Shot", "icon": "ability_whirlwind", "note": "Keep it running."}, {"name": "Serpent Sting", "icon": "ability_hunter_quickshot", "note": "Long fights only."}, {"name": "Arcane Shot", "icon": "ability_impalingbolt", "note": "Between Auto Shots."}, {"name": "Raptor Strike", "icon": "ability_meleedamage", "note": "If a mob reaches you."}], "aoeNote": "Multi-Shot on two or more mobs; Trueshot Aura on at all times."},
+    },
+    {
+      spec: "Survival", title: "Hunter — Level 30 Survival", code: "--5402000310410001", meta: "Reasoned from the guides' picks and our talent data (sources differ): re-check in beta. Mobalytics and LepreStore agree; other guides take Survivalist and Clever Traps instead.",
+      talents: t30([["Improved Tracking","5/5","inv_misc_head_dragon_black"], ["Deflection","4/5","ability_parry"], ["Savage Strikes","2/2","ability_racial_bloodrage"], ["Surefooted","3/3","ability_kick"], ["Deterrence","1/1","ability_whirlwind"], ["Predator's Edge","4/5","ability_dualwield"], ["Counterattack","1/1","ability_warrior_challange"], ["Strider Kick","1/1","ability_hunter_pet_tallstrider"]]),
+      rotation: {"confidence": "medium", "note": "Traps and melee, with Counterattack when you are hit.", "single": [{"name": "Hunter's Mark", "icon": "ability_hunter_snipershot", "note": "Before the pull."}, {"name": "Serpent Sting", "icon": "ability_hunter_quickshot", "note": "Keep it up."}, {"name": "Arcane Shot", "icon": "ability_impalingbolt", "note": "Main shot."}, {"name": "Raptor Strike", "icon": "ability_meleedamage", "note": "In melee."}, {"name": "Counterattack", "icon": "ability_warrior_challange", "note": "After you parry or dodge."}], "aoeNote": "Immolation Trap or Explosive Trap under groups."},
+    },
+  ],
   Paladin: [
     {
       spec: "Retribution", title: "Paladin — Level 30 Retribution", code: "--0500533120101", meta: "From Mobalytics' Forever leveling guide.",
@@ -503,6 +552,16 @@ const DATA30 = {
         ["Two-Handed Weapon Specialization","3/3","inv_axe_09"], ["Impale","2/2","ability_searingarrow"],
         ["Sweeping Strikes","1/1","ability_rogue_slicedice"],
       ]),
+    },
+    {
+      spec: "Fury", title: "Warrior — Level 30 Fury (two-hander)", code: "-0555000005001", meta: "Reasoned from the guides' picks and our talent data (sources differ): re-check in beta. Mobalytics' build after the Oct 2 rework (Lingering Rage); the only guide updated for it.",
+      talents: t30([["Cruelty","5/5","ability_rogue_eviscerate"], ["Lingering Rage","5/5","ability_warrior_secondwind"], ["Unbridled Wrath","5/5","spell_nature_stoneclawtotem"], ["Enrage","5/5","ability_druid_enrage"], ["Death Wish","1/1","spell_shadow_deathpact"]]),
+      rotation: {"confidence": "medium", "note": "Two-hander with Death Wish.", "single": [{"name": "Charge", "icon": "ability_warrior_charge", "note": "Opener."}, {"name": "Battle Shout", "icon": "ability_warrior_battleshout", "note": "Before the pull."}, {"name": "Death Wish", "icon": "spell_shadow_deathpact", "note": "On cooldown for big fights."}, {"name": "Rend", "icon": "ability_gouge", "note": "Long fights."}, {"name": "Heroic Strike", "icon": "ability_rogue_ambush", "note": "Rage dump."}, {"name": "Execute", "icon": "inv_sword_48", "note": "Below 20% health."}], "aoeNote": "Cleave on two or more mobs."},
+    },
+    {
+      spec: "Fury (dual-wield)", title: "Warrior — Level 30 Fury (dual-wield, 26 points)", code: "-4505010505001", meta: "Our own code. 26 points: turn the Talented perk on (+5 points). It uses Booming Voice and Piercing Howl as filler that the two-hander no longer needs.",
+      talents: t30([["Booming Voice","4/5","spell_nature_purge"], ["Cruelty","5/5","ability_rogue_eviscerate"], ["Unbridled Wrath","5/5","spell_nature_stoneclawtotem"], ["Piercing Howl","1/1","spell_shadow_deathscream"], ["Dual Wield Specialization","5/5","ability_dualwield"], ["Enrage","5/5","ability_druid_enrage"], ["Death Wish","1/1","spell_shadow_deathpact"]]),
+      rotation: {"confidence": "medium", "note": "Dual-wield with Death Wish.", "single": [{"name": "Charge", "icon": "ability_warrior_charge", "note": "Opener."}, {"name": "Battle Shout", "icon": "ability_warrior_battleshout", "note": "Before the pull."}, {"name": "Death Wish", "icon": "spell_shadow_deathpact", "note": "On cooldown."}, {"name": "Heroic Strike", "icon": "ability_rogue_ambush", "note": "Rage dump."}, {"name": "Execute", "icon": "inv_sword_48", "note": "Below 20% health."}]},
     },
   ],
 };

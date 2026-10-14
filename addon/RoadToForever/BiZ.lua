@@ -166,8 +166,8 @@ function BiZ.Enchants(specId, slot)
   return sp and sp.enchants and sp.enchants[slot] or {}
 end
 
--- The item tooltip's enchant line: what Mr.BiZ recommends for the slot this item goes in, in the game's enchant
--- green, like Sixty Upgrades shows it on the item. Equip locations -> Mr.BiZ slot keys; a one-hand weapon is
+-- The item tooltip's enchant line: what Mr.BiZ recommends for the slot this item goes in, in pink (the
+-- item's own green stats made it hard to spot), like Sixty Upgrades shows it on the item. Equip locations -> Mr.BiZ slot keys; a one-hand weapon is
 -- judged as a main hand, a shield as an off hand.
 local ENCHANT_SLOT_OF = {
   INVTYPE_CLOAK = "back", INVTYPE_CHEST = "chest", INVTYPE_ROBE = "chest", INVTYPE_FEET = "feet", INVTYPE_HAND = "hands",
@@ -191,11 +191,11 @@ function BiZ.EnchantTipLine(link, loc, specId)
   local have = tonumber(link:match("item:%d+:(%d*)")) or 0
   local state, _, rank = BiZ.EnchantState(rows, have)
   if state == "best" then
-    return L.BIZ_TIP_ENCHANT_HAVE:format(best.name), 0.1, 1, 0.1
+    return L.BIZ_TIP_ENCHANT_HAVE:format(best.name), 1, 0.5, 0.85
   elseif state == "alt" then
     return L.BIZ_TIP_ENCHANT_ALT:format(rank, best.name), 1, 0.82, 0
   end
-  return L.BIZ_TIP_ENCHANT:format(best.name, best.eff), 0.1, 1, 0.1
+  return L.BIZ_TIP_ENCHANT:format(best.name, best.eff), 1, 0.5, 0.85
 end
 
 -- ---------------------------------------------------------------------------

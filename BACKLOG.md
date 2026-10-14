@@ -32,8 +32,10 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 3. **ForeverChanges as a source**: compared only (`bis/foreverchanges-compare.md`); nothing imported.
 
 ## 4. Site: builds and macros
-1. **Level 30 builds missing** (owner supplies talent codes, each needs a rotation): Warrior Fury (`-4505010505001`), Warlock Destruction + Demonology,
-   Priest Discipline (`023303131300121-3-`), Hunter Marksmanship + Survival, Rogue Assassination + Subtlety, Druid Balance.
+1. **Level 30 builds: confirm in beta** (added 2026-10-14, all "medium"): Survival (sources disagree), Assassination (last 7 points flexible), Fury, Balance, Discipline; Marksmanship's tree may gain Improved Serpent Sting (check share links).
+1b. **Talent pick order** (plan 2026-10-14, owner agreed): add an ordered 21-entry pick list to each build, generated into TalentData.lua, with a test that replays it (gates + prerequisites); a level stepper on the board for Recommended builds, then a "next point" hint on Home / level-up, one-click learn last (after TESTING 4.2). Prerequisite arrows come first: raise STEP_Y to about 44 (board grows about 42 px, must still fit 566 px), grey until the prerequisite is met, gold after.
+1c. **Group picks in the addon**: the addon cannot fetch group-builds.json; it would have to be baked in at release like MacroData. Owner asked 2026-10-14 whether to add it.
+1d. **Fury / Warrior "+5 Talented points" option**: builds.html already has the Talented switch; check the 26-point builds (Fury dual-wield, Priest Healer / PvP) show it clearly.
 2. **Re-check the 15 "medium" rotations** (only Priest Shadow, Druid Feral, Paladin Retribution, Warrior Protection are "high").
 3. **Macro fall-through audit** (a macro stops at the first `/cast` of a known-but-unusable spell):
    - Fix now: Hunter "Raptor Strike + Wing Clip" and "Survival melee button", Rogue "Pick Pocket + Sap": split or drop.

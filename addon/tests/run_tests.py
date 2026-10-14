@@ -6963,9 +6963,9 @@ def test_enchant_tooltip():
     spec, best_id, alt_id, best_name = found[1], found[2], found[3], found[4]
     fn = lua.eval("function(link, loc, spec) return R2F.BiZ.EnchantTipLine(link, loc, spec) end")
     text, r, g, b = fn("item:1000:0:0:0", "INVTYPE_CHEST", spec)
-    check(text.startswith("Mr.BiZ enchant: " + best_name) and (r, g, b) == (0.1, 1, 0.1), "enchant tip: no enchant -> the BiZ pick, green: %s" % text)
+    check(text.startswith("Mr.BiZ enchant: " + best_name) and (r, g, b) == (1, 0.5, 0.85), "enchant tip: no enchant -> the BiZ pick, pink: %s" % text)
     text, r, g, b = fn("item:1000:%d:0:0" % best_id, "INVTYPE_CHEST", spec)
-    check(text == "Mr.BiZ enchant in place: " + best_name and g == 1, "enchant tip: the best enchant already on -> 'in place': %s" % text)
+    check(text == "Mr.BiZ enchant in place: " + best_name and r == 1 and b == 0.85, "enchant tip: the best enchant already on -> 'in place': %s" % text)
     text, r, g, b = fn("item:1000:%d:0:0" % alt_id, "INVTYPE_CHEST", spec)
     check(text.startswith("Enchant: the #2 pick. Mr.BiZ best: ") and r == 1 and g == 0.82, "enchant tip: a stand-in -> gold, names the best: %s" % text)
     check(fn("item:1000:0:0:0", "INVTYPE_FINGER", spec) is None, "enchant tip: rings have no enchant line")

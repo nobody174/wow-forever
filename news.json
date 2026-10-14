@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-14",
+      "title": "More level 30 builds",
+      "text": "The Builds page now has level 30 builds for Hunter Marksmanship and Survival, Warlock Destruction and Demonology, Rogue Assassination and Subtlety, Druid Balance, Warrior Fury (two-hander and dual-wield) and Priest Discipline (a leveler and a Healer / PvP one). Some come from several guides that disagree, so they are marked medium confidence until we test them in the beta.",
+      "link": "builds.html"
+    },
+    {
+      "date": "2026-10-14",
       "title": "Druid macros",
       "text": "The macro page now has Druid: 61 macros for Shared, Balance, Feral (Bear and Cat) and Restoration. Form-swap macros shift you into the right form first, heals and cleanses go on your mouseover, and rune abilities are marked as needing their rune. They're built from the Forever ability list and other Forever guides and not tested in the beta yet, so each form macro says what to check.",
       "link": "macros.html"

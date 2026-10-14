@@ -1714,6 +1714,12 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.55.3 (2026-10-14)
+
+- ImportFrame.lua doImport: an import holding only another class's records (plus Universal) opens that class's preview even when nothing in it is new (before, `firstNew` was nil on a repeat import and the book stayed on the browsed class).
+- BiZ.EnchantTipLine colour green -> pink (1, 0.5, 0.85); two run_tests checks updated.
+- builds.html DATA30: 11 new builds (Hunter MM + SV, Warlock Destruction + Demonology, Rogue Assassination + Subtlety, Druid Balance, Warrior Fury two-hander + dual-wield (26 pts), Priest Discipline leveler + Healer/PvP (26 pts)); existing single-build Warlock / Rogue / Hunter got `spec` names. All codes validated against TalentData (gates, prerequisites, ranks) with the decoded rows and icons generated from it; rotations are "medium". TalentData.lua regenerated. Source: Claude Desktop research 2026-10-14 (Mobalytics, LepreStore, wowvendor, wowforever.gg).
+
 ## 0.55.2 (2026-10-14)
 
 - Gameplay.lua sellGray: batches of 4 every 0.25 s with a re-scan (items that stay after 2 tries are skipped; sold items are counted when they leave the bag). GameplayChat.lua Chat.Text: pcall per line, skips `issecretvalue` lines, returns a hidden count; the window shows a reason instead of staying blank (the owner's first real test of Copy chat came up empty; cause not proven, this adds the counters needed to see it). GameplayExtras mail menu foot note. UI.CheckedGlow adds a gold UI-ActionButton-Border ring on checked buttons. Tests: test_sell_batches_and_chat_secret; the vendor and mail tests follow the new behaviour. addon/dev/TESTING.md: confirmed items moved out.

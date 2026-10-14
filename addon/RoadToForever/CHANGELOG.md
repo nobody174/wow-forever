@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.55.3 (2026-10-14)
+
+- Importing macros of another class (for example Shaman macros on a Druid) now always opens that class's preview, even when the same string was imported before.
+- The Mr.BiZ enchant line on item tooltips is pink, so it no longer disappears among the green stats.
+- New recommended level-30 builds on the Talents tab: Hunter Marksmanship and Survival, Warlock Destruction and Demonology, Rogue Assassination and Subtlety, Druid Balance, Warrior Fury (two-hander and dual-wield) and Priest Discipline (leveler and Healer / PvP).
+
 ## 0.55.2 (2026-10-14)
 
 - Auto-sell grey items now sells a few at a time and looks again, so a full bag is cleaned in one vendor visit (before, only part of it sold and you had to talk to the vendor again).

@@ -50,6 +50,14 @@ local function doImport()
   -- Jump to the first tab that got a new macro: a Universal / own-class
   -- one if any, else another class's, shown as a preview.
   local first = diff.firstNewOwn or diff.firstNew
+  -- An import holding only another class's macros (plus Universal) opens that class's preview, even when
+  -- nothing in it is new (a second import of the same Shaman string).
+  local own, other = false, nil
+  for _, r in ipairs(parsed.records or {}) do
+    if r.class == playerClass() then own = true
+    elseif r.class ~= "ANY" and not other then other = r end
+  end
+  if other and not own then first = other end
   R2F.MacroBook.ShowSection(first and first.class, first and first.section)
 end
 

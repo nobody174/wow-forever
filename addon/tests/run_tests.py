@@ -7010,6 +7010,15 @@ def test_talent_sandbox_ui(templates):
     # Loadouts menu starts with "My current talents" (the character's own build on the board).
     lua.execute("R2F.TalentPanel.LoadoutsMenu()")
     check(lua.eval("MENU[1].text") == lua.eval("R2F.L.TALENT_LOAD_MINE") and lua.eval("MENU[1].kind") == "button", "%s: loadouts menu offers my current talents first" % tag)
+    # Group picks (0.62.1): the owner's picks baked into TalentData show under the Recommended menu.
+    lua.execute("R2F.TalentData.groupBuilds = { { 'priest', 'Raid healer', 'Venom', '003-0321510303' }, { 'mage', 'Not mine', '', '25' } }")
+    check(lua.eval("#R2F.TalentCalc.GroupPicks('priest')") == 1 and lua.eval("R2F.TalentCalc.GroupPicks('priest')[1].by") == "Venom", "%s: group picks per class" % tag)
+    lua.execute("R2F.TalentPanel.RecommendedMenu()")
+    texts = lua_table_to_list(lua.eval("(function() local o = {} for i, it in ipairs(MENU) do o[i] = it.kind .. ':' .. (it.text or '') end return o end)()"))
+    check("title:Group picks" in texts and any("Raid healer" in t for t in texts), "%s: the Recommended menu lists the group picks: %s" % (tag, texts))
+    lua.execute("for _, it in ipairs(MENU) do if it.text and it.text:find('Raid healer') then it.func() end end")
+    check(lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())") > 5, "%s: picking a group pick fills the board" % tag)
+    lua.execute("R2F.TalentData.groupBuilds = {}")
     t0 = lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())")
     lua.execute("R2F.TalentPanel.Step(-1)")
     check(lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())") == t0 - 1, "%s: stepper back = one point less" % tag)

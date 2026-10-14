@@ -294,6 +294,15 @@ end
 Calc.ROLES = { "Tank", "DPS", "Healer" }
 
 -- { { level, role, name, code } } for a class, role order Tank / DPS / Healer, then level 60 before 30.
+-- The owner's Group picks for a class (group-builds.json on the site, baked in at release): { name, by, code }, in file order.
+function Calc.GroupPicks(classId)
+  local out = {}
+  for _, e in ipairs(R2F.TalentData and R2F.TalentData.groupBuilds or {}) do
+    if e[1] == classId then out[#out + 1] = { name = e[2], by = e[3], code = e[4] } end
+  end
+  return out
+end
+
 function Calc.Recommended(classId)
   local out = {}
   local b = R2F.TalentData and R2F.TalentData.builds or {}

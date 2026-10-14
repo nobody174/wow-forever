@@ -74,6 +74,19 @@ def builds():
     return out
 
 
+def group_picks():
+    """The owner's Group picks (group-builds.json, published from the site): (class id, name, by, code)."""
+    path = ROOT / "group-builds.json"
+    if not path.exists():
+        return []
+    out = []
+    for p in json.loads(path.read_text(encoding="utf-8")).get("picks", []):
+        cls, _, code = str(p.get("code", "")).partition("/")
+        if cls in [c[0] for c in CLASSES] and re.fullmatch(r"[0-9-]*", code) and p.get("name"):
+            out.append((cls, str(p["name"]), str(p.get("by") or ""), code))
+    return out
+
+
 def trees_lua(raw, trees):
     """Lua lines for one class's trees: `trees` = [(tree id, name)], `raw` = Wowhead's {tree id: {talent id: talent}}.
     Also used by the tests to feed the addon a small fixture in the same format."""
@@ -118,6 +131,11 @@ def build_text(raw):
     for cls, lvl, role, name, code in builds():
         lines.append("    {%s,%d,%s,%s,%s}," % (lua_str(cls), lvl, lua_str(role), lua_str(name), lua_str(code)))
     lines.append("  },")
+    lines.append("  -- Group picks: { class, name, by, code } (group-builds.json, the owner's picks from the site).")
+    lines.append("  groupBuilds = {")
+    for cls, name, by, code in group_picks():
+        lines.append("    {%s,%s,%s,%s}," % (lua_str(cls), lua_str(name), lua_str(by), lua_str(code)))
+    lines.append("  },")
     lines.append("}")
     return "\n".join(lines) + "\n"
 
@@ -130,6 +148,11 @@ def main():
         got = ["%s,%s,%s,%s,%s" % g for g in got]
         if want != got:
             print("TalentData.lua is out of date with builds.html: run python addon/tools/gen_talent_data.py")
+            return 1
+        wantg = ["%s,%s,%s,%s" % g for g in group_picks()]
+        gotg = ["%s,%s,%s,%s" % g for g in re.findall(r'\{"(\w+)","(.*?)","(.*?)","(.*?)"\},', have.split("groupBuilds = {")[-1])]
+        if wantg != gotg:
+            print("TalentData.lua is out of date with group-builds.json: run python addon/tools/gen_talent_data.py")
             return 1
         return 0
     raw = fetch()

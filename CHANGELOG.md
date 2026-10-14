@@ -1720,6 +1720,9 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Workflow action versions)
 - ci.yml / release.yml: actions/checkout v4 -> v6, setup-python v5 -> v6, setup-node v4 -> v6, softprops/action-gh-release v2 -> v3 (all on the Node 24 runtime; the inputs we use are unchanged). The release step is only exercised by the next tag.
 
+## 2026-10-15 (Group picks in the addon, unreleased)
+- gen_talent_data.py writes `groupBuilds` from group-builds.json into TalentData.lua (`--check` covers it); Calc.GroupPicks and a "Group picks" section in the Recommended menu on the Talents tab. group-builds.json is empty today, so nothing shows until the owner publishes picks on the site and a release is made.
+
 ## 0.62.0 (2026-10-15)
 
 - Repair.lua (GetInventoryItemDurability over slots 1-19, worst piece, threshold slider 5-90 default 25) and Pet.lua (UnitExists / UnitIsDead on "pet", GetPetHappiness for Hunters, quiet when mounted / dead) as reminder modules in the Reminders registry (`applies` for Hunter / Warlock); R2FDB.repair / R2FDB.pet defaults in Library.lua; `/r2f repair [lock]`, `/r2f pet [lock]`; the Loadouts menu entry uses Talents.MyBuildLink. First release with the Node 24 action versions (see 2026-10-15 Workflow action versions).

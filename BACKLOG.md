@@ -21,8 +21,7 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 
 
 ## 3. Mr.BiZ data
-1. **9 rank 2-3 items with no source** (`bis/sources.json`: 271911, 271920, 276631, 277219, 282283, 282653, 282658, 284399, 284401); two drop zones are
-   Forever-new ids Wowhead didn't name (16611 Rath'mael, 16732 Shadetooth).
+1. **9 rank 2-3 items with no source** (`bis/sources.json`: 271911, 271920, 276631, 277219, 282283, 282653, 282658, 284399, 284401): checked 2026-10-15, ForeverDB's own item pages say "where it comes from isn't known yet" for all nine, so there is nothing to add; check again after launch. Two drop zones are Forever-new ids Wowhead didn't name (16611 Rath'mael, 16732 Shadetooth).
 2. **Data pipeline** (ADDON_PLAN 19, to write): keep the list current from ForeverDB / Wowhead / addon reports; Wowhead throttles (403 after ~70 quick
    pages); reuse permission for republishing is an open question.
 3. **ForeverChanges as a source**: compared only (`bis/foreverchanges-compare.md`); nothing imported.
@@ -30,7 +29,6 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 ## 4. Site: builds and macros
 1. **Level 30 builds: confirm in beta** (added 2026-10-14, all "medium"): Survival (sources disagree), Assassination (last 7 points flexible), Fury, Balance, Discipline; Marksmanship's tree may gain Improved Serpent Sting (check share links).
 1b. **Talent pick order, still open**: (a) a guide's real pick order per build (the current order is tier by tier), (b) one-click "learn next point" after TESTING 4.2 passes.
-1c. **Group picks in the addon**: the addon cannot fetch group-builds.json; it would have to be baked in at release like MacroData. Owner asked 2026-10-14 whether to add it.
 1d. **Fury / Warrior "+5 Talented points" option**: builds.html already has the Talented switch; check the 26-point builds (Fury dual-wield, Priest Healer / PvP) show it clearly.
 2. **Re-check the 15 "medium" rotations** (only Priest Shadow, Druid Feral, Paladin Retribution, Warrior Protection are "high").
 3. **Macro fall-through audit** (a macro stops at the first `/cast` of a known-but-unusable spell):

@@ -258,7 +258,8 @@ end
 function Import.Commit(parsed, playerClass, now, opts)
   local d = Import.Diff(parsed, R2F.Library.db.library, playerClass, opts)
   d.imported = R2F.Library.Apply(parsed.records, now)
-  R2F.Print(d.imported == 1 and L.IMPORT_DONE_ONE or L.IMPORT_DONE:format(d.imported, d.new or 0, d.updated or 0, d.unchanged or 0))
+  R2F.Print(d.imported == 1 and L.IMPORT_DONE_ONE
+    or L.IMPORT_DONE:format(d.imported, d.new or 0, d.updated or 0, d.unchanged or 0))
 
   local plan = d.plan
   -- Markers first: they depend on the macro being on a bar, which an edit

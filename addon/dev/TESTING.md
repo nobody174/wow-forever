@@ -104,7 +104,6 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 5. Interface templates (`/dump R2FMain ~= nil`, `R2FMainTab1.r2fTemplate`, `MenuUtil ~= nil`, `R2F.Minimap.backend`): note the answers in ADDON_PLAN 11 if not already there.
 
 ## 13. Druid macros (0.55.0, all untested in game; use a Druid, level 20+ for Cat)
-1. Import the new string (or `/reload` after updating): a **Druid** tab with Shared / Balance / Feral / Restoration appears in the Macro Book and on the site.
 2. **Form numbers (the key check).** Cat Form + Prowl: press once, you become a cat; press again, you Prowl. If it casts the wrong form or does nothing, tell me your learned forms (Aquatic Form learned? level 16) and the number that works (2 or 3). Same for Claw / Shred / Rake / Dash.
 3. Bear: Bear Form (no unshift) does nothing when already a bear; Growl@ taunts the mouseover; Maul queues on the next hit; Swipe, Demoralizing Roar, Enrage, Frenzied Regeneration shift you first and work. One press must be enough (not two).
 4. Cat from stealth: Ravage / Pounce from Prowl; Tiger's Fury, Dash, Rip, Ferocious Bite work.
@@ -117,5 +116,5 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 11. Level 40: does "Bear Form" in the macros need to become "Dire Bear Form"?
 
 ---
-**Confirmed working (kept for the record):** all of Bags (section 6), Plan weapon lines; Talents tab 3.1-3.9, 3.11, 3.12 (0.54.0); 3D arrow; bag upgrade arrows and tweaks; Plan weapon lines; window, help, tabs, minimap menu (Blizzard's own menu, `MenuUtil` = true), macro tooltips, no duplicate on re-drag, Replace popup, basic Tidy up, Settings, three Quick settings, profession export, Plan Waypoint buttons, `/bizway` with coordinates; Interface number 16001; slot limits 120 + 30; Home footer line; Plan weapon lines show; green bag upgrade arrows; Train now / Next on Home; Alt + right-click map arrow incl. Questie; 24-hour clock box (Quick settings).
+**Confirmed working (kept for the record):** Druid macros appear in the addon's Macro Book (13.1); all of Bags (section 6), Plan weapon lines; Talents tab 3.1-3.9, 3.11, 3.12 (0.54.0); 3D arrow; bag upgrade arrows and tweaks; Plan weapon lines; window, help, tabs, minimap menu (Blizzard's own menu, `MenuUtil` = true), macro tooltips, no duplicate on re-drag, Replace popup, basic Tidy up, Settings, three Quick settings, profession export, Plan Waypoint buttons, `/bizway` with coordinates; Interface number 16001; slot limits 120 + 30; Home footer line; Plan weapon lines show; green bag upgrade arrows; Train now / Next on Home; Alt + right-click map arrow incl. Questie; 24-hour clock box (Quick settings).
 **Dropped by the owner:** combat drag steps of the old section 6, Questie Ctrl + click (TomTom stand-in code stays, harmless), TomTom waypoint tests, "Required level" slider (removed 0.50.0), the old Classic-API talent learning checks (replaced by section 4).

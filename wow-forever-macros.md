@@ -859,6 +859,426 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Hemorrhage
 ```
 
+## Druid
+
+### Druid — Shared (all specs)
+
+#### Damage / offensive
+
+**Wrath** (`Wrath`) — Level 1. Caster form (leave Bear / Cat Form first).
+```
+#showtooltip Wrath
+/cast [harm] Wrath
+```
+
+**Moonfire** (`Moonfire`) — Level 4. Works in caster form (and Moonkin).
+```
+#showtooltip Moonfire
+/cast [harm] Moonfire
+```
+
+**Faerie Fire** (`FaerieFire`) — Level 18. Caster form.
+```
+#showtooltip Faerie Fire
+/cast [harm] Faerie Fire
+```
+
+**Entangling Roots (mouseover)** (`Roots@`) — Level 8.
+```
+#showtooltip Entangling Roots
+/cast [@mouseover, harm, exists][harm] Entangling Roots
+```
+
+**Hibernate (mouseover)** (`Hibernate@`) — Level 18. Beasts and Dragonkin.
+```
+#showtooltip Hibernate
+/cast [@mouseover, harm, exists][harm] Hibernate
+```
+
+**Soothe Animal (mouseover)** (`Soothe@`) — Level 22. Takes the enrage off an animal.
+```
+#showtooltip Soothe Animal
+/cast [@mouseover, harm, exists][harm] Soothe Animal
+```
+
+#### Mouseover healing / utility
+
+**Heal from any form (Healing Touch, Shift = Regrowth)** (`HealForm`) — Test in beta: Leaves Bear / Cat Form first (every press, even if the heal fails). Without a friendly target it heals you.
+```
+#showtooltip Healing Touch
+/cancelform
+/cast [mod:shift, @mouseover, help, nodead][mod:shift, help, nodead][mod:shift, @player] Regrowth; [@mouseover, help, nodead][help, nodead][@player] Healing Touch
+```
+
+**Rebirth in combat, Revive outside it** (`Rebirth@`) — Revive is level 12, Rebirth level 20 (needs a seed). Rebirth out of combat uses its long cooldown. Leave Bear / Cat Form first.
+```
+#showtooltip [combat] Rebirth; Revive
+/cast [@mouseover, help, dead, combat][help, dead, combat] Rebirth
+/cast [@mouseover, help, dead, nocombat][help, dead, nocombat] Revive
+```
+
+**Innervate (mouseover)** (`Innervate@`) — Test in beta: Level 40. Leaves your form first, even when Innervate is on cooldown: keep it off your tanking bar.
+```
+#showtooltip Innervate
+/cancelform
+/cast [@mouseover, help, nodead][help, nodead][@player] Innervate
+```
+
+#### Cleanse / dispel
+
+**Remove Curse (mouseover)** (`RemCurse@`) — Level 24.
+```
+#showtooltip Remove Curse
+/cast [@mouseover, help, exists][help][@player] Remove Curse
+```
+
+**Cure Poison (mouseover)** (`CurePoison@`) — Level 14. Abolish Poison (26) replaces it.
+```
+#showtooltip Cure Poison
+/cast [@mouseover, help, exists][help][@player] Cure Poison
+```
+
+**Abolish Poison (mouseover)** (`Abolish@`) — Level 26.
+```
+#showtooltip Abolish Poison
+/cast [@mouseover, help, exists][help][@player] Abolish Poison
+```
+
+**Cleanse (Abolish Poison, Shift = Remove Curse)** (`Cleanse`) — One button for both. Poison by default, curse with Shift.
+```
+#showtooltip Abolish Poison
+/cast [mod:shift, @mouseover, help, nodead][mod:shift, help, nodead][mod:shift, @player] Remove Curse; [@mouseover, help, nodead][help, nodead][@player] Abolish Poison
+```
+
+#### Buffs
+
+**Mark of the Wild** (`MotW`)
+```
+#showtooltip Mark of the Wild
+/cast [@mouseover, help, exists][help][@player] Mark of the Wild
+```
+
+**Thorns** (`Thorns`) — Level 6.
+```
+#showtooltip Thorns
+/cast [@mouseover, help, exists][help][@player] Thorns
+```
+
+**Gift of the Wild** (`GotW`) — Level 50. Needs a reagent.
+```
+#showtooltip Gift of the Wild
+/cast [@mouseover, help, exists][help][@player] Gift of the Wild
+```
+
+#### Panic / defensive
+
+**Barkskin (Shift = Nature's Grasp)** (`Bark/Grasp`) — Test in beta: Barkskin is level 44, Nature's Grasp level 10. Another Forever guide says neither one drops your form.
+```
+#showtooltip [mod:shift] Nature's Grasp; Barkskin
+/cast [mod:shift] Nature's Grasp; Barkskin
+```
+
+#### Class QoL
+
+**Cat Form (Shift = Bear Form)** (`CatBear`) — Dismounts, then shifts. Pressing it again in that form leaves the form. From level 40 write Dire Bear Form.
+```
+#showtooltip [mod:shift] Bear Form; Cat Form
+/dismount
+/cast [mod:shift] Bear Form; Cat Form
+```
+
+**Travel / Aquatic / Cat Form** (`Travel`) — Aquatic Form level 16, Cat Form 20, Travel Form 30. Until you have Travel Form, delete that part.
+```
+#showtooltip
+/dismount
+/cast [swimming] Aquatic Form; [outdoors] Travel Form; Cat Form
+```
+
+**Leave form and dismount** (`NoForm`) — Stops a cast, drops any form and gets off your mount.
+```
+/stopcasting
+/cancelform
+/dismount
+```
+
+**Teleport: Moonglade** (`Moonglade`) — Level 10.
+```
+#showtooltip Teleport: Moonglade
+/cast Teleport: Moonglade
+```
+
+#### Focus
+
+**Entangling Roots focus** (`Roots F`)
+```
+#showtooltip Entangling Roots
+/cast [@focus, harm, exists][harm] Entangling Roots
+```
+
+**Hibernate focus** (`Hibernate F`)
+```
+#showtooltip Hibernate
+/cast [@focus, harm, exists][harm] Hibernate
+```
+
+### Druid — Balance
+
+#### Damage / offensive
+
+**Starfire** (`Starfire`) — Level 20.
+```
+#showtooltip Starfire
+/cast [harm] Starfire
+```
+
+**Insect Swarm** (`InsectSwarm`) — Level 30.
+```
+#showtooltip Insect Swarm
+/cast [harm] Insect Swarm
+```
+
+**Hurricane at cursor** (`Hurricane`) — Level 40. Channelled: keep still.
+```
+#showtooltip Hurricane
+/cast [@cursor] Hurricane
+```
+
+**Starfire (back into Moonkin, Ctrl = Wrath)** (`StarMoon`) — Test in beta: Needs the Moonkin Form talent. In caster form it shifts you into Moonkin Form first; then Starfire, or Wrath while Ctrl is held. Leave out the first part if you don't have the talent.
+```
+#showtooltip Starfire
+/cast [noform] Moonkin Form; [mod:ctrl] Wrath; Starfire
+```
+
+**Starsurge** (`Starsurge`) — Test in beta: Rune ability: needs the Starsurge rune engraved on your legs.
+```
+#showtooltip Starsurge
+/cast [harm] Starsurge
+```
+
+**Sunfire** (`Sunfire`) — Test in beta: Rune ability: needs the Sunfire rune engraved on your gloves.
+```
+#showtooltip Sunfire
+/cast [harm] Sunfire
+```
+
+**Starfall** (`Starfall`) — Test in beta: Rune ability: needs the Starfall rune engraved on your cloak.
+```
+#showtooltip Starfall
+/cast Starfall
+```
+
+### Druid — Feral
+
+#### Damage / offensive
+
+**Maul** (`Maul`) — Test in beta: Level 10. Shifts into Bear Form first, then queues Maul on your next hit. The 1 is Bear Form's place on the form bar. From level 40 write Dire Bear Form in every Bear macro.
+```
+#showtooltip Maul
+/startattack [harm]
+/cast [noform:1] Bear Form; [harm] Maul
+```
+
+**Swipe** (`Swipe`) — Test in beta: Bear AoE. Shifts into Bear Form first.
+```
+#showtooltip Swipe
+/cast [noform:1] Bear Form; Swipe
+```
+
+**Lacerate** (`Lacerate`) — Test in beta: Bear bleed that stacks. Rune ability: needs the Lacerate rune engraved on your pants.
+```
+#showtooltip Lacerate
+/startattack [harm]
+/cast [noform:1] Bear Form; [harm] Lacerate
+```
+
+**Demoralizing Roar** (`DemoRoar`) — Test in beta: Level 10. Shifts into Bear Form first.
+```
+#showtooltip Demoralizing Roar
+/cast [noform:1] Bear Form; Demoralizing Roar
+```
+
+**Bash** (`Bash`) — Test in beta: Level 14. Stun, and interrupts a cast. Shifts into Bear Form first.
+```
+#showtooltip Bash
+/startattack [harm]
+/cast [noform:1] Bear Form; [harm] Bash
+```
+
+**Skull Bash (mouseover)** (`SkullBash@`) — Test in beta: Interrupt for Bear and Cat Form. Rune ability: needs the Skull Bash rune engraved on your gloves.
+```
+#showtooltip Skull Bash
+/cast [@mouseover, harm, nodead][harm, nodead] Skull Bash
+```
+
+**Claw** (`Claw`) — Test in beta: Level 20. Shifts into Cat Form first. 3 = Cat Form's place on the form bar (Bear, Aquatic, Cat): if you haven't learned Aquatic Form (16), change 3 to 2.
+```
+#showtooltip Claw
+/startattack [harm]
+/cast [noform:3] Cat Form; [harm] Claw
+```
+
+**Shred** (`Shred`) — Test in beta: Level 22. Behind the target. Shifts into Cat Form first (3, or 2 without Aquatic Form).
+```
+#showtooltip Shred
+/startattack [harm]
+/cast [noform:3] Cat Form; [harm] Shred
+```
+
+**Rake** (`Rake`) — Test in beta: Level 24. Shifts into Cat Form first (3, or 2 without Aquatic Form).
+```
+#showtooltip Rake
+/startattack [harm]
+/cast [noform:3] Cat Form; [harm] Rake
+```
+
+**Rip** (`Rip`) — Test in beta: Level 20, combo points. Shifts into Cat Form first (3, or 2 without Aquatic Form).
+```
+#showtooltip Rip
+/startattack [harm]
+/cast [noform:3] Cat Form; [harm] Rip
+```
+
+**Ferocious Bite** (`FeroBite`) — Test in beta: Level 32, combo points. Shifts into Cat Form first (3, or 2 without Aquatic Form).
+```
+#showtooltip Ferocious Bite
+/startattack [harm]
+/cast [noform:3] Cat Form; [harm] Ferocious Bite
+```
+
+**Ravage (from stealth)** (`Ravage`) — Test in beta: Level 32. Needs Prowl, behind the target.
+```
+#showtooltip Ravage
+/startattack [harm]
+/cast [noform:3] Cat Form; [harm] Ravage
+```
+
+**Pounce (from stealth)** (`Pounce`) — Test in beta: Level 36. Needs Prowl, stuns.
+```
+#showtooltip Pounce
+/startattack [harm]
+/cast [noform:3] Cat Form; [harm] Pounce
+```
+
+**Tiger's Fury** (`TigersFury`) — Test in beta: Shifts into Cat Form first (3, or 2 without Aquatic Form).
+```
+#showtooltip Tiger's Fury
+/cast [noform:3] Cat Form; Tiger's Fury
+```
+
+**Dash** (`Dash`) — Test in beta: Level 26. Shifts into Cat Form first (3, or 2 without Aquatic Form).
+```
+#showtooltip Dash
+/cast [noform:3] Cat Form; Dash
+```
+
+#### Panic / defensive
+
+**Frenzied Regeneration** (`FrenzyRegen`) — Test in beta: Level 36. Turns rage into health.
+```
+#showtooltip Frenzied Regeneration
+/cast [noform:1] Bear Form; Frenzied Regeneration
+```
+
+**Enrage** (`Enrage`) — Test in beta: Level 12. Gives rage; lowers your armor while it lasts.
+```
+#showtooltip Enrage
+/cast [noform:1] Bear Form; Enrage
+```
+
+**Survival Instincts** (`SurvInst`) — Test in beta: Rune ability: needs the Survival Instincts rune engraved on your boots.
+```
+#showtooltip Survival Instincts
+/cast Survival Instincts
+```
+
+#### Targeting helpers
+
+**Growl (mouseover)** (`Growl@`) — Test in beta: Level 10. Taunts what is under your mouse, else your target. Shifts into Bear Form first.
+```
+#showtooltip Growl
+/cast [noform:1] Bear Form; [@mouseover, harm, nodead][harm, nodead] Growl
+```
+
+**Challenging Roar** (`ChallRoar`) — Test in beta: Level 28. Taunts everything around you; long cooldown.
+```
+#showtooltip Challenging Roar
+/cast [noform:1] Bear Form; Challenging Roar
+```
+
+#### Class QoL
+
+**Bear Form (no accidental unshift)** (`BearForm`) — Test in beta: Does nothing if you are already a bear. From level 40 write Dire Bear Form.
+```
+#showtooltip Bear Form
+/cast [noform:1] Bear Form
+```
+
+**Cat Form + Prowl** (`CatProwl`) — Test in beta: Press once for Cat Form, again for Prowl. Pressing it while stealthed doesn't break stealth. 3 = Cat Form's place on the form bar (Bear, Aquatic, Cat): without Aquatic Form change 3 to 2.
+```
+#showtooltip Prowl
+/cast [noform:3] Cat Form; [nostealth] Prowl
+```
+
+#### Focus
+
+**Bash focus** (`Bash F`) — Test in beta: Shifts into Bear Form first.
+```
+#showtooltip Bash
+/cast [noform:1] Bear Form; [@focus, harm, exists][harm] Bash
+```
+
+**Skull Bash focus** (`SkullBash F`) — Test in beta: Rune ability: needs the Skull Bash rune.
+```
+#showtooltip Skull Bash
+/cast [@focus, harm, exists][harm] Skull Bash
+```
+
+### Druid — Restoration
+
+#### Mouseover healing / utility
+
+**Healing Touch** (`HTouch`)
+```
+#showtooltip Healing Touch
+/cast [@mouseover, help, exists][help][@player] Healing Touch
+```
+
+**Regrowth** (`Regrowth`) — Level 12.
+```
+#showtooltip Regrowth
+/cast [@mouseover, help, exists][help][@player] Regrowth
+```
+
+**Rejuvenation** (`Rejuv`) — Level 4.
+```
+#showtooltip Rejuvenation
+/cast [@mouseover, help, exists][help][@player] Rejuvenation
+```
+
+**Lifebloom** (`Lifebloom`) — Test in beta: Rune ability: needs the Lifebloom rune engraved on your pants.
+```
+#showtooltip Lifebloom
+/cast [@mouseover, help, exists][help][@player] Lifebloom
+```
+
+**Nourish** (`Nourish`) — Test in beta: Rune ability: needs the Nourish rune engraved on your belt.
+```
+#showtooltip Nourish
+/cast [@mouseover, help, exists][help][@player] Nourish
+```
+
+**Wild Growth** (`WildGrowth`) — Level 50. Heals the target and their party.
+```
+#showtooltip Wild Growth
+/cast [@mouseover, help, exists][help][@player] Wild Growth
+```
+
+**Tranquility** (`Tranquility`) — Level 30. Channelled: keep still.
+```
+#showtooltip Tranquility
+/cast Tranquility
+```
+
 ## Shaman
 
 ### Shaman — Shared (all specs)

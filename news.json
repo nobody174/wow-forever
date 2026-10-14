@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-10-14",
+      "title": "Druid macros",
+      "text": "The macro page now has Druid: 61 macros for Shared, Balance, Feral (Bear and Cat) and Restoration. Form-swap macros shift you into the right form first, heals and cleanses go on your mouseover, and rune abilities are marked as needing their rune. They're built from the Forever ability list and other Forever guides and not tested in the beta yet, so each form macro says what to check.",
+      "link": "macros.html"
+    },
+    {
       "date": "2026-10-13",
       "title": "Mr.BiZ shows the best enchant on every slot",
       "text": "The best enchant for each slot is now on the closed row, and opening a slot lists the 2nd and 3rd best stand-ins. In the addon, Mr.BiZ also tells you which of them you wear right now.",

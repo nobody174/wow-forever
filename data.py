@@ -78,6 +78,26 @@ def stance(required_stance_id, stance_name, spell, tt=True, attack=False):
     return f"#showtooltip {spell}\n{start}/cast [nostance:{required_stance_id}] {stance_name}; {target}{spell}"
 
 
+# Druid form helpers. Forever macros stop after the first GCD action, so a form swap and the ability
+# must be ONE /cast with conditions (swap if not in the form, else the ability). The numbers are the
+# form's place on the form bar: Bear 1, Aquatic 2, Cat 3 (Cat is 2 until you learn Aquatic Form, 16).
+def bear(spell):
+    """Bear Form melee ability (Maul, Lacerate...): shifts into Bear Form first, turns on auto-attack."""
+    return f"#showtooltip {spell}\n/startattack [harm]\n/cast [noform:1] Bear Form; [harm] {spell}"
+
+def bear_self(spell):
+    """Bear Form ability with no target needed (Swipe, Enrage, Frenzied Regeneration...)."""
+    return f"#showtooltip {spell}\n/cast [noform:1] Bear Form; {spell}"
+
+def cat(spell):
+    """Cat Form melee ability (Claw, Shred...): shifts into Cat Form first, turns on auto-attack."""
+    return f"#showtooltip {spell}\n/startattack [harm]\n/cast [noform:3] Cat Form; [harm] {spell}"
+
+def cat_self(spell):
+    """Cat Form ability with no target needed (Tiger's Fury, Dash...)."""
+    return f"#showtooltip {spell}\n/cast [noform:3] Cat Form; {spell}"
+
+
 # Multi-line macros that don't fit the single-spell helpers above.
 WAND = (
     "#showtooltip Shoot\n"
@@ -494,6 +514,178 @@ CLASSES = [
         {"spec": "Subtlety", "groups": [
             G(DPS, [
                 M("Hemorrhage", melee("Hemorrhage"), short="Hemo"),
+            ]),
+        ]},
+    ]},
+
+    # -------------------------------------------------------------------- #
+    # DRUID
+    # Spell names and levels checked against Wowhead's Forever druid ability list (2026-10-14).
+    # Sources for the macro ideas: classicwowforever.com, forg.gg, rankedboost.com (Forever druid pages) and the
+    # Forever beta forum thread on the Cat Form + Prowl macro. None of it is tested in game yet.
+    # -------------------------------------------------------------------- #
+    {"name": "Druid", "color": "#FF7D0A", "sections": [
+
+        {"spec": "Shared", "groups": [
+            G(DPS, [
+                M("Wrath", dpsHarm("Wrath"), "Level 1. Caster form (leave Bear / Cat Form first).", short="Wrath"),
+                M("Moonfire", dpsHarm("Moonfire"), "Level 4. Works in caster form (and Moonkin).", short="Moonfire"),
+                M("Faerie Fire", dpsHarm("Faerie Fire"), "Level 18. Caster form.", short="FaerieFire"),
+                M("Entangling Roots (mouseover)", dpsMO("Entangling Roots"), "Level 8.", short="Roots@"),
+                M("Hibernate (mouseover)", dpsMO("Hibernate"), "Level 18. Beasts and Dragonkin.", short="Hibernate@"),
+                M("Soothe Animal (mouseover)", dpsMO("Soothe Animal"), "Level 22. Takes the enrage off an animal.",
+                  short="Soothe@"),
+            ]),
+            G(HEAL, [
+                M("Heal from any form (Healing Touch, Shift = Regrowth)",
+                  "#showtooltip Healing Touch\n/cancelform\n/cast [mod:shift, @mouseover, help, nodead][mod:shift, help, nodead]"
+                  "[mod:shift, @player] Regrowth; [@mouseover, help, nodead][help, nodead][@player] Healing Touch",
+                  BETA + "Leaves Bear / Cat Form first (every press, even if the heal fails). Without a friendly "
+                  "target it heals you.", short="HealForm"),
+                M("Rebirth in combat, Revive outside it",
+                  "#showtooltip [combat] Rebirth; Revive\n"
+                  "/cast [@mouseover, help, dead, combat][help, dead, combat] Rebirth\n"
+                  "/cast [@mouseover, help, dead, nocombat][help, dead, nocombat] Revive",
+                  "Revive is level 12, Rebirth level 20 (needs a seed). Rebirth out of combat uses its long cooldown. "
+                  "Leave Bear / Cat Form first.", short="Rebirth@"),
+                M("Innervate (mouseover)",
+                  "#showtooltip Innervate\n/cancelform\n/cast [@mouseover, help, nodead][help, nodead][@player] Innervate",
+                  BETA + "Level 40. Leaves your form first, even when Innervate is on cooldown: keep it off your tanking bar.",
+                  short="Innervate@"),
+            ]),
+            G(CLEAN, [
+                M("Remove Curse (mouseover)", heal("Remove Curse"), "Level 24.", short="RemCurse@"),
+                M("Cure Poison (mouseover)", heal("Cure Poison"), "Level 14. Abolish Poison (26) replaces it.", short="CurePoison@"),
+                M("Abolish Poison (mouseover)", heal("Abolish Poison"), "Level 26.", short="Abolish@"),
+                M("Cleanse (Abolish Poison, Shift = Remove Curse)",
+                  "#showtooltip Abolish Poison\n/cast [mod:shift, @mouseover, help, nodead][mod:shift, help, nodead]"
+                  "[mod:shift, @player] Remove Curse; [@mouseover, help, nodead][help, nodead][@player] Abolish Poison",
+                  "One button for both. Poison by default, curse with Shift.", short="Cleanse"),
+            ]),
+            G(BUFF, [
+                M("Mark of the Wild", buff("Mark of the Wild"), short="MotW"),
+                M("Thorns", buff("Thorns"), "Level 6.", short="Thorns"),
+                M("Gift of the Wild", buff("Gift of the Wild"), "Level 50. Needs a reagent.", short="GotW"),
+            ]),
+            G(PANIC, [
+                M("Barkskin (Shift = Nature's Grasp)",
+                  "#showtooltip [mod:shift] Nature's Grasp; Barkskin\n/cast [mod:shift] Nature's Grasp; Barkskin",
+                  BETA + "Barkskin is level 44, Nature's Grasp level 10. Another Forever guide says neither one drops your form.", short="Bark/Grasp"),
+            ]),
+            G(QOL, [
+                M("Cat Form (Shift = Bear Form)",
+                  "#showtooltip [mod:shift] Bear Form; Cat Form\n/dismount\n/cast [mod:shift] Bear Form; Cat Form",
+                  "Dismounts, then shifts. Pressing it again in that form leaves the form. From level 40 write Dire Bear Form.",
+                  short="CatBear"),
+                M("Travel / Aquatic / Cat Form",
+                  "#showtooltip\n/dismount\n/cast [swimming] Aquatic Form; [outdoors] Travel Form; Cat Form",
+                  "Aquatic Form level 16, Cat Form 20, Travel Form 30. Until you have Travel Form, delete that part.",
+                  short="Travel"),
+                M("Leave form and dismount",
+                  "/stopcasting\n/cancelform\n/dismount", "Stops a cast, drops any form and gets off your mount.",
+                  short="NoForm", icon="Spell_Nature_WispSplode"),
+                M("Teleport: Moonglade", plain("Teleport: Moonglade"), "Level 10.", short="Moonglade"),
+            ]),
+            G(FOCUS, [
+                M("Entangling Roots focus", foc("Entangling Roots"), short="Roots F"),
+                M("Hibernate focus", foc("Hibernate"), short="Hibernate F"),
+            ]),
+        ]},
+
+        {"spec": "Balance", "groups": [
+            G(DPS, [
+                M("Starfire", dpsHarm("Starfire"), "Level 20.", short="Starfire"),
+                M("Insect Swarm", dpsHarm("Insect Swarm"), "Level 30.", short="InsectSwarm"),
+                M("Hurricane at cursor", "#showtooltip Hurricane\n/cast [@cursor] Hurricane",
+                  "Level 40. Channelled: keep still.", short="Hurricane"),
+                M("Starfire (back into Moonkin, Ctrl = Wrath)",
+                  "#showtooltip Starfire\n/cast [noform] Moonkin Form; [mod:ctrl] Wrath; Starfire",
+                  BETA + "Needs the Moonkin Form talent. In caster form it shifts you into Moonkin Form first; then Starfire, "
+                  "or Wrath while Ctrl is held. Leave out the first part if you don't have the talent.", short="StarMoon"),
+                M("Starsurge", dpsHarm("Starsurge"), BETA + "Rune ability: needs the Starsurge rune engraved on your legs.",
+                  short="Starsurge"),
+                M("Sunfire", dpsHarm("Sunfire"), BETA + "Rune ability: needs the Sunfire rune engraved on your gloves.",
+                  short="Sunfire"),
+                M("Starfall", "#showtooltip Starfall\n/cast Starfall",
+                  BETA + "Rune ability: needs the Starfall rune engraved on your cloak.", short="Starfall"),
+            ]),
+        ]},
+
+        {"spec": "Feral", "groups": [
+            G(DPS, [
+                M("Maul", bear("Maul"), BETA + "Level 10. Shifts into Bear Form first, then queues Maul on your next hit. "
+                  "The 1 is Bear Form's place on the form bar. From level 40 write Dire Bear Form in every Bear macro.",
+                  short="Maul"),
+                M("Swipe", bear_self("Swipe"), BETA + "Bear AoE. Shifts into Bear Form first.", short="Swipe"),
+                M("Lacerate", bear("Lacerate"), BETA + "Bear bleed that stacks. Rune ability: needs the Lacerate rune "
+                  "engraved on your pants.", short="Lacerate"),
+                M("Demoralizing Roar", bear_self("Demoralizing Roar"), BETA + "Level 10. Shifts into Bear Form first.",
+                  short="DemoRoar"),
+                M("Bash", bear("Bash"), BETA + "Level 14. Stun, and interrupts a cast. Shifts into Bear Form first.", short="Bash"),
+                M("Skull Bash (mouseover)",
+                  "#showtooltip Skull Bash\n/cast [@mouseover, harm, nodead][harm, nodead] Skull Bash",
+                  BETA + "Interrupt for Bear and Cat Form. Rune ability: needs the Skull Bash rune engraved on your gloves.",
+                  short="SkullBash@"),
+                M("Claw", cat("Claw"), BETA + "Level 20. Shifts into Cat Form first. 3 = Cat Form's place on the form bar "
+                  "(Bear, Aquatic, Cat): if you haven't learned Aquatic Form (16), change 3 to 2.", short="Claw"),
+                M("Shred", cat("Shred"), BETA + "Level 22. Behind the target. Shifts into Cat Form first (3, or 2 without "
+                  "Aquatic Form).", short="Shred"),
+                M("Rake", cat("Rake"), BETA + "Level 24. Shifts into Cat Form first (3, or 2 without Aquatic Form).",
+                  short="Rake"),
+                M("Rip", cat("Rip"), BETA + "Level 20, combo points. Shifts into Cat Form first (3, or 2 without Aquatic Form).",
+                  short="Rip"),
+                M("Ferocious Bite", cat("Ferocious Bite"), BETA + "Level 32, combo points. Shifts into Cat Form first "
+                  "(3, or 2 without Aquatic Form).", short="FeroBite"),
+                M("Ravage (from stealth)", cat("Ravage"), BETA + "Level 32. Needs Prowl, behind the target.", short="Ravage"),
+                M("Pounce (from stealth)", cat("Pounce"), BETA + "Level 36. Needs Prowl, stuns.", short="Pounce"),
+                M("Tiger's Fury", cat_self("Tiger's Fury"), BETA + "Shifts into Cat Form first (3, or 2 without Aquatic Form).",
+                  short="TigersFury"),
+                M("Dash", cat_self("Dash"), BETA + "Level 26. Shifts into Cat Form first (3, or 2 without Aquatic Form).",
+                  short="Dash"),
+            ]),
+            G(TARGET, [
+                M("Growl (mouseover)",
+                  "#showtooltip Growl\n/cast [noform:1] Bear Form; [@mouseover, harm, nodead][harm, nodead] Growl",
+                  BETA + "Level 10. Taunts what is under your mouse, else your target. Shifts into Bear Form first.",
+                  short="Growl@"),
+                M("Challenging Roar", bear_self("Challenging Roar"), BETA + "Level 28. Taunts everything around you; long "
+                  "cooldown.", short="ChallRoar"),
+            ]),
+            G(PANIC, [
+                M("Frenzied Regeneration", bear_self("Frenzied Regeneration"), BETA + "Level 36. Turns rage into health.",
+                  short="FrenzyRegen"),
+                M("Enrage", bear_self("Enrage"), BETA + "Level 12. Gives rage; lowers your armor while it lasts.", short="Enrage"),
+                M("Survival Instincts", "#showtooltip Survival Instincts\n/cast Survival Instincts",
+                  BETA + "Rune ability: needs the Survival Instincts rune engraved on your boots.", short="SurvInst"),
+            ]),
+            G(QOL, [
+                M("Bear Form (no accidental unshift)", "#showtooltip Bear Form\n/cast [noform:1] Bear Form",
+                  BETA + "Does nothing if you are already a bear. From level 40 write Dire Bear Form.", short="BearForm"),
+                M("Cat Form + Prowl",
+                  "#showtooltip Prowl\n/cast [noform:3] Cat Form; [nostealth] Prowl",
+                  BETA + "Press once for Cat Form, again for Prowl. Pressing it while stealthed doesn't break stealth. "
+                  "3 = Cat Form's place on the form bar (Bear, Aquatic, Cat): without Aquatic Form change 3 to 2.",
+                  short="CatProwl"),
+            ]),
+            G(FOCUS, [
+                M("Bash focus", "#showtooltip Bash\n/cast [noform:1] Bear Form; [@focus, harm, exists][harm] Bash",
+                  BETA + "Shifts into Bear Form first.", short="Bash F"),
+                M("Skull Bash focus", foc("Skull Bash"), BETA + "Rune ability: needs the Skull Bash rune.", short="SkullBash F"),
+            ]),
+        ]},
+
+        {"spec": "Restoration", "groups": [
+            G(HEAL, [
+                M("Healing Touch", heal("Healing Touch"), short="HTouch"),
+                M("Regrowth", heal("Regrowth"), "Level 12.", short="Regrowth"),
+                M("Rejuvenation", heal("Rejuvenation"), "Level 4.", short="Rejuv"),
+                M("Lifebloom", heal("Lifebloom"), BETA + "Rune ability: needs the Lifebloom rune engraved on your pants.",
+                  short="Lifebloom"),
+                M("Nourish", heal("Nourish"), BETA + "Rune ability: needs the Nourish rune engraved on your belt.",
+                  short="Nourish"),
+                M("Wild Growth", heal("Wild Growth"), "Level 50. Heals the target and their party.", short="WildGrowth"),
+                M("Tranquility", "#showtooltip Tranquility\n/cast Tranquility", "Level 30. Channelled: keep still.",
+                  short="Tranquility"),
             ]),
         ]},
     ]},

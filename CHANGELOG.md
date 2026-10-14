@@ -23,7 +23,7 @@ user-facing release notes.
   - Weapons from quests along the route (0.53.0). Level slider dropped, enchant lines in Mr.BiZ, Talents tab Clear (0.50.0).
   - Item rarity colours baked into the Mr.BiZ data (`bis/quality.json`, all 340 items, 0.48.1 + site).
   - Level 20 builds removed (2026-10-12); level 30 builds exist for every class (gaps listed in BACKLOG).
-  - Decisions kept in ROADMAP / BACKLOG: no Druid macro section; Warrior and Paladin use role sections; logo / ornament stays as is.
+  - Decisions kept in ROADMAP / BACKLOG: Warrior and Paladin use role sections; logo / ornament stays as is.
 
 ## 2026-10-13 (Addon version check: CurseForge not reached)
 - addons.html: Road to Forever fallback values refreshed 0.38.1 → 0.41.0 (link, `v` tag, version/date line, zip name;
@@ -1713,6 +1713,10 @@ The in-game addon's developer log, merged in on 2026-10-13 (it used to be `addon
 The short player-facing notes shipped in the zip are still `addon/RoadToForever/CHANGELOG.md`. Old command names here (`/r2f who`, `/r2f rankdebug`...)
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
+
+## 2026-10-14 (Druid macros)
+- data.py: Druid class block after Rogue (Shared 23, Balance 7, Feral 24, Restoration 7 = 61 macros); new helpers bear() / bear_self() / cat() / cat_self() (one /cast with `[noform:N]` conditions because Forever macros stop after the first GCD action). Spell names and levels from Wowhead's Forever druid ability list; macro ideas from classicwowforever.com, forg.gg, rankedboost.com and the Forever beta forum thread on the Cat Form + Prowl macro. NOT tested in game: the form numbers (Bear 1, Cat 3, or 2 without Aquatic Form) and the rune abilities are marked "Test in beta".
+- template.html: Druid class icon; Library.lua SECTION_ORDER[DRUID]; MacroData.lua regenerated; news.json entry; addon 0.55.0.
 
 ## 0.54.2 (2026-10-14)
 

@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.55.0 (2026-10-14)
+
+- **Druid macros** in the Macro Book: Shared, Balance, Feral and Restoration sections (61 macros): heals and cleanses on your mouseover,
+  form-swap macros for Bear and Cat (Maul, Swipe, Growl, Claw, Shred, Rake, Rip, Ferocious Bite, Ravage, Pounce, Prowl, Dash...),
+  Rebirth in combat / Revive outside it, Travel / Aquatic / Cat on one key, and the Forever rune abilities (marked with the rune they need).
+  Import the new string from the site (or the addon installs them itself at login).
+
 ## 0.54.2 (2026-10-14)
 
 - Mr.BiZ enchant on the item: hover a piece of gear and its tooltip gets a green line with the enchant Mr.BiZ recommends for that slot and your spec

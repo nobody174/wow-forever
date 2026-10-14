@@ -48,6 +48,7 @@ Library.SECTION_ORDER = {
   WARLOCK = { "Shared", "Affliction", "Demonology", "Destruction" },
   MAGE    = { "Shared", "Arcane" },
   ROGUE   = { "Shared", "Assassination", "Subtlety" },
+  DRUID   = { "Shared", "Balance", "Feral", "Restoration" },
   SHAMAN  = { "Shared", "Elemental", "Enhancement" },
   HUNTER  = { "Shared", "Beast Mastery", "Marksmanship", "Survival" },
   PALADIN = { "General", "Tank", "DPS", "Healer" },

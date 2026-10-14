@@ -14,7 +14,7 @@ launch, then your character (build, talents, gear, professions), then your UI (m
 group they belong to.
 
 Class roster order on both `macros.html` and `builds.html` follows armor type,
-Cloth → Leather → Mail → Plate: Priest, Warlock, Mage, Rogue, Shaman, Hunter,
+Cloth → Leather → Mail → Plate: Priest, Warlock, Mage, Rogue, Druid, Shaman, Hunter,
 Paladin, Warrior. Keep new classes inserted in this order on both pages.
 
 ## Files
@@ -517,10 +517,14 @@ Damage / offensive, Mouseover healing / utility, Cleanse / dispel, Wand / auto-a
 Buffs, Panic / defensive, Targeting helpers, Class QoL, Focus, Misc / UI.
 Misc / UI lives only in the UNIVERSAL block (camera/UI console commands, target
 marking, gear-swap macros — not spell-specific, so not part of any class section).
-Classes: Priest, Shaman, Paladin, Warlock, Hunter, Warrior, Rogue, Mage.
+Classes: Priest, Shaman, Paladin, Warlock, Hunter, Warrior, Rogue, Mage, Druid (added 2026-10-14).
+Druid: spec sections Shared / Balance / Feral (Bear + Cat) / Restoration. Forever macros stop after the first GCD
+action, so a form swap and its ability are ONE /cast with conditions: bear() / bear_self() use `[noform:1] Bear Form; ...`,
+cat() / cat_self() use `[noform:3] Cat Form; ...` (3 = Cat's place on the form bar after Bear and Aquatic; 2 until Aquatic
+Form is learned, level 16). Rune abilities (Starsurge, Lacerate, Skull Bash...) are marked "Test in beta" with the rune named.
 Use helpers: dps() (Priest only — target-of-target-aware), dpsHarm() (every other
 class — plain [harm] targeting, no TT), heal(), util(), buff(), chan(), foc(),
-plain(), me(), stance(), melee(). Every helper prepends #showtooltip; hand-written
+plain(), me(), stance(), melee(), bear(), bear_self(), cat(), cat_self(). Every helper prepends #showtooltip; hand-written
 multi-line /cast or /castsequence macros must add #showtooltip as their own
 first line. Pure utility commands (/console, /targetmarker, /target, /focus,
 /petattack, /use item) do not get #showtooltip.

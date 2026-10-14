@@ -48,6 +48,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 
 7. **New in 0.59.0:** the arrow look picker has two more buttons on a second row, Block and Needle: each switches the arrow at once. Do they read at Small and Medium? Is the Needle's red end clearly the pointing end?
 
+8. **New in 0.60.0:** the look picker has a third row: Gilded, Plate, Stone slab. Each switches at once and turns to point at the target. Which of the eight looks do you actually keep using? Tell me which to drop so the list stays short.
+
 ## 9. Mr.BiZ (BiZ tab)
 8. **Retest (0.55.3):** the enchant line on item tooltips is now pink (it was lost among the green stats). Hover gear: pink "Mr.BiZ enchant: ..." / "in place", gold for a stand-in. Readable enough?
 

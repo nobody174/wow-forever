@@ -131,9 +131,9 @@ function Library.Init()
   if type(db.nav.x) ~= "number" then db.nav.x = 0 end
   if type(db.nav.y) ~= "number" then db.nav.y = 220 end
   if db.nav.size ~= "small" and db.nav.size ~= "medium" and db.nav.size ~= "large" then db.nav.size = "medium" end
-  -- Which 3D look the arrow has ("dart" = gold dart, "arrow" = stone arrow, "block", "needle");
+  -- Which look the arrow has besides the flat dart (Nav.STYLES keys: dart, arrow, block, needle, gilded, plate, slab);
   -- the flat dart is the arrow3d switch off.
-  local looks = { dart = true, arrow = true, block = true, needle = true }
+  local looks = { dart = true, arrow = true, block = true, needle = true, gilded = true, plate = true, slab = true }
   if not looks[db.nav.style] then db.nav.style = "arrow" end
   if type(db.fct) ~= "table" then db.fct = {} end
   local fc = db.fct

@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.60.0 (2026-10-15)
+
+- Picture looks "gilded", "plate", "slab": the owner generated them with Google Gemini (gemini-2.5-flash-image) from a prompt written here; the originals are addon/art/sources/*.jpg and addon/art/make_image_looks.py cuts the plain background out, centres and shrinks them to 128 px TGAs (media/arrow_<key>.tga). Nav.STYLES entries without `sheet` use one texture turned by SetRotation; Gameplay picker has a third row. AI-generated images: check Gemini's terms if the addon ever goes on CurseForge (BACKLOG 2.8 hold).
+
 ## 0.59.0 (2026-10-15)
 
 - New 3D looks "block" and "needle" (blender_arrow3d_block.py, blender_arrow3d_needle.py; shared helpers blender_arrow_parts.py and blender_arrow_render.py; media/arrow3d_block.tga and arrow3d_needle.tga; exporter STYLES, Nav.STYLES / STYLE_ORDER, Library nav.style, Locale NAV_STYLE_BLOCK / NAV_STYLE_NEEDLE; the picker wraps to a second row). Owner wanted home-made looks instead of the downloaded icon packs (Smashicons / Vecteezy, not used). The earlier two scripts still carry their own copy of the helpers.

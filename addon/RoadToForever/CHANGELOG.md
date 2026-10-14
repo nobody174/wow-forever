@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.60.0 (2026-10-15)
+
+- Three painted looks for the waypoint arrow, in the Warcraft hand-painted style: **Gilded** (a golden arrow with fletching), **Plate** (a riveted gold signpost arrow) and **Stone slab** (a stone arrow with feathers). They turn like the flat dart. The picker now has three rows.
+
 ## 0.59.0 (2026-10-15)
 
 - Two more looks for the waypoint arrow in Tweaks > Alerts & HUD > "Waypoint arrow look": **Block** (a thick orange signpost arrow) and **Needle** (a compass needle, red at the pointing end). Both are our own designs, like the others.

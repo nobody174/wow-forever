@@ -158,16 +158,20 @@ local elapsed, update   -- the arrow's OnUpdate state, defined below
 Nav.FRAMES, Nav.COLS, Nav.CELL, Nav.SHEET = 100, 10, 102, 1024
 local ARROW_FLAT = "Interface\\AddOns\\RoadToForever\\media\\arrow"
 local ARROW_3D = "Interface\\AddOns\\RoadToForever\\media\\arrow3d"
--- The looks to choose from (Tweaks > Alerts & HUD): the flat dart, and a sprite sheet per 3D look
--- (all share FRAMES / COLS / CELL).
--- A new look: render it with addon/art/export_arrow3d.py, add it here and a NAV_STYLE_<KEY> text in Locale.lua.
-Nav.STYLE_ORDER = { "flat", "dart", "arrow", "block", "needle" }
+-- The looks to choose from (Tweaks > Alerts & HUD). `sheet = true`: a 3D look, a sprite sheet of FRAMES turn angles
+-- (FRAMES / COLS / CELL); otherwise one picture that is turned like the flat dart (`size` px).
+-- A new 3D look: render it with addon/art/export_arrow3d.py. A new picture look: addon/art/make_image_looks.py.
+-- Either way add it here and a NAV_STYLE_<KEY> text in Locale.lua.
+Nav.STYLE_ORDER = { "flat", "dart", "arrow", "block", "needle", "gilded", "plate", "slab" }
 Nav.STYLES = {
-  flat = {},
-  dart = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_dart" },
-  arrow = { tex = ARROW_3D },
-  block = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_block" },
-  needle = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_needle" },
+  flat = { tex = ARROW_FLAT, size = 48 },
+  dart = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_dart", sheet = true },
+  arrow = { tex = ARROW_3D, sheet = true },
+  block = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_block", sheet = true },
+  needle = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_needle", sheet = true },
+  gilded = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow_gilded", size = 60 },
+  plate = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow_plate", size = 56 },
+  slab = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow_slab", size = 56 },
 }
 
 -- Sprite frame (0 .. FRAMES - 1) for a turn angle in radians (counter-clockwise, any size).
@@ -210,16 +214,17 @@ local function applyStyle(f)
   local key = Nav.Style()
   if f.style == key then return end
   f.style = key
-  if key ~= "flat" then
-    f.arrow:SetTexture(Nav.STYLES[key].tex)
+  local st = Nav.STYLES[key]
+  if st.sheet then
+    f.arrow:SetTexture(st.tex)
     f.arrow:SetSize(64, 64)
     f.arrow:SetRotation(0)
     f:SetSize(120, 108)
   else
-    f.arrow:SetTexture(ARROW_FLAT)
+    f.arrow:SetTexture(st.tex)
     f.arrow:SetTexCoord(0, 1, 0, 1)
-    f.arrow:SetSize(48, 48)
-    f:SetSize(120, 92)
+    f.arrow:SetSize(st.size, st.size)
+    f:SetSize(120, 44 + st.size)
   end
 end
 
@@ -254,7 +259,7 @@ update = function(f, dt)
   end
   if state == "ok" and angle then
     applyStyle(f)
-    if f.style ~= "flat" then
+    if Nav.STYLES[f.style].sheet then
       f.arrow:SetTexCoord(Nav.FrameCoords(Nav.FrameFor(angle)))
     else
       f.arrow:SetRotation(angle)

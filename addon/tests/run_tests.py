@@ -1581,6 +1581,17 @@ def test_reminders():
     T.chat = lua.table()
     lua.execute('SlashCmdList.R2F("ammo")')
     check(any("Hunters only" in c for c in lua_table_to_list(lua.eval("TEST.chat"))), "15.4 /r2f ammo on a Priest explains")
+    # Repair reminder (0.62.0): the worst piece you wear, in percent; red under the threshold.
+    lua.execute("""TEST.dur = { [1] = { 100, 100 }, [5] = { 20, 100 }, [10] = { 90, 100 } }
+      GetInventoryItemDurability = function(slot) local d = TEST.dur[slot] if d then return d[1], d[2] end end""")
+    check(abs(lua.eval("R2F.Repair.Worst()") - 20) < 1e-9, "repair: the worst piece is 20 percent")
+    check(lua.eval("R2F.Repair.IsLow(R2F.Repair.Worst())") is True and lua.eval("R2F.Repair.IsLow(60)") is False, "repair: low under the 25 percent default")
+    lua.execute("R2F.Repair.Update()")
+    check(lua.eval("R2FRepairFrame:IsShown()") is True and lua.eval("R2FRepairFrame.count.__text") == "20%", "repair: the icon shows 20%")
+    lua.execute("TEST.dur[5] = { 95, 100 } R2F.Repair.SetLock(true)")
+    check(lua.eval("R2FRepairFrame:IsShown()") is False, "repair: fine gear hides the icon")
+    lua.execute("TEST.dur = {} GetInventoryItemDurability = nil")
+    check(lua.eval("R2F.Repair.Worst()") is None, "repair: nothing that wears, nothing to show")
 
     # --- Ammo counting ----------------------------------------------------------------
     lua, T = reminder_runtime("HUNTER")

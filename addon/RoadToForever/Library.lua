@@ -176,6 +176,15 @@ function Library.Init()
   if type(am.x) ~= "number" then am.x = 0 end
   if type(am.y) ~= "number" then am.y = -100 end
   if type(am.threshold) ~= "number" or am.threshold < 50 or am.threshold > 1000 then am.threshold = 200 end
+  -- Repair reminder (Repair.lua).
+  if type(db.repair) ~= "table" then db.repair = {} end
+  local rp = db.repair
+  if type(rp.shown) ~= "boolean" then rp.shown = true end
+  if type(rp.lock) ~= "boolean" then rp.lock = false end
+  if type(rp.scale) ~= "number" or rp.scale < 0.5 or rp.scale > 3 then rp.scale = 1 end
+  if type(rp.x) ~= "number" then rp.x = 0 end
+  if type(rp.y) ~= "number" then rp.y = -150 end
+  if type(rp.threshold) ~= "number" or rp.threshold < 5 or rp.threshold > 90 then rp.threshold = 25 end
   local s = db.settings
   -- Main window size and opacity (top bar sliders).
   if type(s.menuScale) ~= "number" or s.menuScale < 0.5 or s.menuScale > 1.5 then s.menuScale = 1 end

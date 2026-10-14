@@ -31,6 +31,7 @@ handlers.PLAYER_LOGIN = function()
   R2F.Minimap.Init()
   R2F.Stance.Init()
   R2F.Ammo.Init()
+  R2F.Repair.Init()
   R2F.Tracking.Init()
   R2F.Buffs.Init()
   R2F.Gameplay.InitCharacters()
@@ -181,6 +182,8 @@ local COMMANDS = {
   copychat = function() R2F.CopyChat.Command() end,
   ammo = function() R2F.Ammo.ToggleShown() end,
   ["ammo lock"] = function() R2F.Ammo.ToggleLock() end,
+  repair = function() R2F.Repair.ToggleShown() end,
+  ["repair lock"] = function() R2F.Repair.ToggleLock() end,
   minimap = function() R2F.Minimap.ToggleHidden() end,
   stance = function() R2F.Stance.ToggleShown() end,
   ["stance lock"] = function() R2F.Stance.ToggleLock() end,

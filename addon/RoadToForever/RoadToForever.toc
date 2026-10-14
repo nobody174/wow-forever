@@ -33,6 +33,7 @@ QuickSettings.lua
 Reminders.lua
 Stance.lua
 Ammo.lua
+Repair.lua
 Tracking.lua
 Buffs.lua
 Diagnostics.lua

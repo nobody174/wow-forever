@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.55.1 (2026-10-14)
+
+- Core.lua `open` command, Locale EMPTY_LIBRARY / help text, test_open_command. addon/dev/TESTING.md rewritten against the real 0.55.0 interface (sidebar, Tweaks pages, Home / Macros > Options, `/r2f debug ...`).
+
 ## 2026-10-14 (Druid macros)
 - data.py: Druid class block after Rogue (Shared 23, Balance 7, Feral 24, Restoration 7 = 61 macros); new helpers bear() / bear_self() / cat() / cat_self() (one /cast with `[noform:N]` conditions because Forever macros stop after the first GCD action). Spell names and levels from Wowhead's Forever druid ability list; macro ideas from classicwowforever.com, forg.gg, rankedboost.com and the Forever beta forum thread on the Cat Form + Prowl macro. NOT tested in game: the form numbers (Bear 1, Cat 3, or 2 without Aquatic Form) and the rune abilities are marked "Test in beta".
 - template.html: Druid class icon; Library.lua SECTION_ORDER[DRUID]; MacroData.lua regenerated; news.json entry; addon 0.55.0.

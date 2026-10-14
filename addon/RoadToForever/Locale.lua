@@ -33,7 +33,7 @@ R2F.L = {
   BTN_IMPORT = "Import",
   BTN_TIDY = "Tidy up",
   BTN_SETTINGS = "Settings",
-  EMPTY_LIBRARY = "Your macro library is empty.\n\nClick Import and paste the import string from the Macros page.",
+  EMPTY_LIBRARY = "Your macro library is empty.\n\nClick Options, then Import, and paste the import string from the Macros page of the site.",
   EMPTY_CLASS = "No macros for your class or Universal yet.\n\nThey install at login; if this stays empty, type /reload.",
   OTHER_CLASSES = "You also have macros for %s. Click a class icon at the top to look at them; "
     .. "log in on that character to use them.",
@@ -693,7 +693,7 @@ R2F.L = {
   -- Slash commands. /r2f help prints HELP_LINES, one chat line each.
   HELP_LINES = {
     "commands:",
-    "/r2f  open or close Road to Forever (on the tab you used last)",
+    "/r2f  open or close Road to Forever (on the tab you used last); /r2f open only opens it",
     "/r2f macros  the Macros tab",
     "/r2ft or /r2f talents  the Talents tab",
     "/r2f plan  the Plan tab (launch checklist)",

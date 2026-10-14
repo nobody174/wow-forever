@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.55.1 (2026-10-14)
+
+- `/r2f open` opens the window without ever closing it (`/r2f` alone still toggles).
+- The empty Macro Book now says to click Options, then Import (Import moved there in 0.32).
+
 ## 0.55.0 (2026-10-14)
 
 - **Druid macros** in the Macro Book: Shared, Balance, Feral and Restoration sections (61 macros): heals and cleanses on your mouseover,

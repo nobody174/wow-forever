@@ -166,6 +166,7 @@ end
 
 local COMMANDS = {
   [""] = function() R2F.MainWindow.Toggle() end,
+  open = function() R2F.MainWindow.Show() end,
   macros = function() R2F.MainWindow.Show("macros") end,
   talents = function() R2F.MainWindow.Show("talents") end,
   settings = function() R2F.MainWindow.Show("settings") end,

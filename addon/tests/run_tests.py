@@ -6969,6 +6969,23 @@ def test_enchant_tooltip():
     check(fn("item:1000:0:0:0", "INVTYPE_ROBE", spec) is not None, "enchant tip: a robe counts as chest")
 
 
+def test_open_command():
+    """/r2f open only opens the window (0.55.1); /r2f toggles; an unknown word still says so."""
+    lua = new_runtime()
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    lua.execute("SlashCmdList.R2F('open')")
+    check(lua.eval("R2F.MainWindow.IsShown()") is True, "open: /r2f open opens the window")
+    lua.execute("SlashCmdList.R2F('open')")
+    check(lua.eval("R2F.MainWindow.IsShown()") is True, "open: /r2f open never closes it")
+    lua.execute("SlashCmdList.R2F('')")
+    check(lua.eval("R2F.MainWindow.IsShown()") is False, "open: /r2f alone toggles it shut")
+    lua.execute("SlashCmdList.R2F('nonsense')")
+    check(any("unknown command \"nonsense\"" in c for c in chat_lines(lua)), "open: an unknown word says unknown command")
+    check("Options, then Import" in lua.eval("R2F.L.EMPTY_LIBRARY"), "open: the empty-library text points at Options > Import")
+
+
 def test_talent_source_traits():
     """13.12's write discipline on the source: PurchaseRank and CommitConfig are
     called in exactly one function (purchasePoint, Talents.lua), after its
@@ -7805,6 +7822,7 @@ def main():
     test_talent_calc()
     test_talent_data_fresh()
     test_enchant_tooltip()
+    test_open_command()
     test_talent_sandbox_ui(True)
     test_talent_sandbox_ui(False)
     test_talent_learning(True)

@@ -1,12 +1,13 @@
-"""Turn picture arrows (AI-generated or painted, on a plain light background) into the game's flat arrow textures.
+"""Cut out picture arrows (AI-generated or painted, on a plain light background) for the game's picture looks.
 
 For each entry of LOOKS: the source picture in addon/art/sources/ is cut out (the light, colourless background that touches the border becomes
-transparent, which also removes a soft shadow), centred on the middle of the arrow, padded and shrunk to SIZE x SIZE, and written as an
-uncompressed 32-bit TGA to addon/RoadToForever/media/arrow_<key>.tga. The game turns these pictures like the flat dart (Nav.lua, STYLES
-entries without a sprite sheet).
+transparent, which also removes a soft shadow) and cropped to the arrow, written as addon/art/sources/<key>_cut.png. Then
+`python addon/art/export_arrow3d.py --style <key>` lays that picture on the ground in Blender and renders the 100-angle sprite sheet
+(blender_arrow3d_picture.py), the same way as the modelled arrows.
 
 Usage (repo root):  python addon/art/make_image_looks.py [--preview <dir>]
-A new look = a picture in addon/art/sources/, a line in LOOKS, a Nav.STYLES entry and a NAV_STYLE_<KEY> text in Locale.lua.
+A new look = a picture in addon/art/sources/, a line in LOOKS, a STYLES line in export_arrow3d.py, a Nav.STYLES entry and a
+NAV_STYLE_<KEY> text in Locale.lua.
 """
 import os
 import sys
@@ -16,9 +17,7 @@ from PIL import Image, ImageFilter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SOURCES = os.path.join(HERE, "sources")
-MEDIA = os.path.join(HERE, "..", "RoadToForever", "media")
-SIZE = 128
-PAD = 0.06            # empty margin around the arrow, fraction of the picture
+SIZE = 128            # preview size only
 
 # key -> source file
 LOOKS = {
@@ -70,26 +69,27 @@ def cut_out(img):
     return out
 
 
-def centred(img):
-    """Crop to the arrow, centre it on the middle of the arrow's box, pad, resize to SIZE x SIZE."""
+def cropped(img):
+    """Crop to the arrow (its box centre becomes the turning point), with a thin transparent margin."""
     box = img.getchannel("A").point(lambda v: 255 if v > 40 else 0).getbbox()
     img = img.crop(box)
-    side = int(max(img.size) * (1 + 2 * PAD))
-    canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
-    canvas.paste(img, ((side - img.width) // 2, (side - img.height) // 2), img)
-    return canvas.resize((SIZE, SIZE), Image.LANCZOS)
+    m = max(2, int(max(img.size) * 0.01))
+    canvas = Image.new("RGBA", (img.width + 2 * m, img.height + 2 * m), (0, 0, 0, 0))
+    canvas.paste(img, (m, m), img)
+    return canvas
 
 
 def main():
     preview = sys.argv[sys.argv.index("--preview") + 1] if "--preview" in sys.argv else None
-    os.makedirs(MEDIA, exist_ok=True)
     sheet = Image.new("RGBA", (SIZE * 2 * len(LOOKS), SIZE * 2), (40, 60, 80, 255))
     for i, (key, name) in enumerate(LOOKS.items()):
-        out = centred(cut_out(Image.open(os.path.join(SOURCES, name))))
-        path = os.path.join(MEDIA, "arrow_%s.tga" % key)
-        out.save(path, format="TGA")
-        print("%s  %d bytes" % (os.path.relpath(path, os.path.join(HERE, "..", "..")), os.path.getsize(path)))
-        sheet.alpha_composite(out.resize((SIZE * 2, SIZE * 2), Image.LANCZOS), (i * SIZE * 2, 0))
+        out = cropped(cut_out(Image.open(os.path.join(SOURCES, name))))
+        path = os.path.join(SOURCES, "%s_cut.png" % key)
+        out.save(path)
+        print("%s  %dx%d" % (os.path.relpath(path, os.path.join(HERE, "..", "..")), out.width, out.height))
+        thumb = out.copy()
+        thumb.thumbnail((SIZE * 2, SIZE * 2))
+        sheet.alpha_composite(thumb, (i * SIZE * 2, 0))
     if preview:
         os.makedirs(preview, exist_ok=True)
         sheet.save(os.path.join(preview, "image_looks.png"))

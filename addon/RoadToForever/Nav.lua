@@ -169,9 +169,9 @@ Nav.STYLES = {
   arrow = { tex = ARROW_3D, sheet = true },
   block = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_block", sheet = true },
   needle = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_needle", sheet = true },
-  gilded = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow_gilded", size = 60 },
-  plate = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow_plate", size = 56 },
-  slab = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow_slab", size = 56 },
+  gilded = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_gilded", sheet = true },
+  plate = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_plate", sheet = true },
+  slab = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_slab", sheet = true },
 }
 
 -- Sprite frame (0 .. FRAMES - 1) for a turn angle in radians (counter-clockwise, any size).

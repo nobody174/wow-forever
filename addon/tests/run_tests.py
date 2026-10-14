@@ -1132,11 +1132,10 @@ def test_arrow_3d():
     check(lua.eval("R2F.Nav.Style()") == "arrow" and lua.eval("R2FNavFrame.arrow.__tex").endswith("arrow3d"), "3D arrow: the stone arrow look")
     check(lua.eval("R2F.Nav.SetStyle('nonsense')") is False, "3D arrow: an unknown look is refused")
     for look in ("gilded", "plate", "slab"):
-        # picture looks: one texture, turned by the angle like the flat dart (no sprite-sheet window)
+        # painted looks: rendered into sprite sheets like the modelled ones
         lua.execute("R2F.Nav.SetStyle('%s')" % look)
         lua.execute("R2FNavFrame:Fire('OnUpdate', 1)")
-        check(lua.eval("R2F.Nav.Style()") == look and lua.eval("R2FNavFrame.arrow.__tex").endswith("arrow_" + look), "arrow look %s: its picture" % look)
-        check(abs(lua.eval("R2FNavFrame.arrow.__rotation") + math.pi / 2) < 1e-9, "arrow look %s: turns by the angle like the flat dart" % look)
+        check(lua.eval("R2F.Nav.Style()") == look and lua.eval("R2FNavFrame.arrow.__tex").endswith("arrow3d_" + look), "arrow look %s: its sprite sheet" % look)
     for look in ("block", "needle"):
         lua.execute("R2F.Nav.SetStyle('%s')" % look)
         check(lua.eval("R2F.Nav.Style()") == look and lua.eval("R2FNavFrame.arrow.__tex").endswith("arrow3d_" + look), "3D arrow: the %s look" % look)

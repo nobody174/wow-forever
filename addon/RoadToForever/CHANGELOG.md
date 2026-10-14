@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.61.0 (2026-10-15)
+
+- The 3D arrows now point INTO the scene: the picture is seen from behind and above with a wide lens, so an arrow that points straight ahead recedes (the tail end is bigger than the tip), one pointing at you grows toward you, and sideways ones lie on the ground. Before, they were seen almost from above, so ahead looked like "up the screen". All looks (Gold dart, Stone arrow, Block, Needle) are rendered again this way.
+- Gilded, Plate and Stone slab are now laid on the ground and rendered the same way, so they point into the scene too. The Flat look is still the plain flat dart.
+
 ## 0.60.0 (2026-10-15)
 
 - Three painted looks for the waypoint arrow, in the Warcraft hand-painted style: **Gilded** (a golden arrow with fletching), **Plate** (a riveted gold signpost arrow) and **Stone slab** (a stone arrow with feathers). They turn like the flat dart. The picker now has three rows.

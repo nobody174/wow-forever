@@ -3,19 +3,20 @@
 A model script defines `scene`, `holder` (the parent of the whole model, turned for each frame), OUT, FRAMES and PIXELS, then runs this file.
 """
 import math
+import os
 
 from mathutils import Vector
 
 import bpy
 
-# ---- camera: south of the arrow, looking at it from about 52 degrees above the ground ----
+# ---- camera: behind the arrow (south), 40 degrees up, wide lens and close, so an arrow that points ahead recedes into the scene ----
 cam_data = bpy.data.cameras.new("cam")
 cam_data.type = "PERSP"
-cam_data.lens = 70
+cam_data.lens = float(os.environ.get("R2F_LENS", "28"))
 cam = bpy.data.objects.new("cam", cam_data)
 scene.collection.objects.link(cam)
-elev = math.radians(52)
-dist = 5.3
+elev = math.radians(float(os.environ.get("R2F_ELEV", "40")))
+dist = float(os.environ.get("R2F_DIST", str(globals().get("CAM_DIST", 2.2))))   # a model may set CAM_DIST (long ones need more room)
 cam.location = (0.0, -dist * math.cos(elev), dist * math.sin(elev))
 direction = Vector((0, 0, 0.0)) - cam.location
 cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()

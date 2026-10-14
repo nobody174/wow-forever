@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.56.1 (2026-10-14)
+
+- Hunter and Rogue macros that stopped at the first spell they could not cast are split into one button per spell: Hunter "Raptor Strike" and "Wing Clip" (was Raptor Strike + Wing Clip), Survival "Raptor Strike", "Mongoose Bite" and "Strider Kick" (was one melee button), Rogue "Sap" (was Pick Pocket + Sap; Pick Pocket keeps its own mouseover macro). Import the new string from the site: macros you already placed update in place; the old combined ones stay as they are until you remove them.
+
 ## 0.56.0 (2026-10-14)
 
 - Talents tab: **build in order**. Under the board, `<` and `>` walk the build one point at a time (one point = one level); the board shows only what you would have by then, and Learn this build learns only that. Hover a talent to see which points and levels it is taken at.

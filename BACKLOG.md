@@ -38,7 +38,6 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 1d. **Fury / Warrior "+5 Talented points" option**: builds.html already has the Talented switch; check the 26-point builds (Fury dual-wield, Priest Healer / PvP) show it clearly.
 2. **Re-check the 15 "medium" rotations** (only Priest Shadow, Druid Feral, Paladin Retribution, Warrior Protection are "high").
 3. **Macro fall-through audit** (a macro stops at the first `/cast` of a known-but-unusable spell):
-   - Fix now: Hunter "Raptor Strike + Wing Clip" and "Survival melee button", Rogue "Pick Pocket + Sap": split or drop.
    - One test decides the rest: Shield Block + Sunder while Shield Block is on cooldown. Sunder casts = cooldown + spell pairs are fine; nothing = each becomes two
      buttons (Priest Inner Focus + Greater Heal, Warlock Amplify Curse + Agony, Fel Domination, Mage Arcane Power / Presence of Mind, Rogue Cold Blood + Ambush,
      Shaman Elemental Mastery, Hunter Bestial Wrath + Rapid Fire).

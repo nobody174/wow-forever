@@ -16,6 +16,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 ## 2. Macros (Macros tab; the Options button holds Import, "New macros go to" and Remove all)
 11. Class picker, retest (0.55.3 fix): you are on a Druid in the Warrior view and import Shaman macros: the book must now jump to the Shaman preview (class circles on top, Druid first, "Shaman (preview)" in grey) even when that string was imported before. Dragging a Shaman macro gives "Log in on a Shaman character..." with nothing on the cursor; Universal still works; after `/reload` the book is back on your own class; right-click > Remove from library on a macro already on your bar keeps the bar button working.
 
+15. **New in 0.56.1, split macros:** import the site string again. Hunter: Raptor Strike (starts auto-attack in melee), Wing Clip; Survival: Raptor Strike, Mongoose Bite (needs a dodge first), Strider Kick; Rogue: Sap. Each does its one thing on a hostile target. The old combined macros stay on your bars until you remove them.
+
 ## 4. Talent learning (TEST CHAR, never a main)
 2. One point: click ONE tier-1 talent on the board (after a trainer reset), Learn this build, Cancel (nothing changes), Learn: applied within ~2 s, chat "Learned 1 talent point.", free points one lower, no "Interface action failed", survives `/reload`.
 3. If it stops with "didn't accept" or "waiting in Blizzard's window": note the exact message and what Blizzard's window shows.

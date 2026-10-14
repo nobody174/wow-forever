@@ -479,9 +479,7 @@ CLASSES = [
                   short="Stealth"),
                 M("Pick Pocket (mouseover)", "#showtooltip Pick Pocket\n/cast [@mouseover, harm, nodead][harm, nodead] Pick Pocket",
                   short="PickPkt@"),
-                M("Pick Pocket + Sap",
-                  "#showtooltip Sap\n/cast [harm] Pick Pocket\n/cast [harm] Sap",
-                  "Pick Pocket has no global cooldown, so one press robs and saps.", short="PickPkt+Sap"),
+                M("Sap", dpsHarm("Sap"), "Pick Pocket is its own button (mouseover): a macro that tries Pick Pocket first stops there when it can't be used, so they are not combined.", short="Sap"),
                 M("Apply poison (left = main, right = off hand)",
                   "#showtooltip Instant Poison\n/use Instant Poison\n/use [button:1] 16; [button:2] 17\n/click StaticPopup1Button1",
                   "Change the poison name to the rank you have (e.g. Instant Poison II). The last line "
@@ -779,8 +777,9 @@ CLASSES = [
                 M("Volley at cursor", "#showtooltip Volley\n/cast [@cursor] Volley",
                   "Forever removed Volley's cooldown, so it's a real AoE button now. "
                   "Drops at your mouse cursor, no targeting circle.", short="Volley"),
-                M("Raptor Strike + Wing Clip",
-                  "#showtooltip Raptor Strike\n/startattack [harm]\n/cast [harm] Raptor Strike\n/cast [harm] Wing Clip", short="Raptor+Clip"),
+                M("Raptor Strike", melee("Raptor Strike"), "Queues on your next swing and turns on auto-attack.", short="Raptor"),
+                M("Wing Clip", dpsHarm("Wing Clip"), "Its own button: a macro stops at the first spell it can't cast, so Raptor Strike and Wing Clip are not combined.",
+                  short="WingClip"),
             ]),
             G(AUTO, [
                 M("Auto Shot (spam-safe)",
@@ -835,11 +834,10 @@ CLASSES = [
 
         {"spec": "Survival", "groups": [
             G(DPS, [
-                M("Survival melee button (Raptor + Mongoose + Strider Kick)",
-                  "#showtooltip Raptor Strike\n/startattack [harm]\n/cast [harm] Raptor Strike\n"
-                  "/cast [harm] Mongoose Bite\n/cast [harm] Strider Kick",
-                  BETA + "Raptor Strike queues on your next swing (no global cooldown), then "
-                  "Mongoose Bite if it's lit up, else Strider Kick. Spam it in melee.", short="SurvMelee"),
+                M("Raptor Strike", melee("Raptor Strike"), BETA + "Queues on your next swing and turns on auto-attack.", short="SurvRaptor"),
+                M("Mongoose Bite", dpsHarm("Mongoose Bite"), BETA + "Only usable after you dodge; its own button, since a macro stops at the first spell it can't cast.",
+                  short="Mongoose"),
+                M("Strider Kick", dpsHarm("Strider Kick"), BETA + "Rune ability; its own button for the same reason.", short="StriderKick"),
             ]),
         ]},
     ]},

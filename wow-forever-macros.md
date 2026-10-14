@@ -774,10 +774,9 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@mouseover, harm, nodead][harm, nodead] Pick Pocket
 ```
 
-**Pick Pocket + Sap** (`PickPkt+Sap`) — Pick Pocket has no global cooldown, so one press robs and saps.
+**Sap** (`Sap`) — Pick Pocket is its own button (mouseover): a macro that tries Pick Pocket first stops there when it can't be used, so they are not combined.
 ```
 #showtooltip Sap
-/cast [harm] Pick Pocket
 /cast [harm] Sap
 ```
 
@@ -1457,11 +1456,16 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@cursor] Volley
 ```
 
-**Raptor Strike + Wing Clip** (`Raptor+Clip`)
+**Raptor Strike** (`Raptor`) — Queues on your next swing and turns on auto-attack.
 ```
 #showtooltip Raptor Strike
 /startattack [harm]
 /cast [harm] Raptor Strike
+```
+
+**Wing Clip** (`WingClip`) — Its own button: a macro stops at the first spell it can't cast, so Raptor Strike and Wing Clip are not combined.
+```
+#showtooltip Wing Clip
 /cast [harm] Wing Clip
 ```
 
@@ -1563,12 +1567,22 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
-**Survival melee button (Raptor + Mongoose + Strider Kick)** (`SurvMelee`) — Test in beta: Raptor Strike queues on your next swing (no global cooldown), then Mongoose Bite if it's lit up, else Strider Kick. Spam it in melee.
+**Raptor Strike** (`SurvRaptor`) — Test in beta: Queues on your next swing and turns on auto-attack.
 ```
 #showtooltip Raptor Strike
 /startattack [harm]
 /cast [harm] Raptor Strike
+```
+
+**Mongoose Bite** (`Mongoose`) — Test in beta: Only usable after you dodge; its own button, since a macro stops at the first spell it can't cast.
+```
+#showtooltip Mongoose Bite
 /cast [harm] Mongoose Bite
+```
+
+**Strider Kick** (`StriderKick`) — Test in beta: Rune ability; its own button for the same reason.
+```
+#showtooltip Strider Kick
 /cast [harm] Strider Kick
 ```
 

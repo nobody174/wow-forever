@@ -5,6 +5,13 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-14 (Addon version check)
+- addons.html: AtlasLootClassic Continued 12482 → 12487 (Oct 12), Forever Bestiary 0.5.0 → 0.6.0 (Oct 13, beta, the only
+  Forever release type it ships), ForeverPlus 0.8.6 → 0.9.2 (Oct 13), Questie v12.0.4+v1.0.5 → v12.1.0+v1.0.6 (Oct 12).
+  Road to Forever fallback values 0.41.0 → 0.54.0 (r2f-v0.54.0, Oct 14). Leatrix Maps (1.60.20-forever) and TomTom
+  (v4.3.12-release) unchanged. ThreatMaster could not be checked (WebFetch permission for its CurseForge page timed out
+  in the unattended run), card left at 0.4.0. "Versions checked on CurseForge" set to Oct 14, 2026.
+
 ## 2026-10-13 (Planning files cleaned up)
 - BACKLOG.md rewritten as a numbered open-only list; ROADMAP.md took the unscheduled ideas. Everything below from the old BACKLOG is DONE and now lives here:
   - Site data and export: Data (1) and Site export (2), 2026-10-01.

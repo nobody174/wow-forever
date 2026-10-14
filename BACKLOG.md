@@ -47,7 +47,6 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 1. **Professions BiS**: re-scrape ForeverChanges' level-60 lists, re-check `ALT` / `LADDER` and sources, update the "checked" dates.
 2. **AH market**: when AHledger lists EU markets, switch `DEFAULT_MARKET` in professions.html and save fresh site prices.
 3. **Builds and launch plan**: re-check builds and the `unverified` steps past level 30; compare our level-60 builds with the first real guides.
-4. **Mark beta data**: label level-30 beta data as such on Professions and Builds until then.
 
 ## 6. Owner to do
 1. Create the GitHub token and sign in once at the owner login (Group picks); publish real 60 builds for the group.

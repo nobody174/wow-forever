@@ -1714,6 +1714,9 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 2026-10-15 (Beta labels)
+- builds.html and professions.html ledes now say level 30 data comes from the beta and can change before the November 4 launch (Mr.BiZ already did).
+
 ## 0.61.0 (2026-10-15)
 
 - blender_arrow_render.py: camera 40 degrees up, lens 28, dist 2.2 (CAM_DIST 2.8 for the long arrow and dart; env R2F_ELEV / R2F_LENS / R2F_DIST for experiments) instead of 52 / 70 / 5.3. blender_arrow3d.py and _dart.py now use the shared render file. New blender_arrow3d_picture.py lays a cut-out PNG (addon/art/sources/<key>_cut.png from make_image_looks.py) on the ground; gilded / plate / slab became 100-frame sheets (media/arrow3d_<key>.tga, `sheet = true`). The flat media/arrow_gilded|plate|slab.tga from 0.60.0 are no longer used. No frame is clipped at the cell edge.

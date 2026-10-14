@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-10-15",
+      "title": "Road to Forever addon 0.62: pick your arrow",
+      "text": "The addon's waypoint arrow now points into the scene like a real direction marker, and you can choose its look: a flat dart, a gold dart, a stone arrow, a block arrow, a compass needle, or three painted ones. The Talents tab shows arrows between talents, walks a build one level at a time and tells you the next point to pick, and there are new reminders for gear repair and for a missing, dead or unhappy pet.",
+      "link": "addons.html"
+    },
+    {
       "date": "2026-10-14",
       "title": "More level 30 builds",
       "text": "The Builds page now has level 30 builds for Hunter Marksmanship and Survival, Warlock Destruction and Demonology, Rogue Assassination and Subtlety, Druid Balance, Warrior Fury (two-hander and dual-wield) and Priest Discipline (a leveler and a Healer / PvP one). Some come from several guides that disagree, so they are marked medium confidence until we test them in the beta.",

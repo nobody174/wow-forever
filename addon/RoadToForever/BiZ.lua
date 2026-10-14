@@ -166,6 +166,38 @@ function BiZ.Enchants(specId, slot)
   return sp and sp.enchants and sp.enchants[slot] or {}
 end
 
+-- The item tooltip's enchant line: what Mr.BiZ recommends for the slot this item goes in, in the game's enchant
+-- green, like Sixty Upgrades shows it on the item. Equip locations -> Mr.BiZ slot keys; a one-hand weapon is
+-- judged as a main hand, a shield as an off hand.
+local ENCHANT_SLOT_OF = {
+  INVTYPE_CLOAK = "back", INVTYPE_CHEST = "chest", INVTYPE_ROBE = "chest", INVTYPE_FEET = "feet", INVTYPE_HAND = "hands",
+  INVTYPE_LEGS = "legs", INVTYPE_NECK = "neck", INVTYPE_WRIST = "wrist", INVTYPE_WEAPON = "mainhand",
+  INVTYPE_WEAPONMAINHAND = "mainhand", INVTYPE_2HWEAPON = "mainhand", INVTYPE_SHIELD = "offhand",
+  INVTYPE_WEAPONOFFHAND = "offhand", INVTYPE_HOLDABLE = "offhand", INVTYPE_RANGED = "ranged",
+  INVTYPE_RANGEDRIGHT = "ranged",
+}
+
+-- link, equipLoc, specId -> text, r, g, b (or nil: no enchant for that slot / spec). A link carries the enchant it
+-- already has (item:<id>:<enchantId>:...), so the line says whether the BiZ pick is already on.
+function BiZ.EnchantTipLine(link, loc, specId)
+  local slot = ENCHANT_SLOT_OF[loc or ""]
+  if not (slot and specId and type(link) == "string") then return nil end
+  local rows = {}
+  for _, e in ipairs(BiZ.Enchants(specId, slot)) do
+    if e.kind ~= "2h" or loc == "INVTYPE_2HWEAPON" then rows[#rows + 1] = e end
+  end
+  if #rows == 0 then return nil end
+  local best = rows[1]
+  local have = tonumber(link:match("item:%d+:(%d*)")) or 0
+  local state, _, rank = BiZ.EnchantState(rows, have)
+  if state == "best" then
+    return L.BIZ_TIP_ENCHANT_HAVE:format(best.name), 0.1, 1, 0.1
+  elseif state == "alt" then
+    return L.BIZ_TIP_ENCHANT_ALT:format(rank, best.name), 1, 0.82, 0
+  end
+  return L.BIZ_TIP_ENCHANT:format(best.name, best.eff), 0.1, 1, 0.1
+end
+
 -- ---------------------------------------------------------------------------
 -- On-route weapons: Mr.BiZ weapon picks you can get at a launch-plan step
 -- ---------------------------------------------------------------------------

@@ -6942,6 +6942,33 @@ def test_talent_data_fresh():
     check(r.returncode == 0, "TalentData.lua is current with builds.html: %s" % r.stdout.decode("utf-8", "replace").strip())
 
 
+def test_enchant_tooltip():
+    """The item tooltip's Mr.BiZ enchant line (green), from the real BiZData."""
+    lua = new_runtime()
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    found = lua.eval("""(function()
+      for id, sp in pairs(R2F.BiZData.specs) do
+        local rows = sp.enchants and sp.enchants.chest
+        if rows and rows[1] and rows[1].ids and rows[1].alts and rows[1].alts[1] then
+          return { id, rows[1].ids[1], rows[1].alts[1].ids[1], rows[1].name } end
+      end end)()""")
+    check(found is not None, "enchant tip: a spec with a best and a stand-in chest enchant exists")
+    spec, best_id, alt_id, best_name = found[1], found[2], found[3], found[4]
+    fn = lua.eval("function(link, loc, spec) return R2F.BiZ.EnchantTipLine(link, loc, spec) end")
+    text, r, g, b = fn("item:1000:0:0:0", "INVTYPE_CHEST", spec)
+    check(text.startswith("Mr.BiZ enchant: " + best_name) and (r, g, b) == (0.1, 1, 0.1), "enchant tip: no enchant -> the BiZ pick, green: %s" % text)
+    text, r, g, b = fn("item:1000:%d:0:0" % best_id, "INVTYPE_CHEST", spec)
+    check(text == "Mr.BiZ enchant in place: " + best_name and g == 1, "enchant tip: the best enchant already on -> 'in place': %s" % text)
+    text, r, g, b = fn("item:1000:%d:0:0" % alt_id, "INVTYPE_CHEST", spec)
+    check(text.startswith("Enchant: the #2 pick. Mr.BiZ best: ") and r == 1 and g == 0.82, "enchant tip: a stand-in -> gold, names the best: %s" % text)
+    check(fn("item:1000:0:0:0", "INVTYPE_FINGER", spec) is None, "enchant tip: rings have no enchant line")
+    check(fn("item:1000:0:0:0", "INVTYPE_CHEST", "nope/nope") is None, "enchant tip: unknown spec -> nothing")
+    check(fn(None, "INVTYPE_CHEST", spec) is None, "enchant tip: no link -> nothing")
+    check(fn("item:1000:0:0:0", "INVTYPE_ROBE", spec) is not None, "enchant tip: a robe counts as chest")
+
+
 def test_talent_source_traits():
     """13.12's write discipline on the source: PurchaseRank and CommitConfig are
     called in exactly one function (purchasePoint, Talents.lua), after its
@@ -7777,6 +7804,7 @@ def main():
     test_talent_preview(False)
     test_talent_calc()
     test_talent_data_fresh()
+    test_enchant_tooltip()
     test_talent_sandbox_ui(True)
     test_talent_sandbox_ui(False)
     test_talent_learning(True)

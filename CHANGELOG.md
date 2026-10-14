@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.54.2 (2026-10-14)
+
+- BiZ.EnchantTipLine (BiZ.lua) + GearScore.lua tooltip hook: the green enchant line on item tooltips (equip location -> Mr.BiZ slot key, 2h-only enchants filtered, the link's own enchant id decides "in place" / stand-in). Locale BIZ_TIP_ENCHANT*. Test: test_enchant_tooltip. Looked at Sixty Upgrades through Claude in Chrome (CLAUDE_CODE_ENABLE_CFC=1 in user settings; Claude Code's native host registered by `claude --chrome`).
+
 ## 0.54.1 (2026-10-14)
 
 - gen_talent_data.py lists a "Bear tank / Cat" build under Tank and DPS; UI/BiZ.lua colours the enchant line green (0.1, 1, 0.1).

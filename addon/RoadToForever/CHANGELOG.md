@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.54.2 (2026-10-14)
+
+- Mr.BiZ enchant on the item: hover a piece of gear and its tooltip gets a green line with the enchant Mr.BiZ recommends for that slot and your spec
+  ("Mr.BiZ enchant: ... (effect)"), "Mr.BiZ enchant in place" when the best one is already on, or a gold line when a stand-in is on. Shown with the BiZ score line
+  (Tweaks > Bags > Upgrade arrows). Same idea as the enchant line on Sixty Upgrades' gear list.
+
 ## 0.54.1 (2026-10-14)
 
 - Talents tab, Recommended: the Druid Feral build (bear tank / cat) is listed under both Tank and DPS.

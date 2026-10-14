@@ -241,6 +241,12 @@ local function onTooltip(tip)
     tip:AddLine(text, r, g, b)
     tip:Show()
   end
+  -- The Mr.BiZ enchant for this slot (green), like the enchant line on Sixty Upgrades' gear list.
+  local etext, er, eg, eb = R2F.BiZ.EnchantTipLine(link, equipLoc(link), GS.SpecId())
+  if etext then
+    tip:AddLine(etext, er, eg, eb)
+    tip:Show()
+  end
 end
 GS.OnTooltip = onTooltip
 

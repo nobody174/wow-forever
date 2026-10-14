@@ -6975,6 +6975,9 @@ def test_talent_sandbox_ui(templates):
     end)()""")
     check(chk.endswith(":1:nil") and not chk.startswith("nil"), "%s: next point = first point of the order, none when all taken: %s" % (tag, chk))
     check(lua.eval("R2F.Talents.NextPointLine() == nil or type(R2F.Talents.NextPointLine()) == 'string'"), "%s: Home next-point line is text or nothing" % tag)
+    # Loadouts menu starts with "My current talents" (the character's own build on the board).
+    lua.execute("R2F.TalentPanel.LoadoutsMenu()")
+    check(lua.eval("MENU[1].text") == lua.eval("R2F.L.TALENT_LOAD_MINE") and lua.eval("MENU[1].kind") == "button", "%s: loadouts menu offers my current talents first" % tag)
     t0 = lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())")
     lua.execute("R2F.TalentPanel.Step(-1)")
     check(lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())") == t0 - 1, "%s: stepper back = one point less" % tag)

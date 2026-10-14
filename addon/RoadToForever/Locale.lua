@@ -563,6 +563,7 @@ R2F.L = {
   TALENT_CLASS_YOURS = "%s (your class)",
   TALENT_CLASS_OTHER = "%s (preview only)",
   TALENT_SB_SUMMARY = "%d of %d points spent, %d left.",
+  TALENT_LOAD_MINE = "My current talents (start from here)",
   TALENT_STEP = "Build in order: point %d of %d",
   TALENT_STEP_PREV = "One point back",
   TALENT_STEP_NEXT = "One point forward",

@@ -8,7 +8,7 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
    didn't save it; macro there but bar slot empty = ours).
 
 ## 2. Addon
-1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): maybe a "start from my current talents" button; re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build; then delete TalentGuide.lua and the old guided mode.
+1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build; then delete TalentGuide.lua and the old guided mode.
 2. **Plan points without a position** (19 `check` points in `launch-plan-waypoints.json`: Skycutter / Dalaran portal, Stormwind boat, Riverglades,
    Shen'dralas, Mount Hyjal, new dungeons): `/r2f here` at the spot, send the lines, set `zone/x/y/conf: "exact"`, run `python build.py`. Also re-check the
    `classic` points ("may have moved").

@@ -892,9 +892,13 @@ end
 
 function TalentPanel.LoadoutsMenu()
   local list = Talents.Loadouts(state.class)
-  local items = {}
+  -- First entry: the character's own talents on the board, to build on from where you are now.
+  local items = { { kind = "button", text = L.TALENT_LOAD_MINE, func = function()
+    local link = Talents.MyBuildLink()
+    if link then setLink(link) else R2F.Print(L.TALENT_READ_FAILED) end
+  end }, { kind = "divider" } }
   if #list == 0 then
-    items[1] = { kind = "title", text = L.TALENT_LOADOUT_NONE }
+    items[#items + 1] = { kind = "title", text = L.TALENT_LOADOUT_NONE }
   else
     for _, l in ipairs(list) do
       local label = l.by and L.TALENT_LOADOUT_BY:format(l.name, l.by) or l.name

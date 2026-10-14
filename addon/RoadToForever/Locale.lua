@@ -561,6 +561,7 @@ R2F.L = {
   TALENT_TIP_ORDER = "Build order: points %d to %d (levels %d to %d).",
   TALENT_TIP_ORDER_ONE = "Build order: point %d (level %d).",
   TALENT_NEXT_POINT = "Next point in this build: %s (point %d, level %d).",
+  TALENT_NEXT_HOME = "Next talent point: %s (point %d, level %d).",
   TALENT_NEXT_DONE = "You have every point of this build.",
   TALENT_PREVIEW_ONLY = "Preview only: log in on a %s to learn this build.",
   TALENT_TIP_RANK = "Rank %d / %d",

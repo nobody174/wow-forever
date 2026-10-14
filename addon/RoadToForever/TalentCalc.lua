@@ -271,6 +271,20 @@ function Calc.Prefix(calc, n)
   return out
 end
 
+-- The first point of a build (in Calc.Order) that the character does not have yet. `tree` = Talents.Plan's trees
+-- (each talent's real `rank`). -> name, point number, or nil when every point is taken.
+function Calc.NextPoint(calc, planTrees)
+  local seen = {}
+  for i, p in ipairs(Calc.Order(calc)) do
+    local t, k = p[1], p[2]
+    seen[t] = seen[t] or {}
+    seen[t][k] = (seen[t][k] or 0) + 1
+    local e = planTrees[t] and planTrees[t].talents[k]
+    if seen[t][k] > (e and e.rank or 0) then return Calc.Trees(calc.class)[t].talents[k].n, i end
+  end
+  return nil
+end
+
 function Calc.Level(calc, perk)
   return R2F.Talents.LevelFor(Calc.Total(calc), perk)
 end

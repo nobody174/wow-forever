@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.56.2 (2026-10-14)
+
+- "Next talent point: X (point n, level L)" now also shows on Home (right column, under Training) and in chat after each level-up, following the build you last put on the Talents board on this character.
+
 ## 0.56.1 (2026-10-14)
 
 - Hunter and Rogue macros that stopped at the first spell they could not cast are split into one button per spell: Hunter "Raptor Strike" and "Wing Clip" (was Raptor Strike + Wing Clip), Survival "Raptor Strike", "Mongoose Bite" and "Strider Kick" (was one melee button), Rogue "Sap" (was Pick Pocket + Sap; Pick Pocket keeps its own mouseover macro). Import the new string from the site: macros you already placed update in place; the old combined ones stay as they are until you remove them.

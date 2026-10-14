@@ -912,6 +912,22 @@ function Talents.OnAddonMessage(prefix, msg, _, sender)
   if R2F.TalentPanel and R2F.TalentPanel.RequestRefresh then R2F.TalentPanel.RequestRefresh() end
 end
 
+-- "Next talent point: X (point n, level L)" for the build you last put on the board on this character (the Talents
+-- tab saves it as cdb.followLink). nil when there is none, it is not your class, or you have every point of it.
+function Talents.NextPointLine()
+  local c = R2F.Library.cdb
+  local link = c and c.followLink
+  if not link then return nil end
+  local res = Talents.Preview(link)
+  if not (res and res.plan and not res.error) then return nil end
+  local parsed = Talents.ParseLink(link)
+  local calc = parsed and R2F.TalentCalc.FromCode(parsed.class, parsed.code)
+  if not calc then return nil end
+  local name, i = R2F.TalentCalc.NextPoint(calc, res.plan.trees)
+  if not name then return nil end
+  return L.TALENT_NEXT_HOME:format(name, i, Talents.LevelFor(i, R2F.Library.db.settings.talented == true))
+end
+
 -- Preview: text -> result.
 --   { error = text }               stop: nothing to preview (red). Bad link,
 --                                  wrong class, talents unreadable, or a hash

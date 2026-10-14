@@ -6943,6 +6943,20 @@ def test_talent_sandbox_ui(templates):
       return n .. ':' .. table.concat(bad, ';')
     end)()""")
     check(bad.endswith(":") and int(bad.split(":")[0]) > 25, "%s: build order is legal for every recommended build: %s" % (tag, bad))
+    # Next point (0.56.2): nothing taken -> the build's first point; everything taken -> nil; the Home line follows the board.
+    chk = lua.eval("""(function()
+      local TC = R2F.TalentCalc
+      local calc = TC.FromCode('priest', '02--3050220012013')
+      local name, i = TC.NextPoint(calc, {})
+      local full = {}
+      for t = 1, #calc.ranks do
+        full[t] = { talents = {} }
+        for k = 1, #calc.ranks[t] do full[t].talents[k] = { rank = calc.ranks[t][k] } end
+      end
+      return tostring(name) .. ':' .. tostring(i) .. ':' .. tostring(TC.NextPoint(calc, full))
+    end)()""")
+    check(chk.endswith(":1:nil") and not chk.startswith("nil"), "%s: next point = first point of the order, none when all taken: %s" % (tag, chk))
+    check(lua.eval("R2F.Talents.NextPointLine() == nil or type(R2F.Talents.NextPointLine()) == 'string'"), "%s: Home next-point line is text or nothing" % tag)
     t0 = lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())")
     lua.execute("R2F.TalentPanel.Step(-1)")
     check(lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())") == t0 - 1, "%s: stepper back = one point less" % tag)

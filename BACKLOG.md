@@ -33,7 +33,7 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 
 ## 4. Site: builds and macros
 1. **Level 30 builds: confirm in beta** (added 2026-10-14, all "medium"): Survival (sources disagree), Assassination (last 7 points flexible), Fury, Balance, Discipline; Marksmanship's tree may gain Improved Serpent Sting (check share links).
-1b. **Talent pick order, still open**: (a) a guide's real pick order per build (the current order is tier by tier), (b) the "Next point" line on Home and in the level-up reminder (today only on the Talents tab), (c) one-click "learn next point" after TESTING 4.2 passes.
+1b. **Talent pick order, still open**: (a) a guide's real pick order per build (the current order is tier by tier), (b) one-click "learn next point" after TESTING 4.2 passes.
 1c. **Group picks in the addon**: the addon cannot fetch group-builds.json; it would have to be baked in at release like MacroData. Owner asked 2026-10-14 whether to add it.
 1d. **Fury / Warrior "+5 Talented points" option**: builds.html already has the Talented switch; check the 26-point builds (Fury dual-wield, Priest Healer / PvP) show it clearly.
 2. **Re-check the 15 "medium" rotations** (only Priest Shadow, Druid Feral, Paladin Retribution, Warrior Protection are "high").

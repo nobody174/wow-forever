@@ -644,19 +644,9 @@ end
 -- "Next point in this build" for your own class: the first point of the build's order you have not taken yet.
 local function nextPointText(plan)
   if not (plan and state.full) then return "" end
-  local need = {}
-  local perk = R2F.Library.db.settings.talented == true
-  for i, p in ipairs(Calc.Order(state.full)) do
-    local t, k = p[1], p[2]
-    need[t] = need[t] or {}
-    need[t][k] = (need[t][k] or 0) + 1
-    local real = plan.trees[t] and plan.trees[t].talents[k] and plan.trees[t].talents[k].rank or 0
-    if need[t][k] > real then
-      local name = Calc.Trees(state.class)[t].talents[k].n
-      return L.TALENT_NEXT_POINT:format(name, i, Talents.LevelFor(i, perk))
-    end
-  end
-  return L.TALENT_NEXT_DONE
+  local name, i = Calc.NextPoint(state.full, plan.trees)
+  if not name then return L.TALENT_NEXT_DONE end
+  return L.TALENT_NEXT_POINT:format(name, i, Talents.LevelFor(i, R2F.Library.db.settings.talented == true))
 end
 
 function TalentPanel.Refresh()

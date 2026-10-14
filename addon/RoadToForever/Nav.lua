@@ -158,6 +158,15 @@ local elapsed, update   -- the arrow's OnUpdate state, defined below
 Nav.FRAMES, Nav.COLS, Nav.CELL, Nav.SHEET = 100, 10, 102, 1024
 local ARROW_FLAT = "Interface\\AddOns\\RoadToForever\\media\\arrow"
 local ARROW_3D = "Interface\\AddOns\\RoadToForever\\media\\arrow3d"
+-- The looks to choose from (Tweaks > Alerts & HUD): the flat dart, and a sprite sheet per 3D look
+-- (all share FRAMES / COLS / CELL).
+-- A new look: render it with addon/art/export_arrow3d.py, add it here and a NAV_STYLE_<KEY> text in Locale.lua.
+Nav.STYLE_ORDER = { "flat", "dart", "arrow" }
+Nav.STYLES = {
+  flat = {},
+  dart = { tex = "Interface\\AddOns\\RoadToForever\\media\\arrow3d_dart" },
+  arrow = { tex = ARROW_3D },
+}
 
 -- Sprite frame (0 .. FRAMES - 1) for a turn angle in radians (counter-clockwise, any size).
 function Nav.FrameFor(angle)
@@ -176,13 +185,31 @@ function Nav.Is3D()
   return R2F.Gameplay ~= nil and R2F.Gameplay.IsOn("arrow3d") and true or false
 end
 
--- Switch the arrow's picture between the flat dart and the 3D sheet (also when the Tweaks switch changes).
+-- The look in use: "flat", "dart" or "arrow".
+function Nav.Style()
+  if not Nav.Is3D() then return "flat" end
+  local st = settings()
+  local k = st and st.style
+  return (k and k ~= "flat" and Nav.STYLES[k]) and k or "arrow"
+end
+
+-- Choose a look. Saved, applied at once.
+function Nav.SetStyle(key)
+  if not Nav.STYLES[key] then return false end
+  local st = settings()
+  if key ~= "flat" and st then st.style = key end
+  R2F.Gameplay.SetOn("arrow3d", key ~= "flat")
+  Nav.ApplyStyle()
+  return true
+end
+
+-- Switch the arrow's picture between the flat dart and a 3D sheet (also when the look or the Tweaks switch changes).
 local function applyStyle(f)
-  local three = Nav.Is3D()
-  if f.style == three then return end
-  f.style = three
-  if three then
-    f.arrow:SetTexture(ARROW_3D)
+  local key = Nav.Style()
+  if f.style == key then return end
+  f.style = key
+  if key ~= "flat" then
+    f.arrow:SetTexture(Nav.STYLES[key].tex)
     f.arrow:SetSize(64, 64)
     f.arrow:SetRotation(0)
     f:SetSize(120, 108)
@@ -225,7 +252,7 @@ update = function(f, dt)
   end
   if state == "ok" and angle then
     applyStyle(f)
-    if f.style then
+    if f.style ~= "flat" then
       f.arrow:SetTexCoord(Nav.FrameCoords(Nav.FrameFor(angle)))
     else
       f.arrow:SetRotation(angle)

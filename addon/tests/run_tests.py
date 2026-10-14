@@ -1122,6 +1122,15 @@ def test_arrow_3d():
     check(abs(lua.eval("R2FNavFrame.arrow.__rotation") + math.pi / 2) < 1e-9, "3D arrow: the flat dart turns by the angle again")
     lua.execute("R2F.Gameplay.SetOn('arrow3d', true)")
     check(lua.eval("string.sub(R2FNavFrame.arrow.__tex, -7)") == "arrow3d", "3D arrow: back to the sprite sheet")
+    # Arrow looks (0.58.0): flat / gold dart / stone arrow, chosen with Nav.SetStyle (the Tweaks buttons).
+    lua.execute("R2F.Nav.SetStyle('dart')")
+    check(lua.eval("R2F.Nav.Style()") == "dart" and lua.eval("R2FNavFrame.arrow.__tex").endswith("arrow3d_dart"), "3D arrow: the gold dart look")
+    lua.execute("R2F.Nav.SetStyle('flat')")
+    tex = lua.eval("R2FNavFrame.arrow.__tex")
+    check(lua.eval("R2F.Nav.Style()") == "flat" and tex.endswith("arrow") and not tex.endswith("arrow3d"), "3D arrow: the flat look: %s" % tex)
+    lua.execute("R2F.Nav.SetStyle('arrow')")
+    check(lua.eval("R2F.Nav.Style()") == "arrow" and lua.eval("R2FNavFrame.arrow.__tex").endswith("arrow3d"), "3D arrow: the stone arrow look")
+    check(lua.eval("R2F.Nav.SetStyle('nonsense')") is False, "3D arrow: an unknown look is refused")
 def test_quest_weapons():
     """Weapons along the route: quest rewards matched to plan steps by zone and level, class and faction, upgrades only."""
     lua, T = plan_runtime()

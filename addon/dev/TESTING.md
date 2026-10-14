@@ -44,6 +44,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 
 5. **New in 0.57.0:** turn on Tweaks > Alerts & HUD > 3D arrow, set an arrow (`/bizway`): it is now a shot-style arrow (wooden shaft, gold head, red and cream feathers). Check Small / Medium / Large: is the shaft thick enough to see at Small, does the head point the right way, and does it turn smoothly as you walk? Tell me if it should be thicker, longer or other colours.
 
+6. **New in 0.58.0:** Tweaks > Alerts & HUD > "Waypoint arrow look": Flat / Gold dart / Stone arrow: each switches the arrow at once (set one with `/bizway`), the chosen button is gold, it stays after `/reload`, Reset page brings back the stone arrow. Is the stone head readable at Small and Medium, are the feathers feathery enough, and is it still turning smoothly?
+
 ## 9. Mr.BiZ (BiZ tab)
 8. **Retest (0.55.3):** the enchant line on item tooltips is now pink (it was lost among the green stats). Hover gear: pink "Mr.BiZ enchant: ..." / "in place", gold for a stand-in. Readable enough?
 

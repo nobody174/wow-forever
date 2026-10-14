@@ -26,6 +26,7 @@ local pages = {}        -- page key -> container frame
 local pageButtons = {}  -- page key -> button
 local pageHeight = {}
 local outlineButtons = {}   -- "none" / "thin" / "thick" -> button (Alerts & HUD page)
+local styleButtons = {}     -- BiZNav arrow look: "flat" / "dart" / "arrow" -> button
 local arrowButtons = {}     -- BiZNav arrow size: "small" / "medium" / "large" -> button (Alerts & HUD page)
 local sizeSlider, sizeText
 local bagBoxes = {}     -- Movable bags / Lock bags (Bags.lua), on the Bags page
@@ -41,7 +42,7 @@ Tab.PAGES = {
   { key = "screen", label = "GP_PAGE_SCREEN", features = { "errorfilter", "xpbar", "copychat", "duels" } },
   { key = "bags", label = "GP_PAGE_BAGS", features = { "bagslots", "bagsort", "upgrades" } },
   { key = "alerts", label = "GP_PAGE_ALERTS",
-    features = { "reactalert", "reactlock", "reactblizz", "training", "navfollow", "corpsearrow", "arrow3d" } },
+    features = { "reactalert", "reactlock", "reactblizz", "training", "navfollow", "corpsearrow" } },
 }
 
 local function visible()
@@ -67,6 +68,13 @@ local function refresh()
       local fs = b.GetFontString and b:GetFontString()
       if fs then
         if k == d.outline then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
+      end
+    end
+    local look = R2F.Nav.Style()
+    for k, b in pairs(styleButtons) do
+      local fs = b.GetFontString and b:GetFontString()
+      if fs then
+        if k == look then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
       end
     end
     local size = R2F.Nav.Size()
@@ -189,6 +197,7 @@ function Tab.ResetPage()
         d.textScale, d.outline = 1, "none"
         Gameplay.ApplyAlertStyle()
         R2F.Nav.SetSize("medium")
+        R2F.Nav.SetStyle("arrow")
       end
     end
   end
@@ -317,7 +326,25 @@ function Tab.Build(f)
         arrowButtons[k] = ab
         bx = bx + 68
       end
-      y = y - 156
+      -- BiZNav arrow look: flat dart, gold 3D dart, stone 3D arrow.
+      local sl = c:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+      sl:SetPoint("TOPLEFT", LEFT + 4, y - 156)
+      sl:SetText(L.NAV_STYLE)
+      bx = LEFT + 4
+      local widths = { flat = 54, dart = 80, arrow = 94 }
+      for _, k in ipairs(R2F.Nav.STYLE_ORDER) do
+        local sb = CreateFrame("Button", nil, c, "UIPanelButtonTemplate")
+        sb:SetSize(widths[k], 22)
+        sb:SetPoint("TOPLEFT", bx, y - 174)
+        sb:SetText(L["NAV_STYLE_" .. k:upper()])
+        sb:SetScript("OnClick", function()
+          R2F.Nav.SetStyle(k)
+          refresh()
+        end)
+        styleButtons[k] = sb
+        bx = bx + widths[k] + 4
+      end
+      y = y - 208
       local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
       note:SetPoint("TOPLEFT", LEFT + 4, y - 4)
       note:SetWidth(230)

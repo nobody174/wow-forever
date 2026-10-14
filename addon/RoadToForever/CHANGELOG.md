@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.58.0 (2026-10-14)
+
+- The 3D arrow has a stone head now (a chipped flint point lashed on with sinew) and feathers made of single barbs, so the tail looks feathery.
+- Pick the arrow's look in Tweaks > Alerts & HUD > "Waypoint arrow look": Flat (the original dart), Gold dart (the earlier 3D look) or Stone arrow (new default). This replaces the "3D arrow" tick box.
+
 ## 0.57.1 (2026-10-14)
 
 - The import line in chat now says what changed: "imported 61 macros: 0 new, 0 updated, 61 unchanged."

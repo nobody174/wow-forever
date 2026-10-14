@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.58.0 (2026-10-14)
+
+- blender_arrow3d.py: stone point (notched flint, flake scars, sinew lashing) and barb-by-barb vanes; the previous gold dart model is kept as blender_arrow3d_dart.py -> media/arrow3d_dart.tga. export_arrow3d.py `--style arrow|dart|all`. Nav.STYLES / Nav.Style / Nav.SetStyle, db.nav.style, Tweaks buttons Flat / Gold dart / Stone arrow (the arrow3d switch stays as the flat on/off underneath; its tick box is gone from the page). A new look = a script, a STYLES line in the exporter, a Nav.STYLES entry and a NAV_STYLE_ text.
+
 ## 0.57.1 (2026-10-14)
 
 - Import.Commit message with new / updated / unchanged counts; Home nextTalentHead + gold line; TalentPanel PAGE.h 630 / WIN_H 664, nextHint on its own row; removed the doll-slot enchant line added in 0.56.3 (duplicate of the item tooltip's Mr.BiZ line, owner 2026-10-14).

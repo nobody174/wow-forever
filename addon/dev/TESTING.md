@@ -34,6 +34,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 
 11. **Next release, start from my talents:** Talents tab > Loadouts: the first entry "My current talents (start from here)" puts your real talents on the board; edit from there, Learn works as before.
 
+12. **New in 0.62.0, reminders:** Tweaks > Alerts & HUD > Icons for your class now has **Gear repair reminder** (every class) and, for a Hunter / Warlock, **Pet reminder**. Repair: wear something down (or lower the "Turn red below" slider to 90) and check the red percentage appears, and goes after repairing; `/r2f repair`, `/r2f repair lock`. Pet: dismiss your pet: "No pet"; let it die: "Dead"; a Hunter pet at unhappy: "Unhappy"; nothing while mounted or dead; `/r2f pet`.
+
 ## 5. Home and Tweaks extras
 4. Training reminder (Tweaks > Alerts & HUD): at level-up chat names the new spells; Home's "Training" block lists what to train after you visit your trainer once.
 

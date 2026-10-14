@@ -1573,6 +1573,27 @@ def test_reminders():
           "15.4 Hunter: ammo frame only")
     lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
     check(lua.eval("R2FAmmoScale:IsVisible() and R2FAmmoThreshold:IsVisible()") is True, "15.4 Hunter sees the ammo size + threshold sliders")
+    # Pet reminder (0.62.0): Hunters and Warlocks only; missing / dead / unhappy, quiet when mounted or dead yourself.
+    check(lua.eval("R2FPetFrame ~= nil") and lua.eval("R2FPetScale ~= nil"), "pet: the Hunter has the pet icon and its size slider")
+    lua.execute("""TEST.pet = { exists = false, dead = false, happy = 3 } TEST.mounted = false TEST.selfDead = false
+      UnitExists = function(u) if u == "pet" then return TEST.pet.exists end return true end
+      UnitIsDead = function(u) return u == "pet" and TEST.pet.dead end
+      UnitIsDeadOrGhost = function() return TEST.selfDead end
+      IsMounted = function() return TEST.mounted end
+      GetPetHappiness = function() return TEST.pet.happy end""")
+    check(lua.eval("R2F.Pet.Problem()") == "missing", "pet: no pet out")
+    lua.execute("TEST.pet.exists = true TEST.pet.dead = true")
+    check(lua.eval("R2F.Pet.Problem()") == "dead", "pet: dead pet")
+    lua.execute("TEST.pet.dead = false TEST.pet.happy = 1")
+    check(lua.eval("R2F.Pet.Problem()") == "unhappy", "pet: unhappy Hunter pet")
+    lua.execute("TEST.pet.happy = 3")
+    check(lua.eval("R2F.Pet.Problem()") is None, "pet: a happy pet is fine")
+    lua.execute("TEST.pet.exists = false TEST.mounted = true")
+    check(lua.eval("R2F.Pet.Problem()") is None, "pet: no reminder while mounted")
+    lua.execute("TEST.mounted = false TEST.selfDead = true")
+    check(lua.eval("R2F.Pet.Problem()") is None, "pet: no reminder while you are dead")
+    lua.execute("TEST.selfDead = false R2F.Pet.SetLock(true) R2F.Pet.Update()")
+    check(lua.eval("R2FPetFrame:IsShown()") is True and lua.eval("R2FPetFrame.count.__text") == "No pet", "pet: the icon says No pet")
     lua, T = reminder_runtime("PRIEST")
     check(lua.eval("R2FAmmoFrame == nil and R2FStanceFrame == nil and R2FAmmoScale == nil and R2FStanceScale == nil"),
           "15.4 Priest: no reminder frames or controls")

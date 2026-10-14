@@ -1720,6 +1720,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Workflow action versions)
 - ci.yml / release.yml: actions/checkout v4 -> v6, setup-python v5 -> v6, setup-node v4 -> v6, softprops/action-gh-release v2 -> v3 (all on the Node 24 runtime; the inputs we use are unchanged). The release step is only exercised by the next tag.
 
+## 0.62.0 (2026-10-15)
+
+- Repair.lua (GetInventoryItemDurability over slots 1-19, worst piece, threshold slider 5-90 default 25) and Pet.lua (UnitExists / UnitIsDead on "pet", GetPetHappiness for Hunters, quiet when mounted / dead) as reminder modules in the Reminders registry (`applies` for Hunter / Warlock); R2FDB.repair / R2FDB.pet defaults in Library.lua; `/r2f repair [lock]`, `/r2f pet [lock]`; the Loadouts menu entry uses Talents.MyBuildLink. First release with the Node 24 action versions (see 2026-10-15 Workflow action versions).
+
 ## 0.61.0 (2026-10-15)
 
 - blender_arrow_render.py: camera 40 degrees up, lens 28, dist 2.2 (CAM_DIST 2.8 for the long arrow and dart; env R2F_ELEV / R2F_LENS / R2F_DIST for experiments) instead of 52 / 70 / 5.3. blender_arrow3d.py and _dart.py now use the shared render file. New blender_arrow3d_picture.py lays a cut-out PNG (addon/art/sources/<key>_cut.png from make_image_looks.py) on the ground; gilded / plate / slab became 100-frame sheets (media/arrow3d_<key>.tga, `sheet = true`). The flat media/arrow_gilded|plate|slab.tga from 0.60.0 are no longer used. No frame is clipped at the cell edge.

@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.62.0 (2026-10-15)
+
+- Talents tab > Loadouts: the first entry, "My current talents (start from here)", puts your real talents on the board so you can build on them.
+- New reminder icon: **gear repair**. Shows the worst piece of equipment in percent and turns red under a level you choose (default 25%). Hidden while your gear is fine. Settings: Tweaks > Alerts & HUD (Icons for your class), or `/r2f repair`.
+- New reminder icon: **pet** (Hunters and Warlocks): "No pet", "Dead" or "Unhappy" (Hunter pets), quiet while you are mounted or dead yourself. `/r2f pet`.
+
 ## 0.61.0 (2026-10-15)
 
 - The 3D arrows now point INTO the scene: the picture is seen from behind and above with a wide lens, so an arrow that points straight ahead recedes (the tail end is bigger than the tip), one pointing at you grows toward you, and sideways ones lie on the ground. Before, they were seen almost from above, so ahead looked like "up the screen". All looks (Gold dart, Stone arrow, Block, Needle) are rendered again this way.

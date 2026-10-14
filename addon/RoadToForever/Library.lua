@@ -185,6 +185,14 @@ function Library.Init()
   if type(rp.x) ~= "number" then rp.x = 0 end
   if type(rp.y) ~= "number" then rp.y = -150 end
   if type(rp.threshold) ~= "number" or rp.threshold < 5 or rp.threshold > 90 then rp.threshold = 25 end
+  -- Pet reminder (Pet.lua).
+  if type(db.pet) ~= "table" then db.pet = {} end
+  local pt = db.pet
+  if type(pt.shown) ~= "boolean" then pt.shown = true end
+  if type(pt.lock) ~= "boolean" then pt.lock = false end
+  if type(pt.scale) ~= "number" or pt.scale < 0.5 or pt.scale > 3 then pt.scale = 1 end
+  if type(pt.x) ~= "number" then pt.x = 0 end
+  if type(pt.y) ~= "number" then pt.y = -200 end
   local s = db.settings
   -- Main window size and opacity (top bar sliders).
   if type(s.menuScale) ~= "number" or s.menuScale < 0.5 or s.menuScale > 1.5 then s.menuScale = 1 end

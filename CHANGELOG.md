@@ -1720,6 +1720,9 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Workflow action versions)
 - ci.yml / release.yml: actions/checkout v4 -> v6, setup-python v5 -> v6, setup-node v4 -> v6, softprops/action-gh-release v2 -> v3 (all on the Node 24 runtime; the inputs we use are unchanged). The release step is only exercised by the next tag.
 
+## 2026-10-15 (Mr.BiZ cross-check tooling)
+- bis/own/: tooltips.py (cached Wowhead tooltip fetch), stats.py (tooltip -> stats), check_scores.py, check_order.py, report.md, README.md. First run: ForeverDB's score is exactly stats x weights (1% hit = 10, 1% crit = 14); about 26 best picks differ in stats, nearly all level-scaled items; 19 of 414 slots would be ordered differently under our scoring. Nothing in the site or addon changed.
+
 ## 0.62.1 (2026-10-15)
 - gen_talent_data.py writes `groupBuilds` from group-builds.json into TalentData.lua (`--check` covers it); Calc.GroupPicks and a "Group picks" section in the Recommended menu on the Talents tab. group-builds.json is empty today, so nothing shows until the owner publishes picks on the site and a release is made.
 

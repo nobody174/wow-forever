@@ -8,7 +8,7 @@ being worked on next.
 
 - Arena/PvP-specific macro set (arena1-3 tokens, stopcasting) if that ever becomes
   something we actually want covered. Deferred: the site is general-purpose / PvE-leaning; revisit only if PvP macro requests come in.
-- **Our own Mr.BiZ ranking** (owner wants it, 2026-10-12), so we don't depend on ForeverDB: item stats from the game files (CASCConsole, `ItemSparse`)
+- **Our own Mr.BiZ ranking** (owner wants it, 2026-10-12; 2026-10-15: NOT replacing ForeverDB yet, the cross-check tooling in `bis/own/` is built at level 30 and gets extended at the level 60 launch, see `bis/own/README.md`), so we don't depend on ForeverDB: item stats from the game files (CASCConsole, `ItemSparse`)
   or Wowhead's tooltip JSON; sources from Classic tables (CMaNGOS / QuestieDB) plus what our addon sees; one stat-weight table per spec in
   `bis/weights/<spec>.json`; class / weapon / unique rules; 5-7 ranks per slot per level bracket. ForeverDB stays a cross-check.
 - Group picks: shared list everyone can write to (needs a backend; today only the owner publishes, Saved builds are per browser).

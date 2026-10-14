@@ -68,7 +68,7 @@ read_globals = {
   "CraftOnlyShowMakeable", "ExpandCraftSkillLine", "ExpandTradeSkillSubClass", "GetActiveTitle",
   "GetCraftDisplaySkillLine", "GetCraftInfo", "GetCraftItemLink", "GetCraftNumReagents",
   "GetCraftReagentInfo", "GetCraftReagentItemLink", "GetCraftSkillLine", "GetGossipActiveQuests",
-  "GetInventoryItemID", "GetMoney", "GetNormalizedRealmName", "GetNumActiveQuests", "GetNumAvailableQuests",
+  "GetInventoryItemDurability", "GetInventoryItemID", "GetMoney", "GetNormalizedRealmName", "GetNumActiveQuests", "GetNumAvailableQuests",
   "GetNumCrafts", "GetNumGossipActiveQuests", "GetNumGossipAvailableQuests", "GetNumGroupMembers",
   "GetNumLootItems", "GetNumQuestChoices", "GetNumSpellTabs", "GetNumTradeSkills", "GetPlayerInfoByGUID",
   "GetQuestItemLink", "GetQuestReward", "GetRealmName", "GetRepairAllCost", "GetShapeshiftForm",

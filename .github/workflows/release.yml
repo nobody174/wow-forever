@@ -23,7 +23,7 @@ jobs:
     needs: checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Read version from the tag and check the TOC
         id: ver
@@ -91,7 +91,7 @@ jobs:
           cat notes.md
 
       - name: Publish the GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Road to Forever ${{ steps.ver.outputs.version }}
           body_path: notes.md

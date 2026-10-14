@@ -16,7 +16,7 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 4. **More reminders** (none picked): pet missing / dead / unhappy, pet food, repair needed, bags almost full, rested XP.
 5. **Buff "upper display"** for the group's class buffs: waits on the `/r2f auras` probe results (TESTING 7.12).
 6. **Rank-aware macros**: verify in game (TESTING 2.9), then decide whether the three `Charge(Rank 1)` site macros go back to plain `Charge`.
-7. **Release workflow upkeep**: bump `actions/checkout@v4` and `softprops/action-gh-release@v2` to their Node 24 majors, tag the next release, check its run.
+7. **Release workflow upkeep**: the Node 24 action bumps (2026-10-15) are untested on the release step until the next tag: check that run.
 8. **CurseForge upload / sharing**: HOLD until the owner says the addon works 100% for him and his friends.
 9. Releases: push tags ONE OR TWO at a time (GitHub starts no build for more than three).
 

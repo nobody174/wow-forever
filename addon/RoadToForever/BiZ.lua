@@ -167,8 +167,8 @@ function BiZ.Enchants(specId, slot)
 end
 
 -- The item tooltip's enchant line: what Mr.BiZ recommends for the slot this item goes in, in pink (the
--- item's own green stats made it hard to spot), like Sixty Upgrades shows it on the item. Equip locations -> Mr.BiZ slot keys; a one-hand weapon is
--- judged as a main hand, a shield as an off hand.
+-- item's own green stats made it hard to spot). Equip locations -> Mr.BiZ slot keys; a one-hand weapon is judged
+-- as a main hand, a shield as an off hand.
 local ENCHANT_SLOT_OF = {
   INVTYPE_CLOAK = "back", INVTYPE_CHEST = "chest", INVTYPE_ROBE = "chest", INVTYPE_FEET = "feet", INVTYPE_HAND = "hands",
   INVTYPE_LEGS = "legs", INVTYPE_NECK = "neck", INVTYPE_WRIST = "wrist", INVTYPE_WEAPON = "mainhand",

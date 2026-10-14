@@ -31,6 +31,9 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 7. Vendors & loot > Mail: list my other characters. `/dump R2FDB.chars` on 2026-10-14 showed 7 characters saved (Despicable, Madfury, Miss, Aoe, Falseaim, Madblade, Venom) and NO Paladin or Shaman: they were never recorded. Tick Road to Forever for them on the character select AddOns screen, log in on each, run `/dump R2FDB.chars` again, then check the mail list. Fast looting (needs the game's Auto Loot; Shift does the opposite) is still open.
 16. Hunter ammo (Hunter with a ranged weapon; Icons for your class): the count equals arrows / bullets in all bags; switching weapon type switches the label; red 0 with no ammo; hidden with no ranged weapon when locked; the "warn when under" slider; `/r2f ammo`.
 
+## 8. Waypoint arrow
+4. Retest (0.55.4): drag the arrow to a new spot at Small, Medium and Large (Tweaks > Alerts & HUD): it stays exactly where you drop it, also after `/reload` and after changing the size. If it sits somewhere new after updating, drag it once more.
+
 ## 9. Mr.BiZ (BiZ tab)
 8. **Retest (0.55.3):** the enchant line on item tooltips is now pink (it was lost among the green stats). Hover gear: pink "Mr.BiZ enchant: ..." / "in place", gold for a stand-in. Readable enough?
 

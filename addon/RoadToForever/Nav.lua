@@ -133,13 +133,20 @@ local function savePos(f)
   if not s then return end
   local cx, cy = f:GetCenter()
   local ux, uy = UIParent:GetCenter()
-  if cx and ux then s.x, s.y = cx - ux, cy - uy end
+  -- GetCenter is in the frame's own scale (Small / Medium / Large), UIParent's in its own: compare in screen units and
+  -- save in UIParent units, so the arrow comes back where it was dropped at any size.
+  if cx and ux then
+    local fs, us = f:GetEffectiveScale(), UIParent:GetEffectiveScale()
+    s.x, s.y = (cx * fs - ux * us) / us, (cy * fs - uy * us) / us
+  end
 end
 
 local function place(f)
   local s = settings()
   f:ClearAllPoints()
-  f:SetPoint("CENTER", UIParent, "CENTER", s and s.x or 0, s and s.y or 220)
+  -- SetPoint offsets are in the frame's own scale; the saved ones are in UIParent units.
+  local k = UIParent:GetEffectiveScale() / f:GetEffectiveScale()
+  f:SetPoint("CENTER", UIParent, "CENTER", (s and s.x or 0) * k, (s and s.y or 220) * k)
 end
 
 local elapsed, update   -- the arrow's OnUpdate state, defined below
@@ -279,9 +286,9 @@ local function build()
   f.label:SetWidth(200)
 
   f:SetScript("OnUpdate", update)
-  place(f)
   local st = settings()
   f:SetScale(Nav.SIZES[st and st.size] or Nav.SIZES.medium)
+  place(f)
   f:Hide()
   frame = f
   return f

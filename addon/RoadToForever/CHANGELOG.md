@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.55.4 (2026-10-14)
+
+- The waypoint arrow now stays exactly where you drop it. It used to jump back a bit because its position was saved without allowing for the arrow's size setting. If it sits in a new spot after updating, drag it once more.
+
 ## 0.55.3 (2026-10-14)
 
 - Importing macros of another class (for example Shaman macros on a Druid) now always opens that class's preview, even when the same string was imported before.

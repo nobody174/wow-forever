@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.55.4 (2026-10-14)
+
+- Nav.lua savePos/place: the arrow frame's scale (Nav.SIZES) differs from UIParent's, so GetCenter offsets saved in mixed scales made the arrow jump after a drag. Now saved in UIParent units and converted by the scale ratio in place(); build() sets the scale before placing.
+
 ## 0.55.3 (2026-10-14)
 
 - ImportFrame.lua doImport: an import holding only another class's records (plus Universal) opens that class's preview even when nothing in it is new (before, `firstNew` was nil on a repeat import and the book stayed on the browsed class).

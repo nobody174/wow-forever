@@ -218,6 +218,59 @@ function Calc.FromCode(classId, code)
 end
 
 -- The level a build needs (Talents.LevelFor: talent points start at level 10, the Talented perk 5 earlier).
+-- The points of a build in the order to take them: tier by tier (and tree by tree, column by column inside a
+-- tier), every rank of a talent together. The same order Learn this build uses (Talents.LearnOrder), and always
+-- legal: a tier's points above it and a talent's prerequisite are complete before it. -> { {tree, talent}, ... }
+function Calc.Order(calc)
+  local list = {}
+  for t, tree in ipairs(Calc.Trees(calc.class) or {}) do
+    for k, x in ipairs(tree.talents) do
+      if calc.ranks[t][k] > 0 then list[#list + 1] = { t = t, k = k, r = x.r, c = x.c } end
+    end
+  end
+  table.sort(list, function(a, b)
+    if a.r ~= b.r then return a.r < b.r end
+    if a.t ~= b.t then return a.t < b.t end
+    return a.c < b.c
+  end)
+  -- A prerequisite in the same row (a horizontal link) comes first, even when it sits to the right.
+  local moved = true
+  for _ = 1, #list do
+    if not moved then break end
+    moved = false
+    for i, e in ipairs(list) do
+      for _, q in ipairs(Calc.Trees(calc.class)[e.t].talents[e.k].q) do
+        for j = i + 1, #list do
+          if list[j].t == e.t and list[j].k == q[1] then
+            table.remove(list, i)
+            table.insert(list, j, e)
+            moved = true
+            break
+          end
+        end
+        if moved then break end
+      end
+      if moved then break end
+    end
+  end
+  local order = {}
+  for _, e in ipairs(list) do
+    for _ = 1, calc.ranks[e.t][e.k] do order[#order + 1] = { e.t, e.k } end
+  end
+  return order
+end
+
+-- A copy of a build with only its first n points (in Calc.Order).
+function Calc.Prefix(calc, n)
+  local out = Calc.New(calc.class)
+  if not out then return nil end
+  for i, p in ipairs(Calc.Order(calc)) do
+    if i > n then break end
+    out.ranks[p[1]][p[2]] = out.ranks[p[1]][p[2]] + 1
+  end
+  return out
+end
+
 function Calc.Level(calc, perk)
   return R2F.Talents.LevelFor(Calc.Total(calc), perk)
 end

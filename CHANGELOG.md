@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.56.0 (2026-10-14)
+
+- TalentCalc.lua `Calc.Order` / `Calc.Prefix` (tier, tree, column order, every rank together, a same-row prerequisite moved first; matches Talents.LearnOrder), tested for every recommended build; TalentPanel.lua stepper (`Step`, `syncFull`: `state.full` = the build, `state.shown` = the code the stepper left, a different code on the board = new build), tooltip order line, `nextPointText` from `plan.trees[t].talents[k].rank`. Order is computed at runtime from the board, so no data generation and it works for any link or loadout.
+
 ## 0.55.5 (2026-10-14)
 
 - TalentPanel.lua: prerequisite arrows (drawLinks): a bar + a rotated ChatFrameExpandArrow head per link, drawn on `linkFrame` above the cells, grey / gold by `Calc.Rank >= q[2]`. STEP_Y 38 -> 44, PAGE.h 566 -> 602, MainWindow WIN_H 600 -> 636. Verified only by the tests (no in-game look yet): see TESTING 4.8.

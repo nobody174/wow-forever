@@ -6922,6 +6922,32 @@ def test_talent_sandbox_ui(templates):
           and any("Shadow (level 30)" in t for t in texts), "%s: recommended menu groups by role: %s" % (tag, texts))
     lua.execute("for _, it in ipairs(MENU) do if it.kind == 'button' and it.text:find('Shadow %(level 30%)') then it.func() break end end")
     check(lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())") > 20, "%s: picking a recommended build fills the board" % tag)
+    # Build in order (0.56.0): every recommended build's order is legal point by point and adds up to the build.
+    bad = lua.eval("""(function()
+      local TC, bad, n = R2F.TalentCalc, {}, 0
+      for _, id in ipairs(TC.ORDER) do
+        for _, b in ipairs(TC.Recommended(id)) do
+          local calc = TC.FromCode(id, b.code)
+          local order = TC.Order(calc)
+          n = n + 1
+          local walk = TC.New(id)
+          for i, p in ipairs(order) do
+            if TC.AddBlock(walk, p[1], p[2]) then bad[#bad + 1] = id .. ' ' .. b.name .. ' point ' .. i break end
+            walk.ranks[p[1]][p[2]] = walk.ranks[p[1]][p[2]] + 1
+          end
+          if TC.Code(walk) ~= TC.Code(calc) then bad[#bad + 1] = id .. ' ' .. b.name .. ' differs' end
+          if TC.Code(TC.Prefix(calc, #order)) ~= TC.Code(calc) or TC.Total(TC.Prefix(calc, 3)) ~= math.min(3, #order) then
+            bad[#bad + 1] = id .. ' ' .. b.name .. ' prefix' end
+        end
+      end
+      return n .. ':' .. table.concat(bad, ';')
+    end)()""")
+    check(bad.endswith(":") and int(bad.split(":")[0]) > 25, "%s: build order is legal for every recommended build: %s" % (tag, bad))
+    t0 = lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())")
+    lua.execute("R2F.TalentPanel.Step(-1)")
+    check(lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())") == t0 - 1, "%s: stepper back = one point less" % tag)
+    lua.execute("R2F.TalentPanel.Step(1)")
+    check(lua.eval("R2F.TalentCalc.Total(R2F.TalentPanel.Calc())") == t0, "%s: stepper forward = the build again" % tag)
     # Share to the party: any class, the same R2FT message; a teammate's addon saves it as a loadout.
     lua.execute("TEST.addonSent = {} R2F.TalentPanel.ShareMenu()")
     lua.execute("for _, it in ipairs(MENU) do if it.kind == 'button' and it.text == R2F.L.TALENT_SHARE_PARTY then it.func() end end")

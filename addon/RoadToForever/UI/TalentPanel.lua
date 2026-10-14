@@ -48,7 +48,7 @@ local links = {}           -- prerequisite arrows: { bar, head } pairs, reused o
 local linkFrame            -- above the cells, so the arrows are not hidden by their rings
 local readTries = 0   -- retries of a talent read that failed (names not loaded yet)
 -- The sandbox: the class on the board, its calc (ranks per talent), and the share link of that build.
-local state = { class = nil, calc = nil, text = nil }
+local state = { class = nil, calc = nil, text = nil, full = nil, shown = nil }
 
 local function cdb() return R2F.Library.cdb end
 
@@ -110,6 +110,18 @@ local function cellTooltip(b)
   if e.rank > 0 and e.rank < e.maxRank and x.d[e.rank + 1] then
     GameTooltip:AddLine(L.TALENT_TIP_NEXT, 1, 1, 1)
     GameTooltip:AddLine(x.d[e.rank + 1], 0.1, 1, 0.1, true)
+  end
+  if state.full then
+    local first, last
+    for i, p in ipairs(Calc.Order(state.full)) do
+      if p[1] == e.tab and p[2] == e.pos then first = first or i; last = i end
+    end
+    if first then
+      local perk = R2F.Library.db.settings.talented == true
+      local lv = Talents.LevelFor
+      GameTooltip:AddLine(first == last and L.TALENT_TIP_ORDER_ONE:format(first, lv(first, perk))
+        or L.TALENT_TIP_ORDER:format(first, last, lv(first, perk), lv(last, perk)), 0.6, 0.85, 1, true)
+    end
   end
   GameTooltip:AddLine(L.TALENT_EDIT_HOW, 0.6, 0.85, 1)
   GameTooltip:Show()
@@ -334,6 +346,23 @@ local function build(f)
   ui.summary:SetPoint("TOPLEFT", 24, below)
   ui.summary:SetWidth(600)
   ui.summary:SetJustifyH("LEFT")
+  -- Build in order: walk the board through the build one point (= one level) at a time.
+  ui.stepPrev = button(f, "<", 22)
+  ui.stepPrev:SetPoint("TOPLEFT", 436, below + 4)
+  ui.stepPrev:SetScript("OnClick", function() TalentPanel.Step(-1) end)
+  tip(ui.stepPrev, L.TALENT_STEP_PREV, L.TALENT_STEP_TIP)
+  ui.stepNext = button(f, ">", 22)
+  ui.stepNext:SetPoint("TOPLEFT", 618, below + 4)
+  ui.stepNext:SetScript("OnClick", function() TalentPanel.Step(1) end)
+  tip(ui.stepNext, L.TALENT_STEP_NEXT, L.TALENT_STEP_TIP)
+  ui.stepText = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.stepText:SetPoint("TOPLEFT", 462, below - 1)
+  ui.stepText:SetWidth(152)
+  ui.stepText:SetJustifyH("CENTER")
+  ui.nextHint = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  ui.nextHint:SetPoint("TOPLEFT", 300, below - 17)
+  ui.nextHint:SetWidth(340)
+  ui.nextHint:SetJustifyH("RIGHT")
   ui.level = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
   ui.level:SetPoint("TOPLEFT", ui.summary, "BOTTOMLEFT", 0, -3)
   ui.level:SetTextColor(0.7, 0.7, 0.7)
@@ -591,8 +620,48 @@ local function applyLearnState(plan)
   ui.note:SetText(st.phase == "guided" and R2F.TalentGuide.Text() or "")
 end
 
+-- Build in order. state.full = the whole build on the board; the board shows its first points (state.calc) while
+-- stepping. Any other change to the board (a click, a loaded link) shows up as a different code than the one the
+-- stepper left, and starts a new build.
+local function syncFull()
+  local code = Calc.Code(state.calc)
+  if state.full and state.fullClass == state.class and code == state.shown then return end
+  state.full = Calc.FromCode(state.class, code)
+  state.fullClass, state.shown = state.class, code
+end
+
+function TalentPanel.Step(d)
+  if not state.calc then return end
+  syncFull()
+  local total = Calc.Total(state.full)
+  local n = math.max(0, math.min(total, Calc.Total(state.calc) + d))
+  state.calc = Calc.Prefix(state.full, n)
+  state.shown = Calc.Code(state.calc)
+  Talents.ResetLearn()
+  TalentPanel.Refresh()
+end
+
+-- "Next point in this build" for your own class: the first point of the build's order you have not taken yet.
+local function nextPointText(plan)
+  if not (plan and state.full) then return "" end
+  local need = {}
+  local perk = R2F.Library.db.settings.talented == true
+  for i, p in ipairs(Calc.Order(state.full)) do
+    local t, k = p[1], p[2]
+    need[t] = need[t] or {}
+    need[t][k] = (need[t][k] or 0) + 1
+    local real = plan.trees[t] and plan.trees[t].talents[k] and plan.trees[t].talents[k].rank or 0
+    if need[t][k] > real then
+      local name = Calc.Trees(state.class)[t].talents[k].n
+      return L.TALENT_NEXT_POINT:format(name, i, Talents.LevelFor(i, perk))
+    end
+  end
+  return L.TALENT_NEXT_DONE
+end
+
 function TalentPanel.Refresh()
   if not page or not page:IsVisible() or not state.calc then return end
+  syncFull()
   state.text = linkText()
   drawTrees()
   for _, p in ipairs(picks) do p:SetChecked(p.talentClass == state.class) end
@@ -652,6 +721,13 @@ function TalentPanel.Refresh()
     ui.learnInfo:SetText("")
   end
   applyLearnState(plan)
+  local ft = Calc.Total(state.full)
+  ui.stepText:SetText(ft > 1 and L.TALENT_STEP:format(total, ft) or "")
+  ui.stepPrev:SetShown(ft > 1)
+  ui.stepNext:SetShown(ft > 1)
+  ui.stepPrev:SetEnabled(total > 0)
+  ui.stepNext:SetEnabled(total < ft)
+  ui.nextHint:SetText(own and ft > 0 and not (res and res.error) and nextPointText(plan) or "")
 end
 
 -- Learn this build (your own class only). The preview is re-run here rather than taking the one on

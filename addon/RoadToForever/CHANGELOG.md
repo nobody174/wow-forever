@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.56.0 (2026-10-14)
+
+- Talents tab: **build in order**. Under the board, `<` and `>` walk the build one point at a time (one point = one level); the board shows only what you would have by then, and Learn this build learns only that. Hover a talent to see which points and levels it is taken at.
+- On your own class the Talents tab says **"Next point in this build: ..."**: the first point of the build you have not taken yet, with its level.
+- The order is tier by tier, the same order Learn this build uses (not a guide's own pick order).
+
 ## 0.55.5 (2026-10-14)
 
 - Talents tab: arrows between talents that need another one first. Grey until you have the needed points, gold once you do. The board is a little taller (the main window grew by 36 px) to make room for the arrowheads.

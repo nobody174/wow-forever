@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.57.0 (2026-10-14)
+
+- The 3D waypoint arrow (Tweaks > Alerts & HUD > 3D arrow) is now a real arrow, the kind you shoot: a wooden shaft, a gold barbed head and red and cream feathers at the tail, with a dark outline under it so it reads on any ground. Small / Medium / Large work as before.
+
 ## 0.56.3 (2026-10-14)
 
 - Mr.BiZ tab: hovering a gear slot on the doll now also shows the slot's best enchant, in pink, under the item. The enchant lines in an opened slot are pink too, matching the item tooltip.

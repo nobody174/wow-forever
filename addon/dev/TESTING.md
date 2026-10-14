@@ -40,6 +40,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 ## 8. Waypoint arrow
 4. Retest (0.55.4): drag the arrow to a new spot at Small, Medium and Large (Tweaks > Alerts & HUD): it stays exactly where you drop it, also after `/reload` and after changing the size. If it sits somewhere new after updating, drag it once more.
 
+5. **New in 0.57.0:** turn on Tweaks > Alerts & HUD > 3D arrow, set an arrow (`/bizway`): it is now a shot-style arrow (wooden shaft, gold head, red and cream feathers). Check Small / Medium / Large: is the shaft thick enough to see at Small, does the head point the right way, and does it turn smoothly as you walk? Tell me if it should be thicker, longer or other colours.
+
 ## 9. Mr.BiZ (BiZ tab)
 8. **Retest (0.55.3):** the enchant line on item tooltips is now pink (it was lost among the green stats). Hover gear: pink "Mr.BiZ enchant: ..." / "in place", gold for a stand-in. Readable enough?
 

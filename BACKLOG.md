@@ -20,7 +20,6 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 8. **CurseForge upload / sharing**: HOLD until the owner says the addon works 100% for him and his friends.
 9. Releases: push tags ONE OR TWO at a time (GitHub starts no build for more than three).
 
-10. **3D arrow redesign** (owner, 2026-10-14): more like a bow-and-arrow arrow and a better design; use the design skill, then re-render with `addon/art/blender_arrow3d.py` and `export_arrow3d.py`.
 
 ## 3. Mr.BiZ data
 1. **9 rank 2-3 items with no source** (`bis/sources.json`: 271911, 271920, 276631, 277219, 282283, 282653, 282658, 284399, 284401); two drop zones are

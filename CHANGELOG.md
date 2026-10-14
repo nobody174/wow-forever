@@ -1714,6 +1714,22 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.57.0 (2026-10-14)
+
+- addon/art/blender_arrow3d.py rewritten (shaft cylinder, barbed gold broadhead with ridge, two flat vanes + one upright fin, nock, dark outline plate; camera dist 5.3), media/arrow3d.tga re-exported with export_arrow3d.py (100 frames, none clipped at the cell edge). Owner asked for "an arrow like you shoot", no bow. The flat 2D arrow (export_arrow.py) is unchanged.
+
+## 0.56.3 (2026-10-14)
+
+- UI/BiZ.lua: doll slot tooltip adds `BiZ.Enchants(spec, slot)[1]` (pink); the side panel's enchant heading pink. Closes the "enchant line under the item name" backlog item.
+
+## 0.56.2 (2026-10-14)
+
+- Calc.NextPoint (shared by the Talents tab and Talents.NextPointLine); TalentPanel.syncFull saves the followed build as cdb.followLink (own class only); Home ui.nextTalent and the Training level-up handler print the line.
+
+## 0.56.1 (2026-10-14)
+
+- data.py fall-through fix (BACKLOG 4.3 "Fix now"): Hunter Raptor Strike + Wing Clip -> two macros, Survival melee button -> Raptor Strike / Mongoose Bite / Strider Kick, Rogue Pick Pocket + Sap -> Sap. build.py regenerated macros.html, the .md and MacroData.lua.
+
 ## 0.56.0 (2026-10-14)
 
 - TalentCalc.lua `Calc.Order` / `Calc.Prefix` (tier, tree, column order, every rank together, a same-row prerequisite moved first; matches Talents.LearnOrder), tested for every recommended build; TalentPanel.lua stepper (`Step`, `syncFull`: `state.full` = the build, `state.shown` = the code the stepper left, a different code on the board = new build), tooltip order line, `nextPointText` from `plan.trees[t].talents[k].rank`. Order is computed at runtime from the board, so no data generation and it works for any link or loadout.

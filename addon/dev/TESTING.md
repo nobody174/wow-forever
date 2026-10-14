@@ -27,6 +27,7 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 7. Full build, then Copy link: the link equals the site's for that build.
 11. **New in 0.62.0, start from my talents:** Talents tab > Loadouts: the first entry "My current talents (start from here)" puts your real talents on the board; edit from there, Learn works as before.
 
+13. **0.62.1, group picks:** nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made; then Talents tab > Recommended shows a "Group picks" section for that class.
 ## 5. Home and Tweaks extras
 4. Training reminder (Tweaks > Alerts & HUD): at level-up chat names the new spells; Home's "Training" block lists what to train after you visit your trainer once. Home's "Next talent point" now has its own heading and a gold line (0.57.1): easy to see now?
 10. **New in 0.56.2:** put a build on the Talents board on your own class (Recommended), then open Home: right column under Training says "Next talent point: X (point n, level L)". Learn a point of it, or level up: chat prints the line after the training line, and it moves on. A different build on the board changes it.

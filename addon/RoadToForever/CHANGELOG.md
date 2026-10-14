@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.62.1 (2026-10-15)
+
+- The Recommended menu on the Talents tab will list the group's picks (the ones published on the site's Saved builds > Group picks) once there are any: they are baked into each release. There are none yet.
+
 ## 0.62.0 (2026-10-15)
 
 - Talents tab > Loadouts: the first entry, "My current talents (start from here)", puts your real talents on the board so you can build on them.

@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.55.2 (2026-10-14)
+
+- Gameplay.lua sellGray: batches of 4 every 0.25 s with a re-scan (items that stay after 2 tries are skipped; sold items are counted when they leave the bag). GameplayChat.lua Chat.Text: pcall per line, skips `issecretvalue` lines, returns a hidden count; the window shows a reason instead of staying blank (the owner's first real test of Copy chat came up empty; cause not proven, this adds the counters needed to see it). GameplayExtras mail menu foot note. UI.CheckedGlow adds a gold UI-ActionButton-Border ring on checked buttons. Tests: test_sell_batches_and_chat_secret; the vendor and mail tests follow the new behaviour. addon/dev/TESTING.md: confirmed items moved out.
+
 ## 0.55.1 (2026-10-14)
 
 - Core.lua `open` command, Locale EMPTY_LIBRARY / help text, test_open_command. addon/dev/TESTING.md rewritten against the real 0.55.0 interface (sidebar, Tweaks pages, Home / Macros > Options, `/r2f debug ...`).

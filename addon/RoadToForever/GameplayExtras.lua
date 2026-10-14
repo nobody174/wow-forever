@@ -131,6 +131,8 @@ local function openAltMenu()
       end,
     }
   end
+  items[#items + 1] = { kind = "divider" }
+  items[#items + 1] = { kind = "title", text = L.GP_MAIL_FOOT }
   R2F.UI.ContextMenu(items)
 end
 

@@ -139,31 +139,69 @@ local function sellPrice(link)
   if ok and type(a) == "table" then return tonumber(a.sellPrice) end
 end
 
-local function sellGray()
-  if not (C_Container and C_Container.GetContainerNumSlots and C_Container.UseContainerItem) then return end
-  local sold, total = 0, 0
+-- Grey items worth selling right now: { { bag, slot, key, value }, ... }. Quality 0 only, never an item the
+-- game says has no vendor value.
+local function greyItems()
+  local list = {}
   local lastBag = (NUM_BAG_SLOTS or 4)
   if NUM_REAGENTBAG_SLOTS then lastBag = lastBag + NUM_REAGENTBAG_SLOTS end
   for bag = 0, lastBag do
     for slot = 1, C_Container.GetContainerNumSlots(bag) or 0 do
-      if not merchantOpen then break end
       local info = C_Container.GetContainerItemInfo(bag, slot)
-      -- Quality 0 only (grey), never an item the game says has no vendor value.
       if info and info.quality == 0 and not info.hasNoValue then
         local price = sellPrice(info.hyperlink or info.itemID)
         if price == nil or price > 0 then
-          local ok = pcall(C_Container.UseContainerItem, bag, slot)
-          if ok then
-            sold = sold + 1
-            total = total + (price or 0) * (info.stackCount or 1)
-          end
+          list[#list + 1] = { bag = bag, slot = slot, key = bag .. ":" .. slot .. ":" .. tostring(info.itemID),
+                              value = (price or 0) * (info.stackCount or 1) }
         end
       end
     end
   end
-  if sold > 0 then
-    R2F.Print(total > 0 and L.GP_SOLD:format(sold, Gameplay.Money(total)) or L.GP_SOLD_NOVALUE:format(sold))
+  return list
+end
+
+-- Sells a few at a time and looks again: asking the game to sell a whole bag in one go only sold some of
+-- it (you had to talk to the vendor again and again). An item that is still there after two tries is left alone.
+local SELL_BATCH, SELL_DELAY = 4, 0.25
+local selling = false
+
+local function sellGray()
+  if selling then return end
+  if not (C_Container and C_Container.GetContainerNumSlots and C_Container.UseContainerItem) then return end
+  local sold, total = 0, 0
+  local tries, queued = {}, {}   -- tries[key] = attempts; queued[key] = value while waiting to leave the bag
+  local function finish()
+    selling = false
+    if sold > 0 then
+      R2F.Print(total > 0 and L.GP_SOLD:format(sold, Gameplay.Money(total)) or L.GP_SOLD_NOVALUE:format(sold))
+    end
   end
+  local function step()
+    if not merchantOpen then return finish() end
+    local list = greyItems()
+    local present = {}
+    for _, it in ipairs(list) do present[it.key] = true end
+    -- What we sent last time and is gone now was sold.
+    for key, value in pairs(queued) do
+      if not present[key] then sold = sold + 1; total = total + value end
+      queued[key] = nil
+    end
+    local sent = 0
+    for _, it in ipairs(list) do
+      if sent >= SELL_BATCH then break end
+      if (tries[it.key] or 0) < 2 then
+        tries[it.key] = (tries[it.key] or 0) + 1
+        if pcall(C_Container.UseContainerItem, it.bag, it.slot) then
+          queued[it.key] = it.value
+          sent = sent + 1
+        end
+      end
+    end
+    if sent == 0 then return finish() end
+    if C_Timer and C_Timer.After then C_Timer.After(SELL_DELAY, step) else step() end
+  end
+  selling = true
+  step()
 end
 
 Gameplay.Register({

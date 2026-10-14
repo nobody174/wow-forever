@@ -2418,8 +2418,8 @@ GAMEPLAY_API_LUA = """
   PRICES = { gray1 = 25, gray2 = 100, zero = 0, white = 50 }
   C_Container = {
     GetContainerNumSlots = function(bag) return BAGS[bag] and #BAGS[bag] or 0 end,
-    GetContainerItemInfo = function(bag, slot) return BAGS[bag] and BAGS[bag][slot] end,
-    UseContainerItem = function(bag, slot) table.insert(SOLD, bag .. ':' .. slot) end,
+    GetContainerItemInfo = function(bag, slot) local it = BAGS[bag] and BAGS[bag][slot] if it and not it.sold then return it end end,
+    UseContainerItem = function(bag, slot) table.insert(SOLD, bag .. ':' .. slot) BAGS[bag][slot].sold = true end,
   }
   GetItemInfo = function(link)
     if PRICES[link] ~= nil then return link, link, 0, 0, 0, '', '', 1, '', 0, PRICES[link] end
@@ -2542,14 +2542,16 @@ def test_gameplay():
     T.chat = lua.table()
     lua.execute("REPAIRS = {}")
     T.fire("MERCHANT_SHOW")
+    T.runTimers()   # it sells a few at a time and checks again
     sold = lua_table_to_list(lua.eval("SOLD"))
     check(sold == ["0:1", "1:1"], "17 sell grey: only grey items with a vendor price are sold (not white, not 'no value', not 0c): %s" % sold)
     check("sold 2 grey items for 1g" not in chat_all(lua) and "sold 2 grey items for 1s 75c." in chat_all(lua), "17 sell grey says count and total (3 x 25c + 100c = 1s 75c): %r" % chat_all(lua))
     check(lua.eval("#REPAIRS") == 1, "17 both features run on the same vendor visit")
     lua.execute("SOLD = {}")
     T.fire("MERCHANT_CLOSED")
-    lua.execute("BAGS[0][1].quality = 0")
+    lua.execute("BAGS[0][1].quality = 0 BAGS[0][1].sold = nil BAGS[1][1].sold = nil")
     T.fire("MERCHANT_SHOW")
+    T.runTimers()
     check(lua.eval("#SOLD") == 2, "17 a second vendor visit sells again (state comes from the events)")
     # --- Block duels -------------------------------------------------------------------------------------------
     T.fire("DUEL_REQUESTED", "Bob")
@@ -2728,7 +2730,7 @@ def test_gameplay_extras():
     check(lua.eval("R2FMailAltsButton ~= nil and R2FMailAltsButton:IsShown()"), "17.2 mail on: a button after the recipient field")
     lua.execute("R2FMailAltsButton:Click()")
     items = lua.eval("MENU")
-    check(lua.eval("#MENU") == 2 and lua.eval("MENU[1].kind") == "title", "17.2 the menu: a title and one character")
+    check(lua.eval("#MENU") == 4 and lua.eval("MENU[1].kind") == "title", "17.2 the menu: a title, one character, a divider and the foot note")
     txt = lua.eval("MENU[2].text")
     check("Alice" in txt and "30" in txt and "|cffabd473" in txt, "17.2 the entry shows name, level and the class colour: %r" % txt)
     lua.execute("MENU[2].func()")
@@ -2743,7 +2745,7 @@ def test_gameplay_extras():
     lua.execute("GetRealmName = function() return 'Mad Fury' end")
     check(lua.eval("R2F.Gameplay.OtherCharacters()") is not None, "17.2 realm names with spaces do not break the list")
     lua.execute("R2FDB.chars.Realm.Alice = nil R2FMailAltsButton:Click()")
-    check(lua.eval("#MENU") == 2 and "No other characters" in lua.eval("MENU[2].text"), "17.2 no other characters: the menu says so")
+    check(lua.eval("#MENU") == 4 and "No other characters" in lua.eval("MENU[2].text"), "17.2 no other characters: the menu says so")
     lua.execute("R2F.Gameplay.SetOn('mailalts', false)")
     check(lua.eval("R2FMailAltsButton:IsShown()") is False, "17.2 mail off again: the button goes")
     # --- Bag slots --------------------------------------------------------------------------------------------------
@@ -6901,6 +6903,9 @@ def test_talent_sandbox_ui(templates):
     lua.execute("R2F.TalentPanel.SelectClass('priest')")
     find_frames(lua, "f.__kind == 'FontString' and f.__text == 'Discipline'", "DIS")
     check(lua.eval("#DIS") >= 1 and lua.eval("R2F.TalentPanel.Class()") == "priest", "%s: another class's trees open" % tag)
+    check(lua.eval("""(function() local on = 0 for _, f in ipairs(CIR) do
+      if f.r2fCheckRing and f.r2fCheckRing:IsShown() then on = on + 1 end end return on end)()""") == 1,
+          "%s: exactly the selected class circle has the gold ring" % tag)
     cell = "R2F.TalentPanel.Cell(1, 1, 2)"
     check(lua.eval(cell + ".__shown") is True and lua.eval(cell + ".entry.name") != "", "%s: a Priest talent is drawn at row 1" % tag)
     lua.execute(cell + ":Fire('OnEnter')")
@@ -6984,6 +6989,53 @@ def test_open_command():
     lua.execute("SlashCmdList.R2F('nonsense')")
     check(any("unknown command \"nonsense\"" in c for c in chat_lines(lua)), "open: an unknown word says unknown command")
     check("Options, then Import" in lua.eval("R2F.L.EMPTY_LIBRARY"), "open: the empty-library text points at Options > Import")
+
+
+def test_sell_batches_and_chat_secret():
+    """0.55.2: selling many grey items goes a few at a time until the bags are clean; copy chat skips lines the
+    game keeps secret instead of coming up blank; the selected class circle gets a gold ring."""
+    lua = new_runtime()
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    lua.execute("""
+      SOLD = {}
+      BAGS = { [0] = {} }
+      for i = 1, 11 do BAGS[0][i] = { quality = 0, hasNoValue = false, stackCount = 1, hyperlink = 'g' .. i, itemID = i } end
+      C_Container = { GetContainerNumSlots = function(b) return b == 0 and #BAGS[0] or 0 end,
+        GetContainerItemInfo = function(b, s) local it = BAGS[b] and BAGS[b][s] if it and not it.sold then return it end end,
+        UseContainerItem = function(b, s) table.insert(SOLD, b .. ':' .. s) BAGS[b][s].sold = true end }
+      GetItemInfo = function(link) return link, link, 0, 0, 0, '', '', 1, '', 0, 10 end
+      R2F.Gameplay.SetOn('sellgray', true)
+    """)
+    T.chat = lua.table()
+    T.fire("MERCHANT_SHOW")
+    check(lua.eval("#SOLD") <= 4, "sell batches: the first visit sends at most 4 at once (%s)" % lua.eval("#SOLD"))
+    for _ in range(12):
+        T.runTimers()
+    check(lua.eval("#SOLD") == 11, "sell batches: all 11 grey items are sold without talking to the vendor again (%s)" % lua.eval("#SOLD"))
+    check("sold 11 grey items for 1s 10c." in chat_all(lua), "sell batches: one summary line: %r" % chat_all(lua))
+    # An item the game refuses to sell is tried twice, then left alone (no endless loop).
+    lua.execute("""
+      SOLD = {} BAGS = { [0] = { { quality = 0, hasNoValue = false, stackCount = 1, hyperlink = 'stuck', itemID = 99 } } }
+      C_Container.UseContainerItem = function(b, s) table.insert(SOLD, b .. ':' .. s) end
+    """)
+    T.fire("MERCHANT_CLOSED")
+    T.fire("MERCHANT_SHOW")
+    for _ in range(6):
+        T.runTimers()
+    check(lua.eval("#SOLD") == 2, "sell batches: an item that will not sell is tried twice, then skipped (%s)" % lua.eval("#SOLD"))
+
+    # Copy chat with a line the game keeps secret.
+    lua2, T2 = copychat_runtime()
+    lua2.execute("issecretvalue = function(v) return v == 'line 100' end")
+    lua2.execute("CCF = R2F.CopyChat.Frames()[1].frame CCT, CCN, CCH = R2F.CopyChat.Text(CCF, true, 200)")
+    check(lua2.eval("CCH") == 1 and lua2.eval("CCN") == 199 and "line 100" not in lua2.eval("CCT"),
+          "copy chat: a secret line is skipped and counted (%s read, %s hidden)" % (lua2.eval("CCN"), lua2.eval("CCH")))
+    lua2.execute("issecretvalue = function() return true end")
+    lua2.execute('SlashCmdList.R2F("copychat")')
+    lua2.execute("""for _, f in ipairs(TEST.allFrames) do if f.__kind == 'EditBox' and f.__parent and f.__parent.__name == 'R2FCopyChatScroll' then CCE2 = f end end""")
+    check("does not let addons read" in lua2.eval("CCE2 and CCE2:GetText() or ''"), "copy chat: when nothing is readable the window says why instead of staying blank")
 
 
 def test_talent_source_traits():
@@ -7823,6 +7875,7 @@ def main():
     test_talent_data_fresh()
     test_enchant_tooltip()
     test_open_command()
+    test_sell_batches_and_chat_secret()
     test_talent_sandbox_ui(True)
     test_talent_sandbox_ui(False)
     test_talent_learning(True)

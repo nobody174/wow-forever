@@ -45,18 +45,24 @@ function Chat.Plain(s)
   return s
 end
 
--- The newest `count` lines of a chat frame, oldest first, one per line.
+-- The newest `count` lines of a chat frame, oldest first, one per line. Returns the text, how many lines
+-- it holds and how many lines the game would not hand over (this client can mark chat text as a secret
+-- value that an addon may not read or copy; those lines are skipped instead of stopping the whole copy).
 function Chat.Text(frame, plain, count)
   count = count or Chat.LINES
-  local n = frame:GetNumMessages() or 0
-  local lines = {}
+  local okN, n = pcall(frame.GetNumMessages, frame)
+  n = okN and tonumber(n) or 0
+  local lines, hidden = {}, 0
   for i = math.max(1, n - count + 1), n do
-    local msg = frame:GetMessageInfo(i)
-    if type(msg) == "string" and msg ~= "" then
-      lines[#lines + 1] = plain and Chat.Plain(msg) or msg
+    local ok, msg = pcall(frame.GetMessageInfo, frame, i)
+    if not ok or (_G.issecretvalue and _G.issecretvalue(msg)) then
+      hidden = hidden + 1
+    elseif type(msg) == "string" and msg ~= "" then
+      local good, line = pcall(function() return plain and Chat.Plain(msg) or msg end)
+      if good and type(line) == "string" then lines[#lines + 1] = line else hidden = hidden + 1 end
     end
   end
-  return table.concat(lines, "\n"), #lines
+  return table.concat(lines, "\n"), #lines, hidden
 end
 
 -- ---------------------------------------------------------------------------
@@ -68,9 +74,10 @@ local current          -- the chat frame shown
 
 local function fill()
   if not (win and current) then return end
-  local text, n = Chat.Text(current, plainBox:GetChecked(), Chat.LINES)
+  local text, n, hidden = Chat.Text(current, plainBox:GetChecked(), Chat.LINES)
+  if n == 0 then text = hidden > 0 and L.CC_ALL_HIDDEN or L.CC_NOTHING end
   edit:SetText(text)
-  countText:SetText(L.CC_COUNT:format(n))
+  countText:SetText(hidden > 0 and L.CC_COUNT_HIDDEN:format(n, hidden) or L.CC_COUNT:format(n))
   edit:HighlightText()
   edit:SetFocus()
 end

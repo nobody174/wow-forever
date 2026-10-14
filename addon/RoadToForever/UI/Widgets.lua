@@ -51,6 +51,27 @@ function UI.CheckedGlow(button)
     tex:SetVertexColor(1, 0.82, 0)
     tex:SetAllPoints(button)
   end
+  -- The square glow alone was too faint to see which one is selected: a gold ring (the action bars' own
+  -- highlight) sits on top while the button is checked.
+  if button.CreateTexture then
+    local ring = button:CreateTexture(nil, "OVERLAY")
+    ring:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
+    ring:SetBlendMode("ADD")
+    ring:SetVertexColor(1, 0.82, 0)
+    local w, h = 32, 32
+    if button.GetSize then
+      local bw, bh = button:GetSize()
+      if bw and bw > 0 then w, h = bw, bh end
+    end
+    ring:SetSize(w * 1.7, h * 1.7)
+    ring:SetPoint("CENTER", button, "CENTER", 0, 0)
+    ring:Hide()
+    local function sync() ring:SetShown(button:GetChecked() and true or false) end
+    if button.HookScript then button:HookScript("OnClick", sync) end
+    local set = button.SetChecked
+    button.SetChecked = function(self, value) set(self, value); sync() end
+    button.r2fCheckRing = ring
+  end
 end
 
 -- SetNormalTexture(path) with a known-good icon when `path` is empty, so an

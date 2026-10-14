@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.55.2 (2026-10-14)
+
+- Auto-sell grey items now sells a few at a time and looks again, so a full bag is cleaned in one vendor visit (before, only part of it sold and you had to talk to the vendor again).
+- Copy chat no longer comes up blank: lines the game keeps secret are skipped and counted ("N lines (M hidden by the game)"), and when nothing can be read the window says why.
+- Mail: the list of your characters says at the bottom that it only knows characters you logged in on with the addon (same realm and faction).
+- The selected class circle / side tab now has a clear gold ring around it (it was too faint).
+
 ## 0.55.1 (2026-10-14)
 
 - `/r2f open` opens the window without ever closing it (`/r2f` alone still toggles).

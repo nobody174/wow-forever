@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.55.5 (2026-10-14)
+
+- Talents tab: arrows between talents that need another one first. Grey until you have the needed points, gold once you do. The board is a little taller (the main window grew by 36 px) to make room for the arrowheads.
+
 ## 0.55.4 (2026-10-14)
 
 - The waypoint arrow now stays exactly where you drop it. It used to jump back a bit because its position was saved without allowing for the arrow's size setting. If it sits in a new spot after updating, drag it once more.

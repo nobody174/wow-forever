@@ -1714,6 +1714,10 @@ The short player-facing notes shipped in the zip are still `addon/RoadToForever/
 now live under `/r2f debug`. The detailed log stops at 0.30.0 (0.31 - 0.53 are in the dated entries above and in the addon's own
 CHANGELOG); entries from 0.54.0 on are written here again.
 
+## 0.55.5 (2026-10-14)
+
+- TalentPanel.lua: prerequisite arrows (drawLinks): a bar + a rotated ChatFrameExpandArrow head per link, drawn on `linkFrame` above the cells, grey / gold by `Calc.Rank >= q[2]`. STEP_Y 38 -> 44, PAGE.h 566 -> 602, MainWindow WIN_H 600 -> 636. Verified only by the tests (no in-game look yet): see TESTING 4.8.
+
 ## 0.55.4 (2026-10-14)
 
 - Nav.lua savePos/place: the arrow frame's scale (Nav.SIZES) differs from UIParent's, so GetCenter offsets saved in mixed scales made the arrow jump after a drag. Now saved in UIParent units and converted by the scale ratio in place(); build() sets the scale before placing.

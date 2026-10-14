@@ -20,6 +20,7 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 2. One point: click ONE tier-1 talent on the board (after a trainer reset), Learn this build, Cancel (nothing changes), Learn: applied within ~2 s, chat "Learned 1 talent point.", free points one lower, no "Interface action failed", survives `/reload`.
 3. If it stops with "didn't accept" or "waiting in Blizzard's window": note the exact message and what Blizzard's window shows.
 4. **Open until the owner drops it:** 5 points across tier 1 and 2: counts `Learning 1 / 5` ..., exact build at the end, none pending.
+8. **New in 0.55.5:** Talents tab: an arrow runs from each talent to the talent that needs it (Warrior Arms: Sweeping Strikes / Impale area, any class): grey while the needed talent lacks points, gold once it has them; the arrowhead points at the dependent talent, is not hidden by the icon rings, sits straight and not on top of the rank numbers. Does the taller window (36 px) still fit your screen and look right on every tab? Screenshot it if anything looks off.
 5. Your own unapplied click in Blizzard's window (not the addon's board) stops the run ("changes that aren't applied yet"), nothing learned.
 6. Combat mid-run stops cleanly and continues after combat without a popup; Stop then Learn does not buy a point twice.
 7. Full build, then Copy link: the link equals the site's for that build.

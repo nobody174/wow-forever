@@ -8,7 +8,7 @@
 -- (Stop appears), the stop / done message in the status line, guided mode's "Click ..." in the note line.
 -- The engine runs on events, not on this tab: closing the window doesn't stop a run.
 --
--- Layout (page = PAGE, 650 x 566):
+-- Layout (page = PAGE, 650 x 602):
 --   [class circles x 9]  Warrior (your class)                        [Talented perk]
 --   Talent link [ talents.html#warrior/...              ] [Load]
 --   hint line                                                        [Copy link]
@@ -32,9 +32,9 @@ local Talents = R2F.Talents
 local Calc = R2F.TalentCalc
 
 local TREES, COLS, ROWS = 3, 4, 7    -- Three trees, each a 4 x 7 grid
-local CELL, STEP_X, STEP_Y = 34, 42, 38
+local CELL, STEP_X, STEP_Y = 34, 42, 44   -- 44 leaves room for the prerequisite arrowheads (was 38)
 local TREE_W, TREE_TOP = 204, -170
-TalentPanel.PAGE = { w = 650, h = 566 }
+TalentPanel.PAGE = { w = 650, h = 602 }
 
 local CLASS_CIRCLES = "Interface\\TargetingFrame\\UI-Classes-Circles"
 local PICK_SIZE, PICK_STEP = 26, 31
@@ -44,6 +44,8 @@ local ui = {}
 local cells = {}           -- cells[tree][row][col]
 local heads = {}           -- heads[tree] = { name, counts }
 local picks = {}           -- picks[i] = class circle button
+local links = {}           -- prerequisite arrows: { bar, head } pairs, reused on every draw
+local linkFrame            -- above the cells, so the arrows are not hidden by their rings
 local readTries = 0   -- retries of a talent read that failed (names not loaded yet)
 -- The sandbox: the class on the board, its calc (ranks per talent), and the share link of that build.
 local state = { class = nil, calc = nil, text = nil }
@@ -115,6 +117,7 @@ end
 
 local function buildCell(parent, x, y)
   local b = CreateFrame("Button", nil, parent)
+  b.px, b.py = x, y   -- top-left corner on the page, for the prerequisite arrows
   b:SetSize(CELL, CELL)
   b:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
   -- The talent frame draws a big ring behind a smaller icon; same ratio here
@@ -158,6 +161,10 @@ local function paintCell(b, e)
 end
 
 local function buildTrees(f)
+  linkFrame = CreateFrame("Frame", nil, f)
+  linkFrame:SetAllPoints(f)
+  linkFrame:SetFrameLevel(f:GetFrameLevel() + 10)
+  linkFrame:EnableMouse(false)
   for t = 1, TREES do
     local x0 = 10 + (t - 1) * TREE_W
     local name = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -450,6 +457,74 @@ local function showStatus(text, r, g, b)
   if text then ui.status:SetTextColor(r, g, b) end
 end
 
+-- Prerequisite arrows: from the talent that is needed to the one that needs it. Grey until the prerequisite has
+-- enough ranks, gold once it has. (Every Classic link is vertical or horizontal, none diagonal.)
+local ARROW = "Interface\\ChatFrame\\ChatFrameExpandArrow"   -- points right; turned for the other directions
+local HEAD, BAR = 12, 3
+local function linkPair(n)
+  local l = links[n]
+  if not l then
+    l = { bar = linkFrame:CreateTexture(nil, "OVERLAY"), head = linkFrame:CreateTexture(nil, "OVERLAY") }
+    l.head:SetTexture(ARROW)
+    l.head:SetSize(HEAD, HEAD)
+    links[n] = l
+  end
+  return l
+end
+
+local function drawLinks(trees)
+  local n = 0
+  for t = 1, TREES do
+    local tree = trees and trees[t]
+    for k = 1, tree and #tree.talents or 0 do
+      local x = tree.talents[k]
+      local dep = cells[t][x.r + 1] and cells[t][x.r + 1][x.c + 1]
+      for _, q in ipairs(x.q or {}) do
+        local pre = tree.talents[q[1]]
+        local from = pre and cells[t][pre.r + 1] and cells[t][pre.r + 1][pre.c + 1]
+        if dep and from and dep:IsShown() and from:IsShown() then
+          n = n + 1
+          local l = linkPair(n)
+          local met = Calc.Rank(state.calc, t, q[1]) >= q[2]
+          local c = met and 1 or 0.45
+          local r, g, b = c, met and 0.82 or c, met and 0 or c
+          local dx, dy = x.c - pre.c, pre.r - x.r   -- dy < 0: the dependent talent is lower on the board
+          local hx, hy, angle   -- head centre (page coordinates, y up is positive) and its turn
+          if dx == 0 then
+            angle = dy < 0 and -math.pi / 2 or math.pi / 2
+            hx, hy = dep.px + CELL / 2, dep.py + (dy < 0 and 7 or -CELL - 7)
+            l.bar:ClearAllPoints()
+            local top = dy < 0 and from.py - CELL or dep.py - CELL
+            local bottom = dy < 0 and hy or from.py
+            l.bar:SetPoint("TOPLEFT", linkFrame, "TOPLEFT", hx - BAR / 2, math.max(top, bottom))
+            l.bar:SetSize(BAR, math.abs(top - bottom))
+          else
+            angle = dx > 0 and 0 or math.pi
+            hx, hy = dep.px + (dx > 0 and -5 or CELL + 5), dep.py - CELL / 2
+            l.bar:ClearAllPoints()
+            local left = dx > 0 and from.px + CELL or hx
+            local right = dx > 0 and hx or from.px
+            l.bar:SetPoint("TOPLEFT", linkFrame, "TOPLEFT", left, hy + BAR / 2)
+            l.bar:SetSize(math.abs(right - left), BAR)
+          end
+          l.bar:SetColorTexture(r, g, b, 1)
+          l.head:ClearAllPoints()
+          l.head:SetPoint("CENTER", linkFrame, "TOPLEFT", hx, hy)
+          l.head:SetRotation(angle)
+          l.head:SetDesaturated(true)
+          l.head:SetVertexColor(r, g, b)
+          l.bar:Show()
+          l.head:Show()
+        end
+      end
+    end
+  end
+  for i = n + 1, #links do
+    links[i].bar:Hide()
+    links[i].head:Hide()
+  end
+end
+
 local function drawTrees()
   local trees = Calc.Trees(state.class)
   for t = 1, TREES do
@@ -475,6 +550,7 @@ local function drawTrees()
       heads[t].counts:SetText("")
     end
   end
+  drawLinks(trees)
 end
 
 -- The last learn preview (your own class's board against your real talents), for the tests.

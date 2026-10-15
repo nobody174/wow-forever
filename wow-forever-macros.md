@@ -343,7 +343,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Mouseover healing / utility
 
-**Inner Focus + Greater Heal** (`IF+GHeal`)
+**Inner Focus + Greater Heal** (`IF+GHeal`) — While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Greater Heal
 /cast Inner Focus
@@ -518,7 +518,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [@targettarget, harm, exists, nochanneling][harm, nochanneling] Wrack
 ```
 
-**Amplify Curse + Bane of Agony** (`AmpCurse`)
+**Amplify Curse + Bane of Agony** (`AmpCurse`) — While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Bane of Agony
 /cast Amplify Curse
@@ -535,14 +535,14 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Class QoL
 
-**Fel Domination + Felhunter** (`FelDom+FH`)
+**Fel Domination + Felhunter** (`FelDom+FH`) — While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Summon Felhunter
 /cast Fel Domination
 /cast Summon Felhunter
 ```
 
-**Fel Domination + Voidwalker** (`FelDom+VW`)
+**Fel Domination + Voidwalker** (`FelDom+VW`) — While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Summon Voidwalker
 /cast Fel Domination
@@ -648,21 +648,21 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
-**Arcane Power + Arcane Missiles** (`APower+AMiss`)
+**Arcane Power + Arcane Missiles** (`APower+AMiss`) — While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Arcane Missiles
 /cast Arcane Power
 /cast [harm] Arcane Missiles
 ```
 
-**Presence of Mind + Frostbolt** (`PoM+Frost`) — Instant-cast next spell.
+**Presence of Mind + Frostbolt** (`PoM+Frost`) — Instant-cast next spell. While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Frostbolt
 /cast Presence of Mind
 /cast [harm] Frostbolt
 ```
 
-**Presence of Mind + Pyroblast** (`PoM+Pyro`) — The classic burst combo for Arcane/Fire hybrids: instant Pyroblast.
+**Presence of Mind + Pyroblast** (`PoM+Pyro`) — The classic burst combo for Arcane/Fire hybrids: instant Pyroblast. While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Pyroblast
 /cast Presence of Mind
@@ -840,7 +840,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Mutilate
 ```
 
-**Cold Blood + Ambush** (`ColdBlood+Amb`) — Requires stealth.
+**Cold Blood + Ambush** (`ColdBlood+Amb`) — Requires stealth. While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Ambush
 /cast Cold Blood
@@ -1404,14 +1404,14 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /castsequence [harm] reset=target/12 Flame Shock, Lava Burst
 ```
 
-**Elemental Mastery + Chain Lightning** (`EleMastery+CL`) — Test in beta: Elemental Mastery was not seen in the Forever beta talent tree.
+**Elemental Mastery + Chain Lightning** (`EleMastery+CL`) — Test in beta: Elemental Mastery was not seen in the Forever beta talent tree. While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Chain Lightning
 /cast Elemental Mastery
 /cast [harm] Chain Lightning
 ```
 
-**Elemental Mastery + Lightning Bolt** (`EleMastery+LB`) — Test in beta: Elemental Mastery was not seen in the Forever beta talent tree.
+**Elemental Mastery + Lightning Bolt** (`EleMastery+LB`) — Test in beta: Elemental Mastery was not seen in the Forever beta talent tree. While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Lightning Bolt
 /cast Elemental Mastery
@@ -1539,7 +1539,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Damage / offensive
 
-**Bestial Wrath + Rapid Fire burst** (`BW+RapidFire`)
+**Bestial Wrath + Rapid Fire burst** (`BW+RapidFire`) — While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Bestial Wrath
 /cast Bestial Wrath
@@ -1893,18 +1893,18 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Class QoL
 
-**Charge / Intercept (one button)** (`Charge`) — Out of combat: Charge. In combat: Intercept (level 30). Tactical Mastery (now trained) keeps up to 10 rage on a stance swap. Rank 1 on purpose: on Forever an unranked "Charge" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).
+**Charge / Intercept (one button)** (`Charge`) — Out of combat: Charge. In combat: Intercept (level 30). Tactical Mastery (now trained) keeps up to 10 rage on a stance swap. Plain "Charge" uses the highest rank you know (owner test 2026-10-15, so no rank in the name).
 ```
-#showtooltip Charge(Rank 1)
-/cast [nocombat, nostance:1] Battle Stance; [nocombat, @targettarget, harm, exists][nocombat, harm] Charge(Rank 1); [nostance:3] Berserker Stance; [@targettarget, harm, exists][harm] Intercept
+#showtooltip Charge
+/cast [nocombat, nostance:1] Battle Stance; [nocombat, @targettarget, harm, exists][nocombat, harm] Charge; [nostance:3] Berserker Stance; [@targettarget, harm, exists][harm] Intercept
 ```
 
-**Charge + Rend (opener)** (`Charge+Rend`) — Charges in (out of combat only) then opens with Rend. Rank 1 on purpose: on Forever an unranked "Charge" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).
+**Charge + Rend (opener)** (`Charge+Rend`) — Charges in (out of combat only) then opens with Rend. Plain "Charge" uses the highest rank you know (owner test 2026-10-15, so no rank in the name).
 ```
-#showtooltip Charge(Rank 1)
+#showtooltip Charge
 /startattack [harm]
 /cast [nocombat, nostance:1] Battle Stance
-/cast [nocombat, harm] Charge(Rank 1)
+/cast [nocombat, harm] Charge
 /cast [harm] Rend
 ```
 
@@ -1965,7 +1965,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Revenge
 ```
 
-**Shield Block + Sunder Armor** (`SBlk+Sund`) — Test in beta: Shield Block is off the global cooldown, so it fires with Sunder in one press. Unknown on Forever: whether Sunder still goes out while Shield Block is on cooldown (if not, use plain Sunder between blocks). Needs a shield and Defensive Stance.
+**Shield Block + Sunder Armor** (`SBlk+Sund`) — Test in beta: Shield Block is off the global cooldown, so it fires with Sunder in one press. Unknown on Forever: whether Sunder still goes out while Shield Block is on cooldown (if not, use plain Sunder between blocks). Needs a shield and Defensive Stance. While the first spell is on cooldown this button does nothing: use the plain spell button then.
 ```
 #showtooltip Shield Block
 /startattack [harm]
@@ -1997,11 +1997,11 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Class QoL
 
-**Charge + Rend (Vanguard, any stance)** (`VCharge`) — With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, so no stance swap. Out of combat it charges, then press again for Rend (it fails while you are still out of range). Rank 1 on purpose: on Forever an unranked "Charge" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).
+**Charge + Rend (Vanguard, any stance)** (`VCharge`) — With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, so no stance swap. Out of combat it charges, then press again for Rend (it fails while you are still out of range). Plain "Charge" uses the highest rank you know (owner test 2026-10-15, so no rank in the name).
 ```
-#showtooltip Charge(Rank 1)
+#showtooltip Charge
 /startattack [harm]
-/cast [nocombat, harm] Charge(Rank 1)
+/cast [nocombat, harm] Charge
 /cast [harm] Rend
 ```
 

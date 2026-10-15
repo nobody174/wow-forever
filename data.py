@@ -127,10 +127,23 @@ PET_ICON_NOTE = ("No #showtooltip: /petattack is not a spell, so it would show a
 # Prefix for notes on macros that still need checking in the Forever beta.
 BETA = "Test in beta: "
 
+# "Cooldown + spell" buttons: a Forever macro stops at the first spell you know but can't use right now, and a spell on
+# cooldown counts, so while the first one recharges the second one does not go out from that button either (owner test
+# with Shield Block + Revenge, 2026-10-15). They stay (one press while the cooldown is up is the point), with this warning.
+PAIR_MACROS = {
+    "Inner Focus + Greater Heal", "Amplify Curse + Bane of Agony", "Fel Domination + Felhunter", "Fel Domination + Voidwalker",
+    "Arcane Power + Arcane Missiles", "Presence of Mind + Frostbolt", "Presence of Mind + Pyroblast", "Cold Blood + Ambush",
+    "Elemental Mastery + Chain Lightning", "Elemental Mastery + Lightning Bolt", "Bestial Wrath + Rapid Fire burst",
+    "Shield Block + Sunder Armor", "Shield Block + Revenge",
+}
+PAIR_WARNING = "While the first spell is on cooldown this button does nothing: use the plain spell button then."
+
 def M(name, code, note="", short=None, icon=None):
     """One macro entry: display name, macro code, optional short description,
     in-game short name (max 16 chars, unique per class + Universal) and icon
     (texture name without path, for macros with no #showtooltip spell)."""
+    if name in PAIR_MACROS and PAIR_WARNING not in note and "will not go out" not in note:
+        note = (note + " " if note else "") + PAIR_WARNING
     return {"name": name, "code": code, "note": note, "short": short, "icon": icon}
 
 def G(kind, macros):
@@ -990,20 +1003,20 @@ CLASSES = [
             ]),
             G(QOL, [
                 M("Charge / Intercept (one button)",
-                  "#showtooltip Charge(Rank 1)\n"
+                  "#showtooltip Charge\n"
                   "/cast [nocombat, nostance:1] Battle Stance; "
-                  "[nocombat, @targettarget, harm, exists][nocombat, harm] Charge(Rank 1); "
+                  "[nocombat, @targettarget, harm, exists][nocombat, harm] Charge; "
                   "[nostance:3] Berserker Stance; "
                   "[@targettarget, harm, exists][harm] Intercept",
                   "Out of combat: Charge. In combat: Intercept (level 30). "
-                  "Tactical Mastery (now trained) keeps up to 10 rage on a stance swap. Rank 1 on purpose: on Forever an unranked \"Charge\" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).", short="Charge"),
+                  "Tactical Mastery (now trained) keeps up to 10 rage on a stance swap. Plain \"Charge\" uses the highest rank you know (owner test 2026-10-15, so no rank in the name).", short="Charge"),
                 M("Charge + Rend (opener)",
-                  "#showtooltip Charge(Rank 1)\n"
+                  "#showtooltip Charge\n"
                   "/startattack [harm]\n"
                   "/cast [nocombat, nostance:1] Battle Stance\n"
-                  "/cast [nocombat, harm] Charge(Rank 1)\n"
+                  "/cast [nocombat, harm] Charge\n"
                   "/cast [harm] Rend",
-                  "Charges in (out of combat only) then opens with Rend. Rank 1 on purpose: on Forever an unranked \"Charge\" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).", short="Charge+Rend"),
+                  "Charges in (out of combat only) then opens with Rend. Plain \"Charge\" uses the highest rank you know (owner test 2026-10-15, so no rank in the name).", short="Charge+Rend"),
                 M("Taunt (to Defensive)", stance(2, "Defensive Stance", "Taunt"), "Target the friend being hit: TT is the mob.",
                   short="Taunt"),
                 M("Mocking Blow (to Battle)", stance(1, "Battle Stance", "Mocking Blow", attack=True), short="Mock"),
@@ -1052,11 +1065,11 @@ CLASSES = [
             ]),
             G(QOL, [
                 M("Charge + Rend (Vanguard, any stance)",
-                  "#showtooltip Charge(Rank 1)\n/startattack [harm]\n"
-                  "/cast [nocombat, harm] Charge(Rank 1)\n/cast [harm] Rend",
+                  "#showtooltip Charge\n/startattack [harm]\n"
+                  "/cast [nocombat, harm] Charge\n/cast [harm] Rend",
                   "With the Vanguard talent (level-30 tank build) Charge works in Defensive Stance, "
                   "so no stance swap. Out of combat it charges, then press again for Rend (it fails while you are "
-                  "still out of range). Rank 1 on purpose: on Forever an unranked \"Charge\" resolves to the level-46 rank (spell 1240289) and fails until you know it (owner test 2026-10-09).", short="VCharge"),
+                  "still out of range). Plain \"Charge\" uses the highest rank you know (owner test 2026-10-15, so no rank in the name).", short="VCharge"),
                 M("Taunt (mouseover)",
                   "#showtooltip Taunt\n/cast [@mouseover, harm, nodead][harm] Taunt",
                   "Defensive Stance. Hover a loose mob to taunt it without changing target.", short="Taunt@"),

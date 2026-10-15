@@ -4,8 +4,7 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 [ROADMAP.md](ROADMAP.md); what needs in-game testing in [addon/dev/TESTING.md](addon/dev/TESTING.md).
 
 ## 1. Bugs
-1. **Macros missing from bars after a relog** (2026-10-07, seen once, not reproduced). If it returns: check `/macro` first (macro gone = the game
-   didn't save it; macro there but bar slot empty = ours).
+None open (the "macros missing after a relog" bug is gone since 2026-10-15, owner).
 
 ## 2. Addon
 1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build; then delete TalentGuide.lua and the old guided mode.
@@ -15,7 +14,6 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 3. **Weapons along the route**: check the Classic weapon table against Forever; extend past level 32 when the beta does.
 4. **More reminders**: pet missing / dead / unhappy and repair needed shipped in 0.62.0 (verify in game); still open: pet food, rested XP (bags: the backpack counter exists).
 5. **Buff "upper display"**: built (Buffs.lua). The aura probe (TESTING 7.12) showed the game hands out your buffs readably out of combat; what it does in a fight / in a dungeon is still to be sent, the reminder stays silent when the list is unreadable.
-6. **Rank-aware macros**: verify in game (TESTING 2.9), then decide whether the three `Charge(Rank 1)` site macros go back to plain `Charge`.
 8. **CurseForge upload / sharing**: HOLD until the owner says the addon works 100% for him and his friends.
 9. Releases: push tags ONE OR TWO at a time (GitHub starts no build for more than three).
 
@@ -27,16 +25,11 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 3. **ForeverChanges as a source**: compared only (`bis/foreverchanges-compare.md`); nothing imported.
 
 ## 4. Site: builds and macros
-1. **Level 30 builds: confirm in beta** (added 2026-10-14, all "medium"): Survival (sources disagree), Assassination (last 7 points flexible), Fury, Balance, Discipline; Marksmanship's tree may gain Improved Serpent Sting (check share links).
-1b. **Talent pick order, still open**: (a) a guide's real pick order per build (the current order is tier by tier), (b) one-click "learn next point" after TESTING 4.2 passes.
+1. **Marksmanship tree**: Mobalytics lists an Improved Serpent Sting that Wowhead's Forever data does not have yet; our code ends before it, but old share links could shift if it is added (check share links then). All level 30 builds are owner-confirmed (2026-10-15).
+1b. **Talent pick order**: owner rule (2026-10-15): reach the deepest talents the build asks for as early as possible (5 points per row), then fill the rest; done in 0.63.0 (`Calc.Order`). Still open: one-click "learn next point" after TESTING 4.2 passes.
 1d. **Fury / Warrior "+5 Talented points" option**: builds.html already has the Talented switch; check the 26-point builds (Fury dual-wield, Priest Healer / PvP) show it clearly.
-2. **Re-check the 15 "medium" rotations** (only Priest Shadow, Druid Feral, Paladin Retribution, Warrior Protection are "high").
-3. **Macro fall-through audit** (a macro stops at the first `/cast` of a known-but-unusable spell):
-   - One test decides the rest: Shield Block + Sunder while Shield Block is on cooldown. Sunder casts = cooldown + spell pairs are fine; nothing = each becomes two
-     buttons (Priest Inner Focus + Greater Heal, Warlock Amplify Curse + Agony, Fel Domination, Mage Arcane Power / Presence of Mind, Rogue Cold Blood + Ambush,
-     Shaman Elemental Mastery, Hunter Bestial Wrath + Rapid Fire).
-   - Check Warlock Shadow Bolt + Imp Firebolt.
-4. **"Test in beta" macros**: Dark Pact, Elemental Mastery (not in beta trees), Seal swap (Twist of Light), Voice of Truth, Rogue Venom name, Survival melee Raptor Strike GCD.
+3. **Macro fall-through audit**: decided 2026-10-15. "Cooldown + spell" pair macros stay; while the first spell is on cooldown the button does nothing (owner test, Shield Block + Revenge), and every such macro now says so in its note (`PAIR_MACROS` in data.py). Check Warlock Shadow Bolt + Imp Firebolt.
+4. **"Test in beta" macros** (42 of them carry the label; 33 are the Druid set, see TESTING 13; the other 9 are TESTING 14).
 5. **Paladin "Crusade" talent**: missing from Wowhead's Forever data; when it appears, re-check the level-30 Ret build (`DATA30` code shifts by one talent).
 6. **`/console` combat lockdown**: unconfirmed which CVars are blocked in combat (low priority).
 

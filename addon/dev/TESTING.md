@@ -68,6 +68,17 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 10. Balance: Starfire (back into Moonkin, Ctrl = Wrath), Insect Swarm, Hurricane at cursor.
 11. Level 40: does "Bear Form" in the macros need to become "Dire Bear Form"?
 
+## 14. "Test in beta" macros that are not Druid ones
+What the label means: a macro whose note starts with "Test in beta" has never been pressed in the real game: we built it from the spell list and
+the rules we know. To test one: import the macros (or open the Macro Book), drag it to a bar, stand where its note says (the right class, spec or
+level), press it once or twice, and answer `ok`, `does nothing`, `casts the wrong thing` or `error in chat`. For a macro with a talent or rune in its note, take
+that talent / engrave that rune first. The Druid ones are section 13; these are the rest:
+1. Hunter > Survival: **Raptor Strike**, **Mongoose Bite**, **Strider Kick**: each does its one thing on an enemy in melee range (Mongoose Bite needs a dodge first; Strider Kick is a rune).
+2. Paladin > DPS: **Seal swap: Command <> Righteousness**: with the Twist of Light talent, does swapping between swings give the extra seal hit?
+3. Warrior > General: **Retaliation with 2H (from Defensive)**: press twice (1st equips the two-hander and swaps to Battle Stance, 2nd casts Retaliation).
+4. Shaman > Elemental: **Elemental Mastery + Chain Lightning / Lightning Bolt**: Elemental Mastery was not in the beta trees, so these may simply be useless; say if you ever see the talent.
+5. Warrior > Tank: **Shield Block + Sunder Armor** (the Revenge version works, owner 2026-10-15): skip if you do not use it.
+
 ---
 **Confirmed working (kept for the record):**
 - *Window and Home:* the sidebar layout (6 tabs on the left), window position and last tab kept, minimap button (drag, lock, hide, Reload UI), Size / Opacity sliders, Home Quick settings box and footer, `/r2ft`, `/r2f import`, `/biz`, the 24-hour clock box and the three other Quick settings, Settings, profession export.

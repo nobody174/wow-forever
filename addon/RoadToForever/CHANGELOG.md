@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.65.0 (2026-10-15)
+
+- **New standard settings.** A fresh install now starts with the owner's own setup: icon layout, positions, sizes and locks (Repair, Pet and Rested XP icons start hidden, the others shown), the gilded small arrow, thick combat text outline, the Talented perk display on, Thorns off in the group buff reminder, the minimap button at the bottom. The Gameplay features (auto sell, quest automation, bags, chat...) still start OFF so players switch on what they want; the "No food" notice is off until ticked. Players who already have the addon keep their own settings.
+
 ## 0.64.4 (2026-10-15)
 
 - Food buff: the "No food" notice is now plain red text only, without the food icon or its frame. (While the icon is unlocked to move it, the icon shows so you can find and drag it.)

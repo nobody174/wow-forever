@@ -102,15 +102,15 @@ function Library.Init()
   local mm = db.minimap
   if type(mm.hide) ~= "boolean" then mm.hide = false end
   if type(mm.lock) ~= "boolean" then mm.lock = false end
-  if type(mm.minimapPos) ~= "number" then mm.minimapPos = 220 end
+  if type(mm.minimapPos) ~= "number" then mm.minimapPos = 270 end
   -- Warrior stance indicator (Stance.lua).
   if type(db.stance) ~= "table" then db.stance = {} end
   local st = db.stance
   if type(st.shown) ~= "boolean" then st.shown = true end
-  if type(st.lock) ~= "boolean" then st.lock = false end
-  if type(st.scale) ~= "number" or st.scale < 0.5 or st.scale > 3 then st.scale = 1 end
-  if type(st.x) ~= "number" then st.x = 0 end
-  if type(st.y) ~= "number" then st.y = -150 end
+  if type(st.lock) ~= "boolean" then st.lock = true end
+  if type(st.scale) ~= "number" or st.scale < 0.5 or st.scale > 3 then st.scale = 1.25 end
+  if type(st.x) ~= "number" then st.x = -2 end
+  if type(st.y) ~= "number" then st.y = 498 end
   -- Gameplay features (Gameplay.lua): one true / false per feature, all OFF until ticked.
   if type(db.gameplay) ~= "table" then db.gameplay = {} end
   for _, key in ipairs({ "repair", "sellgray", "duels", "errorfilter", "xpbar", "mailalts", "bagslots", "bagsort", "fastloot",
@@ -129,29 +129,29 @@ function Library.Init()
   if type(db.loadouts) ~= "table" then db.loadouts = {} end
   -- BiZNav arrow position (Nav.lua): offset from the screen centre, UIParent units.
   if type(db.nav) ~= "table" then db.nav = {} end
-  if type(db.nav.x) ~= "number" then db.nav.x = 0 end
-  if type(db.nav.y) ~= "number" then db.nav.y = 220 end
-  if db.nav.size ~= "small" and db.nav.size ~= "medium" and db.nav.size ~= "large" then db.nav.size = "medium" end
+  if type(db.nav.x) ~= "number" then db.nav.x = -6 end
+  if type(db.nav.y) ~= "number" then db.nav.y = 369 end
+  if db.nav.size ~= "small" and db.nav.size ~= "medium" and db.nav.size ~= "large" then db.nav.size = "small" end
   -- Which look the arrow has besides the flat dart (Nav.STYLES keys: dart, arrow, block, needle, gilded, plate, slab);
   -- the flat dart is the arrow3d switch off.
   local looks = { dart = true, arrow = true, block = true, needle = true, gilded = true, plate = true, slab = true }
-  if not looks[db.nav.style] then db.nav.style = "arrow" end
+  if not looks[db.nav.style] then db.nav.style = "gilded" end
   if type(db.fct) ~= "table" then db.fct = {} end
   local fc = db.fct
-  if type(fc.x) ~= "number" then fc.x = 0 end
-  if type(fc.y) ~= "number" then fc.y = 0 end
+  if type(fc.x) ~= "number" then fc.x = -3 end
+  if type(fc.y) ~= "number" then fc.y = 459 end
   if type(fc.scale) ~= "number" or fc.scale < 0.5 or fc.scale > 3 then fc.scale = 1 end
-  if type(fc.lock) ~= "boolean" then fc.lock = false end
+  if type(fc.lock) ~= "boolean" then fc.lock = true end
   if type(fc.textScale) ~= "number" or fc.textScale < 0.5 or fc.textScale > 2.5 then fc.textScale = 1 end
-  if fc.outline ~= "none" and fc.outline ~= "thin" and fc.outline ~= "thick" then fc.outline = "none" end
+  if fc.outline ~= "none" and fc.outline ~= "thin" and fc.outline ~= "thick" then fc.outline = "thick" end
   -- Tracking reminder (Tracking.lua): any class that has Find Minerals / Herbs / Treasure.
   if type(db.tracking) ~= "table" then db.tracking = {} end
   local tr = db.tracking
   if type(tr.shown) ~= "boolean" then tr.shown = true end
-  if type(tr.lock) ~= "boolean" then tr.lock = false end
+  if type(tr.lock) ~= "boolean" then tr.lock = true end
   if type(tr.scale) ~= "number" or tr.scale < 0.5 or tr.scale > 3 then tr.scale = 1 end
-  if type(tr.x) ~= "number" then tr.x = 0 end
-  if type(tr.y) ~= "number" then tr.y = -60 end
+  if type(tr.x) ~= "number" then tr.x = 83 end
+  if type(tr.y) ~= "number" then tr.y = 501 end
   for _, kind in ipairs({ "minerals", "herbs", "treasure" }) do
     if type(tr[kind]) ~= "boolean" then tr[kind] = true end
   end
@@ -161,9 +161,9 @@ function Library.Init()
   if type(bf.shown) ~= "boolean" then bf.shown = true end
   if type(bf.lock) ~= "boolean" then bf.lock = true end
   if type(bf.scale) ~= "number" or bf.scale < 0.5 or bf.scale > 3 then bf.scale = 1 end
-  if type(bf.x) ~= "number" then bf.x = 0 end
-  if type(bf.y) ~= "number" then bf.y = 140 end
-  for key, default in pairs({ fortitude = true, motw = true, thorns = true, intellect = true, blessing = true,
+  if type(bf.x) ~= "number" then bf.x = -20 end
+  if type(bf.y) ~= "number" then bf.y = 428 end
+  for key, default in pairs({ fortitude = true, motw = true, thorns = false, intellect = true, blessing = true,
     spirit = false, shadowprot = false, battleshout = false, trueshot = false,
     strengthearth = false, graceair = false, windfury = false, manaspring = false }) do
     if type(bf[key]) ~= "boolean" then bf[key] = default end
@@ -174,45 +174,45 @@ function Library.Init()
   if type(am.shown) ~= "boolean" then am.shown = true end
   if type(am.lock) ~= "boolean" then am.lock = false end
   if type(am.scale) ~= "number" or am.scale < 0.5 or am.scale > 3 then am.scale = 1 end
-  if type(am.x) ~= "number" then am.x = 0 end
-  if type(am.y) ~= "number" then am.y = -100 end
+  if type(am.x) ~= "number" then am.x = 327 end
+  if type(am.y) ~= "number" then am.y = 550 end
   if type(am.threshold) ~= "number" or am.threshold < 50 or am.threshold > 1000 then am.threshold = 200 end
   -- Repair reminder (Repair.lua).
   if type(db.repair) ~= "table" then db.repair = {} end
   local rp = db.repair
-  if type(rp.shown) ~= "boolean" then rp.shown = true end
+  if type(rp.shown) ~= "boolean" then rp.shown = false end
   if type(rp.lock) ~= "boolean" then rp.lock = false end
   if type(rp.scale) ~= "number" or rp.scale < 0.5 or rp.scale > 3 then rp.scale = 1 end
-  if type(rp.x) ~= "number" then rp.x = 0 end
-  if type(rp.y) ~= "number" then rp.y = -150 end
+  if type(rp.x) ~= "number" then rp.x = 387 end
+  if type(rp.y) ~= "number" then rp.y = 509 end
   if type(rp.threshold) ~= "number" or rp.threshold < 5 or rp.threshold > 90 then rp.threshold = 25 end
   -- Pet reminder (Pet.lua).
   if type(db.pet) ~= "table" then db.pet = {} end
   local pt = db.pet
-  if type(pt.shown) ~= "boolean" then pt.shown = true end
+  if type(pt.shown) ~= "boolean" then pt.shown = false end
   if type(pt.lock) ~= "boolean" then pt.lock = false end
   if type(pt.scale) ~= "number" or pt.scale < 0.5 or pt.scale > 3 then pt.scale = 1 end
-  if type(pt.x) ~= "number" then pt.x = 0 end
-  if type(pt.y) ~= "number" then pt.y = -200 end
+  if type(pt.x) ~= "number" then pt.x = 238 end
+  if type(pt.y) ~= "number" then pt.y = 522 end
   if db.newerVersion ~= nil and type(db.newerVersion) ~= "string" then db.newerVersion = nil end   -- Version.lua
   -- Rested XP reminder (Rested.lua).
   if type(db.rested) ~= "table" then db.rested = {} end
   local rs = db.rested
-  if type(rs.shown) ~= "boolean" then rs.shown = true end
-  if type(rs.lock) ~= "boolean" then rs.lock = false end
+  if type(rs.shown) ~= "boolean" then rs.shown = false end
+  if type(rs.lock) ~= "boolean" then rs.lock = true end
   if type(rs.scale) ~= "number" or rs.scale < 0.5 or rs.scale > 3 then rs.scale = 1 end
-  if type(rs.x) ~= "number" then rs.x = 0 end
-  if type(rs.y) ~= "number" then rs.y = -250 end
+  if type(rs.x) ~= "number" then rs.x = 326 end
+  if type(rs.y) ~= "number" then rs.y = 552 end
   -- Buff countdown reminders (Timers.lua): one table per tracked buff.
   if type(db.timers) ~= "table" then db.timers = {} end
-  for key, y in pairs({ walkonair = 140, wellfed = 100 }) do
+  for key, pos in pairs({ walkonair = { 2, 462 }, wellfed = { 230, 515 } }) do
     if type(db.timers[key]) ~= "table" then db.timers[key] = {} end
     local tm = db.timers[key]
     if type(tm.shown) ~= "boolean" then tm.shown = true end
-    if type(tm.lock) ~= "boolean" then tm.lock = false end
-    if type(tm.scale) ~= "number" or tm.scale < 0.5 or tm.scale > 3 then tm.scale = 1.4 end
-    if type(tm.x) ~= "number" then tm.x = 0 end
-    if type(tm.y) ~= "number" then tm.y = y end
+    if type(tm.lock) ~= "boolean" then tm.lock = true end
+    if type(tm.scale) ~= "number" or tm.scale < 0.5 or tm.scale > 3 then tm.scale = 1.15 end
+    if type(tm.x) ~= "number" then tm.x = pos[1] end
+    if type(tm.y) ~= "number" then tm.y = pos[2] end
     if type(tm.remindMissing) ~= "boolean" then tm.remindMissing = false end
   end
   local s = db.settings
@@ -221,7 +221,7 @@ function Library.Init()
   if type(s.menuAlpha) ~= "number" or s.menuAlpha < 0.3 or s.menuAlpha > 1 then s.menuAlpha = 1 end
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
   -- Talents tab: show build levels as if the Talented legacy perk (+5 points) is on. Display only.
-  if type(s.talented) ~= "boolean" then s.talented = false end
+  if type(s.talented) ~= "boolean" then s.talented = true end
   -- The bundled macro set (MacroData.lua) that is installed in the library; Bundle.lua compares it.
   if type(s.bundleVersion) ~= "string" then s.bundleVersion = "" end
   -- Class icons page: which class groups of group buffs are folded open (class token -> true).

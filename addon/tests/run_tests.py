@@ -564,9 +564,10 @@ def test_stance():
     T.fire("PLAYER_LOGIN")
     check(lua.eval("R2FStanceFrame ~= nil"), "stance: frame built for a Warrior")
     st = "R2FDB.stance"
-    check(lua.eval(st + ".shown") is True and lua.eval(st + ".scale") == 1, "stance: defaults")
+    check(lua.eval(st + ".shown") is True and lua.eval(st + ".scale") == 1.25 and lua.eval(st + ".lock") is True, "stance: defaults (owner's setup, locked)")
     lua.execute("TEST.stanceIndex = 3 R2F.Stance.Update()")
     check(lua.eval("R2FStanceFrame.border ~= nil"), "stance: border texture exists")
+    lua.execute(st + ".lock = false")
     lua.execute('SlashCmdList.R2F("stance lock")')
     check(lua.eval(st + ".lock") is True, "stance: /r2f stance lock locks")
     lua.execute('SlashCmdList.R2F("stance")')
@@ -863,7 +864,7 @@ def test_talented_perk():
     check(lua.eval("R2F.Talents.LevelFor(26, true)") == 30, "perk: 26 points = level 30 with the perk")
     check(lua.eval("R2F.Talents.LevelFor(26, false)") == 35, "perk: 26 points = level 35 without the perk")
     check(lua.eval("R2F.Talents.LevelFor(0, true)") == 0, "perk: no points = no level")
-    check(lua.eval("R2F.Library.db.settings.talented") is False, "perk: setting defaults to off")
+    check(lua.eval("R2F.Library.db.settings.talented") is True, "perk: setting defaults to on (owner's setup)")
     js = open(os.path.join(ROOT, "talentcalc.js"), encoding="utf-8").read()
     check("points + 9 - perkRank()" in js and "TALENTED_RANK = 5" in js,
           "perk: talentcalc.js uses points + 9 - 5, the same as Talents.LevelFor")
@@ -1108,7 +1109,7 @@ def test_arrow_3d():
     lua.execute("TEST.hereMap = 1426 TEST.herePos = { 0.5, 0.5 } TEST.facing = 0 R2F.Nav.SetTarget(1426, 60, 50, 'Spot', 'Dun Morogh')")
     lua.execute("R2FNavFrame:Fire('OnUpdate', 1)")
     tex = lua.eval("R2FNavFrame.arrow.__tex")
-    check(tex is not None and tex.endswith("arrow3d"), "3D arrow: the sprite sheet is the texture: %r" % tex)
+    check(tex is not None and tex.endswith("arrow3d_gilded"), "3D arrow: the sprite sheet is the texture: %r" % tex)
     check(lua.eval("R2FNavFrame.arrow.__texcoord ~= nil"), "3D arrow: a texture coordinate window is set")
     got = lua.eval("{ unpack(R2FNavFrame.arrow.__texcoord) }")
     want = lua.eval("{ R2F.Nav.FrameCoords(R2F.Nav.FrameFor(-math.pi / 2)) }")
@@ -1121,7 +1122,7 @@ def test_arrow_3d():
     lua.execute("R2FNavFrame:Fire('OnUpdate', 1)")
     check(abs(lua.eval("R2FNavFrame.arrow.__rotation") + math.pi / 2) < 1e-9, "3D arrow: the flat dart turns by the angle again")
     lua.execute("R2F.Gameplay.SetOn('arrow3d', true)")
-    check(lua.eval("string.sub(R2FNavFrame.arrow.__tex, -7)") == "arrow3d", "3D arrow: back to the sprite sheet")
+    check(lua.eval("string.sub(R2FNavFrame.arrow.__tex, -14)") == "arrow3d_gilded", "3D arrow: back to the sprite sheet")
     # Arrow looks (0.58.0): flat / gold dart / stone arrow, chosen with Nav.SetStyle (the Tweaks buttons).
     lua.execute("R2F.Nav.SetStyle('dart')")
     check(lua.eval("R2F.Nav.Style()") == "dart" and lua.eval("R2FNavFrame.arrow.__tex").endswith("arrow3d_dart"), "3D arrow: the gold dart look")
@@ -1554,8 +1555,8 @@ def test_reminders():
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_STANCE_SHOW", "SS")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_STANCE_LOCK", "SL")
     check(lua.eval("#SS") == 1 and lua.eval("#SL") == 1 and lua.eval("SS[1]:IsVisible()") is True, "15.4 stance Show / Lock boxes on the Reminders tab")
-    lua.execute("SL[1]:Click()")
-    check(lua.eval("R2FDB.stance.lock") is True and lua.eval("SL[1]:GetChecked()") is True, "15.4 stance Lock works from the new tab")
+    lua.execute("SL[1]:Click()")   # the stance icon starts locked, so the click unlocks it
+    check(lua.eval("R2FDB.stance.lock") is False and lua.eval("SL[1]:GetChecked()") is False, "15.4 stance Lock works from the new tab")
     lua.execute("SL[1]:Click() SS[1]:Click()")
     check(lua.eval("R2FDB.stance.shown") is False, "15.4 stance Show works from the new tab")
     lua.execute("SS[1]:Click() R2FStanceScale:Fire('OnValueChanged', 150)")
@@ -1579,7 +1580,7 @@ def test_reminders():
     # Rested XP (0.64.0): the bank as a percent of the level's bar; gold icon, hidden without rested XP once locked.
     lua.execute("TEST.bank = 450 TEST.need = 900 GetXPExhaustion = function() return TEST.bank end UnitXPMax = function() return TEST.need end")
     check(abs(lua.eval("R2F.Rested.Percent()") - 50) < 1e-9, "rested: 450 of a 900 bar = 50 percent")
-    lua.execute("R2F.Rested.SetLock(true)")
+    lua.execute("R2FDB.rested.shown = true R2F.Rested.SetLock(true)")
     check(lua.eval("R2FRestedFrame:IsShown()") is True and lua.eval("R2FRestedFrame.count.__text") == "50%", "rested: the icon says 50%")
     lua.execute("TEST.bank = nil R2F.Rested.Update()")
     check(lua.eval("R2FRestedFrame:IsShown()") is False, "rested: none left and locked: hidden")
@@ -1661,7 +1662,7 @@ def test_reminders():
     check(lua.eval("R2F.Pet.Problem()") is None, "pet: no reminder while mounted")
     lua.execute("TEST.mounted = false TEST.selfDead = true")
     check(lua.eval("R2F.Pet.Problem()") is None, "pet: no reminder while you are dead")
-    lua.execute("TEST.selfDead = false R2F.Pet.SetLock(true) R2F.Pet.Update()")
+    lua.execute("TEST.selfDead = false R2FDB.pet.shown = true R2F.Pet.SetLock(true) R2F.Pet.Update()")
     check(lua.eval("R2FPetFrame:IsShown()") is True and lua.eval("R2FPetFrame.count.__text") == "No pet", "pet: the icon says No pet")
     lua, T = reminder_runtime("PRIEST")
     check(lua.eval("R2FAmmoFrame == nil and R2FStanceFrame == nil and R2FAmmoScale == nil and R2FStanceScale == nil"),
@@ -1676,7 +1677,7 @@ def test_reminders():
       GetInventoryItemDurability = function(slot) local d = TEST.dur[slot] if d then return d[1], d[2] end end""")
     check(abs(lua.eval("R2F.Repair.Worst()") - 20) < 1e-9, "repair: the worst piece is 20 percent")
     check(lua.eval("R2F.Repair.IsLow(R2F.Repair.Worst())") is True and lua.eval("R2F.Repair.IsLow(60)") is False, "repair: low under the 25 percent default")
-    lua.execute("R2F.Repair.Update()")
+    lua.execute("R2FDB.repair.shown = true R2F.Repair.Update()")
     check(lua.eval("R2FRepairFrame:IsShown()") is True and lua.eval("R2FRepairFrame.count.__text") == "20%", "repair: the icon shows 20%")
     lua.execute("TEST.dur[5] = { 95, 100 } R2F.Repair.SetLock(true)")
     check(lua.eval("R2FRepairFrame:IsShown()") is False, "repair: fine gear hides the icon")
@@ -1803,7 +1804,7 @@ def test_reminders():
     # Independent from the stance icon: a Warrior's position is untouched by this.
     lua, T = reminder_runtime("WARRIOR")
     lua.execute("R2FStanceFrame.__cx, R2FStanceFrame.__cy = 33, 44 R2FStanceFrame:Fire('OnDragStart') R2FStanceFrame:Fire('OnDragStop')")
-    check(lua.eval("R2FDB.stance.x") == 33 and lua.eval("R2FDB.stance.y") == 44 and lua.eval("R2FDB.ammo.x") == 0,
+    check(lua.eval("R2FDB.stance.x") == 33 and lua.eval("R2FDB.stance.y") == 44 and lua.eval("R2FDB.ammo.x") == 327,
           "15.4 each reminder keeps its own position")
     # Relog: saved settings come back.
     preset = "{ ammo = { shown = true, lock = true, scale = 1.5, x = 70, y = -80, threshold = 350 } }"
@@ -2602,7 +2603,7 @@ def test_gameplay():
     check(lua.eval("R2F.Gameplay.IsOn('reactalert')") is False and lua.eval("R2FDB.fct.textScale") == 1 and lua.eval("R2FDB.fct.outline") == "none",
           "Reset page turns the page's boxes off and restores the alert text style")
     lua.execute("R2FDB.fct.textScale = 9 R2FDB.fct.outline = 'bogus' R2F.Library.Init()")
-    check(lua.eval("R2FDB.fct.textScale") == 1 and lua.eval("R2FDB.fct.outline") == "none", "bad alert style values are reset")
+    check(lua.eval("R2FDB.fct.textScale") == 1 and lua.eval("R2FDB.fct.outline") == "thick", "bad alert style values are reset")
     find_frames(lua, "f.__kind == 'FontString' and type(f.__text) == 'string' and f.__text:find('Priest') and f.__text:find('/')", "PRG")
     check(lua.eval("#PRG") >= 1, "group buffs are grouped under a Priest fold-out header")
     lua.execute("R2F.GameplayTab.ShowPage('icons') R2F.RemindersTab.OpenGroups().PRIEST = true R2F.GameplayTab.Refresh()")
@@ -2766,11 +2767,11 @@ def test_gameplay():
       R2F.Buffs.Update()
     """)
     names = lambda: [lua8.eval("R2F.Buffs.Missing()[%d].key" % i) for i in range(1, lua8.eval("#R2F.Buffs.Missing()") + 1)]
-    check(names() == ["fortitude", "motw", "thorns", "intellect", "blessing"],
-          "17.5 a Priest, Druid, Paladin and Mage group: Fortitude, Mark of the Wild, Thorns, Intellect, a Blessing are all missing: %r" % names())
+    check(names() == ["fortitude", "motw", "intellect", "blessing"],
+          "17.5 a Priest, Druid, Paladin and Mage group: Fortitude, Mark of the Wild, Intellect, a Blessing (Thorns is off by default) are all missing: %r" % names())
     check(lua8.eval("R2FGroupBuffFrame:IsShown()") is True, "17.5 the reminder shows")
     lua8.execute("AUR = { 'Power Word: Fortitude', 'Gift of the Wild', 'Greater Blessing of Kings' } R2F.Buffs.Update()")
-    check(names() == ["thorns", "intellect"], "17.5 Fortitude, Gift of the Wild (counts as Mark) and a Greater Blessing are recognised: %r" % names())
+    check(names() == ["intellect"], "17.5 Fortitude, Gift of the Wild (counts as Mark) and a Greater Blessing are recognised: %r" % names())
     lua8.execute("R2FDB.buffs.thorns = false R2F.Buffs.Update()")
     check(names() == ["intellect"], "17.5 a buff you switched off is not asked for")
     lua8.execute("AUR = { 'Power Word: Fortitude', 'Gift of the Wild', 'Blessing of Might', 'Arcane Intellect' } R2F.Buffs.Update()")
@@ -4088,7 +4089,7 @@ def test_step5_logic(lua, fx):
 
     # Init fills a partial minimap table without touching set values.
     lua.execute("R2FDB.minimap = { hide = true } R2F.Library.Init()")
-    check(lua.eval("R2FDB.minimap.hide == true and R2FDB.minimap.lock == false and R2FDB.minimap.minimapPos == 220"),
+    check(lua.eval("R2FDB.minimap.hide == true and R2FDB.minimap.lock == false and R2FDB.minimap.minimapPos == 270"),
           "Init fills missing minimap fields (LibDBIcon format) and keeps hide")
 
 
@@ -4243,9 +4244,9 @@ def test_step6_ui(templates, fx):
           "minimap icon = media/logo64")
     pt = lua_table_to_list(lua.eval("R2FMinimapButton.__point"))
     import math
-    want = (75 * math.cos(math.radians(220)), 75 * math.sin(math.radians(220)))
+    want = (75 * math.cos(math.radians(270)), 75 * math.sin(math.radians(270)))
     check(pt[0] == "CENTER" and abs(pt[3] - want[0]) < 1e-6 and abs(pt[4] - want[1]) < 1e-6,
-          "default minimapPos 220 puts the button on the rim (round minimap): %s" % pt)
+          "default minimapPos 270 puts the button on the rim (round minimap): %s" % pt)
     lua.execute("R2FDB.minimap.hide = true R2F.Minimap.Apply()")
     check(lua.eval("R2FMinimapButton:IsShown()") is False, "Apply: hide = true hides the button")
     lua.execute("R2FDB.minimap.hide = false R2F.Minimap.Apply()")

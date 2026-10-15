@@ -1573,6 +1573,22 @@ def test_reminders():
           "15.4 Hunter: ammo frame only")
     lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('icons')")
     check(lua.eval("R2FAmmoScale:IsVisible() and R2FAmmoThreshold:IsVisible()") is True, "15.4 Hunter sees the ammo size + threshold sliders")
+    # Buff countdown (0.63.0): Walk on Air shows the seconds left on the buff, big, and nothing when it is off (locked).
+    lua.execute("""TEST.now = 1000 TEST.aura = { name = 'Walking on Air', spellId = 1259417, expirationTime = 1007, icon = 'x' }
+      GetTime = function() return TEST.now end
+      C_UnitAuras = { GetUnitAuras = function() if TEST.aura then return { TEST.aura } end return {} end }""")
+    check(abs(lua.eval("(R2F.Timers.Remaining(R2F.Timers.TRACK[1]))") - 7) < 1e-9, "timer: 7 seconds left on Walking on Air")
+    lua.execute("R2F.Timers.TRACK[1].module.SetLock(true) R2F.Timers.TRACK[1].module.Apply()")
+    check(lua.eval("R2FWalkonairFrame:IsShown()") is True and lua.eval("R2FWalkonairFrame.count.__text") == "7.0", "timer: the icon counts down: 7.0")
+    lua.execute("TEST.now = 1002.5 R2F.Timers.TRACK[1].module.Apply()")
+    check(lua.eval("R2FWalkonairFrame.count.__text") == "4.5", "timer: 4.5 a little later")
+    lua.execute("TEST.aura = nil R2F.Timers.TRACK[1].module.Apply()")
+    check(lua.eval("R2FWalkonairFrame:IsShown()") is False, "timer: no buff, locked: hidden")
+    lua.execute("TEST.aura = { name = 'Walking on Air', spellId = 1259417, expirationTime = 1007 } C_UnitAuras.GetUnitAuras = function() return { { name = 'x', spellId = 1, expirationTime = 5 } } end")
+    check(lua.eval("(R2F.Timers.Remaining(R2F.Timers.TRACK[1]))") is None, "timer: another buff only: nothing")
+    lua.execute("issecretvalue = function() return true end")
+    check(lua.eval("(R2F.Timers.Remaining(R2F.Timers.TRACK[1]))") is None, "timer: secret values: nothing shown, nothing guessed")
+    lua.execute("issecretvalue = nil")
     # Pet reminder (0.62.0): Hunters and Warlocks only; missing / dead / unhappy, quiet when mounted or dead yourself.
     check(lua.eval("R2FPetFrame ~= nil") and lua.eval("R2FPetScale ~= nil"), "pet: the Hunter has the pet icon and its size slider")
     lua.execute("""TEST.pet = { exists = false, dead = false, happy = 3 } TEST.mounted = false TEST.selfDead = false

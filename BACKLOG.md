@@ -26,7 +26,7 @@ None open (the "macros missing after a relog" bug is gone since 2026-10-15, owne
 
 ## 4. Site: builds and macros
 1. **Marksmanship tree**: Mobalytics lists an Improved Serpent Sting that Wowhead's Forever data does not have yet; our code ends before it, but old share links could shift if it is added (check share links then). All level 30 builds are owner-confirmed (2026-10-15).
-1b. **Talent pick order**: owner rule (2026-10-15): reach the deepest talents the build asks for as early as possible (5 points per row), then fill the rest; done in 0.63.0 (`Calc.Order`). Still open: one-click "learn next point" after TESTING 4.2 passes.
+1b. **Talent pick order**: owner rule (2026-10-15): reach the deepest talents the build asks for as early as possible (5 points per row), then fill the rest; done in 0.63.0 (`Calc.Order`, deepest first). Still open: one-click "learn next point" after TESTING 4.2 passes.
 1d. **Fury / Warrior "+5 Talented points" option**: builds.html already has the Talented switch; check the 26-point builds (Fury dual-wield, Priest Healer / PvP) show it clearly.
 3. **Macro fall-through audit**: decided 2026-10-15. "Cooldown + spell" pair macros stay; while the first spell is on cooldown the button does nothing (owner test, Shield Block + Revenge), and every such macro now says so in its note (`PAIR_MACROS` in data.py). Check Warlock Shadow Bolt + Imp Firebolt.
 4. **"Test in beta" macros** (42 of them carry the label; 33 are the Druid set, see TESTING 13; the other 9 are TESTING 14).

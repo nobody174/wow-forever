@@ -1,5 +1,13 @@
 # Road to Forever changelog
 
+## 0.63.0 (2026-10-15)
+
+- Tweaks is split into more pages: **Alerts**, **Waypoint arrow** (follow the plan, arrow to corpse, size, the eight looks) and **Class icons** (all the icon reminders). The page buttons sit in two rows.
+- New **Walk on Air countdown** (Tweaks > Class icons, for characters that have the Skyborne racial): a big timer icon with the seconds left while the buff is on you. Move, resize or lock it like the other icons.
+- Talent pick order now goes deepest first: it reaches the deepest talent the build asks for as early as it can (5 points per row), main tree first, a dip into another tree last. This is what the `<` `>` stepper and "Next point" use.
+- Macros: the three Charge macros use plain `Charge` again (it takes the highest rank you know). Every "cooldown + spell" button (Shield Block + Revenge, Inner Focus + Greater Heal, ...) now says in its note that it does nothing while the first spell is on cooldown.
+- Site: every build card has a "+5 points" switch for the Talented legacy perk (the same setting as the switch at the top of the page).
+
 ## 0.62.1 (2026-10-15)
 
 - The Recommended menu on the Talents tab will list the group's picks (the ones published on the site's Saved builds > Group picks) once there are any: they are baked into each release. There are none yet.

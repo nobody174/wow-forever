@@ -193,6 +193,17 @@ function Library.Init()
   if type(pt.scale) ~= "number" or pt.scale < 0.5 or pt.scale > 3 then pt.scale = 1 end
   if type(pt.x) ~= "number" then pt.x = 0 end
   if type(pt.y) ~= "number" then pt.y = -200 end
+  -- Buff countdown reminders (Timers.lua): one table per tracked buff.
+  if type(db.timers) ~= "table" then db.timers = {} end
+  for key, y in pairs({ walkonair = 140 }) do
+    if type(db.timers[key]) ~= "table" then db.timers[key] = {} end
+    local tm = db.timers[key]
+    if type(tm.shown) ~= "boolean" then tm.shown = true end
+    if type(tm.lock) ~= "boolean" then tm.lock = false end
+    if type(tm.scale) ~= "number" or tm.scale < 0.5 or tm.scale > 3 then tm.scale = 1.4 end
+    if type(tm.x) ~= "number" then tm.x = 0 end
+    if type(tm.y) ~= "number" then tm.y = y end
+  end
   local s = db.settings
   -- Main window size and opacity (top bar sliders).
   if type(s.menuScale) ~= "number" or s.menuScale < 0.5 or s.menuScale > 1.5 then s.menuScale = 1 end

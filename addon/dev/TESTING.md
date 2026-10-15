@@ -35,6 +35,10 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 
 14. **New in 0.63.0, Tweaks is split:** the old "Alerts & HUD" page is now three: **Alerts** (ability alert text, Training reminder), **Waypoint arrow** (follow the plan, arrow to corpse, size, the eight looks) and **Class icons** (stance, ammo, repair, pet, tracking, group buffs). The page buttons sit in two rows. Does every setting still work and sit where you expect? Does Reset page only touch the page you are on?
 
+15. **New in 0.63.0, Walk on Air countdown** (Skyborne): Tweaks > Class icons > "Walk on Air countdown": use Walk on Air (a short glide): a big icon with the seconds counting down appears for as long as the buff lasts (1 decimal under 10 s), and goes away after; unlock it to move it, "Size" makes it bigger. Does it read well while gliding? Does it show anything in combat?
+16. **0.63.0, pick order:** load a Recommended build on the Talents tab and step through it with `>`: the first points go to the main tree's top row, then the next row opens after 5 points and the stepper goes as deep as it can before filling the rest; a dip into another tree comes last.
+17. **0.63.0, the site:** each build card on the Builds page has a gold "+5 points" button (next to Copy link): it switches the Talented perk on the whole page.
+
 ## 7. Tweaks tab (everything is OFF until ticked; turn off ForeverPlus' matching modules)
 7. Vendors & loot > Mail: list my other characters. `/dump R2FDB.chars` on 2026-10-14 showed 7 characters saved (Despicable, Madfury, Miss, Aoe, Falseaim, Madblade, Venom) and NO Paladin or Shaman: they were never recorded. Tick Road to Forever for them on the character select AddOns screen, log in on each, run `/dump R2FDB.chars` again, then check the mail list. Fast looting (needs the game's Auto Loot; Shift does the opposite) is still open.
 16. Hunter ammo (Hunter with a ranged weapon; Icons for your class): the count equals arrows / bullets in all bags; switching weapon type switches the label; red 0 with no ammo; hidden with no ranged weapon when locked; the "warn when under" slider; `/r2f ammo`.

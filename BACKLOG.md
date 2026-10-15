@@ -8,9 +8,7 @@ None open (the "macros missing after a relog" bug is gone since 2026-10-15, owne
 
 ## 2. Addon
 1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build; then delete TalentGuide.lua and the old guided mode.
-2. **Plan points without a position** (19 `check` points in `launch-plan-waypoints.json`: Skycutter / Dalaran portal, Stormwind boat, Riverglades,
-   Shen'dralas, Mount Hyjal, new dungeons): `/r2f here` at the spot, send the lines, set `zone/x/y/conf: "exact"`, run `python build.py`. Also re-check the
-   `classic` points ("may have moved").
+2. **Plan points without a position**: 7 left (TESTING 15): Zephras Isle start and Skycutter, the Skyborne portal in Dalaran, Riverglades, Krol'dok Stronghold, Shen'dralas, Shaper's Terrace; run `/r2f here` at each spot and send the lines. Six were filled in on 2026-10-15 from the owner's map readings. Also re-check the `classic` points ("may have moved").
 3. **Weapons along the route**: check the Classic weapon table against Forever; extend past level 32 when the beta does.
 4. **More reminders**: pet missing / dead / unhappy and repair needed shipped in 0.62.0 (verify in game); rested XP shipped in 0.64.0; still open: the +5% experience food buff (waiting for its name from the owner). Walk on Air countdown shipped; more countdowns on request (Timers.TRACK).
 5. **Buff "upper display"**: built (Buffs.lua). The aura probe (TESTING 7.12) showed the game hands out your buffs readably out of combat; what it does in a fight / in a dungeon is still to be sent, the reminder stays silent when the list is unreadable.

@@ -88,13 +88,11 @@ that talent / engrave that rune first. The Druid ones are section 13; these are 
 4. Shaman > Elemental: **Elemental Mastery + Chain Lightning / Lightning Bolt**: Elemental Mastery was not in the beta trees, so these may simply be useless; say if you ever see the talent.
 5. Warrior > Tank: **Shield Block + Sunder Armor** (the Revenge version works, owner 2026-10-15): skip if you do not use it.
 
-## 15. Plan positions for the arrow (the 13 plan steps that still have no exact spot)
+## 15. Plan positions for the arrow (7 plan steps still have no exact spot; 6 were set from your map readings on 2026-10-15)
 How: stand on the spot the step names, run `/r2f here` once, send me the two chat lines. I then set the exact position so the arrow points there. Skip any you do not plan to visit.
-1. Zephras Isle: the starting area. 2. Zephras Isle: where the Skycutter to Dalaran leaves. 3. Dalaran: the Skyborne portal to Stormwind.
-4. Stormwind Harbor: the boat to Auberdine. 5. Dalaran (Alterac Mountains): the way down through the sewers to the Underbelly.
-6. Stranglethorn Vale: the Drowned City (where you dive at Zin'aka). 7. Tanaris, Steamwheedle Port: the boat to Powderfuse Port.
-8. Riverglades. 9. Riverglades: Krol'dok Stronghold. 10. Feralas: Shen'dralas. 11. Mount Hyjal. 12. Azshara: Blackmaw Hold (behind the Furbolg Gates in the north).
-13. Un'Goro Crater: Shaper's Terrace.
+1. Zephras Isle: the starting area. 2. Zephras Isle: where the Skycutter to Dalaran leaves. 3. Dalaran: the Skyborne portal to Stormwind (the zone named Dalaran).
+4. Riverglades (the zone, a spot in the middle will do). 5. Riverglades: Krol'dok Stronghold. 6. Feralas: Shen'dralas. 7. Un'Goro Crater: Shaper's Terrace.
+Set from your readings: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance (8, 59), the Drowned City (21, 27), Steamwheedle Port boat (67, 22, not confirmed), Mount Hyjal (53, 33 on the Kalimdor map), Blackmaw Hold gate (38, 32, approximate). If one of those is off when you walk there, tell me.
 
 ---
 **Confirmed working (kept for the record):**

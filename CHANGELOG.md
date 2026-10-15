@@ -1739,6 +1739,9 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Mr.BiZ cross-check tooling)
 - bis/own/: tooltips.py (cached Wowhead tooltip fetch), stats.py (tooltip -> stats), check_scores.py, check_order.py, report.md, README.md. First run: ForeverDB's score is exactly stats x weights (1% hit = 10, 1% crit = 14); about 26 best picks differ in stats, nearly all level-scaled items; 19 of 414 slots would be ordered differently under our scoring. Nothing in the site or addon changed.
 
+## 2026-10-15 (Plan positions)
+- launch-plan-waypoints.json: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance (8, 59), the Drowned City (21, 27), Steamwheedle Port boat (67, 22, approx), Mount Hyjal (53, 33 on the Kalimdor map, approx; zone "Kalimdor"), Blackmaw Hold gate (38, 32, approx), all read off the map by the owner. PlanData.lua regenerated.
+
 ## 0.64.0 (2026-10-15)
 
 - Rested.lua (GetXPExhaustion / UnitXPMax, events PLAYER_XP_UPDATE / UPDATE_EXHAUSTION / PLAYER_UPDATE_RESTING), `general = true` reminder, R2FDB.rested, `/r2f rested`.

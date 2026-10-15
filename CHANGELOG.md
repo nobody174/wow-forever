@@ -5,6 +5,11 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-15 (Addon version check, afternoon)
+- addons.html: AtlasLootClassic Continued 12487 → 12488 (file 9187862, Oct 15; Forever + 1.60.1 listed like 12487), Leatrix Maps
+  1.60.20-forever → 1.60.21-forever (file 9170659, Oct 14). Forever Bestiary 0.6.0, ThreatMaster 0.4.0 and Road to Forever
+  0.62.1 unchanged. "Versions checked on CurseForge" set to Oct 15, 2026.
+
 ## 2026-10-15 (Addons page trim)
 - addons.html: removed the ForeverPlus, Questie and TomTom cards from "What we use" (owner baked their functions into the Road
   to Forever addon). The daily addon version check reads the `data-addon` slugs on the page, so it stops checking them

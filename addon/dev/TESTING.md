@@ -17,7 +17,6 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 15. **New in 0.56.1, split macros:** import the site string again. Hunter: Raptor Strike (starts auto-attack in melee), Wing Clip; Survival: Raptor Strike, Mongoose Bite (needs a dodge first), Strider Kick; Rogue: Sap. Each does its one thing on a hostile target. The old combined macros stay on your bars until you remove them.
 16. **0.57.1:** import the same string twice: the second chat line says "0 new, 0 updated, N unchanged".
 
-17. **New in 0.63.1:** the Druid side tabs in the Macro Book: Feral has a bear, Balance a falling star, Restoration its own, the class tab keeps the class icon, Universal is the book.
 
 ## 4. Talent learning (TEST CHAR, never a main)
 2. One point: click ONE tier-1 talent on the board (after a trainer reset), Learn this build, Cancel (nothing changes), Learn: applied within ~2 s, chat "Learned 1 talent point.", free points one lower, no "Interface action failed", survives `/reload`.
@@ -45,7 +44,6 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 7. Vendors & loot > Mail: list my other characters. `/dump R2FDB.chars` on 2026-10-14 showed 7 characters saved (Despicable, Madfury, Miss, Aoe, Falseaim, Madblade, Venom) and NO Paladin or Shaman: they were never recorded. Tick Road to Forever for them on the character select AddOns screen, log in on each, run `/dump R2FDB.chars` again, then check the mail list. Fast looting (needs the game's Auto Loot; Shift does the opposite) is still open.
 16. Hunter ammo (Hunter with a ranged weapon; Icons for your class): the count equals arrows / bullets in all bags; switching weapon type switches the label; red 0 with no ammo; hidden with no ranged weapon when locked; the "warn when under" slider; `/r2f ammo`.
 
-18. **New in 0.63.1:** right-click the minimap button: a "Damage meter (Blizzard)" tick box above Reload UI. Ticking it shows the game's damage meter, unticking hides it; the box shows the meter's real state when you open the menu.
 
 ## 8. Waypoint arrow
 9. **0.61.0, the arrows point into the scene:** turn so the target is straight ahead: does the arrow look like it points away from you into the distance (not just up)? Turn around so it is behind you: does it point toward you? Sideways: lying on the ground? Is the camera angle right, or should it be lower or higher?
@@ -107,6 +105,7 @@ How: stand on the spot the step names, run `/r2f here` once, send me the two cha
 - *Talents tab (0.54.0):* the whole sandbox calculator, 3.1 to 3.12 including Share to Party and the Recommended builds.
 - *2026-10-14 round:* updates in place (2.8), Universal list without the three Quick settings (2.12), gold ring on the selected class circle / tab (2.14), auto-sell in batches (7.3), `/r2f debug auras` probe (7.12), Copy chat window (7.15), Plan tab (8.1), waypoint arrow (8.2), `/r2f debug here` (8.3), arrow size and drag (8.4), `/bizway clear` and `size` (8.5), world map pin (8.6), BiZ rows, ranks, wishlist, menus, Alt + click arrow, enchant lines and tooltip line (9.1 to 9.7), corpse arrow setting and jump to corpse (10.1, 10.2), release checks (12.1 to 12.3).
 - *2026-10-15 round:* the class picker jumps to the imported class (2.11), prerequisite arrows on the Talents tab (4.8), the pink enchant line (9.8), arrow dragging at every size (8.4), the arrow looks with the stone head and feathers (8.5 to 8.8), build in order (4.9, working, layout fixed in 0.57.1).
+- *2026-10-15 evening:* the Druid tab icons in the Macro Book (4.17), the damage meter tick box in the minimap menu (4.18), the size sliders on every reminder icon, the repair reminder.
 - *Other:* all of Bags (arrows, sort, movable), Plan weapon lines, Plan Waypoint buttons, `/bizway` with coordinates, Alt + right-click map arrow incl. Questie, 3D arrow, Home Training lines (Train now / Next), Interface number 16001, slot limits 120 + 30.
 
 **Dropped by the owner:** combat drag steps of the old section 6, Questie Ctrl + click (TomTom stand-in code stays, harmless), TomTom waypoint tests, "Required level" slider (removed 0.50.0), the old Classic-API talent learning checks.

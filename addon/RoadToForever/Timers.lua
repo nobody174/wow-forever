@@ -22,8 +22,9 @@ Timers.TRACK = {
     learned = { 1259416, 1308663 }, icon = "Interface\\Icons\\inv_elemental_primal_air",
     title = "REM_WALKAIR_TITLE", show = "TIMER_SHOW", lock = "TIMER_LOCK", size = "TIMER_SIZE" },
   -- Every food that gives a stat also gives +5% experience from kills ("you become well fed"): the aura is "Well Fed".
-  -- `missing`: an optional nag (off by default) when you have none; `clock`: show minutes (the buff lasts 15 minutes).
-  { key = "wellfed", names = {}, spells = {}, like = { "^Well Fed" }, missing = true, clock = true,
+  -- `missing`: an optional nag (off by default) when you have none; `nagOnly`: show nothing while the buff is on (no icon,
+-- no timer), only the "No food" nag once it is gone; `clock`: show minutes (the buff lasts 15 minutes).
+  { key = "wellfed", names = {}, spells = {}, like = { "^Well Fed" }, missing = true, nagOnly = true, clock = true,
     icon = "Interface\\Icons\\INV_Misc_Food_15",
     title = "REM_WELLFED_TITLE", show = "TIMER_SHOW", lock = "TIMER_LOCK", size = "TIMER_SIZE" },
 }
@@ -96,7 +97,7 @@ local function update(def)
   local d = settings(def)
   local sec, icon, readable = Timers.Remaining(def)
   local nag = missingNag(def, d, sec, readable)
-  local show = d.shown and (sec ~= nil or nag or not d.lock)
+  local show = d.shown and (nag or (sec ~= nil and not def.nagOnly) or not d.lock)
   f:SetShown(show)
   active[def.key] = sec ~= nil
   if not show then return end

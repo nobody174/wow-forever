@@ -1613,7 +1613,10 @@ def test_reminders():
     lua.execute("""WF = R2F.Timers.TRACK[2] TEST.now = 2000
       C_UnitAuras = { GetUnitAuras = function() return { { name = 'Well Fed', spellId = 5, expirationTime = 2900, icon = 'f' } } end }
       WF.module.SetLock(true) WF.module.Apply()""")
-    check(lua.eval("WF.key") == "wellfed" and lua.eval("R2FWellfedFrame.count.__text") == "15:00", "food: 15:00 left on a Well Fed buff")
+    check(lua.eval("WF.key") == "wellfed" and lua.eval("R2FWellfedFrame:IsShown()") is False, "food: Well Fed on, locked: no icon, no timer")
+    lua.execute("R2FDB.timers.wellfed.remindMissing = true WF.module.Apply()")
+    check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: Well Fed on, nag on: still nothing on screen")
+    lua.execute("R2FDB.timers.wellfed.remindMissing = false WF.module.Apply()")
     lua.execute("C_UnitAuras.GetUnitAuras = function() return {} end WF.module.Apply()")
     check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: no buff, nag off: hidden")
     lua.execute("R2FDB.timers.wellfed.remindMissing = true WF.module.Apply()")

@@ -12,7 +12,6 @@
 -- Read-only: only aura getters, no protected calls. Settings live in R2FDB.timers[key]: shown, lock, scale, x, y.
 
 local _, R2F = ...
-local L = R2F.L
 
 local Timers = {}
 R2F.Timers = Timers

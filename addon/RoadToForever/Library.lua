@@ -203,7 +203,7 @@ function Library.Init()
   if type(rs.y) ~= "number" then rs.y = -250 end
   -- Buff countdown reminders (Timers.lua): one table per tracked buff.
   if type(db.timers) ~= "table" then db.timers = {} end
-  for key, y in pairs({ walkonair = 140 }) do
+  for key, y in pairs({ walkonair = 140, wellfed = 100 }) do
     if type(db.timers[key]) ~= "table" then db.timers[key] = {} end
     local tm = db.timers[key]
     if type(tm.shown) ~= "boolean" then tm.shown = true end
@@ -211,6 +211,7 @@ function Library.Init()
     if type(tm.scale) ~= "number" or tm.scale < 0.5 or tm.scale > 3 then tm.scale = 1.4 end
     if type(tm.x) ~= "number" then tm.x = 0 end
     if type(tm.y) ~= "number" then tm.y = y end
+    if type(tm.remindMissing) ~= "boolean" then tm.remindMissing = false end
   end
   local s = db.settings
   -- Main window size and opacity (top bar sliders).

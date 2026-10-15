@@ -1601,6 +1601,18 @@ def test_reminders():
     lua.execute("issecretvalue = function() return true end")
     check(lua.eval("(R2F.Timers.Remaining(R2F.Timers.TRACK[1]))") is None, "timer: secret values: nothing shown, nothing guessed")
     lua.execute("issecretvalue = nil")
+    # Food buff (0.64.1): any "Well Fed" buff counts down in minutes; optional "No food" nag only when the auras were readable.
+    lua.execute("""WF = R2F.Timers.TRACK[2] TEST.now = 2000
+      C_UnitAuras = { GetUnitAuras = function() return { { name = 'Well Fed', spellId = 5, expirationTime = 2900, icon = 'f' } } end }
+      WF.module.SetLock(true) WF.module.Apply()""")
+    check(lua.eval("WF.key") == "wellfed" and lua.eval("R2FWellfedFrame.count.__text") == "15:00", "food: 15:00 left on a Well Fed buff")
+    lua.execute("C_UnitAuras.GetUnitAuras = function() return {} end WF.module.Apply()")
+    check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: no buff, nag off: hidden")
+    lua.execute("R2FDB.timers.wellfed.remindMissing = true WF.module.Apply()")
+    check(lua.eval("R2FWellfedFrame:IsShown()") is True and lua.eval("R2FWellfedFrame.count.__text") == "No food", "food: nag on, no buff: No food")
+    lua.execute("issecretvalue = function() return true end C_UnitAuras.GetUnitAuras = function() return { { name = 'x' } } end WF.module.Apply()")
+    check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: auras unreadable: no nag")
+    lua.execute("issecretvalue = nil R2FDB.timers.wellfed.remindMissing = false")
     # Pet reminder (0.62.0): Hunters and Warlocks only; missing / dead / unhappy, quiet when mounted or dead yourself.
     check(lua.eval("R2FPetFrame ~= nil") and lua.eval("R2FPetScale ~= nil"), "pet: the Hunter has the pet icon and its size slider")
     lua.execute("""TEST.pet = { exists = false, dead = false, happy = 3 } TEST.mounted = false TEST.selfDead = false

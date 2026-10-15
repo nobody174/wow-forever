@@ -1622,7 +1622,7 @@ def test_reminders():
     check(lua.eval("R2FDB.newerVersion") is None and lua.eval("R2F.Version.Newer()") is None, "version: older, invalid, other prefix and my own message change nothing")
     lua.execute("R2F.Version.OnAddonMessage('R2FV', 'V	0.65.0', 'GUILD', 'New-Realm') R2F.Version.OnAddonMessage('R2FV', 'V	0.66.0', 'PARTY', 'New2-Realm')")
     check(lua.eval("R2F.Version.Newer()") == "0.66.0", "version: the newest heard version is kept")
-    check(sum(1 for c in lua_table_to_list(lua.eval("TEST.chat")) if "newer version is out" in c) == 1, "version: the chat line comes once")
+    check(sum(1 for c in lua_table_to_list(lua.eval("TEST.chat")) if "new version is out" in c) == 1, "version: the chat line comes once")
     lua.execute("R2F.Gameplay.SetOn('updatecheck', false) R2FDB.newerVersion = nil R2F.Version.OnAddonMessage('R2FV', 'V	7.0.0', 'GUILD', 'A-R')")
     check(lua.eval("R2FDB.newerVersion") is None, "version: switched off, nothing is heard")
     lua.execute("R2F.Gameplay.SetOn('updatecheck', true) R2FDB.newerVersion = nil")

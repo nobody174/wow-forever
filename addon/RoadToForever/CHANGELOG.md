@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.63.2 (2026-10-15)
+
+- Tweaks > Class icons is in two columns: gear repair, Walk on Air and tracking on the left, the class icons and the missing group buffs on the right, so the page is shorter.
+
 ## 0.63.1 (2026-10-15)
 
 - Macro Book: the Druid side tabs have their own icons now: Feral = a bear, Balance = a falling star (they were both the plain book). Restoration and the class tab are unchanged, Universal stays the book.

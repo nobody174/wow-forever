@@ -123,7 +123,7 @@ function Repair.ToggleLock()
 end
 
 R2F.Reminders.Register({
-  key = "repair", module = Repair,
+  key = "repair", general = true, module = Repair,
   title = "REM_REPAIR_TITLE", show = "REPAIR_SHOW", lock = "REPAIR_LOCK", size = "REPAIR_SIZE",
   extra = {
     label = "REPAIR_THRESHOLD", name = "R2FRepairThreshold",

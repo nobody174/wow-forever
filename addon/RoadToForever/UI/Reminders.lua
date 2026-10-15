@@ -61,11 +61,18 @@ function Tab.Relayout(s)
   if Tab.OnReflow then Tab.OnReflow() end
 end
 
--- Total height of all sections (for the page's scroll height).
-function Tab.TotalHeight()
+-- Total height of the sections of one column (all of them when `col` is nil), for the page's scroll height.
+function Tab.TotalHeight(col)
   local h = 0
-  for _, s in ipairs(sections) do h = h + (s.height or 0) end
+  for _, s in ipairs(sections) do
+    if col == nil or s.col == col then h = h + (s.height or 0) end
+  end
   return h
+end
+
+-- The taller of the two columns.
+function Tab.MaxHeight()
+  return math.max(Tab.TotalHeight(1), Tab.TotalHeight(2), Tab.TotalHeight())
 end
 
 local function visible()
@@ -197,9 +204,14 @@ end
 
 -- Build the sections for this class into frame `f`, starting at (x, y) with sliders
 -- `width` wide. `f` is the page whose visibility decides whether refresh draws.
-function Tab.BuildInto(f, x, y, width)
+-- `filter(def)` (optional) picks which reminders go into this column, `col` (1 or 2) names the column for TotalHeight.
+function Tab.BuildInto(f, x, y, width, filter, col)
   page = f
-  local mine = R2F.Reminders.ForPlayer()
+  local mine = {}
+  for _, def in ipairs(R2F.Reminders.ForPlayer()) do
+    if not filter or filter(def) then mine[#mine + 1] = def end
+  end
+  if #mine == 0 and filter then return y end
   if #mine == 0 then
     local none = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     none:SetPoint("TOPLEFT", x, y)
@@ -216,6 +228,7 @@ function Tab.BuildInto(f, x, y, width)
     local before = #sections
     local used = buildSection(box, def, 0, 0, width)
     local s = sections[before + 1]
+    s.col = col
     s.container = box
     if used then
       s.height = used
@@ -225,7 +238,7 @@ function Tab.BuildInto(f, x, y, width)
     end
     prev = box
   end
-  return y - Tab.TotalHeight()
+  return y - Tab.TotalHeight(col)
 end
 
 Tab.Refresh = refresh

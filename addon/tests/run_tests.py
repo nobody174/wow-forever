@@ -1547,6 +1547,9 @@ def test_reminders():
     check(title == "Road to Forever: Tweaks", "15.4 Reminders title: %r" % title)
     check(lua.eval("R2FStanceFrame ~= nil") and lua.eval("R2FAmmoFrame == nil") and lua.eval("R2FAmmoScale == nil"),
           "15.4 Warrior: stance frame only, no ammo frame or ammo controls")
+    # Class icons page, two columns (0.63.2): repair / countdown / tracking on the left, the class ones on the right.
+    check(lua.eval("R2F.RemindersTab.TotalHeight(1)") > 0 and lua.eval("R2F.RemindersTab.TotalHeight(2)") > 0,
+          "class icons page: both columns have sections")
     check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "15.4 stance size slider is on the Reminders tab")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_STANCE_SHOW", "SS")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_STANCE_LOCK", "SL")

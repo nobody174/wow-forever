@@ -31,7 +31,7 @@ local arrowButtons = {}     -- BiZNav arrow size: "small" / "medium" / "large" -
 local sizeSlider, sizeText
 local bagBoxes = {}     -- Movable bags / Lock bags (Bags.lua), on the Bags page
 local scroll, content
-local LEFT, ICON_W = 22, 300
+local LEFT, ICON_W = 22, 200
 
 -- page key -> label key and the features on it (in this order)
 Tab.PAGES = {
@@ -362,10 +362,16 @@ function Tab.Build(f)
       local head = c:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
       head:SetPoint("TOPLEFT", LEFT, -10)
       head:SetText(L.GP_ICONS)
-      bottom = R2F.RemindersTab.BuildInto(c, LEFT + 2, -42, ICON_W) or -100
-      -- Folding a class group in or out changes the column's height.
+      -- Two columns: the icons every character can have (repair, countdown, tracking) and the class ones (stance, ammo,
+      -- pet, the missing group buffs with their fold-out class lists).
+      local general = function(def) return def.general == true end
+      local endLeft = R2F.RemindersTab.BuildInto(c, LEFT + 2, -42, ICON_W, general, 1)
+      local classOnly = function(def) return not general(def) end
+      local endRight = R2F.RemindersTab.BuildInto(c, LEFT + ICON_W + 50, -42, ICON_W, classOnly, 2)
+      bottom = math.min(endLeft or -100, endRight or -100)
+      -- Folding a class group in or out changes a column's height.
       R2F.RemindersTab.OnReflow = function()
-        local h = 42 + R2F.RemindersTab.TotalHeight() + 20
+        local h = 42 + R2F.RemindersTab.MaxHeight() + 20
         pageHeight.icons = h
         if Tab.CurrentPage() == "icons" then
           content:SetHeight(h)

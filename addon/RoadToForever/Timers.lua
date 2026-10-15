@@ -106,7 +106,7 @@ local function modules()
     function m.SetScale(v) settings(def).scale = R2F.Reminders.ClampScale(v); m.Apply() end
     def.module = m
     R2F.Reminders.Register({
-      key = def.key, applies = function() return Timers.Applies(def) end, module = m,
+      key = def.key, general = true, applies = function() return Timers.Applies(def) end, module = m,
       title = def.title, show = def.show, lock = def.lock, size = def.size,
     })
   end

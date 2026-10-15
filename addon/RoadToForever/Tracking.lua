@@ -134,7 +134,7 @@ function Tracking.SetKind(kind, on)
 end
 
 R2F.Reminders.Register({
-  key = "tracking", class = nil, applies = Tracking.Applies, module = Tracking,
+  key = "tracking", class = nil, general = true, applies = Tracking.Applies, module = Tracking,
   title = "REM_TRACKING_TITLE", show = "TRACKING_SHOW", lock = "TRACKING_LOCK", size = "TRACKING_SIZE",
   checks = {
     { label = "TRACKING_MINERALS", get = function() return db().minerals end,

@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.65.2 (2026-10-15)
+
+- Fixed: the Training lines on Home showed a spell twice, for example "Blessing of Wisdom (Rank 1), Blessing of Wisdom" or "Entangling Roots (Rank 2), Entangling Roots". An older saved line without a rank is now hidden next to the ranked one, and a visit to your class trainer cleans it up for good.
+
 ## 0.65.1 (2026-10-15)
 
 - Housekeeping: two unused arrow picture files (the flat plate and slab looks) are no longer shipped, so the download is a little smaller. Nothing changes in game.

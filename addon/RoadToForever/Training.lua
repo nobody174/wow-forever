@@ -56,11 +56,14 @@ function Training.Read()
   -- Merge with what we knew: a later-level spell the trainer no longer lists was hidden by its
   -- "Unavailable" filter, so keep it. One that was trainable and is gone was learned (the trainer
   -- hides learned spells by default), so it goes.
+  -- The same spell at the same level under another rank text is the same entry: the trainer says "Rank 2" only once
+  -- you know rank 1, while the older saved line has no rank.
   local seen = {}
-  for _, e in ipairs(list) do seen[e.n .. "\0" .. e.r] = true end
+  for _, e in ipairs(list) do seen[e.n .. "\0" .. e.r] = true seen[e.n .. "\0\0" .. e.lvl] = true end
   local level = UnitLevel("player")
   for _, old in ipairs(d.spells or {}) do
-    if not seen[old.n .. "\0" .. old.r] and old.s == "unavailable" and (old.lvl or 0) > level then
+    if not seen[old.n .. "\0" .. old.r] and not seen[old.n .. "\0\0" .. (old.lvl or 0)] and old.s == "unavailable"
+        and (old.lvl or 0) > level then
       list[#list + 1] = old
     end
   end
@@ -88,8 +91,14 @@ end
 function Training.Status(level)
   level = level or UnitLevel("player")
   local now, later, nextLevel = {}, {}, nil
+  -- A line without a rank next to one with a rank (same spell, same level) is an older copy: hide it.
+  local ranked = {}
   for _, e in ipairs(db().spells) do
-    if e.s ~= "used" then
+    if e.r ~= "" then ranked[e.n .. "\0" .. e.lvl] = true end
+  end
+  local function stale(e) return e.r == "" and ranked[e.n .. "\0" .. e.lvl] end
+  for _, e in ipairs(db().spells) do
+    if e.s ~= "used" and not stale(e) then
       if e.lvl <= level then
         now[#now + 1] = e
       elseif not nextLevel or e.lvl < nextLevel then
@@ -99,7 +108,7 @@ function Training.Status(level)
   end
   if nextLevel then
     for _, e in ipairs(db().spells) do
-      if e.s ~= "used" and e.lvl == nextLevel then later[#later + 1] = e end
+      if e.s ~= "used" and e.lvl == nextLevel and not stale(e) then later[#later + 1] = e end
     end
   end
   table.sort(now, sortSpells)

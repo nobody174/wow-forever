@@ -8334,6 +8334,13 @@ def test_training_forever_shape():
     check(a.startswith("Train now: 1 spell") and "Corruption (Rank 2)" in a, "train (Forever API): level 14 spell is trainable at 20: %r" % a)
     check(b.startswith("Next: level 22: ") and all(n in b for n in ("Drain Soul (Rank 2)", "Fear (Rank 2)", "Shadow Bolt (Rank 4)", "Siphon Life (Rank 1)"))
           and "more" not in b, "train (Forever API): next lists every spell of the next level, no 'and N more': %r" % b)
+    # An older saved line without a rank next to the ranked one (the trainer names "Rank 2" only once rank 1 is known)
+    # must not show twice, neither on Home nor after the next trainer visit.
+    lua.execute("table.insert(R2FCharDB.training.spells, { n = 'Fear', r = '', lvl = 22, cost = 0, s = 'unavailable' })")
+    _, b2 = lua.eval("R2F.Training.Lines()")
+    check(b2.count("Fear") == 1, "train: an older rank-less copy of a spell is not listed twice on Home: %r" % b2)
+    T.fire("TRAINER_SHOW")
+    check(lua.eval("#R2FCharDB.training.spells") == 7, "train: a trainer visit drops the older rank-less copy")
 
 
 def test_item_api_modern():

@@ -1,10 +1,11 @@
 -- Version.lua: "is there a newer Road to Forever?", without the internet.
 --
--- An addon cannot reach GitHub, so it asks the people around you instead: at login (guild) and when your group changes (party /
--- raid) every copy of the addon says which version it is, over the addon channel (prefix R2FV, a tiny "V<tab>0.64.0" message).
--- When you hear a higher version than yours, the chat says so once per session and Home shows a gold line with the release page.
--- Nothing is sent or read unless the Tweaks > Chat & screen box "Tell me when a newer version exists" is ticked (it is, by default).
--- Everything received is validated (three numbers separated by dots) and only compared, never run.
+-- An addon cannot reach GitHub, so it asks the people around you instead: at login (guild) and when your group changes
+-- (party / raid) every copy of the addon says which version it is, over the addon channel (prefix R2FV, a tiny
+-- "V<tab>0.64.0" message). When you hear a higher version than yours, the chat says so once per session and Home shows a
+-- gold line with the release page. Nothing is sent or read unless the Tweaks > Chat & screen box "Tell me when a newer
+-- version exists" is ticked (it is, by default). Everything received is validated (three numbers separated by dots) and
+-- only compared, never run.
 
 local _, R2F = ...
 local L = R2F.L

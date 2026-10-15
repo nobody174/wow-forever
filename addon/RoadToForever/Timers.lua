@@ -101,6 +101,16 @@ local function update(def)
   f:SetShown(show)
   active[def.key] = sec ~= nil
   if not show then return end
+  -- A nag-only entry says it in plain red text: no icon, no frame (they come back while the icon is unlocked to move it).
+  local plain = def.nagOnly and nag and d.lock
+  f.border:SetShown(not plain)
+  f.icon:SetShown(not plain)
+  f.count:ClearAllPoints()
+  if plain then
+    f.count:SetPoint("CENTER", f, "CENTER", 0, 0)
+  else
+    f.count:SetPoint("BOTTOMRIGHT", -3, 3)   -- the icon frame's own corner (Reminders.NewIcon)
+  end
   if nag then
     f.border:SetColorTexture(0.9, 0.1, 0.1, 1)
   else

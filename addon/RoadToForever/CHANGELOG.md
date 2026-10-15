@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.64.4 (2026-10-15)
+
+- Food buff: the "No food" notice is now plain red text only, without the food icon or its frame. (While the icon is unlocked to move it, the icon shows so you can find and drag it.)
+
 ## 0.64.3 (2026-10-15)
 
 - Food buff: nothing is shown while you are fed (no icon, no timer). Only when the buff is gone, and only if you turned on "Show \"No food\" when I am not fed" (Tweaks > Class icons), the red "No food" notice appears. Off by default.

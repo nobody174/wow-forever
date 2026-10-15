@@ -1621,6 +1621,11 @@ def test_reminders():
     check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: no buff, nag off: hidden")
     lua.execute("R2FDB.timers.wellfed.remindMissing = true WF.module.Apply()")
     check(lua.eval("R2FWellfedFrame:IsShown()") is True and lua.eval("R2FWellfedFrame.count.__text") == "No food", "food: nag on, no buff: No food")
+    check(lua.eval("R2FWellfedFrame.icon:IsShown()") is False and lua.eval("R2FWellfedFrame.border:IsShown()") is False,
+          "food: the No food nag is text only (no icon, no frame)")
+    lua.execute("R2FDB.timers.wellfed.lock = false WF.module.Apply()")
+    check(lua.eval("R2FWellfedFrame.icon:IsShown()") is True, "food: unlocked to move it: the icon is back")
+    lua.execute("R2FDB.timers.wellfed.lock = true WF.module.Apply()")
     lua.execute("issecretvalue = function() return true end C_UnitAuras.GetUnitAuras = function() return { { name = 'x' } } end WF.module.Apply()")
     check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: auras unreadable: no nag")
     lua.execute("issecretvalue = nil R2FDB.timers.wellfed.remindMissing = false")

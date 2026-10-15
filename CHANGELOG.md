@@ -1742,6 +1742,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Plan positions)
 - launch-plan-waypoints.json: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance (8, 59), the Drowned City (21, 27), Steamwheedle Port boat (67, 22, approx), Mount Hyjal (53, 33 on the Kalimdor map, approx; zone "Kalimdor"), Blackmaw Hold gate (38, 32, approx), all read off the map by the owner. PlanData.lua regenerated.
 
+## 0.64.4 (2026-10-15)
+
+- Timers.lua: a `nagOnly` entry hides its icon and border while it shows the nag (locked), text centred. Tests added.
+
 ## 0.64.3 (2026-10-15)
 
 - Timers.lua: `nagOnly` flag on the food entry. While Well Fed is on, the frame stays hidden (no icon, no timer); the "No food" nag still needs the player's `remindMissing` checkbox (off by default). Tests updated.

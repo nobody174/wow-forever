@@ -1742,6 +1742,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Plan positions)
 - launch-plan-waypoints.json: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance (8, 59), the Drowned City (21, 27), Steamwheedle Port boat (67, 22, approx), Mount Hyjal (53, 33 on the Kalimdor map, approx; zone "Kalimdor"), Blackmaw Hold gate (38, 32, approx), all read off the map by the owner. PlanData.lua regenerated.
 
+## 0.66.1 (2026-10-15)
+
+- data.py: Hunter "Raptor Strike + Wing Clip" restored (removed in 0.56.1, 13e2525, because a macro can stop at the first spell it can't cast; owner asked for it back); Paladin "Judgement + Holy Strike" added (BETA). Rebuilt macros.html, wow-forever-macros.md, MacroData.lua. TESTING.md: corpse arrow (10) and Druid macros (13, except 9 and 11) confirmed.
+
 ## 0.66.0 (2026-10-15)
 
 - Timers.lua: two more TRACK entries with a `class` (seal for Paladin matching `^Seal of`, sliceanddice for Rogue); frames and the Class icons section only for that class; Library defaults (stance's spot). Tests: test_class_timers. TESTING.md 5.22.

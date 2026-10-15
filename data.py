@@ -791,8 +791,13 @@ CLASSES = [
                   "Forever removed Volley's cooldown, so it's a real AoE button now. "
                   "Drops at your mouse cursor, no targeting circle.", short="Volley"),
                 M("Raptor Strike", melee("Raptor Strike"), "Queues on your next swing and turns on auto-attack.", short="Raptor"),
-                M("Wing Clip", dpsHarm("Wing Clip"), "Its own button: a macro stops at the first spell it can't cast, so Raptor Strike and Wing Clip are not combined.",
+                M("Wing Clip", dpsHarm("Wing Clip"), "Wing Clip alone, for when you only want the slow.",
                   short="WingClip"),
+                M("Raptor Strike + Wing Clip",
+                  "#showtooltip Raptor Strike\n/startattack [harm]\n/cast [harm] Raptor Strike\n/cast [harm] Wing Clip",
+                  "Raptor Strike (on your next swing, no global cooldown) and Wing Clip on one button. Split in 0.56.1 because a macro "
+                  "can stop at the first spell it can't cast, put back at the owner's request. If Wing Clip never goes off while "
+                  "Raptor Strike is on cooldown, use the two single buttons.", short="Raptor+Clip"),
             ]),
             G(AUTO, [
                 M("Auto Shot (spam-safe)",
@@ -865,6 +870,11 @@ CLASSES = [
                 M("Holy Strike + auto-attack",
                   "#showtooltip Holy Strike\n/startattack [harm]\n/cast [harm] Holy Strike",
                   "New baseline strike in Forever (level 6, 12 sec cooldown).", short="HStrike"),
+                M("Judgement + Holy Strike",
+                  "#showtooltip Judgement\n/startattack [harm]\n/cast [harm] Judgement\n/cast [harm] Holy Strike",
+                  BETA + "Judgement first, Holy Strike after, one button. Works if Judgement doesn't use the global cooldown "
+                  "(a macro stops after the first spell that does); if Holy Strike never fires after Judgement, tell me.",
+                  short="Judge+HS"),
                 M("Hammer of Justice", dpsMO("Hammer of Justice"),
                   "Stuns whatever's under your mouse without changing your target; "
                   "falls back to your target if nothing's under the mouse.", short="HoJ"),

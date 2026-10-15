@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.66.1 (2026-10-15)
+
+- Macros: **Raptor Strike + Wing Clip** is back as one Hunter button (the single Raptor Strike and Wing Clip buttons stay). New Paladin button **Judgement + Holy Strike** (Judgement first, Holy Strike after; marked "Test in beta" until it is tried in game).
+
 ## 0.66.0 (2026-10-15)
 
 - **Seal timer (Paladin)** and **Slice and Dice timer (Rogue)**, like the Warrior stance icon: one framed icon with the seconds left on your active seal (it shows the seal's own picture) or on Slice and Dice. Tweaks > Class icons has a section for each: show on or off, lock, size, and drag it where you want it while unlocked. Hidden while the buff is off. If the game hides your buffs (in combat, in some places) the icon stays quiet instead of guessing.

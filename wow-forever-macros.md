@@ -1463,9 +1463,17 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Raptor Strike
 ```
 
-**Wing Clip** (`WingClip`) — Its own button: a macro stops at the first spell it can't cast, so Raptor Strike and Wing Clip are not combined.
+**Wing Clip** (`WingClip`) — Wing Clip alone, for when you only want the slow.
 ```
 #showtooltip Wing Clip
+/cast [harm] Wing Clip
+```
+
+**Raptor Strike + Wing Clip** (`Raptor+Clip`) — Raptor Strike (on your next swing, no global cooldown) and Wing Clip on one button. Split in 0.56.1 because a macro can stop at the first spell it can't cast, put back at the owner's request. If Wing Clip never goes off while Raptor Strike is on cooldown, use the two single buttons.
+```
+#showtooltip Raptor Strike
+/startattack [harm]
+/cast [harm] Raptor Strike
 /cast [harm] Wing Clip
 ```
 
@@ -1596,6 +1604,14 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Holy Strike
 /startattack [harm]
+/cast [harm] Holy Strike
+```
+
+**Judgement + Holy Strike** (`Judge+HS`) — Test in beta: Judgement first, Holy Strike after, one button. Works if Judgement doesn't use the global cooldown (a macro stops after the first spell that does); if Holy Strike never fires after Judgement, tell me.
+```
+#showtooltip Judgement
+/startattack [harm]
+/cast [harm] Judgement
 /cast [harm] Holy Strike
 ```
 

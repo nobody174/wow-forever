@@ -48,28 +48,14 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 ## 9. Mr.BiZ (BiZ tab)
 11. Hover a gear slot on the doll: ONE enchant line, the pink "Mr.BiZ enchant: ..." from the item tooltip (the extra "Enchant: ..." line from 0.56.3 was removed in 0.57.1). The opened slot's enchant lines on the right are pink too.
 
-## 10. Corpse arrow (1 and 2 confirmed; 3 to 8 not tested yet)
-3. Release spirit: the arrow stays on the corpse (does it appear only after release?).
-4. Alive again: corpse arrow goes, the earlier arrow returns (none before = none left).
-5. Setting another arrow while dead is not replaced on revive.
-6. `/reload` as a ghost: arrow points at the corpse again.
-7. Switch unticked: no arrow on death.
-8. Death inside a dungeon: error, or just no arrow?
+## 10. Corpse arrow (all confirmed)
 
 ## 12. Release and exports
 4. `/r2f debug who` on the Paladin: send the lines (which one reads "Thorin Stormborn"?).
 5. Interface templates (run each as its own command: `/dump R2FMain ~= nil`, then `/dump R2FMainTab1.r2fTemplate`, then `/dump MenuUtil ~= nil`, then `/dump R2F.Minimap.backend`): note the answers in ADDON_PLAN 11 if not already there.
 
-## 13. Druid macros (0.55.0, all untested in game; use a Druid, level 20+ for Cat)
-2. **Form numbers (the key check).** Cat Form + Prowl: press once, you become a cat; press again, you Prowl. If it casts the wrong form or does nothing, tell me your learned forms (Aquatic Form learned? level 16) and the number that works (2 or 3). Same for Claw / Shred / Rake / Dash.
-3. Bear: Bear Form (no unshift) does nothing when already a bear; Growl@ taunts the mouseover; Maul queues on the next hit; Swipe, Demoralizing Roar, Enrage, Frenzied Regeneration shift you first and work. One press must be enough (not two).
-4. Cat from stealth: Ravage / Pounce from Prowl; Tiger's Fury, Dash, Rip, Ferocious Bite work.
-5. Heal from any form (Shift = Regrowth) leaves the form and heals; plain heals (Healing Touch, Regrowth, Rejuvenation) work on mouseover / target / yourself.
-6. Cleanse: Abolish Poison, Shift = Remove Curse; Cure Poison / Remove Curse singles.
-7. Rebirth in combat / Revive outside it (on a dead friend under the mouse); Innervate; Barkskin and Shift = Nature's Grasp (do they drop your form?).
-8. Travel / Aquatic / Cat on one key; Cat Form (Shift = Bear Form); Leave form and dismount; Teleport: Moonglade.
+## 13. Druid macros (0.55.0, 2 to 8 and 10 confirmed 2026-10-15; 9 (runes) and 11 (level 40) still open; use a Druid, level 20+ for Cat)
 9. Rune abilities (engrave the rune first): Starsurge, Sunfire, Starfall, Lacerate, Skull Bash, Survival Instincts, Lifebloom, Nourish: does the macro cast it? Is the spell name right?
-10. Balance: Starfire (back into Moonkin, Ctrl = Wrath), Insect Swarm, Hurricane at cursor.
 11. Level 40: does "Bear Form" in the macros need to become "Dire Bear Form"?
 
 ## 14. "Test in beta" macros that are not Druid ones
@@ -82,6 +68,8 @@ that talent / engrave that rune first. The Druid ones are section 13; these are 
 3. Warrior > General: **Retaliation with 2H (from Defensive)**: press twice (1st equips the two-hander and swaps to Battle Stance, 2nd casts Retaliation).
 4. Shaman > Elemental: **Elemental Mastery + Chain Lightning / Lightning Bolt**: Elemental Mastery was not in the beta trees, so these may simply be useless; say if you ever see the talent.
 5. Warrior > Tank: **Shield Block + Sunder Armor** (the Revenge version works, owner 2026-10-15): skip if you do not use it.
+6. **New in 0.66.1, Hunter:** **Raptor Strike + Wing Clip** is back on one button (it was split in 0.56.1): does Wing Clip also fire, also while Raptor Strike is on cooldown? If not, answer `does nothing` and the two single buttons stay.
+7. **New in 0.66.1, Paladin > General > DPS:** **Judgement + Holy Strike** on one button: Judgement first, then Holy Strike. Does the Holy Strike fire after the Judgement in the same press? (Works only if Judgement is off the global cooldown.)
 
 ## 15. Plan positions for the arrow (7 plan steps still have no exact spot; 6 were set from your map readings on 2026-10-15)
 How: stand on the spot the step names, run `/r2f here` once, send me the two chat lines. I then set the exact position so the arrow points there. Skip any you do not plan to visit.
@@ -96,6 +84,8 @@ Set from your readings: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance
 - *Macros (2026-10-14):* Import, paste speed, Macro Book (tabs, paging, counters, Shift-click, right-click), icon macros, Replace / Keep mine, full slots and relog, Tidy up, rank-aware macros, Import replaces, combat behaviour, Options menu (slots first, Remove all).
 - *Tweaks (2026-10-14):* page buttons and Reset page, auto-repair, decline duels, hide red errors, XP numbers, quests (accept, turn in, reward prices, track-all, skip shop chat), ability alert, tracking reminder, group buffs, Warrior stance icon, Home Quick settings.
 - *Macros (earlier):* tooltips, greyed "?" icons, no duplicate on re-drag, Replace popup, basic Tidy up, Druid macros appear in the Macro Book.
+- *Corpse arrow (section 10, 2026-10-15):* all of 3 to 8.
+- *Druid macros (section 13, 0.55.0, 2026-10-15):* form numbers, bear, cat from stealth, heals from any form, cleanse, rebirth / revive, travel forms, Balance. Still open: 9 (rune abilities) and 11 (Dire Bear Form at level 40).
 - *Seal timer (Paladin) and Slice and Dice timer (Rogue), 0.66.0 (5.22, 2026-10-15):* work, also in combat.
 - *Hunter ammo (7.16, 2026-10-15):* count, weapon-type label, red 0, hidden without a ranged weapon.
 - *Talent learning (0.56 to 0.62, 2026-10-15):* 4.2 one point (applied, chat line, survives /reload), 4.3 no "didn't accept" (the addon learns talents itself, no Blizzard-window fallback needed), 4.4 five points across two trees, 4.6 combat (stops in combat, starts again after; Owner: not a real use case), 4.9 build in order (`<` `>`, order walk), 4.7 Copy link equals the site's, 4.11 "My current talents" loadout.

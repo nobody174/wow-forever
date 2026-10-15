@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.66.0 (2026-10-15)
+
+- **Seal timer (Paladin)** and **Slice and Dice timer (Rogue)**, like the Warrior stance icon: one framed icon with the seconds left on your active seal (it shows the seal's own picture) or on Slice and Dice. Tweaks > Class icons has a section for each: show on or off, lock, size, and drag it where you want it while unlocked. Hidden while the buff is off. If the game hides your buffs (in combat, in some places) the icon stays quiet instead of guessing.
+
 ## 0.65.2 (2026-10-15)
 
 - Fixed: the Training lines on Home showed a spell twice, for example "Blessing of Wisdom (Rank 1), Blessing of Wisdom" or "Entangling Roots (Rank 2), Entangling Roots". An older saved line without a rank is now hidden next to the ranked one, and a visit to your class trainer cleans it up for good.

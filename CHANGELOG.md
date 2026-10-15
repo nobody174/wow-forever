@@ -1742,6 +1742,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Plan positions)
 - launch-plan-waypoints.json: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance (8, 59), the Drowned City (21, 27), Steamwheedle Port boat (67, 22, approx), Mount Hyjal (53, 33 on the Kalimdor map, approx; zone "Kalimdor"), Blackmaw Hold gate (38, 32, approx), all read off the map by the owner. PlanData.lua regenerated.
 
+## 0.66.0 (2026-10-15)
+
+- Timers.lua: two more TRACK entries with a `class` (seal for Paladin matching `^Seal of`, sliceanddice for Rogue); frames and the Class icons section only for that class; Library defaults (stance's spot). Tests: test_class_timers. TESTING.md 5.22.
+
 ## 0.65.2 (2026-10-15)
 
 - Training.lua: the trainer merge and Training.Status treat a rank-less saved line as the same spell as a ranked one at the same level (the trainer words a spell "Rank 2" only once rank 1 is known). Test added. TESTING.md: 7.16 confirmed, 5.20 text matches 0.64.4.

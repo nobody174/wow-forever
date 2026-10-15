@@ -27,6 +27,14 @@ Timers.TRACK = {
   { key = "wellfed", names = {}, spells = {}, like = { "^Well Fed" }, missing = true, nagOnly = true, clock = true,
     icon = "Interface\\Icons\\INV_Misc_Food_15",
     title = "REM_WELLFED_TITLE", show = "TIMER_SHOW", lock = "TIMER_LOCK", size = "TIMER_SIZE" },
+  -- `class`: only that class gets the icon and the Class icons section. The Paladin's active seal (whichever one, the
+  -- icon is the seal's own) and the Rogue's Slice and Dice, with the seconds left.
+  { key = "seal", class = "PALADIN", names = {}, spells = {}, like = { "^Seal of" },
+    icon = "Interface\\Icons\\Spell_Holy_SealOfMight",
+    title = "REM_SEAL_TITLE", show = "TIMER_SHOW", lock = "TIMER_LOCK", size = "TIMER_SIZE" },
+  { key = "sliceanddice", class = "ROGUE", names = { "Slice and Dice" }, spells = {},
+    icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
+    title = "REM_SND_TITLE", show = "TIMER_SHOW", lock = "TIMER_LOCK", size = "TIMER_SIZE" },
 }
 
 Timers.MIN_SCALE, Timers.MAX_SCALE = R2F.Reminders.MIN_SCALE, R2F.Reminders.MAX_SCALE
@@ -143,7 +151,7 @@ local function modules()
                    set = function(on) settings(def).remindMissing = on and true or false; m.Apply() end } }
     end
     R2F.Reminders.Register({
-      key = def.key, general = true, applies = function() return Timers.Applies(def) end, module = m,
+      key = def.key, general = true, class = def.class, applies = function() return Timers.Applies(def) end, module = m,
       title = def.title, show = def.show, lock = def.lock, size = def.size, checks = checks,
     })
   end
@@ -153,7 +161,7 @@ modules()
 -- PLAYER_LOGIN (Core.lua).
 function Timers.Init()
   for _, def in ipairs(Timers.TRACK) do
-    if not frames[def.key] then
+    if not frames[def.key] and (def.class == nil or def.class == R2F.playerClass) then
       local name = "R2F" .. def.key:sub(1, 1):upper() .. def.key:sub(2) .. "Frame"
       local f = R2F.Reminders.NewIcon(name, def.module.Db, "REM_DRAG_TIP")
       f:Place()

@@ -8098,6 +8098,7 @@ def main():
     test_remove_from_library(False, fx)
     test_gearscore()
     test_training()
+    test_class_timers()
     test_training_forever_shape()
     test_item_api_modern()
     test_own_spec()
@@ -8341,6 +8342,33 @@ def test_training_forever_shape():
     check(b2.count("Fear") == 1, "train: an older rank-less copy of a spell is not listed twice on Home: %r" % b2)
     T.fire("TRAINER_SHOW")
     check(lua.eval("#R2FCharDB.training.spells") == 7, "train: a trainer visit drops the older rank-less copy")
+
+
+def test_class_timers():
+    """Seal timer (Paladin) and Slice and Dice timer (Rogue): the seconds left on the buff, the buff's own icon, gone when
+    the buff is off (locked), only for that class."""
+    for token, key, frame, aura, other in (("PALADIN", "seal", "R2FSealFrame", "Seal of Command", "R2FSliceanddiceFrame"),
+                                           ("ROGUE", "sliceanddice", "R2FSliceanddiceFrame", "Slice and Dice", "R2FSealFrame")):
+        lua, T = reminder_runtime(token)
+        lua.execute("""TEST.now = 500 TEST.aura = { name = '%s', spellId = 77, expirationTime = 520, icon = 'buffIcon' }
+          GetTime = function() return TEST.now end
+          C_UnitAuras = { GetUnitAuras = function() if TEST.aura then return { TEST.aura } end return {} end }
+          for _, d in ipairs(R2F.Timers.TRACK) do if d.key == '%s' then TD = d end end
+          TD.module.SetLock(true) TD.module.Apply()""" % (aura, key))
+        check(lua.eval("%s ~= nil" % frame) and lua.eval("%s == nil" % other), "%s timer: only this class gets the icon" % key)
+        check(lua.eval("%s:IsShown()" % frame) is True and lua.eval("%s.count.__text" % frame) == "20", "%s timer: 20 seconds left" % key)
+        check(lua.eval("%s.icon.__tex" % frame) == "buffIcon", "%s timer: the buff's own icon" % key)
+        lua.execute("TEST.aura = nil TD.module.Apply()")
+        check(lua.eval("%s:IsShown()" % frame) is False, "%s timer: buff off, locked: hidden" % key)
+        lua.execute("TD.module.SetLock(false)")
+        check(lua.eval("%s:IsShown()" % frame) is True, "%s timer: unlocked it shows so it can be moved" % key)
+        lua.execute("TD.module.SetShown(false)")
+        check(lua.eval("%s:IsShown()" % frame) is False, "%s timer: switched off" % key)
+        names = lua.eval("(function() local t = {} for _, d in ipairs(R2F.Reminders.ForPlayer()) do t[#t + 1] = d.key end return table.concat(t, ',') end)()")
+        check(key in names.split(","), "%s timer: its section is on the Class icons page: %s" % (key, names))
+    lua, T = reminder_runtime("MAGE")
+    names = lua.eval("(function() local t = {} for _, d in ipairs(R2F.Reminders.ForPlayer()) do t[#t + 1] = d.key end return table.concat(t, ',') end)()")
+    check("seal" not in names.split(",") and "sliceanddice" not in names.split(","), "class timers: not for a Mage")
 
 
 def test_item_api_modern():

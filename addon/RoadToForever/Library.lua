@@ -205,7 +205,7 @@ function Library.Init()
   if type(rs.y) ~= "number" then rs.y = 552 end
   -- Buff countdown reminders (Timers.lua): one table per tracked buff.
   if type(db.timers) ~= "table" then db.timers = {} end
-  for key, pos in pairs({ walkonair = { 2, 462 }, wellfed = { 230, 515 } }) do
+  for key, pos in pairs({ walkonair = { 2, 462 }, wellfed = { 230, 515 }, seal = { -2, 498 }, sliceanddice = { -2, 498 } }) do
     if type(db.timers[key]) ~= "table" then db.timers[key] = {} end
     local tm = db.timers[key]
     if type(tm.shown) ~= "boolean" then tm.shown = true end

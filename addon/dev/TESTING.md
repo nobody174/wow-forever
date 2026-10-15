@@ -19,14 +19,7 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 
 
 ## 4. Talent learning (TEST CHAR, never a main)
-2. One point: click ONE tier-1 talent on the board (after a trainer reset), Learn this build, Cancel (nothing changes), Learn: applied within ~2 s, chat "Learned 1 talent point.", free points one lower, no "Interface action failed", survives `/reload`.
-3. If it stops with "didn't accept" or "waiting in Blizzard's window": note the exact message and what Blizzard's window shows.
-4. **Open until the owner drops it:** 5 points across tier 1 and 2: counts `Learning 1 / 5` ..., exact build at the end, none pending.
-9. **New in 0.56.0, build in order:** load a Recommended build: `<` `>` appear under the board right of "points spent". `<` takes one point off, `>` puts it back; the line "Build in order: point 12 of 21" and "reached at level N" follow; hovering a talent says "Build order: points 1 to 5 (levels 10 to 14)". Walk it from 0 to the end: is the order sensible to play? Clicking a talent yourself starts a new build (the stepper counts from your edit). On your own class with the build on the board: "Next point in this build: X (point n, level L)" on the right, and it moves on after you learn a point. Learn this build while stepped back learns only what is shown.
 5. Your own unapplied click in Blizzard's window (not the addon's board) stops the run ("changes that aren't applied yet"), nothing learned.
-6. Combat mid-run stops cleanly and continues after combat without a popup; Stop then Learn does not buy a point twice.
-7. Full build, then Copy link: the link equals the site's for that build.
-11. **New in 0.62.0, start from my talents:** Talents tab > Loadouts: the first entry "My current talents (start from here)" puts your real talents on the board; edit from there, Learn works as before.
 
 13. **0.62.1, group picks:** nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made; then Talents tab > Recommended shows a "Group picks" section for that class.
 ## 5. Home and Tweaks extras
@@ -104,6 +97,7 @@ Set from your readings: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance
 - *Macros (2026-10-14):* Import, paste speed, Macro Book (tabs, paging, counters, Shift-click, right-click), icon macros, Replace / Keep mine, full slots and relog, Tidy up, rank-aware macros, Import replaces, combat behaviour, Options menu (slots first, Remove all).
 - *Tweaks (2026-10-14):* page buttons and Reset page, auto-repair, decline duels, hide red errors, XP numbers, quests (accept, turn in, reward prices, track-all, skip shop chat), ability alert, tracking reminder, group buffs, Warrior stance icon, Home Quick settings.
 - *Macros (earlier):* tooltips, greyed "?" icons, no duplicate on re-drag, Replace popup, basic Tidy up, Druid macros appear in the Macro Book.
+- *Talent learning (0.56 to 0.62, 2026-10-15):* 4.2 one point (applied, chat line, survives /reload), 4.3 no "didn't accept" (the addon learns talents itself, no Blizzard-window fallback needed), 4.4 five points across two trees, 4.6 combat (stops in combat, starts again after; Owner: not a real use case), 4.9 build in order (`<` `>`, order walk), 4.7 Copy link equals the site's, 4.11 "My current talents" loadout.
 - *Talents tab (0.54.0):* the whole sandbox calculator, 3.1 to 3.12 including Share to Party and the Recommended builds.
 - *2026-10-14 round:* updates in place (2.8), Universal list without the three Quick settings (2.12), gold ring on the selected class circle / tab (2.14), auto-sell in batches (7.3), `/r2f debug auras` probe (7.12), Copy chat window (7.15), Plan tab (8.1), waypoint arrow (8.2), `/r2f debug here` (8.3), arrow size and drag (8.4), `/bizway clear` and `size` (8.5), world map pin (8.6), BiZ rows, ranks, wishlist, menus, Alt + click arrow, enchant lines and tooltip line (9.1 to 9.7), corpse arrow setting and jump to corpse (10.1, 10.2), release checks (12.1 to 12.3).
 - *2026-10-15 round:* the class picker jumps to the imported class (2.11), prerequisite arrows on the Talents tab (4.8), the pink enchant line (9.8), arrow dragging at every size (8.4), the arrow looks with the stone head and feathers (8.5 to 8.8), build in order (4.9, working, layout fixed in 0.57.1).

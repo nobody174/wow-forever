@@ -1742,6 +1742,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Plan positions)
 - launch-plan-waypoints.json: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance (8, 59), the Drowned City (21, 27), Steamwheedle Port boat (67, 22, approx), Mount Hyjal (53, 33 on the Kalimdor map, approx; zone "Kalimdor"), Blackmaw Hold gate (38, 32, approx), all read off the map by the owner. PlanData.lua regenerated.
 
+## 0.65.1 (2026-10-15)
+
+- Removed media/arrow_plate.tga and media/arrow_slab.tga (unreferenced; arrow_gilded.tga kept at the owner's request). TESTING.md: talent learning 4.2, 4.3, 4.4, 4.6, 4.7, 4.9, 4.11 confirmed by the owner; 4.5 still open.
+
 ## 0.65.0 (2026-10-15)
 
 - Library.lua: new first-install defaults taken from the owner's SavedVariables (reminder shown/lock/scale/x/y, nav style gilded + small, fct outline thick + position, talented on, Thorns off, minimap 270). Gameplay switches unchanged (off). Tests updated to the new defaults.

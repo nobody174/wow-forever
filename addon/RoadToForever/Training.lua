@@ -164,7 +164,7 @@ ev:SetScript("OnEvent", function(_, event, a1)
   end
 end)
 
--- The level-up line (Tweaks > Alerts & HUD > Training reminder).
+-- The level-up line (Tweaks > Alerts > Training reminder).
 R2F.Gameplay.Register({
   key = "training", group = "auto", title = "TRAIN_TITLE", tip = "TRAIN_TITLE_TIP",
   events = {

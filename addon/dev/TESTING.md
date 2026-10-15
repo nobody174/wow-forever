@@ -7,7 +7,7 @@ This is the only place to look: the site's pages have no test lists. Checked aga
 **Layout today (0.62.0):** a sidebar on the left: **Home** at the top, **JOURNEY** (Plan, Talents, BiZ) and **TOOLS** (Macros, Tweaks), with
 Size / Opacity sliders and a Reload UI button in the window's top bar. There is no Settings or Gameplay tab any more: the game and
 minimap options are on Home, the macro slot choice and Remove all are under Macros > Options, and the old Gameplay tab is **Tweaks**
-(pages: Quests, Vendors & loot, Chat & screen, Bags, Alerts & HUD).
+(pages: Quests, Vendors & loot, Chat & screen, Bags, Alerts, Waypoint arrow, Class icons).
 
 **Setup:** newest release zip unzipped into AddOns, `/console scriptErrors 1`, TomTom off (BiZNav replaces it), Questie on.
 Level 20+ character is best. Use a test character for anything marked **TEST CHAR**.
@@ -29,9 +29,11 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 
 13. **0.62.1, group picks:** nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made; then Talents tab > Recommended shows a "Group picks" section for that class.
 ## 5. Home and Tweaks extras
-4. Training reminder (Tweaks > Alerts & HUD): at level-up chat names the new spells; Home's "Training" block lists what to train after you visit your trainer once. Home's "Next talent point" now has its own heading and a gold line (0.57.1): easy to see now?
+4. Training reminder (Tweaks > Alerts): at level-up chat names the new spells; Home's "Training" block lists what to train after you visit your trainer once. Home's "Next talent point" now has its own heading and a gold line (0.57.1): easy to see now?
 10. **New in 0.56.2:** put a build on the Talents board on your own class (Recommended), then open Home: right column under Training says "Next talent point: X (point n, level L)". Learn a point of it, or level up: chat prints the line after the training line, and it moves on. A different build on the board changes it.
-12. **New in 0.62.0, reminders:** Tweaks > Alerts & HUD > Icons for your class now has **Gear repair reminder** (every class) and, for a Hunter / Warlock, **Pet reminder**. Repair: wear something down (or lower the "Turn red below" slider to 90) and check the red percentage appears, and goes after repairing; `/r2f repair`, `/r2f repair lock`. Pet: dismiss your pet: "No pet"; let it die: "Dead"; a Hunter pet at unhappy: "Unhappy"; nothing while mounted or dead; `/r2f pet`.
+12. **New in 0.62.0, reminders:** Tweaks > Class icons now has **Gear repair reminder** (every class) and, for a Hunter / Warlock, **Pet reminder**. Repair: wear something down (or lower the "Turn red below" slider to 90) and check the red percentage appears, and goes after repairing; `/r2f repair`, `/r2f repair lock`. Pet: dismiss your pet: "No pet"; let it die: "Dead"; a Hunter pet at unhappy: "Unhappy"; nothing while mounted or dead; `/r2f pet`.
+
+14. **New in 0.63.0, Tweaks is split:** the old "Alerts & HUD" page is now three: **Alerts** (ability alert text, Training reminder), **Waypoint arrow** (follow the plan, arrow to corpse, size, the eight looks) and **Class icons** (stance, ammo, repair, pet, tracking, group buffs). The page buttons sit in two rows. Does every setting still work and sit where you expect? Does Reset page only touch the page you are on?
 
 ## 7. Tweaks tab (everything is OFF until ticked; turn off ForeverPlus' matching modules)
 7. Vendors & loot > Mail: list my other characters. `/dump R2FDB.chars` on 2026-10-14 showed 7 characters saved (Despicable, Madfury, Miss, Aoe, Falseaim, Madblade, Venom) and NO Paladin or Shaman: they were never recorded. Tick Road to Forever for them on the character select AddOns screen, log in on each, run `/dump R2FDB.chars` again, then check the mail list. Fast looting (needs the game's Auto Loot; Shift does the opposite) is still open.
@@ -39,7 +41,7 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 
 ## 8. Waypoint arrow
 9. **0.61.0, the arrows point into the scene:** turn so the target is straight ahead: does the arrow look like it points away from you into the distance (not just up)? Turn around so it is behind you: does it point toward you? Sideways: lying on the ground? Is the camera angle right, or should it be lower or higher?
-10. **The eight looks** (Tweaks > Alerts & HUD > "Waypoint arrow look": Flat, Gold dart, Stone arrow, Block, Needle, Gilded, Plate, Stone slab): each switches the arrow at once, the chosen button is gold, it stays after `/reload`, Reset page brings back the Stone arrow. Which do you actually keep? Say which to drop so the list stays short. Is the Needle's red end clearly the pointing end, and do the thin ones (Stone arrow, Gilded) read at Small?
+10. **The eight looks** (Tweaks > Waypoint arrow > "Waypoint arrow look": Flat, Gold dart, Stone arrow, Block, Needle, Gilded, Plate, Stone slab): each switches the arrow at once, the chosen button is gold, it stays after `/reload`, Reset page brings back the Stone arrow. Which do you actually keep? Say which to drop so the list stays short. Is the Needle's red end clearly the pointing end, and do the thin ones (Stone arrow, Gilded) read at Small?
 
 ## 9. Mr.BiZ (BiZ tab)
 11. Hover a gear slot on the doll: ONE enchant line, the pink "Mr.BiZ enchant: ..." from the item tooltip (the extra "Enchant: ..." line from 0.56.3 was removed in 0.57.1). The opened slot's enchant lines on the right are pink too.

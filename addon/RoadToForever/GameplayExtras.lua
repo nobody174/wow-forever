@@ -353,7 +353,7 @@ local function updateAlertMarker()
   end
 end
 
--- Size and outline of the alert text (Alerts & HUD page). Our own font string only.
+-- Size and outline of the alert text (Alerts page). Our own font string only.
 local OUTLINE_FLAGS = { none = "", thin = "OUTLINE", thick = "THICKOUTLINE" }
 function Gameplay.ApplyAlertStyle()
   if not alertText then return end

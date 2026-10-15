@@ -202,7 +202,7 @@ function Library.Init()
   if type(s.talented) ~= "boolean" then s.talented = false end
   -- The bundled macro set (MacroData.lua) that is installed in the library; Bundle.lua compares it.
   if type(s.bundleVersion) ~= "string" then s.bundleVersion = "" end
-  -- Alerts & HUD page: which class groups of group buffs are folded open (class token -> true).
+  -- Class icons page: which class groups of group buffs are folded open (class token -> true).
   if type(s.hudOpen) ~= "table" then s.hudOpen = {} end
   -- Main window: the tab /r2f reopens. Home on first use.
   -- windowPos (the window's saved spot) is written by UI.Window when moved.

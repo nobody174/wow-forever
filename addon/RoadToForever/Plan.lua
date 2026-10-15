@@ -355,6 +355,6 @@ function Plan.Here()
   return mapID, x, y
 end
 
--- Tweaks > Alerts & HUD: "Arrow follows the plan". Ticking the step you are on points the arrow at the next one.
+-- Tweaks > Waypoint arrow: "Arrow follows the plan". Ticking the step you are on points the arrow at the next one.
 -- On by default (Library.lua), because it only ever acts on your own tick.
 R2F.Gameplay.Register({ key = "navfollow", group = "screen", title = "NAV_FOLLOW", tip = "NAV_FOLLOW_TIP" })

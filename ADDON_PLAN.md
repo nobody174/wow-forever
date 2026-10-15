@@ -3082,7 +3082,7 @@ Owner request 2026-10-13: navigation driven by our own data, no TomTom.
   2. (0.40.0) World map pin (own frame `R2FNavPin` parented to the map canvas, placed from the arrow's update; other maps
      via `C_Map.GetMapPosFromWorldPos`), Alt + right-click on the map sets the arrow (`HookScript` on the scroll
      container's OnMouseDown, read before the game's right-click zooms out), arrow size Small / Medium / Large
-     (`R2FDB.nav.size`, Tweaks > Alerts & HUD), `/bizway` (x y in your zone, label before the numbers, clear, size).
+     (`R2FDB.nav.size`, Tweaks > Waypoint arrow), `/bizway` (x y in your zone, label before the numbers, clear, size).
      Owner 2026-10-13: no minimap pin. Ctrl + right-click on a quest objective (TomTom + Questie style) is not built:
      Questie's map icons are its own frames and take the click.
   3. (0.41.0) Mr.BiZ: `bis/places.json` (dungeon entrances, the two vendors, Booty Bay; conf classic / approx)
@@ -3160,7 +3160,7 @@ tab, on Home and in chat after a level-up. The followed build is `cdb.followLink
 so it works for any link or loadout; a guide's own pick order would need data (BACKLOG). Loadouts menu: "My current talents". Group picks from
 `group-builds.json` are baked into `TalentData.lua` by `gen_talent_data.py` and listed in the Recommended menu.
 
-**Waypoint arrow looks** (Tweaks > Alerts & HUD > "Waypoint arrow look"; `Nav.STYLES`, `db.nav.style`, `Gameplay.IsOn("arrow3d")` is the flat
+**Waypoint arrow looks** (Tweaks > Waypoint arrow > "Waypoint arrow look"; `Nav.STYLES`, `db.nav.style`, `Gameplay.IsOn("arrow3d")` is the flat
 dart switch underneath). Eight looks: Flat dart, Gold dart, Stone arrow, Block, Needle, Gilded, Plate, Stone slab. Every 3D look is a 1024 px
 sprite sheet of 100 turn angles (`media/arrow3d*.tga`, 4 MB on disk, about 0.5 MB zipped). They are rendered in Blender by
 `addon/art/export_arrow3d.py` (`--style <key>|all`): modelled ones from `blender_arrow3d*.py` (shared helpers `blender_arrow_parts.py`, shared

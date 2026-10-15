@@ -25,13 +25,13 @@ local boxes = {}        -- feature key -> check button
 local pages = {}        -- page key -> container frame
 local pageButtons = {}  -- page key -> button
 local pageHeight = {}
-local outlineButtons = {}   -- "none" / "thin" / "thick" -> button (Alerts & HUD page)
+local outlineButtons = {}   -- "none" / "thin" / "thick" -> button (Waypoint arrow page)
 local styleButtons = {}     -- BiZNav arrow look: "flat" / "dart" / "arrow" -> button
-local arrowButtons = {}     -- BiZNav arrow size: "small" / "medium" / "large" -> button (Alerts & HUD page)
+local arrowButtons = {}     -- BiZNav arrow size: "small" / "medium" / "large" -> button (Waypoint arrow page)
 local sizeSlider, sizeText
 local bagBoxes = {}     -- Movable bags / Lock bags (Bags.lua), on the Bags page
 local scroll, content
-local LEFT, RIGHT, RIGHT_W = 22, 270, 214
+local LEFT, ICON_W = 22, 300
 
 -- page key -> label key and the features on it (in this order)
 Tab.PAGES = {
@@ -41,8 +41,9 @@ Tab.PAGES = {
     features = { "repair", "sellgray", "fastloot", "mailalts" } },
   { key = "screen", label = "GP_PAGE_SCREEN", features = { "errorfilter", "xpbar", "copychat", "duels" } },
   { key = "bags", label = "GP_PAGE_BAGS", features = { "bagslots", "bagsort", "upgrades" } },
-  { key = "alerts", label = "GP_PAGE_ALERTS",
-    features = { "reactalert", "reactlock", "reactblizz", "training", "navfollow", "corpsearrow" } },
+  { key = "alerts", label = "GP_PAGE_ALERTS", features = { "reactalert", "reactlock", "reactblizz", "training" } },
+  { key = "arrow", label = "GP_PAGE_ARROW", features = { "navfollow", "corpsearrow" } },
+  { key = "icons", label = "GP_PAGE_ICONS", features = {} },
 }
 
 local function visible()
@@ -70,6 +71,8 @@ local function refresh()
         if k == d.outline then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
       end
     end
+  end
+  if next(styleButtons) then
     local look = R2F.Nav.Style()
     for k, b in pairs(styleButtons) do
       local fs = b.GetFontString and b:GetFontString()
@@ -196,6 +199,7 @@ function Tab.ResetPage()
         local d = R2F.Library.db.fct
         d.textScale, d.outline = 1, "none"
         Gameplay.ApplyAlertStyle()
+      elseif key == "arrow" then
         R2F.Nav.SetSize("medium")
         R2F.Nav.SetStyle("arrow")
       end
@@ -214,11 +218,10 @@ function Tab.Build(f)
   local defs = byKey()
 
   -- The page buttons along the top.
-  local x = 12
-  for _, pg in ipairs(Tab.PAGES) do
+  for i, pg in ipairs(Tab.PAGES) do
     local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     b:SetSize(100, 22)
-    b:SetPoint("TOPLEFT", x, -46)
+    b:SetPoint("TOPLEFT", 12 + ((i - 1) % 4) * 104, -46 - math.floor((i - 1) / 4) * 26)
     b:SetText(L[pg.label])
     b:SetScript("OnClick", function() Tab.ShowPage(pg.key) end)
     b.mark = b:CreateTexture(nil, "OVERLAY")
@@ -228,7 +231,6 @@ function Tab.Build(f)
     b.mark:SetHeight(3)
     b.mark:Hide()
     pageButtons[pg.key] = b
-    x = x + 104
   end
 
   local reset = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
@@ -245,8 +247,8 @@ function Tab.Build(f)
 
   scroll = UI.TryTemplate("ScrollFrame", "R2FGameplayScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FGameplayScrollPlain", f)
-  scroll:SetPoint("TOPLEFT", 6, -76)
-  scroll:SetSize(500, 390)
+  scroll:SetPoint("TOPLEFT", 6, -102)
+  scroll:SetSize(500, 364)
   content = CreateFrame("Frame", nil, scroll)
   content:SetSize(490, 100)
   scroll:SetScrollChild(content)
@@ -308,15 +310,24 @@ function Tab.Build(f)
         outlineButtons[k] = ob
         bx = bx + 68
       end
+      y = y - 112
+      local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+      note:SetPoint("TOPLEFT", LEFT + 4, y - 4)
+      note:SetWidth(440)
+      note:SetJustifyH("LEFT")
+      note:SetText(L.GP_ALERTS_NOTE)
+      bottom = y - 40
+    elseif pg.key == "arrow" then
+      local bx
       -- BiZNav arrow size.
       local al = c:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-      al:SetPoint("TOPLEFT", LEFT + 4, y - 104)
+      al:SetPoint("TOPLEFT", LEFT + 4, y - 6)
       al:SetText(L.NAV_SIZE)
       bx = LEFT + 4
       for _, k in ipairs(R2F.Nav.SIZE_ORDER) do
         local ab = CreateFrame("Button", nil, c, "UIPanelButtonTemplate")
         ab:SetSize(64, 22)
-        ab:SetPoint("TOPLEFT", bx, y - 122)
+        ab:SetPoint("TOPLEFT", bx, y - 24)
         ab:SetText(L["NAV_SIZE_" .. k:upper()])
         ab.navSize = k
         ab:SetScript("OnClick", function()
@@ -328,11 +339,11 @@ function Tab.Build(f)
       end
       -- BiZNav arrow look: flat dart, gold 3D dart, stone 3D arrow.
       local sl = c:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-      sl:SetPoint("TOPLEFT", LEFT + 4, y - 156)
+      sl:SetPoint("TOPLEFT", LEFT + 4, y - 58)
       sl:SetText(L.NAV_STYLE)
       bx = LEFT + 4
       local widths = { flat = 54, dart = 80, arrow = 94, block = 64, needle = 70, gilded = 66, plate = 60, slab = 84 }
-      local by = y - 174
+      local by = y - 76
       for _, k in ipairs(R2F.Nav.STYLE_ORDER) do
         if k == "block" or k == "gilded" then bx, by = LEFT + 4, by - 26 end   -- more rows
         local sb = CreateFrame("Button", nil, c, "UIPanelButtonTemplate")
@@ -346,24 +357,17 @@ function Tab.Build(f)
         styleButtons[k] = sb
         bx = bx + widths[k] + 4
       end
-      y = y - 260
-      local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-      note:SetPoint("TOPLEFT", LEFT + 4, y - 4)
-      note:SetWidth(230)
-      note:SetJustifyH("LEFT")
-      note:SetText(L.GP_ALERTS_NOTE)
-      bottom = y - 70
+      bottom = y - 190
+    elseif pg.key == "icons" then
       local head = c:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-      head:SetPoint("TOPLEFT", RIGHT, -10)
+      head:SetPoint("TOPLEFT", LEFT, -10)
       head:SetText(L.GP_ICONS)
-      local rightEnd = R2F.RemindersTab.BuildInto(c, RIGHT + 2, -42, RIGHT_W) or -100
-      local leftBottom = bottom
-      bottom = math.min(bottom, rightEnd)
-      -- Folding a class group in or out changes the right column's height.
+      bottom = R2F.RemindersTab.BuildInto(c, LEFT + 2, -42, ICON_W) or -100
+      -- Folding a class group in or out changes the column's height.
       R2F.RemindersTab.OnReflow = function()
-        local h = math.max(-leftBottom, 42 + R2F.RemindersTab.TotalHeight()) + 20
-        pageHeight.alerts = h
-        if Tab.CurrentPage() == "alerts" then
+        local h = 42 + R2F.RemindersTab.TotalHeight() + 20
+        pageHeight.icons = h
+        if Tab.CurrentPage() == "icons" then
           content:SetHeight(h)
           scroll.r2fContentHeight = h
         end

@@ -31,7 +31,7 @@ Nav.ARRIVE_YARDS = 10
 local EPS = 0.01          -- map fraction used to probe east / south
 local THROTTLE = 0.05     -- seconds between arrow updates
 
--- Arrow sizes (Tweaks > Alerts & HUD): frame scale per choice. Medium is the default.
+-- Arrow sizes (Tweaks > Waypoint arrow): frame scale per choice. Medium is the default.
 Nav.SIZES = { small = 1.0, medium = 1.4, large = 1.8 }
 Nav.SIZE_ORDER = { "small", "medium", "large" }
 
@@ -158,7 +158,7 @@ local elapsed, update   -- the arrow's OnUpdate state, defined below
 Nav.FRAMES, Nav.COLS, Nav.CELL, Nav.SHEET = 100, 10, 102, 1024
 local ARROW_FLAT = "Interface\\AddOns\\RoadToForever\\media\\arrow"
 local ARROW_3D = "Interface\\AddOns\\RoadToForever\\media\\arrow3d"
--- The looks to choose from (Tweaks > Alerts & HUD). `sheet = true`: a 3D look, a sprite sheet of FRAMES turn angles
+-- The looks to choose from (Tweaks > Waypoint arrow). `sheet = true`: a 3D look, a sprite sheet of FRAMES turn angles
 -- (FRAMES / COLS / CELL); otherwise one picture that is turned like the flat dart (`size` px).
 -- A new 3D look: render it with addon/art/export_arrow3d.py. A new picture look: addon/art/make_image_looks.py.
 -- Either way add it here and a NAV_STYLE_<KEY> text in Locale.lua.
@@ -632,11 +632,11 @@ end
 
 local function isGhost() return _G.UnitIsGhost and _G.UnitIsGhost("player") end
 
--- Tweaks > Alerts & HUD: "3D arrow" (on by default, Library.lua); off = the flat dart.
+-- Tweaks > Waypoint arrow: "3D arrow" (on by default, Library.lua); off = the flat dart.
 R2F.Gameplay.Register({ key = "arrow3d", group = "screen", title = "NAV_3D_TITLE", tip = "NAV_3D_TIP",
   onToggle = function() Nav.ApplyStyle() end })
 
--- Tweaks > Alerts & HUD: "Arrow to corpse when you die" (on by default, Library.lua).
+-- Tweaks > Waypoint arrow: "Arrow to corpse when you die" (on by default, Library.lua).
 R2F.Gameplay.Register({
   key = "corpsearrow", group = "screen", title = "NAV_CORPSE_TITLE", tip = "NAV_CORPSE_TIP",
   events = {

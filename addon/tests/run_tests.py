@@ -1541,7 +1541,7 @@ def test_reminders():
     keys = [lua.eval("R2F.MainWindow.TABS[%d]" % i) for i in range(1, 7)]
     check(keys == ["home", "macros", "talents", "plan", "bis", "gameplay"], "15.4/15.5/19 tab order: %s" % keys)
     lua.execute('SlashCmdList.R2F("reminders")')
-    lua.execute('R2F.GameplayTab.ShowPage("alerts")')
+    lua.execute('R2F.GameplayTab.ShowPage("icons")')
     check(MW.CurrentTab() == "gameplay", "15.4 /r2f reminders (the old name) opens the Gameplay tab")
     title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever: Tweaks", "15.4 Reminders title: %r" % title)
@@ -1571,7 +1571,7 @@ def test_reminders():
     lua, T = reminder_runtime("HUNTER")
     check(lua.eval("R2FAmmoFrame ~= nil") and lua.eval("R2FStanceFrame == nil") and lua.eval("R2FStanceScale == nil"),
           "15.4 Hunter: ammo frame only")
-    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
+    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('icons')")
     check(lua.eval("R2FAmmoScale:IsVisible() and R2FAmmoThreshold:IsVisible()") is True, "15.4 Hunter sees the ammo size + threshold sliders")
     # Pet reminder (0.62.0): Hunters and Warlocks only; missing / dead / unhappy, quiet when mounted or dead yourself.
     check(lua.eval("R2FPetFrame ~= nil") and lua.eval("R2FPetScale ~= nil"), "pet: the Hunter has the pet icon and its size slider")
@@ -1597,7 +1597,7 @@ def test_reminders():
     lua, T = reminder_runtime("PRIEST")
     check(lua.eval("R2FAmmoFrame == nil and R2FStanceFrame == nil and R2FAmmoScale == nil and R2FStanceScale == nil"),
           "15.4 Priest: no reminder frames or controls")
-    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
+    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('icons')")
     check(font_text(lua, "^No reminders for your class") is None and font_text(lua, "^" + "Missing group buffs") is not None, "15.4 every class has the group-buff reminder, so the 'none yet' line is gone")
     T.chat = lua.table()
     lua.execute('SlashCmdList.R2F("ammo")')
@@ -1682,7 +1682,7 @@ def test_reminders():
     check(lua.eval("R2FDB.ammo.threshold") == 50, "15.4 threshold minimum 50")
     lua.execute("R2F.Ammo.SetThreshold(99999)")
     check(lua.eval("R2FDB.ammo.threshold") == 1000, "15.4 threshold maximum 1000")
-    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts') R2FAmmoThreshold:Fire('OnValueChanged', 650)")
+    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('icons') R2FAmmoThreshold:Fire('OnValueChanged', 650)")
     check(lua.eval("R2FDB.ammo.threshold") == 650, "15.4 the threshold slider sets it")
     check(font_text(lua, "^Turn red below: 650$") is not None, "15.4 the slider label shows the value")
 
@@ -2057,8 +2057,8 @@ def test_plan(templates=True):
         check(lua.eval("R2F.Nav.Target()") is None, "BiZNav: Alt + left-click does nothing")
         lua.execute("TEST.alt = false R2F.Nav.SetTarget(1426, 50, 20, 'Spot', 'Dun Morogh')")
 
-        # Tweaks > Alerts & HUD: Small / Medium / Large buttons; Reset page puts Medium back.
-        lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
+        # Tweaks > Waypoint arrow: Small / Medium / Large buttons; Reset page puts Medium back.
+        lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('arrow')")
         find_frames(lua, "f.__kind == 'Button' and f.navSize ~= nil", "SIZEBTN")
         names = sorted(lua.eval("SIZEBTN[%d].navSize" % i) for i in range(1, lua.eval("#SIZEBTN") + 1))
         check(names == ["large", "medium", "small"], "BiZNav: Tweaks has Small / Medium / Large arrow buttons: %r" % names)
@@ -2066,7 +2066,7 @@ def test_plan(templates=True):
         check(lua.eval("R2FDB.nav.size") == "small" and abs(lua.eval("R2FNavFrame:GetScale()") - 1.0) < 1e-9,
               "BiZNav: clicking Small saves and applies it")
         lua.execute("R2F.GameplayTab.ResetPage()")
-        check(lua.eval("R2FDB.nav.size") == "medium", "BiZNav: Reset page on Alerts & HUD puts the arrow back to Medium")
+        check(lua.eval("R2FDB.nav.size") == "medium", "BiZNav: Reset page on Waypoint arrow puts the arrow back to Medium")
 
         # Questie: Ctrl + click on a map icon calls TomTom:AddWaypoint(uiMapId, x/100, y/100, {title, crazy, from})
         # and, on the next click, TomTom:RemoveWaypoint(saved) first (same icon = toggle off).
@@ -2521,8 +2521,8 @@ def test_gameplay():
     labels = {lua.eval("GB[%d].r2fLabel.__text" % i): i for i in range(1, lua.eval("#GB") + 1)}
     wanted = [lua.eval("R2F.L.%s" % k) for k in ("GP_REPAIR", "GP_SELLGRAY", "GP_DUELS", "GP_ERRORFILTER", "GP_XPBAR")]
     check(all(w in labels for w in wanted), "17 the tab has one box per feature")
-    pages = [lua.eval("R2F.GameplayTab.PAGES[%d].key" % i) for i in range(1, 6)]
-    check(pages == ["quests", "vendors", "screen", "bags", "alerts"], "17.1 the tab has five pages: %s" % pages)
+    pages = [lua.eval("R2F.GameplayTab.PAGES[%d].key" % i) for i in range(1, 8)]
+    check(pages == ["quests", "vendors", "screen", "bags", "alerts", "arrow", "icons"], "17.1 the tab has seven pages: %s" % pages)
     # Phase 3: alert text size/outline, reset page, changed dot.
     lua.execute("R2F.GameplayTab.ShowPage('alerts') R2F.GameplayTab.ResetPage()")
     check(lua.eval("R2F.GameplayTab.PAGES[5].key") == "alerts" and lua.eval("R2FDB.fct.textScale") == 1 and lua.eval("R2FDB.fct.outline") == "none",
@@ -2536,7 +2536,7 @@ def test_gameplay():
     check(lua.eval("R2FDB.fct.textScale") == 1 and lua.eval("R2FDB.fct.outline") == "none", "bad alert style values are reset")
     find_frames(lua, "f.__kind == 'FontString' and type(f.__text) == 'string' and f.__text:find('Priest') and f.__text:find('/')", "PRG")
     check(lua.eval("#PRG") >= 1, "group buffs are grouped under a Priest fold-out header")
-    lua.execute("R2F.RemindersTab.OpenGroups().PRIEST = true R2F.GameplayTab.Refresh()")
+    lua.execute("R2F.GameplayTab.ShowPage('icons') R2F.RemindersTab.OpenGroups().PRIEST = true R2F.GameplayTab.Refresh()")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == 'Divine Spirit' and f.__shown", "PRS")
     check(lua.eval("#PRS") == 1, "opening the Priest group shows Divine Spirit")
     lua.execute("R2F.RemindersTab.OpenGroups().PRIEST = nil R2F.GameplayTab.Refresh()")
@@ -2557,8 +2557,8 @@ def test_gameplay():
     lua.execute("UnitName = function() return 'Thorin' end UnitFullName = function() return 'Thorin', 'Realm' end GetRealmName = function() return 'Realm' end TEST.chat = {} R2F.Gameplay.PrintWho()")
     check(lua.eval("#TEST.chat") >= 1, "17.1 /r2f who prints the ways the client names the character, without error")
     check(boxvis("GP_QACCEPT") is False and boxvis("GP_REPAIR") is True and lua.eval("R2FDB.settings.gameplayPage") == "vendors", "17.1 switching pages swaps the boxes and is remembered")
-    lua.execute("R2F.GameplayTab.ShowPage('alerts')")
-    check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "17 the Warrior's stance options are on the Alerts page")
+    lua.execute("R2F.GameplayTab.ShowPage('icons')")
+    check(lua.eval("R2FStanceScale ~= nil and R2FStanceScale:IsVisible()") is True, "17 the Warrior's stance options are on the Class icons page")
     lua.execute("R2F.GameplayTab.ShowPage('quests')")
     check(lua.eval("R2FStanceScale:IsVisible()") is False, "17.1 ... and not on the other pages")
     lua.execute("R2F.GameplayTab.ShowPage('nope')")
@@ -3358,7 +3358,7 @@ def test_tracking():
     lua.execute("R2F.Tracking.SetShown(false)")
     check(lua.eval("R2FTrackingFrame:IsShown()") is False, "17.5 switched off: hidden")
     # persistence and the tab
-    lua.execute("R2F.Tracking.SetShown(true) R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
+    lua.execute("R2F.Tracking.SetShown(true) R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('icons')")
     check(lua.eval("R2FTrackingScale ~= nil and R2FTrackingScale:IsVisible()") is True, "17.5 the section is on the Gameplay tab's Reminders column")
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.TRACKING_HERBS", "TH")
     check(lua.eval("#TH") == 1 and lua.eval("TH[1]:GetChecked()") is True, "17.5 the 'remind about Find Herbs' box is ticked")
@@ -3367,11 +3367,11 @@ def test_tracking():
     # no tracking spell at all
     lua2, T2 = tracking_runtime(tracks=False)
     check(lua2.eval("R2F.Tracking.Applies()") is False and lua2.eval("R2FTrackingFrame:IsShown()") is False, "17.5 a character with no tracking spell: no icon (even unlocked)")
-    lua2.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
+    lua2.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('icons')")
     check(lua2.eval("R2FTrackingScale == nil"), "17.5 ... and no section on the tab")
     # a Warrior still gets its own reminder next to it
     lua3, T3 = tracking_runtime(token="WARRIOR")
-    lua3.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('alerts')")
+    lua3.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('icons')")
     check(lua3.eval("R2FStanceScale ~= nil and R2FTrackingScale ~= nil"), "17.5 class reminders and the tracking one live side by side")
     # bad saved values repaired
     lua4, T4 = tracking_runtime(preset="{ tracking = { scale = 9, herbs = 'x' } }")
@@ -8350,7 +8350,7 @@ def test_training():
     check(font_text(lua, "^Train now: 1 spell,") is not None and font_text(lua, "^Next: level 22") is not None,
           "train: Home shows Train now and Next")
     check(lua.eval("(function() for _, p in ipairs(R2F.GameplayTab.PAGES) do if p.key == 'alerts' then for _, k in ipairs(p.features) do if k == 'training' then return true end end end end end)()") is True,
-          "train: the reminder switch is on Tweaks > Alerts & HUD")
+          "train: the reminder switch is on Tweaks > Alerts")
 
 
 def install_item_stubs(lua):

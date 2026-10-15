@@ -227,8 +227,8 @@ Paladin, Warrior. Keep new classes inserted in this order on both pages.
 - `addons.html` — hand-written page. An "Our own addon" section on top (Road to
   Forever, `data-addon="roadtoforever"`, links to its GitHub release, not
   CurseForge), then "What we use" (the owner's actual list, 2026-10-10): AtlasLootClassic
-  Continued, Forever Bestiary, ForeverPlus (until Road to Forever replaces it), Leatrix Maps, Questie,
-  ThreatMaster, TomTom — all CurseForge links, sorted alphabetically (case-insensitive) —
+  Continued, Forever Bestiary, Leatrix Maps, ThreatMaster (ForeverPlus, Questie and TomTom removed 2026-10-15,
+  their functions are in Road to Forever) — all CurseForge links, sorted alphabetically (case-insensitive) —
   plus a link to wow4ever.quest's addon compatibility tracker.
   Compact card layout (2026-10-05): a `.pick` column on the left holding the
   Select checkbox (the whole strip is the click target), then `.card-main` with

@@ -5,6 +5,11 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-15 (Addons page trim)
+- addons.html: removed the ForeverPlus, Questie and TomTom cards from "What we use" (owner baked their functions into the Road
+  to Forever addon). The daily addon version check reads the `data-addon` slugs on the page, so it stops checking them
+  automatically. The scheduled check now runs on Haiku.
+
 ## 2026-10-15 (Addon version check)
 - addons.html: Road to Forever fallback values 0.62.0 → 0.62.1 (r2f-v0.62.1, Oct 15). AtlasLootClassic Continued (12487),
   Forever Bestiary (0.6.0), ForeverPlus (0.9.2), Leatrix Maps (1.60.20-forever), Questie (v12.1.0+v1.0.6) and TomTom

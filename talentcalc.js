@@ -288,6 +288,7 @@
         ? '<div class="tc-bar"><span class="tc-stat">Points <b data-tc="spent">0</b> / 51</span><span class="tc-stat">Level <b data-tc="level">—</b><span class="tc-perkbadge" data-tc="perk" title="Counting the Talented legacy perk (+5 points)" hidden>Talented</span></span>' +
           '<button type="button" class="tc-btn tc-danger" data-tc-act="reset">Reset to build</button>' +
           '<button type="button" class="tc-btn" data-tc-act="copy">Copy link</button>' + saveBtn +
+          '<button type="button" class="tc-btn tc-perk-btn" data-tc-act="perk" data-tc="perkbtn" aria-pressed="false" title="Talented legacy perk: +5 talent points (the same switch as at the top of the page)">+5 points</button>' +
           '<a class="tc-btn" data-tc="open" href="talents.html">Open in Talent Calc</a></div>' +
           '<div class="tc-tabs" role="tablist">' + trees.map(function (t, ti) {
             return '<button type="button" role="tab" data-tab="' + ti + '" aria-selected="' + (ti === active) + '">' + esc(t.name) + '<span class="tc-n" data-pts="' + ti + '">0</span></button>';
@@ -325,6 +326,7 @@
       set("left", MAX_POINTS - spent);
       set("level", spent ? String(levelFor(spent)) : "—");
       var pk = q('[data-tc="perk"]'); if (pk) pk.hidden = !(talented && spent);
+      var pb = q('[data-tc="perkbtn"]'); if (pb) pb.setAttribute("aria-pressed", talented ? "true" : "false");
       var open = q('[data-tc="open"]');
       if (open) open.href = "talents.html#" + self.link();
       if (changed && typeof opts.onChange === "function") opts.onChange(self);
@@ -372,6 +374,7 @@
       if (act) {
         if (act.dataset.tcAct === "save") { if (window.TalentSaved) window.TalentSaved.openSave(self, opts.saveName); }
         else if (act.dataset.tcAct === "reset") { ranks = compact ? JSON.parse(initial) : {}; update(true); }
+        else if (act.dataset.tcAct === "perk") { setTalented(!talented); }
         else if (act.dataset.tcAct === "copy") {
           var url = new URL("talents.html#" + self.link(), location.href).href;
           var done = function () { act.textContent = "Copied!"; setTimeout(function () { act.textContent = "Copy link"; }, 1500); };

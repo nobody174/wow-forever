@@ -7010,6 +7010,21 @@ def test_talent_sandbox_ui(templates):
     # Loadouts menu starts with "My current talents" (the character's own build on the board).
     lua.execute("R2F.TalentPanel.LoadoutsMenu()")
     check(lua.eval("MENU[1].text") == lua.eval("R2F.L.TALENT_LOAD_MINE") and lua.eval("MENU[1].kind") == "button", "%s: loadouts menu offers my current talents first" % tag)
+    # Pick order (0.63.0, owner rule): deepest first, the main tree first, a dip into another tree last.
+    chk = lua.eval("""(function()
+      local TC = R2F.TalentCalc
+      local calc = TC.FromCode('priest', '02--3050220012013')   -- Shadow, with 2 points in Discipline
+      local o = TC.Order(calc)
+      local last = o[#o]
+      local depth = 0
+      for i = 1, 10 do
+        local x = TC.Trees('priest')[o[i][1]].talents[o[i][2]]
+        if o[i][1] ~= 3 then return 'dip too early at ' .. i end
+        depth = math.max(depth, x.r)
+      end
+      return (o[1][1] == 3 and last[1] == 1 and o[#o - 1][1] == 1) and 'ok' or 'wrong end'
+    end)()""")
+    check(chk == "ok", "%s: pick order: the main tree first, the dip last: %s" % (tag, chk))
     # Group picks (0.62.1): the owner's picks baked into TalentData show under the Recommended menu.
     lua.execute("R2F.TalentData.groupBuilds = { { 'priest', 'Raid healer', 'Venom', '003-0321510303' }, { 'mage', 'Not mine', '', '25' } }")
     check(lua.eval("#R2F.TalentCalc.GroupPicks('priest')") == 1 and lua.eval("R2F.TalentCalc.GroupPicks('priest')[1].by") == "Venom", "%s: group picks per class" % tag)

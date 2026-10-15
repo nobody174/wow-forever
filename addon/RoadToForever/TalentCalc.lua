@@ -218,44 +218,42 @@ function Calc.FromCode(classId, code)
 end
 
 -- The level a build needs (Talents.LevelFor: talent points start at level 10, the Talented perk 5 earlier).
--- The points of a build in the order to take them: tier by tier (and tree by tree, column by column inside a
--- tier), every rank of a talent together. The same order Learn this build uses (Talents.LearnOrder), and always
--- legal: a tier's points above it and a talent's prerequisite are complete before it. -> { {tree, talent}, ... }
+-- The points of a build in the order to take them (owner rule, 2026-10-15): get as deep into the tree as the build
+-- goes as early as you can (the next row opens after 5 points in the rows above it), then fill in the rest. Walking
+-- the build point by point: of the talents you may take right now, take the deepest one; at the same depth the
+-- tree with more points in the build (your main tree, so a dip into another tree comes last), then the left-most.
+-- Always legal (it only ever takes a point the game would allow). -> { {tree, talent}, ... }
 function Calc.Order(calc)
-  local list = {}
-  for t, tree in ipairs(Calc.Trees(calc.class) or {}) do
-    for k, x in ipairs(tree.talents) do
-      if calc.ranks[t][k] > 0 then list[#list + 1] = { t = t, k = k, r = x.r, c = x.c } end
-    end
-  end
-  table.sort(list, function(a, b)
-    if a.r ~= b.r then return a.r < b.r end
-    if a.t ~= b.t then return a.t < b.t end
-    return a.c < b.c
-  end)
-  -- A prerequisite in the same row (a horizontal link) comes first, even when it sits to the right.
-  local moved = true
-  for _ = 1, #list do
-    if not moved then break end
-    moved = false
-    for i, e in ipairs(list) do
-      for _, q in ipairs(Calc.Trees(calc.class)[e.t].talents[e.k].q) do
-        for j = i + 1, #list do
-          if list[j].t == e.t and list[j].k == q[1] then
-            table.remove(list, i)
-            table.insert(list, j, e)
-            moved = true
-            break
-          end
-        end
-        if moved then break end
-      end
-      if moved then break end
-    end
+  local trees = Calc.Trees(calc.class) or {}
+  local walk = Calc.New(calc.class)
+  local weight, total = {}, 0
+  for t = 1, #trees do
+    weight[t] = 0
+    for k = 1, #trees[t].talents do weight[t] = weight[t] + calc.ranks[t][k] end
+    total = total + weight[t]
   end
   local order = {}
-  for _, e in ipairs(list) do
-    for _ = 1, calc.ranks[e.t][e.k] do order[#order + 1] = { e.t, e.k } end
+  for _ = 1, total do
+    local best
+    for t, tree in ipairs(trees) do
+      for k, x in ipairs(tree.talents) do
+        if walk.ranks[t][k] < calc.ranks[t][k] and Calc.AddBlock(walk, t, k) == nil then
+          if not best or x.r > best.r or (x.r == best.r and (weight[t] > best.w
+              or (weight[t] == best.w and (t < best.t or (t == best.t and x.c < best.c))))) then
+            best = { t = t, k = k, r = x.r, c = x.c, w = weight[t] }
+          end
+        end
+      end
+    end
+    if not best then break end
+    walk.ranks[best.t][best.k] = walk.ranks[best.t][best.k] + 1
+    order[#order + 1] = { best.t, best.k }
+  end
+  -- A build the game would not allow (it never happens for a loaded link): keep the length right anyway.
+  for t = 1, #trees do
+    for k = 1, #trees[t].talents do
+      for _ = walk.ranks[t][k] + 1, calc.ranks[t][k] do order[#order + 1] = { t, k } end
+    end
   end
   return order
 end

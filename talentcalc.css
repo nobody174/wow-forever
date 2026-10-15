@@ -194,6 +194,7 @@ body.lc-on .ts-fab{display:none}
 .tc-perk-text{font-size:14px;color:var(--text);cursor:pointer;line-height:1.35}
 .tc-perk-text b{color:var(--gold)}
 .tc-perk-text small{display:block;color:var(--muted);font-size:12.5px}
+.tc-perk-btn[aria-pressed="true"]{color:#0E1428;background:linear-gradient(180deg,#FFD84A 0%,#E6B800 100%);border-color:#FFD84A}
 .tc-perkbadge{margin-left:6px;font:700 10px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:#0E1428;background:var(--gold);border-radius:4px;padding:3px 5px;vertical-align:middle}
 .tc-perkbadge[hidden]{display:none}
 @media (prefers-reduced-motion:reduce){.tc-sw,.tc-sw-knob{transition:none}}

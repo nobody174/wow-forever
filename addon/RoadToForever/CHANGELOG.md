@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.64.1 (2026-10-15)
+
+- **Newer version notice.** The addon cannot look on the internet, so copies of it tell each other their version (guild, party, raid: a few bytes at login and when your group changes). If someone around you has a newer one, chat says so once and Home shows "Update available". `/r2f update` shows what it knows. Tweaks > Chat & screen has a box to switch it off.
+- **Food buff countdown** (Tweaks > Class icons, left): any "Well Fed" food buff (all stat foods now also give +5% experience from kills) counts down in minutes. Optional: "Show \"No food\" when I am not fed".
+- The launch plan arrow knows more exact spots: Stormwind Harbor boat, the Dalaran entrance, the Drowned City, Steamwheedle Port, Mount Hyjal and the Blackmaw Hold gate.
+
 ## 0.64.0 (2026-10-15)
 
 - New reminder icon: **Rested XP** (Tweaks > Class icons, left column, every class): how much rested experience you have as a percentage of a level (up to 150%). Gold while you have some, hidden when you have none. `/r2f rested`.

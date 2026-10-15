@@ -1742,6 +1742,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Plan positions)
 - launch-plan-waypoints.json: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance (8, 59), the Drowned City (21, 27), Steamwheedle Port boat (67, 22, approx), Mount Hyjal (53, 33 on the Kalimdor map, approx; zone "Kalimdor"), Blackmaw Hold gate (38, 32, approx), all read off the map by the owner. PlanData.lua regenerated.
 
+## 0.64.1 (2026-10-15)
+
+- Version.lua (addon message prefix R2FV, "V<tab>x.y.z" to GUILD and PARTY / RAID; numbers compared, newest kept in R2FDB.newerVersion; feature `updatecheck` on, in Tweaks > Chat & screen; `/r2f update`; Home line); Timers.lua wellfed entry (`like = { "^Well Fed" }`, clock format, optional "No food" nag with `readable` flag so secret auras never nag); launch-plan-waypoints.json positions.
+
 ## 0.64.0 (2026-10-15)
 
 - Rested.lua (GetXPExhaustion / UnitXPMax, events PLAYER_XP_UPDATE / UPDATE_EXHAUSTION / PLAYER_UPDATE_RESTING), `general = true` reminder, R2FDB.rested, `/r2f rested`.

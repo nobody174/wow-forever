@@ -124,6 +124,7 @@ function Library.Init()
   if db.gameplay.corpsearrow == nil then db.gameplay.corpsearrow = true end
   -- The 3D arrow (Nav.lua) starts ON; switching it off gives the flat dart.
   if db.gameplay.arrow3d == nil then db.gameplay.arrow3d = true end
+  if db.gameplay.updatecheck == nil then db.gameplay.updatecheck = true end
   -- Where the floating combat text starts (GameplayExtras.lua): offset from the screen centre, UIParent units.
   if type(db.loadouts) ~= "table" then db.loadouts = {} end
   -- BiZNav arrow position (Nav.lua): offset from the screen centre, UIParent units.
@@ -193,6 +194,7 @@ function Library.Init()
   if type(pt.scale) ~= "number" or pt.scale < 0.5 or pt.scale > 3 then pt.scale = 1 end
   if type(pt.x) ~= "number" then pt.x = 0 end
   if type(pt.y) ~= "number" then pt.y = -200 end
+  if db.newerVersion ~= nil and type(db.newerVersion) ~= "string" then db.newerVersion = nil end   -- Version.lua
   -- Rested XP reminder (Rested.lua).
   if type(db.rested) ~= "table" then db.rested = {} end
   local rs = db.rested

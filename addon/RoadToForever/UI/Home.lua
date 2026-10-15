@@ -184,6 +184,12 @@ end
 
 local function buildFooter(f)
   local version, author = addonMetadata("Version"), addonMetadata("Author")
+  -- "Update available: 0.65.0" (Version.lua heard of a newer copy from your guild or group), above the footer.
+  ui.update = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  ui.update:SetPoint("BOTTOMLEFT", 0, 28)
+  ui.update:SetWidth(600)
+  ui.update:SetJustifyH("LEFT")
+  ui.update:SetTextColor(1, 0.82, 0)
   ui.footer = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
   ui.footer:SetPoint("BOTTOMLEFT", 0, 10)
   ui.footer:SetWidth(600)
@@ -223,6 +229,8 @@ function Home.Refresh()
   local np = R2F.Talents.NextPointLine()
   ui.nextTalent:SetText(np or "")
   ui.nextTalentHead:SetShown(np ~= nil)
+  local newer = R2F.Version.Newer()
+  ui.update:SetText(newer and (L.HOME_UPDATE:format(newer) .. "  " .. R2F.Version.URL) or "")
   ui.combat:SetShown(R2F.InCombat())
   R2F.Settings.Refresh()
 end

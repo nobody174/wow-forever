@@ -1613,6 +1613,19 @@ def test_reminders():
     lua.execute("issecretvalue = function() return true end C_UnitAuras.GetUnitAuras = function() return { { name = 'x' } } end WF.module.Apply()")
     check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: auras unreadable: no nag")
     lua.execute("issecretvalue = nil R2FDB.timers.wellfed.remindMissing = false")
+    # Newer version heard (0.64.1): compared as three numbers, said once, saved, ignored when old / invalid / mine / switched off.
+    check(lua.eval("R2F.Version.Compare('0.64.1', '0.64.0')") == 1 and lua.eval("R2F.Version.Compare('0.9.0', '0.10.0')") == -1
+          and lua.eval("R2F.Version.Compare('1.0.0', '1.0.0')") == 0 and lua.eval("R2F.Version.Compare('x', '1.0.0')") is None, "version: numbers compare as numbers")
+    lua.execute("TEST.metadata.Version = '0.64.0' R2FDB.newerVersion = nil TEST.chat = {}")
+    lua.execute("R2F.Version.OnAddonMessage('R2FV', 'V	0.63.0', 'GUILD', 'Old-Realm') R2F.Version.OnAddonMessage('R2FV', 'V	junk', 'GUILD', 'X-R')")
+    lua.execute("R2F.Version.OnAddonMessage('OTHER', 'V	9.9.9', 'GUILD', 'X-R') R2F.Version.OnAddonMessage('R2FV', 'V	9.9.9', 'GUILD', UnitName('player') .. '-R')")
+    check(lua.eval("R2FDB.newerVersion") is None and lua.eval("R2F.Version.Newer()") is None, "version: older, invalid, other prefix and my own message change nothing")
+    lua.execute("R2F.Version.OnAddonMessage('R2FV', 'V	0.65.0', 'GUILD', 'New-Realm') R2F.Version.OnAddonMessage('R2FV', 'V	0.66.0', 'PARTY', 'New2-Realm')")
+    check(lua.eval("R2F.Version.Newer()") == "0.66.0", "version: the newest heard version is kept")
+    check(sum(1 for c in lua_table_to_list(lua.eval("TEST.chat")) if "newer version is out" in c) == 1, "version: the chat line comes once")
+    lua.execute("R2F.Gameplay.SetOn('updatecheck', false) R2FDB.newerVersion = nil R2F.Version.OnAddonMessage('R2FV', 'V	7.0.0', 'GUILD', 'A-R')")
+    check(lua.eval("R2FDB.newerVersion") is None, "version: switched off, nothing is heard")
+    lua.execute("R2F.Gameplay.SetOn('updatecheck', true) R2FDB.newerVersion = nil")
     # Pet reminder (0.62.0): Hunters and Warlocks only; missing / dead / unhappy, quiet when mounted or dead yourself.
     check(lua.eval("R2FPetFrame ~= nil") and lua.eval("R2FPetScale ~= nil"), "pet: the Hunter has the pet icon and its size slider")
     lua.execute("""TEST.pet = { exists = false, dead = false, happy = 3 } TEST.mounted = false TEST.selfDead = false

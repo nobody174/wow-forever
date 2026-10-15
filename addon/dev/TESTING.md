@@ -17,6 +17,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 15. **New in 0.56.1, split macros:** import the site string again. Hunter: Raptor Strike (starts auto-attack in melee), Wing Clip; Survival: Raptor Strike, Mongoose Bite (needs a dodge first), Strider Kick; Rogue: Sap. Each does its one thing on a hostile target. The old combined macros stay on your bars until you remove them.
 16. **0.57.1:** import the same string twice: the second chat line says "0 new, 0 updated, N unchanged".
 
+17. **New in 0.63.1:** the Druid side tabs in the Macro Book: Feral has a bear, Balance a falling star, Restoration its own, the class tab keeps the class icon, Universal is the book.
+
 ## 4. Talent learning (TEST CHAR, never a main)
 2. One point: click ONE tier-1 talent on the board (after a trainer reset), Learn this build, Cancel (nothing changes), Learn: applied within ~2 s, chat "Learned 1 talent point.", free points one lower, no "Interface action failed", survives `/reload`.
 3. If it stops with "didn't accept" or "waiting in Blizzard's window": note the exact message and what Blizzard's window shows.
@@ -42,6 +44,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 ## 7. Tweaks tab (everything is OFF until ticked; turn off ForeverPlus' matching modules)
 7. Vendors & loot > Mail: list my other characters. `/dump R2FDB.chars` on 2026-10-14 showed 7 characters saved (Despicable, Madfury, Miss, Aoe, Falseaim, Madblade, Venom) and NO Paladin or Shaman: they were never recorded. Tick Road to Forever for them on the character select AddOns screen, log in on each, run `/dump R2FDB.chars` again, then check the mail list. Fast looting (needs the game's Auto Loot; Shift does the opposite) is still open.
 16. Hunter ammo (Hunter with a ranged weapon; Icons for your class): the count equals arrows / bullets in all bags; switching weapon type switches the label; red 0 with no ammo; hidden with no ranged weapon when locked; the "warn when under" slider; `/r2f ammo`.
+
+18. **New in 0.63.1:** right-click the minimap button: a "Damage meter (Blizzard)" tick box above Reload UI. Ticking it shows the game's damage meter, unticking hides it; the box shows the meter's real state when you open the menu.
 
 ## 8. Waypoint arrow
 9. **0.61.0, the arrows point into the scene:** turn so the target is straight ahead: does the arrow look like it points away from you into the distance (not just up)? Turn around so it is behind you: does it point toward you? Sideways: lying on the ground? Is the camera angle right, or should it be lower or higher?
@@ -84,6 +88,14 @@ that talent / engrave that rune first. The Druid ones are section 13; these are 
 3. Warrior > General: **Retaliation with 2H (from Defensive)**: press twice (1st equips the two-hander and swaps to Battle Stance, 2nd casts Retaliation).
 4. Shaman > Elemental: **Elemental Mastery + Chain Lightning / Lightning Bolt**: Elemental Mastery was not in the beta trees, so these may simply be useless; say if you ever see the talent.
 5. Warrior > Tank: **Shield Block + Sunder Armor** (the Revenge version works, owner 2026-10-15): skip if you do not use it.
+
+## 15. Plan positions for the arrow (the 13 plan steps that still have no exact spot)
+How: stand on the spot the step names, run `/r2f here` once, send me the two chat lines. I then set the exact position so the arrow points there. Skip any you do not plan to visit.
+1. Zephras Isle: the starting area. 2. Zephras Isle: where the Skycutter to Dalaran leaves. 3. Dalaran: the Skyborne portal to Stormwind.
+4. Stormwind Harbor: the boat to Auberdine. 5. Dalaran (Alterac Mountains): the way down through the sewers to the Underbelly.
+6. Stranglethorn Vale: the Drowned City (where you dive at Zin'aka). 7. Tanaris, Steamwheedle Port: the boat to Powderfuse Port.
+8. Riverglades. 9. Riverglades: Krol'dok Stronghold. 10. Feralas: Shen'dralas. 11. Mount Hyjal. 12. Azshara: Blackmaw Hold (behind the Furbolg Gates in the north).
+13. Un'Goro Crater: Shaper's Terrace.
 
 ---
 **Confirmed working (kept for the record):**

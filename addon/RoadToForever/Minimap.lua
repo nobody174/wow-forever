@@ -115,10 +115,29 @@ end
 -- Right-click menu
 -- ---------------------------------------------------------------------------
 
+-- The game's own damage meter is switched by the damageMeterEnabled CVar (Options > Gameplay). We only flip that setting,
+-- never touch the meter's frames. No entry when this client has no such CVar.
+local DAMAGE_METER_CVAR = "damageMeterEnabled"
+
+function Minimap_.DamageMeterAvailable()
+  return R2F.QuickSettings.Read(DAMAGE_METER_CVAR) ~= nil
+end
+
+function Minimap_.DamageMeterOn()
+  local v = R2F.QuickSettings.Read(DAMAGE_METER_CVAR)
+  return v == "1" or v == "true"
+end
+
+function Minimap_.ToggleDamageMeter()
+  if Minimap_.DamageMeterAvailable() then
+    R2F.QuickSettings.Write(DAMAGE_METER_CVAR, Minimap_.DamageMeterOn() and "0" or "1")
+  end
+end
+
 -- The menu as data, so both menu backends draw the same thing (and the
 -- tests can check it): kind = title / button / check / divider.
 function Minimap_.MenuItems()
-  return {
+  local items = {
     { kind = "title", text = L.ADDON_NAME },
     { kind = "button", text = L.MENU_OPEN, func = function() R2F.MainWindow.Show() end },
     { kind = "button", text = L.MENU_MACROS, func = function() R2F.MainWindow.Show("macros") end },
@@ -128,9 +147,14 @@ function Minimap_.MenuItems()
       func = Minimap_.ToggleLock },
     { kind = "button", text = L.MENU_HIDE, func = function() Minimap_.SetHidden(true) end },
     { kind = "divider" },
-    -- /reload without typing it (ReloadUI is not a protected function).
-    { kind = "button", text = L.MENU_RELOAD, func = function() ReloadUI() end },
   }
+  if Minimap_.DamageMeterAvailable() then
+    items[#items + 1] = { kind = "check", text = L.MENU_DAMAGEMETER, isChecked = Minimap_.DamageMeterOn,
+                          func = Minimap_.ToggleDamageMeter }
+  end
+  -- /reload without typing it (ReloadUI is not a protected function).
+  items[#items + 1] = { kind = "button", text = L.MENU_RELOAD, func = function() ReloadUI() end }
+  return items
 end
 
 -- Which menu API: Blizzard's MenuUtil when the

@@ -53,6 +53,7 @@ local SECTION_ICONS = {
   Restoration = "Spell_Nature_MagicImmunity",
   ["Beast Mastery"] = "Ability_Hunter_BeastTaming", Marksmanship = "Ability_Marksmanship",
   Survival = "Ability_Hunter_SwiftStrike",
+  Balance = "Spell_Nature_StarFall", Feral = "Ability_Racial_BearForm",   -- Druid (Restoration is above)
 }
 local MELEE = { WARRIOR = true, ROGUE = true, PALADIN = true }
 

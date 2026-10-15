@@ -1739,6 +1739,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Mr.BiZ cross-check tooling)
 - bis/own/: tooltips.py (cached Wowhead tooltip fetch), stats.py (tooltip -> stats), check_scores.py, check_order.py, report.md, README.md. First run: ForeverDB's score is exactly stats x weights (1% hit = 10, 1% crit = 14); about 26 best picks differ in stats, nearly all level-scaled items; 19 of 414 slots would be ordered differently under our scoring. Nothing in the site or addon changed.
 
+## 0.63.1 (2026-10-15)
+
+- UI/MacroBook.lua SECTION_ICONS Balance / Feral; Minimap.lua menu item for the damageMeterEnabled CVar through QuickSettings.Read / Write (only shown when the client has the setting).
+
 ## 0.63.0 (2026-10-15)
 
 - UI/Gameplay.lua: PAGES alerts / arrow / icons (Alerts & HUD split, two rows of page buttons, ResetPage per page); Timers.lua (buff countdown reminders: TRACK list, Walk on Air spells 1259416 / 1308663 / aura 1259417, R2FDB.timers); Calc.Order greedy deepest-first; data.py plain Charge, `PAIR_MACROS` warning; talentcalc.js "+5 points" button per card (`?v=20261015a`).

@@ -4280,6 +4280,19 @@ def test_step6_ui(templates, fx):
       end""")
     check(lua.eval("LOCKBOX:GetChecked()") is True, "the open Settings panel follows the menu's lock")
     click(6)
+    # Damage meter toggle (0.63.1): only when the client has the damageMeterEnabled setting; it flips that CVar.
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_DAMAGEMETER then return true end end return false end)()") is False,
+          "menu: no damage meter entry when the client has no such setting")
+    lua.execute("""TEST.dm = '0' OLDGET, OLDSET = GetCVar, SetCVar
+      GetCVar = function(n) if n == 'damageMeterEnabled' then return TEST.dm end return OLDGET and OLDGET(n) end
+      SetCVar = function(n, v) if n == 'damageMeterEnabled' then TEST.dm = v return end if OLDSET then return OLDSET(n, v) end end""")
+    lua.execute("DMI = nil for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_DAMAGEMETER then DMI = it end end")
+    check(lua.eval("DMI ~= nil and DMI.kind == 'check' and DMI.isChecked() == false"), "menu: a damage meter check item, unchecked while the meter is off")
+    lua.execute("DMI.func()")
+    check(lua.eval("TEST.dm") == "1" and lua.eval("DMI.isChecked()") is True, "menu: ticking it switches the game's damage meter on")
+    lua.execute("DMI.func()")
+    check(lua.eval("TEST.dm") == "0", "menu: and off again")
+    lua.execute("GetCVar, SetCVar = OLDGET, OLDSET")
     check(lua.eval("R2FDB.minimap.lock") is False, "Lock again unlocks")
     T.chat = lua.table()
     click(7)

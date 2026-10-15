@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.63.1 (2026-10-15)
+
+- Macro Book: the Druid side tabs have their own icons now: Feral = a bear, Balance = a falling star (they were both the plain book). Restoration and the class tab are unchanged, Universal stays the book.
+- Minimap button right-click menu: a "Damage meter (Blizzard)" tick box that switches the game's own damage meter on and off (it flips the game's setting, nothing else).
+
 ## 0.63.0 (2026-10-15)
 
 - Tweaks is split into more pages: **Alerts**, **Waypoint arrow** (follow the plan, arrow to corpse, size, the eight looks) and **Class icons** (all the icon reminders). The page buttons sit in two rows.

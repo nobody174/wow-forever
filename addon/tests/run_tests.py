@@ -1601,6 +1601,14 @@ def test_reminders():
     lua.execute("issecretvalue = function() return true end")
     check(lua.eval("(R2F.Timers.Remaining(R2F.Timers.TRACK[1]))") is None, "timer: secret values: nothing shown, nothing guessed")
     lua.execute("issecretvalue = nil")
+    # The section of a buff nobody has to learn (food) shows for everyone, also when the client has the spell API;
+    # the Walk on Air one only for a character who knows the spell.
+    lua.execute("IsPlayerSpell = function() return false end")
+    check(lua.eval("R2F.Timers.Applies(R2F.Timers.TRACK[2])") is True and lua.eval("R2F.Timers.Applies(R2F.Timers.TRACK[1])") is False,
+          "timers: food is for everyone, Walk on Air only with the spell")
+    lua.execute("IsPlayerSpell = function(id) return id == 1259416 end")
+    check(lua.eval("R2F.Timers.Applies(R2F.Timers.TRACK[1])") is True, "timers: Walk on Air with the spell known")
+    lua.execute("IsPlayerSpell = nil")
     # Food buff (0.64.1): any "Well Fed" buff counts down in minutes; optional "No food" nag only when the auras were readable.
     lua.execute("""WF = R2F.Timers.TRACK[2] TEST.now = 2000
       C_UnitAuras = { GetUnitAuras = function() return { { name = 'Well Fed', spellId = 5, expirationTime = 2900, icon = 'f' } } end }

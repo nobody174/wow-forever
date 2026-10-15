@@ -69,6 +69,7 @@ end
 
 -- Does this character have the buff's spell (so the section is for them)? Without the spell API: yes.
 function Timers.Applies(def)
+  if not def.learned then return true end   -- a buff for everyone (food): no spell to know
   if not (_G.IsPlayerSpell or _G.IsSpellKnown) then return true end
   for _, id in ipairs(def.learned or {}) do
     local ok, known = pcall(_G.IsPlayerSpell or _G.IsSpellKnown, id)

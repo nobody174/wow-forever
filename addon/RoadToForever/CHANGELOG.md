@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.64.2 (2026-10-15)
+
+- Fixed: the Food buff section did not show on Tweaks > Class icons (the page only listed buffs you must learn a spell for). It is there for every character now.
+- The newer-version line in chat now reads "a new version is out: x (you have y), get it @ github.com/nobody174/wow-forever/releases".
+
 ## 0.64.1 (2026-10-15)
 
 - **Newer version notice.** The addon cannot look on the internet, so copies of it tell each other their version (guild, party, raid: a few bytes at login and when your group changes). If someone around you has a newer one, chat says so once and Home shows "Update available". `/r2f update` shows what it knows. Tweaks > Chat & screen has a box to switch it off.

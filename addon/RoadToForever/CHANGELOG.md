@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.64.0 (2026-10-15)
+
+- New reminder icon: **Rested XP** (Tweaks > Class icons, left column, every class): how much rested experience you have as a percentage of a level (up to 150%). Gold while you have some, hidden when you have none. `/r2f rested`.
+
 ## 0.63.2 (2026-10-15)
 
 - Tweaks > Class icons is in two columns: gear repair, Walk on Air and tracking on the left, the class icons and the missing group buffs on the right, so the page is shorter.

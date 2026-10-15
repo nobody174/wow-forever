@@ -193,6 +193,14 @@ function Library.Init()
   if type(pt.scale) ~= "number" or pt.scale < 0.5 or pt.scale > 3 then pt.scale = 1 end
   if type(pt.x) ~= "number" then pt.x = 0 end
   if type(pt.y) ~= "number" then pt.y = -200 end
+  -- Rested XP reminder (Rested.lua).
+  if type(db.rested) ~= "table" then db.rested = {} end
+  local rs = db.rested
+  if type(rs.shown) ~= "boolean" then rs.shown = true end
+  if type(rs.lock) ~= "boolean" then rs.lock = false end
+  if type(rs.scale) ~= "number" or rs.scale < 0.5 or rs.scale > 3 then rs.scale = 1 end
+  if type(rs.x) ~= "number" then rs.x = 0 end
+  if type(rs.y) ~= "number" then rs.y = -250 end
   -- Buff countdown reminders (Timers.lua): one table per tracked buff.
   if type(db.timers) ~= "table" then db.timers = {} end
   for key, y in pairs({ walkonair = 140 }) do

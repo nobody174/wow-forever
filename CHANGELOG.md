@@ -1739,6 +1739,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Mr.BiZ cross-check tooling)
 - bis/own/: tooltips.py (cached Wowhead tooltip fetch), stats.py (tooltip -> stats), check_scores.py, check_order.py, report.md, README.md. First run: ForeverDB's score is exactly stats x weights (1% hit = 10, 1% crit = 14); about 26 best picks differ in stats, nearly all level-scaled items; 19 of 414 slots would be ordered differently under our scoring. Nothing in the site or addon changed.
 
+## 0.64.0 (2026-10-15)
+
+- Rested.lua (GetXPExhaustion / UnitXPMax, events PLAYER_XP_UPDATE / UPDATE_EXHAUSTION / PLAYER_UPDATE_RESTING), `general = true` reminder, R2FDB.rested, `/r2f rested`.
+
 ## 0.63.2 (2026-10-15)
 
 - UI/Reminders.lua BuildInto(f, x, y, width, filter, col) + TotalHeight(col) / MaxHeight; registry `general = true` (repair, tracking, timers); icons page builds two columns (ICON_W 200).

@@ -34,6 +34,7 @@ handlers.PLAYER_LOGIN = function()
   R2F.Repair.Init()
   R2F.Pet.Init()
   R2F.Timers.Init()
+  R2F.Rested.Init()
   R2F.Tracking.Init()
   R2F.Buffs.Init()
   R2F.Gameplay.InitCharacters()
@@ -188,6 +189,7 @@ local COMMANDS = {
   ["repair lock"] = function() R2F.Repair.ToggleLock() end,
   pet = function() R2F.Pet.ToggleShown() end,
   ["pet lock"] = function() R2F.Pet.ToggleLock() end,
+  rested = function() R2F.Rested.ToggleShown() end,
   minimap = function() R2F.Minimap.ToggleHidden() end,
   stance = function() R2F.Stance.ToggleShown() end,
   ["stance lock"] = function() R2F.Stance.ToggleLock() end,

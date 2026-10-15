@@ -12,7 +12,7 @@ None open (the "macros missing after a relog" bug is gone since 2026-10-15, owne
    Shen'dralas, Mount Hyjal, new dungeons): `/r2f here` at the spot, send the lines, set `zone/x/y/conf: "exact"`, run `python build.py`. Also re-check the
    `classic` points ("may have moved").
 3. **Weapons along the route**: check the Classic weapon table against Forever; extend past level 32 when the beta does.
-4. **More reminders**: pet missing / dead / unhappy and repair needed shipped in 0.62.0 (verify in game); still open: pet food, rested XP (bags: the backpack counter exists).
+4. **More reminders**: pet missing / dead / unhappy and repair needed shipped in 0.62.0 (verify in game); rested XP shipped in 0.64.0; still open: the +5% experience food buff (waiting for its name from the owner). Walk on Air countdown shipped; more countdowns on request (Timers.TRACK).
 5. **Buff "upper display"**: built (Buffs.lua). The aura probe (TESTING 7.12) showed the game hands out your buffs readably out of combat; what it does in a fight / in a dungeon is still to be sent, the reminder stays silent when the list is unreadable.
 8. **CurseForge upload / sharing**: HOLD until the owner says the addon works 100% for him and his friends.
 9. Releases: push tags ONE OR TWO at a time (GitHub starts no build for more than three).

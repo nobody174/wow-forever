@@ -1576,6 +1576,15 @@ def test_reminders():
           "15.4 Hunter: ammo frame only")
     lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('icons')")
     check(lua.eval("R2FAmmoScale:IsVisible() and R2FAmmoThreshold:IsVisible()") is True, "15.4 Hunter sees the ammo size + threshold sliders")
+    # Rested XP (0.64.0): the bank as a percent of the level's bar; gold icon, hidden without rested XP once locked.
+    lua.execute("TEST.bank = 450 TEST.need = 900 GetXPExhaustion = function() return TEST.bank end UnitXPMax = function() return TEST.need end")
+    check(abs(lua.eval("R2F.Rested.Percent()") - 50) < 1e-9, "rested: 450 of a 900 bar = 50 percent")
+    lua.execute("R2F.Rested.SetLock(true)")
+    check(lua.eval("R2FRestedFrame:IsShown()") is True and lua.eval("R2FRestedFrame.count.__text") == "50%", "rested: the icon says 50%")
+    lua.execute("TEST.bank = nil R2F.Rested.Update()")
+    check(lua.eval("R2FRestedFrame:IsShown()") is False, "rested: none left and locked: hidden")
+    lua.execute("GetXPExhaustion = nil")
+    check(lua.eval("R2F.Rested.Percent()") is None, "rested: no experience API: nothing")
     # Buff countdown (0.63.0): Walk on Air shows the seconds left on the buff, big, and nothing when it is off (locked).
     lua.execute("""TEST.now = 1000 TEST.aura = { name = 'Walking on Air', spellId = 1259417, expirationTime = 1007, icon = 'x' }
       GetTime = function() return TEST.now end

@@ -5,6 +5,14 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-17 (Druid bear tank cheat sheet)
+- builds.html: a build can now carry an optional `guide` (title, confidence, intro, `modes[]` with stat order + pack-pull rotation, foot note),
+  rendered by `guideHTML()` as a second `.build-section.guide` card right after its build card, so it sits beside the build on wide
+  screens and stacks under it on phones. First user: Druid Level 30 Feral, "Bear tank cheat sheet" (Damage tank: Strength > Stamina >
+  Agility > Armor; Pure tank: Stamina > Armor > Agility > Strength; Feral Charge > (Enrage) > Demoralizing Roar > Swipe loop). Stat order
+  is our reading of Icy Veins' Forever Feral guide (updated Oct 7) plus the Classic tank guides, so it is badged "medium": re-check in
+  beta. Nothing in the talent data or addon changed.
+
 ## 2026-10-16 (Addon version check)
 - addons.html: Leatrix Maps 1.60.21-forever → 1.60.23-forever (file 9175962, Oct 14; Forever + 1.60.1, release R, confirmed on the
   file page). Road to Forever fallback values 0.62.1 → 0.66.1 (r2f-v0.66.1, Oct 15; toc agrees, pre-release until 1.0.0).

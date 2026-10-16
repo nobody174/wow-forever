@@ -46,8 +46,10 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
   confidence badge: "high" = matches a build-specific guide, "medium" =
   reasoned from mechanics/ability-level-gating with no exact build-matched source
   found — flagged for the user to double-check in beta). Pattern notes:
-  Verify talent icons against Wowhead before adding. Hand-edit
-  directly.
+  Verify talent icons against Wowhead before adding. A build may also carry an optional `guide`
+  (cheat-sheet card shown right after it, see `guideHTML()`): `{title, confidence, intro, modes: [{name, sub,
+  stats[], statTip, pull[abilities], pullLoop, pullTip}], foot}`. Used by Druid Level 30 Feral (bear tank
+  stat order + pack pull). Hand-edit directly.
 
 - `launch-plan.html` — hand-written launch plan with three group plans plus Compare:
   2 Hunters · Warrior · Druid (`hwd`), 3 Hunters · Druid (`h3d`) — both Skyborne,

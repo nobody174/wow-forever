@@ -192,6 +192,22 @@ h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spac
 .perk-note{margin:0 0 8px;font-size:13px;color:var(--gold)}
 .perk-note[hidden]{display:none}
 .build-calc .tc-trees{justify-content:center}
+
+/* Optional "cheat sheet" card that sits beside a build card (build.guide). */
+.guide .g-mode{margin-top:18px;padding-top:16px;border-top:1px solid var(--edge)}
+.guide .build-meta{margin-bottom:0}
+.guide h3{font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin:0 0 4px}
+.guide .g-sub{color:var(--muted);font-size:13px;margin:0 0 10px;line-height:1.4}
+.guide .g-label{font:600 12px/1 var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 8px}
+.g-stats{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.g-stats li{display:flex;align-items:center;gap:6px;font:600 13px/1 var(--sans);color:var(--text)}
+.g-stats li + li::before{content:"\203A";color:var(--gold);font-size:18px;font-weight:700;margin-right:0}
+.g-stats .chip{display:inline-flex;align-items:center;gap:7px;background:#0A0F1F;border:1px solid var(--edge);border-radius:5px;padding:7px 10px}
+.g-stats .n{color:var(--gold);font-weight:700}
+.guide .g-tip{color:var(--muted);font-size:13px;margin:10px 0 0;line-height:1.45}
+.guide .g-foot{color:var(--muted);font-size:12.5px;margin:18px 0 0;padding-top:14px;border-top:1px solid var(--edge);line-height:1.45}
+.guide .g-title-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 0;margin-bottom:2px}
+.guide .confidence{display:inline-block;font:600 10px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;padding:3px 7px;border-radius:3px;margin-left:10px;vertical-align:3px}
 </style>
 <link rel="stylesheet" href="talentcalc.css?v=20261016a">
 </head>
@@ -288,6 +304,28 @@ function rotationHTML(r){
   }
   if(r.aoeNote) html += `<p class="r-note">${esc(r.aoeNote)}</p>`;
   return html + `</div>`;
+}
+// Optional cheat-sheet card shown right after a build card: build.guide =
+// {title, confidence, intro, modes:[{name, sub, stats:[...], statTip, pull:[abilities], pullLoop, pullTip}], foot}.
+function guideHTML(b){
+  const g = b.guide;
+  if(!g) return "";
+  const modes = g.modes.map(m=>`<div class="g-mode">
+      <h3>${esc(m.name)}</h3>
+      ${m.sub ? `<p class="g-sub">${esc(m.sub)}</p>` : ""}
+      <p class="g-label">Stat order</p>
+      <ol class="g-stats">${m.stats.map((s,k)=>`<li><span class="chip"><span class="n">${k+1}</span>${esc(s)}</span></li>`).join("")}</ol>
+      ${m.statTip ? `<p class="g-tip">${esc(m.statTip)}</p>` : ""}
+      <p class="g-label">Pack pull</p>
+      ${abilityRowHTML(m.pull, m.pullLoop)}
+      ${m.pullTip ? `<p class="g-tip">${esc(m.pullTip)}</p>` : ""}
+    </div>`).join("");
+  return `<div class="build-section guide">
+    <div class="g-title-row"><h2>${esc(g.title)}</h2><span class="confidence ${g.confidence}">${g.confidence}</span></div>
+    ${g.intro ? `<p class="build-meta">${esc(g.intro)}</p>` : ""}
+    ${modes}
+    ${g.foot ? `<p class="g-foot">${esc(g.foot)}</p>` : ""}
+  </div>`;
 }
 function buildHTML(b, i){
   // The talent-row is the fallback; mountCalcs() swaps in a live calculator
@@ -442,6 +480,36 @@ const DATA30 = {
       spec: "Feral", title: "Druid — Level 30 Feral (Bear tank / Cat)", code: "-5320000212003201", meta: "From Mobalytics' Forever leveling guide.",
       talents: t30([["Ferocity","5","ability_hunter_pet_hyena"], ["Heart of the Wild","3","spell_holy_blessingofagility"], ["Feral Swiftness","2","spell_nature_spiritwolf"], ["Feral Charge","1","ability_hunter_pet_bear"], ["Sharpened Claws","2","inv_misc_monsterclaw_04"], ["Savage Fury","2","ability_druid_ravage"], ["Predatory Strikes","3","ability_hunter_pet_cat"], ["Blood Frenzy","2","ability_ghoulfrenzy"], ["Leader of the Pack","1","spell_nature_unyeildingstamina"]]),
       rotation: {"confidence": "high", "note": "Mobalytics' Forever 1-30 Feral build: works for bear tanking in dungeons and cat damage solo.", "single": [{"name": "Feral Charge", "icon": "ability_hunter_pet_bear", "note": "Bear: open with it (also interrupts)."}, {"name": "Enrage", "icon": "ability_druid_enrage", "note": "Bear: rage to start the fight."}, {"name": "Demoralizing Roar", "icon": "ability_druid_demoralizingroar", "note": "Bear: on everything except casters."}, {"name": "Maul", "icon": "ability_druid_rake", "note": "Bear: rage dump on one target."}], "aoe": [{"name": "Swipe", "icon": "inv_misc_monsterclaw_03", "note": "Bear: your AoE threat."}, {"name": "Demoralizing Roar", "icon": "ability_druid_demoralizingroar", "note": "Every pack."}], "aoeNote": "Cat: Prowl, Shred to open, Rake if it lives 6+ sec, Claw for combo points, Rip on long fights, Ferocious Bite otherwise."},
+      guide: {
+        title: "Bear tank cheat sheet", confidence: "medium",
+        intro: "Two ways to play the bear while leveling. Stat order is our read of Icy Veins' Forever Feral guide plus the Classic tank guides: re-check it in beta.",
+        modes: [
+          {
+            name: "Damage tank", sub: "Pull big, kill fast. You trade a little safety for threat and speed.",
+            stats: ["Strength", "Stamina", "Agility", "Armor"],
+            statTip: "Strength is your damage (2 Attack Power per point). Agility only gives Attack Power in Cat Form, so in Bear Form it is just dodge and crit. Weapon DPS beats everything: take the highest-DPS two-hander.",
+            pull: [
+              {name: "Feral Charge", icon: "ability_hunter_pet_bear", note: "Open with it: it closes the gap and interrupts."},
+              {name: "Enrage", icon: "ability_druid_enrage", note: "Rage up front. It lowers your Armor a little, so it is fine for a damage tank."},
+              {name: "Demoralizing Roar", icon: "ability_druid_demoralizingroar", note: "On the whole pack, so they hit you softer."},
+              {name: "Swipe", icon: "inv_misc_monsterclaw_03", note: "Your AoE threat: spam it on every pull of 2+."}
+            ], pullLoop: true,
+            pullTip: "Swipe on packs, Maul on a lone target to burn spare rage. Enrage again when it is ready and you are out of rage."
+          },
+          {
+            name: "Pure tank", sub: "Stay alive and hold everything. Use this when you are low on health or the healer is stretched.",
+            stats: ["Stamina", "Armor", "Agility", "Strength"],
+            statTip: "Stamina is your health bar, and Armor cuts every melee hit. Agility adds dodge on top. Same weapon rule: highest DPS wins, speed does not matter.",
+            pull: [
+              {name: "Feral Charge", icon: "ability_hunter_pet_bear", note: "Open with it on the mob you want first."},
+              {name: "Demoralizing Roar", icon: "ability_druid_demoralizingroar", note: "Before the pack reaches you: it is your best safety button."},
+              {name: "Swipe", icon: "inv_misc_monsterclaw_03", note: "Spam it to keep every mob on you."}
+            ], pullLoop: true,
+            pullTip: "Skip Enrage unless you are out of rage, because it lowers your Armor. Use Maul only when you have rage to spare; Roar and Swipe come first."
+          }
+        ],
+        foot: "Gear: green items of the Bear (Strength + Stamina) fit both styles, Tiger (Strength + Agility) leans to damage, Monkey (Agility + Stamina) leans to pure tank. Hit, Expertise and Crit on a piece are a bonus. Check the tooltip, since Forever can change suffix stats."
+      },
     },
     {
       spec: "Restoration", title: "Druid — Level 30 Restoration (Healer)", code: "--0550035003", meta: "Our proposal from the live Forever talent trees (no guide has a Forever build for this yet): re-check it after launch.",
@@ -710,7 +778,7 @@ function render(){
     return;
   }
   const shown = spec==="All" ? builds : builds.filter(b=>b.spec===spec);
-  out.innerHTML = shown.map(buildHTML).join("");
+  out.innerHTML = shown.map((b,i)=>buildHTML(b,i) + guideHTML(b)).join("");
   mountCalcs(shown);
 }
 roster.addEventListener("click", e=>{

@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-17",
+      "title": "Builds: bear tank cheat sheet for Druids",
+      "text": "The Level 30 Feral Druid build now has a short cheat sheet beside it: the stat order and a pack-pull rotation for a damage tank (Strength, Stamina, Agility) and a pure tank (Stamina, Armor, Agility), plus which green item suffixes to look for.",
+      "link": "builds.html?class=Druid&level=30"
+    },
+    {
+      "date": "2026-10-17",
       "title": "Road to Forever addon 0.66.5: builds updated for the new talent trees",
       "text": "Wowhead changed the Forever talent trees, so every recommended build, on the Builds page and in the addon, was checked and rebuilt for the new trees. The combat banner can now be resized and moved, and a stray /reload message is gone.",
       "link": "builds.html"

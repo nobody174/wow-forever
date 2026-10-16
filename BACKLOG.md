@@ -34,7 +34,7 @@ None open (talent-tree drift fixed 2026-10-16; before each release run `python a
 ## 5. Launch-day refresh (launch 2026-11-04)
 1. **Professions BiS**: re-scrape ForeverChanges' level-60 lists, re-check `ALT` / `LADDER` and sources, update the "checked" dates.
 2. **AH market**: when AHledger lists EU markets, switch `DEFAULT_MARKET` in professions.html and save fresh site prices.
-3. **Builds and launch plan**: re-check builds and the `unverified` steps past level 30; compare our level-60 builds with the first real guides.
+3. **Builds and launch plan**: re-check builds and the `unverified` steps past level 30; compare our level-60 builds with the first real guides. Also re-check the Druid "Bear tank cheat sheet" (stat order, Enrage/armor note, green suffixes) and extend it to Level 60 (Defense, crit immunity) once real guides exist.
 
 ## 6. Owner to do
 1. Create the GitHub token and sign in once at the owner login (Group picks); publish real 60 builds for the group.

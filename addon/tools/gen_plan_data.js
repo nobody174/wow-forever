@@ -35,6 +35,12 @@ const siteCode = [
 ].join("\n");
 const site = new Function(siteCode + "\nreturn { PLANS, PLAN_IDS, PHASES, resolve, override };")();
 
+// The site's "Buyable quests" list (second script block): QUESTS and its own PHASES array.
+const buy = new Function([
+  grab(/^  var QUESTS = \[[\s\S]*?^  \];$/m, "QUESTS"),
+  grab(/^  var PHASES = \[[\s\S]*?^  \];$/m, "buy PHASES"),
+].join("\n") + "\nreturn { QUESTS, PHASES };")();
+
 // Phase headings: the page's own <h2 id="p1">Phase 1 — 12 → 20</h2>.
 function heading(id) {
   const m = html.match(new RegExp('<h2 id="' + id + '">([\\s\\S]*?)</h2>'));
@@ -133,6 +139,23 @@ function generate() {
     out.push("    } },");
   }
   out.push("  },");
+  // The "Buyable quests" list of the site (quests whose objectives can be bought instead of farmed).
+  out.push("  quests = {");
+  out.push("    phases = { " + buy.PHASES.map(p => "{ id = " + lstr(p[0]) + ", title = " + lstr(plain(p[1])) + " }").join(", ") + " },");
+  out.push("    list = {");
+  const qids = new Set();
+  for (const q of buy.QUESTS) {
+    if (qids.has(q.id)) throw new Error("gen_plan_data: duplicate quest id " + q.id);
+    qids.add(q.id);
+    let line = "      { id = " + lstr(q.id) + ", name = " + lstr(plain(q.name)) + ", zone = " + lstr(plain(q.zone)) +
+      ", q = " + lnum(q.q) + ", phase = " + lstr(q.phase) + ", st = " + lstr(q.st) +
+      ", items = { " + q.items.map(it => "{ " + lstr(plain(it[0])) + ", " + lnum(it[1]) + " }").join(", ") + " }";
+    if (q.note) line += ", note = " + lstr(plain(q.note));
+    if (q.xp) line += ", xp = " + lstr(plain(q.xp));
+    out.push(line + " },");
+  }
+  out.push("    },");
+  out.push("  },");
   // Waypoints: step id -> { default = {points}, <plan> = {points} }.
   out.push("  waypoints = {");
   for (const id of Object.keys(wpJson.steps).sort()) {
@@ -167,7 +190,8 @@ function expected() {
       }
     }
   }
-  return { plans: res, phases: LAUNCH_PHASES, waypointSteps: Object.keys(wpJson.steps) };
+  return { plans: res, phases: LAUNCH_PHASES, waypointSteps: Object.keys(wpJson.steps),
+           quests: buy.QUESTS.map(q => ({ id: q.id, name: plain(q.name), items: q.items.map(it => plain(it[0]) + ":" + it[1]), phase: q.phase })) };
 }
 
 const arg = process.argv[2];

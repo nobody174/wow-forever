@@ -14,7 +14,7 @@
 -- call is learnPoint() and the ONLY C_Traits writes (PurchaseRank,
 -- CommitConfig) are in purchasePoint(); every point is checked against combat
 -- first, nothing learns while R2F.InCombat() is true, and the "traits" mode
--- adds a two-way read-back and falls back to guided mode on anything
+-- adds a two-way read-back and switches itself off for the session on anything
 -- unexpected. The free-points source (FreePointsInfo) lives here too.
 
 local _, R2F = ...
@@ -991,7 +991,7 @@ end
 Talents.LEARN_TIMEOUT = 0.5   -- how long to wait for the server's answer
 -- "traits" mode: one point there is a purchase AND a commit, and the
 -- commit is a server round trip (Blizzard's own window shows an "applying"
--- wait for it). A too-short wait only turns into a stop + guided mode (safe,
+-- wait for it). A too-short wait only turns into a stop + learning off (safe,
 -- but annoying), so it gets more room than Classic's single LearnTalent.
 Talents.TRAITS_TIMEOUT = 2
 Talents.POLL = 0.1            -- how often a waiting point is looked for (see stepSend)
@@ -999,12 +999,12 @@ Talents.POLL = 0.1            -- how often a waiting point is looked for (see st
 local run            -- the current / last run (see Talents.StartLearn)
 -- worked: LearnTalent has landed a point this session (so addons may use it).
 -- blocked: it was refused with no other explanation before ever working, so
--- this client probably blocks it for addons -> guided mode.
+-- this client probably blocks it for addons -> mode "none".
 -- traitsWorked / traitsBlocked: the same two facts for the "traits" mode
 -- (C_Traits.PurchaseRank). Kept apart so one write path's trouble
 -- never says anything about the other. traitsBlocked, unlike blocked, is never
--- cleared by a late success: anything unexpected in that mode means guided
--- mode for the rest of the session (a /reload tries "traits" again).
+-- cleared by a late success: anything unexpected in that mode means mode "none"
+-- for the rest of the session (a /reload tries "traits" again).
 local session = { worked = false, blocked = false, traitsWorked = false, traitsBlocked = false }
 local message        -- { text =, kind = "stop" | "done" | "info" } for the tab
 
@@ -1040,9 +1040,9 @@ end
 --              (Wrath-style; the previewTalents CVar). Preferred when there:
 --              we only fill Blizzard's preview; its own Learn button commits.
 --   "direct"   LearnTalent(tab, index), one point at a time (Classic).
---   "guided"   no LearnTalent at all, or this session saw it refused with no
---              other explanation before it ever worked: we point at the
---              talent to click in Blizzard's own window instead.
+--   "none"     no write API at all, or this session saw it refused with no
+--              other explanation before it ever worked: addon learning is
+--              off (the player spends the points in Blizzard's window).
 -- The CVar test matters: a client can carry the preview functions without
 -- the feature being on (shared code), and filling a preview nobody sees
 -- would learn nothing.
@@ -1085,7 +1085,7 @@ function Talents.LearnMode()
   end
   if legacy and type(LearnTalent) == "function" and not session.blocked then return "direct" end
   if traitsWritable() and not session.traitsBlocked then return "traits" end
-  return "guided"
+  return "none"
 end
 
 local function packed(...) return { n = select("#", ...), ... } end
@@ -1236,7 +1236,7 @@ end
 -- count staged ranks on this client, the rank alone would say "yes" right
 -- after a purchase that was never applied; the free points would still say
 -- "no". Cost: a level-up landing in the same moment (+1 free) makes a real
--- point look unconfirmed -> a stop and guided mode, the safe direction.
+-- point look unconfirmed -> a stop and learning off, the safe direction.
 local function landed(r, p)
   local rank = liveRank(r, p)
   if not (rank and rank >= p.target) then return false end
@@ -1247,11 +1247,11 @@ end
 
 -- Stops that "Learn talents" can pick up again from the same point. The
 -- others (no points, tier/prerequisite, trees changed) need a fresh preview,
--- so the next click starts over with a new popup. "staged" resumes in guided
--- mode, "pending" once Blizzard's window is applied or undone.
-local RESUMABLE = { combat = true, user = true, rejected = true, staged = true, pending = true }
+-- so the next click starts over with a new popup. "pending" resumes once
+-- Blizzard's window is applied or undone.
+local RESUMABLE = { combat = true, user = true, rejected = true, pending = true }
 
--- The guided-mode hint goes on a refusal when the mode that refused is now
+-- The "blocked" hint goes on a refusal when the mode that refused is now
 -- switched off for this session.
 local function blockedNow(r)
   if r.mode == "traits" then return session.traitsBlocked end
@@ -1269,6 +1269,7 @@ local function stopText(r, why, name)
   if why == "staged" then
     return L.TALENT_STOP_STAGED:format(name, r.done, r.total) .. " " .. L.TALENT_BLOCKED_HINT
   end
+  if why == "unavailable" then return L.TALENT_UNAVAILABLE end
   if why == "pending" then return L.TALENT_STOP_PENDING:format(r.done, r.total) end
   if why == "locked" then return L.TALENT_STOP_LOCKED:format(name, r.done, r.total) end
   if why == "nopoints" then return L.TALENT_STOP_NOPOINTS:format(r.done, r.total) end
@@ -1281,7 +1282,6 @@ local function stop(r, why, p)
   -- ignored (the point may still land; lateCheck counts it then).
   r.token = r.token + 1
   r.resumable = RESUMABLE[why] or false
-  R2F.TalentGuide.Hide()
   say(stopText(r, why, p and p.name or ""), "stop")
   notify()
 end
@@ -1289,7 +1289,6 @@ end
 local function finish(r)
   r.phase = "done"
   r.token = r.token + 1
-  R2F.TalentGuide.Hide()
   say(r.done == 1 and L.TALENT_LEARNED_ONE or L.TALENT_LEARNED:format(r.done), "done")
   notify()
 end
@@ -1456,10 +1455,10 @@ end
 
 local stepSend, settle
 
--- A point that didn't land. Classic: guided mode is only suspected when
+-- A point that didn't land. Classic: a block is only suspected when
 -- LearnTalent never worked this session. "traits": ANY refusal,
--- error, failed commit or unconfirmed point switches the session to guided
--- mode at once; nothing more is fired at C_Traits until a /reload. If the
+-- error, failed commit or unconfirmed point switches addon learning off
+-- for the session at once; nothing more is fired at C_Traits until a /reload. If the
 -- point is sitting staged in Blizzard's window, the message says so: the
 -- player's Apply Changes keeps it (lateCheck counts it), undo drops it.
 local function reject(r, p, why)
@@ -1556,8 +1555,8 @@ end
 -- After a stop, the point that was on its way may still land (a slow
 -- server, combat started right after it was sent, or the player clicked
 -- Apply Changes on a staged point). Count it. Classic: if it was a "refused"
--- stop, LearnTalent does work after all, so no guided mode. "traits" stays
--- guided for the session (see session).
+-- stop, LearnTalent does work after all, so it stays on. "traits" stays
+-- off for the session (see session).
 local function lateCheck(r)
   local p = r.late
   if not p then return end
@@ -1578,37 +1577,15 @@ local function lateCheck(r)
   notify()
 end
 
--- Guided mode: show the next point in Blizzard's window and wait for the
--- player's click (CHARACTER_POINTS_CHANGED calls this again). The same
--- verify() runs before every point, so a click on the wrong talent stops it.
-local function stepGuided(r)
-  if run ~= r or r.phase ~= "guided" then return end
-  if R2F.InCombat() then return stop(r, "combat", r.points[r.pos]) end
-  local p = nextPoint(r)
-  if not p then return end
-  if r.shown ~= r.pos then
-    r.shown = r.pos
-    R2F.Print(L.TALENT_GUIDE_CLICK:format(p.name, r.done + 1, r.total))
-  end
-  R2F.TalentGuide.Show(p, r.done + 1, r.total, Talents.TreeName(p.tab))
-  notify()
-end
-
 local function begin(r)
   if run ~= r then return end       -- cancelled while it waited for combat to end
   local pending = r.late
-  r.waiting, r.late, r.shown = nil, nil, nil
+  r.waiting, r.late = nil, nil
   message = nil
   local mode = Talents.LearnMode()
-  if mode == "guided" then
-    r.mode, r.phase = "guided", "guided"
-    if R2F.TalentGuide.IsWindowOpen() then
-      R2F.Print(L.TALENT_GUIDE_START)
-    else
-      R2F.Print(L.TALENT_GUIDE_OPEN)
-    end
-    stepGuided(r)
-    return
+  if mode == "none" then
+    r.mode = "none"
+    return stop(r, "unavailable", r.points[r.pos])
   end
   r.mode, r.phase = mode == "traits" and "traits" or "direct", "learning"
   -- The config this (part of the) run writes to; every point checks the
@@ -1671,7 +1648,7 @@ function Talents.StopLearn()
   if r.phase == "queued" then
     run, message = nil, nil        -- the queued start finds run ~= r and does nothing
     notify()
-  elseif r.phase == "learning" or r.phase == "guided" then
+  elseif r.phase == "learning" then
     if r.waiting then r.late, r.waiting = r.waiting, nil end
     stop(r, "user", r.points[r.pos])
   end
@@ -1679,7 +1656,7 @@ end
 
 function Talents.LearnBusy()
   local r = run
-  return r ~= nil and (r.phase == "queued" or r.phase == "learning" or r.phase == "guided")
+  return r ~= nil and (r.phase == "queued" or r.phase == "learning")
 end
 
 -- New link previewed or Cancel: forget a stopped / finished run and its
@@ -1687,12 +1664,11 @@ end
 function Talents.ResetLearn()
   if Talents.LearnBusy() then return false end
   run, message = nil, nil
-  R2F.TalentGuide.Hide()
   return true
 end
 
--- { phase = "idle" | "queued" | "learning" | "guided" | "stopped" | "done",
---   mode ("direct" | "traits" | "guided"), done, total, current (the point
+-- { phase = "idle" | "queued" | "learning" | "stopped" | "done",
+--   mode ("direct" | "traits" | "none"), done, total, current (the point
 --   being learned, 1-based), text, resumable, point }
 function Talents.LearnStatus()
   local r = run
@@ -1715,8 +1691,6 @@ function Talents.OnPointsChanged()
   if r.phase == "learning" and r.waiting then
     -- Without C_Timer there is no timeout, so this event is the final word.
     settle(r, r.token, not (C_Timer and C_Timer.After))
-  elseif r.phase == "guided" then
-    stepGuided(r)
   elseif r.phase == "stopped" then
     lateCheck(r)
   end
@@ -1740,7 +1714,7 @@ end
 -- event on.
 function Talents.OnCombat()
   local r = run
-  if r and (r.phase == "learning" or r.phase == "guided") then
+  if r and r.phase == "learning" then
     if r.waiting then r.late, r.waiting = r.waiting, nil end
     stop(r, "combat", r.points[r.pos])
   end
@@ -1748,8 +1722,8 @@ end
 
 -- ADDON_ACTION_FORBIDDEN / ADDON_ACTION_BLOCKED (Core.lua, our addon only):
 -- the game's own word that it refused a call. For LearnTalent that is the
--- clearest "blocked for addons" signal there is, so it switches this session
--- to guided mode at once, even if a point worked before, and the point in
+-- clearest "blocked for addons" signal there is, so it switches addon
+-- learning off for this session at once, even if a point worked before, and the point in
 -- flight is settled as refused now. The same for the C_Traits writes
 -- (PurchaseRank / CommitConfig), on their own flag.
 function Talents.OnActionBlocked(fn)

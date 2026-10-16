@@ -79,7 +79,7 @@ read_globals = {
   "LootSlot", "QuestGetAutoAccept", "ReloadUI", "RepairAllItems", "SelectActiveQuest",
   "SelectAvailableQuest", "SelectGossipActiveQuest", "SelectGossipAvailableQuest",
   "SetTradeSkillItemNameFilter", "StaticPopup_Hide", "TradeSkillOnlyShowMakeable", "UnitExists",
-  "UnitFullName", "UnitGUID", "UnitIsDeadOrGhost", "UnitLevel", "UnitName", "UnitPVPName", "hooksecurefunc",
+  "UnitFullName", "UnitGUID", "UnitIsDeadOrGhost", "UnitOnTaxi", "GetRealZoneText", "UnitLevel", "UnitName", "UnitPVPName", "hooksecurefunc",
   "issecretvalue",
   -- Constants
   "NUM_BAG_SLOTS", "NUM_REAGENTBAG_SLOTS",

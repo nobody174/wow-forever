@@ -1748,6 +1748,21 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Plan positions)
 - launch-plan-waypoints.json: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance (8, 59), the Drowned City (21, 27), Steamwheedle Port boat (67, 22, approx), Mount Hyjal (53, 33 on the Kalimdor map, approx; zone "Kalimdor"), Blackmaw Hold gate (38, 32, approx), all read off the map by the owner. PlanData.lua regenerated.
 
+## 0.66.3 (2026-10-16): guided talent mode removed
+- Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
+
+## 0.66.3 (2026-10-16): quest shopping list in the Plan tab
+- gen_plan_data.js also reads QUESTS and the buy PHASES of launch-plan.html and writes `R2F.PlanData.quests` (phases + list: name, zone, quest level, phase, status, items with counts, note, xp); `--expected` carries the quests for the test. Plan.lua: `Plan.QuestGroups / QuestBought / SetQuestBought / QuestProgress` (ticks in `R2FCharDB.plan.bought`, created in Library.lua). UI/Plan.lua: a "Quest shopping list" button (top right of the tab) swaps the launch-day list for the quest list grouped by route phase, each quest with a tick box, its items ("3x Boar Intestines, ..."), the note and a "verify in beta" mark; "Back to the steps" returns. Tests: same quests in the same order as the site, rows, ticks saved per character, back to the steps.
+
+## 0.66.3 (2026-10-16): food nag quiet on flights and in capitals
+- Timers.lua: the "No food" nag stays hidden on a flight path (`UnitOnTaxi`) and in Stormwind, Ironforge, Darnassus, Undercity, Orgrimmar and Thunder Bluff (classic city map ids 1453 to 1458, or the English zone name as a fallback; `Timers.QuietSpot`). The timers re-check on ZONE_CHANGED_NEW_AREA and PLAYER_CONTROL_LOST / GAINED. Tests added; the globals are in .luacheckrc.
+
+## 2026-10-16 (Addons page: what Road to Forever contains)
+- addons.html: the Road to Forever card's Details now open with a short list of what the addon contains (macros, talents incl. Learn this build, launch plan and arrows, Mr.BiZ, training and Home, reminders and counters, Tweaks, professions export) instead of one long paragraph. The old "Test first" warning about talent learning is gone (it works, tested in game 2026-10-16). `.note ul` gets the same spacing as `.note ol`.
+
+## 2026-10-16 (Macro fall-through audit closed)
+- "Cooldown + spell" pair macros stay, each with its warning note (PAIR_MACROS in data.py; decided 2026-10-15 after the Shield Block + Revenge test). The last open check, Warlock Shadow Bolt + Imp Firebolt, needed nothing: that combined macro was replaced on 2026-10-13 by the single-spell Shadow Bolt (target / target's target), so there is no pair left to fall through. No data.py change.
+
 ## 0.66.2 (2026-10-16)
 
 - GameplayExtras.lua: R2FDB.chars is keyed by the full in-game name (two characters called Venom, Venom Oathbreaker and Venom Madstorm, overwrote each other, so the Shaman never showed in the mail list); an old bare-name entry is dropped at the next login of that character; OtherCharacters compares full names. Test added.

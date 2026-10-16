@@ -88,7 +88,7 @@ handlers.SPELLS_CHANGED = function() R2F.Ranks.OnLearned() end
 -- Talent points spent (here or in Blizzard's talent window) or gained on a
 -- level-up: Home's free-points line and the Talents tab's preview.
 -- CHARACTER_POINTS_CHANGED is the server's answer to a learned point
--- (or the player's click in guided mode); the engine checks it first, then
+-- (or the player's click in Blizzard's window); the engine checks it first, then
 -- the tab redraws.
 handlers.CHARACTER_POINTS_CHANGED = function()
   R2F.BiZ.ForgetOwnSpec()
@@ -131,7 +131,7 @@ handlers.TRADE_SKILL_DATA_SOURCE_CHANGED = function() R2F.Professions.OnUpdate("
 -- event only loses the live update while Home is already showing.
 handlers.CVAR_UPDATE = function() R2F.Settings.RequestRefresh() end
 -- The game refusing a protected call from an addon (args: addon name,
--- function). Only ours matters; for LearnTalent it means guided mode.
+-- function). Only ours matters; for LearnTalent it switches addon learning off for the session.
 local function actionBlocked(addon, fn)
   if addon == ADDON_NAME then R2F.Talents.OnActionBlocked(fn) end
 end

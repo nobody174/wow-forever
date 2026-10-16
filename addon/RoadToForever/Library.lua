@@ -258,6 +258,7 @@ function Library.Init()
   -- Per character: ticks are about THIS character's progress.
   if type(cdb.plan) ~= "table" then cdb.plan = {} end
   if type(cdb.plan.done) ~= "table" then cdb.plan.done = {} end
+  if type(cdb.plan.bought) ~= "table" then cdb.plan.bought = {} end   -- ticked quests of the shopping list
   if not (R2F.PlanData and R2F.PlanData.plans[cdb.plan.selected]) then cdb.plan.selected = "hwd" end
   -- Mr.BiZ tab (BiZ.lua): class / spec shown, source filters, the wishlist.
   -- Per character: the wishlist is this character's gear goals.

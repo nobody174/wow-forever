@@ -93,10 +93,30 @@ local function text(sec, clock)
   return ("%.1f"):format(sec)
 end
 
--- The "you have no food buff" nag: only when the player turned it on, the auras were readable, and you are alive.
+-- Where the food nag keeps quiet: on a flight path and in the six capitals (nobody needs the reminder there).
+-- Map ids are the classic city maps; the English zone names cover a client that numbers them differently.
+local CAPITAL_MAPS = { [1453] = true, [1454] = true, [1455] = true, [1456] = true, [1457] = true, [1458] = true }
+local CAPITAL_ZONES = { ["Stormwind City"] = true, ["Ironforge"] = true, ["Darnassus"] = true, ["Undercity"] = true,
+                        ["Orgrimmar"] = true, ["Thunder Bluff"] = true }
+function Timers.QuietSpot()
+  if UnitOnTaxi and UnitOnTaxi("player") then return true end
+  if C_Map and C_Map.GetBestMapForUnit then
+    local ok, id = pcall(C_Map.GetBestMapForUnit, "player")
+    if ok and CAPITAL_MAPS[id] then return true end
+  end
+  if GetRealZoneText then
+    local ok, zone = pcall(GetRealZoneText)
+    if ok and CAPITAL_ZONES[zone] then return true end
+  end
+  return false
+end
+
+-- The "you have no food buff" nag: only when the player turned it on, the auras were readable, you are alive,
+-- and you are not on a flight or in a capital.
 local function missingNag(def, d, sec, readable)
   if not (def.missing and d.remindMissing and sec == nil and readable) then return false end
-  return not (UnitIsDeadOrGhost and UnitIsDeadOrGhost("player"))
+  if UnitIsDeadOrGhost and UnitIsDeadOrGhost("player") then return false end
+  return not Timers.QuietSpot()
 end
 
 local function update(def)
@@ -182,7 +202,8 @@ function Timers.Init()
     if event == "UNIT_AURA" and unit ~= "player" then return end
     for _, def in ipairs(Timers.TRACK) do update(def) end
   end)
-  for _, e in ipairs({ "UNIT_AURA", "PLAYER_ENTERING_WORLD", "PLAYER_DEAD", "PLAYER_ALIVE" }) do
+  for _, e in ipairs({ "UNIT_AURA", "PLAYER_ENTERING_WORLD", "PLAYER_DEAD", "PLAYER_ALIVE", "ZONE_CHANGED_NEW_AREA",
+                  "PLAYER_CONTROL_LOST", "PLAYER_CONTROL_GAINED" }) do
     pcall(ev.RegisterEvent, ev, e)
   end
   for _, def in ipairs(Timers.TRACK) do update(def) end

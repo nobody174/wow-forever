@@ -20,6 +20,8 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 
 13. **0.62.1, group picks:** nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made; then Talents tab > Recommended shows a "Group picks" section for that class.
 ## 5. Home and Tweaks extras
+24. **Next release, quest shopping list:** Plan tab > "Quest shopping list" (top right): the quests whose items you can buy instead of farm, grouped by phase, with counts ("3x Boar Intestines"). Tick one: it stays ticked after /reload, the line at the top counts it. "Back to the steps" brings the launch list back. Check that nothing overlaps and that long notes fit.
+23. **Next release, food nag:** Tweaks > Class icons > Food buff > tick "Show No food when I am not fed", take off your food buff: "No food" shows in the field. Now board a flight path: it goes away while you fly and comes back after landing. Walk into a capital (Stormwind, Ironforge, Darnassus, Undercity, Orgrimmar, Thunder Bluff): it is gone there too. Tell me if a capital still shows it (the map id or zone name differs on Forever).
 
 
 

@@ -1627,6 +1627,20 @@ def test_reminders():
     lua.execute("R2FDB.timers.wellfed.lock = false WF.module.Apply()")
     check(lua.eval("R2FWellfedFrame.icon:IsShown()") is True, "food: unlocked to move it: the icon is back")
     lua.execute("R2FDB.timers.wellfed.lock = true WF.module.Apply()")
+    # Quiet on a flight and in the capitals (the nag is still on, no buff).
+    lua.execute("UnitOnTaxi = function() return true end WF.module.Apply()")
+    check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: on a flight: no nag")
+    lua.execute("UnitOnTaxi = function() return false end WF.module.Apply()")
+    check(lua.eval("R2FWellfedFrame:IsShown()") is True, "food: flight over: the nag is back")
+    for mid in (1453, 1454, 1455, 1456, 1457, 1458):
+        lua.execute("C_Map = { GetBestMapForUnit = function() return %d end } WF.module.Apply()" % mid)
+        check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: capital map %d: no nag" % mid)
+    lua.execute("C_Map = { GetBestMapForUnit = function() return 1429 end } WF.module.Apply()")
+    check(lua.eval("R2FWellfedFrame:IsShown()") is True, "food: Elwynn Forest: nag shows")
+    lua.execute("GetRealZoneText = function() return 'Orgrimmar' end WF.module.Apply()")
+    check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: zone name Orgrimmar: no nag")
+    lua.execute("GetRealZoneText = nil C_Map = nil UnitOnTaxi = nil WF.module.Apply()")
+    check(lua.eval("R2FWellfedFrame:IsShown()") is True, "food: no location APIs: the nag shows as before")
     lua.execute("issecretvalue = function() return true end C_UnitAuras.GetUnitAuras = function() return { { name = 'x' } } end WF.module.Apply()")
     check(lua.eval("R2FWellfedFrame:IsShown()") is False, "food: auras unreadable: no nag")
     lua.execute("issecretvalue = nil R2FDB.timers.wellfed.remindMissing = false")
@@ -2239,6 +2253,35 @@ def test_plan(templates=True):
     check(lua.eval("R2F.Nav.Target() ~= nil"), "%s: waypoints and ticks work in combat" % tag)
     T.combat = False
     T.fire("PLAYER_REGEN_ENABLED")
+
+    # --- Quest shopping list (the site's Buyable quests) -----------------------------------------------------------
+    lua, T = plan_runtime(templates=templates)
+    lua.execute("R2F.MainWindow.Show('plan') R2F.PlanTab.Refresh()")
+    exp_q = json.loads(subprocess.check_output(["node", node_gen, "--expected"]).decode("utf-8"))["quests"]
+    got_q = [lua.eval("R2F.PlanData.quests.list[%d].id" % i) for i in range(1, lua.eval("#R2F.PlanData.quests.list") + 1)]
+    check(got_q == [q["id"] for q in exp_q] and len(got_q) > 10, "%s: the addon has the site's %d buyable quests, same order" % (tag, len(exp_q)))
+    got_items = [lua.eval("R2F.PlanData.quests.list[%d].items" % (i + 1)) for i in range(len(exp_q))]
+    check(all(len(got_items[i]) == len(q["items"]) for i, q in enumerate(exp_q)), "%s: every quest keeps all its items" % tag)
+    find_frames(lua, "f.__kind == 'Button' and f.__text == 'Quest shopping list'", "BUYB")
+    check(lua.eval("#BUYB") == 1, "%s: the Plan tab has a Quest shopping list button" % tag)
+    lua.execute("BUYB[1]:Click()")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.questId ~= nil and f:IsVisible()", "QROWS")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "SROWS")
+    check(lua.eval("#QROWS") == len(exp_q) and lua.eval("#SROWS") == 0, "%s: the shopping list shows every quest, no launch steps" % tag)
+    check(font_text(lua, "Thelsamar Blood Sausages") is not None and font_text(lua, "3x Boar Intestines") is not None,
+          "%s: a quest shows its name and its items with counts" % tag)
+    check(font_text(lua, "Phase 1") is not None and font_text(lua, "Off our route") is not None, "%s: grouped by route phase" % tag)
+    b0, t0 = lua.eval("R2F.Plan.QuestProgress()")
+    lua.execute("QROWS[1]:Click()")
+    done_id = lua.eval("QROWS[1].questId")
+    check(lua.eval("R2F.Plan.QuestBought('%s')" % done_id) is True and lua.eval("R2F.Plan.QuestProgress()") == (1, t0),
+          "%s: ticking a quest is saved per character and counted (route quests only)" % tag)
+    check(font_text(lua, "1 of %d route quests ticked off" % t0) is not None, "%s: progress line in the shopping list" % tag)
+    check(lua.eval("R2FCharDB.plan.bought['%s']" % done_id) is True, "%s: stored in the character's saved variables" % tag)
+    lua.execute("BUYB[1]:Click()")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.questId ~= nil and f:IsVisible()", "QROWS")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "SROWS")
+    check(lua.eval("#QROWS") == 0 and lua.eval("#SROWS") > 0, "%s: Back to the steps: the launch-day list returns" % tag)
 
     # --- Home: next step ------------------------------------------------------------------------------------------------
     lua, T = plan_runtime(templates=templates)
@@ -5523,7 +5566,7 @@ def test_talent_learning(templates):
     c.T.fire("CHARACTER_POINTS_CHANGED")
     c.T.runTimers()
     check(len(c.calls()) == 4, "%s: stays stopped on later events / timers" % tag)
-    check(c.ev("R2F.Talents.LearnMode()") == "direct", "%s: LearnTalent worked earlier -> no guided mode" % tag)
+    check(c.ev("R2F.Talents.LearnMode()") == "direct", "%s: LearnTalent worked earlier -> LearnMode stays direct" % tag)
     check(c.text(c.learn) == "Learn this build" and c.enabled(c.learn) is True and c.enabled(c.previewb) is True,
           "%s: stopped: tab unlocked, Learn enabled" % tag)
     check(c.ev("R2F.Talents.CanResume(%r)" % link) is True and c.ev("R2F.Talents.CanResume('warrior/05~%s')" % wh) is False,
@@ -5543,7 +5586,7 @@ def test_talent_learning(templates):
     c.click(c.learn)
     c.accept()
     check(c.said("Stopped at Deflection: the game didn't accept the point. 0 of 17 learned. "
-                 + c.ev("R2F.L.TALENT_BLOCKED_HINT")), "%s: LearnTalent error -> refused, guided hint" % tag)
+                 + c.ev("R2F.L.TALENT_BLOCKED_HINT")), "%s: LearnTalent error -> refused, blocked hint" % tag)
 
     # ---- Combat mid-run: stop at once, count the point in flight, resume ----------------
     c = ctx({}, 17)
@@ -5746,7 +5789,7 @@ def test_talent_learning(templates):
     c.T.fire("CHARACTER_POINTS_CHANGED")           # e.g. a level-up: rank unchanged
     check(c.status().phase == "learning", "%s: an unrelated CHARACTER_POINTS_CHANGED doesn't stop the run" % tag)
     c.T.runTimers()                                # timeout before the answer
-    check(c.ev("R2F.Talents.LearnMode()") == "guided", "%s: first point refused, never worked -> guided suspected" % tag)
+    check(c.ev("R2F.Talents.LearnMode()") == "none", "%s: first point refused, never worked -> learning off" % tag)
     c.T.server()                                   # the answer was only slow
     check(c.said("The point in Deflection arrived late after all. 1 of 17 learned. Click Learn talents to continue.")
           and c.ev("R2F.Talents.LearnMode()") == "direct", "%s: late answer -> counted, back to direct mode" % tag)
@@ -5769,123 +5812,33 @@ def test_talent_learning(templates):
                                                    + c.ev("R2F.L.TALENT_BLOCKED_HINT")),
           "%s: no C_Timer: the next event without the rank is final" % tag)
 
-    # ---- Guided mode ------------------------------------------------------------------
-    def glow(cx):
-        return {"shown": cx.ev("R2F.TalentGuide.Glow() ~= nil and R2F.TalentGuide.Glow():IsShown()"),
-                "anchor": cx.ev("R2F.TalentGuide.Glow() and R2F.TalentGuide.Glow().anchor and R2F.TalentGuide.Glow().anchor:GetName()"),
-                "label": cx.ev("R2F.TalentGuide.Glow() and R2F.TalentGuide.Glow().label.__text")}
-    def tick(cx):
-        cx.lua.execute("R2F.TalentGuide.Host():Fire('OnUpdate', 0.3)")
+    # ---- Addon learning off ("none"): no write API, or this session saw it blocked -----------
     c = ctx({}, 17, setup="LearnTalent = nil")
-    check(c.ev("R2F.Talents.LearnMode()") == "guided", "%s: no LearnTalent -> guided mode" % tag)
+    check(c.ev("R2F.Talents.LearnMode()") == "none", "%s: no LearnTalent -> mode none" % tag)
     c.click(c.learn)
-    check(c.popup() == "Learn 17 talent points? Only a trainer reset can undo this.\n\n" + c.ev("R2F.L.TALENT_CONFIRM_GUIDED"),
-          "%s: guided popup says what will happen" % tag)
-    c.accept()
-    defl = c.index_of("Deflection")
-    check((c.ev("TEST.toggles") or 0) == 0 and glow(c)["shown"] is False and c.said(c.ev("R2F.L.TALENT_GUIDE_OPEN")),
-          "%s: guided mode never opens Blizzard's window itself, it asks the player to" % tag)
-    c.lua.execute("ToggleTalentFrame()")   # the player presses N
-    tick(c)
-    g = glow(c)
-    check(c.ev("TalentFrame:IsShown()") is True and c.ev("TEST.toggles") == 1, "%s: the player opened Blizzard's talent window" % tag)
-    check(g["shown"] is True and g["anchor"] == "TalentFrameTalent%d" % defl and g["label"] == "Click Deflection (1 of 17)",
-          "%s: glow on Deflection's button (client index %d): %s" % (tag, defl, g))
-    check(c.said("Click Deflection (1 of 17)"), "%s: chat says what to click" % tag)
-    check(c.text(c.learn) == "Learning 1 / 17" and c.text(c.cancel) == "Stop", "%s: guided label" % tag)
-    check(c.ev("LHINT ~= nil") and find_frames(c.lua, "f.__kind == 'FontString' and f.__text == 'Click Deflection (1 of 17)'", "NOTE") >= 2,
-          "%s: the tab's note line shows it too" % tag)
-    check(c.ev("R2F.TalentGuide.Glow().__parent == UIParent and R2F.TalentGuide.Glow().__name == nil"),
-          "%s: glow parented to UIParent" % tag)
-    pulse = c.ev("R2F.TalentGuide.Glow().pulse ~= nil and R2F.TalentGuide.Glow().pulse.playing")
-    check(pulse is (True if templates else False), "%s: pulse animation %s" % (tag, "plays" if templates else "absent (steady glow)"))
-    c.T.playerLearn(1, defl)
-    check(glow(c)["label"] == "Click Deflection (2 of 17)" and c.text(c.learn) == "Learning 2 / 17",
-          "%s: glow advances on CHARACTER_POINTS_CHANGED" % tag)
-    for _ in range(4):
-        c.T.playerLearn(1, defl)
-    g = glow(c)
-    check(g["anchor"] == "TalentFrameTab2" and g["label"] == "Open the Fury tab, then click Booming Voice (6 of 17)",
-          "%s: other tree -> glow on its tab: %s" % (tag, g))
-    c.lua.execute("TalentFrame.selectedTab = 2")
-    tick(c)
-    g = glow(c)
-    check(g["anchor"] == "TalentFrameTalent%d" % c.index_of("Booming Voice") and g["label"] == "Click Booming Voice (6 of 17)",
-          "%s: tab switched -> glow on the talent (throttled refresh): %s" % (tag, g))
-    c.lua.execute("TalentFrame:Hide()")
-    tick(c)
-    check(glow(c)["shown"] is False, "%s: talent window closed -> glow hidden" % tag)
-    c.lua.execute("TalentFrame:Show()")
-    tick(c)
-    check(glow(c)["shown"] is True, "%s: reopened -> glow back" % tag)
-    # Combat stops guided mode too; resume continues it.
-    c.combat(True)
-    check(c.said(STOP_COMBAT % (5, 17)) and glow(c)["shown"] is False, "%s: guided: combat stops, glow hidden" % tag)
-    c.combat(False)
-    c.click(c.learn)
-    check(c.popup() is None and glow(c)["label"] == "Click Booming Voice (6 of 17)", "%s: guided resumes after combat" % tag)
-    # Click through the rest in the right tabs.
-    for n in order17[5:]:
-        t = 2 if n == "Booming Voice" else 3 if n == "Shield Specialization" else 1
-        c.lua.execute("TalentFrame.selectedTab = %d" % t)
-        c.T.playerLearn(t, c.index_of(n))
-    check(c.said("Learned 17 talent points.") and glow(c)["shown"] is False and c.ev("R2F.TalentGuide.Host():IsShown()") is False,
-          "%s: guided run completes, glow and its refresh gone" % tag)
-    check(c.ev("TEST.talentWrites") == 0, "%s: guided mode never calls a talent write" % tag)
-    bliz = find_frames(c.lua, "f.__name and f.__name:find('^TalentFrame') and next(f.__scripts) ~= nil", "BZ")
-    check(bliz == 0, "%s: no script set on any Blizzard talent frame" % tag)
-    # A wrong click (talent not in the build) stops guided mode.
-    c = ctx({}, 17, setup="LearnTalent = nil")
-    c.click(c.learn)
-    c.accept()
-    c.T.playerLearn(1, c.index_of("Improved Heroic Strike"))
-    check(c.said("Stopped: your talents changed while learning. 0 of 17 learned. Check the preview, then click Learn talents again.")
-          and glow(c)["shown"] is False, "%s: guided: wrong talent clicked -> stop" % tag)
-    # Stop button in guided mode.
-    c = ctx({}, 17, setup="LearnTalent = nil")
-    c.click(c.learn)
-    c.accept()
-    c.click(c.cancel)
-    check(c.said("Stopped. 0 of 17 learned. Click Learn talents to continue.") and glow(c)["shown"] is False,
-          "%s: guided: Stop" % tag)
-    # Newer frame name; window already open is not toggled shut.
-    c = ctx({}, 17, setup="LearnTalent = nil TEST.talentFrameName = 'PlayerTalentFrame'")
-    c.lua.execute("ToggleTalentFrame()")
-    c.click(c.learn)
-    c.accept()
-    check(c.ev("PlayerTalentFrame:IsShown()") is True and c.ev("TEST.toggles") == 1
-          and glow(c)["anchor"] == "PlayerTalentFrameTalent%d" % c.index_of("Deflection"),
-          "%s: PlayerTalentFrame names; an open window stays open" % tag)
-    # No ToggleTalentFrame: text only until the player opens the window.
-    c = ctx({}, 17, setup="LearnTalent = nil ToggleTalentFrame = nil")
-    c.click(c.learn)
-    c.accept()
-    check(c.said(c.ev("R2F.L.TALENT_GUIDE_OPEN")) and c.said("Click Deflection (1 of 17)") and glow(c)["shown"] is False,
-          "%s: no ToggleTalentFrame -> 'open your talent window', no glow yet" % tag)
-    c.lua.execute("TEST.makeTalentFrame('TalentFrame'):Show()")
-    tick(c)
-    check(glow(c)["shown"] is True, "%s: glow appears once the player opens it" % tag)
-    # Detection: first point refused -> hint -> Learn continues in guided mode.
+    check(c.popup() is None and c.said(c.ev("R2F.L.TALENT_UNAVAILABLE")),
+          "%s: mode none: no popup, chat says to use Blizzard's window" % tag)
+    check(c.ev("TEST.talentWrites") == 0 and (c.ev("TEST.toggles") or 0) == 0 and c.status().phase == "idle",
+          "%s: mode none: nothing written, Blizzard's window not touched, no run started" % tag)
+    # Detection: first point refused -> hint -> the next Learn only says it is off.
     c = ctx({}, 17, setup="TEST.learnBlocked = true")
     c.click(c.learn)
     c.accept()
     c.T.runTimers()
     check(c.said("Stopped at Deflection: the game didn't accept the point. 0 of 17 learned. " + c.ev("R2F.L.TALENT_BLOCKED_HINT")),
-          "%s: blocked LearnTalent -> 13.5's stop + guided hint" % tag)
+          "%s: blocked LearnTalent -> stop + blocked hint" % tag)
     c.click(c.learn)
-    c.lua.execute("ToggleTalentFrame()")   # the player presses N
-    tick(c)
-    check(c.popup() is None and c.status().mode == "guided" and glow(c)["label"] == "Click Deflection (1 of 17)",
-          "%s: next Learn -> guided mode on the same run" % tag)
+    check(c.popup() is None and c.ev("R2F.Talents.LearnMode()") == "none" and c.said(c.ev("R2F.L.TALENT_UNAVAILABLE")),
+          "%s: next Learn -> off, says so, no popup" % tag)
     # ADDON_ACTION_FORBIDDEN for LearnTalent: stops at once, no timer needed.
     c = ctx({}, 17, setup="TEST.learnBlocked = true TEST.forbiddenEvent = true")
     c.click(c.learn)
     c.accept()
-    check(c.status().phase == "stopped" and c.ev("R2F.Talents.LearnMode()") == "guided",
-          "%s: ADDON_ACTION_FORBIDDEN -> stop and guided mode at once" % tag)
+    check(c.status().phase == "stopped" and c.ev("R2F.Talents.LearnMode()") == "none",
+          "%s: ADDON_ACTION_FORBIDDEN -> stop and learning off at once" % tag)
     c.T.fire("ADDON_ACTION_FORBIDDEN", "OtherAddon", "LearnTalent()")
     c.T.fire("ADDON_ACTION_BLOCKED", "RoadToForever", "CastSpellByName()")
-    check(c.ev("R2F.Talents.LearnMode()") == "guided", "%s: other addons' / other functions' events ignored" % tag)
+    check(c.ev("R2F.Talents.LearnMode()") == "none", "%s: other addons' / other functions' events ignored" % tag)
 
     # ---- Blizzard's preview API (Wrath-style), when switched on --------------------------
     setup = ("GetCVarBool = function(n) return n == 'previewTalents' end "
@@ -5962,7 +5915,7 @@ def test_talent_traits(templates):
     """13.10: reading talents through C_Traits. The position -> row/column
     conversion is checked against REAL dumped node data, the pane split and its
     refusals, and the realistic WoW Forever client (no Classic talent API at
-    all: reading works, learning is guided and writes nothing)."""
+    all: reading works, learning is off and writes nothing)."""
     tag = "templates" if templates else "fallbacks"
     fxt = json.load(open(TALENT_FIXTURE, encoding="utf-8"))
     raw = fxt["talents"]
@@ -6090,32 +6043,23 @@ def test_talent_traits(templates):
           "%s: Forever client: Preview works and the plan is learnable" % tag)
     check(fv.eval("R2F.Talents.TreeName(1)") == "Arms",
           "%s: Forever client: no GetTalentTabInfo -> our own tree name (15.2)" % tag)
-    check(fv.eval("R2F.Talents.LearnMode()") == "guided",
-          "%s: Forever client without C_Traits writes (13.12 adds them): learning is guided" % tag)
+    check(fv.eval("R2F.Talents.LearnMode()") == "none",
+          "%s: Forever client without C_Traits writes (13.12 adds them): addon learning is off" % tag)
     # Even if a LearnTalent (and a switched-on preview API) existed there: no
-    # Classic GetTalentInfo = no way to confirm a (tab, index) address -> guided.
+    # Classic GetTalentInfo = no way to confirm a (tab, index) address -> none.
     fv.execute("LearnTalent = function() error('must not be called') end "
                "AddPreviewTalentPoints = LearnTalent LearnPreviewTalents = LearnTalent "
                "GetCVarBool = function() return true end")
-    check(fv.eval("R2F.Talents.LearnMode()") == "guided",
-          "%s: Forever client with a stray LearnTalent / preview API: still guided" % tag)
+    check(fv.eval("R2F.Talents.LearnMode()") == "none",
+          "%s: Forever client with a stray LearnTalent / preview API: still none" % tag)
     fv.execute("LearnTalent = nil AddPreviewTalentPoints = nil LearnPreviewTalents = nil GetCVarBool = nil")
     fv.execute("R2F.Talents.StartLearn(%s, R2F.Talents.LearnPoints(R2F.Talents.Preview(%s).plan))"
                % (lua_literal(link), lua_literal(link)))
     F.runTimers()
     st = fv.eval("R2F.Talents.LearnStatus()")
-    check(st.phase == "guided" and st.point.name == "Deflection", "%s: Forever client: guided run points at Deflection" % tag)
-    check(fv.eval("R2F.TalentGuide.Glow() == nil or not R2F.TalentGuide.Glow():IsShown()") is True,
-          "%s: Forever client: no glow on a Blizzard button it can't confirm" % tag)
+    check(st.phase == "stopped" and fv.eval("R2F.Talents.LearnMode()") == "none",
+          "%s: Forever client: the run stops at once, learning is off" % tag)
     check(F.talentWrites == 0, "%s: Forever client: nothing written" % tag)
-    # The player applies the points in Blizzard's window (fires TRAIT_CONFIG_UPDATED):
-    # the guided run follows.
-    for _ in range(5):
-        fv.execute("for _, x in ipairs(TEST.talentTabs[1]) do if x.name == 'Deflection' then x.rank = (x.rank or 0) + 1 end end"
-                   " TEST.talentPoints = TEST.talentPoints - 1")
-        F.fire("TRAIT_CONFIG_UPDATED", 7001)
-    check(fv.eval("R2F.Talents.LearnStatus().phase") == "done" and F.talentWrites == 0,
-          "%s: Forever client: guided run finishes on TRAIT_CONFIG_UPDATED, still nothing written" % tag)
 
     # ---- A Classic-API client whose address names another talent: no write --
     set_game_talents(lua, raw, js["classes"]["warrior"], {})
@@ -6432,9 +6376,9 @@ def test_talent_traits_learning(templates):
     check(d.ev("R2F.Talents.LearnMode()") == "direct",
           "%s: Classic API present too -> still 'direct' (Classic path unchanged, traits only as its alternative)" % tag)
     d = ctx(extra="C_Traits.GetNodeInfo = nil")
-    check(d.ev("R2F.Talents.LearnMode()") == "guided", "%s: C_Traits without GetNodeInfo -> guided" % tag)
+    check(d.ev("R2F.Talents.LearnMode()") == "none", "%s: C_Traits without GetNodeInfo -> none" % tag)
     d = ctx(extra="C_Traits.PurchaseRank = 'not a function'")
-    check(d.ev("R2F.Talents.LearnMode()") == "guided", "%s: PurchaseRank not a function -> guided" % tag)
+    check(d.ev("R2F.Talents.LearnMode()") == "none", "%s: PurchaseRank not a function -> none" % tag)
 
     # ---- Order: the shared plan, untouched; points carry their node id --------------
     lp = c.ev("(function() local o = {} for i, p in ipairs(R2F.Talents.LearnPoints(R2F.TalentPanel.Result().plan))"
@@ -6531,7 +6475,7 @@ def test_talent_traits_learning(templates):
     check(purchases(c) == order17 and exact_build(c) and c.said("Learned 17 talent points.")
           and c.ev("R2F.Talents.LearnMode()") == "traits", "%s: async: full run, stays in traits mode" % tag)
 
-    # ---- A rejected purchase mid-run: stop, guided fallback, nothing more fired --------
+    # ---- A rejected purchase mid-run: stop, learning off, nothing more fired --------
     c = ctx()
     c.click(c.learn)
     c.accept()
@@ -6539,22 +6483,18 @@ def test_talent_traits_learning(templates):
     c.T.purchaseRejects = True
     c.T.traitServer(1)                          # 4th applied -> 5th purchase refused
     want = "Stopped at Deflection: the game didn't accept the point. 4 of 17 learned. " + HINT
-    check(c.status().phase == "stopped" and c.said(want), "%s: refused purchase -> stop + guided hint: %s" % (tag, c.chat()[-1:]))
+    check(c.status().phase == "stopped" and c.said(want), "%s: refused purchase -> stop + blocked hint: %s" % (tag, c.chat()[-1:]))
     check(want in c.status_line(), "%s: refused purchase: red line on the tab" % tag)
     check(purchases(c) == ["Deflection"] * 5 and commits(c) == 4, "%s: the refused purchase isn't committed" % tag)
-    check(c.ev("R2F.Talents.LearnMode()") == "guided", "%s: anything unexpected -> guided for the session" % tag)
+    check(c.ev("R2F.Talents.LearnMode()") == "none", "%s: anything unexpected -> off for the session" % tag)
     writes = c.ev("TEST.talentWrites")
     c.T.purchaseRejects = False
     c.T.fire("TRAIT_CONFIG_UPDATED", 7001)
     c.T.runTimers()
     check(c.ev("TEST.talentWrites") == writes, "%s: stays stopped on later events / timers" % tag)
     c.click(c.learn)
-    check(c.popup() is None and c.status().mode == "guided" and c.said("Click Deflection (5 of 17)"),
-          "%s: Learn continues the SAME run in guided mode (5 of 17), no popup" % tag)
-    for n in order17[4:]:
-        c.T.playerLearn({"Booming Voice": 2, "Shield Specialization": 3}.get(n, 1), c.index_of(n))
-    check(c.said("Learned 17 talent points.") and exact_build(c) and c.ev("TEST.talentWrites") == writes,
-          "%s: guided fallback finishes the build; no C_Traits write after the fallback" % tag)
+    check(c.popup() is None and c.said(c.ev("R2F.L.TALENT_UNAVAILABLE")) and c.ev("TEST.talentWrites") == writes,
+          "%s: Learn now only says addon learning is off: no popup, no C_Traits write" % tag)
     c.lua.execute("R2F.Talents.ResetSession()")
     check(c.ev("R2F.Talents.LearnMode()") == "traits", "%s: a new session (/reload) tries traits again" % tag)
     # PurchaseRank raising.
@@ -6562,13 +6502,13 @@ def test_talent_traits_learning(templates):
     c.click(c.learn)
     c.accept()
     check(c.said("Stopped at Deflection: the game didn't accept the point. 0 of 17 learned. " + HINT)
-          and commits(c) == 0 and c.ev("R2F.Talents.LearnMode()") == "guided", "%s: PurchaseRank error -> refused, guided" % tag)
+          and commits(c) == 0 and c.ev("R2F.Talents.LearnMode()") == "none", "%s: PurchaseRank error -> refused, off" % tag)
     # CanEditConfig says no: nothing purchased at all.
     c = ctx(extra="C_Traits.CanEditConfig = function() return false, 'nope' end")
     c.click(c.learn)
     c.accept()
-    check(c.ev("TEST.talentWrites") == 0 and c.status().phase == "stopped" and c.ev("R2F.Talents.LearnMode()") == "guided",
-          "%s: CanEditConfig false -> stopped before any purchase, guided" % tag)
+    check(c.ev("TEST.talentWrites") == 0 and c.status().phase == "stopped" and c.ev("R2F.Talents.LearnMode()") == "none",
+          "%s: CanEditConfig false -> stopped before any purchase, off" % tag)
     # The node's own canPurchaseRank = false: tier/prerequisite stop, nothing sent.
     c = ctx(extra="TEST.canPurchaseRank = false")
     c.click(c.learn)
@@ -6585,9 +6525,9 @@ def test_talent_traits_learning(templates):
     c = ctx(extra="TEST.purchaseForbidden = true")
     c.click(c.learn)
     c.accept()
-    check(c.status().phase == "stopped" and commits(c) == 0 and c.ev("R2F.Talents.LearnMode()") == "guided"
+    check(c.status().phase == "stopped" and commits(c) == 0 and c.ev("R2F.Talents.LearnMode()") == "none"
           and c.said("Stopped at Deflection: the game didn't accept the point. 0 of 17 learned. " + HINT),
-          "%s: ADDON_ACTION_FORBIDDEN on PurchaseRank -> stop, no commit, guided" % tag)
+          "%s: ADDON_ACTION_FORBIDDEN on PurchaseRank -> stop, no commit, off" % tag)
     c = ctx()
     c.T.fire("ADDON_ACTION_FORBIDDEN", "OtherAddon", "C_Traits.PurchaseRank()")
     c.T.fire("ADDON_ACTION_BLOCKED", "RoadToForever", "CastSpellByName()")
@@ -6605,8 +6545,8 @@ def test_talent_traits_learning(templates):
     check(c.status().phase == "learning", "%s: an event alone proves nothing" % tag)
     c.T.runTimers()
     check(c.said("Stopped at Deflection: the game didn't accept the point. 0 of 17 learned. " + HINT)
-          and c.rank("Deflection") == 0 and len(purchases(c)) == 1 and c.ev("R2F.Talents.LearnMode()") == "guided",
-          "%s: false success caught by the read-back at the timeout; guided" % tag)
+          and c.rank("Deflection") == 0 and len(purchases(c)) == 1 and c.ev("R2F.Talents.LearnMode()") == "none",
+          "%s: false success caught by the read-back at the timeout; off" % tag)
     # activeRank that counts STAGED ranks (field semantics differ) + no commit
     # function: the rank alone would say "learned"; the free points don't.
     c = ctx("stagedNoCommit", extra="TEST.activeIncludesStaged = true")
@@ -6621,8 +6561,8 @@ def test_talent_traits_learning(templates):
           "%s: ... never counted as learned; 'waiting in Blizzard's window' stop: %s" % (tag, c.chat()[-1:]))
     c.T.playerApply()
     check(c.said("The point in Deflection arrived late after all. 1 of 17 learned. Click Learn talents to continue.")
-          and c.ev("R2F.Talents.LearnMode()") == "guided",
-          "%s: player's Apply Changes -> counted late; the session stays guided" % tag)
+          and c.ev("R2F.Talents.LearnMode()") == "none",
+          "%s: player's Apply Changes -> counted late; the session stays off" % tag)
     # The same semantics WITH CommitConfig: committed, then really confirmed.
     c = ctx(extra="TEST.activeIncludesStaged = true")
     c.click(c.learn)
@@ -6636,17 +6576,18 @@ def test_talent_traits_learning(templates):
     c.accept()
     check(staged_of(c, "Deflection") == 1 and commits(c) == 0, "%s: no CommitConfig: the point stays staged" % tag)
     c.T.runTimers()
-    check(c.said(staged_msg) and c.ev("R2F.Talents.LearnMode()") == "guided", "%s: no CommitConfig -> 'Apply Changes' stop, guided" % tag)
+    check(c.said(staged_msg) and c.ev("R2F.Talents.LearnMode()") == "none", "%s: no CommitConfig -> 'Apply Changes' stop, off" % tag)
     c.click(c.learn)
-    check(c.status().mode == "guided" and c.ev("TEST.talentWrites") == 1, "%s: ... Learn continues guided, nothing more written" % tag)
+    check(c.popup() is None and c.said(c.ev("R2F.L.TALENT_UNAVAILABLE")) and c.ev("TEST.talentWrites") == 1,
+          "%s: ... Learn only says it is off, nothing more written" % tag)
 
     # ---- Commit failures --------------------------------------------------------------
     c = ctx(extra="TEST.commitRejects = true")
     c.click(c.learn)
     c.accept()
     c.T.runTimers()
-    check(c.said(staged_msg) and c.status().phase == "stopped" and c.ev("R2F.Talents.LearnMode()") == "guided",
-          "%s: CommitConfig keeps returning false -> retried, then stop ('waiting in Blizzard's window'), guided" % tag)
+    check(c.said(staged_msg) and c.status().phase == "stopped" and c.ev("R2F.Talents.LearnMode()") == "none",
+          "%s: CommitConfig keeps returning false -> retried, then stop ('waiting in Blizzard's window'), off" % tag)
     # A commit that answers false once or twice (still busy with the last one) is asked again and the run goes on.
     c = ctx(extra="TEST.commitRejectsTimes = 2")
     c.click(c.learn)
@@ -6729,7 +6670,7 @@ def test_talent_traits_learning(templates):
     check(purchases(c) == order17 and c.rank("Shield Specialization") == 1 and exact_build(c)
           and c.said("Learned 17 talent points."), "%s: traits: no double send, Shield Specialization 1 / 1" % tag)
     # The commit got lost: in traits mode it is NEVER re-sent (a second purchase
-    # could stack on an invisible one); it's reported, guided takes over.
+    # could stack on an invisible one); it's reported, learning goes off.
     c = ctx()
     c.click(c.learn)
     c.accept()
@@ -6753,7 +6694,7 @@ def test_talent_traits_learning(templates):
     pend = ("Stopped: Blizzard's talent window has changes that aren't applied yet. Apply or undo them there first. "
             "0 of 17 learned. Click Learn talents to continue.")
     check(c.said(pend) and c.ev("TEST.talentWrites") == 0, "%s: staged changes of the player's -> stop before any write" % tag)
-    check(c.ev("R2F.Talents.LearnMode()") == "traits", "%s: ... no guided switch for that (nothing was sent)" % tag)
+    check(c.ev("R2F.Talents.LearnMode()") == "traits", "%s: ... no switch-off for that (nothing was sent)" % tag)
     c.lua.execute("for _, x in ipairs(TEST.talentTabs[1]) do x.staged = 0 end")    # player undoes it
     c.click(c.learn)
     check(c.popup() is None and purchases(c) == ["Deflection"], "%s: ... undone -> Learn continues, no popup" % tag)
@@ -7311,7 +7252,7 @@ def test_talent_source_writes():
     LearnTalent is CALLED in exactly one place (learnPoint in Talents.lua, right
     after its combat check); AddPreviewTalentPoints only in FillPreview;
     LearnPreviewTalents (Blizzard's commit) is never called, only detected; no
-    talent API in any other file; guided mode never writes to Blizzard frames."""
+    talent API in any other file; the addon never writes to Blizzard frames."""
     calls, refs = [], []
     for dirpath, _, names in os.walk(ADDON):
         for n in names:
@@ -7340,18 +7281,9 @@ def test_talent_source_writes():
     code = "\n".join(l.split("--", 1)[0] for l in src.splitlines())
     check(not re.search(r"\b(GetNumTalentTabs|GetNumTalents|LoadAddOn|IsAddOnLoaded|Blizzard_TalentUI)\b", code),
           "Talents.lua no longer touches the Classic tab API or LoadAddOn (13.10)")
-    guide =open(os.path.join(ADDON, "UI", "TalentGuide.lua"), encoding="utf-8").read()
-    guide_code = "\n".join(l.split("--", 1)[0] for l in guide.splitlines())
-    # Only our own frames (glow, host, label, texture) get written to.
-    writes = re.findall(r"(\w+)[:.](SetScript|HookScript|SetPoint|SetParent|Show|Hide|SetSize|ClearAllPoints|Disable|Enable)\(",
-                        guide_code)
-    # ("TalentGuide" = our module's own function definitions, TalentGuide.Show etc.)
-    check({w for w, _ in writes} <= {"glow", "host", "self", "label", "tex", "TalentGuide"},
-          "TalentGuide only writes to its own frames: %s" % sorted({w for w, _ in writes}))
-    check("CreateFrame(\"Frame\", nil, UIParent)" in guide_code and "_G[" in guide_code,
-          "glow/host are unnamed frames on UIParent; Blizzard frames only looked up")
     toc = open(os.path.join(ADDON, "RoadToForever.toc"), encoding="utf-8").read()
-    check("UI\\TalentPanel.lua" in toc and "UI\\TalentGuide.lua" in toc, "TalentPanel.lua and TalentGuide.lua in the TOC")
+    check("UI\\TalentPanel.lua" in toc and "TalentGuide" not in toc, "TalentPanel.lua in the TOC, TalentGuide gone")
+    check(not os.path.exists(os.path.join(ADDON, "UI", "TalentGuide.lua")), "UI/TalentGuide.lua is deleted")
     check(re.search(r"^## Version: \d+\.\d+\.\d+$", toc, re.M) is not None, "TOC has a x.y.z version")
 
 

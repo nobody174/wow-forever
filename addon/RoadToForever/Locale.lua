@@ -187,6 +187,11 @@ R2F.L = {
   HOME_PLAN_DONE = "All launch-day steps done",
   PLAN_PICK = "Group plan:",
   PLAN_PROGRESS = "%d of %d launch-day steps done",
+  PLAN_BUY_BTN = "Quest shopping list",
+  PLAN_BUY_BACK = "Back to the steps",
+  PLAN_BUY_PROGRESS = "%d of %d route quests ticked off",
+  PLAN_BUY_VERIFY = "verify in beta",
+  PLAN_BUY_LEVEL = "%s, quest level %d",
   PLAN_WAYPOINT = "Waypoint",
   PLAN_WAYLINE_BTN = "Show /way",
   PLAN_UNKNOWN_POS = "position not known yet",
@@ -711,8 +716,8 @@ R2F.L = {
   BTN_STOP = "Stop",
   TALENT_CONFIRM = "Learn %d talent points? Only a trainer reset can undo this.",
   TALENT_CONFIRM_ONE = "Learn 1 talent point? Only a trainer reset can undo this.",
-  TALENT_CONFIRM_GUIDED = "Your game doesn't let addons learn talents, so Blizzard's talent window opens "
-    .. "and shows you which talent to click, one at a time.",
+  TALENT_UNAVAILABLE = "Your game doesn't let addons learn talents (right now). Spend the points in Blizzard's "
+    .. "talent window (default key N); /reload to let the addon try again.",
   TALENT_LEARN_TIP = "Learns the gold +N points shown in the trees, one at a time. Only a trainer reset can undo it.",
   TALENT_LEARN_COMBAT = "You can't learn talents in combat.",
   TALENT_LEARNING = "Learning %d / %d",
@@ -728,17 +733,13 @@ R2F.L = {
   TALENT_STOP_CHANGED = "Stopped: your talents changed while learning. %d of %d learned. "
     .. "Check the preview, then click Learn talents again.",
   TALENT_BLOCKED_HINT = "Your game may not let addons learn talents. "
-    .. "Click Learn talents to be shown which talents to click instead.",
+    .. "Spend the points in Blizzard's talent window instead.",
   TALENT_LATE = "The point in %s arrived late after all. %d of %d learned. Click Learn talents to continue.",
   -- "Traits" learning (WoW Forever)
   TALENT_STOP_STAGED = "Stopped at %s: the point is waiting in Blizzard's talent window but wasn't applied. "
     .. "Click Apply Changes there to keep it, or undo it there. %d of %d learned.",
   TALENT_STOP_PENDING = "Stopped: Blizzard's talent window has changes that aren't applied yet. "
     .. "Apply or undo them there first. %d of %d learned. Click Learn talents to continue.",
-  TALENT_GUIDE_CLICK = "Click %s (%d of %d)",
-  TALENT_GUIDE_TAB = "Open the %s tab, then click %s (%d of %d)",
-  TALENT_GUIDE_START = "click the glowing talent in Blizzard's talent window, one at a time.",
-  TALENT_GUIDE_OPEN = "open your talent window (default key N) and click the talents named here, one at a time.",
   TALENT_PREVIEW_FILLED = "added %d talent points to the talent window's preview. Open your talent window (default key N) and click its Learn button to keep them.",
 
   -- Minimap button

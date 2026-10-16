@@ -3148,7 +3148,9 @@ other classes' talent icons/tooltips can show without the spell being known (ico
 addon-message size limits (a build code is short, so fine); whether sharing needs a version handshake.
 
 **Removes / changes:** the "mirror my talents" view goes; "Copy my build" stays (it reads real talents); TalentGuide.lua and the old
-guided-learning mode become deletion candidates.
+guided-learning mode were deleted on 2026-10-16 (owner: more annoying than helpful; Learn this build works through "traits" mode). Every "guided" /
+`UI/TalentGuide.lua` mention earlier in this file is history: `LearnMode()` returns `"none"` where it said `guided`, and Learn talents then only
+says to use Blizzard's window (`TALENT_UNAVAILABLE`); last version with the guide: r2f-v0.66.2.
 
 ## 21. Since 0.55: what was built after the sandbox (2026-10-14 / 15, v0.55.3 - v0.62.x)
 

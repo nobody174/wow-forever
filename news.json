@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-10-16",
+      "title": "Road to Forever addon 0.66.3: quest shopping list",
+      "text": "The addon's Plan tab has a Quest shopping list: the quests whose items you can buy instead of farm, with counts and tick boxes. Learn this build now learns all the points itself, the mail list keeps characters that share a first name, and the No food reminder stays quiet on flights and in capitals. The addons page also lists everything the addon does.",
+      "link": "addons.html"
+    },
+    {
       "date": "2026-10-15",
       "title": "Road to Forever addon 0.62: pick your arrow",
       "text": "The addon's waypoint arrow now points into the scene like a real direction marker, and you can choose its look: a flat dart, a gold dart, a stone arrow, a block arrow, a compass needle, or three painted ones. The Talents tab shows arrows between talents, walks a build one level at a time and tells you the next point to pick, and there are new reminders for gear repair and for a missing, dead or unhappy pet.",

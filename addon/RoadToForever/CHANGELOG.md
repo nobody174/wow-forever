@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.66.3 (2026-10-16)
+
+- **Plan tab: Quest shopping list.** A button at the top right swaps the launch-day steps for the quests whose items you can buy instead of farm, grouped by phase, with counts and a tick box per quest (saved per character). "Back to the steps" returns.
+- **"No food" reminder** stays quiet on a flight path and in the six capitals.
+- The old **click-it-yourself talent mode is gone**: Learn this build learns the points itself, and if the game ever refuses addon learning it says so in chat and you spend the points in Blizzard's window.
+
 ## 0.66.2 (2026-10-16)
 
 - **Learn this build** no longer stops halfway on talents with several ranks: when the game answers "not yet" to the Apply step right after the previous point, the addon asks again a few times instead of giving up and switching to "click it yourself" mode.

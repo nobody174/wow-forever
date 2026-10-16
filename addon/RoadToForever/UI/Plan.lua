@@ -10,6 +10,7 @@
 --   prints the /way line to chat (Plan.Waypoint).
 -- The list is redrawn from the data every time (a few dozen rows): row frames are
 -- pooled, heights come from the wrapped text so notes of any length fit.
+-- The "Quest shopping list" button swaps the list for the site's Buyable quests (see layoutBuy).
 -- Everything here only writes SavedVariables or calls map getters / our arrow, so it all
 -- stays usable in combat.
 
@@ -26,6 +27,9 @@ local ui = {}
 local picks = {}      -- plan id -> radio button
 local headers = {}    -- pooled phase heading font strings
 local rows = {}       -- pooled step rows
+local view = "steps"  -- "steps" (the launch-day list) or "buy" (the quest shopping list)
+local buyRows = {}    -- pooled shopping-list rows
+local buyHeaders = {} -- pooled shopping-list phase headings
 
 local CONTENT_W = 440
 local TEXT_W = 360
@@ -227,10 +231,120 @@ local function layout()
   ui.contentHeight = y
 end
 
+-- Quest shopping list: the site's "Buyable quests" (quests whose items can be bought, not farmed),
+-- grouped by route phase, each with a tick box (saved per character).
+local BUY_W = 390
+
+local function buyRow(i)
+  local r = buyRows[i]
+  if r then return r end
+  r = {}
+  r.check = UI.CheckButton(content, "")
+  r.check:SetScript("OnClick", function(self)
+    if self.questId then
+      Plan.SetQuestBought(self.questId, not Plan.QuestBought(self.questId))
+      Tab.Refresh()
+    end
+  end)
+  r.title = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  r.title:SetJustifyH("LEFT")
+  r.title:SetWidth(BUY_W)
+  r.items = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  r.items:SetJustifyH("LEFT")
+  r.items:SetTextColor(1, 0.82, 0)
+  r.items:SetWidth(BUY_W)
+  r.note = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  r.note:SetJustifyH("LEFT")
+  r.note:SetTextColor(0.7, 0.7, 0.7)
+  r.note:SetWidth(BUY_W)
+  buyRows[i] = r
+  return r
+end
+
+local function hideBuyFrom(i)
+  for k = i, #buyRows do
+    local r = buyRows[k]
+    r.check:Hide(); r.title:Hide(); r.items:Hide(); r.note:Hide()
+  end
+end
+
+local function itemsText(q)
+  local parts = {}
+  for _, it in ipairs(q.items) do parts[#parts + 1] = it[2] .. "x " .. it[1] end
+  return table.concat(parts, ", ")
+end
+
+local function layoutBuy()
+  hideRowsFrom(1)
+  for k = 1, #headers do headers[k]:Hide() end
+  local y, nHead, nRow = 0, 0, 0
+  for _, g in ipairs(Plan.QuestGroups()) do
+    nHead = nHead + 1
+    local h = buyHeaders[nHead]
+    if not h then
+      h = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+      buyHeaders[nHead] = h
+    end
+    h:ClearAllPoints()
+    h:SetPoint("TOPLEFT", content, "TOPLEFT", 4, -y)
+    h:SetText(g.title)
+    h:Show()
+    y = y + 28
+    for _, q in ipairs(g.quests) do
+      nRow = nRow + 1
+      local r = buyRow(nRow)
+      local bought = Plan.QuestBought(q.id)
+      r.check.questId = q.id
+      r.check:ClearAllPoints()
+      r.check:SetPoint("TOPLEFT", content, "TOPLEFT", 0, -y + 4)
+      r.check:SetChecked(bought)
+      r.check:Show()
+      local head = q.name .. " |cff999999(" .. L.PLAN_BUY_LEVEL:format(q.zone, q.q) .. ")|r"
+      if q.st == "verify" then head = head .. " |cffff8040(" .. L.PLAN_BUY_VERIFY .. ")|r" end
+      r.title:ClearAllPoints()
+      r.title:SetPoint("TOPLEFT", content, "TOPLEFT", 40, -y)
+      r.title:SetText(head)
+      if bought then r.title:SetTextColor(0.5, 0.5, 0.5) else r.title:SetTextColor(1, 1, 1) end
+      r.title:Show()
+      local used = math.max(r.title:GetStringHeight(), 14) + 2
+      r.items:ClearAllPoints()
+      r.items:SetPoint("TOPLEFT", content, "TOPLEFT", 40, -(y + used))
+      r.items:SetText(itemsText(q))
+      r.items:Show()
+      used = used + math.max(r.items:GetStringHeight(), 12) + 2
+      local extra = q.note
+      if q.xp then extra = (extra and extra .. " " or "") .. q.xp end
+      if extra and extra ~= "" then
+        r.note:ClearAllPoints()
+        r.note:SetPoint("TOPLEFT", content, "TOPLEFT", 40, -(y + used))
+        r.note:SetText(extra)
+        r.note:Show()
+        used = used + math.max(r.note:GetStringHeight(), 12) + 2
+      else
+        r.note:Hide()
+      end
+      y = y + used + 8
+    end
+  end
+  hideBuyFrom(nRow + 1)
+  for k = nHead + 1, #buyHeaders do buyHeaders[k]:Hide() end
+  content:SetHeight(math.max(y, 1))
+  ui.contentHeight = y
+end
+
 local function refresh()
   if not visible() then return end
   local planId = Plan.Selected()
   for id, b in pairs(picks) do b:SetChecked(id == planId) end
+  ui.buyBtn:SetText(view == "buy" and L.PLAN_BUY_BACK or L.PLAN_BUY_BTN)
+  if view == "buy" then
+    local done, total = Plan.QuestProgress()
+    ui.progress:SetText(L.PLAN_BUY_PROGRESS:format(done, total))
+    layoutBuy()
+    return
+  end
+  hideBuyFrom(1)
+  for k = 1, #buyHeaders do buyHeaders[k]:Hide() end
   local done, total = Plan.Progress(planId)
   ui.progress:SetText(L.PLAN_PROGRESS:format(done, total))
   layout()
@@ -263,6 +377,15 @@ function Tab.Build(f)
   end
   ui.progress = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
   ui.progress:SetPoint("TOPLEFT", 28, -124)
+  ui.buyBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+  ui.buyBtn:SetSize(150, 22)
+  ui.buyBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -24, -120)
+  ui.buyBtn:SetText(L.PLAN_BUY_BTN)
+  ui.buyBtn:SetScript("OnClick", function()
+    view = view == "buy" and "steps" or "buy"
+    scroll:SetVerticalScroll(0)
+    Tab.Refresh()
+  end)
 
   scroll = UI.TryTemplate("ScrollFrame", "R2FPlanScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FPlanScrollPlain", f)

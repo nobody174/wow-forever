@@ -5,7 +5,7 @@
 -- character's real talents. Save a build as a loadout, share it with teammates who run the addon, or, for
 -- your own class and only after a trainer reset, learn it with Talents.lua's learning engine ("Learn this
 -- build"). This file only shows state: "Learning X / N" on the button, the rest of the tab locked meanwhile
--- (Stop appears), the stop / done message in the status line, guided mode's "Click ..." in the note line.
+-- (Stop appears), the stop / done message in the status line.
 -- The engine runs on events, not on this tab: closing the window doesn't stop a run.
 --
 -- Layout (page = PAGE, 650 x 630):
@@ -391,18 +391,11 @@ local function build(f)
   end)
   ui.learn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-  -- Stop: only while a run is active (a way out of a run that is waiting on the server or on the
-  -- player's clicks in guided mode).
+  -- Stop: only while a run is active (a way out of a run that is waiting on the server).
   ui.cancel = button(f, L.BTN_STOP, 70)
   ui.cancel:SetPoint("RIGHT", ui.learn, "LEFT", -8, 0)
   ui.cancel:SetScript("OnClick", function() Talents.StopLearn() end)
   ui.cancel:Hide()
-
-  -- Guided mode's "Click Cruelty (2 of 21)"; empty otherwise.
-  ui.note = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  ui.note:SetPoint("BOTTOMLEFT", 24, 46)
-  ui.note:SetWidth(270)
-  ui.note:SetJustifyH("LEFT")
 
   -- Reset, loadouts, recommended builds, sharing.
   ui.clear = button(f, L.BTN_RESET_TALENTS, 58)
@@ -617,7 +610,6 @@ local function applyLearnState(plan)
     ui.learn:SetEnabled(plan ~= nil and plan.learnable == true and not R2F.InCombat())
     ui.cancel:Hide()
   end
-  ui.note:SetText(st.phase == "guided" and R2F.TalentGuide.Text() or "")
 end
 
 -- Build in order. state.full = the whole build on the board; the board shows its first points (state.calc) while
@@ -725,7 +717,8 @@ end
 --   preview mode -> fill Blizzard's own preview (its Learn button commits, so no popup of ours);
 --   a stopped run for this same link -> continue it ("Click Learn talents to continue"), no second popup;
 --   otherwise    -> the confirm popup, the commit step on a client that learns a talent the moment it's
---                   sent. The same popup for "direct", "traits" and "guided".
+--                   sent. The same popup for "direct" and "traits"; "none" (addon learning off)
+--                   only says so in chat.
 function TalentPanel.Learn()
   if Talents.LearnBusy() or R2F.InCombat() or not state.calc or state.class ~= ownClass() then return end
   local text = linkText()
@@ -736,6 +729,10 @@ function TalentPanel.Learn()
     Talents.FillPreview(plan)
     return
   end
+  if mode == "none" then
+    R2F.Print(L.TALENT_UNAVAILABLE)
+    return
+  end
   if Talents.CanResume(text) then
     Talents.ResumeLearn()
     return
@@ -743,7 +740,6 @@ function TalentPanel.Learn()
   local points = Talents.LearnPoints(plan)
   local n = #points
   local question = n == 1 and L.TALENT_CONFIRM_ONE or L.TALENT_CONFIRM:format(n)
-  if mode == "guided" then question = question .. "\n\n" .. L.TALENT_CONFIRM_GUIDED end
   UI.Confirm(question, L.BTN_LEARN_CONFIRM, L.BTN_CANCEL, function()
     -- The board may have been changed while the popup was open.
     if linkText() ~= text or Talents.LearnBusy() then return end

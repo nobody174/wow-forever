@@ -116,6 +116,49 @@ function Plan.IsDone(stepId)
   return cdb().done[stepId] == true
 end
 
+-- ---------------------------------------------------------------------------
+-- Quest shopping list (the site's "Buyable quests"): quests whose objectives can be bought on the
+-- auction house or from a vendor instead of farmed. Ticks are per character, like the steps.
+-- ---------------------------------------------------------------------------
+
+-- { { id =, title =, quests = { { id, name, zone, q, st, items = { { name, count } }, note, xp }, ... } }, ... }
+-- in the site's route order; phases with no quest are left out.
+function Plan.QuestGroups()
+  local qd = data().quests
+  local out = {}
+  if not qd then return out end
+  for _, ph in ipairs(qd.phases) do
+    local list = {}
+    for _, q in ipairs(qd.list) do
+      if q.phase == ph.id then list[#list + 1] = q end
+    end
+    if #list > 0 then out[#out + 1] = { id = ph.id, title = ph.title, quests = list } end
+  end
+  return out
+end
+
+function Plan.QuestBought(id)
+  return cdb().bought[id] == true
+end
+
+function Plan.SetQuestBought(id, done)
+  cdb().bought[id] = done and true or nil
+end
+
+-- bought, total of the quests on our route (the "off our route" group is for reference only).
+function Plan.QuestProgress()
+  local done, total = 0, 0
+  for _, g in ipairs(Plan.QuestGroups()) do
+    if g.id ~= "off" then
+      for _, q in ipairs(g.quests) do
+        total = total + 1
+        if Plan.QuestBought(q.id) then done = done + 1 end
+      end
+    end
+  end
+  return done, total
+end
+
 -- The step whose Waypoint button last pointed the arrow (so ticking it moves the arrow on).
 local arrowStep
 

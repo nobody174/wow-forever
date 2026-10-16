@@ -57,7 +57,7 @@ Not started yet:
 - [x] L3 promise line already gone (grep finds nothing)
 - [ ] (skipped, owner's call) L4 import doesn't flag `/run`/`/script` in macro bodies — low priority, likely skip
 - [x] L5 talentsaved.js and template.html/macros.html now use nobody174/wow-forever. addons.html still shows 0.29.1 pre-release: update when 1.0.0 is tagged.
-- [x] Privacy/identity: re-checked 2026-10-12. No commit carries vartdal@gmail.com (the earlier "19 commits" note was wrong). All 82 public commits use nobodylearn174@gmail.com (plus Claude's noreply). Owner's call whether to switch to GitHub's noreply address for new commits.
+- [x] Privacy/identity: re-checked 2026-10-12. No commit carries the owner's real-name address (the earlier "19 commits" note was wrong). The older public commits use a separate pseudonymous address; new commits use GitHub's noreply address. (Addresses deliberately not written here, 2026-10-16.)
 
 Remaining workflow steps after Step 2 finishes: 3 Debugger (only if something unclear turns
 up), 4 Taint & Secure Execution + WoW API Compliance audit (M6 above), 4b Lua performance
@@ -130,7 +130,7 @@ verified point by point, 17,873 passing tests). What stands between it and a pub
 ### Privacy / identity
 
 - Code and data: covered by H4 (character and friend names). No email, real name, local paths or tokens found.
-- **Git history:** re-checked 2026-10-12: no commit has vartdal@gmail.com. The public commits use nobodylearn174@gmail.com. Setting the repo's git email to the GitHub noreply address stops it showing on new commits.
+- **Git history:** re-checked 2026-10-12: no commit has the owner's real-name address. Older public commits use a pseudonymous address; the repo's git email is now GitHub's noreply address, so new commits show no personal address. (Addresses deliberately not written in this file.)
 
 ## Step 4b: Lua performance pass (2026-10-12)
 - Checked: OnUpdate scripts (only the Bags drag watcher, Minimap drag, TalentGuide 0.2 s host; all run only while active), timers (no tickers), event registrations (Gameplay features register events only while switched on).

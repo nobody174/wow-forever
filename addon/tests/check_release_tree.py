@@ -49,7 +49,7 @@ if not first:
 elif version and first.group(1) != version:
     fail(f"newest CHANGELOG section is {first.group(1)} but the TOC says {version}")
 
-LEAKS = re.compile(r"ADDON_PLAN|TESTING\.md|BACKLOG\.md|ROADMAP\.md|\bVenom\b|Trollmann|Oathbreaker|vartdal|@gmail\.com",
+LEAKS = re.compile(r"ADDON_PLAN|TESTING\.md|BACKLOG\.md|ROADMAP\.md|\bVenom\b|Trollmann|Oathbreaker|@gmail\.com",
                    re.I)
 # "Venom" is also a real Rogue talent name in the generated game data.
 LEAKS_DATA = re.compile(LEAKS.pattern.replace(r"|\bVenom\b", ""), re.I)

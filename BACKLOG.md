@@ -4,11 +4,7 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 [ROADMAP.md](ROADMAP.md); what needs in-game testing in [addon/dev/TESTING.md](addon/dev/TESTING.md).
 
 ## 1. Bugs
-1. **Builds broken by Wowhead's talent-tree changes (found 2026-10-16).** Wowhead's live Forever talent data changed (talents renamed or removed: Malediction, Wake of Fire, Hot Streak, Call of Thunder, Shadow Affinity, Predatory Instincts; rows and max ranks moved). The site loads that data live, so these builds now open EMPTY (Points 0, Level -) or show a build that no longer matches its talent row:
-   - Level 30: Priest Discipline Healer / PvP (26 points), Warlock Affliction, Mage Arcane, Priest Shadow (the last two only need their codes regenerated from their talent lists: Shadow `02--305022012013`, Arcane `2501005003100301`); Mage Fire and Shaman Elemental have talent lists that name removed talents (the code still opens).
-   - Level 60: Priest Shadow, Warlock Affliction, Mage Frost, Mage Fire, Shaman Elemental (codes broken), Priest Holy, Druid Feral (Bear) (talent lists out of step).
-   - The addon's `TalentData.lua` is still the older snapshot (re-running `python addon/tools/gen_talent_data.py` today makes the test suite fail: 7 recommended builds are no longer valid). Fix order: re-source or re-pick these builds against the current trees (owner's call which talents), regenerate TalentData, run the tests. Do not ship half-rebuilt builds: a regenerated code that silently skips a removed talent loses points (checked: 48 of 51).
-   - Not touched yet because a build needs a real decision (which talent gets the freed point); nothing else of the data is wrong. The 26-point Fury (dual-wield) build is fine and shows the +5 Talented switch clearly (note in the card, switch at the top, "+5 points" button).
+None open (talent-tree drift fixed 2026-10-16; before each release run `python addon/tools/gen_talent_data.py --drift`).
 
 ## 2. Addon
 1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build.

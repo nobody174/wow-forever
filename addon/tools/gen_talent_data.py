@@ -9,6 +9,7 @@ a snapshot: rerun this script when Wowhead changes the trees or builds.html gets
 
     python addon/tools/gen_talent_data.py            # fetch + write
     python addon/tools/gen_talent_data.py --check    # exit 1 if builds.html's builds changed since the file was written
+    python addon/tools/gen_talent_data.py --drift    # exit 1 if Wowhead's live trees differ from the snapshot (run before a release)
 
 Never hand-edit TalentData.lua.
 """
@@ -154,6 +155,16 @@ def main():
         if wantg != gotg:
             print("TalentData.lua is out of date with group-builds.json: run python addon/tools/gen_talent_data.py")
             return 1
+        return 0
+    if "--drift" in sys.argv:
+        def strip(t):
+            return "\n".join(l for l in t.split("\n") if "snapshot" not in l)
+        have = OUT.read_text(encoding="utf-8").replace("\r\n", "\n") if OUT.exists() else ""
+        if strip(have) != strip(build_text(fetch())):
+            print("Wowhead's live talent trees differ from TalentData.lua: the site's builds read the live data, so re-validate "
+                  "every build (see BACKLOG / the library's ledger D12), then run python addon/tools/gen_talent_data.py")
+            return 1
+        print("talent trees match the snapshot")
         return 0
     raw = fetch()
     with open(OUT, "w", encoding="utf-8", newline="\n") as fh:

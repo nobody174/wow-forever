@@ -7043,7 +7043,7 @@ def test_talent_sandbox_ui(templates):
     # Next point (0.56.2): nothing taken -> the build's first point; everything taken -> nil; the Home line follows the board.
     chk = lua.eval("""(function()
       local TC = R2F.TalentCalc
-      local calc = TC.FromCode('priest', '02--3050220012013')
+      local calc = TC.FromCode('priest', '02--305022012013')
       local name, i = TC.NextPoint(calc, {})
       local full = {}
       for t = 1, #calc.ranks do
@@ -7060,7 +7060,7 @@ def test_talent_sandbox_ui(templates):
     # Pick order (0.63.0, owner rule): deepest first, the main tree first, a dip into another tree last.
     chk = lua.eval("""(function()
       local TC = R2F.TalentCalc
-      local calc = TC.FromCode('priest', '02--3050220012013')   -- Shadow, with 2 points in Discipline
+      local calc = TC.FromCode('priest', '02--305022012013')   -- Shadow, with 2 points in Discipline
       local o = TC.Order(calc)
       local last = o[#o]
       local depth = 0

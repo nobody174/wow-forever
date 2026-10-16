@@ -62,7 +62,7 @@
     if (!host) return null;
     host.innerHTML = '<div class="tc-perk"><button type="button" role="switch" class="tc-sw" aria-checked="false" aria-label="Talented legacy perk">' +
       '<span class="tc-sw-knob"></span></button><span class="tc-perk-text"><b>Talented</b> legacy perk: +5 talent points ' +
-      '<small>You start earning points at level 5 instead of 10, so a build is reached 5 levels sooner.</small></span></div>';
+      '<small>You start earning points at level 5 instead of 10, so a build is reached 5 levels sooner. In the beta every character has it; at launch you start with no Legacy points (the first comes at level 25), so treat the 26-point builds as beta-only.</small></span></div>';
     var sw = host.querySelector(".tc-sw");
     function paint() { sw.setAttribute("aria-checked", talented ? "true" : "false"); }
     sw.addEventListener("click", function () { setTalented(!talented); });

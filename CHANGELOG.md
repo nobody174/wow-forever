@@ -5,6 +5,14 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-17 (cheat sheets for every class)
+- builds.html: new `GUIDES[level][class][spec]` map (same shape as an inline `build.guide`; `guideHTML()` uses `b.guide` first) covers
+  all 47 builds. Level 30 from Icy Veins' Forever spec guides (Sep 17 to Oct 16); Level 60 is Classic-based (no Forever 60 guide exists, hit caps
+  and Defense numbers unpublished) and says so in its intro. "high" = the guide gave an ordered stat list for that exact spec, "medium" = our read.
+- Ability icons resolve by name from the class's own builds (`iconFor()`); a name with no known icon renders as a text chip (`.talent.noicon`):
+  Holy Fire, Rupture, Mongoose Bite, Lay on Hands. Optional `pullLabel` (e.g. "Healing priority") and tip-only extra rows (empty abilities).
+- Tested every class x level (18 combos): no page errors, one guide per build card. `python build.py` and addon tests green (25232 checks).
+
 ## 2026-10-17 (Druid bear tank cheat sheet)
 - builds.html: a build can now carry an optional `guide` (title, confidence, intro, `modes[]` with stat order + pack-pull rotation, foot note),
   rendered by `guideHTML()` as a second `.build-section.guide` card right after its build card, so it sits beside the build on wide

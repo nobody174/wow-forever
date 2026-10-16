@@ -47,7 +47,7 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
   reasoned from mechanics/ability-level-gating with no exact build-matched source
   found — flagged for the user to double-check in beta). Pattern notes:
   Verify talent icons against Wowhead before adding. A build may also carry an optional `guide`
-  (cheat-sheet card shown right after it, see `guideHTML()`): `{title, confidence, intro, modes: [{name, sub,
+  (cheat-sheet card shown right after it, see `guideHTML()`; builds without an inline guide read `GUIDES[level][class][spec]`, icons by name via `iconFor()`, text chip when unknown; optional `pullLabel`): `{title, confidence, intro, modes: [{name, sub,
   stats[], statTip, pull[abilities], pullLoop, pullTip}], foot}`. Used by Druid Level 30 Feral (bear tank
   stat order + pack pull) at Level 30 and Level 60; a mode can add `extra: [{label, abilities, loop, tip}]` rows. Hand-edit directly.
 

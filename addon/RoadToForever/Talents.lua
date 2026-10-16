@@ -1441,9 +1441,9 @@ local function purchasePoint(r, p)
       C_Timer.After(Talents.COMMIT_RETRY, function()
         if run ~= r or r.phase ~= "learning" or r.waiting ~= p then return end
         if pendingElsewhere(configID, p.nodeID) then return end      -- someone else staged something: never commit it
-        local ok, res = pcall(C_Traits.CommitConfig, configID)
-        traitLog(("%s: CommitConfig again (%d) ok=%s result=%s"):format(p.name, n, tostring(ok), tostring(res)))
-        if ok and res ~= false then return end
+        local again_ok, again_res = pcall(C_Traits.CommitConfig, configID)
+        traitLog(("%s: CommitConfig again (%d) ok=%s result=%s"):format(p.name, n, tostring(again_ok), tostring(again_res)))
+        if again_ok and again_res ~= false then return end
         if n < Talents.COMMIT_TRIES then again(n + 1) end
       end)
     end

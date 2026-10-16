@@ -6,8 +6,11 @@ Pages: `index` (countdown), `launch-plan`, `builds`, `talents` (+ Legacy), `bis`
 `macros` (generated), `addons`, `news`, `library-books`.
 
 General WoW knowledge (taint rules, macro patterns, data sources, addon checklist, roles) lives in the
-**WoW dev support folder** (`wow-dev-support-folder` repo, kept next to this one). Read the file you need,
-not the whole folder. Per-page and per-pipeline notes for THIS project are in `docs/`:
+**WoW dev support folder**: `../wow-dev-support-folder/` next to this repo (GitHub: `nobody174/wow-dev-support-folder`,
+private). Read the file you need, not the whole folder, and check its
+`06-findings-and-decisions/findings-ledger.md` BEFORE researching a client or data question. When something
+reusable turns up, add a ledger row there (generalized, no duplication). Role definitions live in
+`personal-dev-support-folder/08-meta-ai-roles`. Per-page and per-pipeline notes for THIS project are in `docs/`:
 
 | Doc | Read when you touch |
 |---|---|

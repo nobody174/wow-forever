@@ -4,15 +4,18 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 [ROADMAP.md](ROADMAP.md); what needs in-game testing in [addon/dev/TESTING.md](addon/dev/TESTING.md).
 
 ## 1. Bugs
-None open (the "macros missing after a relog" bug is gone since 2026-10-15, owner).
+1. **Builds broken by Wowhead's talent-tree changes (found 2026-10-16).** Wowhead's live Forever talent data changed (talents renamed or removed: Malediction, Wake of Fire, Hot Streak, Call of Thunder, Shadow Affinity, Predatory Instincts; rows and max ranks moved). The site loads that data live, so these builds now open EMPTY (Points 0, Level -) or show a build that no longer matches its talent row:
+   - Level 30: Priest Discipline Healer / PvP (26 points), Warlock Affliction, Mage Arcane, Priest Shadow (the last two only need their codes regenerated from their talent lists: Shadow `02--305022012013`, Arcane `2501005003100301`); Mage Fire and Shaman Elemental have talent lists that name removed talents (the code still opens).
+   - Level 60: Priest Shadow, Warlock Affliction, Mage Frost, Mage Fire, Shaman Elemental (codes broken), Priest Holy, Druid Feral (Bear) (talent lists out of step).
+   - The addon's `TalentData.lua` is still the older snapshot (re-running `python addon/tools/gen_talent_data.py` today makes the test suite fail: 7 recommended builds are no longer valid). Fix order: re-source or re-pick these builds against the current trees (owner's call which talents), regenerate TalentData, run the tests. Do not ship half-rebuilt builds: a regenerated code that silently skips a removed talent loses points (checked: 48 of 51).
+   - Not touched yet because a build needs a real decision (which talent gets the freed point); nothing else of the data is wrong. The 26-point Fury (dual-wield) build is fine and shows the +5 Talented switch clearly (note in the card, switch at the top, "+5 points" button).
 
 ## 2. Addon
 1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build.
-2. **Plan points without a position**: 7 left (TESTING 15): Zephras Isle start and Skycutter, the Skyborne portal in Dalaran, Riverglades, Krol'dok Stronghold, Shen'dralas, Shaper's Terrace; run `/r2f here` at each spot and send the lines. Six were filled in on 2026-10-15 from the owner's map readings. Also re-check the `classic` points ("may have moved").
+2. **Plan points without a position**: only Shaper's Terrace has no position (TESTING 15.7); Krol'dok and Dire Maul are approximate (read online). Also re-check the `classic` points ("may have moved").
 3. **Weapons along the route**: check the Classic weapon table against Forever; extend past level 32 when the beta does.
 4. **More countdowns** on request (Timers.TRACK). Pet / repair / rested XP / food / Walk on Air / Seal / Slice and Dice reminders are all shipped (CHANGELOG 0.62.0 to 0.66.0).
 5e. **Copy beta settings to release** (owner): found 2026-10-16 in `<WoW folder>\_classic_beta_\WTF\<Account>\` (only the beta client exists there yet). Account level: `edit-mode-cache-account.txt` (Edit Mode layouts, 11 KB), `bindings-cache.wtf` (keybinds), `config-cache.wtf`, `macros-cache.txt`, `character-list-order.txt`, `SavedVariables\` (addon settings, incl. RoadToForever). Per character (`70\<Name-Surname>\`): `layout-local.txt`, `edit-mode-cache-character.txt`, `bindings-cache.wtf`, `click-bindings-cache.txt`, `config-cache.wtf`, `macros-cache.txt`, `chat-cache.txt`, `AddOns.txt`, `SavedVariables\`. To copy when the release client exists: same folder shape under its own WTF; rename the character folders to the release realm's names. Nothing was copied or changed.
-5i. **Addon README is out of date** (addon/RoadToForever/README.md: says six pages, TomTom waypoints, no mention of timers, BiZ enchants, Crafters export, debug tools). Refresh it from the addons.html recap; the README itself already exists.
 5d. **Rested XP icon**: owner keeps it. It is already off until ticked (Tweaks > Class icons); nothing to change.
 5. **Buff "upper display"**: built (Buffs.lua). The aura probe (TESTING 7.12) showed the game hands out your buffs readably out of combat; what it does in a fight / in a dungeon is still to be sent, the reminder stays silent when the list is unreadable.
 8. **CurseForge upload / sharing**: HOLD until the owner says the addon works 100% for him and his friends.
@@ -28,7 +31,6 @@ None open (the "macros missing after a relog" bug is gone since 2026-10-15, owne
 ## 4. Site: builds and macros
 1. **Marksmanship tree**: Mobalytics lists an Improved Serpent Sting that Wowhead's Forever data does not have yet; our code ends before it, but old share links could shift if it is added (check share links then). All level 30 builds are owner-confirmed (2026-10-15).
 1b. **Talent pick order**: owner rule (2026-10-15): reach the deepest talents the build asks for as early as possible (5 points per row), then fill the rest; done in 0.63.0 (`Calc.Order`, deepest first). Still open: one-click "learn next point" after TESTING 4.2 passes.
-1d. **Fury / Warrior "+5 Talented points" option**: builds.html already has the Talented switch; check the 26-point builds (Fury dual-wield, Priest Healer / PvP) show it clearly.
 4. **"Test in beta" macros** (42 of them carry the label; 33 are the Druid set, see TESTING 13; the other 9 are TESTING 14).
 5. **Paladin "Crusade" talent**: missing from Wowhead's Forever data; when it appears, re-check the level-30 Ret build (`DATA30` code shifts by one talent).
 6. **`/console` combat lockdown**: unconfirmed which CVars are blocked in combat (low priority).

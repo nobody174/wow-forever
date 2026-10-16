@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.66.4 (2026-10-16)
+
+- **Seal (Paladin) and Slice and Dice (Rogue) timers keep going in a fight.** If the game hides your buffs in combat, the timer now counts down from the last time it could read them and shows a "~" in front of the number ("~1750"); casting the seal or Slice and Dice again in the fight restarts it. A new `/r2f debug timers` shows what the timers can read (run it in a fight).
+- **Combat banner** (Tweaks > Alerts, off by default): "Entering Combat" and "Leaving Combat" in big text near the top of the screen for a moment.
+- The readme now says what the addon sends (your addon version, to your guild and group) and where the quest shopping list is.
+
 ## 0.66.3 (2026-10-16)
 
 - **Plan tab: Quest shopping list.** A button at the top right swaps the launch-day steps for the quests whose items you can buy instead of farm, grouped by phase, with counts and a tick box per quest (saved per character). "Back to the steps" returns.

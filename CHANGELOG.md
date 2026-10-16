@@ -1751,10 +1751,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
-## Unreleased (2026-10-16): combat banner
+## 0.66.4 (2026-10-16): combat banner
 - GameplayExtras.lua: new Tweaks > Alerts feature "Show a banner when combat starts and ends" (`combatbanner`, off by default): "Entering Combat" (red) / "Leaving Combat" (green) in `GameFontNormalHuge` near the top of the screen (our own frame on UIParent, strata HIGH, 150 px down) for 2 s, driven by PLAYER_REGEN_DISABLED / ENABLED. Tests: `test_combat_banner`. TESTING 5.26.
 
-## Unreleased (2026-10-16): seal and Slice and Dice timers in combat
+## 0.66.4 (2026-10-16): seal and Slice and Dice timers in combat
 - Timers.lua: `Timers.Remaining` no longer gives up when ONE aura in the list is hidden (secret values): an unreadable aura is skipped and ours is looked for in the rest. If ours (or the whole list) is hidden, the countdown continues from the last readable look (`seen[key]` = expires, duration, icon) and the number is shown with a leading "~"; `Timers.OnCast` (UNIT_SPELLCAST_SUCCEEDED, player) restarts the estimate from the last full duration when the buff's spell is cast in the fight; a readable list without the buff clears it; an estimate that has run out shows nothing. New events: UNIT_SPELLCAST_SUCCEEDED, PLAYER_REGEN_DISABLED / ENABLED. New `/r2f debug timers`. Never a guess: nothing seen before + everything hidden = nothing shown. Tests: `test_timers_in_combat`. TESTING 5.25. (Why: the owner saw the timers vanish in fights; whether the game hides the list or only single auras is unknown until `/r2f debug timers` is run in a fight.)
 
 ## 0.66.3 (2026-10-16): quest shopping list in the Plan tab

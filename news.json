@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-16",
+      "title": "Road to Forever addon 0.66.4: timers that keep going in a fight",
+      "text": "The Paladin seal and Rogue Slice and Dice timers no longer disappear in combat: they keep counting (marked with a ~ when the game hides your buffs). There is also an optional Entering Combat / Leaving Combat banner in Tweaks > Alerts.",
+      "link": "addons.html"
+    },
+    {
+      "date": "2026-10-16",
       "title": "Road to Forever addon 0.66.3: quest shopping list",
       "text": "The addon's Plan tab has a Quest shopping list: the quests whose items you can buy instead of farm, with counts and tick boxes. Learn this build now learns all the points itself, the mail list keeps characters that share a first name, and the No food reminder stays quiet on flights and in capitals. The addons page also lists everything the addon does.",
       "link": "addons.html"

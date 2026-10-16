@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.66.5 (2026-10-17)
+
+- **Recommended builds follow the game's changed talent trees.** The game's talent trees changed (some talents renamed, removed or moved), so many recommended builds would have opened wrong or empty. All of them are rebuilt for the new trees. Where a removed talent freed a point, a nearby talent got it; check your class's build in the beta.
+- **Combat banner** moved to Tweaks > Class icons: you can now change its size and drag it where you want it.
+- Fixed: "Hide Blizzard's alert text" no longer prints the "type /reload" line at every login.
+
 ## 0.66.4 (2026-10-16)
 
 - **Seal (Paladin) and Slice and Dice (Rogue) timers keep going in a fight.** If the game hides your buffs in combat, the timer now counts down from the last time it could read them and shows a "~" in front of the number ("~1750"); casting the seal or Slice and Dice again in the fight restarts it. A new `/r2f debug timers` shows what the timers can read (run it in a fight).

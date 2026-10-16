@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-10-17",
+      "title": "Road to Forever addon 0.66.5: builds updated for the new talent trees",
+      "text": "Wowhead changed the Forever talent trees, so every recommended build, on the Builds page and in the addon, was checked and rebuilt for the new trees. The combat banner can now be resized and moved, and a stray /reload message is gone.",
+      "link": "builds.html"
+    },
+    {
       "date": "2026-10-16",
       "title": "Road to Forever addon 0.66.4: timers that keep going in a fight",
       "text": "The Paladin seal and Rogue Slice and Dice timers no longer disappear in combat: they keep counting (marked with a ~ when the game hides your buffs). There is also an optional Entering Combat / Leaving Combat banner in Tweaks > Alerts.",

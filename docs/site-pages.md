@@ -49,7 +49,7 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
   Verify talent icons against Wowhead before adding. A build may also carry an optional `guide`
   (cheat-sheet card shown right after it, see `guideHTML()`): `{title, confidence, intro, modes: [{name, sub,
   stats[], statTip, pull[abilities], pullLoop, pullTip}], foot}`. Used by Druid Level 30 Feral (bear tank
-  stat order + pack pull). Hand-edit directly.
+  stat order + pack pull) at Level 30 and Level 60; a mode can add `extra: [{label, abilities, loop, tip}]` rows. Hand-edit directly.
 
 - `launch-plan.html` — hand-written launch plan with three group plans plus Compare:
   2 Hunters · Warrior · Druid (`hwd`), 3 Hunters · Druid (`h3d`) — both Skyborne,

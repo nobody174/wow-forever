@@ -3,8 +3,8 @@
   "news": [
     {
       "date": "2026-10-17",
-      "title": "Builds: bear tank cheat sheet for Druids",
-      "text": "The Level 30 Feral Druid build now has a short cheat sheet beside it: the stat order and a pack-pull rotation for a damage tank (Strength, Stamina, Agility) and a pure tank (Stamina, Armor, Agility), plus which green item suffixes to look for.",
+      "title": "Builds: bear tank cheat sheet for Druids (Level 30 and 60)",
+      "text": "The Feral Druid build now has a short cheat sheet beside it at both Level 30 and Level 60: the stat order and a rotation for a damage tank and a pure tank, plus which green item suffixes to look for. Click Level 60 and the sheet switches to the 60 version.",
       "link": "builds.html?class=Druid&level=30"
     },
     {

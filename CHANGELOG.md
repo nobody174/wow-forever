@@ -12,6 +12,13 @@ user-facing release notes.
   Agility > Armor; Pure tank: Stamina > Armor > Agility > Strength; Feral Charge > (Enrage) > Demoralizing Roar > Swipe loop). Stat order
   is our reading of Icy Veins' Forever Feral guide (updated Oct 7) plus the Classic tank guides, so it is badged "medium": re-check in
   beta. Nothing in the talent data or addon changed.
+- Same card for Druid Level 60 Feral (Bear tank): Damage tank = Hit (to cap) > Strength > Stamina > Armor > Agility; Pure tank = Stamina >
+  Armor > Defense > Agility > Hit. Cards can now carry extra rotation rows per mode (`extra: [{label, abilities, loop, tip}]`): Single
+  target for both, Safety (Growl, Challenging Roar, Frenzied Regeneration, Barkskin) for the pure tank. Sources: Mobalytics' Forever Feral
+  guide (Oct 14), Icy Veins' Forever Feral guide (Oct 7), Icy Veins' Classic Feral tank stat and rotation pages. No Forever guide covers 60 tank
+  stats yet, so it is badged "medium". Icons for Growl, Challenging Roar, Frenzied Regeneration and Barkskin are the standard Classic names
+  but could not be checked against Wowhead from the cloud: confirm they show on the live page. Hit cap (9% in Classic), Defense and whether
+  Barkskin / Frenzied Regeneration exist in Forever are unverified.
 
 ## 2026-10-16 (Addon version check)
 - addons.html: Leatrix Maps 1.60.21-forever → 1.60.23-forever (file 9175962, Oct 14; Forever + 1.60.1, release R, confirmed on the

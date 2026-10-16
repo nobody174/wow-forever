@@ -201,7 +201,7 @@ h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spac
 .guide .g-label{font:600 12px/1 var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 8px}
 .g-stats{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .g-stats li{display:flex;align-items:center;gap:6px;font:600 13px/1 var(--sans);color:var(--text)}
-.g-stats li + li::before{content:"\203A";color:var(--gold);font-size:18px;font-weight:700;margin-right:0}
+.g-stats li:not(:last-child)::after{content:"\203A";color:var(--gold);font-size:18px;font-weight:700}
 .g-stats .chip{display:inline-flex;align-items:center;gap:7px;background:#0A0F1F;border:1px solid var(--edge);border-radius:5px;padding:7px 10px}
 .g-stats .n{color:var(--gold);font-weight:700}
 .guide .g-tip{color:var(--muted);font-size:13px;margin:10px 0 0;line-height:1.45}
@@ -306,7 +306,8 @@ function rotationHTML(r){
   return html + `</div>`;
 }
 // Optional cheat-sheet card shown right after a build card: build.guide =
-// {title, confidence, intro, modes:[{name, sub, stats:[...], statTip, pull:[abilities], pullLoop, pullTip}], foot}.
+// {title, confidence, intro, modes:[{name, sub, stats:[...], statTip, pull:[abilities], pullLoop, pullTip,
+// extra:[{label, abilities, loop, tip}]}], foot}.
 function guideHTML(b){
   const g = b.guide;
   if(!g) return "";
@@ -319,6 +320,7 @@ function guideHTML(b){
       <p class="g-label">Pack pull</p>
       ${abilityRowHTML(m.pull, m.pullLoop)}
       ${m.pullTip ? `<p class="g-tip">${esc(m.pullTip)}</p>` : ""}
+      ${(m.extra||[]).map(x=>`<p class="g-label">${esc(x.label)}</p>${abilityRowHTML(x.abilities, x.loop)}${x.tip ? `<p class="g-tip">${esc(x.tip)}</p>` : ""}`).join("")}
     </div>`).join("");
   return `<div class="build-section guide">
     <div class="g-title-row"><h2>${esc(g.title)}</h2><span class="confidence ${g.confidence}">${g.confidence}</span></div>
@@ -668,6 +670,56 @@ const DATA60 = {
       spec: "Feral (Bear)", title: "Druid — Level 60 Feral (Bear tank)", code: "-55220302120032012551-055", meta: "Our proposal from the live Forever talent trees (no guide has a Forever build for this yet): re-check it after launch.",
       talents: tN([["Ferocity","5","ability_hunter_pet_hyena"], ["Heart of the Wild","5","spell_holy_blessingofagility"], ["Feral Swiftness","2","spell_nature_spiritwolf"], ["Feral Instinct","2","ability_ambush"], ["Thick Hide","3","inv_misc_pelt_bear_03"], ["Savage Fury","2","ability_druid_ravage"], ["Feral Charge","1","ability_hunter_pet_bear"], ["Sharpened Claws","2","inv_misc_monsterclaw_04"], ["Predatory Strikes","3","ability_hunter_pet_cat"], ["Blood Frenzy","2","ability_ghoulfrenzy"], ["Leader of the Pack","1","spell_nature_unyeildingstamina"], ["Natural Instinct","2","ability_druid_predatoryinstincts"], ["Natural Reaction","5","ability_bullrush"], ["Rend and Tear","5","ability_druid_primalagression"], ["Berserk","1","ability_druid_berserk"], ["Furor","5","spell_holy_blessingofstamina"], ["Naturalist","5","spell_nature_healingtouch"]]),
       rotation: {"confidence": "medium", "note": "Our proposal from the live Forever trees: everything tank-useful in Feral to Berserk, Furor for rage on shifting.", "single": [{"name": "Maul", "icon": "ability_druid_rake", "note": "Rage dump on the main target."}, {"name": "Demoralizing Roar", "icon": "ability_druid_demoralizingroar", "note": "Keep it up."}, {"name": "Faerie Fire (Feral)", "icon": "spell_nature_faeriefire", "note": "Threat and armor reduction on cooldown."}, {"name": "Berserk", "icon": "ability_druid_berserk", "note": "Big threat and damage window."}], "aoe": [{"name": "Swipe", "icon": "inv_misc_monsterclaw_03", "note": "AoE threat on every pack."}, {"name": "Demoralizing Roar", "icon": "ability_druid_demoralizingroar", "note": "Every pack."}], "aoeNote": "Frenzied Regeneration and Barkskin (if you have it) for emergencies; Feral Charge interrupts."},
+      guide: {
+        title: "Bear tank cheat sheet", confidence: "medium",
+        intro: "Level 60 version. No Forever guide covers 60-tank stats yet, so this mixes Forever's own notes (weapon DPS counts, Strength is 2 Attack Power) with the Classic tank guides: re-check it after launch.",
+        modes: [
+          {
+            name: "Damage tank", sub: "Hold threat on everything and push damage in dungeons.",
+            stats: ["Hit (to cap)", "Strength", "Stamina", "Armor", "Agility"],
+            statTip: "Hit stops Maul and Swipe from missing, which is how you lose threat. In Classic the cap against 3-level-higher bosses was 9%: check the number in Forever. Weapon DPS counts in Forever too, so take the best two-hander.",
+            pull: [
+              {name: "Feral Charge", icon: "ability_hunter_pet_bear", note: "Open with it: it closes the gap and interrupts."},
+              {name: "Enrage", icon: "ability_druid_enrage", note: "Rage up front. It lowers your Armor a little, so it is fine for a damage tank."},
+              {name: "Demoralizing Roar", icon: "ability_druid_demoralizingroar", note: "On the whole pack, so they hit you softer."},
+              {name: "Swipe", icon: "inv_misc_monsterclaw_03", note: "Your AoE threat: spam it on every pull of 2+."}
+            ], pullLoop: true,
+            pullTip: "With Furor, shifting into Bear gives you rage, so Roar, Enrage, then Swipe is a clean opener.",
+            extra: [
+              {label: "Single target", abilities: [
+                {name: "Maul", icon: "ability_druid_rake", note: "Your highest-threat hit: use it whenever you have the rage."},
+                {name: "Swipe", icon: "inv_misc_monsterclaw_03", note: "When Maul would leave you capped on rage."},
+                {name: "Faerie Fire (Feral)", icon: "spell_nature_faeriefire", note: "Armor drop and threat, when rage is not capping."}
+              ], loop: true, tip: "Switch targets after each Maul to spread threat."}
+            ]
+          },
+          {
+            name: "Pure tank", sub: "Stay alive and keep every mob on you. Use this for hard dungeons and tough groups.",
+            stats: ["Stamina", "Armor", "Defense", "Agility", "Hit (to cap)"],
+            statTip: "Stamina is your health and Armor cuts every melee hit. Defense lowers how often bosses crit and hit you, but it is rare on gear: take it when it shows up. Agility adds dodge, your only avoidance (druids cannot parry).",
+            pull: [
+              {name: "Feral Charge", icon: "ability_hunter_pet_bear", note: "Open with it on the mob you want first."},
+              {name: "Demoralizing Roar", icon: "ability_druid_demoralizingroar", note: "Before the pack reaches you: your best safety button."},
+              {name: "Swipe", icon: "inv_misc_monsterclaw_03", note: "Spam it to keep every mob on you."}
+            ], pullLoop: true,
+            pullTip: "Skip Enrage unless you are out of rage, because it lowers your Armor.",
+            extra: [
+              {label: "Single target", abilities: [
+                {name: "Maul", icon: "ability_druid_rake", note: "Highest threat, but only with rage to spare."},
+                {name: "Swipe", icon: "inv_misc_monsterclaw_03", note: "When Maul would leave you capped on rage."},
+                {name: "Faerie Fire (Feral)", icon: "spell_nature_faeriefire", note: "Armor drop and threat, when rage is not capping."}
+              ], loop: true, tip: "Keep a little rage back for Frenzied Regeneration."},
+              {label: "Safety", abilities: [
+                {name: "Growl", icon: "ability_physical_taunt", note: "Taunt one loose mob."},
+                {name: "Challenging Roar", icon: "ability_druid_challangingroar", note: "Grabs a whole pack that got away from you."},
+                {name: "Frenzied Regeneration", icon: "ability_bullrush", note: "Turns rage into health when you are low or a long stretch of damage is coming."},
+                {name: "Barkskin", icon: "spell_nature_stoneclawtotem", note: "Less damage taken for a short time, good against magic."}
+              ], tip: "Check your spellbook: not every one of these may be in Forever yet."}
+            ]
+          }
+        ],
+        foot: "Gear: green items of the Bear (Strength + Stamina) and Monkey (Agility + Stamina) suit a tank, Tiger leans to damage. On blue and epic pieces look for Armor, Stamina and Defense, and grab Hit if it appears. Check tooltips, since Forever can change suffix stats."
+      },
     },
     {
       spec: "Restoration", title: "Druid — Level 60 Restoration (Healer)", code: "05302--5053035153113051", meta: "Our proposal from the live Forever talent trees (no guide has a Forever build for this yet): re-check it after launch.",

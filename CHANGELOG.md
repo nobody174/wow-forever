@@ -5,6 +5,12 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-16 (Addon version check)
+- addons.html: Leatrix Maps 1.60.21-forever → 1.60.23-forever (file 9175962, Oct 14; Forever + 1.60.1, release R, confirmed on the
+  file page). Road to Forever fallback values 0.62.1 → 0.66.1 (r2f-v0.66.1, Oct 15; toc agrees, pre-release until 1.0.0).
+  AtlasLootClassic Continued 12488 (file 9187862), Forever Bestiary 0.6.0 (beta, the only Forever type it ships) and ThreatMaster
+  0.4.0 unchanged. "Versions checked on CurseForge" set to Oct 16, 2026.
+
 ## 2026-10-15 (Addon version check, afternoon)
 - addons.html: AtlasLootClassic Continued 12487 → 12488 (file 9187862, Oct 15; Forever + 1.60.1 listed like 12487), Leatrix Maps
   1.60.20-forever → 1.60.21-forever (file 9170659, Oct 14). Forever Bestiary 0.6.0, ThreatMaster 0.4.0 and Road to Forever

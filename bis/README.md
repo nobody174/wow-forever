@@ -4,6 +4,10 @@
 (`https://foreverdb.net/bis/<class>/<spec>`, level 30 PvE, the beta cap). `build_bis.py` turns the 27 files into
 `../bis-data.json` (the site's `bis.html`) and `../addon/RoadToForever/BiZData.lua` (the addon's BiS tab).
 
+## Is the data behind?
+
+`python bis/tools/foreverdb_check.py` (read-only, 27 requests) compares ForeverDB's current pages with `raw/` and prints the build, the slots that changed and an exit code (plan: ADDON_PLAN 19.3). Run it before a release.
+
 ## Refresh the data
 
 1. For each spec, read its ForeverDB page and write the "Every slot" list into `raw/<class>-<spec>.json`:

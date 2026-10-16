@@ -9,7 +9,7 @@ None open (talent-tree drift fixed 2026-10-16; before each release run `python a
 ## 2. Addon
 1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build.
 2. **Plan points without a position**: only Shaper's Terrace has no position (TESTING 15.7); Krol'dok and Dire Maul are approximate (read online). Also re-check the `classic` points ("may have moved").
-3. **Weapons along the route**: check the Classic weapon table against Forever; extend past level 32 when the beta does.
+3. **Weapons along the route**: checked 2026-10-17 (ADDON_PLAN 19.3): all 273 quest weapons still match Wowhead's tooltips; class weapon table fixed (Rogues use 1h axes). Open: re-verify the weapons' quest links when Wowhead's list pages answer again (`python bis/tools/wh_quest_weapons.py`), and extend past level 32 when the beta cap moves.
 4. **More countdowns** on request (Timers.TRACK). Pet / repair / rested XP / food / Walk on Air / Seal / Slice and Dice reminders are all shipped (CHANGELOG 0.62.0 to 0.66.0).
 5e. **Copy beta settings to release** (owner): found 2026-10-16 in `<WoW folder>\_classic_beta_\WTF\<Account>\` (only the beta client exists there yet). Account level: `edit-mode-cache-account.txt` (Edit Mode layouts, 11 KB), `bindings-cache.wtf` (keybinds), `config-cache.wtf`, `macros-cache.txt`, `character-list-order.txt`, `SavedVariables\` (addon settings, incl. RoadToForever). Per character (`70\<Name-Surname>\`): `layout-local.txt`, `edit-mode-cache-character.txt`, `bindings-cache.wtf`, `click-bindings-cache.txt`, `config-cache.wtf`, `macros-cache.txt`, `chat-cache.txt`, `AddOns.txt`, `SavedVariables\`. To copy when the release client exists: same folder shape under its own WTF; rename the character folders to the release realm's names. Nothing was copied or changed.
 5d. **Rested XP icon**: owner keeps it. It is already off until ticked (Tweaks > Class icons); nothing to change.
@@ -20,8 +20,7 @@ None open (talent-tree drift fixed 2026-10-16; before each release run `python a
 
 ## 3. Mr.BiZ data
 1. **9 rank 2-3 items with no source** (`bis/sources.json`: 271911, 271920, 276631, 277219, 282283, 282653, 282658, 284399, 284401): checked 2026-10-15, ForeverDB's own item pages say "where it comes from isn't known yet" for all nine, so there is nothing to add; check again after launch. Two drop zones are Forever-new ids Wowhead didn't name (16611 Rath'mael, 16732 Shadetooth).
-2. **Data pipeline** (ADDON_PLAN 19, to write): keep the list current from ForeverDB / Wowhead / addon reports; Wowhead throttles (403 after ~70 quick
-   pages); reuse permission for republishing is an open question.
+2. **Data pipeline**: plan written (ADDON_PLAN 19.3, 2026-10-17); step 0 `python bis/tools/foreverdb_check.py` exists and shows ForeverDB is ahead of our `bis/raw` (31 best picks changed, 11 of 27 specs). Next: step 1, a fetcher that rewrites `bis/raw` from ForeverDB's pages (owner: yes / no, and ask ForeverDB about reuse).
 3. **ForeverChanges as a source**: compared only (`bis/foreverchanges-compare.md`); nothing imported.
 
 ## 4. Site: builds and macros

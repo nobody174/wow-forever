@@ -4,6 +4,9 @@ The record of what the owner has tested and confirmed. Open tasks are in `TESTIN
 confirmed it is deleted from that file and added here in the same pass (newest round first). Numbers are the
 `section.item` numbers of TESTING.md at the time.
 
+## 2026-10-17 round (0.66.5)
+- 5.26 combat banner (lock, drag, size), 5.27 no /reload line at login, 5.28 Recommended builds after the talent-tree update.
+
 ## 2026-10-16 round (releases 0.66.2 and 0.66.3 and earlier builds)
 - 4.14 Learn this build learns all points itself (commit retry fix, 0.66.2); the skull macro icon; 12.5 interface templates (answers in ADDON_PLAN 11); 2.15 split macros; 2.16 import twice says "0 new, 0 updated, N unchanged"; 4.5 an unapplied click in Blizzard's window stops the run; 5.4 training lines without double names; 5.10 next talent point line; 5.12 repair and pet reminders; 5.16 pick order; 5.17 "+5 points" button on the Builds page; 5.19 Rested XP icon (off by default); 5.21 newer-version notice; 8.9 arrows point into the scene; 9.11 pink enchant line; 12.4 `/r2f debug who`; 14.3, 14.5, 14.6, 14.7 macros.
 - Owner note 2026-10-16: the Paladin Seal and Rogue Slice and Dice timers disappear in combat (listed as working earlier; now a backlog item).

@@ -9,7 +9,8 @@
 -- counts as 0 (GS.Compare). Only the best weapon per slot (main hand, off hand, ranged) is shown on a step, and none that
 -- is not an upgrade. An item the game has not loaded yet is asked for and shown once its stats arrive (the Plan tab
 -- redraws on GET_ITEM_INFO_RECEIVED).
--- Class weapon use is the Classic table (unverified for Forever); quests locked to the other faction are skipped.
+-- Class weapon use is Forever's table (ForeverDB "Trainers & weapon skills", checked 2026-10-17: it differs from Classic only in
+-- that Rogues can use one-handed axes); quests locked to the other faction are skipped.
 -- Read-only: item info and equipped links, nothing written to the game.
 
 local _, R2F = ...
@@ -24,14 +25,14 @@ local function set(...)
   return t
 end
 
--- Weapon kinds (the data's `kind`) each class can use. Classic proficiencies; dual wield is not modelled.
+-- Weapon kinds (the data's `kind`) each class can use. Forever's proficiencies; dual wield is not modelled.
 QW.USE = {
   WARRIOR = set("1h axe", "2h axe", "1h mace", "2h mace", "1h sword", "2h sword", "dagger", "fist", "polearm", "staff",
                 "bow", "gun", "crossbow", "thrown", "shield"),
   PALADIN = set("1h axe", "2h axe", "1h mace", "2h mace", "1h sword", "2h sword", "polearm", "shield"),
   HUNTER = set("1h axe", "2h axe", "1h sword", "2h sword", "dagger", "fist", "polearm", "staff", "bow", "gun", "crossbow",
                "thrown"),
-  ROGUE = set("dagger", "fist", "1h mace", "1h sword", "bow", "gun", "crossbow", "thrown"),
+  ROGUE = set("dagger", "fist", "1h axe", "1h mace", "1h sword", "bow", "gun", "crossbow", "thrown"),
   PRIEST = set("dagger", "1h mace", "staff", "wand"),
   MAGE = set("dagger", "1h sword", "staff", "wand"),
   WARLOCK = set("dagger", "1h sword", "staff", "wand"),

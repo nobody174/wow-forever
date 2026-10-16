@@ -1155,6 +1155,8 @@ def test_quest_weapons():
     check(lua.eval("QW.CanUse('HUNTER', 'bow')") is True and lua.eval("QW.CanUse('MAGE', 'bow')") is False
           and lua.eval("QW.CanUse('PRIEST', 'wand')") is True and lua.eval("QW.CanUse('WARRIOR', 'wand')") is False
           and lua.eval("QW.CanUse('DRUID', 'shield')") is False, "quest weapons: class weapon use")
+    check(lua.eval("QW.CanUse('ROGUE', '1h axe')") is True and lua.eval("QW.CanUse('ROGUE', '2h axe')") is False,
+          "quest weapons: Forever's table: a Rogue can use one-handed axes (not two-handed)")
     lua.execute("""
       R2F.QuestWeaponData = { items = {
         { 101, 'Ally Bow', 'bow', 5, 'Quest A', 'Zephras Isle', 1, 2 },

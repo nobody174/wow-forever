@@ -3063,6 +3063,67 @@ sources from Classic databases plus beta sightings, and a ranking (stat weights 
 - Mr.BiZ lines on every item tooltip in the game (bags, loot), with a setting.
 - Raid filter once the first raid tier is out (9 Dec 2026).
 
+### 19.3 Data pipeline plan (written 2026-10-17)
+
+**Why.** The best-in-slot data is a copy of ForeverDB's pages, taken by hand with WebFetch on 2026-10-12, and the beta changes
+under it. Measured on 2026-10-17 with `bis/tools/foreverdb_check.py` (new, read-only): ForeverDB is now on client build
+1.60.1.70425 (extracted 2026-10-16); our 27 raw files come from four older builds (70205, 70245, 70291, 70338). Of 459 slots,
+**31 best picks and 49 more lists (only the next two picks) have changed; 11 of 27 specs differ.** So the site's Mr.BiZ page and the
+addon's BiZ tab are already behind, and every beta build will widen the gap until launch (2026-11-04) and the first raid tier.
+
+**What we know about the sources (checked 2026-10-17).**
+- ForeverDB: `robots.txt` allows everything except `/api/`, `/auth/`, `/me`, `/admin`; it names assistants (ClaudeBot, Claude-User,
+  Claude-SearchBot, GPTBot...) as welcome "with the same rules", and `/llms.txt` says how to read and cite its data. Every data page ends
+  with "Data from the WoW Forever beta client, build X, extracted DATE" (a free change detector). The BiS page is server-rendered
+  (`<ul class="ssr-list">`: slot, best item, score, stats, source sentence with its label "(Forever client)", "(Classic data)" or
+  "(Seen in Forever)", ease, next two picks with "-N% vs best", enchant text), so no browser is needed and `/api/` is never touched.
+  Item pages (`/item/<id>`) carry the same wording for ranks 2-3 sources. Reuse for **republishing**: the files say read and cite, not "copy
+  everything"; we credit and link on every page and in the addon. Open for the owner: ask ForeverDB in writing before relying on bulk
+  republishing long-term (ADDON_PLAN 19.1).
+- Wowhead Forever: the item tooltip API (`nether.wowhead.com/forever/tooltip/item/<id>`, name, quality, dps, tooltip HTML) answers fine
+  (273 weapon ids checked at 0.45 s apart, no refusals); the www list pages (`/forever/items/weapons/...`) answered **403 (CloudFront)** after
+  a run of 25 list pages on 2026-10-17, the same throttle seen before (about 70 quick pages). Rule: tooltip API only, at most 2 requests per
+  second, a pause of a few minutes after any 403, never from a loop without a delay.
+- Sandbox/cloud sessions cannot reach any of these; the pipeline runs on the owner's PC (ledger E1/E2).
+
+**The pipeline (each step is a script under `bis/tools/`, each one stops on anything it does not understand).**
+0. **Detect (done, `foreverdb_check.py`).** One request per spec page (27), compares best pick id, score and next picks with `bis/raw`, prints
+   the build/extraction date and counts, exit code 1 when anything moved. Run it before every release and after a beta build is announced
+   (ForeverDB's `/changelog` lists builds).
+1. **Fetch (next, small/medium).** `foreverdb_fetch.py` turns the same server-rendered list into `bis/raw/<class>-<spec>.json` in the
+   existing shape (`build`, `weights` from the "Stat weights" paragraph, per slot `best` {id, name, score, stats, src, conf, ease, horde} and
+   `next` [{id, delta}]). The grammar of the source sentence is the same one `build_bis.py` already parses; the fetcher keeps `src` verbatim and splits
+   the trailing "(Forever client)" into `conf`. Writes to a scratch folder first and prints a diff; `--write` replaces `raw/`. The "(Horde: X)"
+   and "(as good as the best)" forms are already handled by the check script's parser.
+2. **Sources for ranks 2-3 (small).** For every next pick that is not a best pick anywhere, read `/item/<id>` (1 request per id, cached
+   in `bis/own/cache`) and fill `bis/sources.json`; unknown wording stops the build, as today.
+3. **Item quality and stats (small, existing).** `bis/quality.json` gets only the ids it does not have yet, from the Wowhead tooltip API
+   (0.5 s apart). `bis/own/check_scores.py` / `check_order.py` stay as the sanity report on ForeverDB's scores.
+4. **Build and test (exists).** `python build.py` (runs `bis/build_bis.py`), then the addon tests; a stale `BiZData.lua` fails them.
+5. **Review (small).** `foreverdb_check.py` output is pasted into the CHANGELOG entry ("best picks changed: N"); the owner glances at the specs he plays.
+6. **Ship.** The site updates on push; the addon's BiZ tab needs an addon release (BiZData.lua is bundled), so a refresh rides the next release.
+   Away from a release: refresh anyway and tag small releases when more than about 10 best picks moved.
+
+**Cadence.** Weekly while the beta is quiet, right after every announced build, daily from 2026-10-28 to launch; once launch has happened,
+after each patch. A scheduled task on the owner's PC can run step 0 and only wake the owner when it exits 1.
+
+**Safeguards.** Never overwrite `raw/` without the diff; keep git as the undo; one request per second and a descriptive user agent
+(`RoadToForever-data-check (repo URL)`); respect `robots.txt`; a page that has no "build ... extracted" line or no `ssr-list` stops the run
+(layout changed); credit lines stay (ForeverDB picks and weights, Wowhead tooltips).
+
+**Not in scope.** A second ranking source (ForeverChanges stays a comparison, `bis/foreverchanges-compare.md`); a ranking of our own beyond the
+sanity report; scraping anything behind `/api/`.
+
+**Decisions for the owner.** (1) Ask ForeverDB for permission for ongoing reuse? (recommended before launch week). (2) Go ahead with step 1 now
+(the data is already behind)? (3) Cadence as above?
+
+**Weapons check, same day (BACKLOG 2.3).** The 273 quest-reward weapons in `bis/quest-weapons.json` (levels up to 32; the beta cap is 30, so
+nothing to extend yet) were re-read from Wowhead's tooltip API: all 273 still exist with the same name, quality and damage per second (and required
+level where the tooltip shows one). Their quest links could not be re-verified because the list pages were throttled (403); re-run
+`python bis/tools/wh_quest_weapons.py` after a pause, or when the beta adds levels. The **class weapon table** in `QuestWeapons.lua` was
+compared with ForeverDB's "Trainers & weapon skills" page: it matched the Classic table except that **Rogues can use one-handed axes in Forever**;
+fixed (the Plan tab's "Weapon:" lines now count axe rewards for Rogues). Wands are not on that page (caster classes only, unchanged).
+
 
 ## 17. BiZNav: our own waypoint arrow and map pins (replaces TomTom) -- step 1 built as v0.39.0, 2026-10-13
 Owner request 2026-10-13: navigation driven by our own data, no TomTom.

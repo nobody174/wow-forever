@@ -44,7 +44,8 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
 4. When something ships: move it from BACKLOG/ROADMAP to CHANGELOG, add a plain-words entry at the top of
    `news.json`, keep `next` in step with BACKLOG.
 5. Addon release: all checks green, then tag `r2f-vX.Y.Z` (see `release.yml`).
-6. Bugs: the owner tests and fetches the error log; teammates only tell the owner.
+6. Bugs: the owner tests and fetches the error log; teammates only tell the owner. `addon/dev/TESTING.md` holds ONLY open
+   tests; a confirmed test moves to `addon/dev/COMPLETED_TESTING.md` in the same pass.
 
 ## Project conventions
 - Class order everywhere: Priest, Warlock, Mage, Rogue, Druid, Shaman, Hunter, Paladin, Warrior.

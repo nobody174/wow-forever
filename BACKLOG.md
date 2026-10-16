@@ -7,10 +7,13 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 None open (the "macros missing after a relog" bug is gone since 2026-10-15, owner).
 
 ## 2. Addon
-1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build; then delete TalentGuide.lua and the old guided mode.
+1. **Talents tab follow-ups** (0.54.0 is built, ADDON_PLAN 20): re-run `python addon/tools/gen_talent_data.py` whenever Wowhead changes the trees or builds.html gets a build.
 2. **Plan points without a position**: 7 left (TESTING 15): Zephras Isle start and Skycutter, the Skyborne portal in Dalaran, Riverglades, Krol'dok Stronghold, Shen'dralas, Shaper's Terrace; run `/r2f here` at each spot and send the lines. Six were filled in on 2026-10-15 from the owner's map readings. Also re-check the `classic` points ("may have moved").
 3. **Weapons along the route**: check the Classic weapon table against Forever; extend past level 32 when the beta does.
-4. **More reminders**: pet missing / dead / unhappy and repair needed shipped in 0.62.0 (verify in game); rested XP shipped in 0.64.0; still open: the +5% experience food buff (waiting for its name from the owner). Walk on Air countdown shipped; more countdowns on request (Timers.TRACK).
+4. **More countdowns** on request (Timers.TRACK). Pet / repair / rested XP / food / Walk on Air / Seal / Slice and Dice reminders are all shipped (CHANGELOG 0.62.0 to 0.66.0).
+5b. **Combat banner**: text mid top of the screen, "Entering Combat" / "Leaving Combat" (own switch in Tweaks > Alerts, off by default).
+5c. **Seal timer shows in combat** (owner, 2026-10-16): it disappears in a fight, when it matters most. Show it whenever a seal is active (check what the game hides: secret auras in combat). Same for Slice and Dice.
+5d. **Rested XP icon**: owner keeps it. It is already off until ticked (Tweaks > Class icons); nothing to change.
 5. **Buff "upper display"**: built (Buffs.lua). The aura probe (TESTING 7.12) showed the game hands out your buffs readably out of combat; what it does in a fight / in a dungeon is still to be sent, the reminder stays silent when the list is unreadable.
 8. **CurseForge upload / sharing**: HOLD until the owner says the addon works 100% for him and his friends.
 9. Releases: push tags ONE OR TWO at a time (GitHub starts no build for more than three).

@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.66.2 (2026-10-16)
+
+- **Learn this build** no longer stops halfway on talents with several ranks: when the game answers "not yet" to the Apply step right after the previous point, the addon asks again a few times instead of giving up and switching to "click it yourself" mode.
+- **Mail list:** characters that share a first name (for example "Anna Stormborn" and "Anna Ironfist") are both remembered now. Log in on each once after updating.
+- **SkullMark** macro has its skull icon. New plan positions for the arrow: Zephras Isle start, the Skycutter, the Dalaran portal, Riverglades, Krol'dok Stronghold and Shen'dralas.
+- New troubleshooting tool: `/r2f debug traits` (what the game answered to the last talent points).
+
 ## 0.66.1 (2026-10-15)
 
 - Macros: **Raptor Strike + Wing Clip** is back as one Hunter button (the single Raptor Strike and Wing Clip buttons stay). New Paladin button **Judgement + Holy Strike** (Judgement first, Holy Strike after; marked "Test in beta" until it is tried in game).

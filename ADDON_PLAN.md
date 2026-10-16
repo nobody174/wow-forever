@@ -1384,7 +1384,7 @@ shows under the repo's Actions tab.
       `UIRadioButtonTemplate` / `UICheckButtonTemplate` exist (Settings) (6.9).
 - [ ] Minimap button (our own, 6.10) drags around the round minimap and saves its
       spot, looks like other minimap buttons, and the logo reads at that size (12.1).
-- [ ] Right-click menu API: does `MenuUtil` exist? (If not, our own menu frame is
+- [x] (owner, 2026-10-16: MenuUtil exists; R2FMain is nil until the window is first opened; R2F.Minimap.backend = "libdbicon") Right-click menu API: does `MenuUtil` exist? (If not, our own menu frame is
       used; `UIDropDownMenu`/`EasyMenu` are deliberately never used, 6.10.)
 - [ ] Bottom tab template: `PanelTabButtonTemplate` or `CharacterFrameTabButtonTemplate`
       (main window, 6.10).

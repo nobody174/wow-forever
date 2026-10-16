@@ -2856,7 +2856,15 @@ def test_gameplay_extras():
     lua.execute("MENU[2].func()")
     check(lua.eval("SendMailNameEditBox:GetText()") == "Alice-RealmNorm", "17.2 clicking a character fills in the FULL name, Name-Realm (a bare name does not arrive on this client)")
     lua.execute("UnitName = function() return 'Zed' end GetUnitName = function() return 'Zed Stormborn' end R2F.Gameplay.RememberCharacter() UnitName = function() return 'Me' end")
-    check(lua.eval("R2FDB.chars[GetRealmName()].Zed.full") == "Zed Stormborn", "17.2 the character's full in-game name is remembered for mail")
+    check(lua.eval("R2FDB.chars[GetRealmName()]['Zed Stormborn'].full") == "Zed Stormborn", "17.2 the character's full in-game name is remembered for mail (and is the key)")
+    # Two characters sharing a first name (Venom Oathbreaker / Venom Madstorm) don't overwrite each other.
+    lua.execute("UnitName = function() return 'Zed' end GetUnitName = function() return 'Zed Other' end R2F.Gameplay.RememberCharacter()")
+    check(lua.eval("R2FDB.chars[GetRealmName()]['Zed Stormborn'] ~= nil and R2FDB.chars[GetRealmName()]['Zed Other'] ~= nil"),
+          "17.2 same first name, different full names: both kept")
+    lua.execute("GetUnitName = function() return 'Zed Stormborn' end")
+    check(any(lua.eval("R2F.Gameplay.OtherCharacters()[%d].full" % i) == "Zed Other" for i in range(1, lua.eval("#R2F.Gameplay.OtherCharacters()") + 1)),
+          "17.2 the same-first-name twin shows in the mail list")
+    lua.execute("R2FDB.chars[GetRealmName()]['Zed Other'] = nil UnitName = function() return 'Me' end GetUnitName = function() return 'Me Full' end")
     check(any(lua.eval("R2F.Gameplay.OtherCharacters()[%d].full" % i) == "Zed Stormborn" for i in range(1, lua.eval("#R2F.Gameplay.OtherCharacters()") + 1)),
           "17.2 the mail list uses the full in-game name (Zed Stormborn), not Name-Realm")
     lua.execute("GetUnitName = nil UnitName = function() return 'Me' end")
@@ -6636,8 +6644,18 @@ def test_talent_traits_learning(templates):
     c = ctx(extra="TEST.commitRejects = true")
     c.click(c.learn)
     c.accept()
+    c.T.runTimers()
     check(c.said(staged_msg) and c.status().phase == "stopped" and c.ev("R2F.Talents.LearnMode()") == "guided",
-          "%s: CommitConfig returns false -> stop at once ('waiting in Blizzard's window'), guided" % tag)
+          "%s: CommitConfig keeps returning false -> retried, then stop ('waiting in Blizzard's window'), guided" % tag)
+    # A commit that answers false once or twice (still busy with the last one) is asked again and the run goes on.
+    c = ctx(extra="TEST.commitRejectsTimes = 2")
+    c.click(c.learn)
+    c.accept()
+    for _ in range(80):
+        c.T.runShortTimers()
+        drain(c)
+    check(c.said("Learned 17 talent points.") and exact_build(c) and c.ev("R2F.Talents.LearnMode()") == "traits",
+          "%s: CommitConfig false twice, then fine -> the retries carry the run to the end" % tag)
     c = ctx(extra="TEST.commitError = 'boom'")
     c.click(c.learn)
     c.accept()
@@ -7268,8 +7286,8 @@ def test_talent_source_traits():
     check(body.index("pendingElsewhere(configID, nil)") < body.index("C_Traits.PurchaseRank")
           and body.index("x.name ~= p.name") < body.index("C_Traits.PurchaseRank"),
           "purchasePoint checks the node's name and staged changes before PurchaseRank")
-    check(body.count("pcall(C_Traits.PurchaseRank") == 1 and body.count("pcall(C_Traits.CommitConfig") == 1,
-          "both writes are pcall-wrapped")
+    check(body.count("pcall(C_Traits.PurchaseRank") == 1 and body.count("pcall(C_Traits.CommitConfig") == 2,
+          "both writes are pcall-wrapped (CommitConfig twice: the first ask and the retry)")
     # The shared plan / order code is untouched (byte for byte vs the v0.10.5 tag).
     try:
         old = subprocess.run(["git", "show", "r2f-v0.10.5:addon/RoadToForever/Talents.lua"], capture_output=True,

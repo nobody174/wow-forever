@@ -11,7 +11,7 @@ local Gameplay = R2F.Gameplay
 -- Your own characters (for mail), remembered whenever one logs in
 -- ---------------------------------------------------------------------------
 
--- R2FDB.chars[realm][name] = { class = "WARRIOR", level = 18, faction = "Alliance" }.
+-- R2FDB.chars[realm][full name or name] = { class = "WARRIOR", level = 18, faction = "Alliance" }.
 -- Recorded always (a few bytes per character) so the list is complete the day the box is
 -- ticked; only characters that have logged in with the addon are known.
 function Gameplay.RememberCharacter()
@@ -26,7 +26,14 @@ function Gameplay.RememberCharacter()
   -- UnitName's second value instead of a realm). Mail wants exactly this form.
   local full = GetUnitName and GetUnitName("player", true)
   if type(full) ~= "string" or full == "" or (issecretvalue and issecretvalue(full)) then full = nil end
-  db.chars[realm][name] = {
+  -- Keyed by the full name: two characters can share the first name (Anna Stormborn and
+  -- Anna Ironfist) and one used to overwrite the other. An old entry saved under the bare
+  -- name is dropped when it is this character.
+  local key = full or name
+  local old = db.chars[realm][name]
+  if key ~= name and old and (old.full == full or old.full == nil) then db.chars[realm][name] = nil end
+  db.chars[realm][key] = {
+    name = name,
     full = full,
     class = class,
     level = UnitLevel and UnitLevel("player") or 0,
@@ -86,13 +93,17 @@ function Gameplay.OtherCharacters()
   local db = R2F.Library.db
   local realm = GetRealmName and GetRealmName()
   local me = UnitName and UnitName("player")
+  local meFull = GetUnitName and GetUnitName("player", true)
+  if type(meFull) ~= "string" or (issecretvalue and issecretvalue(meFull)) then meFull = nil end
   local faction = UnitFactionGroup and (UnitFactionGroup("player")) or ""
-  for name, c in pairs((db.chars and realm and db.chars[realm]) or {}) do
-    if name ~= me and (c.faction == faction or faction == "" or c.faction == "") then
+  for key, c in pairs((db.chars and realm and db.chars[realm]) or {}) do
+    local name = c.name or key
+    local isMe = (meFull and c.full) and c.full == meFull or (not (meFull and c.full) and name == me)
+    if not isMe and (c.faction == faction or faction == "" or c.faction == "") then
       out[#out + 1] = { name = name, full = c.full or (name .. "-" .. realmSuffix()), class = c.class, level = c.level or 0 }
     end
   end
-  table.sort(out, function(a, b) return a.name < b.name end)
+  table.sort(out, function(a, b) return (a.full or a.name) < (b.full or b.name) end)
   return out
 end
 

@@ -219,6 +219,7 @@ local DEBUG = {
   who = function() R2F.Gameplay.PrintWho() end,
   here = function() R2F.Plan.Here() end,
   gear = function() R2F.GearScore.Debug() end,
+  traits = function() R2F.Talents.DebugTraits() end,
 }
 local DEBUG_ALIASES = { rankdebug = "rank", profdebug = "profs" }
 R2F.DEBUG = DEBUG

@@ -1360,6 +1360,35 @@ end
 -- Returns true (sent; wait for the answer) or false, why: "combat" |
 -- "mismatch" | "pending" | "locked" | "rejected" | "staged" | "stopped" (the
 -- run was already stopped inside the call, e.g. ADDON_ACTION_FORBIDDEN).
+-- What the last "traits" points did, for /r2f debug traits (kept for the session only).
+local traitLines = {}
+local function traitLog(line)
+  traitLines[#traitLines + 1] = line
+  if #traitLines > 12 then table.remove(traitLines, 1) end
+end
+
+-- /r2f debug traits: what the last "traits" points saw, plus the current point's node and the
+-- free points right now (run it right after a stop).
+function Talents.DebugTraits()
+  R2F.Print("traits: mode " .. tostring(Talents.LearnMode()) .. ", blocked " .. tostring(session.traitsBlocked)
+    .. ", worked " .. tostring(session.traitsWorked))
+  for _, line in ipairs(traitLines) do R2F.Print("  " .. line) end
+  local configID = liveConfigID()
+  local r = run
+  local p = r and r.points[r.pos]
+  if configID and p and p.nodeID then
+    local node = traitNode(configID, p.nodeID)
+    if node then
+      R2F.Print(("  now %s: active=%s current=%s purchased=%s canPurchase=%s free(applied)=%s free(staged)=%s"):format(
+        p.name, tostring(node.activeRank), tostring(node.currentRank), tostring(node.ranksPurchased),
+        tostring(node.canPurchaseRank), tostring(traitFreePoints(configID, true)), tostring(traitFreePoints(configID, false))))
+    end
+  end
+end
+
+Talents.COMMIT_RETRY = 0.3
+Talents.COMMIT_TRIES = 6
+
 local function purchasePoint(r, p)
   r.freeBefore = nil
   if R2F.InCombat() then return false, "combat" end
@@ -1393,13 +1422,34 @@ local function purchasePoint(r, p)
   node = traitNode(configID, p.nodeID)
   if not node then return false, "rejected" end
   local moved = math.max(appliedOf(node), stagedOf(node) or 0)
+  traitLog(("%s: purchase=%s active=%s current=%s purchased=%s free(applied)=%s free(staged)=%s CommitConfig=%s"):format(
+    p.name, tostring(res), tostring(node.activeRank), tostring(node.currentRank), tostring(node.ranksPurchased),
+    tostring(traitFreePoints(configID, true)), tostring(traitFreePoints(configID, false)), type(C_Traits.CommitConfig)))
   if moved < p.target then return true end
   if type(C_Traits.CommitConfig) ~= "function" then return true end
   -- More than this one rank moved, or something else got staged meanwhile:
   -- don't commit what nobody confirmed.
   if moved > p.target or pendingElsewhere(configID, p.nodeID) then return false, "staged" end
   local cok, cres = pcall(C_Traits.CommitConfig, configID)
+  traitLog(("%s: CommitConfig ok=%s result=%s"):format(p.name, tostring(cok), tostring(cres)))
   if run ~= r or r.phase ~= "learning" then return false, "stopped" end
+  if cok and cres == false and C_Timer and C_Timer.After then
+    -- Seen in game (2026-10-16): the commit right after the previous point's commit answers false
+    -- (the game is still busy applying it). The point is staged and nothing else is, so ask again a
+    -- few times; if it never takes, the point's timeout ends the run as "waiting in Blizzard's window".
+    local function again(n)
+      C_Timer.After(Talents.COMMIT_RETRY, function()
+        if run ~= r or r.phase ~= "learning" or r.waiting ~= p then return end
+        if pendingElsewhere(configID, p.nodeID) then return end      -- someone else staged something: never commit it
+        local ok, res = pcall(C_Traits.CommitConfig, configID)
+        traitLog(("%s: CommitConfig again (%d) ok=%s result=%s"):format(p.name, n, tostring(ok), tostring(res)))
+        if ok and res ~= false then return end
+        if n < Talents.COMMIT_TRIES then again(n + 1) end
+      end)
+    end
+    again(1)
+    return true
+  end
   if not cok or cres == false then return false, "staged" end
   return true
 end

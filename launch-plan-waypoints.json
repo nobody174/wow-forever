@@ -11,7 +11,7 @@
   },
   "steps": {
     "n-zephras": { "default": [
-      { "zone": "Zephras Isle", "label": "Zephras Isle starting area", "conf": "check", "src": "new zone, no map data published" } ] },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.8, "y": 23.1, "label": "Zephras Isle starting area (Thendal Village)", "conf": "exact", "src": "owner /r2f here 2026-10-16" } ] },
     "tr-coldridge": { "trio": [
       { "zone": "Dun Morogh", "mapHint": 1426, "x": 28.8, "y": 67.6, "label": "Anvilmar, Coldridge Valley", "conf": "classic", "src": "classic" } ] },
     "tr-dunmorogh": { "trio": [
@@ -36,8 +36,8 @@
         { "zone": "Zephras Isle", "x": 63.0, "y": 77.8, "label": "Antelariaa Cloudgaze, general goods (southern town)", "conf": "approx", "src": "wh-zephras" } ],
       "trio": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 47.4, "y": 52.5, "label": "Kharanos vendors", "conf": "classic", "src": "classic" } ] },
     "n-dalaran": { "default": [
-      { "zone": "Zephras Isle", "label": "Skycutter to Dalaran", "conf": "check", "src": "not published" },
-      { "zone": "Dalaran", "label": "Skyborne portal to Stormwind", "conf": "check", "src": "not published" } ] },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 65.8, "y": 83.4, "label": "Skycutter to Dalaran (Valanaar)", "conf": "exact", "src": "owner /r2f here 2026-10-16; the way back leaves Dalaran at 12.7, 52.1 on the Alterac Mountains map" },
+      { "zone": "Alterac Mountains", "mapHint": 1416, "x": 12.0, "y": 56.3, "label": "Skyborne portal to Stormwind (The Sky Enclave, Dalaran)", "conf": "exact", "src": "owner /r2f here 2026-10-16" } ] },
     "n-if": { "default": [
       { "zone": "Ironforge", "mapHint": 1455, "x": 43.5, "y": 52.0, "label": "Hall of Thanes entrance (left of the High Seat)", "conf": "exact", "src": "wt-hot" },
       { "zone": "Dun Morogh", "mapHint": 1426, "x": 64.8, "y": 58.5, "label": "Earthseer Farsen (Hall of Thanes quest chain)", "conf": "exact", "src": "wt-hot" } ] },
@@ -82,11 +82,11 @@
       { "zone": "Desolace", "mapHint": 1443, "x": 66.2, "y": 6.6, "label": "Nijel's Point", "conf": "classic", "src": "classic" } ] },
     "p3-river": { "default": [
       { "zone": "Tanaris", "mapHint": 1446, "x": 67, "y": 22, "label": "Steamwheedle Port, boat to Powderfuse Port (Riverglades)", "conf": "approx", "src": "owner read it off the map 2026-10-15 (the dock shows no boat on the map yet)" },
-      { "zone": "Riverglades", "label": "Riverglades", "conf": "check", "src": "new zone" } ] },
+      { "zone": "Riverglades", "x": 58, "y": 46, "label": "Riverglades (Rog'Mar)", "conf": "approx", "src": "owner read it in game 2026-10-16" } ] },
     "p3-krol": { "default": [
-      { "zone": "Riverglades", "label": "Krol'dok Stronghold", "dungeon": "Krol'dok Stronghold", "conf": "check", "src": "wh-dungeons (no position); the game's map gives the entrance" } ] },
+      { "zone": "Riverglades", "x": 43, "y": 42, "label": "Krol'dok Stronghold", "dungeon": "Krol'dok Stronghold", "conf": "approx", "src": "owner, read online 2026-10-16 (not yet visited); the game's map gives the entrance" } ] },
     "p3-shen": { "default": [
-      { "zone": "Feralas", "mapHint": 1444, "label": "Shen'dralas", "conf": "check", "src": "not published" } ] },
+      { "zone": "Feralas", "mapHint": 1444, "x": 59, "y": 43, "label": "Shen'dralas (inside Dire Maul, entrance shown)", "conf": "approx", "src": "owner, Dire Maul entrance read online 2026-10-16" } ] },
     "p3-mid": { "default": [
       { "zone": "Tanaris", "mapHint": 1446, "x": 51.0, "y": 28.7, "label": "Gadgetzan", "conf": "classic", "src": "classic" },
       { "zone": "Feralas", "mapHint": 1444, "x": 30.9, "y": 43.5, "label": "Feathermoon Stronghold", "conf": "classic", "src": "classic" },

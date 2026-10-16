@@ -188,7 +188,7 @@ UNIVERSAL = [
           "8 = skull, 7 = cross, 5 = moon, 6 = square. Uses the full /targetmarker "
           "name, not the /tm shorthand — the ThreatMaster addon claims /tm for "
           "itself, which silently breaks this macro if you use the short form.",
-          short="SkullMark", icon="Ability_MarkOfSkull"),
+          short="SkullMark", icon="INV_Misc_Bone_HumanSkull_01"),
     ]),
 
     G(FOCUS, [

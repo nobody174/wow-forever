@@ -1748,6 +1748,14 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 2026-10-15 (Plan positions)
 - launch-plan-waypoints.json: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance (8, 59), the Drowned City (21, 27), Steamwheedle Port boat (67, 22, approx), Mount Hyjal (53, 33 on the Kalimdor map, approx; zone "Kalimdor"), Blackmaw Hold gate (38, 32, approx), all read off the map by the owner. PlanData.lua regenerated.
 
+## 0.66.2 (2026-10-16)
+
+- GameplayExtras.lua: R2FDB.chars is keyed by the full in-game name (two characters called Venom, Venom Oathbreaker and Venom Madstorm, overwrote each other, so the Shaman never showed in the mail list); an old bare-name entry is dropped at the next login of that character; OtherCharacters compares full names. Test added.
+- data.py: SkullMark icon INV_Misc_Bone_HumanSkull_01 (Ability_MarkOfSkull is not a game icon, it showed as "?"). Rebuilt.
+- launch-plan-waypoints.json: Thendal Village (Zephras start), Valanaar (Skycutter), The Sky Enclave (Dalaran portal; zone Alterac Mountains, 1416) from the owner's /r2f here; Rog'Mar, Krol'dok (43, 42) and Dire Maul (59, 43) approx. PlanData.lua regenerated.
+- Talents.lua: `/r2f debug traits` (what the last traits points answered). Found with it: the second rank of a multi-rank talent (Sanctified Judgement) got `CommitConfig` = false right after the previous point's commit, so "Learn this build" stopped ("waiting in Blizzard's window") and the next session fell back to guided mode. A false commit is now asked again every 0.3 s up to 6 times (only while nothing else is staged), before the point's 2 s timeout decides. Tests: stub `commitRejectsTimes`, `runShortTimers`.
+- Tried and reverted the same day: deleting the guided talent mode. The owner's client uses it (Learn this build only names the talent), so it stays until the addon learns talents itself (BACKLOG 2.5a).
+
 ## 0.66.1 (2026-10-15)
 
 - data.py: Hunter "Raptor Strike + Wing Clip" restored (removed in 0.56.1, 13e2525, because a macro can stop at the first spell it can't cast; owner asked for it back); Paladin "Judgement + Holy Strike" added (BETA). Rebuilt macros.html, wow-forever-macros.md, MacroData.lua. TESTING.md: corpse arrow (10) and Druid macros (13, except 9 and 11) confirmed.

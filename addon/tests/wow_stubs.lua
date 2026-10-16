@@ -475,6 +475,7 @@ function T.installTraitWrites(model)
       table.insert(T.traitCalls, "commit")
       if T.commitError then error(T.commitError, 2) end
       if T.commitRejects then return false end
+      if (T.commitRejectsTimes or 0) > 0 then T.commitRejectsTimes = T.commitRejectsTimes - 1; return false end
       if configID ~= CONFIG_ID or stagedTotal() == 0 then return false end
       table.insert(T.traitQueue, { kind = "commit" })
       return true
@@ -637,7 +638,21 @@ function UnitCharacterPoints() return T.talentPoints or 0 end
 function PlaySound() end
 SOUNDKIT = { IG_SPELLBOOK_OPEN = 1, IG_SPELLBOOK_CLOSE = 2, IG_ABILITY_PAGE_TURN = 3, IG_MAINMENU_OPEN = 4 }
 time = os.time
-C_Timer = { After = function(_, fn) table.insert(T.timers, fn) end }
+T.shortTimer = {}
+C_Timer = { After = function(delay, fn)
+  if type(delay) == "number" and delay < 1 then T.shortTimer[fn] = true end
+  table.insert(T.timers, fn)
+end }
+-- Fire only the timers asked for with a delay under 1 s (polls, commit retries), keep the long ones
+-- (a point's timeout) waiting: what a short stretch of game time does.
+function T.runShortTimers()
+  local list, keep = T.timers, {}
+  T.timers = {}
+  for _, fn in ipairs(list) do
+    if T.shortTimer[fn] then fn() else keep[#keep + 1] = fn end
+  end
+  for _, fn in ipairs(keep) do table.insert(T.timers, fn) end
+end
 function T.runTimers()
   for _ = 1, 10 do
     local list = T.timers

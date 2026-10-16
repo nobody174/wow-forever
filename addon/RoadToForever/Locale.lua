@@ -796,6 +796,7 @@ R2F.L = {
     "/r2f debug who  every name the game gives your character",
     "/r2f debug here  your zone, map id and x, y",
     "/r2f debug gear  the stats the game gives for the item under the mouse, and its BiZ score",
+    "/r2f debug traits  what the last talent points answered (run it right after Learn this build stops)",
   },
 
   UNKNOWN_COMMAND = "unknown command \"%s\". Type /r2f help for the list.",

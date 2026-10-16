@@ -14,45 +14,30 @@ Level 20+ character is best. Use a test character for anything marked **TEST CHA
 **Taint check, any time:** `/console taintLog 1`, play, `/reload`, search `Logs\taint.log` for `RoadToForever`: no entries.
 
 ## 2. Macros (Macros tab; the Options button holds Import, "New macros go to" and Remove all)
-15. **New in 0.56.1, split macros:** import the site string again. Hunter: Raptor Strike (starts auto-attack in melee), Wing Clip; Survival: Raptor Strike, Mongoose Bite (needs a dodge first), Strider Kick; Rogue: Sap. Each does its one thing on a hostile target. The old combined macros stay on your bars until you remove them.
-16. **0.57.1:** import the same string twice: the second chat line says "0 new, 0 updated, N unchanged".
 
 
 ## 4. Talent learning (TEST CHAR, never a main)
-5. Your own unapplied click in Blizzard's window (not the addon's board) stops the run ("changes that aren't applied yet"), nothing learned.
 
 13. **0.62.1, group picks:** nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made; then Talents tab > Recommended shows a "Group picks" section for that class.
 ## 5. Home and Tweaks extras
-4. Training reminder (Tweaks > Alerts) (0.65.2: a spell no longer shows twice, e.g. "Entangling Roots (Rank 2), Entangling Roots"; open your trainer once, then check Home): at level-up chat names the new spells; Home's "Training" block lists what to train after you visit your trainer once. Home's "Next talent point" now has its own heading and a gold line (0.57.1): easy to see now?
-10. **New in 0.56.2:** put a build on the Talents board on your own class (Recommended), then open Home: right column under Training says "Next talent point: X (point n, level L)". Learn a point of it, or level up: chat prints the line after the training line, and it moves on. A different build on the board changes it.
-12. **New in 0.62.0, reminders:** Tweaks > Class icons now has **Gear repair reminder** (every class) and, for a Hunter / Warlock, **Pet reminder**. Repair: wear something down (or lower the "Turn red below" slider to 90) and check the red percentage appears, and goes after repairing; `/r2f repair`, `/r2f repair lock`. Pet: dismiss your pet: "No pet"; let it die: "Dead"; a Hunter pet at unhappy: "Unhappy"; nothing while mounted or dead; `/r2f pet`.
 
 
-16. **0.63.0, pick order:** load a Recommended build on the Talents tab and step through it with `>`: the first points go to the main tree's top row, then the next row opens after 5 points and the stepper goes as deep as it can before filling the rest; a dip into another tree comes last.
-17. **0.63.0, the site:** each build card on the Builds page has a gold "+5 points" button (next to Copy link): it switches the Talented perk on the whole page.
 
 
-19. **New in 0.64.0, Rested XP:** Tweaks > Class icons (left): a "Rested XP" icon with the percentage of a level you have banked. Rest in an inn or city for a while, then check the number grows and the icon is gold; use it up by killing things and watch it shrink; it is hidden when you have none and the icon is locked. `/r2f rested`.
 
-20. **New in 0.64.1, food buff:** (changed in 0.64.4) Tweaks > Class icons (left) \"Food buff (+5% experience)\": while you have a food buff NOTHING shows. Tick \"Show No food when I am not fed\": red \"No food\" text only (no icon) while you have none (quiet if the game hides your auras, in combat for example). Unlock the icon to see and move it. Fixed in 0.64.2: this section shows for every class.
-21. **New in 0.64.1, newer version notice (listed here under section 5, so it is 5.21):** `/r2f update` says which version you have and whether you heard of a newer one. To really see it: run an older copy next to a friend (or an alt in the same guild or group) who has a newer one, log in, and within a few seconds your chat says "Road to Forever: a new version is out: x (you have y), get it @ github..." (only you see it; nothing is posted in guild or party chat) and Home shows a gold "Update available" line. Tweaks > Chat & screen > "Tell me when a newer version exists" switches it off.
 
 ## 7. Tweaks tab (everything is OFF until ticked; turn off ForeverPlus' matching modules)
-7. Vendors & loot > Mail: list my other characters. `/dump R2FDB.chars` on 2026-10-14 showed 7 characters saved (Despicable, Madfury, Miss, Aoe, Falseaim, Madblade, Venom) and NO Paladin or Shaman: they were never recorded. Tick Road to Forever for them on the character select AddOns screen, log in on each, run `/dump R2FDB.chars` again, then check the mail list. Fast looting (needs the game's Auto Loot; Shift does the opposite) is still open.
+7. Vendors & loot > Mail: list my other characters. 2026-10-16: Paladin and Shaman are both called "Venom" (Venom Oathbreaker, Venom Madstorm), so the second login overwrote the first. Fixed in the next release (saved by full name). After updating: log in on the Paladin and the Shaman once more, then open the mail list on a third character: both Venoms must show. Fast looting (needs the game's Auto Loot; Shift does the opposite) is still open.
 
 
 ## 8. Waypoint arrow
-9. **0.61.0, the arrows point into the scene:** turn so the target is straight ahead: does the arrow look like it points away from you into the distance (not just up)? Turn around so it is behind you: does it point toward you? Sideways: lying on the ground? Is the camera angle right, or should it be lower or higher?
 10. **The eight looks** (Tweaks > Waypoint arrow > "Waypoint arrow look": Flat, Gold dart, Stone arrow, Block, Needle, Gilded, Plate, Stone slab): each switches the arrow at once, the chosen button is gold, it stays after `/reload`, Reset page brings back the Stone arrow. Which do you actually keep? Say which to drop so the list stays short. Is the Needle's red end clearly the pointing end, and do the thin ones (Stone arrow, Gilded) read at Small?
 
 ## 9. Mr.BiZ (BiZ tab)
-11. Hover a gear slot on the doll: ONE enchant line, the pink "Mr.BiZ enchant: ..." from the item tooltip (the extra "Enchant: ..." line from 0.56.3 was removed in 0.57.1). The opened slot's enchant lines on the right are pink too.
 
 ## 10. Corpse arrow (all confirmed)
 
 ## 12. Release and exports
-4. `/r2f debug who` on the Paladin: send the lines (which one reads "Thorin Stormborn"?).
-5. Interface templates (run each as its own command: `/dump R2FMain ~= nil`, then `/dump R2FMainTab1.r2fTemplate`, then `/dump MenuUtil ~= nil`, then `/dump R2F.Minimap.backend`): note the answers in ADDON_PLAN 11 if not already there.
 
 ## 13. Druid macros (0.55.0, 2 to 8 and 10 confirmed 2026-10-15; 9 (runes) and 11 (level 40) still open; use a Druid, level 20+ for Cat)
 9. Rune abilities (engrave the rune first): Starsurge, Sunfire, Starfall, Lacerate, Skull Bash, Survival Instincts, Lifebloom, Nourish: does the macro cast it? Is the spell name right?
@@ -65,17 +50,10 @@ level), press it once or twice, and answer `ok`, `does nothing`, `casts the wron
 that talent / engrave that rune first. The Druid ones are section 13; these are the rest:
 1. Hunter > Survival: **Raptor Strike**, **Mongoose Bite**, **Strider Kick**: each does its one thing on an enemy in melee range (Mongoose Bite needs a dodge first; Strider Kick is a rune).
 2. Paladin > DPS: **Seal swap: Command <> Righteousness**: with the Twist of Light talent, does swapping between swings give the extra seal hit?
-3. Warrior > General: **Retaliation with 2H (from Defensive)**: press twice (1st equips the two-hander and swaps to Battle Stance, 2nd casts Retaliation).
 4. Shaman > Elemental: **Elemental Mastery + Chain Lightning / Lightning Bolt**: Elemental Mastery was not in the beta trees, so these may simply be useless; say if you ever see the talent.
-5. Warrior > Tank: **Shield Block + Sunder Armor** (the Revenge version works, owner 2026-10-15): skip if you do not use it.
-6. **New in 0.66.1, Hunter:** **Raptor Strike + Wing Clip** is back on one button (it was split in 0.56.1): does Wing Clip also fire, also while Raptor Strike is on cooldown? If not, answer `does nothing` and the two single buttons stay.
-7. **New in 0.66.1, Paladin > General > DPS:** **Judgement + Holy Strike** on one button: Judgement first, then Holy Strike. Does the Holy Strike fire after the Judgement in the same press? (Works only if Judgement is off the global cooldown.)
 
-## 15. Plan positions for the arrow (7 plan steps still have no exact spot; 6 were set from your map readings on 2026-10-15)
-How: stand on the spot the step names, run `/r2f here` once, send me the two chat lines. I then set the exact position so the arrow points there. Skip any you do not plan to visit.
-1. Zephras Isle: the starting area. 2. Zephras Isle: where the Skycutter to Dalaran leaves. 3. Dalaran: the Skyborne portal to Stormwind (the zone named Dalaran).
-4. Riverglades (the zone, a spot in the middle will do). 5. Riverglades: Krol'dok Stronghold. 6. Feralas: Shen'dralas. 7. Un'Goro Crater: Shaper's Terrace.
-Set from your readings: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance (8, 59), the Drowned City (21, 27), Steamwheedle Port boat (67, 22, not confirmed), Mount Hyjal (53, 33 on the Kalimdor map), Blackmaw Hold gate (38, 32, approximate). If one of those is off when you walk there, tell me.
+## 15. Plan positions for the arrow (6 set from your readings on 2026-10-16; only Shaper's Terrace has no position)
+7. Un'Goro Crater: Shaper's Terrace: stand on it, run `/r2f here`, send me the two lines. Also walk to Krol'dok Stronghold (43, 42) and Dire Maul (59, 43) once and tell me if the arrow is off: those two came from the web, not from standing there.
 
 ---
 **Confirmed working (kept for the record):**
@@ -87,6 +65,8 @@ Set from your readings: Stormwind Harbor boat (22, 56), Dalaran dungeon entrance
 - *Corpse arrow (section 10, 2026-10-15):* all of 3 to 8.
 - *Druid macros (section 13, 0.55.0, 2026-10-15):* form numbers, bear, cat from stealth, heals from any form, cleanse, rebirth / revive, travel forms, Balance. Still open: 9 (rune abilities) and 11 (Dire Bear Form at level 40).
 - *Seal timer (Paladin) and Slice and Dice timer (Rogue), 0.66.0 (5.22, 2026-10-15):* work, also in combat.
+- *Food buff, text only (5.20, 2026-10-15):* "No food" red text shows only while not fed.
+- *2026-10-16 round:* SkullMark icon (the skull), 4.14 Learn this build learns the points itself (commit retry fix), 12.5 interface templates (answers in ADDON_PLAN 11), 2.15 split macros, 4.5 unapplied click stops the run, 5.4 training lines (no double names), 5.10 next talent point line, 5.12 repair and pet reminders, 5.16 pick order, 5.17 "+5 points" button, 5.19 Rested XP, 5.21 newer-version notice, 2.16 import twice, 8.9 arrows point into the scene, 9.11 pink enchant line, 14.3 / 14.5 / 14.6 / 14.7 macros, 12.4 (`/r2f debug who`: the client gives "Venom Oathbreaker" via GetUnitName; fine).
 - *Hunter ammo (7.16, 2026-10-15):* count, weapon-type label, red 0, hidden without a ranged weapon.
 - *Talent learning (0.56 to 0.62, 2026-10-15):* 4.2 one point (applied, chat line, survives /reload), 4.3 no "didn't accept" (the addon learns talents itself, no Blizzard-window fallback needed), 4.4 five points across two trees, 4.6 combat (stops in combat, starts again after; Owner: not a real use case), 4.9 build in order (`<` `>`, order walk), 4.7 Copy link equals the site's, 4.11 "My current talents" loadout.
 - *Talents tab (0.54.0):* the whole sandbox calculator, 3.1 to 3.12 including Share to Party and the Recommended builds.

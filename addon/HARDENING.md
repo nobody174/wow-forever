@@ -130,7 +130,14 @@ verified point by point, 17,873 passing tests). What stands between it and a pub
 ### Privacy / identity
 
 - Code and data: covered by H4 (character and friend names). No email, real name, local paths or tokens found.
-- **Git history:** re-checked 2026-10-12: no commit has the owner's real-name address. Older public commits use a pseudonymous address; the repo's git email is now GitHub's noreply address, so new commits show no personal address. (Addresses deliberately not written in this file.)
+- **Git history (corrected 2026-10-16):** the 2026-10-12 note here said no commit carries the owner's real-name address. **That was wrong.** Counting authors with `git log --all --format=%ae` on 2026-10-16: 19 commits (2026-09-27 to 2026-10-01) have the owner's real-name address as author and committer; 173 commits (2026-09-24 to 2026-10-11) use a separate pseudonymous address; 116 use GitHub's noreply address (2026-10-12 on, plus a few from 2026-09-29/30); 86 are Claude cloud sessions. New commits are fine; the 19 old ones are public. Removing them means rewriting history (about 370 hashes change, `r2f-v*` tags and releases break, forks and caches keep copies); the owner has not said yes, so nothing was rewritten (see the library's decisions log). Prevention: GitHub setting "Block command line pushes that expose my email" and the noreply address set before the first commit (library `03-addon-dev/privacy-and-repo-hygiene.md`). (Addresses deliberately not written in this file.)
+
+## Decisions added 2026-10-16 (owner)
+
+- **No teammate-facing `/r2f report`.** The owner tests and fetches the error logs; teammates only tell the owner. Kept as optional later work: per-module error isolation (`pcall` around each module's init) and an error log the owner can retrieve.
+- **Questie stays on the Addons page** with a known-issues note (party quest progress not showing).
+- **The version broadcast stays on** (addon-message prefix `R2FV`, a version string to guild/party/raid, switch in Tweaks > Chat & screen) and is disclosed in the addon README.
+- The full review report file `R2F-full-review-2026-10-16.md` was not available on the owner's PC when this was written, so these corrections live here; copy them into the report when it is found.
 
 ## Step 4b: Lua performance pass (2026-10-12)
 - Checked: OnUpdate scripts (only the Bags drag watcher, Minimap drag, TalentGuide 0.2 s host; all run only while active), timers (no tickers), event registrations (Gameplay features register events only while switched on).

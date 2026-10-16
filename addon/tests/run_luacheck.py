@@ -25,8 +25,16 @@ def main():
                 % (src.replace("\\", "/"), src.replace("\\", "/"), argparse_dir.replace("\\", "/")))
     luacheck = lua.eval('require("luacheck")')
     # .luacheckrc is plain Lua assignments; run it in its own environment.
-    cfg = lua.eval("function(path) local env = {} local f = assert(loadfile(path)) setfenv(f, env) f() return env end")(
+    # `files["glob"] = { ignore = {...} }` entries are collected through an auto-creating table.
+    cfg = lua.eval("function(path) local env = {files = setmetatable({}, {__index = function(t, k) local v = {} "
+                   "rawset(t, k, v) return v end})} local f = assert(loadfile(path)) setfenv(f, env) f() return env end")(
         RC.replace("\\", "/"))
+    # basename -> set of ignored warning codes (the CLI applies these per file; the library call does not)
+    ignored = {}
+    for glob, rule in cfg.files.items():
+        ign = rule["ignore"] if rule is not None else None
+        if ign is not None:
+            ignored[glob.split("/")[-1]] = {str(v) for _, v in ign.items()}
     opts = lua.table(std=cfg.std, max_line_length=cfg.max_line_length,
                      globals=cfg.globals, read_globals=cfg.read_globals)
 
@@ -42,6 +50,8 @@ def main():
         issues = report[i]
         for j in range(1, len(issues) + 1):
             issue = issues[j]
+            if str(issue.code) in ignored.get(os.path.basename(path), ()):
+                continue
             total += 1
             print("%s:%s:%s: %s" % (os.path.relpath(path, ADDON), issue.line, issue.column,
                                     luacheck.get_message(issue)))

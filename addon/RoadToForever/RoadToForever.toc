@@ -37,6 +37,7 @@ Repair.lua
 Pet.lua
 Timers.lua
 Rested.lua
+CombatBanner.lua
 Tracking.lua
 Buffs.lua
 Diagnostics.lua

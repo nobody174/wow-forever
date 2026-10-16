@@ -203,6 +203,14 @@ function Library.Init()
   if type(rs.scale) ~= "number" or rs.scale < 0.5 or rs.scale > 3 then rs.scale = 1 end
   if type(rs.x) ~= "number" then rs.x = 326 end
   if type(rs.y) ~= "number" then rs.y = 552 end
+  -- Combat banner (CombatBanner.lua). Off until ticked; y is filled in at login (a hand below the top edge).
+  if type(db.banner) ~= "table" then db.banner = {} end
+  local bn = db.banner
+  if type(bn.shown) ~= "boolean" then bn.shown = (db.gameplay ~= nil and db.gameplay.combatbanner == true) end
+  if db.gameplay then db.gameplay.combatbanner = nil end   -- the 0.66.4 switch on the Alerts page moved here
+  if type(bn.lock) ~= "boolean" then bn.lock = true end
+  if type(bn.scale) ~= "number" or bn.scale < 0.5 or bn.scale > 3 then bn.scale = 1 end
+  if type(bn.x) ~= "number" then bn.x = 0 end
   -- Buff countdown reminders (Timers.lua): one table per tracked buff.
   if type(db.timers) ~= "table" then db.timers = {} end
   for key, pos in pairs({ walkonair = { 2, 462 }, wellfed = { 230, 515 }, seal = { -2, 498 }, sliceanddice = { -2, 498 } }) do

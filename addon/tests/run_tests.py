@@ -3336,6 +3336,11 @@ def test_reactalert():
     T.chat = lua.table()
     lua.execute("R2F.Gameplay.SetOn('reactblizz', true)")
     check("type /reload" in chat_all(lua), "17.3c switching it tells the player a /reload is needed (the game reads the setting when it loads)")
+    # A login re-applies the saved choice (onToggle(true) with the game's setting already at 0): no second /reload line.
+    T.chat = lua.table()
+    lua.eval("R2F.Gameplay.FEATURES")
+    lua.execute("for _, d in ipairs(R2F.Gameplay.FEATURES) do if d.key == 'reactblizz' then d.onToggle(true) end end")
+    check("type /reload" not in chat_all(lua), "17.3c the setting is already off at login: nothing is said, nothing is written again")
     lua.execute("R2F.Gameplay.SetOn('reactblizz', false)")
     T.combat = True
     check(lua.eval("R2F.Gameplay.SetOn('reactblizz', true)") is False, "17.3c a game setting can't be changed in combat")
@@ -8378,25 +8383,43 @@ def test_timers_in_combat():
 
 
 def test_combat_banner():
-    """Combat banner (Alerts page): off until ticked; then "Entering Combat" / "Leaving Combat" appear in our own text for
-    a moment, and go away by themselves."""
-    lua, T = gameplay2_runtime()
+    """Combat banner (Class icons page): off until ticked; then "Entering Combat" / "Leaving Combat" appear in our own text
+    for a moment and go away by themselves; the position can be unlocked and dragged, the size is a slider."""
+    lua, T = reminder_runtime("MAGE")
+    banner = "R2F.CombatBanner.Frame()"
     T.fire("PLAYER_REGEN_DISABLED")
-    check(font_text(lua, "Entering Combat") is None, "combat banner: off by default, nothing shows")
-    lua.execute("R2F.Gameplay.SetOn('combatbanner', true)")
+    check(lua.eval("%s:IsShown()" % banner) is False, "combat banner: off by default, nothing shows")
+    lua.execute("R2F.CombatBanner.SetShown(true)")
+    check(lua.eval("%s:IsShown()" % banner) is False, "combat banner: on and locked: nothing until combat")
     T.fire("PLAYER_REGEN_DISABLED")
-    check(font_text(lua, "^Entering Combat$") == "Entering Combat", "combat banner: Entering Combat shows")
+    check(lua.eval("%s:IsShown()" % banner) is True and lua.eval("%s.text.__text" % banner) == "Entering Combat",
+          "combat banner: Entering Combat shows")
+    check(lua.eval("%s.icon:IsShown()" % banner) is False and lua.eval("%s.border:IsShown()" % banner) is False,
+          "combat banner: locked, it is text only (no icon, no frame)")
     T.fire("PLAYER_REGEN_ENABLED")
-    check(font_text(lua, "^Leaving Combat$") == "Leaving Combat" and font_text(lua, "Entering Combat") is None,
-          "combat banner: Leaving Combat replaces it")
-    check(lua.eval("R2F.Gameplay.CombatBanner():IsShown()") is True, "combat banner: shown")
+    check(lua.eval("%s.text.__text" % banner) == "Leaving Combat", "combat banner: Leaving Combat replaces it")
     T.runTimers()
-    check(lua.eval("R2F.Gameplay.CombatBanner():IsShown()") is False, "combat banner: it goes away after a moment")
+    check(lua.eval("%s:IsShown()" % banner) is False, "combat banner: it goes away after a moment")
+    # Unlocked: a marker to drag, always there; the text still flashes on events.
+    lua.execute("R2F.CombatBanner.SetLock(false)")
+    check(lua.eval("%s:IsShown()" % banner) is True and lua.eval("%s.icon:IsShown()" % banner) is True
+          and lua.eval("%s.count.__text" % banner) == "Banner", "combat banner: unlocked: a marker to move it")
+    lua.execute("R2F.CombatBanner.Db().x = 40 R2F.CombatBanner.Db().y = 100 R2F.CombatBanner.Apply()")
+    check(lua.eval("R2F.Library.db.banner.x") == 40, "combat banner: its position is stored")
+    # Size.
+    lua.execute("R2F.CombatBanner.SetScale(2)")
+    check(lua.eval("%s.__scale" % banner) == 2 and lua.eval("R2F.Library.db.banner.scale") == 2, "combat banner: the size slider scales it")
+    lua.execute("R2F.CombatBanner.SetLock(true)")
+    check(lua.eval("%s:IsShown()" % banner) is False, "combat banner: locked again: hidden until combat")
+    lua.execute("R2F.CombatBanner.SetShown(false)")
     T.fire("PLAYER_REGEN_DISABLED")
-    lua.execute("R2F.Gameplay.SetOn('combatbanner', false)")
-    check(lua.eval("R2F.Gameplay.CombatBanner():IsShown()") is False, "combat banner: switching it off hides it")
-    page = lua.eval("(function() for _, p in ipairs(R2F.GameplayTab.PAGES) do if p.key == 'alerts' then return table.concat(p.features, ',') end end end)()")
-    check("combatbanner" in page.split(","), "combat banner: it has a box on the Alerts page: %s" % page)
+    check(lua.eval("%s:IsShown()" % banner) is False, "combat banner: switched off")
+    names = lua.eval("(function() local t = {} for _, d in ipairs(R2F.Reminders.ForPlayer()) do t[#t + 1] = d.key end return table.concat(t, ',') end)()")
+    check("combatbanner" in names.split(","), "combat banner: it has its section on the Class icons page: %s" % names)
+    # The 0.66.4 switch (Gameplay combatbanner) moves over.
+    lua2, _ = reminder_runtime("MAGE", preset="{ gameplay = { combatbanner = true } }")
+    check(lua2.eval("R2F.Library.db.banner.shown") is True and lua2.eval("R2F.Library.db.gameplay.combatbanner") is None,
+          "combat banner: the earlier Alerts-page switch carries over")
 
 
 def test_item_api_modern():

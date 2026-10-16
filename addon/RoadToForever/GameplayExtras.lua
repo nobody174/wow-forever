@@ -521,62 +521,22 @@ Gameplay.Register({
   available = function() return R2F.QuickSettings.Read(REACT_CVAR) ~= nil end,
   onToggle = function(on)
     local db = R2F.Library.db
+    local current = tostring(R2F.QuickSettings.Read(REACT_CVAR) or "")
     if on then
-      if db.reactWas == nil then db.reactWas = R2F.QuickSettings.Read(REACT_CVAR) or "1" end
+      -- Every login re-applies the saved choice: when the game's setting is already off there is nothing to
+      -- change and nothing to say (it used to print the /reload line at each login).
+      if current == "0" then return end
+      if db.reactWas == nil then db.reactWas = current ~= "" and current or "1" end
       R2F.QuickSettings.Write(REACT_CVAR, "0")
     else
-      R2F.QuickSettings.Write(REACT_CVAR, db.reactWas or "1")
+      local want = db.reactWas or "1"
       db.reactWas = nil
+      if current == want then return end
+      R2F.QuickSettings.Write(REACT_CVAR, want)
     end
     -- The game's combat text reads this setting when it loads (and when its own options change it);
     -- a setting changed from outside is picked up after the next /reload. Making the game re-read it
     -- now would mean calling its code from ours (tainting it again), so we say so instead.
     if R2F.Library.db.gameplay.reactblizzAsked ~= false then R2F.Print(L.GP_REACTBLIZZ_RELOAD) end
-  end,
-})
-
--- ---------------------------------------------------------------------------
--- Combat banner: "Entering Combat" / "Leaving Combat" in big text near the top of the screen for a moment.
--- Our own frame and text only; the game's combat events are just listened to. Off until ticked (Alerts page).
--- ---------------------------------------------------------------------------
-local BANNER_SECONDS = 2
-local banner, bannerToken = nil, 0
-
-local function ensureBanner()
-  if banner then return banner end
-  banner = CreateFrame("Frame", nil, UIParent)
-  banner:SetSize(400, 40)
-  banner:SetPoint("TOP", UIParent, "TOP", 0, -150)
-  banner:SetFrameStrata("HIGH")
-  banner.text = banner:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
-  banner.text:SetPoint("CENTER", banner, "CENTER", 0, 0)
-  banner:Hide()
-  return banner
-end
-
-function Gameplay.CombatBanner() return banner end
-
-local function showBanner(entering)
-  local b = ensureBanner()
-  b.text:SetText(entering and L.GP_COMBAT_ENTER or L.GP_COMBAT_LEAVE)
-  if entering then b.text:SetTextColor(1, 0.2, 0.2) else b.text:SetTextColor(0.3, 1, 0.3) end
-  b:Show()
-  bannerToken = bannerToken + 1
-  local mine = bannerToken
-  if C_Timer and C_Timer.After then
-    C_Timer.After(BANNER_SECONDS, function()
-      if bannerToken == mine and banner then banner:Hide() end
-    end)
-  end
-end
-
-Gameplay.Register({
-  key = "combatbanner", group = "screen", title = "GP_COMBATBANNER", tip = "GP_COMBATBANNER_TIP",
-  events = {
-    PLAYER_REGEN_DISABLED = function() showBanner(true) end,
-    PLAYER_REGEN_ENABLED = function() showBanner(false) end,
-  },
-  onToggle = function(on)
-    if not on and banner then banner:Hide() end
   end,
 })

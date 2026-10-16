@@ -1751,6 +1751,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## Unreleased (2026-10-16): banner size and position, reload message
+- CombatBanner.lua (new): the combat banner moved from the Alerts page to the Class icons page as its own section (Show / Lock / Size slider, drag it where you want it while unlocked; `R2FDB.banner` = shown, lock, scale, x, y; the 0.66.4 Alerts switch carries over; default place a hand below the top edge). Tests rewritten.
+- GameplayExtras.lua: "Hide Blizzard's alert text" no longer prints "type /reload" at every login: the saved choice is re-applied at login and now does nothing (and says nothing) when the game's setting is already off; unticking only writes when the value differs. Regression test added.
+
 ## 0.66.4 (2026-10-16): combat banner
 - GameplayExtras.lua: new Tweaks > Alerts feature "Show a banner when combat starts and ends" (`combatbanner`, off by default): "Entering Combat" (red) / "Leaving Combat" (green) in `GameFontNormalHuge` near the top of the screen (our own frame on UIParent, strata HIGH, 150 px down) for 2 s, driven by PLAYER_REGEN_DISABLED / ENABLED. Tests: `test_combat_banner`. TESTING 5.26.
 

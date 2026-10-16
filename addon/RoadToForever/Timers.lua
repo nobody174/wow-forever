@@ -52,28 +52,97 @@ local function settings(def)
   return t and t[def.key]
 end
 
--- Seconds left on the buff, its icon, and whether the auras could be read at all: (nil, nil, false) when the game hides them
--- (secret values, no API), (nil, nil, true) when they were read and the buff is simply not on you.
+-- What the last readable look at each tracked buff saw: { expires, duration, icon }. In a fight the game may hide your
+-- auras (secret values); the timer then keeps counting from this and shows "~" instead of vanishing.
+local seen = {}
+
+local function matches(def, name, id)
+  for _, n in ipairs(def.names) do if name == n then return true end end
+  for _, sid in ipairs(def.spells) do if id == sid then return true end end
+  for _, pat in ipairs(def.like or {}) do if type(name) == "string" and name:find(pat) then return true end end
+  return false
+end
+
+-- Seconds left on the buff, its icon, whether the auras could be read at all, and whether the number is an estimate:
+-- (nil, nil, false) when the game hides them and there is nothing to count from, (nil, nil, true) when they were read and
+-- the buff is simply not on you. An aura whose fields are secret is skipped, not fatal: our buff may be further down the
+-- list and readable. If our buff cannot be read but was seen earlier, the countdown continues from that (estimate = true).
 function Timers.Remaining(def)
   local ns = _G.C_UnitAuras
   if not (ns and ns.GetUnitAuras) then return nil, nil, false end
   local ok, list = pcall(ns.GetUnitAuras, "player", "HELPFUL")
-  if not ok or type(list) ~= "table" then return nil, nil, false end
   local now = GetTime and GetTime() or 0
+  -- The whole list is hidden (the call fails or returns something else): count on from the last look, if any.
+  if not ok or type(list) ~= "table" then
+    local last = seen[def.key]
+    if last and last.expires > now then return last.expires - now, last.icon, true, true end
+    return nil, nil, false
+  end
+  local hidden = false          -- something in the list could not be read
   for _, aura in ipairs(list) do
-    if type(aura) ~= "table" then return nil, nil, false end
-    local name, id, expires = aura.name, aura.spellId, aura.expirationTime
-    if isSecret(name) or isSecret(id) or isSecret(expires) then return nil, nil, false end
-    local match = false
-    for _, n in ipairs(def.names) do if name == n then match = true end end
-    for _, sid in ipairs(def.spells) do if id == sid then match = true end end
-    for _, pat in ipairs(def.like or {}) do if type(name) == "string" and name:find(pat) then match = true end end
-    if match then
-      if type(expires) ~= "number" or expires <= 0 then return nil, nil, false end
-      return math.max(0, expires - now), aura.icon, true
+    if type(aura) ~= "table" then
+      hidden = true
+    else
+      local name, id, expires = aura.name, aura.spellId, aura.expirationTime
+      if isSecret(name) or isSecret(id) then
+        hidden = true
+      elseif matches(def, name, id) then
+        if isSecret(expires) or type(expires) ~= "number" or expires <= 0 then
+          hidden = true
+        else
+          local duration = type(aura.duration) == "number" and not isSecret(aura.duration) and aura.duration or nil
+          seen[def.key] = { expires = expires, duration = duration or (seen[def.key] and seen[def.key].duration),
+                            icon = aura.icon }
+          return math.max(0, expires - now), aura.icon, true, false
+        end
+      end
     end
   end
-  return nil, nil, true
+  if not hidden then
+    seen[def.key] = nil
+    return nil, nil, true
+  end
+  local last = seen[def.key]
+  if last and last.expires > now then return last.expires - now, last.icon, true, true end
+  return nil, nil, false
+end
+
+-- You cast the buff's spell while the game hides your auras (a new seal, Slice and Dice again): restart the estimate
+-- from the last full duration we saw. Called for UNIT_SPELLCAST_SUCCEEDED of the player.
+function Timers.OnCast(spellID)
+  if type(spellID) ~= "number" or isSecret(spellID) then return end
+  local get = _G.C_Spell and _G.C_Spell.GetSpellName
+  local ok, name = pcall(get or function() end, spellID)
+  if not ok or type(name) ~= "string" or isSecret(name) then return end
+  local now = GetTime and GetTime() or 0
+  for _, def in ipairs(Timers.TRACK) do
+    local last = seen[def.key]
+    if last and last.duration and matches(def, name, spellID) and (def.class == nil or def.class == R2F.playerClass) then
+      last.expires = now + last.duration
+    end
+  end
+end
+
+-- /r2f debug timers: what the timers can read right now (run it in a fight to see what the game hides).
+function Timers.Debug()
+  local ns = _G.C_UnitAuras
+  R2F.Print(L.TIMERS_DEBUG_HEAD:format(tostring(InCombatLockdown and InCombatLockdown() or false)))
+  if not (ns and ns.GetUnitAuras) then return R2F.Print(L.TIMERS_DEBUG_NOAPI) end
+  local ok, list = pcall(ns.GetUnitAuras, "player", "HELPFUL")
+  if not ok or type(list) ~= "table" then return R2F.Print(L.TIMERS_DEBUG_NOAPI) end
+  local total, secretN = 0, 0
+  for _, aura in ipairs(list) do
+    total = total + 1
+    if type(aura) ~= "table" or isSecret(aura.name) or isSecret(aura.spellId) then secretN = secretN + 1 end
+  end
+  R2F.Print(L.TIMERS_DEBUG_LIST:format(total, secretN))
+  for _, def in ipairs(Timers.TRACK) do
+    if def.class == nil or def.class == R2F.playerClass then
+      local sec, _, readable, estimated = Timers.Remaining(def)
+      R2F.Print(L.TIMERS_DEBUG_LINE:format(def.key, sec and ("%.0f"):format(sec) or "-", tostring(readable),
+        tostring(estimated == true)))
+    end
+  end
 end
 
 -- Does this character have the buff's spell (so the section is for them)? Without the spell API: yes.
@@ -123,7 +192,7 @@ local function update(def)
   local f = frames[def.key]
   if not f then return end
   local d = settings(def)
-  local sec, icon, readable = Timers.Remaining(def)
+  local sec, icon, readable, estimated = Timers.Remaining(def)
   local nag = missingNag(def, d, sec, readable)
   local show = d.shown and (nag or (sec ~= nil and not def.nagOnly) or not d.lock)
   f:SetShown(show)
@@ -145,7 +214,7 @@ local function update(def)
     f.border:SetColorTexture((sec and 0.95 or 0.4), (sec and 0.75 or 0.4), (sec and 0.1 or 0.4), 1)
   end
   f.icon:SetTexture(icon or def.icon)
-  f.count:SetText(sec and text(sec, def.clock) or (nag and L.TIMER_NOFOOD) or "-")
+  f.count:SetText(sec and ((estimated and "~" or "") .. text(sec, def.clock)) or (nag and L.TIMER_NOFOOD) or "-")
   f.count:SetTextColor(1, nag and 0.3 or 1, nag and 0.3 or 1)
   f:EnableMouse(not d.lock)
 end
@@ -198,12 +267,17 @@ function Timers.Init()
     end
   end
   local ev = CreateFrame("Frame")
-  ev:SetScript("OnEvent", function(_, event, unit)
+  ev:SetScript("OnEvent", function(_, event, unit, _, spellID)
     if event == "UNIT_AURA" and unit ~= "player" then return end
+    if event == "UNIT_SPELLCAST_SUCCEEDED" then
+      if unit ~= "player" then return end
+      Timers.OnCast(spellID)
+    end
     for _, def in ipairs(Timers.TRACK) do update(def) end
   end)
   for _, e in ipairs({ "UNIT_AURA", "PLAYER_ENTERING_WORLD", "PLAYER_DEAD", "PLAYER_ALIVE", "ZONE_CHANGED_NEW_AREA",
-                  "PLAYER_CONTROL_LOST", "PLAYER_CONTROL_GAINED" }) do
+                  "PLAYER_CONTROL_LOST", "PLAYER_CONTROL_GAINED", "UNIT_SPELLCAST_SUCCEEDED",
+                  "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED" }) do
     pcall(ev.RegisterEvent, ev, e)
   end
   for _, def in ipairs(Timers.TRACK) do update(def) end

@@ -8049,6 +8049,7 @@ def main():
     test_gearscore()
     test_training()
     test_class_timers()
+    test_timers_in_combat()
     test_training_forever_shape()
     test_item_api_modern()
     test_own_spec()
@@ -8319,6 +8320,60 @@ def test_class_timers():
     lua, T = reminder_runtime("MAGE")
     names = lua.eval("(function() local t = {} for _, d in ipairs(R2F.Reminders.ForPlayer()) do t[#t + 1] = d.key end return table.concat(t, ',') end)()")
     check("seal" not in names.split(",") and "sliceanddice" not in names.split(","), "class timers: not for a Mage")
+
+
+def test_timers_in_combat():
+    """The seal / Slice and Dice timers keep going in a fight when the game hides auras (2026-10-16): another hidden aura
+    does not hide ours, a hidden buff of ours is counted down from the last readable look with a "~", a recast restarts the
+    estimate, and a readable list without the buff clears it."""
+    lua, T = reminder_runtime("PALADIN")
+    lua.execute("""TEST.now = 500 SECRET = {}
+      issecretvalue = function(v) return v == 'SECRET' end
+      GetTime = function() return TEST.now end
+      TEST.auras = { { name = 'Seal of Command', spellId = 77, expirationTime = 2300, duration = 1800, icon = 'sealIcon' } }
+      C_UnitAuras = { GetUnitAuras = function() return TEST.auras end }
+      C_Spell = { GetSpellName = function(id) if id == 77 then return 'Seal of Command' end end }
+      for _, d in ipairs(R2F.Timers.TRACK) do if d.key == 'seal' then TD = d end end
+      TD.module.SetLock(true) TD.module.Apply()""")
+    check(lua.eval("R2FSealFrame.count.__text") == "1800", "combat timer: readable out of combat: 1800 s")
+    # Another aura is hidden by the game, ours is still readable further down the list.
+    lua.execute("TEST.auras = { { name = 'SECRET', spellId = 'SECRET', expirationTime = 'SECRET' }, "
+                "{ name = 'Seal of Command', spellId = 77, expirationTime = 2300, duration = 1800, icon = 'sealIcon' } } TD.module.Apply()")
+    check(lua.eval("R2FSealFrame:IsShown()") is True and lua.eval("R2FSealFrame.count.__text") == "1800",
+          "combat timer: a hidden aura elsewhere in the list does not hide ours")
+    # Ours is hidden too: count down from the last look, marked with ~.
+    lua.execute("TEST.auras = { { name = 'Seal of Command', spellId = 77, expirationTime = 'SECRET', icon = 'x' } } TEST.now = 520 TD.module.Apply()")
+    check(lua.eval("R2FSealFrame:IsShown()") is True and lua.eval("R2FSealFrame.count.__text") == "~1780",
+          "combat timer: hidden buff: counts down from the last look, marked ~: %r" % lua.eval("R2FSealFrame.count.__text"))
+    check(lua.eval("R2FSealFrame.icon.__tex") == "sealIcon", "combat timer: the estimate keeps the seal's icon")
+    # Recast in the fight (a new seal): the estimate restarts from the last full duration.
+    lua.execute("TEST.now = 600 R2F.Timers.OnCast(77) TD.module.Apply()")
+    check(lua.eval("R2FSealFrame.count.__text") == "~1800", "combat timer: casting the seal again restarts the estimate")
+    lua.execute("R2F.Timers.OnCast(999) TD.module.Apply()")
+    check(lua.eval("R2FSealFrame.count.__text") == "~1800", "combat timer: another spell changes nothing")
+    # The estimate runs out: nothing is shown.
+    lua.execute("TEST.now = 2500 TD.module.Apply()")
+    check(lua.eval("R2FSealFrame:IsShown()") is False, "combat timer: estimate past its end: hidden")
+    # Out of combat again, list readable, buff not on you: cleared (a later hidden look has nothing to count from).
+    lua.execute("TEST.now = 600 TEST.auras = {} TD.module.Apply()")
+    lua.execute("TEST.auras = { { name = 'Seal of Command', spellId = 77, expirationTime = 'SECRET' } } TD.module.Apply()")
+    check(lua.eval("R2FSealFrame:IsShown()") is False, "combat timer: buff gone while readable: no old estimate comes back")
+    # The whole aura call fails in the fight: same estimate from the last look.
+    lua.execute("TEST.now = 600 TEST.auras = { { name = 'Seal of Command', spellId = 77, expirationTime = 2300, duration = 1800 } } "
+                "TD.module.Apply() TEST.now = 610 C_UnitAuras.GetUnitAuras = function() error('restricted') end TD.module.Apply()")
+    check(lua.eval("R2FSealFrame.count.__text") == "~1690", "combat timer: the aura call failing: still counts from the last look: %r" % lua.eval("R2FSealFrame.count.__text"))
+    # Nothing ever seen and everything hidden: nothing shown (never a guess).
+    lua2, _ = reminder_runtime("ROGUE")
+    lua2.execute("""issecretvalue = function(v) return v == 'SECRET' end GetTime = function() return 10 end
+      C_UnitAuras = { GetUnitAuras = function() return { { name = 'SECRET', spellId = 'SECRET' } } end }
+      for _, d in ipairs(R2F.Timers.TRACK) do if d.key == 'sliceanddice' then SD = d end end
+      SD.module.SetLock(true) SD.module.Apply()""")
+    check(lua2.eval("R2FSliceanddiceFrame:IsShown()") is False, "combat timer: nothing seen before and all hidden: nothing shown")
+    # The debug tool reports what is readable.
+    T2 = lua2.eval("TEST")
+    T2.chat = lua2.table()
+    lua2.execute("R2F.DEBUG.timers()")
+    check("1 hidden by the game" in chat_all(lua2) or "hidden by the game" in chat_all(lua2), "combat timer: /r2f debug timers prints the hidden count")
 
 
 def test_item_api_modern():

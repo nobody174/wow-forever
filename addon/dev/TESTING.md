@@ -12,6 +12,9 @@ sliders and a Reload UI button in the top bar. Tweaks pages: Quests, Vendors & l
 Use a test character for anything marked **TEST CHAR**.
 **Taint check, any time:** `/console taintLog 1`, play, `/reload`, search `Logs	aint.log` for `RoadToForever`: no entries.
 
+## To test in the next release (timers in combat)
+5.25. **Seal (Paladin) and Slice and Dice (Rogue) timers in a fight:** put a seal up (or Slice and Dice), start a fight and keep watching the icon. It should keep counting down; if the game hides your buffs in the fight the number shows with a "~" in front ("~1750") instead of disappearing. Cast a new seal / Slice and Dice mid-fight: the number jumps to the full time again. After the fight, a number without "~" returns. Then, in the middle of a fight, run `/r2f debug timers` and send me the lines (it says how many of your buffs the game hides and what each timer can read).
+
 ## To test now (0.66.3)
 5.23. **Food nag:** Tweaks > Class icons > Food buff > tick "Show No food when I am not fed", take off your food buff: "No food" shows. Board a flight path: it goes away while you fly and returns after landing. Walk into a capital (Stormwind, Ironforge, Darnassus, Undercity, Orgrimmar, Thunder Bluff): it is gone there too. Tell me if a capital still shows it (the map id or zone name differs on Forever).
 5.24. **Quest shopping list:** Plan tab > "Quest shopping list" (top right): quests whose items you can buy instead of farm, grouped by phase, with counts ("3x Boar Intestines"). Tick one: it stays ticked after /reload and the line at the top counts it. "Back to the steps" brings the launch list back. Check that nothing overlaps and long notes fit.

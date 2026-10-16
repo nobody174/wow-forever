@@ -797,9 +797,14 @@ R2F.L = {
     "/r2f debug who  every name the game gives your character",
     "/r2f debug here  your zone, map id and x, y",
     "/r2f debug gear  the stats the game gives for the item under the mouse, and its BiZ score",
+    "/r2f debug timers  what the buff timers can read right now (run it in a fight)",
     "/r2f debug traits  what the last talent points answered (run it right after Learn this build stops)",
   },
 
+  TIMERS_DEBUG_HEAD = "timers (in combat: %s):",
+  TIMERS_DEBUG_NOAPI = "  the game gives no aura list here",
+  TIMERS_DEBUG_LIST = "  your buffs: %d in the list, %d hidden by the game",
+  TIMERS_DEBUG_LINE = "  %s: seconds %s, readable %s, estimate %s",
   UNKNOWN_COMMAND = "unknown command \"%s\". Type /r2f help for the list.",
   UNKNOWN_DEBUG = "unknown debug tool \"%s\". Type /r2f debug for the list.",
   -- Professions export

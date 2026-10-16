@@ -534,3 +534,49 @@ Gameplay.Register({
     if R2F.Library.db.gameplay.reactblizzAsked ~= false then R2F.Print(L.GP_REACTBLIZZ_RELOAD) end
   end,
 })
+
+-- ---------------------------------------------------------------------------
+-- Combat banner: "Entering Combat" / "Leaving Combat" in big text near the top of the screen for a moment.
+-- Our own frame and text only; the game's combat events are just listened to. Off until ticked (Alerts page).
+-- ---------------------------------------------------------------------------
+local BANNER_SECONDS = 2
+local banner, bannerToken = nil, 0
+
+local function ensureBanner()
+  if banner then return banner end
+  banner = CreateFrame("Frame", nil, UIParent)
+  banner:SetSize(400, 40)
+  banner:SetPoint("TOP", UIParent, "TOP", 0, -150)
+  banner:SetFrameStrata("HIGH")
+  banner.text = banner:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
+  banner.text:SetPoint("CENTER", banner, "CENTER", 0, 0)
+  banner:Hide()
+  return banner
+end
+
+function Gameplay.CombatBanner() return banner end
+
+local function showBanner(entering)
+  local b = ensureBanner()
+  b.text:SetText(entering and L.GP_COMBAT_ENTER or L.GP_COMBAT_LEAVE)
+  if entering then b.text:SetTextColor(1, 0.2, 0.2) else b.text:SetTextColor(0.3, 1, 0.3) end
+  b:Show()
+  bannerToken = bannerToken + 1
+  local mine = bannerToken
+  if C_Timer and C_Timer.After then
+    C_Timer.After(BANNER_SECONDS, function()
+      if bannerToken == mine and banner then banner:Hide() end
+    end)
+  end
+end
+
+Gameplay.Register({
+  key = "combatbanner", group = "screen", title = "GP_COMBATBANNER", tip = "GP_COMBATBANNER_TIP",
+  events = {
+    PLAYER_REGEN_DISABLED = function() showBanner(true) end,
+    PLAYER_REGEN_ENABLED = function() showBanner(false) end,
+  },
+  onToggle = function(on)
+    if not on and banner then banner:Hide() end
+  end,
+})

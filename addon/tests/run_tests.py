@@ -8000,6 +8000,7 @@ def main():
     test_ranks()
     test_gameplay()
     test_gameplay_extras()
+    test_combat_banner()
     test_gameplay_quests()
     test_copychat()
     test_questzone()
@@ -8374,6 +8375,28 @@ def test_timers_in_combat():
     T2.chat = lua2.table()
     lua2.execute("R2F.DEBUG.timers()")
     check("1 hidden by the game" in chat_all(lua2) or "hidden by the game" in chat_all(lua2), "combat timer: /r2f debug timers prints the hidden count")
+
+
+def test_combat_banner():
+    """Combat banner (Alerts page): off until ticked; then "Entering Combat" / "Leaving Combat" appear in our own text for
+    a moment, and go away by themselves."""
+    lua, T = gameplay2_runtime()
+    T.fire("PLAYER_REGEN_DISABLED")
+    check(font_text(lua, "Entering Combat") is None, "combat banner: off by default, nothing shows")
+    lua.execute("R2F.Gameplay.SetOn('combatbanner', true)")
+    T.fire("PLAYER_REGEN_DISABLED")
+    check(font_text(lua, "^Entering Combat$") == "Entering Combat", "combat banner: Entering Combat shows")
+    T.fire("PLAYER_REGEN_ENABLED")
+    check(font_text(lua, "^Leaving Combat$") == "Leaving Combat" and font_text(lua, "Entering Combat") is None,
+          "combat banner: Leaving Combat replaces it")
+    check(lua.eval("R2F.Gameplay.CombatBanner():IsShown()") is True, "combat banner: shown")
+    T.runTimers()
+    check(lua.eval("R2F.Gameplay.CombatBanner():IsShown()") is False, "combat banner: it goes away after a moment")
+    T.fire("PLAYER_REGEN_DISABLED")
+    lua.execute("R2F.Gameplay.SetOn('combatbanner', false)")
+    check(lua.eval("R2F.Gameplay.CombatBanner():IsShown()") is False, "combat banner: switching it off hides it")
+    page = lua.eval("(function() for _, p in ipairs(R2F.GameplayTab.PAGES) do if p.key == 'alerts' then return table.concat(p.features, ',') end end end)()")
+    check("combatbanner" in page.split(","), "combat banner: it has a box on the Alerts page: %s" % page)
 
 
 def test_item_api_modern():

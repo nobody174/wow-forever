@@ -41,7 +41,7 @@ Tab.PAGES = {
     features = { "repair", "sellgray", "fastloot", "mailalts" } },
   { key = "screen", label = "GP_PAGE_SCREEN", features = { "errorfilter", "xpbar", "copychat", "duels", "updatecheck" } },
   { key = "bags", label = "GP_PAGE_BAGS", features = { "bagslots", "bagsort", "upgrades" } },
-  { key = "alerts", label = "GP_PAGE_ALERTS", features = { "reactalert", "reactlock", "reactblizz", "training" } },
+  { key = "alerts", label = "GP_PAGE_ALERTS", features = { "reactalert", "reactlock", "reactblizz", "combatbanner", "training" } },
   { key = "arrow", label = "GP_PAGE_ARROW", features = { "navfollow", "corpsearrow" } },
   { key = "icons", label = "GP_PAGE_ICONS", features = {} },
 }

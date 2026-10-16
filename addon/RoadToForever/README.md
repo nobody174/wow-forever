@@ -24,12 +24,13 @@ Open it with `/r2f` (or the minimap button). It has six pages:
   at a time. A confirmation comes first, and it never learns in combat.
 - **Plan**: the launch-day checklist from the site, with tick boxes. Each step can point
   the built-in arrow (BiZNav) at its spot; `/bizway` and Alt + right-click on the world map
-  do the same for any spot.
+  do the same for any spot. A **Quest shopping list** button swaps the steps for the quests whose items
+  you can buy instead of farm, with a tick box for each.
 - **BiS (Mr.BiZ)**: best in slot gear for every class and spec at level 30, with where it
   drops, how sure the source is, and a per-character wishlist.
 - **Tweaks**: small optional helpers, all **off until you tick them**: auto-repair, sell
   grey items, quest auto-accept and turn-in, fast looting, free bag slots, a copy-chat box,
-  an "ability ready" alert, a quest shopping list, and on-screen icons and reminders
+  an "ability ready" alert, and on-screen icons and reminders
   (Warrior stance, Hunter ammo, pet, gear repair, rested XP, missing tracking, missing group
   buffs, Seal and Slice and Dice timers, food).
 

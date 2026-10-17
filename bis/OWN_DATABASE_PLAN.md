@@ -155,3 +155,19 @@ Class armor and weapon skills (levels where mail / plate start), required level 
 ## 8. Recommended next step
 
 Start **M0** and stop at its checkpoint: a full item table of the beta (every equippable item with exact stats, source-less) validated against ForeverDB's 305 items. It costs a few days, needs nothing from ForeverDB, and shows whether the rest is as easy as the first measurements suggest. After that, decide on M1 with real numbers.
+
+---
+
+## 9. M0 progress log
+
+**2026-10-17 (started).**
+- `bis/tools/db2_pull.py` downloads 19 item tables of a Forever build (7.9 MB, build 1.60.1.70450) into the gitignored cache.
+- `bis/tools/wh_tooltip_pull.py` pulls Wowhead tooltips for the 11,103 legacy items + a 400-item cross-check sample (resumable, one writer only, 0.45 s each, about 85 minutes; running in the background today).
+- `bis/tools/items_build.py` builds `bis/items.json` and prints the cross-check between the DB2 numbers and the tooltips.
+- **Cross-check, first 400 items that exist both ways:** quality, item level and required level agree **400 of 400**. Stats agree 316 of 400 and armor 215 of 228 with the rules built so far; the remaining differences are all of three understood kinds:
+  1. stats the tooltip prints as sentences instead of numbered lines (hit, crit, block as "by 1.0%"; the client stores rating numbers: **hit = 10 per 1%, crit = 14 per 1%, block = 5 per 1%**, which is also why ForeverDB's score units look the way they do),
+  2. resistances ("+5 Fire Resistance") and school damage ("damage done by Fire spells by up to 23" = stat 85; the school stats run 84 holy, 85 fire, 86 nature, 87 frost, 88 shadow, 89 arcane),
+  3. bonus armor (stat 50) that the tooltip folds into the armor line.
+  Robes use the chest armor row (fixed), negative stats are kept (fixed).
+- **Decision for the legacy items' "Equip:" effects** (about 40-60 sentence shapes): translate the sentences with a small rule table (each rule: sentence pattern -> stat id and scale), validated on the cross-check sample; the alternative (ItemEffect -> Spell -> SpellEffect aura types) is more exact but needs the large spell tables, so it is kept as the fallback for sentences no rule covers.
+- **Next:** finish the rule table, run the full validation against ForeverDB's 305 items once the pull has finished, write `bis/items.json`, then the M0 checkpoint report (coverage: items with complete stats, items that need a rule).

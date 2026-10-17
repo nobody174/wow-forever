@@ -1774,6 +1774,9 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## Unreleased (2026-10-17): own item database, M0 started
+- `bis/tools/db2_pull.py` (19 DB2 tables of a Forever build from wago.tools), `bis/tools/wh_tooltip_pull.py` (resumable Wowhead tooltip cache, one writer, lock file), `bis/tools/items_build.py` (item table from DB2 + tooltips, with a cross-check report). First cross-check: quality, item level and required level agree for 400 of 400 sample items; stats and armor differences are understood (OWN_DATABASE_PLAN.md section 9). Nothing ships to players yet.
+
 ## 0.66.6 (2026-10-17): No weather quick setting
 - QuickSettings.lua: a fifth Home box "No weather (rain, snow, dust)" = `weatherDensity 0`, off = the game's own default (read from the client like the zoom). The minimap block on Home moved down one row. Tests: five boxes, the box sets 0 and gives the default back.
 

@@ -1774,6 +1774,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.66.9 (2026-10-17): revert one-click copy
+
+- `CopyToClipboard` is blocked for addons (taint popup; pcall does not help). Back to the box. Library ledger row added.
+
 ## 0.66.8 (2026-10-17): one-click copy in the quest shopping list
 
 - Item lines call the game's `CopyToClipboard(name, true)` (pcall, needs a positive length back); Shift or a refusal falls back to the `R2FCopyItem` box. Tests cover both paths. TESTING 5.31 asks for an in-game check.

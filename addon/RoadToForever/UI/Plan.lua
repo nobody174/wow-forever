@@ -280,20 +280,8 @@ local function itemButton(r, j)
   b.text:SetPoint("LEFT", 0, 0)
   b.text:SetJustifyH("LEFT")
   b.text:SetTextColor(1, 0.82, 0)
-  -- A click copies the name straight to the clipboard (the game's own CopyToClipboard, allowed from a click); if the game
-  -- refuses it or has none, or with Shift held, the small box opens instead.
-  b:SetScript("OnClick", function(self)
-    local name = self.itemName
-    if not name then return end
-    if not IsShiftKeyDown() and type(_G.CopyToClipboard) == "function" then
-      local ok, n = pcall(_G.CopyToClipboard, name, true)
-      if ok and type(n) == "number" and n > 0 then
-        R2F.Print(L.PLAN_COPY_DONE:format(name))
-        return
-      end
-    end
-    showCopy(name)
-  end)
+  -- No direct clipboard call: CopyToClipboard is a Blizzard-only action and the game blocks the addon for using it.
+  b:SetScript("OnClick", function(self) if self.itemName then showCopy(self.itemName) end end)
   b:SetScript("OnEnter", function(self)
     self.text:SetTextColor(1, 1, 1)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")

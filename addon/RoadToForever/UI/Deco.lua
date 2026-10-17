@@ -40,8 +40,9 @@ local function gradient(t, orientation, lo, hi, alo, ahi)
   if not ok then middle() end
 end
 
--- Four thin lines forming a box `inset` px inside the parent's edge. Returns them as a list.
-local function box(parent, inset, thickness, layer, sub)
+-- Four thin lines forming a box `inset` px inside `rel`'s edge. The textures belong to `frame` (a region cannot own a texture);
+-- `rel` is the frame or texture they are anchored to. Returns them as a list.
+local function box(frame, rel, inset, thickness, layer, sub)
   local out = {}
   local spec = {
     { "TOPLEFT", inset, -inset, "TOPRIGHT", -inset, -inset, true },
@@ -50,9 +51,9 @@ local function box(parent, inset, thickness, layer, sub)
     { "TOPRIGHT", -inset, -inset, "BOTTOMRIGHT", -inset, inset, false },
   }
   for _, sp in ipairs(spec) do
-    local t = tex(parent, layer, sub)
-    t:SetPoint(sp[1], parent, sp[1], sp[2], sp[3])
-    t:SetPoint(sp[4], parent, sp[4], sp[5], sp[6])
+    local t = tex(frame, layer, sub)
+    t:SetPoint(sp[1], rel, sp[1], sp[2], sp[3])
+    t:SetPoint(sp[4], rel, sp[4], sp[5], sp[6])
     if sp[7] then t:SetHeight(thickness) else t:SetWidth(thickness) end
     out[#out + 1] = t
   end
@@ -77,10 +78,10 @@ function Deco.Build(frame, ctx)
   d.insetFill = tex(frame, "BACKGROUND", 3)
   d.insetFill:SetPoint("TOPLEFT", d.insetEdge, "TOPLEFT", 2, -2)
   d.insetFill:SetPoint("BOTTOMRIGHT", d.insetEdge, "BOTTOMRIGHT", -2, 2)
-  d.insetLines = box(d.insetEdge, 3, 1, "BACKGROUND", 4)
+  d.insetLines = box(frame, d.insetEdge, 3, 1, "BACKGROUND", 4)
 
   -- Gold double frame line: the window already draws the outer one (r2fRimLines, 2 px); this is the thin inner line.
-  d.frameInner = box(frame, 6, 1, "ARTWORK", 0)
+  d.frameInner = box(frame, frame, 6, 1, "ARTWORK", 0)
 
   -- Corner gems.
   d.gems = {}
@@ -116,7 +117,7 @@ function Deco.Build(frame, ctx)
   for key, b in pairs(ctx.nav) do
     local n = { grad = tex(b, "BACKGROUND", 1) }
     n.grad:SetAllPoints(b)
-    n.border = box(b, 0, 1, "BORDER", 0)
+    n.border = box(b, b, 0, 1, "BORDER", 0)
     n.gem = tex(b, "ARTWORK", 2)
     n.gem:SetTexture(DOT)
     n.gem:SetSize(8, 8)

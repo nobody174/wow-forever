@@ -767,8 +767,16 @@ function methods:Disable() self.__enabled = false end
 function methods:IsEnabled() return self.__enabled end
 function methods:SetChecked(v) self.__checked = not not v end
 function methods:GetChecked() return self.__checked end
-function methods:CreateTexture() return newObject("Texture") end
-function methods:CreateFontString() return newObject("FontString") end
+-- Only frames own textures and font strings: asking a Texture or FontString (a region) to create one is an error in the game
+-- (0.69.0 shipped such a call and the window failed to open).
+function methods:CreateTexture(...)
+  if self.__kind == "Texture" or self.__kind == "FontString" then error("attempt to call a nil value (CreateTexture on a " .. self.__kind .. ")") end
+  return newObject("Texture")
+end
+function methods:CreateFontString(...)
+  if self.__kind == "Texture" or self.__kind == "FontString" then error("attempt to call a nil value (CreateFontString on a " .. self.__kind .. ")") end
+  return newObject("FontString")
+end
 -- Font objects (CreateFont): the game's own fonts exist as plain objects so a copy can inherit from them.
 function CreateFont(name) local f = newObject("Font") if name then _G[name] = f end return f end
 for _, n in ipairs({ "GameFontNormal", "GameFontNormalLarge", "GameFontNormalSmall", "GameFontHighlight", "GameFontHighlightSmall",

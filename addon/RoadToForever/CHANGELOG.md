@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.69.1 (2026-10-18)
+
+- **Fix: the window failed to open in 0.69.0** with a Lua error in `Deco.lua` (the decoration asked a texture to create more textures, which the game does not allow). Fixed; the test stand-in for the game now refuses that call too, so it cannot slip through again.
+
 ## 0.69.0 (2026-10-18)
 
 - **Azeroth Reforged now has its own look, not just colours.** Pick it under Home > Theme: a stone-coloured panel with a gold double frame line and round corner gems, a banner behind the window title, gradient stone buttons in the sidebar with a gem that lights up on the selected one, gold lines fading out after the group names, and a darker inset behind the pages. The text uses two bundled fonts, Cinzel for headings and Alegreya Sans for the rest (both under the SIL Open Font License, licence files included). If the game cannot load a font it keeps its own. The other themes and Classic are unchanged.

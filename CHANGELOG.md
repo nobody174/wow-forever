@@ -1774,6 +1774,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.69.1 (2026-10-18): hotfix
+
+- `Deco.box` created its lines on a Texture (`d.insetEdge`) -> `attempt to call a nil value`; it now takes the owning frame and the region to anchor to. `wow_stubs.lua`: CreateTexture / CreateFontString on a Texture or FontString raise an error like the game (the stub accepted it, which is why 0.69.0 passed its tests). Ember & Iron moves to 0.70.0.
+
 ## 0.69.0 (2026-10-18): Azeroth Reforged decoration
 
 - `UI/Deco.lua` (textures only, built once, shown for a theme with `deco = "azeroth"`, hidden otherwise): gradient panel (`Texture:SetGradient`, flat fallback), inset, inner frame line, four round corner gems from `media/dot`, banner behind the title, gradient nav buttons with a gem, group headings with a fading line. `Theme.lua`: `deco` / `font` tokens, `setFace` swaps the face of our own font objects only and falls back to the game font when `SetFont` is refused. Bundled `media/fonts`: Cinzel (variable font, default weight) and Alegreya Sans Regular with their OFL files. README credits updated. Not yet seen in the client: TESTING 5.36. Next: Ember & Iron (0.69.1).

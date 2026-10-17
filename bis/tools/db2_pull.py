@@ -24,6 +24,8 @@ TABLES = [
     "ItemDamageAmmo", "ItemDamageThrown", "ItemDamageWand",
     "ItemEffect", "ItemXItemEffect",
     "ItemSet", "ItemSetSpell",
+    # crafting (M2): which spell makes which item, with which reagents, at what skill
+    "SkillLine", "SkillLineAbility", "SpellName", "SpellEffect", "SpellReagents", "Map", "Faction",
 ]
 
 
@@ -58,7 +60,8 @@ def main():
         except Exception as e:
             print("  %-26s FAILED: %s" % (t, e))
             continue
-        if not body.startswith(b"ID,") and not body[:40].replace(b"\xef\xbb\xbf", b"").startswith(b"ID"):
+        first = body[:8000].replace(b"\xef\xbb\xbf", b"").splitlines()[0].strip().split(b",")
+        if b"ID" not in first:                  # a table's header row has an ID column (not always the first)
             print("  %-26s not a table (first bytes %r)" % (t, body[:30]))
             continue
         f.write_bytes(body)

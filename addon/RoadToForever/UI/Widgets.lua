@@ -48,7 +48,7 @@ function UI.CheckedGlow(button)
   local tex = button.GetCheckedTexture and button:GetCheckedTexture()
   if tex then
     tex:SetBlendMode("ADD")
-    tex:SetVertexColor(1, 0.82, 0)
+    R2F.Theme.PaintVertex(tex, "accentTex")
     tex:SetAllPoints(button)
   end
   -- The square glow alone was too faint to see which one is selected: a gold ring (the action bars' own
@@ -57,7 +57,7 @@ function UI.CheckedGlow(button)
     local ring = button:CreateTexture(nil, "OVERLAY")
     ring:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
     ring:SetBlendMode("ADD")
-    ring:SetVertexColor(1, 0.82, 0)
+    R2F.Theme.PaintVertex(ring, "accentTex")
     local w, h = 32, 32
     if button.GetSize then
       local bw, bh = button:GetSize()
@@ -99,6 +99,17 @@ local DIALOG_BACKDROP = {
 
 -- A plain frame with Blizzard's dialog backdrop. BackdropTemplate is needed
 -- for SetBackdrop on modern-engine clients; older ones have SetBackdrop built in.
+-- A game button (UIPanelButtonTemplate) in the theme's colours: its three art pieces and its text. Classic leaves the art
+-- untinted (white) and the text in the game's own gold. Missing parts are skipped (other templates name them differently).
+function UI.ThemeButton(b)
+  for _, key in ipairs({ "Left", "Middle", "Right" }) do
+    local part = b[key]
+    if part and part.SetVertexColor then R2F.Theme.PaintVertex(part, "button") end
+  end
+  if b.SetNormalFontObject and _G.R2FHeading then b:SetNormalFontObject(_G.R2FHeading) end
+  return b
+end
+
 function UI.DialogFrame(name, parent)
   local f = CreateFrame("Frame", name, parent or UIParent,
     (BackdropTemplateMixin and "BackdropTemplate") or nil)
@@ -141,7 +152,7 @@ function UI.Window(name, width, height, saveKey)
     local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", -4, -4)
     f.CloseButton = close
-    local title = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local title = f:CreateFontString(nil, "OVERLAY", "R2FHeading")
     title:SetPoint("TOP", 0, -16)
     f.r2fTitle = title
   end
@@ -254,7 +265,7 @@ local function buildConfirm()
   f:Hide()
   closeOnEsc("R2FConfirm")
 
-  local text = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  local text = f:CreateFontString(nil, "ARTWORK", "R2FBody")
   text:SetPoint("TOP", 0, -24)
   text:SetWidth(330)
   text:SetJustifyH("CENTER")
@@ -309,14 +320,14 @@ function UI.Prompt(title, default, acceptLabel, cancelLabel, onAccept)
     f:EnableMouse(true)
     f:Hide()
     closeOnEsc("R2FPrompt")
-    f.title = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    f.title = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
     f.title:SetPoint("TOP", 0, -20)
     local edit = CreateFrame("EditBox", nil, f, (BackdropTemplateMixin and "BackdropTemplate") or nil)
     if edit.SetBackdrop then
       edit:SetBackdrop({ bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
                          edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16,
                          edgeSize = 12, insets = { left = 3, right = 3, top = 3, bottom = 3 } })
-      edit:SetBackdropColor(0, 0, 0, 0.8)
+      R2F.Theme.PaintBackdrop(edit, "edit")
     end
     edit:SetFontObject(ChatFontNormal or GameFontHighlight)
     edit:SetTextInsets(6, 6, 0, 0)
@@ -388,7 +399,7 @@ function UI.CheckButton(parent, label, radio)
     b:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check")
   end
   b:SetSize(16, 16)
-  local text = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  local text = b:CreateFontString(nil, "ARTWORK", "R2FBody")
   text:SetPoint("LEFT", b, "RIGHT", 4, 0)
   text:SetText(label)
   b:SetHitRectInsets(0, -(text:GetStringWidth() + 4), 0, 0)
@@ -464,7 +475,7 @@ function UI.Switch(parent, label)
   b.SetEnabled = function(self, v) b.r2fEnabled = v and true or false; setEnabled(self, v); paint() end
   b:SetScript("PostClick", paint)
 
-  local text = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  local text = b:CreateFontString(nil, "ARTWORK", "R2FBody")
   text:SetPoint("LEFT", b, "RIGHT", 6, 0)
   text:SetText(label)
   b:SetHitRectInsets(0, -(text:GetStringWidth() + 6), 0, 0)
@@ -532,7 +543,7 @@ local function buildMenuFrame()
       tile = true, tileSize = 16, edgeSize = 16,
       insets = { left = 4, right = 4, top = 4, bottom = 4 },
     })
-    m:SetBackdropColor(0, 0, 0, 0.9)
+    R2F.Theme.PaintBackdrop(m, "menu")
   end
   m:SetFrameStrata("DIALOG")
   m:SetClampedToScreen(true)
@@ -556,7 +567,7 @@ local function menuRow(m, i)
   r:SetSize(MENU_W - 16, ROW_H)
   r:SetPoint("TOPLEFT", 8, -8 - (i - 1) * ROW_H)
   r:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
-  r.text = r:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  r.text = r:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   r.text:SetPoint("LEFT", 20, 0)
   r.text:SetJustifyH("LEFT")
   r.check = r:CreateTexture(nil, "ARTWORK")
@@ -582,10 +593,10 @@ function UI.ContextMenu(items)
     r.text:SetText(it.text or "")
     r.line:SetShown(it.kind == "divider")
     if it.kind == "title" then
-      r.text:SetFontObject(GameFontNormalSmall or GameFontHighlight)
+      r.text:SetFontObject(_G.R2FHeadingSmall or _G.R2FBody)
       r.text:SetPoint("LEFT", 0, 0)
     else
-      r.text:SetFontObject(GameFontHighlightSmall or GameFontHighlight)
+      r.text:SetFontObject(_G.R2FBodySmall or _G.R2FBody)
       r.text:SetPoint("LEFT", 20, 0)
     end
     -- Title and divider rows aren't clickable.
@@ -634,7 +645,7 @@ function UI.ShowCopy(text, hint)
     f:EnableMouse(true)
     f:Hide()
     closeOnEsc("R2FCopy")
-    f.hint = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    f.hint = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
     f.hint:SetPoint("TOP", 0, -18)
     local scroll, edit = UI.MultiLineEdit(f, "R2FCopyScroll", 350, 130)
     scroll:SetPoint("TOPLEFT", 24, -44)

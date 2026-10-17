@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.68.1 (2026-10-18)
+
+- **Themes now colour the text too.** The grey, white and gold text on every page, the dark boxes behind menus and edit fields, the Size and Opacity slider knobs, the Reload UI button and the Theme button all follow the chosen theme. Classic looks exactly as before (same colours, checked by a test).
+
 ## 0.68.0 (2026-10-17)
 
 - **Themes for the window.** Home has a new **Theme** button next to Minimap with four more looks besides Classic (the one you have now, still the default): Azeroth Reforged, Obsidian Night, Ember & Iron and Frost & Void. The panel, sidebar, divider line, frame line, title, selected tab and the switches change at once, no reload needed, and your choice is remembered. Frost & Void keeps the panel nearly solid so text stays readable. Only this window changes, nothing of the game's own interface.

@@ -13,6 +13,7 @@ local handlers = {}
 handlers.ADDON_LOADED = function(name)
   if name ~= ADDON_NAME then return end
   R2F.Library.Init()
+  R2F.Theme.Init()
   events:UnregisterEvent("ADDON_LOADED")
 end
 

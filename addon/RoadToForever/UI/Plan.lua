@@ -42,7 +42,7 @@ end
 local function header(i)
   local h = headers[i]
   if not h then
-    h = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    h = content:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
     headers[i] = h
   end
   return h
@@ -61,15 +61,15 @@ local function row(i)
       if R2F.Home and R2F.Home.Refresh then R2F.Home.Refresh() end
     end
   end)
-  r.lvl = content:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  r.lvl = content:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
   r.lvl:SetJustifyH("LEFT")
   r.lvl:SetWidth(46)
-  r.title = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  r.title = content:CreateFontString(nil, "ARTWORK", "R2FBody")
   r.title:SetJustifyH("LEFT")
   r.title:SetWidth(TEXT_W)
-  r.note = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  r.note = content:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   r.note:SetJustifyH("LEFT")
-  r.note:SetTextColor(0.7, 0.7, 0.7)
+  R2F.Theme.PaintText(r.note, "note")
   r.note:SetWidth(TEXT_W)
   rows[i] = r
   return r
@@ -85,7 +85,7 @@ local function pointLine(r, j)
   p.btn:SetScript("OnClick", function(self)
     if self.point then Plan.Waypoint(self.point, self.stepId) end
   end)
-  p.text = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  p.text = content:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   p.text:SetJustifyH("LEFT")
   p.text:SetWidth(TEXT_W - 100)
   r.points[j] = p
@@ -158,7 +158,7 @@ local function layout()
       r.title:ClearAllPoints()
       r.title:SetPoint("TOPLEFT", content, "TOPLEFT", 78, -y)
       r.title:SetText(titleWithTags(s))
-      if Plan.IsDone(s.id) then r.title:SetTextColor(0.5, 0.5, 0.5) else r.title:SetTextColor(1, 1, 1) end
+      if Plan.IsDone(s.id) then R2F.Theme.PaintText(r.title, "dim") else R2F.Theme.PaintText(r.title, "body") end
       r.title:Show()
       local used = math.max(r.title:GetStringHeight(), 14) + 2
       if s.n and s.n ~= "" then
@@ -203,7 +203,7 @@ local function layout()
       for j, w in ipairs(gear) do
         local g = r.gears[j]
         if not g then
-          g = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+          g = content:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
           g:SetJustifyH("LEFT")
           g:SetWidth(TEXT_W)
           g.hit = CreateFrame("Frame", nil, content)
@@ -249,7 +249,7 @@ local function showCopy(name)
     f:EnableMouse(true)
     f:Hide()
     if UISpecialFrames then table.insert(UISpecialFrames, "R2FCopyItem") end
-    local title = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    local title = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
     title:SetPoint("TOP", 0, -14)
     title:SetText(L.PLAN_COPY_TITLE)
     local box
@@ -257,7 +257,7 @@ local function showCopy(name)
     box:SetPoint("TOPLEFT", 18, -36)
     copyEdit:SetScript("OnEscapePressed", function() f:Hide() end)
     copyEdit:SetScript("OnEditFocusLost", function() f:Hide() end)
-    local hint = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+    local hint = f:CreateFontString(nil, "ARTWORK", "R2FDimSmall")
     hint:SetPoint("BOTTOMLEFT", 20, 12)
     hint:SetWidth(290)
     hint:SetJustifyH("LEFT")
@@ -276,19 +276,19 @@ local function itemButton(r, j)
   if b then return b end
   b = CreateFrame("Button", nil, content)
   b:SetSize(BUY_W, 15)
-  b.text = b:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  b.text = b:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   b.text:SetPoint("LEFT", 0, 0)
   b.text:SetJustifyH("LEFT")
-  b.text:SetTextColor(1, 0.82, 0)
+  R2F.Theme.PaintText(b.text, "heading")
   -- No direct clipboard call: CopyToClipboard is a Blizzard-only action and the game blocks the addon for using it.
   b:SetScript("OnClick", function(self) if self.itemName then showCopy(self.itemName) end end)
   b:SetScript("OnEnter", function(self)
-    self.text:SetTextColor(1, 1, 1)
+    R2F.Theme.PaintText(self.text, "body")
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     GameTooltip:AddLine(L.PLAN_COPY_TIP:format(self.itemName or ""), 1, 1, 1, true)
     GameTooltip:Show()
   end)
-  b:SetScript("OnLeave", function(self) self.text:SetTextColor(1, 0.82, 0) GameTooltip:Hide() end)
+  b:SetScript("OnLeave", function(self) R2F.Theme.PaintText(self.text, "heading") GameTooltip:Hide() end)
   r.itemBtns[j] = b
   return b
 end
@@ -304,12 +304,12 @@ local function buyRow(i)
       Tab.Refresh()
     end
   end)
-  r.title = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  r.title = content:CreateFontString(nil, "ARTWORK", "R2FBody")
   r.title:SetJustifyH("LEFT")
   r.title:SetWidth(BUY_W)
-  r.note = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  r.note = content:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   r.note:SetJustifyH("LEFT")
-  r.note:SetTextColor(0.7, 0.7, 0.7)
+  R2F.Theme.PaintText(r.note, "note")
   r.note:SetWidth(BUY_W)
   buyRows[i] = r
   return r
@@ -331,7 +331,7 @@ local function layoutBuy()
     nHead = nHead + 1
     local h = buyHeaders[nHead]
     if not h then
-      h = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+      h = content:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
       buyHeaders[nHead] = h
     end
     h:ClearAllPoints()
@@ -353,7 +353,7 @@ local function layoutBuy()
       r.title:ClearAllPoints()
       r.title:SetPoint("TOPLEFT", content, "TOPLEFT", 40, -y)
       r.title:SetText(head)
-      if bought then r.title:SetTextColor(0.5, 0.5, 0.5) else r.title:SetTextColor(1, 1, 1) end
+      if bought then R2F.Theme.PaintText(r.title, "dim") else R2F.Theme.PaintText(r.title, "body") end
       r.title:Show()
       local used = math.max(r.title:GetStringHeight(), 14) + 2
       for j, it in ipairs(q.items) do
@@ -415,7 +415,7 @@ end
 -- Called once by MainWindow with the Plan page frame.
 function Tab.Build(f)
   page = f
-  local pick = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  local pick = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
   pick:SetPoint("TOPLEFT", 28, -52)
   pick:SetText(L.PLAN_PICK)
   for i, id in ipairs(Plan.Order()) do
@@ -430,7 +430,7 @@ function Tab.Build(f)
     end)
     picks[id] = b
   end
-  ui.progress = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  ui.progress = f:CreateFontString(nil, "ARTWORK", "R2FBody")
   ui.progress:SetPoint("TOPLEFT", 28, -124)
   ui.buyBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   ui.buyBtn:SetSize(150, 22)

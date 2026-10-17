@@ -88,6 +88,115 @@ function Theme.PanelAlpha(t, a)
   return v
 end
 
+-- ---------------------------------------------------------------------------
+-- Colour roles: every grey / white / gold text and every dark overlay of our windows is a role, not a literal.
+-- Classic's roles are exactly the values the code used to hardcode (and Blizzard's own font colours); the other themes
+-- derive theirs from their text / accent / bg tokens. Text, textures and backdrops painted through Paint* are repainted
+-- on a theme change.
+-- ---------------------------------------------------------------------------
+local CLASSIC_ROLES = {
+  heading = { 1, 0.82, 0 }, body = { 1, 1, 1 }, dim = { 0.5, 0.5, 0.5 }, note = { 0.7, 0.7, 0.7 },
+  tagline = { 0.75, 0.75, 0.75 }, sub = { 0.6, 0.6, 0.6 }, group = { 0.6, 0.6, 0.65 },
+  accentTex = { 1, 0.82, 0, 1 }, thumb = { 1, 1, 1, 1 }, button = { 1, 1, 1, 1 },
+  tick = { 0.75, 0.75, 0.78, 0.8 }, menu = { 0, 0, 0, 0.9 }, edit = { 0, 0, 0, 0.8 }, bizBack = { 0.03, 0.03, 0.05, 0.9 },
+}
+Theme.CLASSIC_ROLES = CLASSIC_ROLES
+
+local function mix(a, b, t)
+  return { a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t, a[3] + (b[3] - a[3]) * t }
+end
+
+-- The colour {r, g, b[, a]} of a role in theme t.
+function Theme.Role(t, role)
+  if t.key == "classic" then return CLASSIC_ROLES[role] end
+  local text, bg, accent, side = t.text, t.bg, t.accent, t.side
+  if role == "heading" then return accent end
+  if role == "body" then return text end
+  if role == "dim" then return mix(text, bg, 0.55) end
+  if role == "note" then return mix(text, bg, 0.3) end
+  if role == "tagline" then return mix(text, bg, 0.22) end
+  if role == "sub" then return mix(text, bg, 0.42) end
+  if role == "group" then return mix(text, bg, 0.4) end
+  if role == "accentTex" or role == "thumb" then return { accent[1], accent[2], accent[3], 1 } end
+  if role == "button" then local c = mix({ 1, 1, 1 }, accent, 0.45) return { c[1], c[2], c[3], 1 } end
+  if role == "tick" then local c = mix(text, bg, 0.35) return { c[1], c[2], c[3], 0.8 } end
+  if role == "menu" then return { side[1], side[2], side[3], 0.92 } end
+  if role == "edit" then return { bg[1], bg[2], bg[3], 0.85 } end
+  if role == "bizBack" then return { side[1], side[2], side[3], 0.9 } end
+  return CLASSIC_ROLES[role]
+end
+
+local function roleColor(role)
+  return Theme.Role(Theme.Get(), role)
+end
+
+local weak = { __mode = "k" }
+local painted = { text = setmetatable({}, weak), tex = setmetatable({}, weak), vertex = setmetatable({}, weak),
+                  backdrop = setmetatable({}, weak) }
+
+local function applyText(fs, role)
+  local c = roleColor(role)
+  if fs.SetTextColor then fs:SetTextColor(c[1], c[2], c[3]) end
+end
+local function applyTex(t, role)
+  local c = roleColor(role)
+  if t.SetColorTexture then t:SetColorTexture(c[1], c[2], c[3], c[4] or 1) end
+end
+local function applyVertex(t, role)
+  local c = roleColor(role)
+  if t.SetVertexColor then t:SetVertexColor(c[1], c[2], c[3], c[4] or 1) end
+end
+local function applyBackdrop(f, role)
+  local c = roleColor(role)
+  if f.SetBackdropColor then f:SetBackdropColor(c[1], c[2], c[3], c[4] or 1) end
+end
+
+function Theme.PaintText(fs, role) painted.text[fs] = role applyText(fs, role) end
+function Theme.PaintTex(t, role) painted.tex[t] = role applyTex(t, role) end
+function Theme.PaintVertex(t, role) painted.vertex[t] = role applyVertex(t, role) end
+function Theme.PaintBackdrop(f, role) painted.backdrop[f] = role applyBackdrop(f, role) end
+
+-- Our own font objects (copies of the game's, never the game's own): same face, size and shadow, colour from the theme.
+-- Text created with R2FBody / R2FHeading / R2FDim (and the Small / Large sizes) follows the theme with no per-string work.
+Theme.FONTS = {
+  R2FHeading = { "GameFontNormal", "heading" }, R2FHeadingLarge = { "GameFontNormalLarge", "heading" },
+  R2FHeadingSmall = { "GameFontNormalSmall", "heading" }, R2FBody = { "GameFontHighlight", "body" },
+  R2FBodySmall = { "GameFontHighlightSmall", "body" }, R2FDim = { "GameFontDisable", "dim" },
+  R2FDimSmall = { "GameFontDisableSmall", "dim" },
+}
+local fontObjects = {}
+local function buildFonts()
+  if not _G.CreateFont then return end
+  for name, spec in pairs(Theme.FONTS) do
+    local parent = _G[spec[1]]
+    if parent and not fontObjects[name] then
+      local f = _G.CreateFont(name)
+      if f.SetFontObject then f:SetFontObject(parent) end
+      fontObjects[name] = f
+    end
+  end
+end
+buildFonts()
+function Theme.FontObject(name) return fontObjects[name] end
+
+local function paintFonts()
+  for name, spec in pairs(Theme.FONTS) do
+    local f = fontObjects[name]
+    if f and f.SetTextColor then
+      local c = roleColor(spec[2])
+      f:SetTextColor(c[1], c[2], c[3])
+    end
+  end
+end
+
+function Theme.Repaint()
+  paintFonts()
+  for fs, role in pairs(painted.text) do applyText(fs, role) end
+  for t, role in pairs(painted.tex) do applyTex(t, role) end
+  for t, role in pairs(painted.vertex) do applyVertex(t, role) end
+  for f, role in pairs(painted.backdrop) do applyBackdrop(f, role) end
+end
+
 local listeners = {}
 function Theme.OnChange(fn) listeners[#listeners + 1] = fn end
 
@@ -96,6 +205,10 @@ function Theme.Set(key)
   local db = R2F.Library and R2F.Library.db
   if not (db and db.settings) then return false end
   db.settings.theme = key
+  Theme.Repaint()
   for _, fn in ipairs(listeners) do fn(byKey[key]) end
   return true
 end
+
+-- A saved theme applies at login: the fonts take its colours before any window is built.
+function Theme.Init() paintFonts() end

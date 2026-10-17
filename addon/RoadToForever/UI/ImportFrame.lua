@@ -37,7 +37,7 @@ local function refresh()
   parsed = result
   local diff = R2F.Import.Diff(result, R2F.Library.db.library, playerClass(),
     { replace = replaceBox:GetChecked() })
-  preview:SetTextColor(1, 1, 1)
+  R2F.Theme.PaintText(preview, "body")
   preview:SetText(R2F.Import.PreviewText(diff))
   importBtn:SetEnabled(not R2F.InCombat())
 end
@@ -77,7 +77,7 @@ local function build()
   f:Hide()
   if UISpecialFrames then table.insert(UISpecialFrames, "R2FImport") end
 
-  local title = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  local title = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
   title:SetPoint("TOP", 0, -18)
   title:SetText(L.IMPORT_TITLE)
 
@@ -89,13 +89,13 @@ local function build()
   scroll:SetPoint("TOPLEFT", 26, -46)
 
   -- Placeholder text, hidden while the box has text.
-  local hint = f:CreateFontString(nil, "ARTWORK", "GameFontDisable")
+  local hint = f:CreateFontString(nil, "ARTWORK", "R2FDim")
   hint:SetPoint("TOPLEFT", scroll, "TOPLEFT", 4, -2)
   hint:SetWidth(380)
   hint:SetJustifyH("LEFT")
   hint:SetText(L.IMPORT_PLACEHOLDER)
 
-  preview = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  preview = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   preview:SetPoint("TOPLEFT", scroll, "BOTTOMLEFT", 0, -10)
   preview:SetWidth(400)
   preview:SetJustifyH("LEFT")

@@ -104,7 +104,7 @@ local function buildNavButton(parent, key, y)
   bar:SetPoint("LEFT", b, "LEFT", 0, 0)
   bar:SetColorTexture(GOLD[1], GOLD[2], GOLD[3], 1)
   bar:Hide()
-  local fs = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  local fs = b:CreateFontString(nil, "ARTWORK", "R2FBody")
   fs:SetPoint("LEFT", b, "LEFT", 14, 0)
   fs:SetText(L[LABELS[key]])
   b.r2fKey, b.r2fSel, b.r2fBar, b.r2fText = key, sel, bar, fs
@@ -161,7 +161,7 @@ R2F.Theme.OnChange(function() MainWindow.ApplyLook() end)
 -- it, so size changes apply on release.
 local STEP = 10
 local function topSlider(parent, label, min, max, get, set, x)
-  local fs = parent:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  local fs = parent:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
   fs:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -5)
   local function snap(v)
     v = math.floor(v / STEP + 0.5) * STEP
@@ -171,6 +171,8 @@ local function topSlider(parent, label, min, max, get, set, x)
   caption(math.floor(get() * 100 + 0.5))
   local sl = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
   sl:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -17)
+  local knob = sl.GetThumbTexture and sl:GetThumbTexture()
+  if knob then R2F.Theme.PaintVertex(knob, "thumb") end
   sl:SetWidth(84)
   sl:SetMinMaxValues(min, max)
   sl:SetValueStep(STEP)
@@ -244,9 +246,9 @@ local function topSlider(parent, label, min, max, get, set, x)
     t:SetSize(1, major and 6 or 4)
     local tx = 8 + (84 - 16) * i / n
     t:SetPoint("TOP", sl, "BOTTOMLEFT", tx, 2)
-    t:SetColorTexture(0.75, 0.75, 0.78, 0.8)
+    R2F.Theme.PaintTex(t, "tick")
     if major then
-      local m = parent:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+      local m = parent:CreateFontString(nil, "ARTWORK", "R2FDimSmall")
       m:SetPoint("TOP", sl, "BOTTOMLEFT", tx, -4)
       m:SetText(tostring(min + i * STEP))
     end
@@ -302,7 +304,7 @@ local function build()
   logo:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -7)
   logo:SetTexture(LOGO)
   f.r2fLogo = logo
-  local title = f:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+  local title = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
   title:SetPoint("LEFT", logo, "RIGHT", 8, 0)
   f.r2fTitle = title
 
@@ -314,6 +316,7 @@ local function build()
   reload:SetPoint("TOPRIGHT", f, "TOPRIGHT", -36, -11)
   reload:SetText(L.MENU_RELOAD)
   reload:SetScript("OnClick", function() ReloadUI() end)
+  UI.ThemeButton(reload)
   f.r2fReload = reload
   f.r2fSizeSlider = topSlider(f, L.WIN_SIZE, 50, 150,
     function() return settings().menuScale end,
@@ -329,10 +332,10 @@ local function build()
   for _, group in ipairs(MainWindow.NAV) do
     if group.heading then
       y = y - 8
-      local h = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+      local h = f:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
       h:SetPoint("TOPLEFT", f, "TOPLEFT", 16, y)
       h:SetText(L[group.heading]:upper())
-      h:SetTextColor(0.6, 0.6, 0.65)
+      R2F.Theme.PaintText(h, "group")
       y = y - 18
     end
     for _, key in ipairs(group.tabs) do

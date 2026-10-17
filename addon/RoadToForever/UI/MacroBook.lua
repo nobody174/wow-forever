@@ -150,7 +150,7 @@ local function buildMenu()
       tile = true, tileSize = 16, edgeSize = 16,
       insets = { left = 4, right = 4, top = 4, bottom = 4 },
     })
-    m:SetBackdropColor(0, 0, 0, 0.9)
+    R2F.Theme.PaintBackdrop(m, "menu")
   end
   m:SetSize(176, 64)
   m:SetFrameStrata("DIALOG")
@@ -266,15 +266,15 @@ local function buildSlot(parent, i)
   b.arrow:SetPoint("TOPLEFT", -5, 5)
   b.arrow:Hide()
 
-  b.name = b:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  b.name = b:CreateFontString(nil, "ARTWORK", "R2FHeading")
   b.name:SetPoint("LEFT", b, "RIGHT", 8, 7)
   b.name:SetWidth(180)
   b.name:SetJustifyH("LEFT")
-  b.sub = b:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  b.sub = b:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   b.sub:SetPoint("TOPLEFT", b.name, "BOTTOMLEFT", 0, -3)
   b.sub:SetWidth(180)
   b.sub:SetJustifyH("LEFT")
-  b.sub:SetTextColor(0.6, 0.6, 0.6)
+  R2F.Theme.PaintText(b.sub, "sub")
 
   b:RegisterForDrag("LeftButton")
   b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -504,7 +504,7 @@ MacroBook.OptionsMenu = optionsMenu
 local function build(f)
   for i = 1, PER_PAGE do slots[i] = buildSlot(f, i) end
 
-  local empty = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  local empty = f:CreateFontString(nil, "ARTWORK", "R2FBody")
   empty:SetPoint("TOP", 0, -150)
   empty:SetWidth(400)
   ui.empty = empty
@@ -512,21 +512,21 @@ local function build(f)
   -- Class picker label, right of the picker row: which class the
   -- grid shows, and whether it's yours or a preview. The buttons are built
   -- on demand in Refresh (only classes with macros get one).
-  ui.pickLabel = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  ui.pickLabel = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
   ui.pickLabel:SetJustifyH("LEFT")
   ui.pickLabel:Hide()
 
   -- Other classes' macros, shown on the Universal tab, and the "previewing
   -- another class" note, on every tab of that class.
-  local other = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  local other = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   other:SetPoint("BOTTOMLEFT", 24, 76)
   other:SetWidth(490)
   other:SetJustifyH("LEFT")
   ui.other = other
 
-  ui.char = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  ui.char = f:CreateFontString(nil, "ARTWORK", "R2FBody")
   ui.char:SetPoint("BOTTOMLEFT", 24, 52)
-  ui.acc = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  ui.acc = f:CreateFontString(nil, "ARTWORK", "R2FBody")
   ui.acc:SetPoint("LEFT", ui.char, "RIGHT", 20, 0)
   ui.combat = f:CreateFontString(nil, "ARTWORK", "GameFontRed")
   ui.combat:SetPoint("LEFT", ui.acc, "RIGHT", 20, 0)
@@ -536,7 +536,7 @@ local function build(f)
   ui.next:SetPoint("BOTTOMRIGHT", -16, 42)
   ui.prev = pageButton(f, "Prev")
   ui.prev:SetPoint("RIGHT", ui.next, "LEFT", -2, 0)
-  ui.page = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  ui.page = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
   ui.page:SetPoint("RIGHT", ui.prev, "LEFT", -6, 0)
   ui.prev:SetScript("OnClick", function()
     state.page = state.page - 1
@@ -689,7 +689,7 @@ local function refreshPicker(counts, browsed)
   ui.pickLabel:SetPoint("LEFT", picks[#list], "RIGHT", 10, 0)
   ui.pickLabel:SetText((own and L.PICKER_YOURS or L.PICKER_PREVIEW):format(className(browsed)))
   -- Gold = yours (GameFontNormal's own colour), grey = preview only.
-  if own then ui.pickLabel:SetTextColor(1, 0.82, 0) else ui.pickLabel:SetTextColor(0.7, 0.7, 0.7) end
+  if own then R2F.Theme.PaintText(ui.pickLabel, "heading") else R2F.Theme.PaintText(ui.pickLabel, "note") end
   ui.pickLabel:Show()
 end
 
@@ -698,8 +698,8 @@ local function refreshBottom()
   ui.char:SetText(L.SLOTS_CHARACTER:format(char, maxChar))
   ui.acc:SetText(L.SLOTS_ACCOUNT:format(acc, maxAcc))
   -- Red when full.
-  if char >= maxChar then ui.char:SetTextColor(1, 0.1, 0.1) else ui.char:SetTextColor(1, 1, 1) end
-  if acc >= maxAcc then ui.acc:SetTextColor(1, 0.1, 0.1) else ui.acc:SetTextColor(1, 1, 1) end
+  if char >= maxChar then ui.char:SetTextColor(1, 0.1, 0.1) else R2F.Theme.PaintText(ui.char, "body") end
+  if acc >= maxAcc then ui.acc:SetTextColor(1, 0.1, 0.1) else R2F.Theme.PaintText(ui.acc, "body") end
   local combat = R2F.InCombat()
   ui.combat:SetShown(combat)
   ui.tidy:SetEnabled(not combat)

@@ -46,7 +46,7 @@ local function refresh()
     b:SetChecked(available and R2F.QuickSettings.IsOn(b.qsItem))
     local enabled = available and not combat
     b:SetEnabled(enabled)
-    if enabled then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
+    if enabled then R2F.Theme.PaintText(b.r2fLabel, "body") else R2F.Theme.PaintText(b.r2fLabel, "dim") end
   end
 end
 
@@ -71,7 +71,7 @@ local function showQuickTip(b)
 end
 
 local function heading(f, x, y, text)
-  local h = f:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+  local h = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
   h:SetPoint("TOPLEFT", x, y)
   h:SetText(text)
   return h
@@ -101,11 +101,11 @@ end
 
 local function buildQuick(f)
   heading(f, LEFT, TOP, L.QS_TITLE)
-  local note = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  local note = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   note:SetPoint("TOPLEFT", LEFT + 4, TOP - 28)
   note:SetWidth(300)
   note:SetJustifyH("LEFT")
-  note:SetTextColor(0.7, 0.7, 0.7)
+  R2F.Theme.PaintText(note, "note")
   note:SetText(L.QS_NOTE)
   ui.qsNote = note
 
@@ -151,6 +151,7 @@ local function buildTheme(f)
   b:SetSize(170, 22)
   b:SetPoint("TOPLEFT", 130, TOP - 218)
   b:SetText(L.SETTINGS_THEME_BTN:format(R2F.Theme.Get().name))
+  UI.ThemeButton(b)
   b:SetScript("OnClick", function() UI.ContextMenu(themeItems()) end)
   b:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")

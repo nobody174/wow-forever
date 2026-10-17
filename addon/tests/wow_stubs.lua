@@ -769,6 +769,10 @@ function methods:SetChecked(v) self.__checked = not not v end
 function methods:GetChecked() return self.__checked end
 function methods:CreateTexture() return newObject("Texture") end
 function methods:CreateFontString() return newObject("FontString") end
+-- Font objects (CreateFont): the game's own fonts exist as plain objects so a copy can inherit from them.
+function CreateFont(name) local f = newObject("Font") if name then _G[name] = f end return f end
+for _, n in ipairs({ "GameFontNormal", "GameFontNormalLarge", "GameFontNormalSmall", "GameFontHighlight", "GameFontHighlightSmall",
+                     "GameFontDisable", "GameFontDisableSmall" }) do if not _G[n] then _G[n] = newObject("Font") end end
 function methods:GetStringHeight() return 14 end
 function methods:GetStringWidth() return 7 * #(self.__text or "") end
 function methods:GetEffectiveScale() return 1 end

@@ -58,7 +58,7 @@ local function refresh()
       local ok = Gameplay.Available(def)
       b:SetChecked(Gameplay.IsOn(def.key))
       b:SetEnabled(ok)
-      if ok then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
+      if ok then R2F.Theme.PaintText(b.r2fLabel, "body") else R2F.Theme.PaintText(b.r2fLabel, "dim") end
     end
   end
   if sizeSlider then
@@ -68,7 +68,7 @@ local function refresh()
     for k, b in pairs(outlineButtons) do
       local fs = b.GetFontString and b:GetFontString()
       if fs then
-        if k == d.outline then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
+        if k == d.outline then R2F.Theme.PaintText(fs, "heading") else R2F.Theme.PaintText(fs, "body") end
       end
     end
   end
@@ -77,21 +77,21 @@ local function refresh()
     for k, b in pairs(styleButtons) do
       local fs = b.GetFontString and b:GetFontString()
       if fs then
-        if k == look then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
+        if k == look then R2F.Theme.PaintText(fs, "heading") else R2F.Theme.PaintText(fs, "body") end
       end
     end
     local size = R2F.Nav.Size()
     for k, b in pairs(arrowButtons) do
       local fs = b.GetFontString and b:GetFontString()
       if fs then
-        if k == size then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
+        if k == size then R2F.Theme.PaintText(fs, "heading") else R2F.Theme.PaintText(fs, "body") end
       end
     end
   end
   local bagsOk = R2F.Bags.Available() and not R2F.InCombat()
   for _, b in ipairs(bagBoxes) do
     b:SetEnabled(bagsOk)
-    if bagsOk then b.r2fLabel:SetTextColor(1, 1, 1) else b.r2fLabel:SetTextColor(0.5, 0.5, 0.5) end
+    if bagsOk then R2F.Theme.PaintText(b.r2fLabel, "body") else R2F.Theme.PaintText(b.r2fLabel, "dim") end
   end
   if bagBoxes[1] then
     bagBoxes[1]:SetChecked(R2F.Bags.IsMovable())
@@ -126,7 +126,7 @@ local function addRow(parent, def, x, y)
   boxes[def.key] = b
   local hint = L[def.title .. "_HINT"]
   if hint then
-    local fs = parent:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+    local fs = parent:CreateFontString(nil, "ARTWORK", "R2FDimSmall")
     fs:SetPoint("TOPLEFT", x + 28, y - 22)
     fs:SetWidth(200)
     fs:SetJustifyH("LEFT")
@@ -177,7 +177,7 @@ function Tab.ShowPage(key)
     end
     local fs = b.GetFontString and b:GetFontString()
     if fs then
-      if on then fs:SetTextColor(1, 0.82, 0) else fs:SetTextColor(1, 1, 1) end
+      if on then R2F.Theme.PaintText(fs, "heading") else R2F.Theme.PaintText(fs, "body") end
     end
   end
   content:SetHeight(pageHeight[key] or 100)
@@ -225,7 +225,7 @@ function Tab.Build(f)
     b:SetText(L[pg.label])
     b:SetScript("OnClick", function() Tab.ShowPage(pg.key) end)
     b.mark = b:CreateTexture(nil, "OVERLAY")
-    b.mark:SetColorTexture(1, 0.82, 0, 1)
+    R2F.Theme.PaintTex(b.mark, "accentTex")
     b.mark:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", 6, 1)
     b.mark:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -6, 1)
     b.mark:SetHeight(3)
@@ -272,7 +272,7 @@ function Tab.Build(f)
     end
     local bottom = y  -- luacheck: ignore 311
     if pg.key == "alerts" then
-      sizeText = c:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+      sizeText = c:CreateFontString(nil, "ARTWORK", "R2FBody")
       sizeText:SetPoint("TOPLEFT", LEFT + 4, y - 6)
       sizeSlider = CreateFrame("Slider", nil, c, "OptionsSliderTemplate")
       sizeSlider:SetPoint("TOPLEFT", LEFT + 4, y - 30)
@@ -293,7 +293,7 @@ function Tab.Build(f)
           refresh()
         end
       end)
-      local ol = c:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+      local ol = c:CreateFontString(nil, "ARTWORK", "R2FBody")
       ol:SetPoint("TOPLEFT", LEFT + 4, y - 56)
       ol:SetText(L.GP_ALERT_OUTLINE)
       local bx = LEFT + 4
@@ -311,7 +311,7 @@ function Tab.Build(f)
         bx = bx + 68
       end
       y = y - 112
-      local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+      local note = c:CreateFontString(nil, "ARTWORK", "R2FDimSmall")
       note:SetPoint("TOPLEFT", LEFT + 4, y - 4)
       note:SetWidth(440)
       note:SetJustifyH("LEFT")
@@ -320,7 +320,7 @@ function Tab.Build(f)
     elseif pg.key == "arrow" then
       local bx
       -- BiZNav arrow size.
-      local al = c:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+      local al = c:CreateFontString(nil, "ARTWORK", "R2FBody")
       al:SetPoint("TOPLEFT", LEFT + 4, y - 6)
       al:SetText(L.NAV_SIZE)
       bx = LEFT + 4
@@ -338,7 +338,7 @@ function Tab.Build(f)
         bx = bx + 68
       end
       -- BiZNav arrow look: flat dart, gold 3D dart, stone 3D arrow.
-      local sl = c:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+      local sl = c:CreateFontString(nil, "ARTWORK", "R2FBody")
       sl:SetPoint("TOPLEFT", LEFT + 4, y - 58)
       sl:SetText(L.NAV_STYLE)
       bx = LEFT + 4
@@ -359,7 +359,7 @@ function Tab.Build(f)
       end
       bottom = y - 190
     elseif pg.key == "icons" then
-      local head = c:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+      local head = c:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
       head:SetPoint("TOPLEFT", LEFT, -10)
       head:SetText(L.GP_ICONS)
       -- Two columns: the icons every character can have (repair, countdown, tracking) and the class ones (stance, ammo,
@@ -379,7 +379,7 @@ function Tab.Build(f)
         end
       end
     else
-      local note = c:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+      local note = c:CreateFontString(nil, "ARTWORK", "R2FDimSmall")
       note:SetPoint("TOPLEFT", LEFT + 4, y - 4)
       note:SetWidth(440)
       note:SetJustifyH("LEFT")

@@ -4555,6 +4555,41 @@ def test_step6_ui(templates, fx):
           "setting an unknown theme is refused")
     check(lua.eval("R2F.Theme.PanelAlpha(R2F.Theme.Get('arcane'), 0.3)") >= 0.85,
           "glass theme stays readable at low opacity")
+    # Text-colour pass: Classic's roles are EXACTLY the values the pages used to hardcode, and the game's own font colours.
+    OLD = {"heading": (1, 0.82, 0), "body": (1, 1, 1), "dim": (0.5, 0.5, 0.5), "note": (0.7, 0.7, 0.7),
+           "tagline": (0.75, 0.75, 0.75), "sub": (0.6, 0.6, 0.6), "group": (0.6, 0.6, 0.65)}
+    OLD_TEX = {"accentTex": (1, 0.82, 0, 1), "thumb": (1, 1, 1, 1), "button": (1, 1, 1, 1), "tick": (0.75, 0.75, 0.78, 0.8),
+               "menu": (0, 0, 0, 0.9), "edit": (0, 0, 0, 0.8), "bizBack": (0.03, 0.03, 0.05, 0.9)}
+    for role, want in list(OLD.items()) + list(OLD_TEX.items()):
+        got = [lua.eval("R2F.Theme.Role(R2F.Theme.Get('classic'), '%s')[%d]" % (role, i + 1)) for i in range(len(want))]
+        check(all(abs(g - w) < 1e-9 for g, w in zip(got, want)), "classic role %s equals the old hardcoded value %s: %s" % (role, want, got))
+    lua.execute("R2F.Theme.Set('classic')")
+    for font, role in (("R2FHeading", "heading"), ("R2FBody", "body"), ("R2FDim", "dim"), ("R2FHeadingLarge", "heading"),
+                       ("R2FBodySmall", "body"), ("R2FDimSmall", "dim"), ("R2FHeadingSmall", "heading")):
+        col = [lua.eval("%s.__color[%d]" % (font, i)) for i in (1, 2, 3)]
+        check(all(abs(c - w) < 1e-9 for c, w in zip(col, OLD[role])), "classic font %s has the game's colour %s" % (font, OLD[role]))
+    lua.execute("""PT = CreateFrame('Frame'):CreateFontString() PTX = CreateFrame('Frame'):CreateTexture()
+      R2F.Theme.PaintText(PT, 'note') R2F.Theme.PaintTex(PTX, 'menu')""")
+    check(abs(lua.eval("PT.__color[1]") - 0.7) < 1e-9, "painted text starts in Classic's value")
+    lua.execute("R2F.Theme.Set('obsidian')")
+    check(lua.eval("PT.__color[1]") != 0.7 and lua.eval("R2FBody.__color[1]") != 1 and lua.eval("R2FHeading.__color[2]") != 0.82,
+          "a theme change repaints painted text and the font objects")
+    lua.execute("R2F.Theme.Set('classic')")
+    check(abs(lua.eval("PT.__color[1]") - 0.7) < 1e-9 and abs(lua.eval("R2FHeading.__color[2]") - 0.82) < 1e-9,
+          "back to Classic restores the old values")
+    # No page may go back to a hardcoded grey / white / gold text colour or a font that ignores the theme.
+    import re as _re
+    ui_dir = os.path.join(HERE, "..", "RoadToForever", "UI")
+    bad = []
+    for fname in sorted(os.listdir(ui_dir)):
+        if not fname.endswith(".lua"):
+            continue
+        src = open(os.path.join(ui_dir, fname), encoding="utf-8").read()
+        for m in _re.finditer(r":SetTextColor\((?:1, 0\.82, 0|1, 1, 1|0\.5, 0\.5, 0\.5|0\.7, 0\.7, 0\.7|0\.75, 0\.75, 0\.75|0\.6, 0\.6, 0\.6|0\.6, 0\.6, 0\.65)\)", src):
+            bad.append("%s: %s" % (fname, m.group(0)))
+        for m in _re.finditer(r"\"(GameFont(?:Normal|Highlight|Disable)[A-Za-z]*)\"", src):
+            bad.append("%s: %s" % (fname, m.group(0)))
+    check(not bad, "no hardcoded text colours or game fonts left in UI/*.lua: %s" % bad[:5])
     # The rim: classic keeps Blizzard's dialog border (no extra lines); the others hide it and draw a thin coloured line.
     lua.execute("R2F.Theme.Set('classic')")
     check(lua.eval("R2FMain.r2fRimLines[1]:IsShown()") is False, "classic: no extra rim line")

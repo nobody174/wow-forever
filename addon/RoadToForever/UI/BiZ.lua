@@ -96,7 +96,7 @@ local function itemButton()
   return pool("item", function()
     local b = CreateFrame("Button", nil, host)
     b:SetHeight(18)
-    b.fs = b:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    b.fs = b:CreateFontString(nil, "ARTWORK", "R2FBody")
     b.fs:SetAllPoints(b)
     b.fs:SetJustifyH("LEFT")
     b.fs:SetWordWrap(false)
@@ -160,7 +160,7 @@ local function line(font, x, y, w, str)
   fs:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)
   fs:SetWidth(w)
   fs:SetWordWrap(false)
-  fs:SetTextColor(1, 1, 1)
+  R2F.Theme.PaintText(fs, "body")
   fs:SetText(str)
   return fs
 end
@@ -247,11 +247,11 @@ local function layoutSide()
   ui.footer:SetText(L.BIZ_FOOTER:format(R2F.BiZData.level, R2F.BiZData.source, sp.build))
 
   local sl = slotOf(sp, selected)
-  line("GameFontNormalLarge", 0, 0, 320, BiZ.SlotLabel(selected))
+  line("R2FHeadingLarge", 0, 0, 320, BiZ.SlotLabel(selected))
   if not (sl and sl.best) then
-    line("GameFontDisableSmall", 0, 30, 320, L.BIZ_NOTHING)
+    line("R2FDimSmall", 0, 30, 320, L.BIZ_NOTHING)
     if sl and sl.note then
-      local n = line("GameFontDisableSmall", 0, 46, 320, (sl.note:gsub("^%l", string.upper)))
+      local n = line("R2FDimSmall", 0, 46, 320, (sl.note:gsub("^%l", string.upper)))
       n:SetWordWrap(true)
     end
     return
@@ -269,17 +269,17 @@ local function layoutSide()
   local altLines = 0
   for i, e in ipairs(rows) do
     if i > 2 then break end
-    local head = line("GameFontNormalSmall", 0, y, 320, L.BIZ_ENCHANT:format(e.name))
+    local head = line("R2FHeadingSmall", 0, y, 320, L.BIZ_ENCHANT:format(e.name))
     head:SetWordWrap(false)
     head:SetTextColor(1, 0.5, 0.85)   -- pink, like the item tooltip line
     local kind = e.kind == "2h" and (" · " .. L.BIZ_ENCHANT_2H) or ""
-    local sub = line("GameFontDisableSmall", 12, y + 14, 308, L.BIZ_ENCHANT_SUB:format(e.eff, e.prof, e.skill) .. kind)
+    local sub = line("R2FDimSmall", 12, y + 14, 308, L.BIZ_ENCHANT_SUB:format(e.eff, e.prof, e.skill) .. kind)
     sub:SetWordWrap(false)
     y = y + 28
     for n, a in ipairs(e.alts or {}) do
       if altLines >= 3 then break end
       altLines = altLines + 1
-      local al = line("GameFontDisableSmall", 12, y, 308, L.BIZ_ENCHANT_ALT:format(n + 1, a.name, a.prof, a.skill))
+      local al = line("R2FDimSmall", 12, y, 308, L.BIZ_ENCHANT_ALT:format(n + 1, a.name, a.prof, a.skill))
       al:SetWordWrap(false)
       y = y + 14
     end
@@ -293,7 +293,7 @@ local function layoutSide()
       elseif state == "alt" then msg, cr, cg, cb = L.BIZ_WORN_ALT:format(label, rank), 1, 0.82, 0
       elseif state == "other" then msg, cr, cg, cb = L.BIZ_WORN_OTHER:format(label), 0.7, 0.7, 0.7
       else msg, cr, cg, cb = L.BIZ_WORN_NONE:format(label), 1, 0.4, 0.4 end
-      local wl = line("GameFontHighlightSmall", 0, y + 2, 320, msg)
+      local wl = line("R2FBodySmall", 0, y + 2, 320, msg)
       wl:SetTextColor(cr, cg, cb)
       wl:SetWordWrap(false)
       y = y + 18
@@ -313,22 +313,22 @@ local function layoutSide()
     local rn = gap and L.BIZ_THE_BIZZ or BiZ.RankName(rank)
     local d = rank == 1 and tostring(b.score)
       or (it.delta == 0 and L.BIZ_SAME) or (it.delta and (it.delta .. "%")) or ""
-    line("GameFontHighlightSmall", 40, y + 19, 280,
+    line("R2FBodySmall", 40, y + 19, 280,
       "|cffffd100" .. rn .. "|r" .. (d ~= "" and ("  |cffe39a79" .. d .. "|r") or ""))
     local src = it.label or L.BIZ_TYPE_UNKNOWN
-    local fs = line("GameFontDisableSmall", 40, y + 33, 280, passes and src or ("|cff707070" .. src .. "|r"))
+    local fs = line("R2FDimSmall", 40, y + 33, 280, passes and src or ("|cff707070" .. src .. "|r"))
     fs:SetWordWrap(false)
     local conf = it.conf or "unknown"
-    local cf = line("GameFontHighlightSmall", 250, y + 19, 70, (CONF_COLOR[conf] or "") .. L["BIZ_CONF_" .. conf:upper()] .. "|r")
+    local cf = line("R2FBodySmall", 250, y + 19, 70, (CONF_COLOR[conf] or "") .. L["BIZ_CONF_" .. conf:upper()] .. "|r")
     cf:SetJustifyH("RIGHT")
     placeWish(40, y + 50, it.id, specId, sl.slot, L.BIZ_WISH_LABEL)
     y = y + 84
   end
   local ease = (b.ease and b.ease ~= "") and (" · " .. b.ease) or ""
-  local facts = line("GameFontHighlightSmall", 0, y, 320, b.name .. ": " .. b.stats .. ease)
-  facts:SetTextColor(0.7, 0.7, 0.7)
+  local facts = line("R2FBodySmall", 0, y, 320, b.name .. ": " .. b.stats .. ease)
+  R2F.Theme.PaintText(facts, "note")
   facts:SetWordWrap(true)
-  if #nxt == 0 then line("GameFontDisableSmall", 0, y + 30, 320, L.BIZ_NO_MORE) end
+  if #nxt == 0 then line("R2FDimSmall", 0, y + 30, 320, L.BIZ_NO_MORE) end
 end
 
 -- ---------------------------------------------------------------------------
@@ -340,21 +340,21 @@ local function layoutWish()
   local y = 0
   local groups = BiZ.WishGroups()
   if #groups == 0 then
-    local e = line("GameFontHighlight", 8, 8, 420, L.BIZ_WISH_EMPTY)
+    local e = line("R2FBody", 8, 8, 420, L.BIZ_WISH_EMPTY)
     e:SetWordWrap(true)
     return 60
   end
   for _, g in ipairs(groups) do
-    line("GameFontNormal", 0, y, 330, g.name)
+    line("R2FHeading", 0, y, 330, g.name)
     local fmt = #g.items == 1 and L.BIZ_ONE_ITEM or L.BIZ_N_ITEMS
-    local cnt = line("GameFontHighlightSmall", 500, y + 2, 96, fmt:format(#g.items))
+    local cnt = line("R2FBodySmall", 500, y + 2, 96, fmt:format(#g.items))
     cnt:SetJustifyH("RIGHT")
     y = y + 20
     for _, it in ipairs(g.items) do
       local sp = it.spec and BiZ.Spec(it.spec)
       placeItem(8, y, 300, it.id, it.name, sp and L.BIZ_TIP_WISHED:format(sp.name, BiZ.SlotLabel(it.slot or "")) or nil)
       local detail = BiZ.SlotLabel(it.slot or "") .. (sp and (" · " .. sp.name) or "")
-      line("GameFontDisableSmall", 330, y + 3, 200, detail)
+      line("R2FDimSmall", 330, y + 3, 200, detail)
       placeWish(560, y + 3, it.id, it.spec, it.slot)
       y = y + 22
     end
@@ -379,14 +379,14 @@ local function showImport()
     f:EnableMouse(true)
     f:Hide()
     if UISpecialFrames then table.insert(UISpecialFrames, "R2FBiZImport") end
-    local hint = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    local hint = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
     hint:SetPoint("TOP", 0, -18)
     hint:SetWidth(370)
     hint:SetText(L.BIZ_IMPORT_HINT)
     local sc, edit = UI.MultiLineEdit(f, "R2FBiZImportScroll", 350, 100)
     sc:SetPoint("TOPLEFT", 24, -54)
     edit:SetScript("OnEscapePressed", function() f:Hide() end)
-    local msg = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    local msg = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
     msg:SetPoint("TOPLEFT", 24, -162)
     msg:SetWidth(360)
     msg:SetJustifyH("LEFT")
@@ -555,7 +555,7 @@ local function buildSlotButton(f, key, x, y)
   b.sel = b:CreateTexture(nil, "BACKGROUND")
   b.sel:SetPoint("TOPLEFT", b, "TOPLEFT", -3, 3)
   b.sel:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", 3, -3)
-  b.sel:SetColorTexture(1, 0.82, 0, 1)
+  R2F.Theme.PaintTex(b.sel, "accentTex")
   b.border = b:CreateTexture(nil, "BORDER")
   b.border:SetAllPoints(b)
   b.border:SetColorTexture(0.25, 0.25, 0.28, 1)
@@ -592,7 +592,7 @@ local function buildModel(f, x, y, w, h)
   local back = f:CreateTexture(nil, "BACKGROUND")
   back:SetPoint("TOPLEFT", f, "TOPLEFT", x, -y)
   back:SetSize(w, h)
-  back:SetColorTexture(0.03, 0.03, 0.05, 0.9)
+  R2F.Theme.PaintTex(back, "bizBack")
   ui.modelBack = back
   local ok, m = pcall(CreateFrame, "PlayerModel", nil, f)
   if not (ok and m) then return end
@@ -663,10 +663,10 @@ function Tab.Build(f)
   side:SetSize(318, 440)
   ui.side = side
 
-  ui.summary = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.summary = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   ui.summary:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -26)
   ui.summary:SetJustifyH("RIGHT")
-  ui.footer = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+  ui.footer = f:CreateFontString(nil, "ARTWORK", "R2FDimSmall")
   ui.footer:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 332, 6)
   ui.footer:SetWidth(318)
   ui.footer:SetJustifyH("LEFT")

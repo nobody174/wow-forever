@@ -144,7 +144,7 @@ local function buildCell(parent, x, y)
   b.badge:SetTexture("Interface\\TalentFrame\\TalentFrame-RankBorder")
   b.badge:SetSize(22, 22)
   b.badge:SetPoint("CENTER", b, "BOTTOMRIGHT", 0, 0)
-  b.rank = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  b.rank = b:CreateFontString(nil, "OVERLAY", "R2FHeadingSmall")
   b.rank:SetPoint("CENTER", b.badge, "CENTER", 0, 0)
   b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
   b:SetScript("OnEnter", cellTooltip)
@@ -179,10 +179,10 @@ local function buildTrees(f)
   linkFrame:EnableMouse(false)
   for t = 1, TREES do
     local x0 = 10 + (t - 1) * TREE_W
-    local name = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    local name = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
     name:SetPoint("TOPLEFT", f, "TOPLEFT", x0 + 6, TREE_TOP)
     name:SetJustifyH("LEFT")
-    local counts = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    local counts = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
     counts:SetPoint("LEFT", name, "RIGHT", 6, 0)
     heads[t] = { name = name, counts = counts }
     cells[t] = {}
@@ -254,7 +254,7 @@ local function buildLinkBox(f)
         tile = true, tileSize = 16, edgeSize = 12,
         insets = { left = 3, right = 3, top = 3, bottom = 3 },
       })
-      edit:SetBackdropColor(0, 0, 0, 0.8)
+      R2F.Theme.PaintBackdrop(edit, "edit")
     end
     edit:SetFontObject(ChatFontNormal or GameFontHighlight)
     edit:SetTextInsets(6, 6, 0, 0)
@@ -285,7 +285,7 @@ end
 local function build(f)
   -- Class circles: pick any class's trees.
   for i, id in ipairs(Calc.ORDER) do picks[i] = buildPick(f, i, id) end
-  ui.classLabel = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  ui.classLabel = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
   ui.classLabel:SetPoint("LEFT", picks[#picks], "RIGHT", 12, 0)
 
   -- Talented legacy perk (+5 points): only changes the level line under a build.
@@ -303,14 +303,14 @@ local function build(f)
   end)
   ui.perk:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-  ui.label = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  ui.label = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
   ui.label:SetPoint("TOPLEFT", 24, -100)
   ui.label:SetText(L.TALENT_LINK_LABEL)
 
   ui.edit = buildLinkBox(f)
   ui.edit:SetPoint("LEFT", ui.label, "RIGHT", 12, 0)
   -- Grey placeholder (EditBoxes have none of their own in Classic).
-  ui.placeholder = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+  ui.placeholder = f:CreateFontString(nil, "OVERLAY", "R2FDimSmall")
   ui.placeholder:SetPoint("LEFT", ui.edit, "LEFT", 6, 0)
   ui.edit:HookScript("OnTextChanged", function(self)
     ui.placeholder:SetShown((self:GetText() or "") == "")
@@ -327,14 +327,14 @@ local function build(f)
   ui.copy:SetPoint("TOPRIGHT", f, "TOPRIGHT", -20, -124)
   ui.copy:SetScript("OnClick", function() TalentPanel.CopyLink() end)
 
-  ui.hint = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.hint = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   ui.hint:SetPoint("TOPLEFT", 24, -128)
   ui.hint:SetWidth(480)
   ui.hint:SetJustifyH("LEFT")
-  ui.hint:SetTextColor(0.7, 0.7, 0.7)
+  R2F.Theme.PaintText(ui.hint, "note")
   ui.hint:SetText(L.TALENT_TAB_HINT)
 
-  ui.status = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.status = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   ui.status:SetPoint("TOPLEFT", 24, -152)
   ui.status:SetWidth(600)
   ui.status:SetJustifyH("LEFT")
@@ -342,7 +342,7 @@ local function build(f)
   buildTrees(f)
 
   local below = TREE_TOP - 24 - (ROWS - 1) * STEP_Y - CELL - 14
-  ui.summary = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  ui.summary = f:CreateFontString(nil, "ARTWORK", "R2FBody")
   ui.summary:SetPoint("TOPLEFT", 24, below)
   ui.summary:SetWidth(600)
   ui.summary:SetJustifyH("LEFT")
@@ -355,19 +355,19 @@ local function build(f)
   ui.stepNext:SetPoint("TOPLEFT", 618, below + 4)
   ui.stepNext:SetScript("OnClick", function() TalentPanel.Step(1) end)
   tip(ui.stepNext, L.TALENT_STEP_NEXT, L.TALENT_STEP_TIP)
-  ui.stepText = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.stepText = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   ui.stepText:SetPoint("TOPLEFT", 462, below - 1)
   ui.stepText:SetWidth(152)
   ui.stepText:SetJustifyH("CENTER")
-  ui.nextHint = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  ui.nextHint = f:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
   ui.nextHint:SetPoint("TOPLEFT", 24, below - 38)
   ui.nextHint:SetWidth(600)
   ui.nextHint:SetJustifyH("LEFT")
-  ui.level = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  ui.level = f:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
   ui.level:SetPoint("TOPLEFT", ui.summary, "BOTTOMLEFT", 0, -3)
-  ui.level:SetTextColor(0.7, 0.7, 0.7)
+  R2F.Theme.PaintText(ui.level, "note")
   -- Learning info: what learning this build would do on your character (your own class only).
-  ui.learnInfo = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  ui.learnInfo = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
   ui.learnInfo:SetPoint("TOPLEFT", ui.level, "BOTTOMLEFT", 0, -20)
   ui.learnInfo:SetWidth(600)
   ui.learnInfo:SetJustifyH("LEFT")
@@ -650,7 +650,7 @@ function TalentPanel.Refresh()
   local own = state.class == ownClass()
   ui.classLabel:SetText(own and L.TALENT_CLASS_YOURS:format(className(state.class))
     or L.TALENT_CLASS_OTHER:format(className(state.class)))
-  if own then ui.classLabel:SetTextColor(1, 0.82, 0) else ui.classLabel:SetTextColor(0.7, 0.7, 0.7) end
+  if own then R2F.Theme.PaintText(ui.classLabel, "heading") else R2F.Theme.PaintText(ui.classLabel, "note") end
 
   -- Your own class with points on the board: check it against your real talents (read-only), for the Learn
   -- button and the line under the board. No points yet = nothing to check.
@@ -695,10 +695,10 @@ function TalentPanel.Refresh()
   end
   if not own then
     ui.learnInfo:SetText(L.TALENT_PREVIEW_ONLY:format(className(state.class)))
-    ui.learnInfo:SetTextColor(0.7, 0.7, 0.7)
+    R2F.Theme.PaintText(ui.learnInfo, "note")
   elseif plan then
     ui.learnInfo:SetText(plan.summary)
-    if plan.kind == "conflict" then ui.learnInfo:SetTextColor(1, 0.15, 0.15) else ui.learnInfo:SetTextColor(1, 1, 1) end
+    if plan.kind == "conflict" then ui.learnInfo:SetTextColor(1, 0.15, 0.15) else R2F.Theme.PaintText(ui.learnInfo, "body") end
   else
     ui.learnInfo:SetText("")
   end

@@ -115,7 +115,7 @@ end
 local function buildSection(f, def, x, y, width)
   local m = def.module
   local s = { def = def }
-  local head = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  local head = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
   head:SetPoint("TOPLEFT", x, y)
   head:SetText(L[def.title])
 
@@ -126,7 +126,7 @@ local function buildSection(f, def, x, y, width)
   s.lock:SetPoint("TOPLEFT", x + 8, y - 50)
   s.lock:SetScript("OnClick", function() m.SetLock(not m.Db().lock) end)
 
-  s.sizeText = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  s.sizeText = f:CreateFontString(nil, "ARTWORK", "R2FBody")
   s.sizeText:SetPoint("TOPLEFT", x + 12, y - 82)
   -- Slider names are R2F<Key>Scale (R2FStanceScale, R2FAmmoScale).
   local name = "R2F" .. def.key:sub(1, 1):upper() .. def.key:sub(2) .. "Scale"
@@ -138,7 +138,7 @@ local function buildSection(f, def, x, y, width)
   local used = SECTION_H - 10
   if def.extra then
     local e = def.extra
-    s.extraText = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    s.extraText = f:CreateFontString(nil, "ARTWORK", "R2FBody")
     s.extraText:SetPoint("TOPLEFT", x + 12, y - 134)
     s.extra = slider(f, e.name, x + 14, y - 156, width, e.min, e.max, e.step, function(_, v)
       local value = math.floor(v / e.step + 0.5) * e.step
@@ -177,7 +177,7 @@ local function buildSection(f, def, x, y, width)
         g.head = CreateFrame("Button", nil, f)
         g.head:SetSize(width, 22)
         g.head:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
-        g.head.text = g.head:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        g.head.text = g.head:CreateFontString(nil, "ARTWORK", "R2FHeading")
         g.head.text:SetPoint("LEFT", 4, 0)
         g.head:SetScript("OnClick", function()
           local open = Tab.OpenGroups()
@@ -213,7 +213,7 @@ function Tab.BuildInto(f, x, y, width, filter, col)
   end
   if #mine == 0 and filter then return y end
   if #mine == 0 then
-    local none = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    local none = f:CreateFontString(nil, "ARTWORK", "R2FBody")
     none:SetPoint("TOPLEFT", x, y)
     none:SetWidth(width + 20)
     none:SetJustifyH("LEFT")

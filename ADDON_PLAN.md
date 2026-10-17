@@ -3065,6 +3065,8 @@ sources from Classic databases plus beta sightings, and a ranking (stat weights 
 
 ### 19.3 Data pipeline plan (written 2026-10-17)
 
+> **2026-10-17, owner: no dependence on ForeverDB, no credits or permission.** The research and plan for our own item database and score is `bis/OWN_DATABASE_PLAN.md` (sources of the data, scoring design, size, effort, milestones M0-M4). The ForeverDB steps below stay as the bridge until M1 produces our own `raw/`.
+
 **Why.** The best-in-slot data is a copy of ForeverDB's pages, taken by hand with WebFetch on 2026-10-12, and the beta changes
 under it. Measured on 2026-10-17 with `bis/tools/foreverdb_check.py` (new, read-only): ForeverDB is now on client build
 1.60.1.70425 (extracted 2026-10-16); our 27 raw files come from four older builds (70205, 70245, 70291, 70338). Of 459 slots,

@@ -1774,6 +1774,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.67.0 (2026-10-17): recorder
+
+- `Recorder.lua` (LOOT_OPENED, MERCHANT_SHOW, QUEST_DETAIL / QUEST_COMPLETE, read only) -> `R2FDB.recorder`; `bis/tools/recorder_import.py` merges the files; `refresh_sources.py` rebuilds all source tables; `DATA_SOURCES.md` records the research; README credits added. TESTING 5.32.
+
 ## 0.66.10 (2026-10-17): timers started by the cast
 
 - `Timers.OnCast` now creates the estimate itself (def.fixed 1800 for seals, def.perCombo {6,3} for Slice and Dice via GetComboPoints sampled on UNIT_SPELLCAST_SENT) with the spell's own icon, instead of only restarting an earlier readable look. Tests added. TESTING 5.25 again.

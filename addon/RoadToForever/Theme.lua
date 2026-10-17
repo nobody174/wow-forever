@@ -28,6 +28,16 @@ Theme.LIST = {
   },
   {
     key = "azeroth", name = "Azeroth Reforged",
+    -- deco: the ornate frame of the design (gold double line, corner gems, banner title, gradient stone buttons), drawn from
+    -- coloured rectangles by UI/Deco.lua. font: bundled OFL fonts (media/fonts); a missing or refused file falls back to
+    -- the game's font.
+    deco = "azeroth",
+    font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Cinzel-Variable.ttf",
+             body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\AlegreyaSans-Regular.ttf", bodyBump = 1 },
+    panelTop = { 0.23, 0.205, 0.17 }, panelBottom = { 0.145, 0.13, 0.1 },
+    edgeOuter = { 0.54, 0.415, 0.165 }, edgeInner = { 0.79, 0.64, 0.29 }, gem = { 1, 0.78, 0.32 },
+    stoneTop = { 0.24, 0.22, 0.185 }, stoneBottom = { 0.165, 0.15, 0.12 }, stoneEdge = { 0.06, 0.047, 0.03 },
+    insetTop = { 0.12, 0.105, 0.085 }, insetBottom = { 0.08, 0.07, 0.055 },
     on = { 0.45, 0.58, 0.22 }, off = { 0.08, 0.07, 0.055 }, swRim = { 0.55, 0.45, 0.22 },
     bg = { 0.17, 0.15, 0.125 }, bgAlpha = 1,
     side = { 0.1, 0.085, 0.07 }, sideAlpha = 0.6,
@@ -179,12 +189,32 @@ end
 buildFonts()
 function Theme.FontObject(name) return fontObjects[name] end
 
+-- A theme with a font swaps the face of our own font objects (never the game's); the size is the game font's, plus `bodyBump` for
+-- the body face (a smaller x-height needs a point more). A refused file puts the game's font back.
+local function setFace(f, parent, face, bump)
+  local ok = false
+  if face and parent and parent.GetFont and f.SetFont then
+    local fok, file, size, flags = pcall(parent.GetFont, parent)
+    if fok and file and size then
+      local sok, res = pcall(f.SetFont, f, face, size + (bump or 0), flags)
+      ok = sok and res ~= false
+    end
+  end
+  if not ok and f.SetFontObject and parent then f:SetFontObject(parent) end
+  return ok
+end
+
 local function paintFonts()
+  local t = Theme.Get()
   for name, spec in pairs(Theme.FONTS) do
     local f = fontObjects[name]
-    if f and f.SetTextColor then
-      local c = roleColor(spec[2])
-      f:SetTextColor(c[1], c[2], c[3])
+    if f then
+      local face = t.font and t.font[spec[2] == "heading" and "heading" or "body"]
+      setFace(f, _G[spec[1]], face, spec[2] ~= "heading" and t.font and t.font.bodyBump or 0)
+      if f.SetTextColor then
+        local c = roleColor(spec[2])
+        f:SetTextColor(c[1], c[2], c[3])
+      end
     end
   end
 end

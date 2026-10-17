@@ -116,6 +116,7 @@ local selectedKey
 
 local function showSelected(key)
   selectedKey = key
+  R2F.Deco.Select(key)
   local th = R2F.Theme.Get()
   local ac, tx = th.accent, th.text
   for k, b in pairs(tabButtons) do
@@ -151,6 +152,7 @@ function MainWindow.ApplyLook()
     frame.r2fTitle:SetTextColor(th.accent[1], th.accent[2], th.accent[3])
   end
   if selectedKey then showSelected(selectedKey) end
+  R2F.Deco.Apply(frame, th, R2F.Theme.PanelAlpha(th, st.menuAlpha))
 end
 
 -- Any theme change (the Home page picker, a future slash command) recolours the window.
@@ -328,11 +330,13 @@ local function build()
   f.r2fOpacitySlider:SetValue(settings().menuAlpha * 100)
 
   -- Sidebar.
+  local groupHeads = {}
   local y = -(TOP_H + 12)
   for _, group in ipairs(MainWindow.NAV) do
     if group.heading then
       y = y - 8
       local h = f:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
+      groupHeads[#groupHeads + 1] = h
       h:SetPoint("TOPLEFT", f, "TOPLEFT", 16, y)
       h:SetText(L[group.heading]:upper())
       R2F.Theme.PaintText(h, "group")
@@ -343,6 +347,8 @@ local function build()
       y = y - 28
     end
   end
+
+  R2F.Deco.Build(f, { sideW = SIDE_W, topH = TOP_H, nav = tabButtons, heads = groupHeads })
 
   for _, key in ipairs(MainWindow.TABS) do
     local p = CreateFrame("Frame", nil, f)

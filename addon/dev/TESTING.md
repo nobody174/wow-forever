@@ -29,13 +29,15 @@ Use a test character for anything marked **TEST CHAR**.
 - Open each tab (Plan, Talents, BiS, Macros, Gameplay) in each theme: is the text readable? (Pages still use white and gold text, so only dark themes exist for now.)
 - No Lua errors or taint warnings; changing the theme in combat should just recolour the window.
 
-5.34. **Text colours follow the theme (0.68.1):**
-- **Classic first:** it must look exactly as before on every tab (Home, Plan, Talents, BiS, Macros, Gameplay): same gold headings, white text, grey notes. Anything that looks different from 0.68.0 in Classic is a bug.
-- **One dark theme (Obsidian Night is the clearest):** headings turn teal, body text near-white, grey notes a dimmer tone of it; the right-click menus and the edit boxes have a dark box in the theme's colour; the Size and Opacity knobs and the Reload UI and Theme buttons are tinted. Is any text hard to read, or still the old gold/grey?
-- Quest shopping list, Mr.BiZ list, Talents panel notes and Gameplay labels are the places most likely to have something left over: tell me the page and what it is.
-- No Lua errors. Changing the theme with a page open recolours it at once.
 
 5.35. **Corpse arrow (0.68.2):** die, release your spirit, and see if the arrow points at your corpse (chat says it is set). If not: while still a ghost type `/r2f debug corpse` and paste the lines. Also try dying close to a graveyard and far from one (a ghost in another zone is the case this fixes), and once inside a dungeon.
+
+5.36. **Azeroth Reforged decoration (0.69.0):** Home > Theme > Azeroth Reforged. It should show: a brown stone gradient panel, a gold double line round the window with round gold gems in the four corners, a dark banner with gold edge and gems at the top middle holding the page title, brown gradient buttons in the sidebar (the selected one with a gold edge and a glowing orange gem), a thin gold line fading out after JOURNEY / TOOLS, and a darker inset behind the pages. Headings should be in Cinzel (capital-style serif) and the rest in Alegreya Sans.
+- Does any heading or label get cut off or overlap because the new fonts are wider? Which page?
+- Does the banner collide with the Size slider on the right? Does it look close to the mockup, or should I ask Claude Desktop for exported images?
+- If the game refuses a font you should see the old game font instead of a broken one.
+- Switch back to Classic and to Obsidian: all decoration must disappear and the fonts return to the game's.
+- Size and Opacity sliders still work (the panel gets see-through with Opacity).
 
 ## Cannot be tested yet (reason)
 - 4.13 group picks: nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made.

@@ -4605,6 +4605,44 @@ def test_step6_ui(templates, fx):
         for m in _re.finditer(r"\"(GameFont(?:Normal|Highlight|Disable)[A-Za-z]*)\"", src):
             bad.append("%s: %s" % (fname, m.group(0)))
     check(not bad, "no hardcoded text colours or game fonts left in UI/*.lua: %s" % bad[:5])
+    # Azeroth Reforged decoration (UI/Deco.lua) and its bundled fonts.
+    lua.execute("R2F.Theme.Set('azeroth')")
+    D = "R2FMain.r2fDeco"
+    check(lua.eval("%s.panel:IsShown()" % D) is True and lua.eval("%s.bannerEdge:IsShown()" % D) is True
+          and lua.eval("%s.gems[1].gem:IsShown()" % D) is True and lua.eval("%s.frameInner[1]:IsShown()" % D) is True,
+          "azeroth: panel, banner, corner gems and the inner frame line are drawn")
+    check(lua.eval("R2FMain.r2fBgTex:IsShown()") is False, "azeroth: the flat panel colour is replaced by the gradient panel")
+    check(all(lua.eval("%s.nav.%s.grad:IsShown()" % (D, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay")),
+          "azeroth: every navigation button has its stone gradient")
+    check(lua.eval("R2FMain.r2fTitle.__point[2] == %s.bannerEdge" % D) is True, "azeroth: the title sits on the banner")
+    lua.execute("R2F.Theme.Set('obsidian')")
+    check(lua.eval("%s.panel:IsShown()" % D) is False and lua.eval("%s.bannerEdge:IsShown()" % D) is False
+          and lua.eval("%s.nav.home.grad:IsShown()" % D) is False and lua.eval("R2FMain.r2fBgTex:IsShown()") is True,
+          "another theme hides all of the azeroth decoration again")
+    lua.execute("R2F.Theme.Set('classic')")
+    check(lua.eval("%s.insetEdge:IsShown()" % D) is False, "classic shows none of the decoration")
+    # Fonts: azeroth swaps the face of OUR font objects only; a refused file puts the game's font back.
+    lua.execute("""FONTCALLS = {} FONTOK = true
+      for _, n in ipairs({ 'GameFontNormal', 'GameFontNormalLarge', 'GameFontNormalSmall', 'GameFontHighlight', 'GameFontHighlightSmall',
+                           'GameFontDisable', 'GameFontDisableSmall' }) do _G[n].GetFont = function() return 'GAME.ttf', 12, '' end end
+      for _, n in ipairs({ 'R2FHeading', 'R2FHeadingLarge', 'R2FHeadingSmall', 'R2FBody', 'R2FBodySmall', 'R2FDim', 'R2FDimSmall' }) do
+        _G[n].SetFont = function(self, file, size, flags) FONTCALLS[n] = { file, size } return FONTOK end
+        _G[n].SetFontObject = function(self, parent) FONTCALLS[n] = { 'parent' } end
+      end
+      R2F.Theme.Set('azeroth')""")
+    check("Cinzel" in lua.eval("FONTCALLS.R2FHeading[1]") and lua.eval("FONTCALLS.R2FHeading[2]") == 12,
+          "azeroth: headings use the bundled Cinzel at the game font's size")
+    check("AlegreyaSans" in lua.eval("FONTCALLS.R2FBody[1]") and lua.eval("FONTCALLS.R2FBody[2]") == 13,
+          "azeroth: body text uses the bundled Alegreya Sans, one point larger")
+    lua.execute("FONTOK = false FONTCALLS = {} R2F.Theme.Set('obsidian') R2F.Theme.Set('azeroth')")
+    check(lua.eval("FONTCALLS.R2FBody[1]") == "parent", "a font file the game refuses falls back to the game's own font")
+    lua.execute("FONTCALLS = {} R2F.Theme.Set('classic')")
+    check(lua.eval("FONTCALLS.R2FBody[1]") == "parent" and lua.eval("FONTCALLS.R2FHeading[1]") == "parent",
+          "classic puts the game's fonts back")
+    fonts_dir = os.path.join(HERE, "..", "RoadToForever", "media", "fonts")
+    check(all(os.path.exists(os.path.join(fonts_dir, f)) for f in ("Cinzel-Variable.ttf", "AlegreyaSans-Regular.ttf",
+                                                                 "OFL-Cinzel.txt", "OFL-AlegreyaSans.txt")),
+          "the bundled fonts ship with their licence files")
     # The rim: classic keeps Blizzard's dialog border (no extra lines); the others hide it and draw a thin coloured line.
     lua.execute("R2F.Theme.Set('classic')")
     check(lua.eval("R2FMain.r2fRimLines[1]:IsShown()") is False, "classic: no extra rim line")

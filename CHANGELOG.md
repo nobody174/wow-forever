@@ -1774,6 +1774,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.69.0 (2026-10-18): Azeroth Reforged decoration
+
+- `UI/Deco.lua` (textures only, built once, shown for a theme with `deco = "azeroth"`, hidden otherwise): gradient panel (`Texture:SetGradient`, flat fallback), inset, inner frame line, four round corner gems from `media/dot`, banner behind the title, gradient nav buttons with a gem, group headings with a fading line. `Theme.lua`: `deco` / `font` tokens, `setFace` swaps the face of our own font objects only and falls back to the game font when `SetFont` is refused. Bundled `media/fonts`: Cinzel (variable font, default weight) and Alegreya Sans Regular with their OFL files. README credits updated. Not yet seen in the client: TESTING 5.36. Next: Ember & Iron (0.69.1).
+
 ## 0.68.2 (2026-10-18): corpse arrow
 
 - `Nav.lua`: `corpsePos` walks the parent maps (`mapChain`), `showCorpseSoon` retries at 0.6 / 1.5 / 3 / 6 s, ZONE_CHANGED_NEW_AREA as a ghost, `Nav.DebugCorpse` (`/r2f debug corpse`). CORPSE_POSITION_UPDATE is not an event of this client (not in its API documentation), so the old code never got that wake-up. Cause not seen in game; TESTING 5.35.

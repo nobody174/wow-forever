@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.69.0 (2026-10-18)
+
+- **Azeroth Reforged now has its own look, not just colours.** Pick it under Home > Theme: a stone-coloured panel with a gold double frame line and round corner gems, a banner behind the window title, gradient stone buttons in the sidebar with a gem that lights up on the selected one, gold lines fading out after the group names, and a darker inset behind the pages. The text uses two bundled fonts, Cinzel for headings and Alegreya Sans for the rest (both under the SIL Open Font License, licence files included). If the game cannot load a font it keeps its own. The other themes and Classic are unchanged.
+
 ## 0.68.2 (2026-10-18)
 
 - **Corpse arrow fix.** After you died and released, the arrow to your corpse could stay away: a ghost often wakes at a graveyard in another zone, where the zone's own map does not know the corpse. The arrow now also asks the maps above it, tries again for a few seconds after you release, and asks again when you enter a new zone as a ghost. `/r2f debug corpse` prints what the arrow can see (run it as a ghost if it still does not show).

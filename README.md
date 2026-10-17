@@ -21,3 +21,6 @@ We build on other people's open work and say so:
   keeping its data current. Research and decisions: `bis/DATA_SOURCES.md` and `bis/OWN_DATABASE_PLAN.md`.
 
 Data we redistribute that comes from GPL sources keeps that licence note.
+
+Fonts bundled with the addon (`addon/RoadToForever/media/fonts`, SIL Open Font License 1.1, licence files next to them): **Cinzel**
+(The Cinzel Project Authors) and **Alegreya Sans** (The Alegreya Sans Project Authors), used by the Azeroth Reforged theme.

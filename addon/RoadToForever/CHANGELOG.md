@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.68.2 (2026-10-18)
+
+- **Corpse arrow fix.** After you died and released, the arrow to your corpse could stay away: a ghost often wakes at a graveyard in another zone, where the zone's own map does not know the corpse. The arrow now also asks the maps above it, tries again for a few seconds after you release, and asks again when you enter a new zone as a ghost. `/r2f debug corpse` prints what the arrow can see (run it as a ghost if it still does not show).
+
 ## 0.68.1 (2026-10-18)
 
 - **Themes now colour the text too.** The grey, white and gold text on every page, the dark boxes behind menus and edit fields, the Size and Opacity slider knobs, the Reload UI button and the Theme button all follow the chosen theme. Classic looks exactly as before (same colours, checked by a test).

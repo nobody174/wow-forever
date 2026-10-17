@@ -1081,6 +1081,21 @@ def test_corpse_arrow():
     lua.execute("TEST.corpse = { 0.3, 0.6 } TEST.ghost = true")
     T.fire("PLAYER_ALIVE")
     check(lua.eval("R2F.Nav.Target().label") == "Your corpse", "corpse arrow: released later, the corpse position is found then")
+    # A ghost wakes at a graveyard in another zone: only a map above the one it is on knows the corpse.
+    lua.execute("""R2F.Nav.RestoreAfterCorpse() R2F.Nav.Clear() TEST.ghost = true
+      OLD_INFO = C_Map.GetMapInfo
+      C_Map.GetMapInfo = function(id) if id == 1426 then return { name = 'Dun Morogh', parentMapID = 1455 } end return OLD_INFO and OLD_INFO(id) end
+      C_DeathInfo.GetCorpseMapPosition = function(id) if id == 1455 then return { x = 0.41, y = 0.52 } end end""")
+    T.fire("PLAYER_ALIVE")
+    check(lua.eval("R2F.Nav.Target().label") == "Your corpse" and lua.eval("R2F.Nav.Target().mapID") == 1455,
+          "corpse arrow: the corpse is found on the parent map when the zone's own map does not have it")
+    T.chat = lua.table()
+    lua.execute("R2F.DEBUG.corpse()")
+    check("map 1455" in chat_all(lua) and "Your corpse" in chat_all(lua), "corpse arrow: /r2f debug corpse lists the maps asked and the arrow")
+    lua.execute("""C_Map.GetMapInfo = OLD_INFO
+      C_DeathInfo.GetCorpseMapPosition = function(id)
+        if id == 1426 and TEST.corpse then return { GetXY = function() return TEST.corpse[1], TEST.corpse[2] end } end
+      end""")
     # Reload as a ghost.
     lua.execute("TEST.ghost = false R2F.Nav.RestoreAfterCorpse() R2F.Nav.Clear() TEST.ghost = true")
     T.fire("PLAYER_ENTERING_WORLD")

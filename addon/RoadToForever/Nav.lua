@@ -590,17 +590,56 @@ end
 
 local corpse = { active = false, prev = nil }
 
--- mapID, x, y (map percent) of your corpse on the map you are on, or nil (not released yet, other map, no API).
+-- The map you are on and the maps above it (zone, continent, world): the game answers for any map that contains the corpse.
+local function mapChain(mapID)
+  local chain, seen, id = {}, {}, mapID
+  while id and id ~= 0 and not seen[id] and #chain < 8 do
+    seen[id] = true
+    chain[#chain + 1] = id
+    local ok, info = pcall(function() return C_Map.GetMapInfo and C_Map.GetMapInfo(id) end)
+    id = ok and info and info.parentMapID or nil
+  end
+  return chain
+end
+
+-- mapID, x, y (map percent) of your corpse, from the map you are on or the first map above it that has it; nil when the
+-- game gives none (not released yet, no API). A ghost often wakes at a graveyard in ANOTHER zone, so the zone's own map
+-- has no corpse and the continent's does.
 local function corpsePos()
   if not (C_DeathInfo and C_DeathInfo.GetCorpseMapPosition and C_Map and C_Map.GetBestMapForUnit) then return nil end
   local mapID = C_Map.GetBestMapForUnit("player")
   if not mapID then return nil end
-  local ok, pos = pcall(C_DeathInfo.GetCorpseMapPosition, mapID)
-  if not (ok and pos) then return nil end
-  local x, y
-  if pos.GetXY then x, y = pos:GetXY() else x, y = pos.x, pos.y end
-  if not (x and y) or (x == 0 and y == 0) then return nil end
-  return mapID, x * 100, y * 100
+  for _, id in ipairs(mapChain(mapID)) do
+    local ok, pos = pcall(C_DeathInfo.GetCorpseMapPosition, id)
+    if ok and pos then
+      local x, y
+      if pos.GetXY then x, y = pos:GetXY() else x, y = pos.x, pos.y end
+      if x and y and not (x == 0 and y == 0) then return id, x * 100, y * 100 end
+    end
+  end
+  return nil
+end
+
+-- /r2f debug corpse: what the corpse arrow can see right now (run it as a ghost).
+function Nav.DebugCorpse()
+  local dead = _G.UnitIsDead and _G.UnitIsDead("player")
+  local ghost = _G.UnitIsGhost and _G.UnitIsGhost("player")
+  R2F.Print(L.NAV_CORPSE_DEBUG_HEAD:format(tostring(R2F.Gameplay.IsOn("corpsearrow")), tostring(dead == true),
+    tostring(ghost == true)))
+  if not (C_DeathInfo and C_DeathInfo.GetCorpseMapPosition and C_Map and C_Map.GetBestMapForUnit) then
+    return R2F.Print(L.NAV_CORPSE_DEBUG_NOAPI)
+  end
+  local mapID = C_Map.GetBestMapForUnit("player")
+  for _, id in ipairs(mapID and mapChain(mapID) or {}) do
+    local ok, pos = pcall(C_DeathInfo.GetCorpseMapPosition, id)
+    local x, y
+    if ok and pos then
+      if pos.GetXY then x, y = pos:GetXY() else x, y = pos.x, pos.y end
+    end
+    local where = ok and (x and ("%.1f, %.1f"):format(x * 100, (y or 0) * 100) or "none") or "error"
+    R2F.Print(L.NAV_CORPSE_DEBUG_MAP:format(id, where))
+  end
+  R2F.Print(L.NAV_CORPSE_DEBUG_ARROW:format(target and target.label or "-"))
 end
 
 -- Point the arrow at the corpse (keeps the arrow you had to bring back later). True when it is set.
@@ -632,6 +671,17 @@ end
 
 local function isGhost() return _G.UnitIsGhost and _G.UnitIsGhost("player") end
 
+-- A ghost wakes up at a graveyard and the game needs a moment to know the map and the corpse: try again a few times.
+local function showCorpseSoon()
+  if Nav.ShowCorpse() then return end
+  if not (C_Timer and C_Timer.After) then return end
+  for _, delay in ipairs({ 0.6, 1.5, 3, 6 }) do
+    C_Timer.After(delay, function()
+      if isGhost() and not (target and target.isCorpse) then Nav.ShowCorpse() end
+    end)
+  end
+end
+
 -- Tweaks > Waypoint arrow: "3D arrow" (on by default, Library.lua); off = the flat dart.
 R2F.Gameplay.Register({ key = "arrow3d", group = "screen", title = "NAV_3D_TITLE", tip = "NAV_3D_TIP",
   onToggle = function() Nav.ApplyStyle() end })
@@ -642,10 +692,12 @@ R2F.Gameplay.Register({
   events = {
     PLAYER_DEAD = function() Nav.ShowCorpse() end,
     -- Releasing the spirit and being resurrected both fire PLAYER_ALIVE: a ghost has a corpse to find, anyone else is back.
-    PLAYER_ALIVE = function() if isGhost() then Nav.ShowCorpse() else Nav.RestoreAfterCorpse() end end,
+    PLAYER_ALIVE = function() if isGhost() then showCorpseSoon() else Nav.RestoreAfterCorpse() end end,
+    -- The ghost arrived in another zone: the corpse may be known now.
+    ZONE_CHANGED_NEW_AREA = function() if isGhost() then Nav.ShowCorpse() end end,
     PLAYER_UNGHOST = function() Nav.RestoreAfterCorpse() end,
     -- Reload or login as a ghost.
-    PLAYER_ENTERING_WORLD = function() if isGhost() then Nav.ShowCorpse() end end,
+    PLAYER_ENTERING_WORLD = function() if isGhost() then showCorpseSoon() end end,
     CORPSE_POSITION_UPDATE = function() if isGhost() or (_G.UnitIsDead and _G.UnitIsDead("player")) then Nav.ShowCorpse() end end,
   },
 })

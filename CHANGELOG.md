@@ -1774,6 +1774,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.68.2 (2026-10-18): corpse arrow
+
+- `Nav.lua`: `corpsePos` walks the parent maps (`mapChain`), `showCorpseSoon` retries at 0.6 / 1.5 / 3 / 6 s, ZONE_CHANGED_NEW_AREA as a ghost, `Nav.DebugCorpse` (`/r2f debug corpse`). CORPSE_POSITION_UPDATE is not an event of this client (not in its API documentation), so the old code never got that wake-up. Cause not seen in game; TESTING 5.35.
+
 ## 0.68.1 (2026-10-18): text-colour pass (step 1 of 0.69.0)
 
 - `Theme.Role` / `Theme.PaintText|PaintTex|PaintVertex|PaintBackdrop` (repainted on every theme change) replace every hardcoded grey / white / gold text colour and dark overlay in `UI/*.lua`; seven own font objects (`R2FHeading[Large|Small]`, `R2FBody[Small]`, `R2FDim[Small]`, copies of the game's fonts, never the game's own) carry the page text; `UI.ThemeButton` tints Reload UI and the Theme button; slider knobs follow the `thumb` role. Classic's roles equal the old literals (test), a test fails if a page goes back to a literal colour or a `GameFont*` name. Semantic colours (class and quality colours, red / green status, pink wishlist) stay. Next: Azeroth Reforged decoration (0.69.0).

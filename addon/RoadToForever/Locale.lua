@@ -817,8 +817,13 @@ R2F.L = {
     "/r2f debug timers  what the buff timers can read right now (run it in a fight)",
     "/r2f debug traits  what the last talent points answered (run it right after Learn this build stops)",
     "/r2f debug recorder  the same counts as /r2f record",
+    "/r2f debug corpse  what the corpse arrow can see (run it as a ghost)",
   },
 
+  NAV_CORPSE_DEBUG_HEAD = "corpse arrow: option on %s, dead %s, ghost %s",
+  NAV_CORPSE_DEBUG_NOAPI = "  the game gives no corpse position here",
+  NAV_CORPSE_DEBUG_MAP = "  map %d: corpse %s",
+  NAV_CORPSE_DEBUG_ARROW = "  the arrow points at: %s",
   REC_ON = "on",
   REC_OFF = "off",
   REC_DEBUG = "recorder %s: %d creatures looted (%d item sightings), %d chests or nodes, %d vendors (%d items for sale), %d quests with rewards",

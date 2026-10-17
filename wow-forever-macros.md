@@ -1048,19 +1048,19 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [noform] Moonkin Form; [mod:ctrl] Wrath; Starfire
 ```
 
-**Starsurge** (`Starsurge`) — Test in beta: Rune ability: needs the Starsurge rune engraved on your legs.
+**Starsurge** (`Starsurge`) — Test in beta: Forever's own Starsurge (3 sec cast, long range, Arcane damage), not a rune: learn it from your class trainer or talents.
 ```
 #showtooltip Starsurge
 /cast [harm] Starsurge
 ```
 
-**Sunfire** (`Sunfire`) — Test in beta: Rune ability: needs the Sunfire rune engraved on your gloves.
+**Sunfire** (`Sunfire`) — Test in beta: Forever's own Sunfire (1.5 sec cast, Fire damage), not a rune: learn it from your class trainer or talents.
 ```
 #showtooltip Sunfire
 /cast [harm] Sunfire
 ```
 
-**Starfall** (`Starfall`) — Test in beta: Rune ability: needs the Starfall rune engraved on your cloak.
+**Starfall** (`Starfall`) — Test in beta: Forever's own Starfall (2 sec cast), not a rune: check that your class trainer or talents give it to you.
 ```
 #showtooltip Starfall
 /cast Starfall
@@ -1083,7 +1083,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [noform:1] Bear Form; Swipe
 ```
 
-**Lacerate** (`Lacerate`) — Test in beta: Bear bleed that stacks. Rune ability: needs the Lacerate rune engraved on your pants.
+**Lacerate** (`Lacerate`) — Test in beta: Bear bleed that stacks. A trainer spell in Forever, not a rune (Rank 2 is level 50).
 ```
 #showtooltip Lacerate
 /startattack [harm]
@@ -1101,12 +1101,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 #showtooltip Bash
 /startattack [harm]
 /cast [noform:1] Bear Form; [harm] Bash
-```
-
-**Skull Bash (mouseover)** (`SkullBash@`) — Test in beta: Interrupt for Bear and Cat Form. Rune ability: needs the Skull Bash rune engraved on your gloves.
-```
-#showtooltip Skull Bash
-/cast [@mouseover, harm, nodead][harm, nodead] Skull Bash
 ```
 
 **Claw** (`Claw`) — Test in beta: Level 20. Shifts into Cat Form first. 3 = Cat Form's place on the form bar (Bear, Aquatic, Cat): if you haven't learned Aquatic Form (16), change 3 to 2.
@@ -1184,12 +1178,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [noform:1] Bear Form; Enrage
 ```
 
-**Survival Instincts** (`SurvInst`) — Test in beta: Rune ability: needs the Survival Instincts rune engraved on your boots.
-```
-#showtooltip Survival Instincts
-/cast Survival Instincts
-```
-
 #### Targeting helpers
 
 **Growl (mouseover)** (`Growl@`) — Test in beta: Level 10. Taunts what is under your mouse, else your target. Shifts into Bear Form first.
@@ -1226,12 +1214,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [noform:1] Bear Form; [@focus, harm, exists][harm] Bash
 ```
 
-**Skull Bash focus** (`SkullBash F`) — Test in beta: Rune ability: needs the Skull Bash rune.
-```
-#showtooltip Skull Bash
-/cast [@focus, harm, exists][harm] Skull Bash
-```
-
 ### Druid — Restoration
 
 #### Mouseover healing / utility
@@ -1252,18 +1234,6 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Rejuvenation
 /cast [@mouseover, help, exists][help][@player] Rejuvenation
-```
-
-**Lifebloom** (`Lifebloom`) — Test in beta: Rune ability: needs the Lifebloom rune engraved on your pants.
-```
-#showtooltip Lifebloom
-/cast [@mouseover, help, exists][help][@player] Lifebloom
-```
-
-**Nourish** (`Nourish`) — Test in beta: Rune ability: needs the Nourish rune engraved on your belt.
-```
-#showtooltip Nourish
-/cast [@mouseover, help, exists][help][@player] Nourish
 ```
 
 **Wild Growth** (`WildGrowth`) — Level 50. Heals the target and their party.
@@ -1588,7 +1558,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Mongoose Bite
 ```
 
-**Strider Kick** (`StriderKick`) — Test in beta: Rune ability; its own button for the same reason.
+**Strider Kick** (`StriderKick`) — Test in beta: Survival talent (level 30); its own button for the same reason.
 ```
 #showtooltip Strider Kick
 /cast [harm] Strider Kick

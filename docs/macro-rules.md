@@ -56,7 +56,7 @@ Classes: Priest, Shaman, Paladin, Warlock, Hunter, Warrior, Rogue, Mage, Druid (
 Druid: spec sections Shared / Balance / Feral (Bear + Cat) / Restoration. Forever macros stop after the first GCD
 action, so a form swap and its ability are ONE /cast with conditions: bear() / bear_self() use `[noform:1] Bear Form; ...`,
 cat() / cat_self() use `[noform:3] Cat Form; ...` (3 = Cat's place on the form bar after Bear and Aquatic; 2 until Aquatic
-Form is learned, level 16). Rune abilities (Starsurge, Lacerate, Skull Bash...) are marked "Test in beta" with the rune named.
+Form is learned, level 16). Forever has no runes (those are Season of Discovery): Starsurge, Sunfire, Starfall, Lacerate are Forever's own spells, marked "Test in beta"; spells that exist only as Season of Discovery leftovers (Skull Bash, Survival Instincts, Lifebloom, Nourish) have no macro.
 Use helpers: dps() (Priest only — target-of-target-aware), dpsHarm() (every other
 class — plain [harm] targeting, no TT), heal(), util(), buff(), chan(), foc(),
 plain(), me(), stance(), melee(), bear(), bear_self(), cat(), cat_self(). Every helper prepends #showtooltip; hand-written

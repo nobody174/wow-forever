@@ -235,10 +235,67 @@ end
 -- grouped by route phase, each with a tick box (saved per character).
 local BUY_W = 390
 
+-- Click an item of the shopping list: a small box with its name selected. Ctrl+C, then paste it into the auction house
+-- search. (Our own box only: nothing is written into the game's search field.) It closes when you click elsewhere.
+local copyWin, copyEdit
+
+local function showCopy(name)
+  if not copyWin then
+    local f = UI.DialogFrame("R2FCopyItem", UIParent)
+    f:SetSize(330, 96)
+    f:SetPoint("CENTER", UIParent, "CENTER", 0, 180)
+    f:SetFrameStrata("DIALOG")
+    f:SetToplevel(true)
+    f:EnableMouse(true)
+    f:Hide()
+    if UISpecialFrames then table.insert(UISpecialFrames, "R2FCopyItem") end
+    local title = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    title:SetPoint("TOP", 0, -14)
+    title:SetText(L.PLAN_COPY_TITLE)
+    local scroll
+    scroll, copyEdit = UI.MultiLineEdit(f, "R2FCopyItemScroll", 290, 24)
+    scroll:SetPoint("TOPLEFT", 18, -36)
+    copyEdit:SetScript("OnEscapePressed", function() f:Hide() end)
+    copyEdit:SetScript("OnEditFocusLost", function() f:Hide() end)
+    local hint = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+    hint:SetPoint("BOTTOMLEFT", 20, 12)
+    hint:SetWidth(290)
+    hint:SetJustifyH("LEFT")
+    hint:SetText(L.PLAN_COPY_HINT)
+    copyWin = f
+  end
+  copyWin:Show()
+  copyEdit:SetText(name)
+  copyEdit:HighlightText()
+  copyEdit:SetFocus()
+end
+Tab.ShowCopy = showCopy
+
+local function itemButton(r, j)
+  local b = r.itemBtns[j]
+  if b then return b end
+  b = CreateFrame("Button", nil, content)
+  b:SetSize(BUY_W, 15)
+  b.text = b:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+  b.text:SetPoint("LEFT", 0, 0)
+  b.text:SetJustifyH("LEFT")
+  b.text:SetTextColor(1, 0.82, 0)
+  b:SetScript("OnClick", function(self) if self.itemName then showCopy(self.itemName) end end)
+  b:SetScript("OnEnter", function(self)
+    self.text:SetTextColor(1, 1, 1)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:AddLine(L.PLAN_COPY_TIP:format(self.itemName or ""), 1, 1, 1, true)
+    GameTooltip:Show()
+  end)
+  b:SetScript("OnLeave", function(self) self.text:SetTextColor(1, 0.82, 0) GameTooltip:Hide() end)
+  r.itemBtns[j] = b
+  return b
+end
+
 local function buyRow(i)
   local r = buyRows[i]
   if r then return r end
-  r = {}
+  r = { itemBtns = {} }
   r.check = UI.CheckButton(content, "")
   r.check:SetScript("OnClick", function(self)
     if self.questId then
@@ -249,10 +306,6 @@ local function buyRow(i)
   r.title = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
   r.title:SetJustifyH("LEFT")
   r.title:SetWidth(BUY_W)
-  r.items = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-  r.items:SetJustifyH("LEFT")
-  r.items:SetTextColor(1, 0.82, 0)
-  r.items:SetWidth(BUY_W)
   r.note = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
   r.note:SetJustifyH("LEFT")
   r.note:SetTextColor(0.7, 0.7, 0.7)
@@ -264,14 +317,9 @@ end
 local function hideBuyFrom(i)
   for k = i, #buyRows do
     local r = buyRows[k]
-    r.check:Hide(); r.title:Hide(); r.items:Hide(); r.note:Hide()
+    r.check:Hide(); r.title:Hide(); r.note:Hide()
+    for _, b in ipairs(r.itemBtns) do b:Hide() end
   end
-end
-
-local function itemsText(q)
-  local parts = {}
-  for _, it in ipairs(q.items) do parts[#parts + 1] = it[2] .. "x " .. it[1] end
-  return table.concat(parts, ", ")
 end
 
 local function layoutBuy()
@@ -307,11 +355,17 @@ local function layoutBuy()
       if bought then r.title:SetTextColor(0.5, 0.5, 0.5) else r.title:SetTextColor(1, 1, 1) end
       r.title:Show()
       local used = math.max(r.title:GetStringHeight(), 14) + 2
-      r.items:ClearAllPoints()
-      r.items:SetPoint("TOPLEFT", content, "TOPLEFT", 40, -(y + used))
-      r.items:SetText(itemsText(q))
-      r.items:Show()
-      used = used + math.max(r.items:GetStringHeight(), 12) + 2
+      for j, it in ipairs(q.items) do
+        local b = itemButton(r, j)
+        b.itemName = it[1]
+        b.text:SetText(it[2] .. "x " .. it[1])
+        b:ClearAllPoints()
+        b:SetPoint("TOPLEFT", content, "TOPLEFT", 40, -(y + used))
+        b:Show()
+        used = used + 15
+      end
+      for j = #q.items + 1, #r.itemBtns do r.itemBtns[j]:Hide() end
+      used = used + 2
       local extra = q.note
       if q.xp then extra = (extra and extra .. " " or "") .. q.xp end
       if extra and extra ~= "" then

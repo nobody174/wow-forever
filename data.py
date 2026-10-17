@@ -613,12 +613,12 @@ CLASSES = [
                   "#showtooltip Starfire\n/cast [noform] Moonkin Form; [mod:ctrl] Wrath; Starfire",
                   BETA + "Needs the Moonkin Form talent. In caster form it shifts you into Moonkin Form first; then Starfire, "
                   "or Wrath while Ctrl is held. Leave out the first part if you don't have the talent.", short="StarMoon"),
-                M("Starsurge", dpsHarm("Starsurge"), BETA + "Rune ability: needs the Starsurge rune engraved on your legs.",
+                M("Starsurge", dpsHarm("Starsurge"), BETA + "Forever's own Starsurge (3 sec cast, long range, Arcane damage), not a rune: learn it from your class trainer or talents.",
                   short="Starsurge"),
-                M("Sunfire", dpsHarm("Sunfire"), BETA + "Rune ability: needs the Sunfire rune engraved on your gloves.",
+                M("Sunfire", dpsHarm("Sunfire"), BETA + "Forever's own Sunfire (1.5 sec cast, Fire damage), not a rune: learn it from your class trainer or talents.",
                   short="Sunfire"),
                 M("Starfall", "#showtooltip Starfall\n/cast Starfall",
-                  BETA + "Rune ability: needs the Starfall rune engraved on your cloak.", short="Starfall"),
+                  BETA + "Forever's own Starfall (2 sec cast), not a rune: check that your class trainer or talents give it to you.", short="Starfall"),
             ]),
         ]},
 
@@ -628,15 +628,10 @@ CLASSES = [
                   "The 1 is Bear Form's place on the form bar. From level 40 write Dire Bear Form in every Bear macro.",
                   short="Maul"),
                 M("Swipe", bear_self("Swipe"), BETA + "Bear AoE. Shifts into Bear Form first.", short="Swipe"),
-                M("Lacerate", bear("Lacerate"), BETA + "Bear bleed that stacks. Rune ability: needs the Lacerate rune "
-                  "engraved on your pants.", short="Lacerate"),
+                M("Lacerate", bear("Lacerate"), BETA + "Bear bleed that stacks. A trainer spell in Forever, not a rune (Rank 2 is level 50).", short="Lacerate"),
                 M("Demoralizing Roar", bear_self("Demoralizing Roar"), BETA + "Level 10. Shifts into Bear Form first.",
                   short="DemoRoar"),
                 M("Bash", bear("Bash"), BETA + "Level 14. Stun, and interrupts a cast. Shifts into Bear Form first.", short="Bash"),
-                M("Skull Bash (mouseover)",
-                  "#showtooltip Skull Bash\n/cast [@mouseover, harm, nodead][harm, nodead] Skull Bash",
-                  BETA + "Interrupt for Bear and Cat Form. Rune ability: needs the Skull Bash rune engraved on your gloves.",
-                  short="SkullBash@"),
                 M("Claw", cat("Claw"), BETA + "Level 20. Shifts into Cat Form first. 3 = Cat Form's place on the form bar "
                   "(Bear, Aquatic, Cat): if you haven't learned Aquatic Form (16), change 3 to 2.", short="Claw"),
                 M("Shred", cat("Shred"), BETA + "Level 22. Behind the target. Shifts into Cat Form first (3, or 2 without "
@@ -666,8 +661,6 @@ CLASSES = [
                 M("Frenzied Regeneration", bear_self("Frenzied Regeneration"), BETA + "Level 36. Turns rage into health.",
                   short="FrenzyRegen"),
                 M("Enrage", bear_self("Enrage"), BETA + "Level 12. Gives rage; lowers your armor while it lasts.", short="Enrage"),
-                M("Survival Instincts", "#showtooltip Survival Instincts\n/cast Survival Instincts",
-                  BETA + "Rune ability: needs the Survival Instincts rune engraved on your boots.", short="SurvInst"),
             ]),
             G(QOL, [
                 M("Bear Form (no accidental unshift)", "#showtooltip Bear Form\n/cast [noform:1] Bear Form",
@@ -681,7 +674,6 @@ CLASSES = [
             G(FOCUS, [
                 M("Bash focus", "#showtooltip Bash\n/cast [noform:1] Bear Form; [@focus, harm, exists][harm] Bash",
                   BETA + "Shifts into Bear Form first.", short="Bash F"),
-                M("Skull Bash focus", foc("Skull Bash"), BETA + "Rune ability: needs the Skull Bash rune.", short="SkullBash F"),
             ]),
         ]},
 
@@ -690,10 +682,6 @@ CLASSES = [
                 M("Healing Touch", heal("Healing Touch"), short="HTouch"),
                 M("Regrowth", heal("Regrowth"), "Level 12.", short="Regrowth"),
                 M("Rejuvenation", heal("Rejuvenation"), "Level 4.", short="Rejuv"),
-                M("Lifebloom", heal("Lifebloom"), BETA + "Rune ability: needs the Lifebloom rune engraved on your pants.",
-                  short="Lifebloom"),
-                M("Nourish", heal("Nourish"), BETA + "Rune ability: needs the Nourish rune engraved on your belt.",
-                  short="Nourish"),
                 M("Wild Growth", heal("Wild Growth"), "Level 50. Heals the target and their party.", short="WildGrowth"),
                 M("Tranquility", "#showtooltip Tranquility\n/cast Tranquility", "Level 30. Channelled: keep still.",
                   short="Tranquility"),
@@ -855,7 +843,7 @@ CLASSES = [
                 M("Raptor Strike", melee("Raptor Strike"), BETA + "Queues on your next swing and turns on auto-attack.", short="SurvRaptor"),
                 M("Mongoose Bite", dpsHarm("Mongoose Bite"), BETA + "Only usable after you dodge; its own button, since a macro stops at the first spell it can't cast.",
                   short="Mongoose"),
-                M("Strider Kick", dpsHarm("Strider Kick"), BETA + "Rune ability; its own button for the same reason.", short="StriderKick"),
+                M("Strider Kick", dpsHarm("Strider Kick"), BETA + "Survival talent (level 30); its own button for the same reason.", short="StriderKick"),
             ]),
         ]},
     ]},

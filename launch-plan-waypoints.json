@@ -110,6 +110,6 @@
       { "zone": "Azshara", "mapHint": 1447, "x": 38, "y": 32, "label": "Blackmaw Hold, behind the Furbolg Gates in the north", "dungeon": "Blackmaw Hold", "conf": "approx", "src": "owner read it off the map 2026-10-15: a gate picture on the map" } ] },
     "p3-shaper": { "default": [
       { "zone": "Un'Goro Crater", "mapHint": 1449, "x": 43.6, "y": 8.3, "label": "Marshal's Refuge (staging)", "conf": "classic", "src": "classic" },
-      { "zone": "Un'Goro Crater", "mapHint": 1449, "label": "Shaper's Terrace", "dungeon": "Shaper's Terrace", "conf": "check", "src": "wh-dungeons (no position); the game's map gives the entrance" } ] }
+      { "zone": "Un'Goro Crater", "mapHint": 1449, "x": 50.4, "y": 7.8, "label": "Shaper's Terrace", "dungeon": "Shaper's Terrace", "conf": "approx", "src": "owner, entrance coordinates 50.4, 7.8 (2026-10-17, not yet stood on)" } ] }
   }
 }

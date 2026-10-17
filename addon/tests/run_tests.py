@@ -2236,7 +2236,11 @@ def test_plan(templates=True):
     lua.execute("ANVIL:Click()")
     check("/way Dun Morogh 28.8 67.6 Anvilmar, Coldridge Valley" in chat_all(lua), "%s: clicking prints the /way line: %r" % (tag, chat_all(lua)))
     check(font_text(lua, "may have moved") is not None, "%s: a classic point shows the 'may have moved' note" % tag)
-    lua.execute("R2F.Plan.Select('hwd') R2F.PlanTab.Refresh()")
+    # Every real position is known now; give the first step one spot with no position to see how the tab shows it.
+    lua.execute("""local s = R2F.Plan.Steps('hwd')[1]
+      R2F.PlanData.waypoints[s.id] = R2F.PlanData.waypoints[s.id] or { default = {} }
+      table.insert(R2F.PlanData.waypoints[s.id].default, { zone = 'Nowhere', label = 'Unknown spot', conf = 'check' })
+      R2F.Plan.Select('hwd') R2F.PlanTab.Refresh()""")
     check(font_text(lua, "position not known yet") is not None, "%s: a check point shows its label with 'position not known yet'" % tag)
     find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible() and f.point.conf == 'check'", "CHK")
     check(lua.eval("#CHK") == 0, "%s: check points have no button" % tag)
@@ -2280,7 +2284,14 @@ def test_plan(templates=True):
           "%s: ticking a quest is saved per character and counted (route quests only)" % tag)
     check(font_text(lua, "1 of %d route quests ticked off" % t0) is not None, "%s: progress line in the shopping list" % tag)
     check(lua.eval("R2FCharDB.plan.bought['%s']" % done_id) is True, "%s: stored in the character's saved variables" % tag)
-    lua.execute("BUYB[1]:Click()")
+    # Click an item: a small box with the NAME (no count) selected, to paste into the auction house search.
+    find_frames(lua, "f.__kind == 'Button' and f.itemName ~= nil and f:IsVisible()", "IBTN")
+    check(lua.eval("#IBTN") > 10, "%s: every item of every quest is a clickable line (%d)" % (tag, lua.eval("#IBTN")))
+    lua.execute("IBTN[1]:Click()")
+    find_frames(lua, "f.__kind == 'EditBox' and f.__text == IBTN[1].itemName and f:IsVisible()", "CEDIT")
+    check(lua.eval("#CEDIT") >= 1 and lua.eval("R2FCopyItem:IsShown()") is True and lua.eval("not IBTN[1].itemName:find('^%d')"),
+          "%s: clicking an item opens the copy box with just its name: %r" % (tag, lua.eval("IBTN[1].itemName")))
+    lua.execute("R2FCopyItem:Hide() BUYB[1]:Click()")
     find_frames(lua, "f.__kind == 'CheckButton' and f.questId ~= nil and f:IsVisible()", "QROWS")
     find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "SROWS")
     check(lua.eval("#QROWS") == 0 and lua.eval("#SROWS") > 0, "%s: Back to the steps: the launch-day list returns" % tag)

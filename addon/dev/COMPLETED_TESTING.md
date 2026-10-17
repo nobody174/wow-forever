@@ -4,6 +4,9 @@ The record of what the owner has tested and confirmed. Open tasks are in `TESTIN
 confirmed it is deleted from that file and added here in the same pass (newest round first). Numbers are the
 `section.item` numbers of TESTING.md at the time.
 
+## 2026-10-17 evening (0.66.6)
+- 5.30 the No weather box on Home (page still tidy), 5.23 the food nag is quiet in the capitals, 5.24 the quest shopping list in the Plan tab, 7.7 the mail list lists characters that share a first name, 8.10 all eight arrow looks, 15.7 Shaper's Terrace entrance (owner gave 50.4, 7.8; set as approximate).
+
 ## 2026-10-17 round (0.66.5)
 - 5.26 combat banner (lock, drag, size), 5.27 no /reload line at login, 5.28 Recommended builds after the talent-tree update.
 

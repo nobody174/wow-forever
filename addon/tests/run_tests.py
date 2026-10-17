@@ -8388,6 +8388,18 @@ def test_timers_in_combat():
     lua.execute("TEST.now = 600 TEST.auras = { { name = 'Seal of Command', spellId = 77, expirationTime = 2300, duration = 1800 } } "
                 "TD.module.Apply() TEST.now = 610 C_UnitAuras.GetUnitAuras = function() error('restricted') end TD.module.Apply()")
     check(lua.eval("R2FSealFrame.count.__text") == "~1690", "combat timer: the aura call failing: still counts from the last look: %r" % lua.eval("R2FSealFrame.count.__text"))
+    # A seal swapped in the fight shows the NEW seal's icon and a fresh 30 minutes, even when the first one was never seen
+    # (the aura is hidden): the timer must not stay on the first seal.
+    lua.execute("""TEST.now = 700 TEST.auras = { { name = 'SECRET', spellId = 'SECRET', expirationTime = 'SECRET' } }
+      C_Spell.GetSpellName = function(id) return ({ [77] = 'Seal of Command', [78] = 'Seal of Righteousness' })[id] end
+      C_Spell.GetSpellTexture = function(id) return 'tex' .. id end
+      R2F.playerClass = 'PALADIN'
+      R2F.Timers.OnCast(77) TD.module.Apply()""")
+    check(lua.eval("R2FSealFrame.icon.__tex") == "tex77" and lua.eval("R2FSealFrame.count.__text") == "~1800",
+          "combat timer: first seal cast in the fight, never seen: icon and 30 minutes")
+    lua.execute("TEST.now = 705 R2F.Timers.OnCast(78) TD.module.Apply()")
+    check(lua.eval("R2FSealFrame.icon.__tex") == "tex78" and lua.eval("R2FSealFrame.count.__text") == "~1800",
+          "combat timer: the next seal replaces the first one's icon and time: %r" % lua.eval("R2FSealFrame.icon.__tex"))
     # Nothing ever seen and everything hidden: nothing shown (never a guess).
     lua2, _ = reminder_runtime("ROGUE")
     lua2.execute("""issecretvalue = function(v) return v == 'SECRET' end GetTime = function() return 10 end
@@ -8395,6 +8407,15 @@ def test_timers_in_combat():
       for _, d in ipairs(R2F.Timers.TRACK) do if d.key == 'sliceanddice' then SD = d end end
       SD.module.SetLock(true) SD.module.Apply()""")
     check(lua2.eval("R2FSliceanddiceFrame:IsShown()") is False, "combat timer: nothing seen before and all hidden: nothing shown")
+    # Slice and Dice cast in the fight with 3 combo points: 6 + 3 x 3 = 15 seconds, its own icon.
+    lua2.execute("""C_Spell = { GetSpellName = function(id) if id == 5171 then return 'Slice and Dice' end end,
+        GetSpellTexture = function() return 'sndTex' end }
+      GetComboPoints = function() return 3 end
+      R2F.playerClass = 'ROGUE'
+      R2F.Timers.OnSent() R2F.Timers.OnCast(5171) SD.module.Apply()""")
+    check(lua2.eval("R2FSliceanddiceFrame:IsShown()") is True and lua2.eval("R2FSliceanddiceFrame.count.__text") == "~15"
+          and lua2.eval("R2FSliceanddiceFrame.icon.__tex") == "sndTex",
+          "combat timer: Slice and Dice cast in a fight with 3 points: ~15 s and its icon: %r" % lua2.eval("R2FSliceanddiceFrame.count.__text"))
     # The debug tool reports what is readable.
     T2 = lua2.eval("TEST")
     T2.chat = lua2.table()

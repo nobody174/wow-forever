@@ -13,7 +13,7 @@ Use a test character for anything marked **TEST CHAR**.
 **Taint check, any time:** `/console taintLog 1`, play, `/reload`, search `Logs\taint.log` for `RoadToForever`: no entries.
 
 ## To test (0.66.6 and the next release)
-5.25. **Seal (Paladin) and Slice and Dice (Rogue) timers in a fight:** put a seal up (or Slice and Dice), start a fight and keep watching the icon. It should keep counting down; if the game hides your buffs in the fight the number shows with a "~" in front ("~1750") instead of disappearing. Cast a new seal / Slice and Dice mid-fight: the number jumps to the full time again. After the fight, a number without "~" returns. Then, in the middle of a fight, run `/r2f debug timers` and send me the lines (it says how many of your buffs the game hides and what each timer can read).
+5.25. **Seal (Paladin) and Slice and Dice (Rogue) timers in a fight (0.66.10):** Paladin: cycle Seal of Command / Righteousness with your macro in a fight; the icon and number must follow the seal you cast last (never stay on the first). Rogue: cast Slice and Dice during a fight; the icon must show with a "~" number (about 6 + 3 per combo point). If something is off, run `/r2f debug timers` in the fight and paste the lines.
 
 
 

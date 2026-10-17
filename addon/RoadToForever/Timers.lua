@@ -29,10 +29,12 @@ Timers.TRACK = {
     title = "REM_WELLFED_TITLE", show = "TIMER_SHOW", lock = "TIMER_LOCK", size = "TIMER_SIZE" },
   -- `class`: only that class gets the icon and the Class icons section. The Paladin's active seal (whichever one, the
   -- icon is the seal's own) and the Rogue's Slice and Dice, with the seconds left.
-  { key = "seal", class = "PALADIN", names = {}, spells = {}, like = { "^Seal of" },
+  -- `fixed`: the buff always lasts this many seconds; `perCombo`: { base, per point }, the length depends on your combo
+  -- points when you cast it. Used when you cast it in a fight and the game hides the aura, so there was no look to copy.
+  { key = "seal", class = "PALADIN", names = {}, spells = {}, like = { "^Seal of" }, fixed = 1800,
     icon = "Interface\\Icons\\Spell_Holy_SealOfMight",
     title = "REM_SEAL_TITLE", show = "TIMER_SHOW", lock = "TIMER_LOCK", size = "TIMER_SIZE" },
-  { key = "sliceanddice", class = "ROGUE", names = { "Slice and Dice" }, spells = {},
+  { key = "sliceanddice", class = "ROGUE", names = { "Slice and Dice" }, spells = {}, perCombo = { 6, 3 },
     icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
     title = "REM_SND_TITLE", show = "TIMER_SHOW", lock = "TIMER_LOCK", size = "TIMER_SIZE" },
 }
@@ -107,8 +109,18 @@ function Timers.Remaining(def)
   return nil, nil, false
 end
 
--- You cast the buff's spell while the game hides your auras (a new seal, Slice and Dice again): restart the estimate
--- from the last full duration we saw. Called for UNIT_SPELLCAST_SUCCEEDED of the player.
+-- Combo points just before a cast (the cast uses them up): UNIT_SPELLCAST_SENT of the player.
+local comboBefore
+function Timers.OnSent()
+  comboBefore = nil
+  if type(_G.GetComboPoints) ~= "function" then return end
+  local ok, n = pcall(_G.GetComboPoints, "player", "target")
+  if ok and type(n) == "number" and not isSecret(n) and n > 0 then comboBefore = n end
+end
+
+-- You cast the buff's spell (a new seal, Slice and Dice again): start the estimate from now, with the buff's own icon, so
+-- it also works when the game hides your auras and there was never a readable look (a seal swapped in a fight). A
+-- readable aura overrides it at the next look. Called for UNIT_SPELLCAST_SUCCEEDED of the player.
 function Timers.OnCast(spellID)
   if type(spellID) ~= "number" or isSecret(spellID) then return end
   local get = _G.C_Spell and _G.C_Spell.GetSpellName
@@ -116,9 +128,20 @@ function Timers.OnCast(spellID)
   if not ok or type(name) ~= "string" or isSecret(name) then return end
   local now = GetTime and GetTime() or 0
   for _, def in ipairs(Timers.TRACK) do
-    local last = seen[def.key]
-    if last and last.duration and matches(def, name, spellID) and (def.class == nil or def.class == R2F.playerClass) then
-      last.expires = now + last.duration
+    if def.class and def.class == R2F.playerClass and matches(def, name, spellID) then
+      local last = seen[def.key]
+      local duration = def.fixed
+      if not duration and def.perCombo and comboBefore then duration = def.perCombo[1] + def.perCombo[2] * comboBefore end
+      duration = duration or (last and last.duration)
+      if duration then
+        local icon = last and last.icon
+        local tex = _G.C_Spell and _G.C_Spell.GetSpellTexture
+        if tex then
+          local okT, t = pcall(tex, spellID)
+          if okT and t and not isSecret(t) then icon = t end
+        end
+        seen[def.key] = { expires = now + duration, duration = duration, icon = icon }
+      end
     end
   end
 end
@@ -269,6 +292,10 @@ function Timers.Init()
   local ev = CreateFrame("Frame")
   ev:SetScript("OnEvent", function(_, event, unit, _, spellID)
     if event == "UNIT_AURA" and unit ~= "player" then return end
+    if event == "UNIT_SPELLCAST_SENT" then
+      if unit == "player" then Timers.OnSent() end
+      return
+    end
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
       if unit ~= "player" then return end
       Timers.OnCast(spellID)
@@ -276,7 +303,7 @@ function Timers.Init()
     for _, def in ipairs(Timers.TRACK) do update(def) end
   end)
   for _, e in ipairs({ "UNIT_AURA", "PLAYER_ENTERING_WORLD", "PLAYER_DEAD", "PLAYER_ALIVE", "ZONE_CHANGED_NEW_AREA",
-                  "PLAYER_CONTROL_LOST", "PLAYER_CONTROL_GAINED", "UNIT_SPELLCAST_SUCCEEDED",
+                  "PLAYER_CONTROL_LOST", "PLAYER_CONTROL_GAINED", "UNIT_SPELLCAST_SUCCEEDED", "UNIT_SPELLCAST_SENT",
                   "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED" }) do
     pcall(ev.RegisterEvent, ev, e)
   end

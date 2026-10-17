@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.66.10 (2026-10-17)
+
+- **Seal timer no longer sticks on the first seal** when you swap seals fast in a fight: each cast now restarts the timer (30 minutes) with the new seal's own icon, even if the game hides your buffs.
+- **Slice and Dice timer now shows in combat** when you cast it in the fight: it counts from the cast (6 seconds + 3 per combo point, marked "~") with its own icon.
+
 ## 0.66.9 (2026-10-17)
 
 - **Fix: the shopping list click no longer triggers "RoadToForever has been blocked from an action".** 0.66.8 called the game's clipboard function, which only Blizzard's own UI may use. A click is back to opening the small copy box (Ctrl+C, then paste).

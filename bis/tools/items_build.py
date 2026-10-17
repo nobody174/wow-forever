@@ -121,6 +121,11 @@ def weapon_dps(folder, rec, sp):
 # 1%, crit 14, block 5, dodge 12, parry 20 in Classic; the first three measured on Forever items, the last two from Classic).
 # None in the id slot = a sentence that is known and carries no stat for gear scoring (procs, skills, professions).
 SCHOOL_STAT = {"Holy": "84", "Fire": "85", "Nature": "86", "Frost": "87", "Shadow": "88", "Arcane": "89"}
+# the slot word at the top of a Wowhead tooltip -> the client's inventory type
+SLOT_NAME_INV = {"Head": 1, "Neck": 2, "Shoulder": 3, "Chest": 5, "Robe": 20, "Waist": 6, "Legs": 7, "Feet": 8, "Wrist": 9,
+                 "Hands": 10, "Finger": 11, "Trinket": 12, "One-Hand": 13, "Shield": 14, "Bow": 15, "Back": 16, "Two-Hand": 17,
+                 "Held In Off-hand": 23, "Gun": 26, "Crossbow": 26, "Wand": 26, "Thrown": 25, "Main Hand": 21, "Off Hand": 22,
+                 "Relic": 28, "Ranged": 26, "Idol": 28, "Libram": 28, "Totem": 28}
 RES_STAT = {"Fire": "51", "Frost": "52", "Holy": "53", "Shadow": "54", "Nature": "55", "Arcane": "56"}   # Holy assumed (no sample)
 EQUIP_RULES = [
     (r"^Increases damage and healing done by magical spells and effects by up to (\d+)", "45", 1),
@@ -171,6 +176,11 @@ def parse_tooltip(i, j):
     m = re.search(r"<!--scstart(\d+):(\d+)-->", t)
     if m:
         rec["c"], rec["s"] = int(m.group(1)), int(m.group(2))
+    m = re.search(r'<table width="100%"><tr><td>([^<]+)</td>', t)
+    if m and m.group(1).strip() in SLOT_NAME_INV:
+        rec["inv"] = SLOT_NAME_INV[m.group(1).strip()]
+        if "c" not in rec:                  # jewelry, cloaks, trinkets carry no armor-type marker
+            rec["c"], rec["s"] = 4, (1 if rec["inv"] == 16 else 0)
     for sid, val, label in re.findall(r"<!--stat(\d+)-->([+-]\d+) ([^<]+)", t):
         rec["st"][sid] = int(val)
         rec.setdefault("_labels", {})[sid] = label.strip()

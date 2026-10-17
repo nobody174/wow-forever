@@ -2291,7 +2291,13 @@ def test_plan(templates=True):
     find_frames(lua, "f.__kind == 'EditBox' and f.__text == IBTN[1].itemName and f:IsVisible()", "CEDIT")
     check(lua.eval("#CEDIT") >= 1 and lua.eval("R2FCopyItem:IsShown()") is True and lua.eval("not IBTN[1].itemName:find('^%d')"),
           "%s: clicking an item opens the copy box with just its name: %r" % (tag, lua.eval("IBTN[1].itemName")))
-    lua.execute("R2FCopyItem:Hide() BUYB[1]:Click()")
+    # With the game's CopyToClipboard a plain click copies right away (no box); Shift + click still opens the box.
+    lua.execute("R2FCopyItem:Hide() COPIED = nil CopyToClipboard = function(t) COPIED = t return #t end IBTN[1]:Click()")
+    check(lua.eval("COPIED") == lua.eval("IBTN[1].itemName") and lua.eval("R2FCopyItem:IsShown()") is not True,
+          "%s: a click copies the name straight to the clipboard, no box" % tag)
+    lua.execute("COPIED = nil TEST.shift = true IBTN[1]:Click() TEST.shift = false")
+    check(lua.eval("COPIED") is None and lua.eval("R2FCopyItem:IsShown()") is True, "%s: Shift + click opens the box instead" % tag)
+    lua.execute("CopyToClipboard = nil R2FCopyItem:Hide() BUYB[1]:Click()")
     find_frames(lua, "f.__kind == 'CheckButton' and f.questId ~= nil and f:IsVisible()", "QROWS")
     find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "SROWS")
     check(lua.eval("#QROWS") == 0 and lua.eval("#SROWS") > 0, "%s: Back to the steps: the launch-day list returns" % tag)

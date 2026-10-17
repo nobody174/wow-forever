@@ -1774,6 +1774,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.66.8 (2026-10-17): one-click copy in the quest shopping list
+
+- Item lines call the game's `CopyToClipboard(name, true)` (pcall, needs a positive length back); Shift or a refusal falls back to the `R2FCopyItem` box. Tests cover both paths. TESTING 5.31 asks for an in-game check.
+
 ## 0.66.7 (2026-10-17): no runes, click-to-copy shopping list, Shaper's Terrace position
 - data.py: Forever has no runes (those are Season of Discovery). Starsurge, Sunfire, Starfall and Lacerate are Forever's own spells (notes corrected, still "Test in beta"); Strider Kick is a level-30 Hunter talent. Removed the five macros whose spells exist in the client only as old Season of Discovery rune spells with no Forever version: Skull Bash (mouseover and focus), Survival Instincts, Lifebloom, Nourish. Rebuilt macros.html, wow-forever-macros.md, MacroData.lua (the addon's bundled set changes with the next release).
 - Plan tab, Quest shopping list: each item is its own clickable line; a click opens a small box with just the item name selected (Ctrl+C, then paste into the auction house search); it closes when you click elsewhere. Our own box only, nothing is written into the game's search field. Tests added. TESTING 5.31.

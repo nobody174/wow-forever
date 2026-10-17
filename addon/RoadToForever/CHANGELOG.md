@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.66.8 (2026-10-17)
+
+- **Quest shopping list: one click copies the item name** straight to the clipboard (a chat line confirms it); paste it into the auction house search with Ctrl+V. Shift + click opens the small copy box instead, which also opens if the game refuses the copy.
+
 ## 0.66.7 (2026-10-17)
 
 - **Quest shopping list: click an item to copy its name.** Each item is its own line; a click opens a small box with just the name selected (no number). Press Ctrl+C and paste it into the auction house search.

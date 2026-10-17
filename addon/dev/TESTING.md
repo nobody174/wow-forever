@@ -19,7 +19,7 @@ Use a test character for anything marked **TEST CHAR**.
 
 5.29. **Rogue weapon lines (next release):** on a Rogue, the Plan tab's "Weapon:" lines may now offer one-handed axes (Forever lets Rogues use them). Nothing to do unless a line shows an axe you cannot actually equip: tell me which.
 
-5.31. **Click an item of the quest shopping list to copy it (next release):** Plan tab > Quest shopping list: every item is a line you can click. A small box opens with just the item name selected (no number): press Ctrl+C, then paste it into the auction house search. Clicking anywhere else closes the box. Does it feel right, or should the click do something else?
+5.31. **Click an item of the quest shopping list to copy it (next release):** Plan tab > Quest shopping list: click an item line. The name (no number) goes straight to the clipboard and a chat line says so; paste it with Ctrl+V into the auction house search. Shift + click opens the small box instead (also the fallback if the game refuses the copy). Does the direct copy work in game?
 
 
 ## Cannot be tested yet (reason)

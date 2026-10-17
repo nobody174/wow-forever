@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-17",
+      "title": "Road to Forever addon 0.66.6: no-weather option, fresher gear lists",
+      "text": "Home has a new quick setting that turns off rain, snow and dust particles. The Mr.BiZ best-in-slot lists on the site and in the addon follow the latest beta data (31 best picks changed), and Rogues now get axe rewards on their Plan tab weapon lines.",
+      "link": "bis.html"
+    },
+    {
+      "date": "2026-10-17",
       "title": "Builds: cheat sheets for every class (Level 30 and 60)",
       "text": "Every build on the Builds page now has a short cheat sheet beside it: the stat order and what to press, for each spec. Level 30 follows the Forever guides. Level 60 uses the Classic order for now and says so, because Forever has not published its hit caps yet. Click Level 60 and the sheet switches.",
       "link": "builds.html"

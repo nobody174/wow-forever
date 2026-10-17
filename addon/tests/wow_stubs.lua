@@ -556,8 +556,8 @@ function PanelTemplates_GetSelectedTab(f) return f.selectedTab end
 -- suite), not a claim about the real client (TESTING.md 16). T.cvarClamp[name]
 -- = the value the client stores instead (a client that clamps); T.cvarError =
 -- SetCVar raises. It fires CVAR_UPDATE like the client.
-T.cvars = { cameraDistanceMaxZoomFactor = "1.7", UnitNamePlayerGuild = "1", UnitNamePlayerPVPTitle = "1" }
-T.cvarDefaults = { cameraDistanceMaxZoomFactor = "1.7", UnitNamePlayerGuild = "1", UnitNamePlayerPVPTitle = "1" }
+T.cvars = { cameraDistanceMaxZoomFactor = "1.7", UnitNamePlayerGuild = "1", UnitNamePlayerPVPTitle = "1", weatherDensity = "3" }
+T.cvarDefaults = { cameraDistanceMaxZoomFactor = "1.7", UnitNamePlayerGuild = "1", UnitNamePlayerPVPTitle = "1", weatherDensity = "3" }
 T.cvarWrites = {}
 T.cvarClamp = {}
 function GetCVar(name) return T.cvars[name] end

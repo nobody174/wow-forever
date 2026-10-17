@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.66.6 (2026-10-17)
+
+- **New quick setting on Home: "No weather (rain, snow, dust)"** turns the weather particles off (the game's `weatherDensity 0`); untick it to get the game's own setting back.
+- **Mr.BiZ best-in-slot lists refreshed** to the latest beta data: 31 best picks changed and many sources are more exact.
+- **Rogues:** the Plan tab's "Weapon:" lines now count one-handed axes (Forever lets Rogues use them).
+
 ## 0.66.5 (2026-10-17)
 
 - **Recommended builds follow the game's changed talent trees.** The game's talent trees changed (some talents renamed, removed or moved), so many recommended builds would have opened wrong or empty. All of them are rebuilt for the new trees. Where a removed talent freed a point, a nearby talent got it; check your class's build in the beta.

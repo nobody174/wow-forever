@@ -19,6 +19,8 @@ Use a test character for anything marked **TEST CHAR**.
 
 5.29. **Rogue weapon lines (next release):** on a Rogue, the Plan tab's "Weapon:" lines may now offer one-handed axes (Forever lets Rogues use them). Nothing to do unless a line shows an axe you cannot actually equip: tell me which.
 
+5.30. **No weather box (0.66.6):** Home > Quick settings, last box "No weather (rain, snow, dust)": tick it, the rain / snow / dust particles stop (move to a place with weather if needed); untick: back to your normal setting. Is the Home page still tidy (the minimap block is one row lower)?
+
 ## To test now (0.66.3)
 5.23. **Food nag:** Tweaks > Class icons > Food buff > tick "Show No food when I am not fed", take off your food buff: "No food" shows. Board a flight path: it goes away while you fly and returns after landing. Walk into a capital (Stormwind, Ironforge, Darnassus, Undercity, Orgrimmar, Thunder Bluff): it is gone there too. Tell me if a capital still shows it (the map id or zone name differs on Forever).
 5.24. **Quest shopping list:** Plan tab > "Quest shopping list" (top right): quests whose items you can buy instead of farm, grouped by phase, with counts ("3x Boar Intestines"). Tick one: it stays ticked after /reload and the line at the top counts it. "Back to the steps" brings the launch list back. Check that nothing overlaps and long notes fit.

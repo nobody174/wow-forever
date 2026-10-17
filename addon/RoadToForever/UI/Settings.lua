@@ -78,11 +78,11 @@ local function heading(f, x, y, text)
 end
 
 local function buildMinimap(f)
-  heading(f, LEFT, TOP - 196, L.SETTINGS_MINIMAP)
+  heading(f, LEFT, TOP - 222, L.SETTINGS_MINIMAP)
   -- Values are flipped from the saved setting, then the boxes are redrawn
   -- from it (refresh), instead of reading GetChecked after the click.
   ui.show = UI.CheckButton(f, L.SETTINGS_MINIMAP_SHOW)
-  ui.show:SetPoint("TOPLEFT", LEFT + 4, TOP - 224)
+  ui.show:SetPoint("TOPLEFT", LEFT + 4, TOP - 250)
   ui.show:SetScript("OnClick", function()
     local mm = Library.db.minimap
     mm.hide = not mm.hide
@@ -90,7 +90,7 @@ local function buildMinimap(f)
     applyMinimap()
   end)
   ui.lock = UI.CheckButton(f, L.SETTINGS_MINIMAP_LOCK)
-  ui.lock:SetPoint("TOPLEFT", LEFT + 4, TOP - 250)
+  ui.lock:SetPoint("TOPLEFT", LEFT + 4, TOP - 276)
   ui.lock:SetScript("OnClick", function()
     local mm = Library.db.minimap
     mm.lock = not mm.lock

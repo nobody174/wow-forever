@@ -1774,13 +1774,16 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
-## Unreleased (2026-10-17): plan for our own Mr.BiZ database
+## 0.66.6 (2026-10-17): No weather quick setting
+- QuickSettings.lua: a fifth Home box "No weather (rain, snow, dust)" = `weatherDensity 0`, off = the game's own default (read from the client like the zoom). The minimap block on Home moved down one row. Tests: five boxes, the box sets 0 and gives the default back.
+
+## 0.66.6 (2026-10-17): plan for our own Mr.BiZ database
 - `bis/OWN_DATABASE_PLAN.md`: research (where item data, stat numbers, sources and scores come from; measured: Item table 31,875 rows, only 7,694 of 18,797 equippable items have a static ItemSparse row, the rest come as server hotfix data; stat numbers = percent x RandPropPoints budget, reproduced exactly for 77 of 77 checked items; local client keeps hotfix rows in DBCache.bin), design (item, source and weight tables, scoring formula, eligibility, ranking labels), size, effort (M0-M4, about 3-4 weeks) and risks.
 
-## Unreleased (2026-10-17): Mr.BiZ data refreshed from ForeverDB (fetcher built)
+## 0.66.6 (2026-10-17): Mr.BiZ data refreshed from ForeverDB (fetcher built)
 - `bis/tools/foreverdb_fetch.py` (new): reads ForeverDB's BiS pages (the "Every slot" list, 27 requests, 1 per second) and writes `bis/raw/*.json` in the existing shape; prints a per-slot diff; `--write` replaces raw/. Ran it: the data moved from builds 70205-70338 to 70425 (31 best picks, 49 next-pick lists, source labels such as Clue -> Seen in Forever and fuller drop sources). `bis/sources.json`: 14 sources for picks that became next-picks (13 from their old best-pick entries, 1 from its item page); `bis/quality.json`: 3 new ids from the Wowhead tooltip API; `build_bis.py` UPDATED 2026-10-17. bis-data.json and BiZData.lua rebuilt (the addon copy ships with the next release). Test pins updated to the new data (route weapons: the Warrior Fury weapon at p3-stv).
 
-## Unreleased (2026-10-17): Mr.BiZ data pipeline plan, weapons check
+## 0.66.6 (2026-10-17): Mr.BiZ data pipeline plan, weapons check
 - ADDON_PLAN 19.3: the pipeline plan (detect, fetch, sources, quality, build, review, ship; cadence, safeguards, rules for ForeverDB and Wowhead, owner decisions). New `bis/tools/foreverdb_check.py` (read-only drift check against ForeverDB's server-rendered BiS pages): ForeverDB is on build 1.60.1.70425, our raw files on four older builds; 31 of 459 best picks and 49 more lists changed, 11 of 27 specs differ.
 - Weapons: all 273 quest-reward weapons re-read from Wowhead's tooltip API, none differ. `QuestWeapons.lua`: the class weapon table now follows Forever's (ForeverDB "Trainers & weapon skills"): Rogues can use one-handed axes (the Plan tab's "Weapon:" lines count them); test added. Wowhead's list pages answered 403 after a run of 25 pages, so the quest links were not re-verified.
 

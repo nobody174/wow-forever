@@ -8,6 +8,7 @@
 --   Hide PvP titles   UnitNamePlayerPVPTitle 0       (off = 1)
 -- plus one with no site macro:
 --   24-hour clock     timeMgrUseMilitaryTime 1       (off = 0; the game clock on the minimap)
+--   No weather        weatherDensity 0               (off = the game's own default; rain, snow and dust particles)
 --
 -- Nothing is stored in SavedVariables: the game saves CVars itself, and the
 -- boxes always show the LIVE value (GetCVar), so a value set by /console,
@@ -38,6 +39,9 @@ QuickSettings.ITEMS = {
   -- No site macro for this one (macro = nil): the game clock's own 12 / 24-hour setting.
   { key = "clock24", cvar = "timeMgrUseMilitaryTime", on = "1", off = "0",
     label = L.QS_CLOCK24, tip = L.QS_CLOCK24_TIP },
+  -- No site macro either. Off = the game's own default density (read from the client, like the zoom).
+  { key = "weather", cvar = "weatherDensity", on = "0", off = nil,
+    label = L.QS_WEATHER, tip = L.QS_WEATHER_TIP },
 }
 
 local byMacro = {}

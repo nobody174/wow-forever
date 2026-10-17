@@ -88,8 +88,77 @@ def db2_items(folder):
             shield = table(folder, "ItemArmorShield").get(il)
             if shield:
                 rec["ar"] = int(round(f(shield, "Quality_%d" % q)))
+        if rec["c"] == 2:
+            d = weapon_dps(folder, rec, sp)
+            if d:
+                rec["dps"], rec["spd"] = d
         out[iid] = rec
     return out
+
+
+RANGED_K = 0.772        # bows, guns, crossbows: the beta prints about 77% of the one-hand damage table (measured, see the report)
+_dmg = {}
+
+
+def weapon_dps(folder, rec, sp):
+    """Damage per second from the item-level damage tables x quality (the 1h / 2h / wand / thrown table by weapon kind)."""
+    inv, sub = rec["inv"], rec["s"]
+    name = ("ItemDamageTwoHand" if inv == 17 else "ItemDamageWand" if sub == 19 else "ItemDamageThrown" if sub == 16
+            else "ItemDamageOneHand")
+    if name not in _dmg:
+        _dmg[name] = {int(r["ItemLevel"]): r for r in table(folder, name).values()}
+    row = _dmg[name].get(rec["il"])
+    delay = f(sp, "ItemDelay") / 1000.0
+    if not row or delay <= 0:
+        return None
+    v = f(row, "Quality_%d" % rec["q"])
+    if sub in (2, 3, 18):
+        v *= RANGED_K
+    return round(v, 1), delay
+
+
+# "Equip:" sentence -> (client stat id, scale). The number in the sentence times the scale is the stored value (ratings: hit 10 per
+# 1%, crit 14, block 5, dodge 12, parry 20 in Classic; the first three measured on Forever items, the last two from Classic).
+# None in the id slot = a sentence that is known and carries no stat for gear scoring (procs, skills, professions).
+SCHOOL_STAT = {"Holy": "84", "Fire": "85", "Nature": "86", "Frost": "87", "Shadow": "88", "Arcane": "89"}
+RES_STAT = {"Fire": "51", "Frost": "52", "Holy": "53", "Shadow": "54", "Nature": "55", "Arcane": "56"}   # Holy assumed (no sample)
+EQUIP_RULES = [
+    (r"^Increases damage and healing done by magical spells and effects by up to (\d+)", "45", 1),
+    (r"^Increases damage done by magical spells and effects by up to (\d+)", "45", 1),
+    (r"^Increases healing done by (?:magical )?spells and effects by up to (\d+)", "41", 1),
+    (r"^Increases healing done by up to (\d+)(?!\s+and)", "41", 1),
+    (r"^Improves your chance to get a critical strike by ([\d.]+)%", "32", 14),
+    (r"^Improves your chance to hit by ([\d.]+)%", "31", 10),
+    (r"^Decreases your chance to hit by ([\d.]+)%", "31", -10),
+    (r"^Increases your chance to Block attacks with a shield by ([\d.]+)%", "15", 5),
+    (r"^Increases your chance to Dodge an attack by ([\d.]+)%", "13", 12),
+    (r"^Increases your chance to Parry an attack by ([\d.]+)%", "14", 20),
+    (r"^Increased Defense \+(\d+)", "12", 1),
+    (r"^\+(\d+) Attack Power\.?$", "38", 1),
+    (r"^\+(\d+) Attack Power (?:when|against|in )", "", 0),
+    (r"^Increases your attack speed and casting speed by ([\d.]+)%", "36", 10),
+    (r"^Reduces chance to be Dodged or Parried by ([\d.]+)%", "37", 10),
+    (r"^Increases damage done to \w+ by magical spells and effects by up to (\d+)", "", 0),
+    (r"^Increased (Two-Handed Axes|Daggers|Polearms|Swords|Fishing|Mining|Herbalism|Skinning) \+(\d+)", "", 0),
+    (r"^Your spells pierce (\d+) (\w+) Resistance", "", 0),
+]
+
+
+def equip_rule(sentence):
+    """-> (stat id, value), () for a known sentence without a gear stat, None when no rule knows it."""
+    m = re.match(r"^Increases damage done by (Holy|Fire|Nature|Frost|Shadow|Arcane) spells and effects by up to (\d+)", sentence)
+    if m:
+        return (SCHOOL_STAT[m.group(1)], int(m.group(2)))
+    m = re.match(r"^Increases healing done by up to (\d+) and damage done by up to (\d+) for all magical spells", sentence)
+    if m:
+        return (("41", int(m.group(1))), ("42", int(m.group(2))))
+    for pat, sid, scale in EQUIP_RULES:
+        m = re.match(pat, sentence)
+        if m:
+            if not sid:
+                return ()
+            return (sid, int(round(float(m.group(1)) * scale)))
+    return None
 
 
 def parse_tooltip(i, j):
@@ -114,16 +183,32 @@ def parse_tooltip(i, j):
     m = re.search(r"<!--spd-->([\d.]+)", t)
     if m:
         rec["spd"] = float(m.group(1))
-    # "Equip:" effects carry the client's stat id in a marker: <!--rtgN-->value. Wowhead numbers spell power 41, the client 45.
-    for sid, val in re.findall(r"<!--rtg(\d+)-->\s*(\d+)", t):
-        sid = "45" if sid == "41" else sid
-        rec["st"][sid] = rec["st"].get(sid, 0) + int(val)
     res = re.findall(r"\+(\d+) (Fire|Frost|Nature|Shadow|Arcane|Holy) Resistance", t)
     if res:
         rec["res"] = {school: int(v) for v, school in res}
-    equip = re.findall(r"Equip: ([^<]+)", t)
+        for school, v in rec["res"].items():
+            rec["st"][RES_STAT[school]] = v
+    m = re.search(r"Restores \+?(\d+) mana per 5 sec", re.sub(r"<[^>]+>", "", t))
+    if m:
+        rec["st"]["43"] = int(m.group(1))
+    equip, unknown = [], []
+    for m in re.finditer(r"Equip: (.*?)(?:<br>|<!--itemEffects|<div)", t, re.S):
+        sentence = re.sub(r"<[^>]+>", "", m.group(1)).strip()
+        equip.append(sentence)
+        stat = equip_rule(sentence)
+        if stat is None and "<!--rtg" in m.group(1):
+            # no sentence rule: take the client's own stat id from the marker (Wowhead's id 41 is ambiguous, so rules come first)
+            for sid, val in re.findall(r"<!--rtg(\d+)-->\s*(\d+)", m.group(1)):
+                rec["st"][sid] = rec["st"].get(sid, 0) + int(val)
+        elif stat is None:
+            unknown.append(sentence)
+        elif stat:
+            for sid, val in (stat if isinstance(stat[0], tuple) else (stat,)):
+                rec["st"][sid] = rec["st"].get(sid, 0) + val
     if equip:
-        rec["eq"] = [e.strip() for e in equip]
+        rec["eq"] = equip
+    if unknown:
+        rec["unk"] = unknown
     return rec
 
 
@@ -155,12 +240,18 @@ def compare(db, tip):
                 bad[key].append(i)
             else:
                 ok[key] += 1
-        if a["st"] != b["st"]:
+        bst = {k: v for k, v in b["st"].items() if k != "50"}      # bonus armor: the tooltip lists it as a stat, we keep it apart
+        if a["st"] != bst:
             bad["stats"].append(i)
         else:
             ok["stats"] += 1
+        if "dps" in b and "dps" in a:
+            if abs(a["dps"] - b["dps"]) > max(0.6, 0.04 * b["dps"]):
+                bad["dps"].append(i)
+            else:
+                ok["dps"] += 1
         if "ar" in b:
-            tot = a.get("ar", 0) + a.get("bonusArmor", 0)
+            tot = a.get("ar", 0)
             if abs(tot - b["ar"]) > 1:
                 bad["armor"].append(i)
             else:
@@ -175,12 +266,12 @@ def main():
     print("DB2 build %s: %d equippable items with a static stat row; tooltip cache: %d items" % (folder.name, len(db), len(tip)))
     both, bad, ok = compare(db, tip)
     print("cross-check on %d items that exist both ways:" % len(both))
-    for key in ("q", "il", "rl", "stats", "armor"):
+    for key in ("q", "il", "rl", "stats", "armor", "dps"):
         print("   %-6s agree %4d | differ %4d  %s" % (key, ok[key], len(bad[key]), bad[key][:6] if bad[key] else ""))
     # what do the misses look like?
     shown = 0
     for i in bad["stats"][:5]:
-        print("   stats miss", i, db[i]["n"], "inv", db[i]["inv"], "ilvl", db[i]["il"], "q", db[i]["q"], "db2", db[i]["st"], "tooltip", tip[i]["st"])
+        print("   stats miss", i, db[i]["n"], "inv", db[i]["inv"], "ilvl", db[i]["il"], "q", db[i]["q"], "db2", db[i]["st"], "tooltip", {k: v for k, v in tip[i]["st"].items() if k != "50"})
     for i in bad["armor"][:4]:
         print("   armor miss", i, db[i]["n"], "inv", db[i]["inv"], "ilvl", db[i]["il"], "q", db[i]["q"], "db2", db[i].get("ar"), "+", db[i].get("bonusArmor"), "tooltip", tip[i].get("ar"))
     if "--report" in sys.argv:
@@ -189,7 +280,13 @@ def main():
     for r in tip.values():
         labels.update(r.pop("_labels", {}))
     merged = dict(tip)
-    merged.update(db)                       # the client's own numbers win where we have them
+    for i, rec in db.items():               # the client's own numbers win where we have them; the tooltip adds what DB2 lacks
+        extra = {k: v for k, v in tip.get(i, {}).items() if k in ("dps", "spd", "eq", "unk", "res")}
+        merged[i] = dict(extra, **rec)
+        # "Equip:" effects and mana per 5 sec come from spells, not from the static stat rows: add what DB2 lacks from the tooltip
+        if i in tip:
+            merged[i]["st"] = dict(tip[i]["st"], **rec["st"])
+            merged[i]["st"].pop("50", None)
     for r in merged.values():
         r.pop("_labels", None)
     items = [merged[i] for i in sorted(merged)]

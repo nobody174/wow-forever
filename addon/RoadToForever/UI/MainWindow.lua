@@ -112,11 +112,18 @@ local function buildNavButton(parent, key, y)
   return b
 end
 
+local selectedKey
+
 local function showSelected(key)
+  selectedKey = key
+  local th = R2F.Theme.Get()
+  local ac, tx = th.accent, th.text
   for k, b in pairs(tabButtons) do
     local on = k == key
+    b.r2fSel:SetColorTexture(ac[1], ac[2], ac[3], th.selAlpha)
+    b.r2fBar:SetColorTexture(ac[1], ac[2], ac[3], 1)
     if on then b.r2fSel:Show() b.r2fBar:Show() else b.r2fSel:Hide() b.r2fBar:Hide() end
-    if on then b.r2fText:SetTextColor(GOLD[1], GOLD[2], GOLD[3]) else b.r2fText:SetTextColor(1, 1, 1) end
+    if on then b.r2fText:SetTextColor(ac[1], ac[2], ac[3]) else b.r2fText:SetTextColor(tx[1], tx[2], tx[3]) end
   end
 end
 
@@ -127,8 +134,18 @@ function MainWindow.ApplyLook()
   local st = settings()
   frame:SetScale(st.menuScale)
   frame:SetBackdropColor(0, 0, 0, 0)
-  frame.r2fBgTex:SetColorTexture(0.07, 0.07, 0.09, st.menuAlpha)
-  frame.r2fSide:SetColorTexture(0, 0, 0, 0.45 * st.menuAlpha)
+  local th = R2F.Theme.Get(st.theme)
+  local bg, sd, ru = th.bg, th.side, th.rule
+  frame.r2fBgTex:SetColorTexture(bg[1], bg[2], bg[3], R2F.Theme.PanelAlpha(th, st.menuAlpha))
+  frame.r2fSide:SetColorTexture(sd[1], sd[2], sd[3], th.sideAlpha * st.menuAlpha)
+  frame.r2fRule:SetColorTexture(ru[1], ru[2], ru[3], th.ruleAlpha)
+  if frame.SetBackdropBorderColor then
+    frame:SetBackdropBorderColor(th.rim[1], th.rim[2], th.rim[3], 1)
+  end
+  if frame.r2fTitle then
+    frame.r2fTitle:SetTextColor(th.accent[1], th.accent[2], th.accent[3])
+  end
+  if selectedKey then showSelected(selectedKey) end
 end
 
 -- Small labelled slider for the top bar. onApply(value) runs when the value
@@ -256,6 +273,7 @@ local function build()
   rule:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -TOP_H)
   rule:SetHeight(1)
   rule:SetColorTexture(GOLD[1], GOLD[2], GOLD[3], 0.35)
+  f.r2fRule = rule
 
   -- Top bar: logo, name (real text), size + opacity sliders, Reload UI, close.
   local logo = f:CreateTexture(nil, "ARTWORK")

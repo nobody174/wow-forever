@@ -127,10 +127,46 @@ local function buildQuick(f)
   end
 end
 
+-- Theme picker: a button that opens the addon's own menu (no
+-- UIDropDownMenu, which taints). Applying a theme only recolours R2F frames.
+local function themeItems()
+  local items = {}
+  local cur = R2F.Theme.Get().key
+  for _, t in ipairs(R2F.Theme.LIST) do
+    items[#items + 1] = {
+      kind = "check", text = t.name,
+      isChecked = function() return t.key == cur end,
+      func = function()
+        R2F.Theme.Set(t.key)
+        ui.theme:SetText(t.name)
+        if R2F.MainWindow and R2F.MainWindow.ApplyLook then R2F.MainWindow.ApplyLook() end
+      end,
+    }
+  end
+  return items
+end
+
+local function buildTheme(f)
+  heading(f, 300, TOP - 222, L.SETTINGS_THEME)
+  local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+  b:SetSize(170, 24)
+  b:SetPoint("TOPLEFT", 304, TOP - 250)
+  b:SetText(R2F.Theme.Get().name)
+  b:SetScript("OnClick", function() UI.ContextMenu(themeItems()) end)
+  b:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetText(L.SETTINGS_THEME_TIP, 1, 1, 1, 1, true)
+    GameTooltip:Show()
+  end)
+  b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  ui.theme = b
+end
+
 -- Called once by Home.Build with the Home page frame.
 function Settings.Build(f)
   page = f
   buildMinimap(f)
+  buildTheme(f)
   buildQuick(f)
   return f
 end

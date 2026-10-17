@@ -236,6 +236,8 @@ function Library.Init()
   -- Main window size and opacity (top bar sliders).
   if type(s.menuScale) ~= "number" or s.menuScale < 0.5 or s.menuScale > 1.5 then s.menuScale = 1 end
   if type(s.menuAlpha) ~= "number" or s.menuAlpha < 0.3 or s.menuAlpha > 1 then s.menuAlpha = 1 end
+  -- UI theme (Theme.lua); unknown values fall back to the default look.
+  if not (R2F.Theme and R2F.Theme.IsValid(s.theme)) then s.theme = "classic" end
   if s.slotsFirst ~= "character" and s.slotsFirst ~= "account" then s.slotsFirst = "character" end
   -- Talents tab: show build levels as if the Talented legacy perk (+5 points) is on. Display only.
   if type(s.talented) ~= "boolean" then s.talented = true end

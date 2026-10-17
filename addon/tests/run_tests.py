@@ -4543,6 +4543,18 @@ def test_step6_ui(templates, fx):
     lua.execute("R2FDB.settings.menuScale = 9 R2FDB.settings.menuAlpha = 0 R2F.Library.Init()")
     check(lua.eval("R2FDB.settings.menuScale") == 1 and lua.eval("R2FDB.settings.menuAlpha") == 1, "bad size / opacity values are reset")
     lua.execute("R2F.MainWindow.ApplyLook()")
+    # Themes: default is classic, bad values fall back, every theme applies.
+    check(lua.eval("R2FDB.settings.theme") == "classic", "theme defaults to classic")
+    lua.execute("R2FDB.settings.theme = 'nope' R2F.Library.Init()")
+    check(lua.eval("R2FDB.settings.theme") == "classic", "unknown theme falls back to classic")
+    for key in ("azeroth", "obsidian", "forge", "arcane", "classic"):
+        check(lua.eval("R2F.Theme.Set('%s')" % key) is True, "theme %s can be set" % key)
+        lua.execute("R2F.MainWindow.ApplyLook()")
+        check(lua.eval("R2FDB.settings.theme") == key, "theme %s is saved" % key)
+    check(lua.eval("R2F.Theme.Set('bogus')") is False and lua.eval("R2FDB.settings.theme") == "classic",
+          "setting an unknown theme is refused")
+    check(lua.eval("R2F.Theme.PanelAlpha(R2F.Theme.Get('arcane'), 0.3)") >= 0.85,
+          "glass theme stays readable at low opacity")
     lua.execute("MTABS[3]:Click()")
     check(MW.CurrentTab() == "talents" and lua.eval("R2F.MacroBook.IsShown()") is False, "Talents tab hides the book")
     # Step 9 replaced the placeholder with the real tab (tested in test_talent_preview).

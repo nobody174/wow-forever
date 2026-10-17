@@ -8026,6 +8026,7 @@ def main():
     test_gameplay()
     test_gameplay_extras()
     test_combat_banner()
+    test_recorder()
     test_gameplay_quests()
     test_copychat()
     test_questzone()
@@ -8421,6 +8422,58 @@ def test_timers_in_combat():
     T2.chat = lua2.table()
     lua2.execute("R2F.DEBUG.timers()")
     check("1 hidden by the game" in chat_all(lua2) or "hidden by the game" in chat_all(lua2), "combat timer: /r2f debug timers prints the hidden count")
+
+
+def test_recorder():
+    """The recorder writes down what loot, vendor and quest windows show (R2FDB.recorder), counts a corpse once, ignores players,
+    can be switched off, and never raises when the game gives something odd."""
+    lua, T = reminder_runtime("MAGE")
+    lua.execute("""
+      LOOT = { { link = '|cff1eff00|Hitem:7684::::|h[Bloodmage Mantle]|h|r', src = { 'Creature-0-1465-0-4-4278-0000AAAA11', 1 } },
+               { link = '|Hitem:159::::|h[Water]|h', src = { 'Creature-0-1465-0-4-4278-0000AAAA11', 1 } },
+               { link = nil, src = { 'Creature-0-1465-0-4-4278-0000AAAA11', 1 } } }
+      GetNumLootItems = function() return #LOOT end
+      GetLootSlotLink = function(i) return LOOT[i].link end
+      GetLootSourceInfo = function(i) return unpack(LOOT[i].src) end
+      GetRealZoneText = function() return 'Shadowfang Keep' end
+      UnitGUID = function(u) if u == 'target' then return 'Creature-0-1465-0-4-4278-0000AAAA11' end if u == 'npc' then return 'Creature-0-1-0-4-8128-0000BBBB22' end end
+      UnitLevel = function() return 24 end""")
+    T.fire("LOOT_OPENED")
+    check(lua.eval("R2FDB.recorder.drops[4278].k") == 1 and lua.eval("R2FDB.recorder.drops[4278].i[7684]") == 1
+          and lua.eval("R2FDB.recorder.drops[4278].z") == "Shadowfang Keep" and lua.eval("R2FDB.recorder.drops[4278].lv") == 24,
+          "recorder: a looted creature is written down with its item, zone and level")
+    T.fire("LOOT_OPENED")
+    check(lua.eval("R2FDB.recorder.drops[4278].k") == 1 and lua.eval("R2FDB.recorder.drops[4278].i[7684]") == 2,
+          "recorder: the same corpse opened again is one kill (the item is seen again)")
+    lua.execute("LOOT = { { link = '|Hitem:5::|h[x]|h', src = { 'Player-1-00000001', 1 } } }")
+    T.fire("LOOT_OPENED")
+    check(lua.eval("R2FDB.recorder.drops[5]") is None, "recorder: players are not recorded")
+    lua.execute("""LOOT = { { link = '|Hitem:9::|h[x]|h', src = { 'GameObject-0-1-0-4-2843-0000CCCC33', 1 } } }""")
+    T.fire("LOOT_OPENED")
+    check(lua.eval("R2FDB.recorder.objects[2843].i[9]") == 1, "recorder: chests and nodes go to their own table")
+    lua.execute("""GetMerchantNumItems = function() return 2 end
+      GetMerchantItemLink = function(i) return ({ '|Hitem:1000::|h[A]|h', '|Hitem:2000::|h[B]|h' })[i] end
+      GetMerchantItemInfo = function(i) if i == 1 then return 'A', 1, 1250, 1, -1, true, false end return 'B', 2, 0, 5, -1, true, true end""")
+    T.fire("MERCHANT_SHOW")
+    check(lua.eval("R2FDB.recorder.vendors[8128].i[1000].p") == 1250 and lua.eval("R2FDB.recorder.vendors[8128].i[2000].e") == 1,
+          "recorder: a vendor's items, prices and extended costs")
+    lua.execute("""GetQuestID = function() return 747 end GetTitleText = function() return 'The Hunt Begins' end
+      GetNumQuestChoices = function() return 2 end GetNumQuestRewards = function() return 1 end
+      GetQuestItemLink = function(kind, i) if kind == 'choice' then return '|Hitem:' .. (100 + i) .. '::|h[c]|h' end return '|Hitem:300::|h[r]|h' end""")
+    T.fire("QUEST_COMPLETE")
+    check(lua.eval("R2FDB.recorder.quests[747].c[2]") == 102 and lua.eval("R2FDB.recorder.quests[747].r[1]") == 300
+          and lua.eval("R2FDB.recorder.quests[747].t") == "The Hunt Begins" and lua.eval("R2FDB.recorder.quests[747].n") == 8128,
+          "recorder: a quest's choices and rewards with the title and the NPC")
+    lua.execute("R2F.Recorder.SetOn(false) LOOT = { { link = '|Hitem:77::|h[x]|h', src = { 'Creature-0-1-0-4-999-0000DDDD44', 1 } } }")
+    T.fire("LOOT_OPENED")
+    check(lua.eval("R2FDB.recorder.drops[999]") is None, "recorder: switched off, nothing new is written")
+    lua.execute("R2F.Recorder.SetOn(true) GetLootSourceInfo = function() error('boom') end")
+    T.fire("LOOT_OPENED")
+    check(True, "recorder: an error inside a getter never reaches the player")
+    T2 = lua.eval("TEST")
+    T2.chat = lua.table()
+    lua.execute("R2F.DEBUG.recorder()")
+    check("1 creatures looted" in chat_all(lua) and "vendors" in chat_all(lua), "recorder: /r2f debug recorder prints the counts")
 
 
 def test_combat_banner():

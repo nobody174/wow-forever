@@ -34,6 +34,7 @@ handlers.PLAYER_LOGIN = function()
   R2F.Repair.Init()
   R2F.Pet.Init()
   R2F.Timers.Init()
+  R2F.Recorder.Init()
   R2F.Rested.Init()
   R2F.CombatBanner.Init()
   R2F.Version.Init()
@@ -173,6 +174,9 @@ end
 local COMMANDS = {
   [""] = function() R2F.MainWindow.Toggle() end,
   open = function() R2F.MainWindow.Show() end,
+  record = function() R2F.Recorder.Debug() end,
+  ["record on"] = function() R2F.Recorder.SetOn(true) end,
+  ["record off"] = function() R2F.Recorder.SetOn(false) end,
   macros = function() R2F.MainWindow.Show("macros") end,
   talents = function() R2F.MainWindow.Show("talents") end,
   settings = function() R2F.MainWindow.Show("settings") end,
@@ -222,6 +226,7 @@ local DEBUG = {
   gear = function() R2F.GearScore.Debug() end,
   traits = function() R2F.Talents.DebugTraits() end,
   timers = function() R2F.Timers.Debug() end,
+  recorder = function() R2F.Recorder.Debug() end,
 }
 local DEBUG_ALIASES = { rankdebug = "rank", profdebug = "profs" }
 R2F.DEBUG = DEBUG

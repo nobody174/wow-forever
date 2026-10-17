@@ -36,6 +36,7 @@ Ammo.lua
 Repair.lua
 Pet.lua
 Timers.lua
+Recorder.lua
 Rested.lua
 CombatBanner.lua
 Tracking.lua

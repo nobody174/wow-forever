@@ -57,6 +57,9 @@ read_globals = {
   "GetItemIcon", "GetItemInfoInstant", "ITEM_QUALITY_COLORS", "UnitFactionGroup", "GameFontDisableSmall",
   -- GearScore: worn items (read), the item tooltip post-call hook (modern clients)
   "GetInventoryItemLink", "TooltipDataProcessor",
+  -- Recorder: the loot, vendor and quest windows (read only)
+  "GetLootSlotLink", "GetLootSourceInfo", "GetMerchantNumItems", "GetMerchantItemLink", "GetMerchantItemInfo",
+  "GetNumQuestRewards", "GetQuestID", "GetTitleText",
   -- What to train next: the class trainer window (read only)
   "GetNumTrainerServices", "GetTrainerServiceInfo", "GetTrainerServiceLevelReq", "GetTrainerServiceCost",
   "IsTradeskillTrainer",

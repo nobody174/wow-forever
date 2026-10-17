@@ -211,6 +211,15 @@ function Library.Init()
   if type(bn.lock) ~= "boolean" then bn.lock = true end
   if type(bn.scale) ~= "number" or bn.scale < 0.5 or bn.scale > 3 then bn.scale = 1 end
   if type(bn.x) ~= "number" then bn.x = 0 end
+  -- Recorder (Recorder.lua): what loot, vendor and quest windows showed, for Mr.BiZ's own item sources. On by default.
+  if type(db.recorder) ~= "table" then db.recorder = {} end
+  local rc = db.recorder
+  if type(rc.on) ~= "boolean" then rc.on = true end
+  for _, key in ipairs({ "drops", "objects", "vendors", "quests" }) do
+    if type(rc[key]) ~= "table" then rc[key] = {} end
+  end
+  rc.version = 1
+  rc.since = rc.since or (_G.date and _G.date("%Y-%m-%d") or nil)
   -- Buff countdown reminders (Timers.lua): one table per tracked buff.
   if type(db.timers) ~= "table" then db.timers = {} end
   for key, pos in pairs({ walkonair = { 2, 462 }, wellfed = { 230, 515 }, seal = { -2, 498 }, sliceanddice = { -2, 498 } }) do

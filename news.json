@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-17",
+      "title": "Road to Forever addon 0.68.0: themes for the window",
+      "text": "Home has a new Theme button with four more looks besides the current one: Azeroth Reforged, Obsidian Night, Ember & Iron and Frost & Void. The choice is remembered. Also new in 0.67.0: a recorder that notes where items drop, who sells them and what quests give, to build our own item database.",
+      "link": "addons.html"
+    },
+    {
+      "date": "2026-10-17",
       "title": "Road to Forever addon 0.66.7: copy items from the shopping list",
       "text": "On the Plan tab's quest shopping list you can now click an item to get its name ready to copy and paste into the auction house. The Druid macros no longer talk about runes (Forever has none) and the macros for spells Forever does not have are removed.",
       "link": "macros.html"

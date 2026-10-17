@@ -14,10 +14,12 @@ R2F.Theme = Theme
 Theme.DEFAULT = "classic"
 
 -- bg/side/rule/accent/text: {r, g, b}. bgAlpha scales the window opacity
--- slider so glass-style themes stay readable. rim tints the border.
+-- slider so glass-style themes stay readable. rim colours the thin frame line (classic keeps Blizzard's dialog border).
+-- on/off/swRim colour UI.Switch and UI.BlackBox (classic = the original green and greys).
 Theme.LIST = {
   {
     key = "classic", name = "Classic",
+    on = { 0.13, 0.52, 0.21 }, off = { 0.04, 0.04, 0.05 }, swRim = { 0.45, 0.45, 0.48 },
     bg = { 0.07, 0.07, 0.09 }, bgAlpha = 1,
     side = { 0, 0, 0 }, sideAlpha = 0.45,
     rule = { 1, 0.82, 0 }, ruleAlpha = 0.35,
@@ -26,6 +28,7 @@ Theme.LIST = {
   },
   {
     key = "azeroth", name = "Azeroth Reforged",
+    on = { 0.45, 0.58, 0.22 }, off = { 0.08, 0.07, 0.055 }, swRim = { 0.55, 0.45, 0.22 },
     bg = { 0.17, 0.15, 0.125 }, bgAlpha = 1,
     side = { 0.1, 0.085, 0.07 }, sideAlpha = 0.6,
     rule = { 0.79, 0.64, 0.29 }, ruleAlpha = 0.6,
@@ -34,6 +37,7 @@ Theme.LIST = {
   },
   {
     key = "obsidian", name = "Obsidian Night",
+    on = { 0.1, 0.62, 0.57 }, off = { 0.035, 0.04, 0.05 }, swRim = { 0.16, 0.5, 0.47 },
     bg = { 0.055, 0.06, 0.075 }, bgAlpha = 1,
     side = { 0.09, 0.1, 0.13 }, sideAlpha = 0.8,
     rule = { 0.21, 0.84, 0.77 }, ruleAlpha = 0.45,
@@ -42,6 +46,7 @@ Theme.LIST = {
   },
   {
     key = "forge", name = "Ember & Iron",
+    on = { 0.85, 0.4, 0.12 }, off = { 0.05, 0.047, 0.043 }, swRim = { 0.42, 0.44, 0.47 },
     bg = { 0.12, 0.115, 0.11 }, bgAlpha = 1,
     side = { 0.07, 0.065, 0.06 }, sideAlpha = 0.8,
     rule = { 1, 0.48, 0.18 }, ruleAlpha = 0.55,
@@ -52,6 +57,7 @@ Theme.LIST = {
     -- Glass look kept readable: the panel is nearly opaque whatever the
     -- opacity slider says (bgFloor).
     key = "arcane", name = "Frost & Void",
+    on = { 0.35, 0.62, 0.95 }, off = { 0.02, 0.02, 0.05 }, swRim = { 0.4, 0.3, 0.8 },
     bg = { 0.07, 0.075, 0.17 }, bgAlpha = 0.97, bgFloor = 0.88,
     side = { 0.03, 0.03, 0.06 }, sideAlpha = 0.7,
     rule = { 0.5, 0.36, 1 }, ruleAlpha = 0.6,
@@ -87,7 +93,9 @@ function Theme.OnChange(fn) listeners[#listeners + 1] = fn end
 
 function Theme.Set(key)
   if not Theme.IsValid(key) then return false end
-  R2F.Library.db.settings.theme = key
+  local db = R2F.Library and R2F.Library.db
+  if not (db and db.settings) then return false end
+  db.settings.theme = key
   for _, fn in ipairs(listeners) do fn(byKey[key]) end
   return true
 end

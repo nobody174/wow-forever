@@ -554,6 +554,7 @@ R2F.L = {
   SETTINGS_MACROS = "Macros",
   SETTINGS_MINIMAP = "Minimap",
   SETTINGS_THEME = "Theme",
+  SETTINGS_THEME_BTN = "Theme: %s",
   SETTINGS_THEME_TIP = "Changes the look of this window. Classic is the original look.",
   SETTINGS_STANCE = "Stance icon",
   BAGS_MOVABLE = "Movable bags",

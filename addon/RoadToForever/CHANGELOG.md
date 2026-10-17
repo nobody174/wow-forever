@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.68.0 (2026-10-17)
+
+- **Themes for the window.** Home has a new **Theme** button next to Minimap with four more looks besides Classic (the one you have now, still the default): Azeroth Reforged, Obsidian Night, Ember & Iron and Frost & Void. The panel, sidebar, divider line, frame line, title, selected tab and the switches change at once, no reload needed, and your choice is remembered. Frost & Void keeps the panel nearly solid so text stays readable. Only this window changes, nothing of the game's own interface.
+
 ## 0.67.0 (2026-10-17)
 
 - **New: the recorder.** While you play, the addon writes down which creatures dropped which items, what vendors sell and what quests give as rewards, in your own saved variables. It only reads what the game's windows already show and sends nothing anywhere. It lets us fill in where Forever-new items come from for Mr.BiZ. `/r2f record` shows the counts, `/r2f record off` switches it off, `/r2f record on` back on.

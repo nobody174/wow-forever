@@ -139,14 +139,22 @@ function MainWindow.ApplyLook()
   frame.r2fBgTex:SetColorTexture(bg[1], bg[2], bg[3], R2F.Theme.PanelAlpha(th, st.menuAlpha))
   frame.r2fSide:SetColorTexture(sd[1], sd[2], sd[3], th.sideAlpha * st.menuAlpha)
   frame.r2fRule:SetColorTexture(ru[1], ru[2], ru[3], th.ruleAlpha)
-  if frame.SetBackdropBorderColor then
-    frame:SetBackdropBorderColor(th.rim[1], th.rim[2], th.rim[3], 1)
+  -- Classic keeps Blizzard's dialog border exactly as it was. Other themes hide it (the dialog art is a fixed bronze
+  -- texture that a tint only muddies) and show a thin line in the theme's rim colour instead.
+  local classic = th.key == "classic"
+  if frame.SetBackdropBorderColor then frame:SetBackdropBorderColor(1, 1, 1, classic and 1 or 0) end
+  for _, line in ipairs(frame.r2fRimLines or {}) do
+    line:SetColorTexture(th.rim[1], th.rim[2], th.rim[3], 1)
+    line:SetShown(not classic)
   end
   if frame.r2fTitle then
     frame.r2fTitle:SetTextColor(th.accent[1], th.accent[2], th.accent[3])
   end
   if selectedKey then showSelected(selectedKey) end
 end
+
+-- Any theme change (the Home page picker, a future slash command) recolours the window.
+R2F.Theme.OnChange(function() MainWindow.ApplyLook() end)
 
 -- Small labelled slider for the top bar. onApply(value) runs when the value
 -- settles: while the mouse drags the thumb the window must not rescale under
@@ -274,6 +282,19 @@ local function build()
   rule:SetHeight(1)
   rule:SetColorTexture(GOLD[1], GOLD[2], GOLD[3], 0.35)
   f.r2fRule = rule
+  -- Thin frame line for the non-classic themes (hidden for classic): two pixels just outside the panel.
+  f.r2fRimLines = {}
+  for _, spec in ipairs({
+    { "TOPLEFT", 2, -2, "TOPRIGHT", -2, -2, true }, { "BOTTOMLEFT", 2, 2, "BOTTOMRIGHT", -2, 2, true },
+    { "TOPLEFT", 2, -2, "BOTTOMLEFT", 2, 2, false }, { "TOPRIGHT", -2, -2, "BOTTOMRIGHT", -2, 2, false },
+  }) do
+    local line = f:CreateTexture(nil, "ARTWORK")
+    line:SetPoint(spec[1], f, spec[1], spec[2], spec[3])
+    line:SetPoint(spec[4], f, spec[4], spec[5], spec[6])
+    if spec[7] then line:SetHeight(2) else line:SetWidth(2) end
+    line:Hide()
+    f.r2fRimLines[#f.r2fRimLines + 1] = line
+  end
 
   -- Top bar: logo, name (real text), size + opacity sliders, Reload UI, close.
   local logo = f:CreateTexture(nil, "ARTWORK")

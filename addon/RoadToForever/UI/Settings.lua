@@ -137,9 +137,8 @@ local function themeItems()
       kind = "check", text = t.name,
       isChecked = function() return t.key == cur end,
       func = function()
-        R2F.Theme.Set(t.key)
-        ui.theme:SetText(t.name)
-        if R2F.MainWindow and R2F.MainWindow.ApplyLook then R2F.MainWindow.ApplyLook() end
+        R2F.Theme.Set(t.key)           -- recolours our own frames (MainWindow listens), nothing of the game's
+        ui.theme:SetText(L.SETTINGS_THEME_BTN:format(t.name))
       end,
     }
   end
@@ -147,11 +146,11 @@ local function themeItems()
 end
 
 local function buildTheme(f)
-  heading(f, 300, TOP - 222, L.SETTINGS_THEME)
+  -- On the Minimap heading's row, right of it: the right column starts at x = 340 and the minimap switches sit below.
   local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-  b:SetSize(170, 24)
-  b:SetPoint("TOPLEFT", 304, TOP - 250)
-  b:SetText(R2F.Theme.Get().name)
+  b:SetSize(170, 22)
+  b:SetPoint("TOPLEFT", 130, TOP - 218)
+  b:SetText(L.SETTINGS_THEME_BTN:format(R2F.Theme.Get().name))
   b:SetScript("OnClick", function() UI.ContextMenu(themeItems()) end)
   b:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")

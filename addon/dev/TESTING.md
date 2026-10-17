@@ -20,6 +20,15 @@ Use a test character for anything marked **TEST CHAR**.
 
 5.32. **Recorder (next release):** play as normal. Loot a few creatures, open a vendor window, open a quest with rewards. Then type `/r2f record`: it prints counts of creatures looted, vendors and quests. `/r2f record off` stops it, `/r2f record on` starts again. Nothing should show on screen or lag. After /reload or logout the counts must still be there. Send me your `WTF/Account/<account>/SavedVariables/RoadToForever.lua` before the beta ends (the 21st) and I merge it (teammates too).
 
+5.33. **Themes (0.68.0):** nothing has been seen in the real client yet.
+- Fresh look: with no change, the window looks exactly as before (Classic, bronze dialog border).
+- Home > **Theme: Classic** button (right of the "Minimap" heading, above its two switches): pick each of the other four (Azeroth Reforged, Obsidian Night, Ember & Iron, Frost & Void). Panel, sidebar, divider line under the title, frame line, title and selected tab colour should change at once without a reload. The bronze border is replaced by a thin coloured line: does it look right, or is there a gap / double border?
+- The Theme button must not touch the Quick settings notes, the right-hand column ("What to train next", share text) or the Minimap switches, at window size 0.5, 1 and 1.5 (top-bar Size slider).
+- The switches on Home and the tick boxes in the quest log should take the theme's colour (green in Classic).
+- The choice survives /reload and relog. Size and Opacity sliders still work in every theme; Frost & Void stays readable at the lowest opacity.
+- Open each tab (Plan, Talents, BiS, Macros, Gameplay) in each theme: is the text readable? (Pages still use white and gold text, so only dark themes exist for now.)
+- No Lua errors or taint warnings; changing the theme in combat should just recolour the window.
+
 ## Cannot be tested yet (reason)
 - 4.13 group picks: nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made.
 - 13.9 (owner: not seen in the beta yet, check after release) Druid spells that Forever gives its own versions of (Starsurge, Sunfire, Starfall, Lacerate): they are not runes (corrected 2026-10-17). Needs the level: does each macro cast it, and how is it learned (trainer or talent)? The Skull Bash, Survival Instincts, Lifebloom and Nourish macros were removed (those spells exist only as Season of Discovery leftovers).

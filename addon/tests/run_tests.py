@@ -4555,6 +4555,19 @@ def test_step6_ui(templates, fx):
           "setting an unknown theme is refused")
     check(lua.eval("R2F.Theme.PanelAlpha(R2F.Theme.Get('arcane'), 0.3)") >= 0.85,
           "glass theme stays readable at low opacity")
+    # The rim: classic keeps Blizzard's dialog border (no extra lines); the others hide it and draw a thin coloured line.
+    lua.execute("R2F.Theme.Set('classic')")
+    check(lua.eval("R2FMain.r2fRimLines[1]:IsShown()") is False, "classic: no extra rim line")
+    lua.execute("R2F.Theme.Set('obsidian')")
+    check(all(lua.eval("R2FMain.r2fRimLines[%d]:IsShown()" % i) is True for i in (1, 2, 3, 4)),
+          "obsidian: the thin rim line is drawn on all four sides")
+    check(lua.eval("R2FDB.settings.theme") == "obsidian", "Theme.Set recolours the window by itself (MainWindow listens)")
+    lua.execute("R2F.Theme.Set('classic')")
+    # Theme.Get is safe before the library exists, and Set refuses to run without it.
+    lua.execute("SAVED = R2F.Library.db R2F.Library.db = nil")
+    check(lua.eval("R2F.Theme.Get().key") == "classic" and lua.eval("R2F.Theme.Set('azeroth')") is False,
+          "Theme.Get falls back to classic and Set is refused before the library has loaded")
+    lua.execute("R2F.Library.db = SAVED")
     lua.execute("MTABS[3]:Click()")
     check(MW.CurrentTab() == "talents" and lua.eval("R2F.MacroBook.IsShown()") is False, "Talents tab hides the book")
     # Step 9 replaced the placeholder with the real tab (tested in test_talent_preview).

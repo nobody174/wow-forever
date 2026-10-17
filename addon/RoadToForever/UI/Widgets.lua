@@ -401,7 +401,11 @@ end
 -- CheckButton underneath, so every caller keeps using SetChecked / GetChecked /
 -- SetScript("OnClick") / SetEnabled and the r2fLabel text exactly as with a
 -- check box. Drawn from our own textures only (no Blizzard template).
-local SWITCH_ON, SWITCH_OFF = { 0.13, 0.52, 0.21 }, { 0.04, 0.04, 0.05 }
+-- (colours come from the theme: Theme.lua `on` / `off` / `swRim`; classic is the original green and greys)
+local themedParts = setmetatable({}, { __mode = "k" })      -- every switch / black box, repainted on a theme change
+R2F.Theme.OnChange(function()
+  for b in pairs(themedParts) do b.r2fPaint() end
+end)
 local DOT = "Interface\\AddOns\\RoadToForever\\media\\dot"
 local SW_W, SW_H = 28, 12
 
@@ -434,9 +438,7 @@ function UI.Switch(parent, label)
   local b = CreateFrame("CheckButton", nil, parent)
   b:SetSize(SW_W, SW_H)
   local rim = pill(b, "BACKGROUND", 0, SW_W, SW_H)
-  rim.color({ 0.45, 0.45, 0.48 })
   local track = pill(b, "BORDER", 1, SW_W, SW_H)
-  track.color(SWITCH_OFF)
   local knob = b:CreateTexture(nil, "ARTWORK")
   knob:SetSize(8, 8)
   knob:SetTexture(DOT)
@@ -444,13 +446,16 @@ function UI.Switch(parent, label)
 
   local function paint()
     local on = b:GetChecked() and true or false
-    track.color(on and SWITCH_ON or SWITCH_OFF)
+    local th = R2F.Theme.Get()
+    rim.color(th.swRim)
+    track.color(on and th.on or th.off)
     if on then knob:SetVertexColor(1, 1, 1) else knob:SetVertexColor(0.7, 0.7, 0.72) end
     knob:ClearAllPoints()
     if on then knob:SetPoint("RIGHT", b, "RIGHT", -2, 0) else knob:SetPoint("LEFT", b, "LEFT", 2, 0) end
     b:SetAlpha(b.r2fEnabled == false and 0.45 or 1)
   end
   b.r2fPaint = paint
+  themedParts[b] = true
 
   -- Callers set the state themselves after a click (SetChecked), and the
   -- button also toggles on its own; repaint after both.
@@ -485,9 +490,15 @@ function UI.BlackBox(parent, size)
   local tick = b:CreateTexture(nil, "ARTWORK")
   tick:SetPoint("TOPLEFT", b, "TOPLEFT", 4, -4)
   tick:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -4, 4)
-  tick:SetColorTexture(SWITCH_ON[1], SWITCH_ON[2], SWITCH_ON[3], 1)
   b.r2fTick = tick
-  local function paint() if b:GetChecked() then tick:Show() else tick:Hide() end end
+  local function paint()
+    local th = R2F.Theme.Get()
+    rim:SetColorTexture(th.swRim[1], th.swRim[2], th.swRim[3], 1)
+    tick:SetColorTexture(th.on[1], th.on[2], th.on[3], 1)
+    if b:GetChecked() then tick:Show() else tick:Hide() end
+  end
+  b.r2fPaint = paint
+  themedParts[b] = true
   local setChecked = b.SetChecked
   b.SetChecked = function(self, v) setChecked(self, v); paint() end
   b:SetScript("PostClick", paint)

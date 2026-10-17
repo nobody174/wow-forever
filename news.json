@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-17",
+      "title": "Road to Forever addon 0.66.7: copy items from the shopping list",
+      "text": "On the Plan tab's quest shopping list you can now click an item to get its name ready to copy and paste into the auction house. The Druid macros no longer talk about runes (Forever has none) and the macros for spells Forever does not have are removed.",
+      "link": "macros.html"
+    },
+    {
+      "date": "2026-10-17",
       "title": "Road to Forever addon 0.66.6: no-weather option, fresher gear lists",
       "text": "Home has a new quick setting that turns off rain, snow and dust particles. The Mr.BiZ best-in-slot lists on the site and in the addon follow the latest beta data (31 best picks changed), and Rogues now get axe rewards on their Plan tab weapon lines.",
       "link": "bis.html"

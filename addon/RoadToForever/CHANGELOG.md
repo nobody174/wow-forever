@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.66.7 (2026-10-17)
+
+- **Quest shopping list: click an item to copy its name.** Each item is its own line; a click opens a small box with just the name selected (no number). Press Ctrl+C and paste it into the auction house search.
+- **Forever has no runes** (those were Season of Discovery). The Druid macros for Starsurge, Sunfire, Starfall and Lacerate now say they are Forever's own spells, and the Strider Kick macro says it is a Hunter talent. Five macros for spells that Forever does not have (Skull Bash, Survival Instincts, Lifebloom, Nourish) are gone from the macro set.
+- The Plan arrow knows the Shaper's Terrace entrance (Un'Goro Crater).
+
 ## 0.66.6 (2026-10-17)
 
 - **New quick setting on Home: "No weather (rain, snow, dust)"** turns the weather particles off (the game's `weatherDensity 0`); untick it to get the game's own setting back.

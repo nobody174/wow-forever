@@ -252,9 +252,9 @@ local function showCopy(name)
     local title = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     title:SetPoint("TOP", 0, -14)
     title:SetText(L.PLAN_COPY_TITLE)
-    local scroll
-    scroll, copyEdit = UI.MultiLineEdit(f, "R2FCopyItemScroll", 290, 24)
-    scroll:SetPoint("TOPLEFT", 18, -36)
+    local box
+    box, copyEdit = UI.MultiLineEdit(f, "R2FCopyItemScroll", 290, 24)
+    box:SetPoint("TOPLEFT", 18, -36)
     copyEdit:SetScript("OnEscapePressed", function() f:Hide() end)
     copyEdit:SetScript("OnEditFocusLost", function() f:Hide() end)
     local hint = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")

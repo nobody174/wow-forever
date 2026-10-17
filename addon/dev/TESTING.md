@@ -17,15 +17,11 @@ Use a test character for anything marked **TEST CHAR**.
 
 
 
-5.29. **Rogue weapon lines (next release):** on a Rogue, the Plan tab's "Weapon:" lines may now offer one-handed axes (Forever lets Rogues use them). Nothing to do unless a line shows an axe you cannot actually equip: tell me which.
-
-5.31. **Click an item of the quest shopping list (0.66.9):** Plan tab > Quest shopping list: click an item line. A small box opens with just the name selected: Ctrl+C, then paste into the auction house search. There must be no "blocked from an action" popup.
-
 
 ## Cannot be tested yet (reason)
 - 4.13 group picks: nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made.
-- 13.9 Druid spells that Forever gives its own versions of (Starsurge, Sunfire, Starfall, Lacerate): they are not runes (corrected 2026-10-17). Needs the level: does each macro cast it, and how is it learned (trainer or talent)? The Skull Bash, Survival Instincts, Lifebloom and Nourish macros were removed (those spells exist only as Season of Discovery leftovers).
-- 13.11 Level 40: does "Bear Form" in the macros need to become "Dire Bear Form"?
-- 14.1 Hunter > Survival **Raptor Strike**, **Mongoose Bite**, **Strider Kick**: skills not acquired in the beta yet.
-- 14.2 Paladin **Seal swap: Command <> Righteousness**: needs the Twist of Light talent (not enough points in the beta). The macro itself seems to work.
+- 13.9 (owner: not seen in the beta yet, check after release) Druid spells that Forever gives its own versions of (Starsurge, Sunfire, Starfall, Lacerate): they are not runes (corrected 2026-10-17). Needs the level: does each macro cast it, and how is it learned (trainer or talent)? The Skull Bash, Survival Instincts, Lifebloom and Nourish macros were removed (those spells exist only as Season of Discovery leftovers).
+- 13.11 (owner: beta stops at level 30) Level 40: does "Bear Form" in the macros need to become "Dire Bear Form"?
+- 14.1 Hunter **Strider Kick** only (Raptor Strike and Mongoose Bite confirmed): not in the beta yet.
+- 14.2 Paladin **Seal swap: Command <> Righteousness**: needs the Twist of Light talent (not enough points in the beta). The seal-swap macro itself works (confirmed 2026-10-17); only the Twist of Light talent is untested.
 - 14.4 Shaman **Elemental Mastery + Chain Lightning / Lightning Bolt**: the talent is in the Elemental tree now (the deepest row, 31 points in), so not reachable at level 30.

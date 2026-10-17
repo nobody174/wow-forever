@@ -1,6 +1,7 @@
 -- Recorder.lua: writes down what you SEE while you play, so Mr.BiZ can learn where items come from.
 --
--- Where Forever-new items drop, who sells them and which quests give them is not in the game's files (the servers hold it), so the
+-- Where Forever-new items drop, who sells them and which quests give them is not in the game's files (the servers hold it),
+-- so the
 -- only way to know is to record it. This listens to three windows the game opens anyway and keeps counts in our own
 -- SavedVariables (R2FDB.recorder), nothing else:
 --   * the loot window: which item came from which creature or object (by id), how many corpses of that id were looted
@@ -151,7 +152,8 @@ function Rec.OnQuest(retry)
     local id = itemId(_G.GetQuestItemLink and _G.GetQuestItemLink("reward", i))
     if id then rewards[#rewards + 1] = id end
   end
-  local wanted = (_G.GetNumQuestChoices and _G.GetNumQuestChoices() or 0) + (_G.GetNumQuestRewards and _G.GetNumQuestRewards() or 0)
+  local wanted = (_G.GetNumQuestChoices and _G.GetNumQuestChoices() or 0)
+    + (_G.GetNumQuestRewards and _G.GetNumQuestRewards() or 0)
   if #choices + #rewards < wanted and not retry and _G.C_Timer and _G.C_Timer.After then
     _G.C_Timer.After(0.7, function() Rec.OnQuest(true) end)
     return

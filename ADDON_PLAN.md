@@ -3090,12 +3090,12 @@ addon's BiZ tab are already behind, and every beta build will widen the gap unti
 0. **Detect (done, `foreverdb_check.py`).** One request per spec page (27), compares best pick id, score and next picks with `bis/raw`, prints
    the build/extraction date and counts, exit code 1 when anything moved. Run it before every release and after a beta build is announced
    (ForeverDB's `/changelog` lists builds).
-1. **Fetch (next, small/medium).** `foreverdb_fetch.py` turns the same server-rendered list into `bis/raw/<class>-<spec>.json` in the
+1. **Fetch (built 2026-10-17).** `foreverdb_fetch.py` turns the same server-rendered list into `bis/raw/<class>-<spec>.json` in the
    existing shape (`build`, `weights` from the "Stat weights" paragraph, per slot `best` {id, name, score, stats, src, conf, ease, horde} and
    `next` [{id, delta}]). The grammar of the source sentence is the same one `build_bis.py` already parses; the fetcher keeps `src` verbatim and splits
-   the trailing "(Forever client)" into `conf`. Writes to a scratch folder first and prints a diff; `--write` replaces `raw/`. The "(Horde: X)"
+   the trailing "(Forever client)" into `conf`. Writes to `bis/own/cache/fetched/` first and prints a per-slot diff; `--write` replaces `raw/` (one compact line per file, so git shows only what changed). First run 2026-10-17: 27 specs parsed with no unknown wording, 242 differences found, raw/ rewritten, `build_bis.py` built without new rules. ForeverDB's item pages state a newer build (70450) than its BiS pages (70425); the BiS pages are our baseline. The "(Horde: X)"
    and "(as good as the best)" forms are already handled by the check script's parser.
-2. **Sources for ranks 2-3 (small).** For every next pick that is not a best pick anywhere, read `/item/<id>` (1 request per id, cached
+2. **Sources for ranks 2-3 (semi-manual, 2026-10-17: 14 missing).** For every next pick that is not a best pick anywhere, read `/item/<id>` (1 request per id, cached
    in `bis/own/cache`) and fill `bis/sources.json`; unknown wording stops the build, as today.
 3. **Item quality and stats (small, existing).** `bis/quality.json` gets only the ids it does not have yet, from the Wowhead tooltip API
    (0.5 s apart). `bis/own/check_scores.py` / `check_order.py` stay as the sanity report on ForeverDB's scores.

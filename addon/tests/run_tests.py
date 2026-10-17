@@ -8549,9 +8549,9 @@ def test_route_weapons():
           and lua.eval("R2F.BiZ.RouteKey({ type = 'quest', label = 'Quest: X (level 30)' })") is None,
           "route: dungeon -> instance, vendor -> zone, quest -> nothing")
 
-    check(lua.eval("R2F.BiZ.RouteWeapons('shaman/elemental', 'hwd')['p1-bfdq']") is None
-          and lua.eval("R2F.BiZ.RouteWeapons('shaman/elemental', 'hwd')['p2-bfd'][1].row.name") == "Twilight Maul",
-          "route: a dungeon drop shows at the run, not at the step that collects its quests")
+    check(lua.eval("R2F.BiZ.RouteWeapons('warrior/fury', 'hwd')['p1-bfdq']") is None
+          and lua.eval("R2F.BiZ.RouteWeapons('warrior/fury', 'hwd')['p3-stv'][1].row.name") in ("Ironspine's Fist", "Bloody Brass Knuckles"),
+          "route: a dungeon drop shows at its run, not at a step that only collects quests (data of 2026-10-17)")
     best = lua.eval("""(function() local n = 0 for _, l in pairs(R2F.BiZ.RouteWeapons('rogue/combat', 'hwd')) do
       for _, m in ipairs(l) do if m.best then n = n + 1 end end end return n end)()""")
     check(best == 2, "route: one 'best on route' per weapon slot that has a match (Combat: main + off hand = %d)" % best)

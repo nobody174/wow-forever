@@ -20,7 +20,7 @@ None open (talent-tree drift fixed 2026-10-16; before each release run `python a
 
 ## 3. Mr.BiZ data
 1. **9 rank 2-3 items with no source** (`bis/sources.json`: 271911, 271920, 276631, 277219, 282283, 282653, 282658, 284399, 284401): checked 2026-10-15, ForeverDB's own item pages say "where it comes from isn't known yet" for all nine, so there is nothing to add; check again after launch. Two drop zones are Forever-new ids Wowhead didn't name (16611 Rath'mael, 16732 Shadetooth).
-2. **Data pipeline**: plan written (ADDON_PLAN 19.3, 2026-10-17); step 0 `python bis/tools/foreverdb_check.py` exists and shows ForeverDB is ahead of our `bis/raw` (31 best picks changed, 11 of 27 specs). Next: step 1, a fetcher that rewrites `bis/raw` from ForeverDB's pages (owner: yes / no, and ask ForeverDB about reuse).
+2. **Data pipeline**: steps 0 and 1 built (ADDON_PLAN 19.3): `python bis/tools/foreverdb_check.py` (drift) and `python bis/tools/foreverdb_fetch.py [--write]` (rewrite `bis/raw`). Done once on 2026-10-17 (data now ForeverDB build 1.60.1.70425). Open: step 2 automation (sources for new next picks: 14 this time, by hand), a scheduled run (owner's PC), and asking ForeverDB about reuse.
 3. **ForeverChanges as a source**: compared only (`bis/foreverchanges-compare.md`); nothing imported.
 
 ## 4. Site: builds and macros

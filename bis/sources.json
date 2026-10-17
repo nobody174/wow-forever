@@ -1,6 +1,6 @@
 {
- "updated": "2026-10-12",
- "about": "Sources for the rank 2-3 picks that aren't a best pick anywhere, in the BiS-page wording parse_source reads. Read from each item's ForeverDB page (https://foreverdb.net/item/<id>); the ones ForeverDB didn't know were filled from Wowhead's Forever item pages (created-by / reward-from / dropped-by, drop % = Wowhead's count/outof) in the owner's Chrome, 2026-10-12. Best picks keep their own source from raw/.",
+ "updated": "2026-10-17",
+ "about": "Sources for the rank 2-3 picks that aren't a best pick anywhere, in the BiS-page wording parse_source reads. Read from each item's ForeverDB page (https://foreverdb.net/item/<id>); the ones ForeverDB didn't know were filled from Wowhead's Forever item pages (created-by / reward-from / dropped-by, drop % = Wowhead's count/outof) in the owner's Chrome, 2026-10-12 and 2026-10-17 (the 14 picks that moved into the next-pick lists after the 2026-10-16 ForeverDB refresh: from their old best-pick entries, one from its item page). Best picks keep their own source from raw/.",
  "items": {
   "888": {
    "name": "Naga Battle Gloves",
@@ -957,6 +957,76 @@
    "name": "Kodohide Legguards",
    "src": "Drops from Brontus in The Barrens, 3.3% (Seen in Forever).",
    "via": "Wowhead"
+  },
+  "4107": {
+   "name": "Tiger Hunter Gloves",
+   "src": "Quest reward: Tiger Mastery, level 37 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "4331": {
+   "name": "Phoenix Gloves",
+   "src": "Crafted: Tailoring 100 (Forever client).",
+   "via": "ForeverDB"
+  },
+  "4980": {
+   "name": "Prospector Gloves",
+   "src": "Quest reward: Agmond's Fate, level 38 · Alliance (Classic data).",
+   "via": "ForeverDB"
+  },
+  "5213": {
+   "name": "Scorching Wand",
+   "src": "Drops from Mekgineer Thermaplugg in Gnomeregan, 0.4% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "6679": {
+   "name": "Armor Piercer",
+   "src": "Drops from Razorfen Spearhide in Razorfen Kraul, 79.6% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "6806": {
+   "name": "Dancing Flame",
+   "src": "Quest reward: Final Passage (a choice), level 36 · Horde (Classic data).",
+   "via": "ForeverDB"
+  },
+  "7047": {
+   "name": "Hands of Darkness",
+   "src": "Crafted: Tailoring 120 (Forever client).",
+   "via": "ForeverDB"
+  },
+  "7348": {
+   "name": "Fletcher's Gloves",
+   "src": "Crafted: Leatherworking 125 (Forever client).",
+   "via": "ForeverDB"
+  },
+  "13062": {
+   "name": "Thunderwood",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "17043": {
+   "name": "Zealot's Robe",
+   "src": "Quest reward: An Unholy Alliance (a choice), level 36 · Horde (Classic data).",
+   "via": "ForeverDB"
+  },
+  "249395": {
+   "name": "Orb of Souls",
+   "src": "Crafted: Enchanting 140 (Forever client).",
+   "via": "ForeverDB"
+  },
+  "252444": {
+   "name": "Wisdom's Leather Boots",
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
+  },
+  "253991": {
+   "name": "Flame Leggings",
+   "src": "Crafted: Tailoring 125 (Forever client).",
+   "via": "ForeverDB"
+  },
+  "270031": {
+   "name": "Dark Ritual Leggings",
+   "src": "Quest reward: Blackfathom Villainy (a choice), level 27 (Seen in Forever).",
+   "via": "ForeverDB"
   }
  }
 }

@@ -8,7 +8,11 @@
 
 `python bis/tools/foreverdb_check.py` (read-only, 27 requests) compares ForeverDB's current pages with `raw/` and prints the build, the slots that changed and an exit code (plan: ADDON_PLAN 19.3). Run it before a release.
 
-## Refresh the data
+## Refresh the data (automatic, since 2026-10-17)
+
+`python bis/tools/foreverdb_fetch.py` (compares, writes nothing), then `--write`; `python bis/build_bis.py`; add sources for any "no source for next pick" it names (`sources.json`); add new item ids to `quality.json` (Wowhead tooltip API); `python addon/tests/run_tests.py`; bump `UPDATED`. The by-hand method below is the fallback.
+
+## Refresh the data (by hand)
 
 1. For each spec, read its ForeverDB page and write the "Every slot" list into `raw/<class>-<spec>.json`:
    `{"build", "weights", "slots": [{"slot", "best": {"id", "name", "score", "stats", "src", "conf", "ease", "horde"?},

@@ -4605,8 +4605,8 @@ def test_step6_ui(templates, fx):
         for m in _re.finditer(r"\"(GameFont(?:Normal|Highlight|Disable)[A-Za-z]*)\"", src):
             bad.append("%s: %s" % (fname, m.group(0)))
     check(not bad, "no hardcoded text colours or game fonts left in UI/*.lua: %s" % bad[:5])
-    # Azeroth Reforged decoration (UI/Deco.lua) and its bundled fonts.
-    lua.execute("R2F.Theme.Set('azeroth')")
+    # Azeroth Reforged decoration (UI/Deco.lua) and its bundled fonts. First the code-drawn look (no image slices).
+    lua.execute("R2F.Images.azeroth = false R2F.Theme.Set('azeroth')")
     D = "R2FMain.r2fDeco"
     check(lua.eval("%s.panel:IsShown()" % D) is True and lua.eval("%s.bannerEdge:IsShown()" % D) is True
           and lua.eval("%s.gems[1].gem:IsShown()" % D) is True and lua.eval("%s.frameInner[1]:IsShown()" % D) is True,
@@ -4615,6 +4615,38 @@ def test_step6_ui(templates, fx):
     check(all(lua.eval("%s.nav.%s.grad:IsShown()" % (D, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay")),
           "azeroth: every navigation button has its stone gradient")
     check(lua.eval("R2FMain.r2fTitle.__point[2] == %s.bannerEdge" % D) is True, "azeroth: the title sits on the banner")
+    # Then the image look: the exported slices (media/azeroth) replace the rectangles.
+    lua.execute("R2F.Images.azeroth = true R2F.Theme.Set('azeroth')")
+    IM = "R2FMain.r2fDeco.img"
+    check(lua.eval("%s.panel:IsShown()" % IM) is True and lua.eval("%s.banner:IsShown()" % IM) is True
+          and all(lua.eval("%s.corners[%d]:IsShown()" % (IM, k)) is True for k in (1, 2, 3, 4))
+          and all(lua.eval("%s.edges[%d]:IsShown()" % (IM, k)) is True for k in (1, 2, 3, 4))
+          and all(lua.eval("%s.gems[%d]:IsShown()" % (IM, k)) is True for k in (1, 2, 3, 4)),
+          "azeroth with images: tiles, four corners, four edges, four gems and the banner are drawn")
+    check(lua.eval("%s.panel:IsShown()" % D) is False and lua.eval("%s.bannerEdge:IsShown()" % D) is False
+          and lua.eval("R2FMain.r2fRimLines[1]:IsShown()") is False,
+          "azeroth with images: the rectangle look and the plain rim line are hidden")
+    check(lua.eval("R2FMain.r2fTitle.__point[2] == %s.banner" % IM) is True, "azeroth with images: the title sits on the banner image")
+    cur = lua.eval("R2F.MainWindow.CurrentTab()")
+    other = "macros" if cur != "macros" else "home"
+    check("btn_selected" in lua.eval("%s.nav.%s.bar.parts[2].__tex" % (IM, cur)) and "gem_on" in lua.eval("%s.nav.%s.gem.__tex" % (IM, cur))
+          and "btn_normal" in lua.eval("%s.nav.%s.bar.parts[2].__tex" % (IM, other)) and "gem_off" in lua.eval("%s.nav.%s.gem.__tex" % (IM, other)),
+          "azeroth with images: the selected sidebar button (%s) and its gem are lit, the others are not" % cur)
+    check(len(lua_table_to_list(lua.eval("R2FMain.r2fDeco.img.sliders"))) == 2, "azeroth with images: both top-bar sliders are re-skinned")
+    lua.execute("R2F.Theme.Set('obsidian')")
+    check(lua.eval("%s.panel:IsShown()" % IM) is False and lua.eval("%s.banner:IsShown()" % IM) is False
+          and lua.eval("%s.nav.home.bar.parts[1]:IsShown()" % IM) is False, "another theme hides every image piece again")
+    lua.execute("R2F.Images.azeroth = false R2F.Theme.Set('azeroth')")
+    check(lua.eval("%s.panel:IsShown()" % D) is True and lua.eval("%s.panel:IsShown()" % IM) is False,
+          "without the image flag Azeroth falls back to the rectangle look")
+    # The flag is only on when every texture the code names exists as a game texture.
+    import re as _re
+    deco_src = open(os.path.join(HERE, "..", "RoadToForever", "UI", "Deco.lua"), encoding="utf-8").read()
+    names = set(_re.findall(r'"(azeroth_[a-z_]+)"', deco_src)) | set(_re.findall(r'IMG \.\. \(sel and "(azeroth_[a-z_]+)" or', deco_src))
+    names |= set(_re.findall(r'"(azeroth_[a-z_]+)"\)', deco_src))
+    missing = [n for n in sorted(names) if not os.path.exists(os.path.join(HERE, "..", "RoadToForever", "media", "azeroth", n + ".tga"))]
+    check(not missing, "every azeroth texture named in Deco.lua exists as a .tga in media/azeroth: %s" % missing)
+    lua.execute("R2F.Images.azeroth = true")
     lua.execute("R2F.Theme.Set('obsidian')")
     check(lua.eval("%s.panel:IsShown()" % D) is False and lua.eval("%s.bannerEdge:IsShown()" % D) is False
           and lua.eval("%s.nav.home.grad:IsShown()" % D) is False and lua.eval("R2FMain.r2fBgTex:IsShown()") is True,

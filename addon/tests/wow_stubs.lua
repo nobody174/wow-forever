@@ -698,7 +698,7 @@ for _, name in ipairs({
   "SetTextInsets", "SetValueStep",
   "SetMinMaxValues",
   -- Mr.BiZ (v0.30.0): FontString:SetWordWrap (real widget method, nothing to model)
-  "SetWordWrap",
+  "SetWordWrap", "SetHorizTile", "SetVertTile", "SetThumbTexture",
 }) do methods[name] = noop end
 local MT = { __index = methods }
 
@@ -756,7 +756,10 @@ function methods:SetText(t)
 end
 function methods:GetText() return self.__text end
 function methods:GetThumbTexture()
-  self.__thumb = self.__thumb or { IsMouseOver = function() return T.thumbOver ~= false end }
+  if not self.__thumb then
+    self.__thumb = newObject("Texture")
+    self.__thumb.IsMouseOver = function() return T.thumbOver ~= false end
+  end
   return self.__thumb
 end
 function methods:SetValue(v) self.__value = v end

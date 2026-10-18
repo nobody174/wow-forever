@@ -349,6 +349,8 @@ local function build()
   end
 
   R2F.Deco.Build(f, { sideW = SIDE_W, topH = TOP_H, nav = tabButtons, heads = groupHeads })
+  R2F.Deco.AddSlider(f, f.r2fSizeSlider)
+  R2F.Deco.AddSlider(f, f.r2fOpacitySlider)
 
   for _, key in ipairs(MainWindow.TABS) do
     local p = CreateFrame("Frame", nil, f)

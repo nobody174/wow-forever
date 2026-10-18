@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.70.0 (2026-10-18)
+
+- **Azeroth Reforged with real artwork.** The theme now uses image pieces made from the design: a stone-textured panel, a gold double frame with corner gems, the banner hanging over the top edge with the window title on it, stone sidebar buttons (normal, hover and selected, with a gem that lights up), the fading gold line after the group names, a darker inset behind the pages, and amber-pearl knobs with a dark groove on the Size and Opacity sliders. If an image is missing the earlier drawn look is used instead. Other themes and Classic are unchanged.
+
 ## 0.69.1 (2026-10-18)
 
 - **Fix: the window failed to open in 0.69.0** with a Lua error in `Deco.lua` (the decoration asked a texture to create more textures, which the game does not allow). Fixed; the test stand-in for the game now refuses that call too, so it cannot slip through again.

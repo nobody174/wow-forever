@@ -15,6 +15,7 @@ local DOT = "Interface\\AddOns\\RoadToForever\\media\\dot"
 
 local pieces = {}        -- every texture we made, to show / hide together
 local built
+local selectedKey
 
 local function tex(parent, layer, sub)
   local t = parent:CreateTexture(nil, layer or "BACKGROUND", nil, sub or 0)
@@ -60,12 +61,232 @@ local function box(frame, rel, inset, thickness, layer, sub)
   return out
 end
 
+-- ---------------------------------------------------------------------------
+-- Image mode: the exported slices of media/azeroth (converted by addon/art/slices_to_tga.py, flagged in Images.lua). Used when
+-- R2F.Images.azeroth is true; without them every piece above is drawn from rectangles as before. Sizes of the art: corner 64x64
+-- (frame depth 16, gem socket centre at 10, 10), edge strips 64x16 / 16x64, gem 32x32, banner 256x64, buttons 128x32 with
+-- 16 px caps, slider track 128x16 with 8 px caps, knob 32x32, divider 128x8, tiles 256x256.
+-- ---------------------------------------------------------------------------
+local IMG = "Interface\\AddOns\\RoadToForever\\media\\azeroth\\"
+local imgPieces = {}
+local BTN_CAP = 16 / 128          -- cap width in texture coordinates
+local TRACK_CAP = 8 / 128
+
+local function itex(parent, layer, sub)
+  local t = parent:CreateTexture(nil, layer or "BACKGROUND", nil, sub or 0)
+  imgPieces[#imgPieces + 1] = t
+  t:Hide()
+  return t
+end
+
+local function imagesOn()
+  return R2F.Images ~= nil and R2F.Images.azeroth == true
+end
+
+-- A three-part bar (left cap, stretchy middle, right cap) on `parent`, filled from one texture file; `capw` is the cap's
+-- display width in px, `cap` its width in texture coordinates. Returns { parts, set = function(file) }.
+local function threeSlice(parent, layer, sub, capw, cap)
+  local l, m, r = itex(parent, layer, sub), itex(parent, layer, sub), itex(parent, layer, sub)
+  l:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0)
+  l:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", 0, 0)
+  l:SetWidth(capw)
+  l:SetTexCoord(0, cap, 0, 1)
+  r:SetPoint("TOPRIGHT", parent, "TOPRIGHT", 0, 0)
+  r:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 0, 0)
+  r:SetWidth(capw)
+  r:SetTexCoord(1 - cap, 1, 0, 1)
+  m:SetPoint("TOPLEFT", l, "TOPRIGHT", 0, 0)
+  m:SetPoint("BOTTOMRIGHT", r, "BOTTOMLEFT", 0, 0)
+  m:SetTexCoord(cap, 1 - cap, 0, 1)
+  local bar = { parts = { l, m, r } }
+  function bar.set(file)
+    for _, t in ipairs(bar.parts) do t:SetTexture(file) end
+  end
+  return bar
+end
+
+local function buildImages(frame, ctx, d)
+  local i = { nav = {}, heads = {}, sliders = {} }
+  d.img = i
+  -- Tiles: the stone panel over the whole window and the darker inset behind the pages.
+  i.panel = itex(frame, "BACKGROUND", 1)
+  i.panel:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4)
+  i.panel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -4, 4)
+  i.panel:SetTexture(IMG .. "azeroth_panel", "REPEAT", "REPEAT")
+  i.panel:SetHorizTile(true)
+  i.panel:SetVertTile(true)
+  i.inset = itex(frame, "BACKGROUND", 2)
+  i.inset:SetPoint("TOPLEFT", d.insetEdge, "TOPLEFT", 0, 0)
+  i.inset:SetPoint("BOTTOMRIGHT", d.insetEdge, "BOTTOMRIGHT", 0, 0)
+  i.inset:SetTexture(IMG .. "azeroth_inset", "REPEAT", "REPEAT")
+  i.inset:SetHorizTile(true)
+  i.inset:SetVertTile(true)
+  -- Frame: four corners (one art, mirrored by texture coordinates) and four tiled edge strips between them.
+  i.corners = {}
+  for _, c in ipairs({
+    { "TOPLEFT", 0, 1, 0, 1 }, { "TOPRIGHT", 1, 0, 0, 1 }, { "BOTTOMLEFT", 0, 1, 1, 0 }, { "BOTTOMRIGHT", 1, 0, 1, 0 },
+  }) do
+    local t = itex(frame, "BORDER", 1)
+    t:SetSize(64, 64)
+    t:SetPoint(c[1], frame, c[1], 0, 0)
+    t:SetTexture(IMG .. "azeroth_corner")
+    t:SetTexCoord(c[2], c[3], c[4], c[5])
+    i.corners[#i.corners + 1] = t
+  end
+  local top = itex(frame, "BORDER", 0)
+  top:SetPoint("TOPLEFT", frame, "TOPLEFT", 64, 0)
+  top:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -64, 0)
+  top:SetHeight(16)
+  top:SetTexture(IMG .. "azeroth_edge_h", "REPEAT", "REPEAT")
+  top:SetHorizTile(true)
+  local bottom = itex(frame, "BORDER", 0)
+  bottom:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 64, 0)
+  bottom:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -64, 0)
+  bottom:SetHeight(16)
+  bottom:SetTexture(IMG .. "azeroth_edge_h", "REPEAT", "REPEAT")
+  bottom:SetHorizTile(true)
+  bottom:SetTexCoord(0, 1, 1, 0)
+  local left = itex(frame, "BORDER", 0)
+  left:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -64)
+  left:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, 64)
+  left:SetWidth(16)
+  left:SetTexture(IMG .. "azeroth_edge_v", "REPEAT", "REPEAT")
+  left:SetVertTile(true)
+  local right = itex(frame, "BORDER", 0)
+  right:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -64)
+  right:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 64)
+  right:SetWidth(16)
+  right:SetTexture(IMG .. "azeroth_edge_v", "REPEAT", "REPEAT")
+  right:SetVertTile(true)
+  right:SetTexCoord(1, 0, 0, 1)
+  i.edges = { top, bottom, left, right }
+  -- Corner gems sit on the empty sockets (centre 10, 10 in the corner art), a little larger than the socket.
+  i.gems = {}
+  for _, g in ipairs({
+    { "TOPLEFT", 10, -10 }, { "TOPRIGHT", -10, -10 }, { "BOTTOMLEFT", 10, 10 }, { "BOTTOMRIGHT", -10, 10 },
+  }) do
+    local t = itex(frame, "OVERLAY", 1)
+    t:SetSize(24, 24)
+    t:SetPoint("CENTER", frame, g[1], g[2], g[3])
+    t:SetTexture(IMG .. "azeroth_gem")
+    i.gems[#i.gems + 1] = t
+  end
+  -- Banner: hangs 20 px above the top edge, between the logo and the Size slider (x 252 to 500).
+  i.banner = itex(frame, "BORDER", 3)
+  i.banner:SetSize(248, 62)
+  i.banner:SetPoint("TOPLEFT", frame, "TOPLEFT", 252, 20)
+  i.banner:SetTexture(IMG .. "azeroth_banner")
+  -- Sidebar buttons: three-slice bar per state plus the gem.
+  for key, b in pairs(ctx.nav) do
+    local n = { bar = threeSlice(b, "BACKGROUND", 1, 16, BTN_CAP), key = key }
+    n.gem = itex(b, "ARTWORK", 2)
+    n.gem:SetSize(16, 16)
+    n.gem:SetPoint("RIGHT", b, "RIGHT", -6, 0)
+    i.nav[key] = n
+    if b.HookScript then
+      b:HookScript("OnEnter", function() n.hover = true Deco.RefreshNav() end)
+      b:HookScript("OnLeave", function() n.hover = false Deco.RefreshNav() end)
+    end
+  end
+  -- Group headings: the fading gold line.
+  for _, h in ipairs(ctx.heads) do
+    local line = itex(frame, "ARTWORK", 1)
+    line:SetHeight(6)
+    line:SetPoint("LEFT", h, "RIGHT", 8, 0)
+    line:SetTexture(IMG .. "azeroth_divider")
+    i.heads[#i.heads + 1] = { fs = h, line = line, sideW = ctx.sideW }
+  end
+end
+
+-- Slider track and knob (the top bar's Size and Opacity). `sl` is our own slider; the template's own track textures are hidden
+-- while the images are on and put back otherwise.
+local DEFAULT_KNOB = "Interface\\Buttons\\UI-SliderBar-Button-Horizontal"
+function Deco.AddSlider(frame, sl)
+  local d = frame.r2fDeco
+  if not (d and d.img) then return end
+  local own = {}
+  if sl.GetRegions then
+    for _, region in ipairs({ sl:GetRegions() }) do
+      if region.IsObjectType and region:IsObjectType("Texture") then own[#own + 1] = region end
+    end
+  end
+  local knob = sl.GetThumbTexture and sl:GetThumbTexture()
+  local track = threeSlice(sl, "BACKGROUND", 1, 8, TRACK_CAP)
+  track.parts[1]:ClearAllPoints()
+  track.parts[1]:SetPoint("LEFT", sl, "LEFT", 0, 0)
+  track.parts[1]:SetSize(8, 16)
+  track.parts[3]:ClearAllPoints()
+  track.parts[3]:SetPoint("RIGHT", sl, "RIGHT", 0, 0)
+  track.parts[3]:SetSize(8, 16)
+  track.parts[2]:ClearAllPoints()
+  track.parts[2]:SetPoint("LEFT", track.parts[1], "RIGHT", 0, 0)
+  track.parts[2]:SetPoint("RIGHT", track.parts[3], "LEFT", 0, 0)
+  track.parts[2]:SetHeight(16)
+  track.set(IMG .. "azeroth_slider_track")
+  d.img.sliders[#d.img.sliders + 1] = { sl = sl, own = own, track = track, knob = knob,
+                                        knobFile = knob and knob.GetTexture and knob:GetTexture() or DEFAULT_KNOB }
+end
+
+function Deco.RefreshNav()
+  local frame = Deco.frame
+  local d = frame and frame.r2fDeco
+  if not (d and d.img and d.imagesActive) then return end
+  for key, n in pairs(d.img.nav) do
+    local sel = key == selectedKey
+    n.bar.set(IMG .. (sel and "azeroth_btn_selected" or (n.hover and "azeroth_btn_hover" or "azeroth_btn_normal")))
+    n.gem:SetTexture(IMG .. (sel and "azeroth_gem_on" or "azeroth_gem_off"))
+  end
+end
+
+-- Image mode on / off. Returns true when the images are in use (the caller then skips the rectangle look).
+local function applyImages(d, th, alpha)
+  local i = d.img
+  local on = th.deco == "azeroth" and imagesOn() and i ~= nil
+  d.imagesActive = on
+  for _, t in ipairs(imgPieces) do t:Hide() end
+  for _, s in ipairs(i and i.sliders or {}) do
+    for _, region in ipairs(s.own) do region:SetAlpha(on and 0 or 1) end
+    if s.knob then
+      if on then
+        s.sl:SetThumbTexture(IMG .. "azeroth_slider_knob")
+        s.knob = s.sl:GetThumbTexture()
+        if s.knob then s.knob:SetSize(24, 24) s.knob:SetVertexColor(1, 1, 1, 1) end
+      else
+        s.sl:SetThumbTexture(s.knobFile)
+        s.knob = s.sl:GetThumbTexture()
+        if s.knob then s.knob:SetSize(32, 32) end
+      end
+    end
+    if on then for _, t in ipairs(s.track.parts) do t:Show() end end
+  end
+  if not on then return false end
+  i.panel:SetAlpha(alpha)
+  i.inset:SetAlpha(alpha)
+  i.panel:Show()
+  i.inset:Show()
+  for _, t in ipairs(i.corners) do t:Show() end
+  for _, t in ipairs(i.edges) do t:Show() end
+  for _, t in ipairs(i.gems) do t:Show() end
+  i.banner:Show()
+  for _, n in pairs(i.nav) do
+    for _, t in ipairs(n.bar.parts) do t:Show() end
+    n.gem:Show()
+  end
+  for _, h in ipairs(i.heads) do
+    h.line:SetWidth(math.max(h.sideW - 22 - ((h.fs.GetStringWidth and h.fs:GetStringWidth()) or 0) - 8, 10))
+    h.line:Show()
+  end
+  Deco.RefreshNav()
+  return true
+end
+
 -- ctx: { sideW, topH, nav = { key -> nav button }, heads = { group heading font strings } }
 function Deco.Build(frame, ctx)
   if built then return end
   built = true
   local d = { nav = {}, heads = {} }
   frame.r2fDeco = d
+  Deco.frame = frame
 
   d.panel = tex(frame, "BACKGROUND", 1)
   d.panel:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4)
@@ -132,18 +353,31 @@ function Deco.Build(frame, ctx)
     line:SetPoint("LEFT", h, "RIGHT", 8, 0)
     d.heads[#d.heads + 1] = { fs = h, line = line, sideW = ctx.sideW }
   end
+  buildImages(frame, ctx, d)
 end
 
-local selectedKey
 function Deco.Select(key)
   selectedKey = key
+  Deco.RefreshNav()
 end
 
 -- Show / recolour for theme th (th.deco == "azeroth"), or hide everything.
 function Deco.Apply(frame, th, alpha)
   local d = frame.r2fDeco
   if not d then return end
+  local a = alpha or 1
+  local imageMode = applyImages(d, th, a)
   local on = th.deco == "azeroth"
+  if imageMode then
+    for _, t in ipairs(pieces) do t:Hide() end
+    for _, line in ipairs(frame.r2fRimLines or {}) do line:Hide() end
+    if frame.r2fBgTex then frame.r2fBgTex:Hide() end
+    if frame.r2fTitle then
+      frame.r2fTitle:ClearAllPoints()
+      frame.r2fTitle:SetPoint("CENTER", d.img.banner, "CENTER", 0, -2)
+    end
+    return
+  end
   if not on then
     for _, t in ipairs(pieces) do t:Hide() end
     if frame.r2fBgTex then frame.r2fBgTex:Show() end
@@ -153,7 +387,6 @@ function Deco.Apply(frame, th, alpha)
     end
     return
   end
-  local a = alpha or 1
   if frame.r2fBgTex then frame.r2fBgTex:Hide() end
   gradient(d.panel, "VERTICAL", th.panelBottom, th.panelTop, a, a)
   d.panel:Show()

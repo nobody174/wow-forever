@@ -32,12 +32,13 @@ Use a test character for anything marked **TEST CHAR**.
 
 5.35. **Corpse arrow (0.68.2):** die, release your spirit, and see if the arrow points at your corpse (chat says it is set). If not: while still a ghost type `/r2f debug corpse` and paste the lines. Also try dying close to a graveyard and far from one (a ghost in another zone is the case this fixes), and once inside a dungeon.
 
-5.36. **Azeroth Reforged decoration (0.69.0):** Home > Theme > Azeroth Reforged. It should show: a brown stone gradient panel, a gold double line round the window with round gold gems in the four corners, a dark banner with gold edge and gems at the top middle holding the page title, brown gradient buttons in the sidebar (the selected one with a gold edge and a glowing orange gem), a thin gold line fading out after JOURNEY / TOOLS, and a darker inset behind the pages. Headings should be in Cinzel (capital-style serif) and the rest in Alegreya Sans.
-- Does any heading or label get cut off or overlap because the new fonts are wider? Which page?
-- Does the banner collide with the Size slider on the right? Does it look close to the mockup, or should I ask Claude Desktop for exported images?
-- If the game refuses a font you should see the old game font instead of a broken one.
-- Switch back to Classic and to Obsidian: all decoration must disappear and the fonts return to the game's.
-- Size and Opacity sliders still work (the panel gets see-through with Opacity).
+5.37. **Azeroth Reforged with images (0.70.0):** Home > Theme > Azeroth Reforged, compare with the design (`azeroth_reforged.png`).
+- Frame: gold double line with a diamond gem in each corner; banner hanging over the top edge with the page title on it; stone panel and a darker inset behind the pages.
+- Sidebar: stone buttons, the selected one gold-edged with a lit orange gem, hover lighter; fading gold line after JOURNEY / TOOLS (if the text of a button is hard to read on the art, tell me which).
+- Size and Opacity sliders: dark groove with an amber knob, still working (drag the knob; Opacity makes the panel see-through).
+- Edges and corners: any gap, seam, stretched or mirrored-wrong piece? Does the banner touch the Size slider on the right?
+- Switch to Obsidian and Classic: everything image-based disappears and the sliders look as before.
+- Please send one screenshot of the Home page in Azeroth Reforged.
 
 ## Cannot be tested yet (reason)
 - 4.13 group picks: nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made.

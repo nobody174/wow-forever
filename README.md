@@ -23,4 +23,4 @@ We build on other people's open work and say so:
 Data we redistribute that comes from GPL sources keeps that licence note.
 
 Fonts bundled with the addon (`addon/RoadToForever/media/fonts`, SIL Open Font License 1.1, licence files next to them): **Cinzel**
-(The Cinzel Project Authors) and **Alegreya Sans** (The Alegreya Sans Project Authors), used by the Azeroth Reforged theme. **Barlow Condensed** and **Barlow** (The Barlow Project Authors) and **Chakra Petch** (The Chakra Petch Project Authors) are used by the Ember & Iron theme.
+(The Cinzel Project Authors) and **Alegreya Sans** (The Alegreya Sans Project Authors), used by the Azeroth Reforged theme. **Barlow Condensed** and **Barlow** (The Barlow Project Authors) and **Chakra Petch** (The Chakra Petch Project Authors) are used by the Ember & Iron theme. **Space Grotesk** (The Space Grotesk Project Authors) and **JetBrains Mono** (The JetBrains Mono Project Authors) are used by the Obsidian Night theme.

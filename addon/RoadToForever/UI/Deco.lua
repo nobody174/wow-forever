@@ -80,6 +80,15 @@ local imgPieces = {}
 local BTN_CAP = 16 / 128          -- cap width in texture coordinates
 local TRACK_CAP = 8 / 128
 
+-- Per image set: how the three-part pieces are cut and how thick the slider groove is. `pad` = how far the art of a button
+-- reaches beyond the button (Obsidian's glow sits in a 3 px margin of the art).
+local SHAPE = {
+  azeroth = { btnCap = 16 / 128, btnCapW = 16, pad = 0, groove = 10, knob = { 22, 22 } },
+  ember = { btnCap = 16 / 128, btnCapW = 16, pad = 0, groove = 12, knob = { 32, 22 } },
+  obsidian = { btnCap = 12 / 128, btnCapW = 12, pad = 3, groove = 16, knob = { 26, 26 } },
+}
+local function shape() return SHAPE[Deco.set or "azeroth"] end
+
 local function itex(parent, layer, sub)
   local t = parent:CreateTexture(nil, layer or "BACKGROUND", nil, sub or 0)
   imgPieces[#imgPieces + 1] = t
@@ -111,6 +120,21 @@ local function threeSlice(parent, layer, sub, capw, cap)
   local bar = { parts = { l, m, r } }
   function bar.set(file)
     for _, t in ipairs(bar.parts) do t:SetTexture(file) end
+  end
+  -- Cut the caps differently (texture coordinates, display width) and let the art reach `pad` px beyond the parent.
+  function bar.shape(newCap, newCapW, pad)
+    pad = pad or 0
+    l:ClearAllPoints()
+    l:SetPoint("TOPLEFT", parent, "TOPLEFT", -pad, pad)
+    l:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", -pad, -pad)
+    l:SetWidth(newCapW)
+    l:SetTexCoord(0, newCap, 0, 1)
+    r:ClearAllPoints()
+    r:SetPoint("TOPRIGHT", parent, "TOPRIGHT", pad, pad)
+    r:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", pad, -pad)
+    r:SetWidth(newCapW)
+    r:SetTexCoord(1 - newCap, 1, 0, 1)
+    m:SetTexCoord(newCap, 1 - newCap, 0, 1)
   end
   return bar
 end
@@ -228,8 +252,8 @@ end
 -- Ember & Iron (media/ember): panel tile with a heat glow along the bottom, a cut-corner steel frame, four rivets,
 -- the plate behind the pages and icon tiles for the sidebar.
 local EM = IMGROOT .. "ember\\ember_"
--- Tile label and icon colours: #B5AFA5 normal, #FFC247 hover and selected.
-local NAV_TEXT_EMBER = { normal = { 0.71, 0.686, 0.647 }, hover = { 1, 0.76, 0.28 }, selected = { 1, 0.76, 0.28 } }
+-- Tile label and icon colours: #B5AFA5 normal, #FFC247 hover, a paler #FFE8B0 selected (readable on the orange glow).
+local NAV_TEXT_EMBER = { normal = { 0.71, 0.686, 0.647 }, hover = { 1, 0.76, 0.28 }, selected = { 1, 0.91, 0.69 } }
 
 local function buildEmber(frame, ctx, d)
   local e = { nav = {} }
@@ -272,6 +296,48 @@ local function buildEmber(frame, ctx, d)
       b:HookScript("OnEnter", function() n.hover = true Deco.RefreshNav() end)
       b:HookScript("OnLeave", function() n.hover = false Deco.RefreshNav() end)
     end
+  end
+end
+
+-- Obsidian Night (media/obsidian): rounded window frame, a card behind the pages, and a strip of tabs in place of the sidebar.
+local OB = IMGROOT .. "obsidian\\obsidian_"
+local NAV_TEXT_OBS = { normal = { 0.541, 0.569, 0.639 }, hover = { 0.91, 0.918, 0.941 }, selected = { 0.208, 0.839, 0.769 } }
+local TAB_H, TAB_TOP = 32, 6        -- the tab strip: pills 32 px high, 6 px under the top bar
+
+local function buildObsidian(frame, ctx, d)
+  local e = { nav = {}, seps = {} }
+  d.ob = e
+  e.frame = Deco.NineSlice(frame, frame, frame, 24, 0.1875, "BORDER", 2, true)
+  e.frame.set(OB .. "frame")
+  -- A region the card behind the pages is anchored to (below the tab strip).
+  e.region = frame:CreateTexture(nil, "BACKGROUND", nil, 1)
+  e.region:SetColorTexture(0, 0, 0, 0)
+  e.region:SetPoint("TOPLEFT", frame, "TOPLEFT", 12, -(ctx.topH + TAB_TOP + TAB_H + 10))
+  e.region:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -12, 12)
+  e.plate = Deco.NineSlice(frame, e.region, e.region, 24, 0.1875, "BACKGROUND", 2)
+  e.plate.set(OB .. "plate")
+  -- The thin line under the tab strip (the one under the top bar is the window's own rule).
+  e.rule = itex(frame, "ARTWORK", 0)
+  e.rule:SetHeight(1)
+  e.rule:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -(ctx.topH + TAB_TOP + TAB_H + 4))
+  e.rule:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -4, -(ctx.topH + TAB_TOP + TAB_H + 4))
+  e.rule:SetColorTexture(0.118, 0.133, 0.169, 1)
+  for key, b in pairs(ctx.nav) do
+    local n = { btn = b, bg = threeSlice(b, "BACKGROUND", 1, 12, 12 / 64), icon = itex(b, "ARTWORK", 2) }
+    n.icon:SetSize(16, 16)
+    n.icon:SetPoint("LEFT", b, "LEFT", 10, 0)
+    n.icon:SetTexture(IMG .. "azeroth_icon_" .. (NAV_ICON[key] or "home"))
+    e.nav[key] = n
+    if b.HookScript then
+      b:HookScript("OnEnter", function() n.hover = true Deco.RefreshNav() end)
+      b:HookScript("OnLeave", function() n.hover = false Deco.RefreshNav() end)
+    end
+  end
+  for k = 1, 2 do
+    local t = itex(frame, "ARTWORK", 1)
+    t:SetSize(8, 32)
+    t:SetTexture(OB .. "tab_sep")
+    e.seps[k] = t
   end
 end
 
@@ -377,6 +443,10 @@ function Deco.RefreshButtons()
     for _, region in ipairs(e.art) do region:SetAlpha(on and 0 or 1) end
     local hl = e.btn.GetHighlightTexture and e.btn:GetHighlightTexture()
     if hl and hl.SetAlpha then hl:SetAlpha(on and 0 or 1) end
+    if on then
+      local sh = shape()
+      e.bar.shape(sh.btnCap, sh.btnCapW, sh.pad)
+    end
     e.refresh()
     for _, t in ipairs(e.bar.parts) do t:SetShown(on) end
     -- The gold primary button carries dark text on the gold art.
@@ -406,8 +476,8 @@ function Deco.StyleSwitch(b, own, knob, small)
       e.track.set(P(on and "switch_on" or "switch_off"))
       e.kn:ClearAllPoints()
       if on then e.kn:SetPoint("RIGHT", b, "RIGHT", -1, 0) else e.kn:SetPoint("LEFT", b, "LEFT", 1, 0) end
-      if Deco.set == "ember" then
-        -- two knobs: grey (off) and orange (on)
+      if Deco.set == "ember" or Deco.set == "obsidian" then
+        -- two knobs: off and on
         e.kn:SetTexture(P(on and "switch_knob_on" or "switch_knob_off"))
         e.kn:SetVertexColor(1, 1, 1, 1)
       else
@@ -520,7 +590,7 @@ local function refreshCards(th)
     if not Deco.plate then
       Deco.plate = Deco.NineSlice(cards[1].frame, cards[1].frame, cards[3].frame, 16, 0.25, "BACKGROUND", 1)
     end
-    local show = on and Deco.set == "ember"
+    local show = on and (Deco.set == "ember" or Deco.set == "obsidian")
     for _, t in ipairs(Deco.plate.parts) do t:SetShown(show) end
     if show then Deco.plate.set(P("display")) end
     for _, c in ipairs(cards) do
@@ -533,6 +603,17 @@ function Deco.RefreshNav()
   local frame = Deco.frame
   local d = frame and frame.r2fDeco
   if not (d and d.img and d.imagesActive) then return end
+  if Deco.set == "obsidian" then
+    for key, n in pairs(d.ob.nav) do
+      local sel = key == selectedKey
+      local c = sel and NAV_TEXT_OBS.selected or (n.hover and NAV_TEXT_OBS.hover or NAV_TEXT_OBS.normal)
+      n.bg.set(OB .. (sel and "tab_on" or "tab_hover"))
+      for _, t in ipairs(n.bg.parts) do t:SetShown(sel or n.hover == true) end
+      n.icon:SetVertexColor(c[1], c[2], c[3], 1)
+      if n.btn.r2fText then n.btn.r2fText:SetTextColor(c[1], c[2], c[3]) end
+    end
+    return
+  end
   if Deco.set == "ember" then
     for key, n in pairs(d.em.nav) do
       local sel = key == selectedKey
@@ -564,8 +645,9 @@ local function applyImages(d, th, alpha)
   for _, t in ipairs(imgPieces) do t:Hide() end
   Deco.RefreshButtons()
   Deco.RefreshSwitches()
-  local grid = on and set == "ember"
-  if R2F.MainWindow and R2F.MainWindow.SetNavLayout then R2F.MainWindow.SetNavLayout(grid) end
+  local layout = on and ((set == "ember" and "grid") or (set == "obsidian" and "top")) or nil
+  local grid = layout == "grid"
+  if R2F.MainWindow and R2F.MainWindow.SetNavLayout then R2F.MainWindow.SetNavLayout(layout) end
   for key, n in pairs(i and i.nav or {}) do
     local fs = n.btn.r2fText
     if fs then
@@ -573,6 +655,9 @@ local function applyImages(d, th, alpha)
       if grid then
         fs:SetPoint("BOTTOM", n.btn, "BOTTOM", 0, 8)
         fs:SetText(L.NAV_TILE and L.NAV_TILE[key] or (d.label and d.label(key)) or "")
+      elseif layout == "top" then
+        fs:SetPoint("LEFT", n.btn, "LEFT", 32, 0)
+        fs:SetText(L.NAV_TAB and L.NAV_TAB[key] or (d.label and d.label(key)) or "")
       else
         fs:SetPoint("LEFT", n.btn, "LEFT", on and 32 or 14, 0)
         if d.label then fs:SetText(d.label(key)) end
@@ -583,7 +668,7 @@ local function applyImages(d, th, alpha)
   for _, h in ipairs(i and i.heads or {}) do h.fs:SetAlpha((on and set == "azeroth") and 0 or 1) end
   for _, s in ipairs(i and i.sliders or {}) do
     for _, region in ipairs(s.own) do region:SetAlpha(on and 0 or 1) end
-    local thick = set == "ember" and 12 or 10
+    local thick = (SHAPE[set] and SHAPE[set].groove) or 10
     s.track.parts[1]:SetHeight(thick)
     s.track.parts[2]:SetHeight(thick)
     s.track.parts[3]:SetHeight(thick)
@@ -593,7 +678,7 @@ local function applyImages(d, th, alpha)
         s.sl:SetThumbTexture(P("slider_knob"))
         s.knob = s.sl:GetThumbTexture()
         if s.knob then
-          if set == "ember" then s.knob:SetSize(32, 22) else s.knob:SetSize(22, 22) end
+          s.knob:SetSize(SHAPE[set].knob[1], SHAPE[set].knob[2])
           s.knob:SetVertexColor(1, 1, 1, 1)
         end
       else
@@ -627,6 +712,21 @@ local function applyImages(d, th, alpha)
       h.line:SetWidth(math.max(h.sideW - 22 - w - 8, 10))
       h.line:Show()
       if h.wordWidth then h.word:Show() end
+    end
+  elseif set == "obsidian" then
+    local e = d.ob
+    e.frame.set(OB .. "frame")
+    for _, t in ipairs(e.frame.parts) do t:Show() end
+    for _, t in ipairs(e.plate.parts) do t:SetAlpha(alpha) t:Show() end
+    e.rule:Show()
+    for _, n in pairs(e.nav) do n.icon:Show() end
+    local seps = R2F.MainWindow and R2F.MainWindow.NavSeparators and R2F.MainWindow.NavSeparators() or {}
+    for k, t in ipairs(e.seps) do
+      if seps[k] then
+        t:ClearAllPoints()
+        t:SetPoint("TOPLEFT", Deco.frame, "TOPLEFT", seps[k], -(50 + TAB_TOP))
+        t:Show()
+      end
     end
   else
     local e = d.em
@@ -720,6 +820,7 @@ function Deco.Build(frame, ctx)
   end
   buildImages(frame, ctx, d)
   buildEmber(frame, ctx, d)
+  buildObsidian(frame, ctx, d)
 end
 
 -- The banner plate is about 200 px wide: a long window title (Road to Forever: Tweaks) is scaled down to fit it.
@@ -752,7 +853,9 @@ applyMain = function(frame, th, alpha)
   if imageMode then
     for _, t in ipairs(pieces) do t:Hide() end
     for _, line in ipairs(frame.r2fRimLines or {}) do line:Hide() end
-    if frame.r2fBgTex then frame.r2fBgTex:Hide() end
+    if frame.r2fBgTex then
+      if Deco.set == "obsidian" then frame.r2fBgTex:Show() else frame.r2fBgTex:Hide() end
+    end
     if frame.r2fTitle then
       frame.r2fTitle:ClearAllPoints()
       if Deco.set == "azeroth" then

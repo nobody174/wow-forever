@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.73.0 (2026-10-18)
+
+- **Obsidian Night is a full theme now, with a new layout:** the sidebar is replaced by a row of tabs under the top bar (Home, Launch plan, Builds, Gear, Macros, Tweaks, with a divider between the groups); the window is 44 px taller in this theme and the pages move up and sideways. Rounded dark frame, a card behind the pages, teal tabs with a glowing underline for the open one, teal switches, tick boxes, buttons and sliders, and the countdown on one dark plate. Fonts: Space Grotesk and JetBrains Mono (bundled, free to use, licence files included).
+- Ember & Iron: the name of the open tile is paler so it reads on the orange glow.
+
 ## 0.72.1 (2026-10-18)
 
 - Ember & Iron: the bright white line along the top edge of the window is now a faint highlight, and the Launch plan row on Home glows in the theme's colour (orange) when you point at it instead of yellow. Classic is unchanged.

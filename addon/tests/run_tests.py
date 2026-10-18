@@ -4688,6 +4688,32 @@ def test_step6_ui(templates, fx):
                                                                   "OFL-BarlowCondensed.txt", "OFL-Barlow.txt", "OFL-ChakraPetch.txt")),
           "the Ember & Iron fonts ship with their licence files")
     lua.execute("R2F.Images.azeroth = true")
+    # Obsidian Night: the sidebar becomes a strip of tabs, the window 44 px taller, the pages move up and sideways.
+    lua.execute("R2F.Images.obsidian = true R2F.Theme.Set('obsidian')")
+    OBI = "R2FMain.r2fDeco.ob"
+    check(all(lua.eval("%s.frame.parts[%d]:IsShown()" % (OBI, k)) is True for k in range(1, 9))
+          and all(lua.eval("%s.plate.parts[%d]:IsShown()" % (OBI, k)) is True for k in range(1, 10))
+          and lua.eval("%s.rule:IsShown()" % OBI) is True, "obsidian: rounded frame, card behind the pages and the line under the tabs are drawn")
+    check(lua.eval("R2FMain.r2fBgTex:IsShown()") is True, "obsidian: the flat window colour stays (the frame art is border only)")
+    check(lua.eval("R2FMain.r2fSide:IsShown()") is False, "obsidian: no sidebar background")
+    check(lua.eval("NAV.plan.r2fText.__text") == "Launch plan" and lua.eval("NAV.talents.r2fText.__text") == "Builds",
+          "obsidian: tab names")
+    check(all(lua.eval("%s.nav.%s.icon:IsShown()" % (OBI, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay")),
+          "obsidian: every tab has its icon")
+    check(len(lua_table_to_list(lua.eval("R2F.MainWindow.NavSeparators()"))) == 2, "obsidian: two separators between the tab groups")
+    check(lua.eval("R2FMain.r2fDeco.img.banner:IsShown()") is False and lua.eval("%s.panel:IsShown()" % EMI) is False,
+          "obsidian: nothing of Azeroth or Ember shows")
+    lua.execute("R2F.Theme.Set('classic')")
+    check(lua.eval("%s.frame.parts[1]:IsShown()" % OBI) is False and lua.eval("R2FMain.r2fSide:IsShown()") is True
+          and lua.eval("NAV.talents.r2fText.__text") == "Builds & talents", "classic after obsidian: sidebar and names are back")
+    obsnames = set(_re.findall(r'OB \.\. "([a-z_]+)"', deco_src)) | set(_re.findall(r'OB \.\. \(sel and "([a-z_]+)"', deco_src))
+    obsnames |= {"btn_normal", "btn_hover", "btn_primary", "btn_primary_hover", "btn_disabled", "check_on", "check_off", "switch_on", "switch_off",
+                 "switch_knob_on", "switch_knob_off", "slider_track", "slider_fill", "slider_knob", "display"}
+    obsmissing = [n for n in sorted(obsnames) if not os.path.exists(os.path.join(HERE, "..", "RoadToForever", "media", "obsidian", "obsidian_" + n + ".tga"))]
+    check(not obsmissing, "every obsidian texture exists as a .tga in media/obsidian: %s" % obsmissing)
+    check(all(os.path.exists(os.path.join(fontsdir, f)) for f in ("SpaceGrotesk-Medium.ttf", "JetBrainsMono-Bold.ttf", "OFL-SpaceGrotesk.txt", "OFL-JetBrainsMono.txt")),
+          "the Obsidian Night fonts ship with their licence files")
+    lua.execute("R2F.Images.azeroth = true")
     # A long window title is scaled to fit the banner plate (200 px) in image mode.
     lua.execute("""R2F.Images.azeroth = true R2F.Theme.Set('azeroth') TSCALE = nil
       R2FMain.r2fTitle.GetStringWidth = function() return 300 end
@@ -4739,7 +4765,7 @@ def test_step6_ui(templates, fx):
     # The rim: classic keeps Blizzard's dialog border (no extra lines); the others hide it and draw a thin coloured line.
     lua.execute("R2F.Theme.Set('classic')")
     check(lua.eval("R2FMain.r2fRimLines[1]:IsShown()") is False, "classic: no extra rim line")
-    lua.execute("R2F.Theme.Set('obsidian')")
+    lua.execute("R2F.Images.obsidian = false R2F.Theme.Set('obsidian')")        # the drawn look, without the image slices
     check(all(lua.eval("R2FMain.r2fRimLines[%d]:IsShown()" % i) is True for i in (1, 2, 3, 4)),
           "obsidian: the thin rim line is drawn on all four sides")
     check(lua.eval("R2FDB.settings.theme") == "obsidian", "Theme.Set recolours the window by itself (MainWindow listens)")

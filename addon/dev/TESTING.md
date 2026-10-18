@@ -48,6 +48,14 @@ Use a test character for anything marked **TEST CHAR**.
 - Switch to Azeroth Reforged and Classic and back: sidebar list returns, nothing of Ember left behind. Fonts: condensed headings (Barlow Condensed); if something is cut off or overlaps say where.
 - Does the page content (Plan, Talents, BiS, Macros, Tweaks) still fit and read well on the steel plate?
 
+5.40. **Obsidian Night (0.73.0):** Home > Theme > Obsidian Night.
+- No sidebar: a row of tabs under the top bar (Home, Launch plan, Builds, Gear, Macros, Tweaks), the open one with a teal underline; hover lights a tab. The window is taller by 44 px. Is it still fully on your screen, and does every page (Home, Launch plan, Builds & talents, Gear, Macros, Tweaks) fit in the new space, especially Builds & talents (the tall one)?
+- Rounded frame, dark card behind the page, teal buttons / switches / tick boxes, thin teal sliders with a pearl knob, the countdown on one dark plate.
+- Text: is it readable and not cut off with the new font (Space Grotesk)? Numbers in JetBrains Mono.
+- Buttons: the glow of hover / primary is inside the art; do the buttons look slightly bigger than their text area?
+- Switch back to Classic / Azeroth / Ember: the sidebar and the window height come back each time.
+- Ember & Iron: the open tile's name should be paler than before (readable on the glow).
+
 ## Cannot be tested yet (reason)
 - 4.13 group picks: nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made.
 - 13.9 (owner: not seen in the beta yet, check after release) Druid spells that Forever gives its own versions of (Starsurge, Sunfire, Starfall, Lacerate): they are not runes (corrected 2026-10-17). Needs the level: does each macro cast it, and how is it learned (trainer or talent)? The Skull Bash, Survival Instincts, Lifebloom and Nourish macros were removed (those spells exist only as Season of Discovery leftovers).

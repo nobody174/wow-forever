@@ -47,12 +47,18 @@ Theme.LIST = {
   },
   {
     key = "obsidian", name = "Obsidian Night",
-    on = { 0.1, 0.62, 0.57 }, off = { 0.035, 0.04, 0.05 }, swRim = { 0.16, 0.5, 0.47 },
+    -- deco "obsidian": rounded dark window, a tab strip instead of the sidebar (UI/Deco.lua, art media/obsidian).
+    -- Fonts: Space Grotesk (text) and JetBrains Mono (numbers), OFL, bundled; refused files fall back to the game's fonts.
+    deco = "obsidian",
+    font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\SpaceGrotesk-Medium.ttf",
+             body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\SpaceGrotesk-Medium.ttf",
+             number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\JetBrainsMono-Bold.ttf", bodyBump = 0 },
+    on = { 0.208, 0.839, 0.769 }, off = { 0.07, 0.082, 0.106 }, swRim = { 0.227, 0.255, 0.314 },
     bg = { 0.055, 0.06, 0.075 }, bgAlpha = 1,
     side = { 0.09, 0.1, 0.13 }, sideAlpha = 0.8,
-    rule = { 0.21, 0.84, 0.77 }, ruleAlpha = 0.45,
-    accent = { 0.21, 0.84, 0.77 }, selAlpha = 0.16,
-    text = { 0.91, 0.92, 0.94 }, rim = { 0.21, 0.84, 0.77 },
+    rule = { 0.118, 0.133, 0.169 }, ruleAlpha = 1,
+    accent = { 0.208, 0.839, 0.769 }, selAlpha = 0.16,
+    text = { 0.91, 0.918, 0.941 }, rim = { 0.165, 0.184, 0.227 },
   },
   {
     key = "forge", name = "Ember & Iron",

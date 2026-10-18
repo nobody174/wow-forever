@@ -41,7 +41,7 @@ local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENT
 local LOGO = "Interface\\AddOns\\RoadToForever\\media\\logo128"
 
 local frame
-local navY, navHeads = {}, {}      -- the list layout of the sidebar, to come back to from the tile grid
+local navY, navHeads, pageCustom = {}, {}, {}      -- the list layout of the sidebar, to come back to from the tile grid
 local pages, tabButtons = {}, {}   -- tabButtons: key -> sidebar button
 local current            -- key of the page showing (kept while the window is closed)
 
@@ -158,24 +158,62 @@ function MainWindow.ApplyLook()
   R2F.Deco.Apply(frame, th, R2F.Theme.PanelAlpha(th, st.menuAlpha))
 end
 
--- The sidebar as a list of wide buttons (the usual look) or as a 2 x 3 grid of 64 px tiles (Ember & Iron): same buttons, moved.
+-- The sidebar as a list of wide buttons (the usual look), as a 2 x 3 grid of 64 px tiles (Ember & Iron, "grid") or as a row
+-- of tabs under the top bar (Obsidian Night, "top"): the same buttons, moved. In the tab layout the window is 44 px taller
+-- and the pages move up and sideways into the space the sidebar left.
 local GRID_ORDER = { "home", "plan", "talents", "bis", "macros", "gameplay" }
-function MainWindow.SetNavLayout(grid)
+local TOP_W = { home = 84, plan = 112, talents = 96, bis = 84, macros = 92, gameplay = 92 }
+local TOP_SEPARATORS_AFTER = { plan = true, bis = true }
+local navSeps = {}
+local STRIP = 44
+
+local function placePages(top)
+  for key, p in pairs(pages) do
+    local custom = pageCustom[key]
+    p:ClearAllPoints()
+    if top then
+      local w = custom and custom.w or PAGE_W
+      p:SetPoint("TOPLEFT", frame, "TOPLEFT", math.floor((WIN_W - w) / 2), -(TOP_H + 4 + STRIP + 8))
+    elseif custom then
+      p:SetPoint("TOPLEFT", frame, "TOPLEFT", SIDE_W + 12, -(TOP_H + 4))
+    else
+      p:SetPoint("TOPLEFT", frame, "TOPLEFT", PAGE_X, PAGE_Y)
+    end
+  end
+end
+
+function MainWindow.NavSeparators() return navSeps end
+
+function MainWindow.SetNavLayout(layout)
   if not frame then return end
+  if layout == true then layout = "grid" end
+  navSeps = {}
+  local x = 14
   for idx, key in ipairs(GRID_ORDER) do
     local b = tabButtons[key]
     if b then
       b:ClearAllPoints()
-      if grid then
+      if layout == "grid" then
         b:SetSize(64, 64)
         b:SetPoint("TOPLEFT", frame, "TOPLEFT", 8 + ((idx - 1) % 2) * 70, -(TOP_H + 12) - math.floor((idx - 1) / 2) * 70)
+      elseif layout == "top" then
+        b:SetSize(TOP_W[key], 32)
+        b:SetPoint("TOPLEFT", frame, "TOPLEFT", x, -(TOP_H + 6))
+        x = x + TOP_W[key] + 4
+        if TOP_SEPARATORS_AFTER[key] then
+          navSeps[#navSeps + 1] = x - 2
+          x = x + 12
+        end
       else
         b:SetSize(SIDE_W - 16, 26)
         b:SetPoint("TOPLEFT", frame, "TOPLEFT", 8, navY[key] or -(TOP_H + 12))
       end
     end
   end
-  for _, h in ipairs(navHeads) do h:SetShown(not grid) end
+  for _, h in ipairs(navHeads) do h:SetShown(layout == nil) end
+  if frame.r2fSide then frame.r2fSide:SetShown(layout ~= "top") end
+  frame:SetHeight(WIN_H + (layout == "top" and STRIP or 0))
+  placePages(layout == "top")
 end
 
 -- Any theme change (the Home page picker, a future slash command) recolours the window.
@@ -381,6 +419,7 @@ local function build()
     local p = CreateFrame("Frame", nil, f)
     local custom = (key == "bis" and R2F.BiZTab.PAGE) or (key == "home" and R2F.Home.PAGE)
       or (key == "talents" and R2F.TalentPanel.PAGE)
+    pageCustom[key] = custom
     if custom then
       -- Mr.BiZ and Home use the whole content area.
       p:SetSize(custom.w, custom.h)

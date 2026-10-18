@@ -173,6 +173,7 @@ Theme.FONTS = {
   R2FHeadingSmall = { "GameFontNormalSmall", "heading" }, R2FBody = { "GameFontHighlight", "body" },
   R2FBodySmall = { "GameFontHighlightSmall", "body" }, R2FDim = { "GameFontDisable", "dim" },
   R2FDimSmall = { "GameFontDisableSmall", "dim" },
+  R2FNumber = { "NumberFontNormalHuge", "heading" },
 }
 local fontObjects = {}
 local function buildFonts()

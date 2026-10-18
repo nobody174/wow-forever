@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.71.0 (2026-10-18)
+
+- **Azeroth Reforged, round 2 of the artwork.** Darker, stronger browns and gold as in the design; an icon on every sidebar button (white line icons, gold when selected); the group names JOURNEY / CHARACTER / UI as letter-spaced images with the fading line after them; the launch countdown is now three stone cards (days, hours, minutes) on Home with the date under them; switches, tick boxes and the Size / Opacity sliders (with the amber filled part) use the new art; buttons show a disabled look when off. Sidebar label colours follow the design (normal, hover, selected).
+- Home: the Launch plan entry is narrower to make room for the countdown cards. All other themes keep a plain dark card.
+
 ## 0.70.1 (2026-10-18)
 
 - **Home shows the launch countdown** again, top right ("FOREVER LAUNCHES IN 18d 01h 44m", counting down while the page is open; it says "Forever is live" after launch).

@@ -464,9 +464,14 @@ function UI.Switch(parent, label)
     knob:ClearAllPoints()
     if on then knob:SetPoint("RIGHT", b, "RIGHT", -2, 0) else knob:SetPoint("LEFT", b, "LEFT", 2, 0) end
     b:SetAlpha(b.r2fEnabled == false and 0.45 or 1)
+    if b.r2fImgPaint then b.r2fImgPaint() end
   end
   b.r2fPaint = paint
   themedParts[b] = true
+  local ownParts = {}
+  for _, p in ipairs(rim.parts) do ownParts[#ownParts + 1] = p end
+  for _, p in ipairs(track.parts) do ownParts[#ownParts + 1] = p end
+  R2F.Deco.StyleSwitch(b, ownParts, knob, false)
 
   -- Callers set the state themselves after a click (SetChecked), and the
   -- button also toggles on its own; repaint after both.
@@ -507,6 +512,7 @@ function UI.BlackBox(parent, size)
     rim:SetColorTexture(th.swRim[1], th.swRim[2], th.swRim[3], 1)
     tick:SetColorTexture(th.on[1], th.on[2], th.on[3], 1)
     if b:GetChecked() then tick:Show() else tick:Hide() end
+    if b.r2fImgPaint then b.r2fImgPaint() end
   end
   b.r2fPaint = paint
   themedParts[b] = true

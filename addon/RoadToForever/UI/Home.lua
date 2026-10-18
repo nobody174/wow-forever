@@ -99,6 +99,26 @@ end
 -- The launch moment (2026-11-04 23:00 UTC, the same target as the site's countdown).
 Home.LAUNCH_AT = 1793833200
 
+-- Days, hours, minutes left (all 0 once launched), and whether the launch has happened.
+function Home.CountdownParts(now)
+  now = now or (GetServerTime and GetServerTime()) or time()
+  local left = Home.LAUNCH_AT - now
+  if left <= 0 then return 0, 0, 0, true end
+  return math.floor(left / 86400), math.floor(left % 86400 / 3600), math.floor(left % 3600 / 60), false
+end
+
+function Home.UpdateCountdown()
+  if not ui.cards then return end
+  local d, h, m, live = Home.CountdownParts()
+  local values = { d, h, m }
+  for k, card in ipairs(ui.cards) do
+    card.num:SetText(("%02d"):format(values[k]))
+    card.frame:SetShown(not live)
+  end
+  ui.cdHead:SetShown(not live)
+  ui.cdLive:SetShown(live)
+end
+
 -- "18d 01h 44m" until the launch, then "Forever is live". `now` is a Unix time (default: the server's).
 function Home.CountdownText(now)
   now = now or (GetServerTime and GetServerTime()) or time()
@@ -116,22 +136,38 @@ local function build(f)
   ui.tagline:SetText(L.HOME_TAGLINE)
   R2F.Theme.PaintText(ui.tagline, "tagline")
 
-  -- "Forever launches in 18d 01h 44m": top right, counted down once a second while the page shows.
+  -- The launch countdown, top right: three stone cards (days, hours, minutes) and the date under them. It counts down once a
+  -- second while the page is showing. After the launch the cards give way to "Forever is live".
+  ui.cards = {}
+  for k, label in ipairs({ L.HOME_CD_DAYS, L.HOME_CD_HOURS, L.HOME_CD_MINUTES }) do
+    local card = R2F.Deco.Card(f, 70, 84)
+    card.frame:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(3 - k) * 76, -2)
+    card.num = card.frame:CreateFontString(nil, "ARTWORK", "R2FNumber")
+    card.num:SetPoint("CENTER", card.frame, "CENTER", 0, 8)
+    R2F.Theme.PaintText(card.num, "heading")
+    card.label = card.frame:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
+    card.label:SetPoint("BOTTOM", card.frame, "BOTTOM", 0, 14)
+    card.label:SetText(label)
+    R2F.Theme.PaintText(card.label, "group")
+    ui.cards[k] = card
+  end
   ui.cdHead = f:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
-  ui.cdHead:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -2)
-  ui.cdHead:SetText(L.HOME_COUNTDOWN_HEAD)
-  ui.cdNum = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
-  ui.cdNum:SetPoint("TOPRIGHT", ui.cdHead, "BOTTOMRIGHT", 0, -4)
-  ui.cdNum:SetText(Home.CountdownText())
+  ui.cdHead:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -92)
+  ui.cdHead:SetText(L.HOME_COUNTDOWN_DATE)
+  R2F.Theme.PaintText(ui.cdHead, "tagline")
+  ui.cdLive = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
+  ui.cdLive:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -30)
+  ui.cdLive:SetText(L.HOME_COUNTDOWN_LIVE)
+  Home.UpdateCountdown()
   local waited = 0
   f:SetScript("OnUpdate", function(_, dt)
     waited = waited + dt
     if waited < 1 then return end
     waited = 0
-    ui.cdNum:SetText(Home.CountdownText())
+    Home.UpdateCountdown()
   end)
 
-  ui.plan = entry(f, -52, "INV_Misc_Map_01", L.HOME_PLAN, "plan", 650)
+  ui.plan = entry(f, -52, "INV_Misc_Map_01", L.HOME_PLAN, "plan", 420)
 
   -- What to train next (Training.lua), right column.
   ui.trainHead = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")

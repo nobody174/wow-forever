@@ -32,13 +32,15 @@ Use a test character for anything marked **TEST CHAR**.
 
 5.35. **Corpse arrow (0.68.2):** die, release your spirit, and see if the arrow points at your corpse (chat says it is set). If not: while still a ghost type `/r2f debug corpse` and paste the lines. Also try dying close to a graveyard and far from one (a ghost in another zone is the case this fixes), and once inside a dungeon.
 
-5.37. **Azeroth Reforged with images (0.70.0):** Home > Theme > Azeroth Reforged, compare with the design (`azeroth_reforged.png`).
-- Frame: gold double line with a diamond gem in each corner; banner hanging over the top edge with the page title on it; stone panel and a darker inset behind the pages.
-- Sidebar: stone buttons, the selected one gold-edged with a lit orange gem, hover lighter; fading gold line after JOURNEY / TOOLS (if the text of a button is hard to read on the art, tell me which).
-- Size and Opacity sliders: dark groove with an amber knob, still working (drag the knob; Opacity makes the panel see-through).
-- Edges and corners: any gap, seam, stretched or mirrored-wrong piece? Does the banner touch the Size slider on the right?
-- Switch to Obsidian and Classic: everything image-based disappears and the sliders look as before.
-- Please send one screenshot of the Home page in Azeroth Reforged.
+5.38. **Azeroth Reforged round 2 (0.71.0):** compare with `azeroth_reforged.png`.
+- Darker brown and stronger gold than in 0.70.1? (The slices match the design's colours; if it still looks lighter in game, say where and I look for a tint on our side.)
+- Sidebar: an icon on every button, gold when selected, muted otherwise; JOURNEY / CHARACTER / UI as letter-spaced gold words with a fading line.
+- Home, top right: three stone cards 18 / 01 / 44 with DAYS / HOURS / MINUTES under the numbers and the date below. Do the numbers fit the cards? Does the narrower Launch plan entry look fine?
+- Switches on Home (Quick settings, Minimap) are the new track with a knob (amber when on); tick boxes in the quest log are the new check box.
+- Size / Opacity sliders: dark groove, amber filled part up to the knob, amber pearl knob.
+- Buttons: Reload UI and Theme show the stone art; a greyed-out button looks greyed.
+- Classic and Obsidian must look as before (plain dark cards for the countdown).
+- Anything cut off, wrongly placed or overlapping: tell me where.
 
 ## Cannot be tested yet (reason)
 - 4.13 group picks: nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made.

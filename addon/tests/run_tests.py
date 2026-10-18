@@ -4640,6 +4640,17 @@ def test_step6_ui(templates, fx):
           and "btn_normal" in lua.eval("%s.nav.%s.bar.parts[2].__tex" % (IM, other)) and "gem_off" in lua.eval("%s.nav.%s.gem.__tex" % (IM, other)),
           "azeroth with images: the selected sidebar button (%s) and its gem are lit, the others are not" % cur)
     check(len(lua_table_to_list(lua.eval("R2FMain.r2fDeco.img.sliders"))) == 2, "azeroth with images: both top-bar sliders are re-skinned")
+    check(all(lua.eval("%s.nav.%s.icon:IsShown()" % (IM, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay")),
+          "azeroth with images: every sidebar button has its icon")
+    check(all(lua.eval("%s.heads[%d].word:IsShown()" % (IM, k)) is True for k in (1, 2, 3)),
+          "azeroth with images: the three group headings are the letter-spaced images")
+    check(lua.eval("(R2F.Home.CountdownParts(R2F.Home.LAUNCH_AT - 18 * 86400 - 3600 - 44 * 60 - 5))") == 18,
+          "home countdown parts: 18 days")
+    check(lua.eval("(select(3, R2F.Home.CountdownParts(R2F.Home.LAUNCH_AT - 18 * 86400 - 3600 - 44 * 60 - 5)))") == 44,
+          "home countdown parts: 44 minutes")
+    check(lua.eval("(select(4, R2F.Home.CountdownParts(R2F.Home.LAUNCH_AT + 5)))") is True, "home countdown parts: live after the launch")
+    lua.execute("R2F.Home.UpdateCountdown()")
+    check(lua.eval("R2F.Deco ~= nil") is True, "decoration module present")
     lua.execute("R2F.Theme.Set('obsidian')")
     check(lua.eval("%s.panel:IsShown()" % IM) is False and lua.eval("%s.banner:IsShown()" % IM) is False
           and lua.eval("%s.nav.home.bar.parts[1]:IsShown()" % IM) is False, "another theme hides every image piece again")
@@ -4651,6 +4662,8 @@ def test_step6_ui(templates, fx):
     deco_src = open(os.path.join(HERE, "..", "RoadToForever", "UI", "Deco.lua"), encoding="utf-8").read()
     names = set(_re.findall(r'"(azeroth_[a-z_]+)"', deco_src)) | set(_re.findall(r'IMG \.\. \(sel and "(azeroth_[a-z_]+)" or', deco_src))
     names |= set(_re.findall(r'"(azeroth_[a-z_]+)"\)', deco_src))
+    names = {n for n in names if not n.endswith("_")}
+    names |= {"azeroth_icon_" + n for n in _re.findall(r'= "([a-z]+)"', deco_src[deco_src.index("local NAV_ICON"):deco_src.index("-- The group heading images")])}
     missing = [n for n in sorted(names) if not os.path.exists(os.path.join(HERE, "..", "RoadToForever", "media", "azeroth", n + ".tga"))]
     check(not missing, "every azeroth texture named in Deco.lua exists as a .tga in media/azeroth: %s" % missing)
     lua.execute("R2F.Images.azeroth = true")

@@ -105,6 +105,13 @@ local function threeSlice(parent, layer, sub, capw, cap)
   return bar
 end
 
+local NAV_ICON = { home = "home", plan = "plan", talents = "talents", bis = "gear", macros = "macros", gameplay = "tweaks" }
+-- The group heading images (word baked in) and how wide the word is, so the fading line can start after it.
+local HEAD_IMG = { JOURNEY = { "azeroth_head_journey", 76 }, CHARACTER = { "azeroth_head_character", 100 },
+                   UI = { "azeroth_head_ui", 17 } }
+-- Sidebar label colours of the design: #CDBF9C normal, #FFF0C4 hover, #FFF3CC selected.
+local NAV_TEXT = { normal = { 0.804, 0.749, 0.612 }, hover = { 1, 0.941, 0.769 }, selected = { 1, 0.953, 0.8 } }
+
 local function buildImages(frame, ctx, d)
   local i = { nav = {}, heads = {}, sliders = {} }
   d.img = i
@@ -182,6 +189,11 @@ local function buildImages(frame, ctx, d)
     n.gem = itex(b, "ARTWORK", 2)
     n.gem:SetSize(16, 16)
     n.gem:SetPoint("RIGHT", b, "RIGHT", -6, 0)
+    n.icon = itex(b, "ARTWORK", 2)
+    n.icon:SetSize(18, 18)
+    n.icon:SetPoint("LEFT", b, "LEFT", 10, 0)
+    n.icon:SetTexture(IMG .. "azeroth_icon_" .. (NAV_ICON[key] or "home"))
+    n.btn = b
     i.nav[key] = n
     if b.HookScript then
       b:HookScript("OnEnter", function() n.hover = true Deco.RefreshNav() end)
@@ -194,7 +206,12 @@ local function buildImages(frame, ctx, d)
     line:SetHeight(6)
     line:SetPoint("LEFT", h, "RIGHT", 8, 0)
     line:SetTexture(IMG .. "azeroth_divider")
-    i.heads[#i.heads + 1] = { fs = h, line = line, sideW = ctx.sideW }
+    local word = itex(frame, "ARTWORK", 2)
+    word:SetSize(128, 16)
+    word:SetPoint("LEFT", h, "LEFT", -1, 0)
+    local spec = HEAD_IMG[(h.GetText and h:GetText() or ""):upper()]
+    if spec then word:SetTexture(IMG .. spec[1]) end
+    i.heads[#i.heads + 1] = { fs = h, line = line, word = word, wordWidth = spec and spec[2], sideW = ctx.sideW }
   end
 end
 
@@ -214,32 +231,176 @@ function Deco.AddSlider(frame, sl)
   local track = threeSlice(sl, "BACKGROUND", 1, 8, TRACK_CAP)
   track.parts[1]:ClearAllPoints()
   track.parts[1]:SetPoint("LEFT", sl, "LEFT", 0, 0)
-  track.parts[1]:SetSize(8, 16)
+  track.parts[1]:SetSize(8, 13)
   track.parts[3]:ClearAllPoints()
   track.parts[3]:SetPoint("RIGHT", sl, "RIGHT", 0, 0)
-  track.parts[3]:SetSize(8, 16)
+  track.parts[3]:SetSize(8, 13)
   track.parts[2]:ClearAllPoints()
   track.parts[2]:SetPoint("LEFT", track.parts[1], "RIGHT", 0, 0)
   track.parts[2]:SetPoint("RIGHT", track.parts[3], "LEFT", 0, 0)
-  track.parts[2]:SetHeight(16)
+  track.parts[2]:SetHeight(13)
   track.set(IMG .. "azeroth_slider_track")
-  d.img.sliders[#d.img.sliders + 1] = { sl = sl, own = own, track = track, knob = knob,
-                                        knobFile = knob and knob.GetTexture and knob:GetTexture() or DEFAULT_KNOB }
+  -- The amber filled part, clipped to the value: its width follows the slider.
+  local fill = threeSlice(sl, "ARTWORK", 0, 8, TRACK_CAP)
+  fill.parts[1]:ClearAllPoints()
+  fill.parts[1]:SetPoint("LEFT", sl, "LEFT", 0, 0)
+  fill.parts[1]:SetSize(8, 13)
+  fill.parts[3]:ClearAllPoints()
+  fill.parts[3]:SetPoint("LEFT", fill.parts[1], "RIGHT", 0, 0)
+  fill.parts[3]:SetSize(8, 13)
+  fill.parts[2]:ClearAllPoints()
+  fill.parts[2]:SetPoint("LEFT", fill.parts[1], "RIGHT", 0, 0)
+  fill.parts[2]:SetHeight(13)
+  fill.set(IMG .. "azeroth_slider_fill")
+  local s = { sl = sl, own = own, track = track, fill = fill, knob = knob,
+              knobFile = knob and knob.GetTexture and knob:GetTexture() or DEFAULT_KNOB }
+  function s.updateFill()
+    local lo, hi = 0, 1
+    if sl.GetMinMaxValues then lo, hi = sl:GetMinMaxValues() end
+    local w = (sl.GetWidth and sl:GetWidth() or 84)
+    local frac = (lo and hi and hi > lo and sl.GetValue) and (sl:GetValue() - lo) / (hi - lo) or 0
+    local px = math.max(0, math.min(w, w * frac))
+    -- the cap of the fill sits at its right end: left cap, plain middle, then the right cap at the value
+    fill.parts[2]:SetWidth(math.max(0, px - 16))
+    fill.parts[3]:ClearAllPoints()
+    fill.parts[3]:SetPoint("LEFT", fill.parts[2], "RIGHT", 0, 0)
+    for _, t in ipairs(fill.parts) do t:SetShown(Deco.imagesOn and px > 0) end
+  end
+  if sl.HookScript then sl:HookScript("OnValueChanged", function() s.updateFill() end) end
+  d.img.sliders[#d.img.sliders + 1] = s
 end
 
 -- A game button (UIPanelButtonTemplate) drawn from the button art: the template's own art is hidden while the images are on.
+-- `primary` = the gold call-to-action look. Art follows the button's state (normal, hover, disabled).
 local imgButtons = {}
-function Deco.AddButton(btn)
+local function buttonArt(e)
+  local kind = e.primary and "azeroth_btn_primary" or "azeroth_btn_normal"
+  if e.btn.IsEnabled and not e.btn:IsEnabled() then return IMG .. "azeroth_btn_disabled" end
+  if e.hover then return IMG .. (e.primary and "azeroth_btn_primary_hover" or "azeroth_btn_hover") end
+  return IMG .. kind
+end
+function Deco.AddButton(btn, primary)
   local bar = threeSlice(btn, "BACKGROUND", 1, 16, BTN_CAP)
-  bar.set(IMG .. "azeroth_btn_normal")
-  local entry = { btn = btn, bar = bar, art = {} }
+  local entry = { btn = btn, bar = bar, art = {}, primary = primary }
+  bar.set(buttonArt(entry))
   for _, key in ipairs({ "Left", "Middle", "Right" }) do
     if btn[key] then entry.art[#entry.art + 1] = btn[key] end
   end
   imgButtons[#imgButtons + 1] = entry
+  local function refresh() bar.set(buttonArt(entry)) end
   if btn.HookScript then
-    btn:HookScript("OnEnter", function() bar.set(IMG .. "azeroth_btn_hover") end)
-    btn:HookScript("OnLeave", function() bar.set(IMG .. "azeroth_btn_normal") end)
+    btn:HookScript("OnEnter", function() entry.hover = true refresh() end)
+    btn:HookScript("OnLeave", function() entry.hover = false refresh() end)
+    btn:HookScript("OnEnable", refresh)
+    btn:HookScript("OnDisable", refresh)
+  end
+  entry.refresh = refresh
+  if Deco.imagesOn then Deco.RefreshButtons() end
+end
+
+function Deco.RefreshButtons()
+  for _, e in ipairs(imgButtons) do
+    local on = Deco.imagesOn == true
+    for _, region in ipairs(e.art) do region:SetAlpha(on and 0 or 1) end
+    local hl = e.btn.GetHighlightTexture and e.btn:GetHighlightTexture()
+    if hl and hl.SetAlpha then hl:SetAlpha(on and 0 or 1) end
+    e.refresh()
+    for _, t in ipairs(e.bar.parts) do t:SetShown(on) end
+  end
+end
+
+-- Switches and tick boxes (UI.Switch / UI.BlackBox) drawn from images: `own` are the code-drawn parts to hide meanwhile.
+local imgSwitches = {}
+function Deco.StyleSwitch(b, own, knob, small)
+  local e = { b = b, own = own, knob = knob, small = small, w = b:GetWidth(), h = b:GetHeight() }
+  e.track = threeSlice(b, "BACKGROUND", 1, 11, 16 / 64)
+  e.kn = itex(b, "ARTWORK", 3)
+  e.kn:SetSize(22, 22)
+  e.kn:SetTexture(IMG .. "azeroth_switch_knob")
+  e.box = itex(b, "ARTWORK", 3)
+  e.box:SetAllPoints(b)
+  imgSwitches[#imgSwitches + 1] = e
+  function e.paint()
+    local on = b.GetChecked and b:GetChecked() and true or false
+    if small then
+      e.box:SetTexture(IMG .. (on and "azeroth_check_on" or "azeroth_check_off"))
+    else
+      e.track.set(IMG .. (on and "azeroth_switch_on" or "azeroth_switch_off"))
+      e.kn:ClearAllPoints()
+      if on then e.kn:SetPoint("RIGHT", b, "RIGHT", -1, 0) else e.kn:SetPoint("LEFT", b, "LEFT", 1, 0) end
+      if on then e.kn:SetVertexColor(1, 0.78, 0.35, 1) else e.kn:SetVertexColor(1, 1, 1, 1) end
+    end
+  end
+  b.r2fImgPaint = e.paint
+  if Deco.imagesOn then Deco.RefreshSwitches() end
+end
+
+function Deco.RefreshSwitches()
+  local on = Deco.imagesOn == true
+  for _, e in ipairs(imgSwitches) do
+    for _, t in ipairs(e.own) do t:SetAlpha(on and 0 or 1) end
+    if e.knob then e.knob:SetAlpha(on and 0 or 1) end
+    if not e.small then e.b:SetSize(on and 44 or e.w, on and 22 or e.h) end
+    for _, t in ipairs(e.track.parts) do t:SetShown(on and not e.small) end
+    e.kn:SetShown(on and not e.small)
+    e.box:SetShown(on and e.small == true)
+    if on then e.paint() end
+  end
+end
+
+-- Stone cards (the launch countdown): the 9-slice card art in image mode, a plain dark rectangle with a thin line otherwise.
+local cards = {}
+function Deco.Card(parent, w, h)
+  local c = { frame = CreateFrame("Frame", nil, parent) }
+  c.frame:SetSize(w, h)
+  local cap = 24 / 128
+  c.parts = {}
+  local xs, ys = { 0, cap, 1 - cap, 1 }, { 0, cap, 1 - cap, 1 }
+  local capw = 13
+  for row = 1, 3 do
+    for col = 1, 3 do
+      local t = c.frame:CreateTexture(nil, "BACKGROUND", nil, 1)
+      t:SetTexCoord(xs[col], xs[col + 1], ys[row], ys[row + 1])
+      if col == 1 then t:SetPoint("LEFT", c.frame, "LEFT", 0, 0) t:SetWidth(capw) end
+      if col == 3 then t:SetPoint("RIGHT", c.frame, "RIGHT", 0, 0) t:SetWidth(capw) end
+      if row == 1 then t:SetPoint("TOP", c.frame, "TOP", 0, 0) t:SetHeight(capw) end
+      if row == 3 then t:SetPoint("BOTTOM", c.frame, "BOTTOM", 0, 0) t:SetHeight(capw) end
+      if col == 2 then t:SetPoint("LEFT", c.frame, "LEFT", capw, 0) t:SetPoint("RIGHT", c.frame, "RIGHT", -capw, 0) end
+      if row == 2 then t:SetPoint("TOP", c.frame, "TOP", 0, -capw) t:SetPoint("BOTTOM", c.frame, "BOTTOM", 0, capw) end
+      t:Hide()
+      c.parts[#c.parts + 1] = t
+    end
+  end
+  c.flat = c.frame:CreateTexture(nil, "BACKGROUND", nil, 0)
+  c.flat:SetAllPoints(c.frame)
+  c.lines = {}
+  for _, sp in ipairs({ { "TOPLEFT", "TOPRIGHT", true }, { "BOTTOMLEFT", "BOTTOMRIGHT", true },
+                        { "TOPLEFT", "BOTTOMLEFT", false }, { "TOPRIGHT", "BOTTOMRIGHT", false } }) do
+    local t = c.frame:CreateTexture(nil, "BORDER")
+    t:SetPoint(sp[1], c.frame, sp[1], 0, 0)
+    t:SetPoint(sp[2], c.frame, sp[2], 0, 0)
+    if sp[3] then t:SetHeight(1) else t:SetWidth(1) end
+    c.lines[#c.lines + 1] = t
+  end
+  cards[#cards + 1] = c
+  return c
+end
+
+local function refreshCards(th)
+  local on = Deco.imagesOn == true
+  for _, c in ipairs(cards) do
+    for k, t in ipairs(c.parts) do
+      if on then t:SetTexture(IMG .. "azeroth_card") end
+      t:SetShown(on)
+      if k == 1 then c.sliceDone = true end
+    end
+    local sd, ru = th.side, th.rule
+    c.flat:SetColorTexture(sd[1], sd[2], sd[3], 0.85)
+    c.flat:SetShown(not on)
+    for _, t in ipairs(c.lines) do
+      t:SetColorTexture(ru[1], ru[2], ru[3], 0.55)
+      t:SetShown(not on)
+    end
   end
 end
 
@@ -251,6 +412,9 @@ function Deco.RefreshNav()
     local sel = key == selectedKey
     n.bar.set(IMG .. (sel and "azeroth_btn_selected" or (n.hover and "azeroth_btn_hover" or "azeroth_btn_normal")))
     n.gem:SetTexture(IMG .. (sel and "azeroth_gem_on" or "azeroth_gem_off"))
+    local c = sel and NAV_TEXT.selected or (n.hover and NAV_TEXT.hover or NAV_TEXT.normal)
+    n.icon:SetVertexColor(c[1], c[2], c[3], 1)
+    if n.btn.r2fText then n.btn.r2fText:SetTextColor(c[1], c[2], c[3]) end
   end
 end
 
@@ -259,20 +423,24 @@ local function applyImages(d, th, alpha)
   local i = d.img
   local on = th.deco == "azeroth" and imagesOn() and i ~= nil
   d.imagesActive = on
+  Deco.imagesOn = on
   for _, t in ipairs(imgPieces) do t:Hide() end
-  for _, e in ipairs(imgButtons) do
-    for _, region in ipairs(e.art) do region:SetAlpha(on and 0 or 1) end
-    local hl = e.btn.GetHighlightTexture and e.btn:GetHighlightTexture()
-    if hl and hl.SetAlpha then hl:SetAlpha(on and 0 or 1) end
-    if on then for _, t in ipairs(e.bar.parts) do t:Show() end end
+  Deco.RefreshButtons()
+  Deco.RefreshSwitches()
+  for _, n in pairs(i and i.nav or {}) do
+    if n.btn.r2fText then
+      n.btn.r2fText:ClearAllPoints()
+      n.btn.r2fText:SetPoint("LEFT", n.btn, "LEFT", on and 34 or 14, 0)
+    end
   end
+  for _, h in ipairs(i and i.heads or {}) do h.fs:SetAlpha(on and 0 or 1) end
   for _, s in ipairs(i and i.sliders or {}) do
     for _, region in ipairs(s.own) do region:SetAlpha(on and 0 or 1) end
     if s.knob then
       if on then
         s.sl:SetThumbTexture(IMG .. "azeroth_slider_knob")
         s.knob = s.sl:GetThumbTexture()
-        if s.knob then s.knob:SetSize(24, 24) s.knob:SetVertexColor(1, 1, 1, 1) end
+        if s.knob then s.knob:SetSize(26, 26) s.knob:SetVertexColor(1, 1, 1, 1) end
       else
         s.sl:SetThumbTexture(s.knobFile)
         s.knob = s.sl:GetThumbTexture()
@@ -280,6 +448,8 @@ local function applyImages(d, th, alpha)
       end
     end
     if on then for _, t in ipairs(s.track.parts) do t:Show() end end
+    Deco.imagesOn = on
+    if s.updateFill then s.updateFill() end
   end
   if not on then return false end
   i.panel:SetAlpha(alpha)
@@ -293,10 +463,15 @@ local function applyImages(d, th, alpha)
   for _, n in pairs(i.nav) do
     for _, t in ipairs(n.bar.parts) do t:Show() end
     n.gem:Show()
+    n.icon:Show()
   end
   for _, h in ipairs(i.heads) do
-    h.line:SetWidth(math.max(h.sideW - 22 - ((h.fs.GetStringWidth and h.fs:GetStringWidth()) or 0) - 8, 10))
+    local w = h.wordWidth or ((h.fs.GetStringWidth and h.fs:GetStringWidth()) or 0)
+    h.line:ClearAllPoints()
+    h.line:SetPoint("LEFT", h.fs, "LEFT", w + 8, 0)
+    h.line:SetWidth(math.max(h.sideW - 22 - w - 8, 10))
     h.line:Show()
+    if h.wordWidth then h.word:Show() end
   end
   Deco.RefreshNav()
   return true
@@ -384,7 +559,13 @@ function Deco.Select(key)
 end
 
 -- Show / recolour for theme th (th.deco == "azeroth"), or hide everything.
+local applyMain
 function Deco.Apply(frame, th, alpha)
+  applyMain(frame, th, alpha)
+  refreshCards(th)
+end
+
+applyMain = function(frame, th, alpha)
   local d = frame.r2fDeco
   if not d then return end
   local a = alpha or 1

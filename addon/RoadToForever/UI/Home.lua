@@ -76,6 +76,9 @@ local function entry(parent, y, icon, title, tab, w)
   b:SetSize(w or 420, 56)
   b:SetPoint("TOPLEFT", 0, y)
   b:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
+  -- Point at it: the glow takes the theme's colour (Classic keeps the game's own yellow-white).
+  local hl = b.GetHighlightTexture and b:GetHighlightTexture()
+  if hl then R2F.Theme.PaintVertex(hl, "highlight") end
   b.icon = b:CreateTexture(nil, "BORDER")
   b.icon:SetSize(44, 44)
   b.icon:SetPoint("LEFT", 6, 0)

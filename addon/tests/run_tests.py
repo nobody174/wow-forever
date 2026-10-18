@@ -4581,7 +4581,7 @@ def test_step6_ui(templates, fx):
     OLD = {"heading": (1, 0.82, 0), "body": (1, 1, 1), "dim": (0.5, 0.5, 0.5), "note": (0.7, 0.7, 0.7),
            "tagline": (0.75, 0.75, 0.75), "sub": (0.6, 0.6, 0.6), "group": (0.6, 0.6, 0.65)}
     OLD_TEX = {"accentTex": (1, 0.82, 0, 1), "thumb": (1, 1, 1, 1), "button": (1, 1, 1, 1), "tick": (0.75, 0.75, 0.78, 0.8),
-               "menu": (0, 0, 0, 0.9), "edit": (0, 0, 0, 0.8), "bizBack": (0.03, 0.03, 0.05, 0.9)}
+               "menu": (0, 0, 0, 0.9), "edit": (0, 0, 0, 0.8), "bizBack": (0.03, 0.03, 0.05, 0.9), "highlight": (1, 1, 1, 1)}
     for role, want in list(OLD.items()) + list(OLD_TEX.items()):
         got = [lua.eval("R2F.Theme.Role(R2F.Theme.Get('classic'), '%s')[%d]" % (role, i + 1)) for i in range(len(want))]
         check(all(abs(g - w) < 1e-9 for g, w in zip(got, want)), "classic role %s equals the old hardcoded value %s: %s" % (role, want, got))

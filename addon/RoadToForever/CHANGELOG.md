@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.72.1 (2026-10-18)
+
+- Ember & Iron: the bright white line along the top edge of the window is now a faint highlight, and the Launch plan row on Home glows in the theme's colour (orange) when you point at it instead of yellow. Classic is unchanged.
+
 ## 0.72.0 (2026-10-18)
 
 - **Ember & Iron is a full theme now:** a cut-corner steel frame with rivets, a steel panel with a glow of heat along the bottom edge, a darker plate behind the pages, the sidebar as a 2 x 3 grid of icon tiles (the open one glows orange) with short names (HOME, PLAN, TALENTS, GEAR, MACROS, TWEAKS), the launch countdown on one wide display plate, steel buttons (orange for the main one), orange switches and tick boxes, and sliders with a molten bead and an orange-to-amber fill. Fonts: Barlow Condensed, Barlow and Chakra Petch (bundled, free to use, licence files included).

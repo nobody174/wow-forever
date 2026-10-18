@@ -115,6 +115,7 @@ local CLASSIC_ROLES = {
   heading = { 1, 0.82, 0 }, body = { 1, 1, 1 }, dim = { 0.5, 0.5, 0.5 }, note = { 0.7, 0.7, 0.7 },
   tagline = { 0.75, 0.75, 0.75 }, sub = { 0.6, 0.6, 0.6 }, group = { 0.6, 0.6, 0.65 },
   accentTex = { 1, 0.82, 0, 1 }, thumb = { 1, 1, 1, 1 }, button = { 1, 1, 1, 1 },
+  highlight = { 1, 1, 1, 1 },
   tick = { 0.75, 0.75, 0.78, 0.8 }, menu = { 0, 0, 0, 0.9 }, edit = { 0, 0, 0, 0.8 }, bizBack = { 0.03, 0.03, 0.05, 0.9 },
 }
 Theme.CLASSIC_ROLES = CLASSIC_ROLES
@@ -134,7 +135,7 @@ function Theme.Role(t, role)
   if role == "tagline" then return mix(text, bg, 0.22) end
   if role == "sub" then return mix(text, bg, 0.42) end
   if role == "group" then return mix(text, bg, 0.4) end
-  if role == "accentTex" or role == "thumb" then return { accent[1], accent[2], accent[3], 1 } end
+  if role == "accentTex" or role == "thumb" or role == "highlight" then return { accent[1], accent[2], accent[3], 1 } end
   if role == "button" then local c = mix({ 1, 1, 1 }, accent, 0.45) return { c[1], c[2], c[3], 1 } end
   if role == "tick" then local c = mix(text, bg, 0.35) return { c[1], c[2], c[3], 0.8 } end
   if role == "menu" then return { side[1], side[2], side[3], 0.92 } end

@@ -5,6 +5,11 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-18 (addon versions checked)
+- addons.html: Road to Forever card fallback moved to 0.69.1 (newest `r2f-v*` tag, Oct 18, 2026; link, version, date, zip name). The card
+  still updates itself from GitHub in the browser. CurseForge cards (AtlasLoot Continued, Forever Bestiary, Leatrix Maps, Questie,
+  ThreatMaster) were not re-checked this run: CurseForge pages could not be fetched, so their "Versions checked" date was left as is.
+
 ## 2026-10-17 (cheat sheets for every class)
 - builds.html: new `GUIDES[level][class][spec]` map (same shape as an inline `build.guide`; `guideHTML()` uses `b.guide` first) covers
   all 47 builds. Level 30 from Icy Veins' Forever spec guides (Sep 17 to Oct 16); Level 60 is Classic-based (no Forever 60 guide exists, hit caps

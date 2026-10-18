@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.71.2 (2026-10-18)
+
+- **Azeroth Reforged artwork back to its true colours.** 0.71.1 darkened it to suit a brighter game setting. The artwork is made for the game's default Gamma (1.0); a higher Gamma in the game's graphics settings makes everything brighter, this window included. If it looks too bright, check Gamma (Esc > Options > Graphics, or `/console Gamma 1`).
+
 ## 0.71.1 (2026-10-18)
 
 - **Azeroth Reforged looks darker, as in the design.** The game drew the artwork much brighter than the pictures (the browns came out about twice as bright), so the artwork is now darkened to compensate.

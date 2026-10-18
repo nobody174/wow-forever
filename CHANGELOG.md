@@ -1779,6 +1779,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.71.2 (2026-10-18): no pre-darkening
+
+- `GAMMA = {"azeroth": 1.0}`: the owner's game had `Gamma 1.5` in Config.wtf (Brightness 50, Contrast 50), and a texture is drawn as v ** (1 / Gamma), which is exactly the 0.67 measured in 0.71.1. The artwork is made for the default (1.0), so the converter no longer compensates. Default to be confirmed in game with `/dump GetCVarDefault("Gamma")` (not in the interface files).
+
 ## 0.71.1 (2026-10-18): gamma, switches, all buttons
 
 - Measured on the owner's screenshot of 0.71.0: texture value v was drawn as about 255 * (v / 255) ** 0.67 (panel tile mean 43 shown as 77, inset 22 as 49, button 51 as 97). `slices_to_tga.py` now pre-darkens the colour channels with `GAMMA = {"azeroth": 1.5}` (alpha untouched); tune that number if a different graphics gamma setting changes the look. Switch leftovers: `SetVertexColor` on the code-drawn caps reset their alpha, so the parts are hidden with `SetShown` now. `UI.ThemeButton` (tint, font, `Deco.AddButton`) is applied to all 21 `UIPanelButtonTemplate` buttons in `UI/*.lua`; the primary button (gold art, dark text) is used for "Export professions".

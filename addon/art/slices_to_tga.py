@@ -42,10 +42,10 @@ def bleed(im):
     return im
 
 
-# The game shows these textures brighter than the PNGs (measured on screenshots of 0.71.0: texture value v is drawn as about
-# 255 * (v / 255) ** 0.67). Pre-darken the colour channels by the inverse so the picture on screen matches the design. Alpha is
-# untouched, pure white stays white. Per theme folder; 1.0 = off.
-GAMMA = {"azeroth": 1.5}
+# The game draws a texture value v as v ** (1 / Gamma) (measured: the owner's Gamma setting was 1.5, and the exponent measured
+# from his screenshots was 0.67 = 1 / 1.5). The artwork is made for the default Gamma 1.0, so it is NOT pre-darkened. If a
+# theme ever needs it, put a number here: 1.5 darkens for a player at Gamma 1.5. 1.0 = off.
+GAMMA = {"azeroth": 1.0}
 
 
 def pre_darken(im, gamma):

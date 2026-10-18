@@ -212,17 +212,35 @@ function Tab.CurrentPage()
   return R2F.Library.db.settings.gameplayPage
 end
 
+-- The page buttons along the top, each as wide as its label (a theme's font can be wider than the game's), wrapping to a
+-- second row; two rows fit above the page.
+function Tab.LayoutPageButtons()
+  local x, y = 12, -46
+  for _, pg in ipairs(Tab.PAGES) do
+    local b = pageButtons[pg.key]
+    if b then
+      local fs = b.GetFontString and b:GetFontString()
+      local textW = fs and fs.GetStringWidth and fs:GetStringWidth() or 0
+      local w = math.min(170, math.max(84, math.ceil(textW) + 28))
+      if x + w > 500 then x, y = 12, y - 26 end
+      b:SetSize(w, 22)
+      b:ClearAllPoints()
+      b:SetPoint("TOPLEFT", x, y)
+      x = x + w + 4
+    end
+  end
+end
+
 -- Called once by MainWindow with the Gameplay page frame.
 function Tab.Build(f)
   page = f
   local defs = byKey()
 
   -- The page buttons along the top.
-  for i, pg in ipairs(Tab.PAGES) do
+  for _, pg in ipairs(Tab.PAGES) do
     local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     R2F.UI.ThemeButton(b)
     b:SetSize(100, 22)
-    b:SetPoint("TOPLEFT", 12 + ((i - 1) % 4) * 104, -46 - math.floor((i - 1) / 4) * 26)
     b:SetText(L[pg.label])
     b:SetScript("OnClick", function() Tab.ShowPage(pg.key) end)
     b.mark = b:CreateTexture(nil, "OVERLAY")
@@ -233,6 +251,9 @@ function Tab.Build(f)
     b.mark:Hide()
     pageButtons[pg.key] = b
   end
+  Tab.LayoutPageButtons()
+  -- Another theme can change the font (and so the width of every label): lay the buttons out again.
+  R2F.Theme.OnChange(function() Tab.LayoutPageButtons() end)
 
   local reset = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
 

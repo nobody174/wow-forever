@@ -231,26 +231,26 @@ function Deco.AddSlider(frame, sl)
   local track = threeSlice(sl, "BACKGROUND", 1, 8, TRACK_CAP)
   track.parts[1]:ClearAllPoints()
   track.parts[1]:SetPoint("LEFT", sl, "LEFT", 0, 0)
-  track.parts[1]:SetSize(8, 13)
+  track.parts[1]:SetSize(8, 10)
   track.parts[3]:ClearAllPoints()
   track.parts[3]:SetPoint("RIGHT", sl, "RIGHT", 0, 0)
-  track.parts[3]:SetSize(8, 13)
+  track.parts[3]:SetSize(8, 10)
   track.parts[2]:ClearAllPoints()
   track.parts[2]:SetPoint("LEFT", track.parts[1], "RIGHT", 0, 0)
   track.parts[2]:SetPoint("RIGHT", track.parts[3], "LEFT", 0, 0)
-  track.parts[2]:SetHeight(13)
+  track.parts[2]:SetHeight(10)
   track.set(IMG .. "azeroth_slider_track")
   -- The amber filled part, clipped to the value: its width follows the slider.
   local fill = threeSlice(sl, "ARTWORK", 0, 8, TRACK_CAP)
   fill.parts[1]:ClearAllPoints()
   fill.parts[1]:SetPoint("LEFT", sl, "LEFT", 0, 0)
-  fill.parts[1]:SetSize(8, 13)
+  fill.parts[1]:SetSize(8, 10)
   fill.parts[3]:ClearAllPoints()
   fill.parts[3]:SetPoint("LEFT", fill.parts[1], "RIGHT", 0, 0)
-  fill.parts[3]:SetSize(8, 13)
+  fill.parts[3]:SetSize(8, 10)
   fill.parts[2]:ClearAllPoints()
   fill.parts[2]:SetPoint("LEFT", fill.parts[1], "RIGHT", 0, 0)
-  fill.parts[2]:SetHeight(13)
+  fill.parts[2]:SetHeight(10)
   fill.set(IMG .. "azeroth_slider_fill")
   local s = { sl = sl, own = own, track = track, fill = fill, knob = knob,
               knobFile = knob and knob.GetTexture and knob:GetTexture() or DEFAULT_KNOB }
@@ -446,7 +446,7 @@ local function applyImages(d, th, alpha)
       if on then
         s.sl:SetThumbTexture(IMG .. "azeroth_slider_knob")
         s.knob = s.sl:GetThumbTexture()
-        if s.knob then s.knob:SetSize(26, 26) s.knob:SetVertexColor(1, 1, 1, 1) end
+        if s.knob then s.knob:SetSize(22, 22) s.knob:SetVertexColor(1, 1, 1, 1) end
       else
         s.sl:SetThumbTexture(s.knobFile)
         s.knob = s.sl:GetThumbTexture()
@@ -559,6 +559,15 @@ function Deco.Build(frame, ctx)
   buildImages(frame, ctx, d)
 end
 
+-- The banner plate is about 200 px wide: a long window title (Road to Forever: Tweaks) is scaled down to fit it.
+function Deco.FitTitle(frame)
+  local t = frame and frame.r2fTitle
+  if not (t and t.SetScale) then return end
+  t:SetScale(1)
+  local w = t.GetStringWidth and t:GetStringWidth() or 0
+  if Deco.imagesOn and w > 200 then t:SetScale(200 / w) end
+end
+
 function Deco.Select(key)
   selectedKey = key
   Deco.RefreshNav()
@@ -585,6 +594,7 @@ applyMain = function(frame, th, alpha)
       frame.r2fTitle:ClearAllPoints()
       frame.r2fTitle:SetPoint("CENTER", d.img.banner, "CENTER", 0, -2)
     end
+    Deco.FitTitle(frame)
     return
   end
   if not on then

@@ -413,6 +413,7 @@ function MainWindow.SelectTab(key)
   end
   pages[key]:Show()
   frame.r2fTitle:SetText(L[TITLES[key]])
+  R2F.Deco.FitTitle(frame)
   showSelected(key)
   settings().lastTab = key
   if frame:IsShown() then refreshPage(key) end

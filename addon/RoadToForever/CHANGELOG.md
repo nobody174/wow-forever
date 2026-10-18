@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.71.3 (2026-10-18)
+
+- **Tweaks page buttons fit their text.** With the Azeroth Reforged font the labels (Vendors & loot, Waypoint arrow) ran out of their buttons; each button is now as wide as its label and wraps to a second row if needed, in every theme.
+- **Thinner sliders and a smaller knob** in Azeroth Reforged, closer to the design.
+- A long window title (Road to Forever: Tweaks) shrinks to fit the banner.
+
 ## 0.71.2 (2026-10-18)
 
 - **Azeroth Reforged artwork back to its true colours.** 0.71.1 darkened it to suit a brighter game setting. The artwork is made for the game's default Gamma (1.0); a higher Gamma in the game's graphics settings makes everything brighter, this window included. If it looks too bright, check Gamma (Esc > Options > Graphics, or `/console Gamma 1`).

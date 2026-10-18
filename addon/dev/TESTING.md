@@ -30,8 +30,6 @@ Use a test character for anything marked **TEST CHAR**.
 - No Lua errors or taint warnings; changing the theme in combat should just recolour the window.
 
 
-5.35. **Corpse arrow (0.68.2):** die, release your spirit, and see if the arrow points at your corpse (chat says it is set). If not: while still a ghost type `/r2f debug corpse` and paste the lines. Also try dying close to a graveyard and far from one (a ghost in another zone is the case this fixes), and once inside a dungeon.
-
 5.38. **Azeroth Reforged round 2 (0.71.0, brightness fixed in 0.71.1):** compare with `azeroth_reforged.png`.
 - Darker brown and stronger gold than in 0.70.1? (The slices match the design's colours; if it still looks lighter in game, say where and I look for a tint on our side.)
 - Sidebar: an icon on every button, gold when selected, muted otherwise; JOURNEY / CHARACTER / UI as letter-spaced gold words with a fading line.

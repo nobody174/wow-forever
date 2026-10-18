@@ -4654,6 +4654,13 @@ def test_step6_ui(templates, fx):
     lua.execute("R2F.Theme.Set('obsidian')")
     check(lua.eval("%s.panel:IsShown()" % IM) is False and lua.eval("%s.banner:IsShown()" % IM) is False
           and lua.eval("%s.nav.home.bar.parts[1]:IsShown()" % IM) is False, "another theme hides every image piece again")
+    # A long window title is scaled to fit the banner plate (200 px) in image mode.
+    lua.execute("""R2F.Images.azeroth = true R2F.Theme.Set('azeroth') TSCALE = nil
+      R2FMain.r2fTitle.GetStringWidth = function() return 300 end
+      R2FMain.r2fTitle.SetScale = function(self, v) TSCALE = v end
+      R2F.Deco.FitTitle(R2FMain)""")
+    check(abs(lua.eval("TSCALE") - 200 / 300.0) < 1e-6, "azeroth with images: a long title is scaled to fit the banner plate")
+    lua.execute("R2FMain.r2fTitle.GetStringWidth = nil R2FMain.r2fTitle.SetScale = nil")
     lua.execute("R2F.Images.azeroth = false R2F.Theme.Set('azeroth')")
     check(lua.eval("%s.panel:IsShown()" % D) is True and lua.eval("%s.panel:IsShown()" % IM) is False,
           "without the image flag Azeroth falls back to the rectangle look")

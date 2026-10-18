@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.71.4 (2026-10-18)
+
+- Azeroth Reforged: the gem on the sidebar buttons is smaller so long names (Builds & talents) no longer touch it, and the Theme button grows to fit its label.
+
 ## 0.71.3 (2026-10-18)
 
 - **Tweaks page buttons fit their text.** With the Azeroth Reforged font the labels (Vendors & loot, Waypoint arrow) ran out of their buttons; each button is now as wide as its label and wraps to a second row if needed, in every theme.

@@ -187,8 +187,8 @@ local function buildImages(frame, ctx, d)
   for key, b in pairs(ctx.nav) do
     local n = { bar = threeSlice(b, "BACKGROUND", 1, 16, BTN_CAP), key = key }
     n.gem = itex(b, "ARTWORK", 2)
-    n.gem:SetSize(16, 16)
-    n.gem:SetPoint("RIGHT", b, "RIGHT", -6, 0)
+    n.gem:SetSize(12, 12)
+    n.gem:SetPoint("RIGHT", b, "RIGHT", -4, 0)
     n.icon = itex(b, "ARTWORK", 2)
     n.icon:SetSize(18, 18)
     n.icon:SetPoint("LEFT", b, "LEFT", 10, 0)
@@ -436,7 +436,7 @@ local function applyImages(d, th, alpha)
   for _, n in pairs(i and i.nav or {}) do
     if n.btn.r2fText then
       n.btn.r2fText:ClearAllPoints()
-      n.btn.r2fText:SetPoint("LEFT", n.btn, "LEFT", on and 34 or 14, 0)
+      n.btn.r2fText:SetPoint("LEFT", n.btn, "LEFT", on and 32 or 14, 0)
     end
   end
   for _, h in ipairs(i and i.heads or {}) do h.fs:SetAlpha(on and 0 or 1) end

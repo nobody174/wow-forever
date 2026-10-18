@@ -1779,6 +1779,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.71.4 (2026-10-18): small spacing fixes
+
+- Nav gem 12 px at right -4, label offset 32; Theme button width = label + 32 (170 to 200 px), re-fitted on a theme change. From the 0.71.3 screenshot.
+
 ## 0.71.3 (2026-10-18): page buttons, thinner sliders, title fit
 
 - `Tab.LayoutPageButtons` (Gameplay): width = label width + 28 (84 to 170 px), wrap at 500 px, re-run on a theme change. Slider groove / fill 10 px high, knob 22 px (the design's 10 / 22). `Deco.FitTitle`: scales the window title down to 200 px in image mode. Corpse arrow confirmed in game (0.68.2).

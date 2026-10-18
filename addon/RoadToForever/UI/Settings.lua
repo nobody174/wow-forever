@@ -139,6 +139,7 @@ local function themeItems()
       func = function()
         R2F.Theme.Set(t.key)           -- recolours our own frames (MainWindow listens), nothing of the game's
         ui.theme:SetText(L.SETTINGS_THEME_BTN:format(t.name))
+        if ui.theme.r2fFit then ui.theme.r2fFit() end
       end,
     }
   end
@@ -151,6 +152,15 @@ local function buildTheme(f)
   b:SetSize(170, 22)
   b:SetPoint("TOPLEFT", 130, TOP - 218)
   b:SetText(L.SETTINGS_THEME_BTN:format(R2F.Theme.Get().name))
+  -- As wide as its label: a theme's font can be wider than the game's.
+  local function fit()
+    local fs = b.GetFontString and b:GetFontString()
+    local w = fs and fs.GetStringWidth and fs:GetStringWidth() or 0
+    b:SetWidth(math.min(200, math.max(170, math.ceil(w) + 32)))
+  end
+  b.r2fFit = fit
+  fit()
+  R2F.Theme.OnChange(function() if b.r2fFit then b.r2fFit() end end)
   UI.ThemeButton(b)
   b:SetScript("OnClick", function() UI.ContextMenu(themeItems()) end)
   b:SetScript("OnEnter", function(self)

@@ -200,6 +200,7 @@ local function build(f)
   -- Export professions: same as /r2f profs and the profession
   -- window's Export button. Read-only, so it stays enabled in combat.
   ui.profs = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+  R2F.UI.ThemeButton(ui.profs, true)
   ui.profs:SetSize(160, 24)
   ui.profs:SetPoint("TOPLEFT", 344, -352)
   ui.profs:SetText(L.HOME_PROFS)

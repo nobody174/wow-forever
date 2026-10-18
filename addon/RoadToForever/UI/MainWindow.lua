@@ -320,7 +320,6 @@ local function build()
   reload:SetText(L.MENU_RELOAD)
   reload:SetScript("OnClick", function() ReloadUI() end)
   UI.ThemeButton(reload)
-  R2F.Deco.AddButton(reload)
   f.r2fReload = reload
   f.r2fSizeSlider = topSlider(f, L.WIN_SIZE, 50, 150,
     function() return settings().menuScale end,

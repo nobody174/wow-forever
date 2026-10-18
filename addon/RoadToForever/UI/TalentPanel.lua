@@ -267,6 +267,7 @@ end
 
 local function button(f, label, w)
   local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+  R2F.UI.ThemeButton(b)
   b:SetSize(w, 22)
   b:SetText(label)
   return b

@@ -220,6 +220,7 @@ function Tab.Build(f)
   -- The page buttons along the top.
   for i, pg in ipairs(Tab.PAGES) do
     local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    R2F.UI.ThemeButton(b)
     b:SetSize(100, 22)
     b:SetPoint("TOPLEFT", 12 + ((i - 1) % 4) * 104, -46 - math.floor((i - 1) / 4) * 26)
     b:SetText(L[pg.label])
@@ -234,6 +235,8 @@ function Tab.Build(f)
   end
 
   local reset = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+
+  R2F.UI.ThemeButton(reset)
   reset:SetSize(100, 22)
   reset:SetPoint("BOTTOMRIGHT", -20, 12)
   reset:SetText(L.GP_RESET_PAGE)
@@ -299,6 +302,7 @@ function Tab.Build(f)
       local bx = LEFT + 4
       for _, k in ipairs({ "none", "thin", "thick" }) do
         local ob = CreateFrame("Button", nil, c, "UIPanelButtonTemplate")
+        R2F.UI.ThemeButton(ob)
         ob:SetSize(64, 22)
         ob:SetPoint("TOPLEFT", bx, y - 74)
         ob:SetText(L["GP_OUTLINE_" .. k:upper()])
@@ -326,6 +330,7 @@ function Tab.Build(f)
       bx = LEFT + 4
       for _, k in ipairs(R2F.Nav.SIZE_ORDER) do
         local ab = CreateFrame("Button", nil, c, "UIPanelButtonTemplate")
+        R2F.UI.ThemeButton(ab)
         ab:SetSize(64, 22)
         ab:SetPoint("TOPLEFT", bx, y - 24)
         ab:SetText(L["NAV_SIZE_" .. k:upper()])
@@ -347,6 +352,7 @@ function Tab.Build(f)
       for _, k in ipairs(R2F.Nav.STYLE_ORDER) do
         if k == "block" or k == "gilded" then bx, by = LEFT + 4, by - 26 end   -- more rows
         local sb = CreateFrame("Button", nil, c, "UIPanelButtonTemplate")
+        R2F.UI.ThemeButton(sb)
         sb:SetSize(widths[k], 22)
         sb:SetPoint("TOPLEFT", bx, by)
         sb:SetText(L["NAV_STYLE_" .. k:upper()])

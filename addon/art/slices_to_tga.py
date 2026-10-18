@@ -42,6 +42,20 @@ def bleed(im):
     return im
 
 
+# The game shows these textures brighter than the PNGs (measured on screenshots of 0.71.0: texture value v is drawn as about
+# 255 * (v / 255) ** 0.67). Pre-darken the colour channels by the inverse so the picture on screen matches the design. Alpha is
+# untouched, pure white stays white. Per theme folder; 1.0 = off.
+GAMMA = {"azeroth": 1.5}
+
+
+def pre_darken(im, gamma):
+    if gamma == 1.0:
+        return im
+    lut = [round(255 * (i / 255.0) ** gamma) for i in range(256)]
+    r, g, b, a = im.split()
+    return Image.merge("RGBA", (r.point(lut), g.point(lut), b.point(lut), a))
+
+
 def convert(theme):
     src, out = SRC / theme, MEDIA / theme
     out.mkdir(parents=True, exist_ok=True)
@@ -52,7 +66,7 @@ def convert(theme):
         ok = lambda n: n in POW2 or n in SMALL_OK
         if not (ok(w) and ok(h)):
             raise SystemExit("%s is %dx%d: each side must be 8, 16, 32, 64, 128 or 256" % (png.name, w, h))
-        bleed(im).save(out / (png.stem + ".tga"), "TGA", orientation=1)
+        pre_darken(bleed(im), GAMMA.get(theme, 1.0)).save(out / (png.stem + ".tga"), "TGA", orientation=1)
         names.append(png.stem)
     return names
 

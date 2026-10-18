@@ -106,6 +106,8 @@ local function build()
   replaceBox:SetScript("OnClick", refresh)
 
   importBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+
+  R2F.UI.ThemeButton(importBtn)
   importBtn:SetSize(110, 22)
   importBtn:SetPoint("BOTTOMRIGHT", f, "BOTTOM", -6, 18)
   importBtn:SetText(L.BTN_IMPORT)
@@ -113,6 +115,8 @@ local function build()
   importBtn:Disable()
 
   local cancel = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+
+  R2F.UI.ThemeButton(cancel)
   cancel:SetSize(110, 22)
   cancel:SetPoint("BOTTOMLEFT", f, "BOTTOM", 6, 18)
   cancel:SetText(L.BTN_CANCEL)

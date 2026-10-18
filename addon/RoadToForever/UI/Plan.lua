@@ -81,6 +81,7 @@ local function pointLine(r, j)
   if p then return p end
   p = {}
   p.btn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+  R2F.UI.ThemeButton(p.btn)
   p.btn:SetSize(96, 18)
   p.btn:SetScript("OnClick", function(self)
     if self.point then Plan.Waypoint(self.point, self.stepId) end
@@ -433,6 +434,7 @@ function Tab.Build(f)
   ui.progress = f:CreateFontString(nil, "ARTWORK", "R2FBody")
   ui.progress:SetPoint("TOPLEFT", 28, -124)
   ui.buyBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+  R2F.UI.ThemeButton(ui.buyBtn)
   ui.buyBtn:SetSize(150, 22)
   ui.buyBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -24, -120)
   ui.buyBtn:SetText(L.PLAN_BUY_BTN)

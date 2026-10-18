@@ -306,6 +306,11 @@ function Deco.RefreshButtons()
     if hl and hl.SetAlpha then hl:SetAlpha(on and 0 or 1) end
     e.refresh()
     for _, t in ipairs(e.bar.parts) do t:SetShown(on) end
+    -- The gold primary button carries dark text on the gold art.
+    local fs = e.primary and e.btn.GetFontString and e.btn:GetFontString()
+    if fs then
+      if on then fs:SetTextColor(0.165, 0.102, 0.008) else R2F.Theme.PaintText(fs, "heading") end
+    end
   end
 end
 
@@ -338,13 +343,14 @@ end
 function Deco.RefreshSwitches()
   local on = Deco.imagesOn == true
   for _, e in ipairs(imgSwitches) do
-    for _, t in ipairs(e.own) do t:SetAlpha(on and 0 or 1) end
-    if e.knob then e.knob:SetAlpha(on and 0 or 1) end
+    -- Hide, not fade: the code-drawn parts set their own alpha when they are recoloured (SetVertexColor), which would undo a fade.
+    for _, t in ipairs(e.own) do t:SetShown(not on) end
+    if e.knob then e.knob:SetShown(not on) end
     if not e.small then e.b:SetSize(on and 44 or e.w, on and 22 or e.h) end
     for _, t in ipairs(e.track.parts) do t:SetShown(on and not e.small) end
     e.kn:SetShown(on and not e.small)
     e.box:SetShown(on and e.small == true)
-    if on then e.paint() end
+    if on then e.paint() elseif e.b.r2fPaint then e.b.r2fPaint() end
   end
 end
 

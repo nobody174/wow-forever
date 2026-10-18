@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.71.1 (2026-10-18)
+
+- **Azeroth Reforged looks darker, as in the design.** The game drew the artwork much brighter than the pictures (the browns came out about twice as bright), so the artwork is now darkened to compensate.
+- The small green dots left over at the side of the switches are gone.
+- **Every button in the addon's windows now uses the stone button art** in this theme (not only Reload UI and Theme), and "Export professions" is the gold call-to-action button.
+
 ## 0.71.0 (2026-10-18)
 
 - **Azeroth Reforged, round 2 of the artwork.** Darker, stronger browns and gold as in the design; an icon on every sidebar button (white line icons, gold when selected); the group names JOURNEY / CHARACTER / UI as letter-spaced images with the fading line after them; the launch countdown is now three stone cards (days, hours, minutes) on Home with the date under them; switches, tick boxes and the Size / Opacity sliders (with the amber filled part) use the new art; buttons show a disabled look when off. Sidebar label colours follow the design (normal, hover, selected).

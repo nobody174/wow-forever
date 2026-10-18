@@ -101,12 +101,15 @@ local DIALOG_BACKDROP = {
 -- for SetBackdrop on modern-engine clients; older ones have SetBackdrop built in.
 -- A game button (UIPanelButtonTemplate) in the theme's colours: its three art pieces and its text. Classic leaves the art
 -- untinted (white) and the text in the game's own gold. Missing parts are skipped (other templates name them differently).
-function UI.ThemeButton(b)
+function UI.ThemeButton(b, primary)
+  if b.r2fThemed then return b end
+  b.r2fThemed = true
   for _, key in ipairs({ "Left", "Middle", "Right" }) do
     local part = b[key]
     if part and part.SetVertexColor then R2F.Theme.PaintVertex(part, "button") end
   end
   if b.SetNormalFontObject and _G.R2FHeading then b:SetNormalFontObject(_G.R2FHeading) end
+  R2F.Deco.AddButton(b, primary)
   return b
 end
 
@@ -272,9 +275,12 @@ local function buildConfirm()
   f.text = text
 
   local yes = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+
+  R2F.UI.ThemeButton(yes)
   yes:SetSize(120, 22)
   yes:SetPoint("BOTTOMRIGHT", f, "BOTTOM", -6, 18)
   local no = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+  R2F.UI.ThemeButton(no)
   no:SetSize(120, 22)
   no:SetPoint("BOTTOMLEFT", f, "BOTTOM", 6, 18)
   f.yes, f.no = yes, no
@@ -344,10 +350,12 @@ function UI.Prompt(title, default, acceptLabel, cancelLabel, onAccept)
     edit:SetScript("OnEnterPressed", accept)
     edit:SetScript("OnEscapePressed", function() f.onAccept = nil f:Hide() end)
     local yes = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    R2F.UI.ThemeButton(yes)
     yes:SetSize(110, 22)
     yes:SetPoint("BOTTOMRIGHT", f, "BOTTOM", -6, 16)
     yes:SetScript("OnClick", accept)
     local no = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    R2F.UI.ThemeButton(no)
     no:SetSize(110, 22)
     no:SetPoint("BOTTOMLEFT", f, "BOTTOM", 6, 16)
     no:SetScript("OnClick", function() f.onAccept = nil f:Hide() end)

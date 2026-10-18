@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.74.1 (2026-10-19)
+
+- **Minimap button menu: ThreatMaster on and off.** A "ThreatMaster (/tm)" entry, ticked while its window is shown, next to the Damage meter one. It does exactly what typing /tm does. It only appears when the ThreatMaster addon is installed.
+
 ## 0.74.0 (2026-10-19)
 
 - **Frost & Void is a full theme now:** a deep indigo window with faint stars and two soft glows (violet lower left, cyan upper right), rounded corners with the small corner brackets, glass-like panels behind the pages and for the countdown, and the sidebar as a chain of round orbs joined by a thin line (the open one glows cyan). Violet-to-blue primary buttons, round tick boxes, pill switches with a glowing pearl, and sliders that fill from violet to cyan. Font: Sora (bundled, free to use, licence file included). The window stays nearly solid at low opacity so the text stays readable.

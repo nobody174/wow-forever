@@ -134,6 +134,23 @@ function Minimap_.ToggleDamageMeter()
   end
 end
 
+-- ThreatMaster (the threat meter addon): its own /tm command shows and hides its window. We call that command's handler,
+-- the same thing typing /tm does; nothing of its window is touched here. The tick follows its saved "shown" option (shown
+-- unless it says no).
+function Minimap_.ThreatMasterAvailable()
+  local cmds = _G.SlashCmdList
+  return type(cmds) == "table" and type(cmds.THREATMASTER) == "function"
+end
+
+function Minimap_.ThreatMasterOn()
+  local saved = rawget(_G, "ThreatMasterDB")
+  return not (type(saved) == "table" and saved.shown == false)
+end
+
+function Minimap_.ToggleThreatMaster()
+  if Minimap_.ThreatMasterAvailable() then pcall(_G.SlashCmdList.THREATMASTER, "") end
+end
+
 -- The menu as data, so both menu backends draw the same thing (and the
 -- tests can check it): kind = title / button / check / divider.
 function Minimap_.MenuItems()
@@ -151,6 +168,10 @@ function Minimap_.MenuItems()
   if Minimap_.DamageMeterAvailable() then
     items[#items + 1] = { kind = "check", text = L.MENU_DAMAGEMETER, isChecked = Minimap_.DamageMeterOn,
                           func = Minimap_.ToggleDamageMeter }
+  end
+  if Minimap_.ThreatMasterAvailable() then
+    items[#items + 1] = { kind = "check", text = L.MENU_THREATMASTER, isChecked = Minimap_.ThreatMasterOn,
+                          func = Minimap_.ToggleThreatMaster }
   end
   -- /reload without typing it (ReloadUI is not a protected function).
   items[#items + 1] = { kind = "button", text = L.MENU_RELOAD, func = function() ReloadUI() end }

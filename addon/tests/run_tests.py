@@ -4431,6 +4431,17 @@ def test_step6_ui(templates, fx):
     lua.execute("DMI.func()")
     check(lua.eval("TEST.dm") == "0", "menu: and off again")
     lua.execute("GetCVar, SetCVar = OLDGET, OLDSET")
+    # ThreatMaster toggle: only when its /tm command exists; it calls that command with no argument (what typing /tm does).
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_THREATMASTER then return true end end return false end)()") is False,
+          "menu: no ThreatMaster entry when the addon is not there")
+    lua.execute("""TMCALLS = {} ThreatMasterDB = { shown = true }
+      SlashCmdList.THREATMASTER = function(msg) TMCALLS[#TMCALLS + 1] = msg ThreatMasterDB.shown = not ThreatMasterDB.shown end""")
+    lua.execute("TMI = nil for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_THREATMASTER then TMI = it end end")
+    check(lua.eval("TMI ~= nil and TMI.kind == 'check' and TMI.isChecked() == true"), "menu: a ThreatMaster check item, ticked while its window is shown")
+    lua.execute("TMI.func()")
+    check(lua.eval("#TMCALLS") == 1 and lua.eval("TMCALLS[1]") == "" and lua.eval("TMI.isChecked()") is False,
+          "menu: ticking it runs /tm (no argument) and the tick follows")
+    lua.execute("SlashCmdList.THREATMASTER = nil ThreatMasterDB = nil")
     check(lua.eval("R2FDB.minimap.lock") is False, "Lock again unlocks")
     T.chat = lua.table()
     click(7)

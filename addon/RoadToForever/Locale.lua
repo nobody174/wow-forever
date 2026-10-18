@@ -781,6 +781,7 @@ R2F.L = {
   MENU_TALENTS = "Talents",
   MENU_LOCK = "Lock button position",
   MENU_DAMAGEMETER = "Damage meter (Blizzard)",
+  MENU_THREATMASTER = "ThreatMaster (/tm)",
   MENU_RELOAD = "Reload UI",
   MENU_HIDE = "Hide minimap button",
   MM_HIDDEN = "minimap button hidden. Type /r2f minimap to show it again.",

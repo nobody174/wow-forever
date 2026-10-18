@@ -7,6 +7,7 @@
 -- Gradients use Texture:SetGradient (guarded: without it the piece is flat, in the middle colour).
 
 local _, R2F = ...
+local L = R2F.L
 
 local Deco = {}
 R2F.Deco = Deco
@@ -68,6 +69,13 @@ end
 -- 16 px caps, slider track 128x16 with 8 px caps, knob 32x32, divider 128x8, tiles 256x256.
 -- ---------------------------------------------------------------------------
 local IMG = "Interface\\AddOns\\RoadToForever\\media\\azeroth\\"
+local IMGROOT = "Interface\\AddOns\\RoadToForever\\media\\"
+-- Art of the shared pieces (buttons, switches, check boxes, sliders) of the image set in use (azeroth until another is chosen).
+local function P(name)
+  local set = Deco.set or "azeroth"
+  return IMGROOT .. set .. "\\" .. set .. "_" .. name
+end
+Deco.P = P
 local imgPieces = {}
 local BTN_CAP = 16 / 128          -- cap width in texture coordinates
 local TRACK_CAP = 8 / 128
@@ -79,8 +87,10 @@ local function itex(parent, layer, sub)
   return t
 end
 
-local function imagesOn()
-  return R2F.Images ~= nil and R2F.Images.azeroth == true
+-- The image set of a theme (its `deco` token) when the slices of that set are installed, else nil.
+local function imageSet(th)
+  if th.deco and R2F.Images and R2F.Images[th.deco] == true then return th.deco end
+  return nil
 end
 
 -- A three-part bar (left cap, stretchy middle, right cap) on `parent`, filled from one texture file; `capw` is the cap's
@@ -215,6 +225,56 @@ local function buildImages(frame, ctx, d)
   end
 end
 
+-- Ember & Iron (media/ember): panel tile with a heat glow along the bottom, a cut-corner steel frame, four rivets,
+-- the plate behind the pages and icon tiles for the sidebar.
+local EM = IMGROOT .. "ember\\ember_"
+-- Tile label and icon colours: #B5AFA5 normal, #FFC247 hover and selected.
+local NAV_TEXT_EMBER = { normal = { 0.71, 0.686, 0.647 }, hover = { 1, 0.76, 0.28 }, selected = { 1, 0.76, 0.28 } }
+
+local function buildEmber(frame, ctx, d)
+  local e = { nav = {} }
+  d.em = e
+  e.panel = itex(frame, "BACKGROUND", 1)
+  e.panel:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4)
+  e.panel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -4, 4)
+  e.panel:SetTexture(EM .. "panel", "REPEAT", "REPEAT")
+  e.panel:SetHorizTile(true)
+  e.panel:SetVertTile(true)
+  e.heat = itex(frame, "BACKGROUND", 2)
+  e.heat:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 4, 4)
+  e.heat:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -4, 4)
+  e.heat:SetHeight(16)
+  e.heat:SetTexture(EM .. "heat", "REPEAT", "REPEAT")
+  e.heat:SetHorizTile(true)
+  e.plate = Deco.NineSlice(frame, d.insetEdge, d.insetEdge, 16, 0.25, "BACKGROUND", 3)
+  e.plate.set(EM .. "plate")
+  e.frame = Deco.NineSlice(frame, frame, frame, 32, 0.25, "BORDER", 2, true)
+  e.frame.set(EM .. "frame")
+  e.rivets = {}
+  for _, rv in ipairs({
+    { "TOPLEFT", 22, -22 }, { "TOPRIGHT", -22, -22 }, { "BOTTOMLEFT", 22, 22 }, { "BOTTOMRIGHT", -22, 22 },
+  }) do
+    local t = itex(frame, "OVERLAY", 1)
+    t:SetSize(16, 16)
+    t:SetPoint("CENTER", frame, rv[1], rv[2], rv[3])
+    t:SetTexture(EM .. "rivet")
+    e.rivets[#e.rivets + 1] = t
+  end
+  for key, b in pairs(ctx.nav) do
+    local n = { btn = b, slot = itex(b, "BACKGROUND", 1), icon = itex(b, "ARTWORK", 2) }
+    n.slot:SetAllPoints(b)
+    n.slot:SetTexture(EM .. "slot_normal")
+    n.icon:SetSize(24, 24)
+    n.icon:SetPoint("TOP", b, "TOP", 0, -10)
+    n.icon:SetTexture(IMG .. "azeroth_icon_" .. (NAV_ICON[key] or "home"))
+    e.nav[key] = n
+    if b.HookScript then
+      b:HookScript("OnEnter", function() n.hover = true Deco.RefreshNav() end)
+      b:HookScript("OnLeave", function() n.hover = false Deco.RefreshNav() end)
+    end
+  end
+end
+
 -- Slider track and knob (the top bar's Size and Opacity). `sl` is our own slider; the template's own track textures are hidden
 -- while the images are on and put back otherwise.
 local DEFAULT_KNOB = "Interface\\Buttons\\UI-SliderBar-Button-Horizontal"
@@ -239,7 +299,7 @@ function Deco.AddSlider(frame, sl)
   track.parts[2]:SetPoint("LEFT", track.parts[1], "RIGHT", 0, 0)
   track.parts[2]:SetPoint("RIGHT", track.parts[3], "LEFT", 0, 0)
   track.parts[2]:SetHeight(10)
-  track.set(IMG .. "azeroth_slider_track")
+  track.set(P("slider_track"))
   -- The amber filled part, clipped to the value: its width follows the slider.
   local fill = threeSlice(sl, "ARTWORK", 0, 8, TRACK_CAP)
   fill.parts[1]:ClearAllPoints()
@@ -251,8 +311,12 @@ function Deco.AddSlider(frame, sl)
   fill.parts[2]:ClearAllPoints()
   fill.parts[2]:SetPoint("LEFT", fill.parts[1], "RIGHT", 0, 0)
   fill.parts[2]:SetHeight(10)
-  fill.set(IMG .. "azeroth_slider_fill")
-  local s = { sl = sl, own = own, track = track, fill = fill, knob = knob,
+  fill.set(P("slider_fill"))
+  -- Ember & Iron: the fill is one picture with its gradient baked in; show the left part of it, clipped to the value.
+  local clip = itex(sl, "ARTWORK", 0)
+  clip:SetPoint("LEFT", sl, "LEFT", 0, 0)
+  clip:SetHeight(12)
+  local s = { sl = sl, own = own, track = track, fill = fill, clip = clip, knob = knob,
               knobFile = knob and knob.GetTexture and knob:GetTexture() or DEFAULT_KNOB }
   function s.updateFill()
     local lo, hi = 0, 1
@@ -260,6 +324,15 @@ function Deco.AddSlider(frame, sl)
     local w = (sl.GetWidth and sl:GetWidth() or 84)
     local frac = (lo and hi and hi > lo and sl.GetValue) and (sl:GetValue() - lo) / (hi - lo) or 0
     local px = math.max(0, math.min(w, w * frac))
+    if Deco.set == "ember" then
+      for _, t in ipairs(fill.parts) do t:Hide() end
+      clip:SetTexture(P("slider_fill"))
+      clip:SetTexCoord(0, w > 0 and px / w or 0, 0, 1)
+      clip:SetWidth(math.max(px, 1))
+      clip:SetShown(Deco.imagesOn and px > 0)
+      return
+    end
+    clip:Hide()
     -- the cap of the fill sits at its right end: left cap, plain middle, then the right cap at the value
     fill.parts[2]:SetWidth(math.max(0, px - 16))
     fill.parts[3]:ClearAllPoints()
@@ -274,10 +347,10 @@ end
 -- `primary` = the gold call-to-action look. Art follows the button's state (normal, hover, disabled).
 local imgButtons = {}
 local function buttonArt(e)
-  local kind = e.primary and "azeroth_btn_primary" or "azeroth_btn_normal"
-  if e.btn.IsEnabled and not e.btn:IsEnabled() then return IMG .. "azeroth_btn_disabled" end
-  if e.hover then return IMG .. (e.primary and "azeroth_btn_primary_hover" or "azeroth_btn_hover") end
-  return IMG .. kind
+  local kind = e.primary and "btn_primary" or "btn_normal"
+  if e.btn.IsEnabled and not e.btn:IsEnabled() then return P("btn_disabled") end
+  if e.hover then return P(e.primary and "btn_primary_hover" or "btn_hover") end
+  return P(kind)
 end
 function Deco.AddButton(btn, primary)
   local bar = threeSlice(btn, "BACKGROUND", 1, 16, BTN_CAP)
@@ -321,19 +394,26 @@ function Deco.StyleSwitch(b, own, knob, small)
   e.track = threeSlice(b, "BACKGROUND", 1, 11, 16 / 64)
   e.kn = itex(b, "ARTWORK", 3)
   e.kn:SetSize(22, 22)
-  e.kn:SetTexture(IMG .. "azeroth_switch_knob")
+  e.kn:SetTexture(P("switch_knob"))
   e.box = itex(b, "ARTWORK", 3)
   e.box:SetAllPoints(b)
   imgSwitches[#imgSwitches + 1] = e
   function e.paint()
     local on = b.GetChecked and b:GetChecked() and true or false
     if small then
-      e.box:SetTexture(IMG .. (on and "azeroth_check_on" or "azeroth_check_off"))
+      e.box:SetTexture(P(on and "check_on" or "check_off"))
     else
-      e.track.set(IMG .. (on and "azeroth_switch_on" or "azeroth_switch_off"))
+      e.track.set(P(on and "switch_on" or "switch_off"))
       e.kn:ClearAllPoints()
       if on then e.kn:SetPoint("RIGHT", b, "RIGHT", -1, 0) else e.kn:SetPoint("LEFT", b, "LEFT", 1, 0) end
-      if on then e.kn:SetVertexColor(1, 0.78, 0.35, 1) else e.kn:SetVertexColor(1, 1, 1, 1) end
+      if Deco.set == "ember" then
+        -- two knobs: grey (off) and orange (on)
+        e.kn:SetTexture(P(on and "switch_knob_on" or "switch_knob_off"))
+        e.kn:SetVertexColor(1, 1, 1, 1)
+      else
+        e.kn:SetTexture(P("switch_knob"))
+        if on then e.kn:SetVertexColor(1, 0.78, 0.35, 1) else e.kn:SetVertexColor(1, 1, 1, 1) end
+      end
     end
   end
   b.r2fImgPaint = e.paint
@@ -352,6 +432,33 @@ function Deco.RefreshSwitches()
     e.box:SetShown(on and e.small == true)
     if on then e.paint() elseif e.b.r2fPaint then e.b.r2fPaint() end
   end
+end
+
+-- A 3x3 slice of one square texture drawn between two regions (corner `capw` px, `cap` of the texture), centre included.
+function Deco.NineSlice(parent, from, to, capw, cap, layer, sub, noCentre)
+  local xs = { 0, cap, 1 - cap, 1 }
+  local bar = { parts = {} }
+  for row = 1, 3 do
+    for col = 1, 3 do
+      if not (noCentre and row == 2 and col == 2) then
+        local t = parent:CreateTexture(nil, layer or "BACKGROUND", nil, sub or 0)
+        imgPieces[#imgPieces + 1] = t
+        t:SetTexCoord(xs[col], xs[col + 1], xs[row], xs[row + 1])
+        if col == 1 then t:SetPoint("LEFT", from, "LEFT", 0, 0) t:SetWidth(capw) end
+        if col == 3 then t:SetPoint("RIGHT", to, "RIGHT", 0, 0) t:SetWidth(capw) end
+        if row == 1 then t:SetPoint("TOP", from, "TOP", 0, 0) t:SetHeight(capw) end
+        if row == 3 then t:SetPoint("BOTTOM", to, "BOTTOM", 0, 0) t:SetHeight(capw) end
+        if col == 2 then t:SetPoint("LEFT", from, "LEFT", capw, 0) t:SetPoint("RIGHT", to, "RIGHT", -capw, 0) end
+        if row == 2 then t:SetPoint("TOP", from, "TOP", 0, -capw) t:SetPoint("BOTTOM", to, "BOTTOM", 0, capw) end
+        t:Hide()
+        bar.parts[#bar.parts + 1] = t
+      end
+    end
+  end
+  function bar.set(file)
+    for _, t in ipairs(bar.parts) do t:SetTexture(file) end
+  end
+  return bar
 end
 
 -- Stone cards (the launch countdown): the 9-slice card art in image mode, a plain dark rectangle with a thin line otherwise.
@@ -396,8 +503,8 @@ local function refreshCards(th)
   local on = Deco.imagesOn == true
   for _, c in ipairs(cards) do
     for k, t in ipairs(c.parts) do
-      if on then t:SetTexture(IMG .. "azeroth_card") end
-      t:SetShown(on)
+      if on then t:SetTexture(P("card")) end
+      t:SetShown(on and Deco.set == "azeroth")
       if k == 1 then c.sliceDone = true end
     end
     local sd, ru = th.side, th.rule
@@ -408,12 +515,34 @@ local function refreshCards(th)
       t:SetShown(not on)
     end
   end
+  -- Ember & Iron shows the three numbers on one wide display plate.
+  if cards[3] then
+    if not Deco.plate then
+      Deco.plate = Deco.NineSlice(cards[1].frame, cards[1].frame, cards[3].frame, 16, 0.25, "BACKGROUND", 1)
+    end
+    local show = on and Deco.set == "ember"
+    for _, t in ipairs(Deco.plate.parts) do t:SetShown(show) end
+    if show then Deco.plate.set(P("display")) end
+    for _, c in ipairs(cards) do
+      c.frame.r2fPlated = show
+    end
+  end
 end
 
 function Deco.RefreshNav()
   local frame = Deco.frame
   local d = frame and frame.r2fDeco
   if not (d and d.img and d.imagesActive) then return end
+  if Deco.set == "ember" then
+    for key, n in pairs(d.em.nav) do
+      local sel = key == selectedKey
+      n.slot:SetTexture(EM .. (sel and "slot_on" or (n.hover and "slot_hover" or "slot_normal")))
+      local c = sel and NAV_TEXT_EMBER.selected or (n.hover and NAV_TEXT_EMBER.hover or NAV_TEXT_EMBER.normal)
+      n.icon:SetVertexColor(c[1], c[2], c[3], 1)
+      if n.btn.r2fText then n.btn.r2fText:SetTextColor(c[1], c[2], c[3]) end
+    end
+    return
+  end
   for key, n in pairs(d.img.nav) do
     local sel = key == selectedKey
     n.bar.set(IMG .. (sel and "azeroth_btn_selected" or (n.hover and "azeroth_btn_hover" or "azeroth_btn_normal")))
@@ -427,26 +556,46 @@ end
 -- Image mode on / off. Returns true when the images are in use (the caller then skips the rectangle look).
 local function applyImages(d, th, alpha)
   local i = d.img
-  local on = th.deco == "azeroth" and imagesOn() and i ~= nil
+  local set = imageSet(th)
+  local on = set ~= nil and i ~= nil
   d.imagesActive = on
   Deco.imagesOn = on
+  Deco.set = on and set or nil
   for _, t in ipairs(imgPieces) do t:Hide() end
   Deco.RefreshButtons()
   Deco.RefreshSwitches()
-  for _, n in pairs(i and i.nav or {}) do
-    if n.btn.r2fText then
-      n.btn.r2fText:ClearAllPoints()
-      n.btn.r2fText:SetPoint("LEFT", n.btn, "LEFT", on and 32 or 14, 0)
+  local grid = on and set == "ember"
+  if R2F.MainWindow and R2F.MainWindow.SetNavLayout then R2F.MainWindow.SetNavLayout(grid) end
+  for key, n in pairs(i and i.nav or {}) do
+    local fs = n.btn.r2fText
+    if fs then
+      fs:ClearAllPoints()
+      if grid then
+        fs:SetPoint("BOTTOM", n.btn, "BOTTOM", 0, 8)
+        fs:SetText(L.NAV_TILE and L.NAV_TILE[key] or (d.label and d.label(key)) or "")
+      else
+        fs:SetPoint("LEFT", n.btn, "LEFT", on and 32 or 14, 0)
+        if d.label then fs:SetText(d.label(key)) end
+      end
+      if fs.SetJustifyH then fs:SetJustifyH(grid and "CENTER" or "LEFT") end
     end
   end
-  for _, h in ipairs(i and i.heads or {}) do h.fs:SetAlpha(on and 0 or 1) end
+  for _, h in ipairs(i and i.heads or {}) do h.fs:SetAlpha((on and set == "azeroth") and 0 or 1) end
   for _, s in ipairs(i and i.sliders or {}) do
     for _, region in ipairs(s.own) do region:SetAlpha(on and 0 or 1) end
+    local thick = set == "ember" and 12 or 10
+    s.track.parts[1]:SetHeight(thick)
+    s.track.parts[2]:SetHeight(thick)
+    s.track.parts[3]:SetHeight(thick)
+    if on then s.track.set(P("slider_track")) end
     if s.knob then
       if on then
-        s.sl:SetThumbTexture(IMG .. "azeroth_slider_knob")
+        s.sl:SetThumbTexture(P("slider_knob"))
         s.knob = s.sl:GetThumbTexture()
-        if s.knob then s.knob:SetSize(22, 22) s.knob:SetVertexColor(1, 1, 1, 1) end
+        if s.knob then
+          if set == "ember" then s.knob:SetSize(32, 22) else s.knob:SetSize(22, 22) end
+          s.knob:SetVertexColor(1, 1, 1, 1)
+        end
       else
         s.sl:SetThumbTexture(s.knobFile)
         s.knob = s.sl:GetThumbTexture()
@@ -454,30 +603,43 @@ local function applyImages(d, th, alpha)
       end
     end
     if on then for _, t in ipairs(s.track.parts) do t:Show() end end
-    Deco.imagesOn = on
     if s.updateFill then s.updateFill() end
   end
   if not on then return false end
-  i.panel:SetAlpha(alpha)
-  i.inset:SetAlpha(alpha)
-  i.panel:Show()
-  i.inset:Show()
-  for _, t in ipairs(i.corners) do t:Show() end
-  for _, t in ipairs(i.edges) do t:Show() end
-  for _, t in ipairs(i.gems) do t:Show() end
-  i.banner:Show()
-  for _, n in pairs(i.nav) do
-    for _, t in ipairs(n.bar.parts) do t:Show() end
-    n.gem:Show()
-    n.icon:Show()
-  end
-  for _, h in ipairs(i.heads) do
-    local w = h.wordWidth or ((h.fs.GetStringWidth and h.fs:GetStringWidth()) or 0)
-    h.line:ClearAllPoints()
-    h.line:SetPoint("LEFT", h.fs, "LEFT", w + 8, 0)
-    h.line:SetWidth(math.max(h.sideW - 22 - w - 8, 10))
-    h.line:Show()
-    if h.wordWidth then h.word:Show() end
+  if set == "azeroth" then
+    i.panel:SetAlpha(alpha)
+    i.inset:SetAlpha(alpha)
+    i.panel:Show()
+    i.inset:Show()
+    for _, t in ipairs(i.corners) do t:Show() end
+    for _, t in ipairs(i.edges) do t:Show() end
+    for _, t in ipairs(i.gems) do t:Show() end
+    i.banner:Show()
+    for _, n in pairs(i.nav) do
+      for _, t in ipairs(n.bar.parts) do t:Show() end
+      n.gem:Show()
+      n.icon:Show()
+    end
+    for _, h in ipairs(i.heads) do
+      local w = h.wordWidth or ((h.fs.GetStringWidth and h.fs:GetStringWidth()) or 0)
+      h.line:ClearAllPoints()
+      h.line:SetPoint("LEFT", h.fs, "LEFT", w + 8, 0)
+      h.line:SetWidth(math.max(h.sideW - 22 - w - 8, 10))
+      h.line:Show()
+      if h.wordWidth then h.word:Show() end
+    end
+  else
+    local e = d.em
+    e.panel:SetAlpha(alpha)
+    e.panel:Show()
+    e.heat:Show()
+    for _, t in ipairs(e.plate.parts) do t:SetAlpha(alpha) t:Show() end
+    for _, t in ipairs(e.frame.parts) do t:Show() end
+    for _, t in ipairs(e.rivets) do t:Show() end
+    for _, n in pairs(e.nav) do
+      n.slot:Show()
+      n.icon:Show()
+    end
   end
   Deco.RefreshNav()
   return true
@@ -487,7 +649,7 @@ end
 function Deco.Build(frame, ctx)
   if built then return end
   built = true
-  local d = { nav = {}, heads = {} }
+  local d = { nav = {}, heads = {}, label = ctx.label }
   frame.r2fDeco = d
   Deco.frame = frame
 
@@ -557,6 +719,7 @@ function Deco.Build(frame, ctx)
     d.heads[#d.heads + 1] = { fs = h, line = line, sideW = ctx.sideW }
   end
   buildImages(frame, ctx, d)
+  buildEmber(frame, ctx, d)
 end
 
 -- The banner plate is about 200 px wide: a long window title (Road to Forever: Tweaks) is scaled down to fit it.
@@ -565,7 +728,7 @@ function Deco.FitTitle(frame)
   if not (t and t.SetScale) then return end
   t:SetScale(1)
   local w = t.GetStringWidth and t:GetStringWidth() or 0
-  if Deco.imagesOn and w > 200 then t:SetScale(200 / w) end
+  if Deco.set == "azeroth" and w > 200 then t:SetScale(200 / w) end
 end
 
 function Deco.Select(key)
@@ -592,7 +755,11 @@ applyMain = function(frame, th, alpha)
     if frame.r2fBgTex then frame.r2fBgTex:Hide() end
     if frame.r2fTitle then
       frame.r2fTitle:ClearAllPoints()
-      frame.r2fTitle:SetPoint("CENTER", d.img.banner, "CENTER", 0, -2)
+      if Deco.set == "azeroth" then
+        frame.r2fTitle:SetPoint("CENTER", d.img.banner, "CENTER", 0, -2)
+      elseif frame.r2fLogo then
+        frame.r2fTitle:SetPoint("LEFT", frame.r2fLogo, "RIGHT", 8, 0)
+      end
     end
     Deco.FitTitle(frame)
     return

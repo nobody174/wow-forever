@@ -4654,6 +4654,40 @@ def test_step6_ui(templates, fx):
     lua.execute("R2F.Theme.Set('obsidian')")
     check(lua.eval("%s.panel:IsShown()" % IM) is False and lua.eval("%s.banner:IsShown()" % IM) is False
           and lua.eval("%s.nav.home.bar.parts[1]:IsShown()" % IM) is False, "another theme hides every image piece again")
+    import re as _re
+    deco_src = open(os.path.join(HERE, "..", "RoadToForever", "UI", "Deco.lua"), encoding="utf-8").read()
+    # Ember & Iron: the cut-corner steel look, with the sidebar as a 2 x 3 grid of 64 px tiles.
+    lua.execute("R2F.Images.ember = true R2F.Theme.Set('forge')")
+    EMI = "R2FMain.r2fDeco.em"
+    check(lua.eval("%s.panel:IsShown()" % EMI) is True and lua.eval("%s.heat:IsShown()" % EMI) is True
+          and all(lua.eval("%s.frame.parts[%d]:IsShown()" % (EMI, k)) is True for k in range(1, 9))
+          and all(lua.eval("%s.rivets[%d]:IsShown()" % (EMI, k)) is True for k in (1, 2, 3, 4)),
+          "ember: panel, heat strip, eight frame pieces and four rivets are drawn")
+    check(lua.eval("R2FMain.r2fDeco.img.banner:IsShown()") is False and lua.eval("%s.panel:IsShown()" % D) is False,
+          "ember: none of the Azeroth pieces show")
+    check(all(lua.eval("%s.nav.%s.slot:IsShown()" % (EMI, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay")),
+          "ember: every sidebar button is an icon tile")
+    check(lua.eval("NAV.plan.r2fText.__text") == "PLAN" and lua.eval("NAV.bis.r2fText.__text") == "GEAR",
+          "ember: the tiles carry the short upper-case labels")
+    check(lua.eval("R2F.Theme.Get().deco") == "ember" and "BarlowCondensed" in lua.eval("R2F.Theme.Get().font.heading"),
+          "ember: Barlow Condensed for headings")
+    lua.execute("R2F.Theme.Set('azeroth')")
+    check(lua.eval("%s.panel:IsShown()" % EMI) is False and lua.eval("NAV.plan.r2fText.__text") == "Launch plan",
+          "back to Azeroth: the ember pieces are gone and the sidebar names are back")
+    lua.execute("R2F.Theme.Set('classic')")
+    check(lua.eval("NAV.talents.r2fText.__text") == "Builds & talents" and lua.eval("%s.panel:IsShown()" % EMI) is False,
+          "classic: list sidebar again, nothing of ember left")
+    # Every texture file the ember look names exists.
+    emnames = set(_re.findall(r'EM \.\. "([a-z_]+)"', deco_src)) | set(_re.findall(r'EM \.\. \(sel and "([a-z_]+)"', deco_src))
+    emnames |= {"slot_normal", "slot_hover", "slot_on", "display", "switch_knob_on", "switch_knob_off", "slider_fill", "slider_track", "slider_knob",
+                "btn_normal", "btn_hover", "btn_primary", "btn_primary_hover", "btn_disabled", "check_on", "check_off", "switch_on", "switch_off"}
+    emmissing = [n for n in sorted(emnames) if not os.path.exists(os.path.join(HERE, "..", "RoadToForever", "media", "ember", "ember_" + n + ".tga"))]
+    check(not emmissing, "every ember texture exists as a .tga in media/ember: %s" % emmissing)
+    fontsdir = os.path.join(HERE, "..", "RoadToForever", "media", "fonts")
+    check(all(os.path.exists(os.path.join(fontsdir, f)) for f in ("BarlowCondensed-Bold.ttf", "Barlow-Medium.ttf", "ChakraPetch-Bold.ttf",
+                                                                  "OFL-BarlowCondensed.txt", "OFL-Barlow.txt", "OFL-ChakraPetch.txt")),
+          "the Ember & Iron fonts ship with their licence files")
+    lua.execute("R2F.Images.azeroth = true")
     # A long window title is scaled to fit the banner plate (200 px) in image mode.
     lua.execute("""R2F.Images.azeroth = true R2F.Theme.Set('azeroth') TSCALE = nil
       R2FMain.r2fTitle.GetStringWidth = function() return 300 end

@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.72.0 (2026-10-18)
+
+- **Ember & Iron is a full theme now:** a cut-corner steel frame with rivets, a steel panel with a glow of heat along the bottom edge, a darker plate behind the pages, the sidebar as a 2 x 3 grid of icon tiles (the open one glows orange) with short names (HOME, PLAN, TALENTS, GEAR, MACROS, TWEAKS), the launch countdown on one wide display plate, steel buttons (orange for the main one), orange switches and tick boxes, and sliders with a molten bead and an orange-to-amber fill. Fonts: Barlow Condensed, Barlow and Chakra Petch (bundled, free to use, licence files included).
+- The group headings (Journey, Character, UI) are hidden in this theme because the tiles replace them. Everything else keeps working in all themes.
+
 ## 0.71.4 (2026-10-18)
 
 - Azeroth Reforged: the gem on the sidebar buttons is smaller so long names (Builds & talents) no longer touch it, and the Theme button grows to fit its label.

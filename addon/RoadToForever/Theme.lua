@@ -56,12 +56,19 @@ Theme.LIST = {
   },
   {
     key = "forge", name = "Ember & Iron",
-    on = { 0.85, 0.4, 0.12 }, off = { 0.05, 0.047, 0.043 }, swRim = { 0.42, 0.44, 0.47 },
-    bg = { 0.12, 0.115, 0.11 }, bgAlpha = 1,
-    side = { 0.07, 0.065, 0.06 }, sideAlpha = 0.8,
+    -- deco "ember": cut-corner steel frame, rivets, heat glow, icon-tile sidebar (UI/Deco.lua, art media/ember). Fonts: Barlow
+    -- Condensed (headings), Barlow (body), Chakra Petch (numbers), all OFL, bundled; refused files fall back to the game's fonts.
+    deco = "ember",
+    font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\BarlowCondensed-Bold.ttf",
+             body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Barlow-Medium.ttf",
+             number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\ChakraPetch-Bold.ttf", bodyBump = 0 },
+    titleColor = { 1, 0.604, 0.271 },
+    on = { 1, 0.478, 0.18 }, off = { 0.05, 0.047, 0.043 }, swRim = { 0.42, 0.44, 0.47 },
+    bg = { 0.165, 0.153, 0.145 }, bgAlpha = 1,
+    side = { 0.07, 0.065, 0.06 }, sideAlpha = 0.55,
     rule = { 1, 0.48, 0.18 }, ruleAlpha = 0.55,
-    accent = { 1, 0.76, 0.28 }, selAlpha = 0.18,
-    text = { 0.85, 0.83, 0.8 }, rim = { 0.42, 0.44, 0.47 },
+    accent = { 1, 0.478, 0.18 }, selAlpha = 0.18,
+    text = { 0.851, 0.831, 0.8 }, rim = { 0.42, 0.44, 0.47 },
   },
   {
     -- Glass look kept readable: the panel is nearly opaque whatever the
@@ -211,6 +218,7 @@ local function paintFonts()
     local f = fontObjects[name]
     if f then
       local face = t.font and t.font[spec[2] == "heading" and "heading" or "body"]
+      if name == "R2FNumber" and t.font and t.font.number then face = t.font.number end
       setFace(f, _G[spec[1]], face, spec[2] ~= "heading" and t.font and t.font.bodyBump or 0)
       if f.SetTextColor then
         local c = roleColor(spec[2])

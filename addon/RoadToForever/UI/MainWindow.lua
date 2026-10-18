@@ -41,6 +41,7 @@ local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENT
 local LOGO = "Interface\\AddOns\\RoadToForever\\media\\logo128"
 
 local frame
+local navY, navHeads = {}, {}      -- the list layout of the sidebar, to come back to from the tile grid
 local pages, tabButtons = {}, {}   -- tabButtons: key -> sidebar button
 local current            -- key of the page showing (kept while the window is closed)
 
@@ -150,10 +151,31 @@ function MainWindow.ApplyLook()
     line:SetShown(not classic)
   end
   if frame.r2fTitle then
-    frame.r2fTitle:SetTextColor(th.accent[1], th.accent[2], th.accent[3])
+    local tc = th.titleColor or th.accent
+    frame.r2fTitle:SetTextColor(tc[1], tc[2], tc[3])
   end
   if selectedKey then showSelected(selectedKey) end
   R2F.Deco.Apply(frame, th, R2F.Theme.PanelAlpha(th, st.menuAlpha))
+end
+
+-- The sidebar as a list of wide buttons (the usual look) or as a 2 x 3 grid of 64 px tiles (Ember & Iron): same buttons, moved.
+local GRID_ORDER = { "home", "plan", "talents", "bis", "macros", "gameplay" }
+function MainWindow.SetNavLayout(grid)
+  if not frame then return end
+  for idx, key in ipairs(GRID_ORDER) do
+    local b = tabButtons[key]
+    if b then
+      b:ClearAllPoints()
+      if grid then
+        b:SetSize(64, 64)
+        b:SetPoint("TOPLEFT", frame, "TOPLEFT", 8 + ((idx - 1) % 2) * 70, -(TOP_H + 12) - math.floor((idx - 1) / 2) * 70)
+      else
+        b:SetSize(SIDE_W - 16, 26)
+        b:SetPoint("TOPLEFT", frame, "TOPLEFT", 8, navY[key] or -(TOP_H + 12))
+      end
+    end
+  end
+  for _, h in ipairs(navHeads) do h:SetShown(not grid) end
 end
 
 -- Any theme change (the Home page picker, a future slash command) recolours the window.
@@ -331,7 +353,7 @@ local function build()
   f.r2fOpacitySlider:SetValue(settings().menuAlpha * 100)
 
   -- Sidebar.
-  local groupHeads = {}
+  local groupHeads = navHeads
   local y = -(TOP_H + 12)
   for _, group in ipairs(MainWindow.NAV) do
     if group.heading then
@@ -345,11 +367,13 @@ local function build()
     end
     for _, key in ipairs(group.tabs) do
       tabButtons[key] = buildNavButton(f, key, y)
+      navY[key] = y
       y = y - 28
     end
   end
 
-  R2F.Deco.Build(f, { sideW = SIDE_W, topH = TOP_H, nav = tabButtons, heads = groupHeads })
+  R2F.Deco.Build(f, { sideW = SIDE_W, topH = TOP_H, nav = tabButtons, heads = groupHeads,
+    label = function(key) return L[LABELS[key]] end })
   R2F.Deco.AddSlider(f, f.r2fSizeSlider)
   R2F.Deco.AddSlider(f, f.r2fOpacitySlider)
 

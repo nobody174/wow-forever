@@ -40,6 +40,14 @@ Use a test character for anything marked **TEST CHAR**.
 - Classic and Obsidian must look as before (plain dark cards for the countdown).
 - Anything cut off, wrongly placed or overlapping: tell me where.
 
+5.39. **Ember & Iron (0.72.0):** Home > Theme > Ember & Iron, compare with `ember_preview.png` (Downloads).
+- Frame: steel border with cut corners (top-left and bottom-right), four rivets, a glow of heat along the bottom edge, steel panel with fine vertical lines.
+- Sidebar: two columns of three tiles (HOME / PLAN, TALENTS / GEAR, MACROS / TWEAKS), the current one glowing orange, icons and labels inside; no JOURNEY / CHARACTER / UI headings. Does a label touch the tile edge?
+- Home: the countdown on one wide dark plate (18 / 17 / ... numbers in Chakra Petch), Quick settings switches orange with a grey or orange knob, Reload UI and other buttons steel with an orange primary one ("Export professions").
+- Sliders: dark groove with an orange-to-amber fill and a molten bead knob.
+- Switch to Azeroth Reforged and Classic and back: sidebar list returns, nothing of Ember left behind. Fonts: condensed headings (Barlow Condensed); if something is cut off or overlaps say where.
+- Does the page content (Plan, Talents, BiS, Macros, Tweaks) still fit and read well on the steel plate?
+
 ## Cannot be tested yet (reason)
 - 4.13 group picks: nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made.
 - 13.9 (owner: not seen in the beta yet, check after release) Druid spells that Forever gives its own versions of (Starsurge, Sunfire, Starfall, Lacerate): they are not runes (corrected 2026-10-17). Needs the level: does each macro cast it, and how is it learned (trainer or talent)? The Skull Bash, Survival Instincts, Lifebloom and Nourish macros were removed (those spells exist only as Season of Discovery leftovers).

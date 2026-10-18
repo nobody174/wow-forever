@@ -13,6 +13,7 @@ R2F.L = {
   -- Main window: sidebar group headings, top bar sliders
   NAV_JOURNEY = "Journey",
   NAV_CHARACTER = "Character",
+  NAV_TILE = { home = "HOME", plan = "PLAN", talents = "TALENTS", bis = "GEAR", macros = "MACROS", gameplay = "TWEAKS" },
   NAV_UI = "UI",
   NAV_OPTIONS = "Options",
   WIN_SIZE = "Size",

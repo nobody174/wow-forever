@@ -1779,6 +1779,10 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.72.0 (2026-10-18): Ember & Iron image set
+
+- 24 slices from Claude Desktop (`addon/art/sources/ember`, converted with `slices_to_tga.py`, GAMMA 1.0) in `media/ember`. `Deco.lua` is per image set now: `imageSet(th)` picks the set from the theme's `deco` token when `R2F.Images[set]`; shared controls (buttons, switches, tick boxes, slider track / knob / fill, card or display plate) use `P(name)`; Ember adds `buildEmber` (panel tile, heat strip, 9-slice frame, plate, rivets, slot tiles). `MainWindow.SetNavLayout(grid)` moves the same nav buttons between the list and the 2 x 3 tile grid and hides the group headings; labels switch to `L.NAV_TILE`. Slider fill for Ember is one baked-gradient picture clipped by texture coordinates. `Theme.lua`: the "forge" theme (key kept, so saved choices survive) gets `deco = "ember"`, `titleColor`, `font.number`; `R2FNumber` uses Chakra Petch. Fonts added to `media/fonts` with OFL files. TESTING 5.39.
+
 ## 0.71.4 (2026-10-18): small spacing fixes
 
 - Nav gem 12 px at right -4, label offset 32; Theme button width = label + 32 (170 to 200 px), re-fitted on a theme change. From the 0.71.3 screenshot.

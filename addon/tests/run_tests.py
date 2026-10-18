@@ -4501,10 +4501,17 @@ def test_step6_ui(templates, fx):
     lua.execute("NAV = {} for _, f in ipairs(MTABS) do NAV[f.r2fKey] = f end "
                 "MTABS = {NAV.home, NAV.macros, NAV.talents, NAV.plan, NAV.bis, NAV.gameplay}")
     labels = [lua.eval("MTABS[%d].r2fText.__text" % i) for i in range(1, 7)]
-    check(labels == ["Home", "Macros", "Talents", "Plan", "BiZ", "Tweaks"],
+    check(labels == ["Home", "Macros", "Builds & talents", "Launch plan", "Gear (Mr.BiZ)", "Tweaks"],
           "sidebar labels %s" % labels)
-    order = [lua.eval("R2F.MainWindow.NAV[%d].tabs[%d]" % (g, t)) for g, t in ((1, 1), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2))]
+    order = [lua.eval("R2F.MainWindow.NAV[%d].tabs[%d]" % (g, t)) for g, t in ((1, 1), (2, 1), (3, 1), (3, 2), (4, 1), (4, 2))]
     check(order == ["home", "plan", "talents", "bis", "macros", "gameplay"], "sidebar order %s" % order)
+    heads = [lua.eval("R2F.MainWindow.NAV[%d].heading" % g) for g in (2, 3, 4)]
+    check(heads == ["NAV_JOURNEY", "NAV_CHARACTER", "NAV_UI"], "sidebar groups: journey, character, UI: %s" % heads)
+    # The launch countdown on Home.
+    check(lua.eval("R2F.Home.CountdownText(R2F.Home.LAUNCH_AT - 18 * 86400 - 3600 - 44 * 60 - 5)") == "18d 01h 44m",
+          "home countdown: 18 days 1 hour 44 minutes before the launch")
+    check(lua.eval("R2F.Home.CountdownText(R2F.Home.LAUNCH_AT + 1)") == "Forever is live", "home countdown: after the launch it says so")
+    check(lua.eval("R2F.Home.LAUNCH_AT") == 1793833200, "home countdown: the launch is 2026-11-04 23:00 UTC")
     lua.execute("MTABS[1]:Click()")
     check(MW.CurrentTab() == "home" and lua.eval("MTABS[1].r2fBar.__shown") is True and lua.eval("MTABS[2].r2fBar.__shown") is False,
           "clicking Home selects it (gold bar on the selected entry only)")

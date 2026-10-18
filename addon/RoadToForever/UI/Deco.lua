@@ -227,6 +227,22 @@ function Deco.AddSlider(frame, sl)
                                         knobFile = knob and knob.GetTexture and knob:GetTexture() or DEFAULT_KNOB }
 end
 
+-- A game button (UIPanelButtonTemplate) drawn from the button art: the template's own art is hidden while the images are on.
+local imgButtons = {}
+function Deco.AddButton(btn)
+  local bar = threeSlice(btn, "BACKGROUND", 1, 16, BTN_CAP)
+  bar.set(IMG .. "azeroth_btn_normal")
+  local entry = { btn = btn, bar = bar, art = {} }
+  for _, key in ipairs({ "Left", "Middle", "Right" }) do
+    if btn[key] then entry.art[#entry.art + 1] = btn[key] end
+  end
+  imgButtons[#imgButtons + 1] = entry
+  if btn.HookScript then
+    btn:HookScript("OnEnter", function() bar.set(IMG .. "azeroth_btn_hover") end)
+    btn:HookScript("OnLeave", function() bar.set(IMG .. "azeroth_btn_normal") end)
+  end
+end
+
 function Deco.RefreshNav()
   local frame = Deco.frame
   local d = frame and frame.r2fDeco
@@ -244,6 +260,12 @@ local function applyImages(d, th, alpha)
   local on = th.deco == "azeroth" and imagesOn() and i ~= nil
   d.imagesActive = on
   for _, t in ipairs(imgPieces) do t:Hide() end
+  for _, e in ipairs(imgButtons) do
+    for _, region in ipairs(e.art) do region:SetAlpha(on and 0 or 1) end
+    local hl = e.btn.GetHighlightTexture and e.btn:GetHighlightTexture()
+    if hl and hl.SetAlpha then hl:SetAlpha(on and 0 or 1) end
+    if on then for _, t in ipairs(e.bar.parts) do t:Show() end end
+  end
   for _, s in ipairs(i and i.sliders or {}) do
     for _, region in ipairs(s.own) do region:SetAlpha(on and 0 or 1) end
     if s.knob then

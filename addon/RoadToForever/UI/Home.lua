@@ -96,6 +96,17 @@ local function entry(parent, y, icon, title, tab, w)
   return b
 end
 
+-- The launch moment (2026-11-04 23:00 UTC, the same target as the site's countdown).
+Home.LAUNCH_AT = 1793833200
+
+-- "18d 01h 44m" until the launch, then "Forever is live". `now` is a Unix time (default: the server's).
+function Home.CountdownText(now)
+  now = now or (GetServerTime and GetServerTime()) or time()
+  local left = Home.LAUNCH_AT - now
+  if left <= 0 then return L.HOME_COUNTDOWN_LIVE end
+  return L.HOME_COUNTDOWN_FMT:format(math.floor(left / 86400), math.floor(left % 86400 / 3600), math.floor(left % 3600 / 60))
+end
+
 local function build(f)
   ui.head = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
   ui.head:SetPoint("TOPLEFT", 0, -2)
@@ -104,6 +115,21 @@ local function build(f)
   ui.tagline:SetPoint("TOPLEFT", ui.head, "BOTTOMLEFT", 0, -6)
   ui.tagline:SetText(L.HOME_TAGLINE)
   R2F.Theme.PaintText(ui.tagline, "tagline")
+
+  -- "Forever launches in 18d 01h 44m": top right, counted down once a second while the page shows.
+  ui.cdHead = f:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
+  ui.cdHead:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -2)
+  ui.cdHead:SetText(L.HOME_COUNTDOWN_HEAD)
+  ui.cdNum = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
+  ui.cdNum:SetPoint("TOPRIGHT", ui.cdHead, "BOTTOMRIGHT", 0, -4)
+  ui.cdNum:SetText(Home.CountdownText())
+  local waited = 0
+  f:SetScript("OnUpdate", function(_, dt)
+    waited = waited + dt
+    if waited < 1 then return end
+    waited = 0
+    ui.cdNum:SetText(Home.CountdownText())
+  end)
 
   ui.plan = entry(f, -52, "INV_Misc_Map_01", L.HOME_PLAN, "plan", 650)
 

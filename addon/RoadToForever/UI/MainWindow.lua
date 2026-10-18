@@ -84,8 +84,9 @@ local PAGE_Y = -(TOP_H - 44)
 -- Sidebar order: a group heading (or none) and the tabs under it.
 MainWindow.NAV = {
   { tabs = { "home" } },
-  { heading = "NAV_JOURNEY", tabs = { "plan", "talents", "bis" } },
-  { heading = "NAV_TOOLS", tabs = { "macros", "gameplay" } },
+  { heading = "NAV_JOURNEY", tabs = { "plan" } },
+  { heading = "NAV_CHARACTER", tabs = { "talents", "bis" } },
+  { heading = "NAV_UI", tabs = { "macros", "gameplay" } },
 }
 
 local GOLD = { 1, 0.82, 0 }
@@ -319,6 +320,7 @@ local function build()
   reload:SetText(L.MENU_RELOAD)
   reload:SetScript("OnClick", function() ReloadUI() end)
   UI.ThemeButton(reload)
+  R2F.Deco.AddButton(reload)
   f.r2fReload = reload
   f.r2fSizeSlider = topSlider(f, L.WIN_SIZE, 50, 150,
     function() return settings().menuScale end,

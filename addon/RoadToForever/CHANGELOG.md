@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.70.1 (2026-10-18)
+
+- **Home shows the launch countdown** again, top right ("FOREVER LAUNCHES IN 18d 01h 44m", counting down while the page is open; it says "Forever is live" after launch).
+- **Sidebar grouped like the site and renamed:** Journey (Launch plan), Character (Builds & talents, Gear (Mr.BiZ)), UI (Macros, Tweaks).
+- In Azeroth Reforged the Reload UI and Theme buttons use the button art too.
+
 ## 0.70.0 (2026-10-18)
 
 - **Azeroth Reforged with real artwork.** The theme now uses image pieces made from the design: a stone-textured panel, a gold double frame with corner gems, the banner hanging over the top edge with the window title on it, stone sidebar buttons (normal, hover and selected, with a gem that lights up), the fading gold line after the group names, a darker inset behind the pages, and amber-pearl knobs with a dark groove on the Size and Opacity sliders. If an image is missing the earlier drawn look is used instead. Other themes and Classic are unchanged.

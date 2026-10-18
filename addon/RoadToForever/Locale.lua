@@ -12,7 +12,8 @@ R2F.L = {
   ADDON_NAME = "Road to Forever",
   -- Main window: sidebar group headings, top bar sliders
   NAV_JOURNEY = "Journey",
-  NAV_TOOLS = "Tools",
+  NAV_CHARACTER = "Character",
+  NAV_UI = "UI",
   NAV_OPTIONS = "Options",
   WIN_SIZE = "Size",
   WIN_OPACITY = "Opacity",
@@ -22,7 +23,7 @@ R2F.L = {
   TITLE_TALENTS = "Road to Forever: Talents",
   TAB_HOME = "Home",
   TAB_MACROS = "Macros",
-  TAB_TALENTS = "Talents",
+  TAB_TALENTS = "Builds & talents",
   CHAT_PREFIX = "|cffffd100Road to Forever:|r ",
 
   -- Macro Book
@@ -181,7 +182,7 @@ R2F.L = {
   RANKS_SYNC_DONE_ONE = "raised spell ranks in 1 macro.",
   RANKS_SYNC_QUEUED = "you're in combat; spell ranks in your macros will be raised when combat ends.",
   TITLE_PLAN = "Road to Forever: Plan",
-  TAB_PLAN = "Plan",
+  TAB_PLAN = "Launch plan",
   HOME_PLAN = "Launch plan",
   HOME_PLAN_NEXT = "Next: %s",
   HOME_PLAN_DONE = "All launch-day steps done",
@@ -483,7 +484,7 @@ R2F.L = {
   REPAIR_UNLOCKED = "repair icon unlocked: drag it to move it.",
   -- Mr.BiZ, the BiS tab
   TITLE_BIS = "Road to Forever: Mr.BiZ",
-  TAB_BIS = "BiZ",
+  TAB_BIS = "Gear (Mr.BiZ)",
   BIZ_CLASS = "Class",
   BIZ_ROLE_TANK = "Tank",
   BIZ_ROLE_DPS = "DPS",
@@ -568,6 +569,9 @@ R2F.L = {
   BAGS_STATE = "movable bags %s, lock bags %s.",
   HOME_NEXT = "What's next",
   HOME_TAGLINE = "Your companion on the road to Forever.",
+  HOME_COUNTDOWN_HEAD = "FOREVER LAUNCHES IN",
+  HOME_COUNTDOWN_LIVE = "Forever is live",
+  HOME_COUNTDOWN_FMT = "%dd %02dh %02dm",
   HOME_SHARE = "Share with the site",
   BAGS_TITLE = "Bags",
   BTN_MACRO_OPTIONS = "Options",

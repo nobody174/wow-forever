@@ -343,7 +343,7 @@ end
 function Deco.RefreshSwitches()
   local on = Deco.imagesOn == true
   for _, e in ipairs(imgSwitches) do
-    -- Hide, not fade: the code-drawn parts set their own alpha when they are recoloured (SetVertexColor), which would undo a fade.
+    -- Hide, not fade: the code-drawn parts set their own alpha when recoloured (SetVertexColor), which would undo a fade.
     for _, t in ipairs(e.own) do t:SetShown(not on) end
     if e.knob then e.knob:SetShown(not on) end
     if not e.small then e.b:SetSize(on and 44 or e.w, on and 22 or e.h) end

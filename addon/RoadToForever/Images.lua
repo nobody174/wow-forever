@@ -4,5 +4,6 @@ local _, R2F = ...
 R2F.Images = {
   azeroth = true,
   ember = true,
+  frost = true,
   obsidian = true,
 }

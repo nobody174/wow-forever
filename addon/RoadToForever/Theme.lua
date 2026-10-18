@@ -78,14 +78,21 @@ Theme.LIST = {
   },
   {
     -- Glass look kept readable: the panel is nearly opaque whatever the
-    -- opacity slider says (bgFloor).
+    -- opacity slider says (bgFloo  {
     key = "arcane", name = "Frost & Void",
-    on = { 0.35, 0.62, 0.95 }, off = { 0.02, 0.02, 0.05 }, swRim = { 0.4, 0.3, 0.8 },
-    bg = { 0.07, 0.075, 0.17 }, bgAlpha = 0.97, bgFloor = 0.88,
-    side = { 0.03, 0.03, 0.06 }, sideAlpha = 0.7,
-    rule = { 0.5, 0.36, 1 }, ruleAlpha = 0.6,
-    accent = { 0.5, 0.91, 1 }, selAlpha = 0.16,
-    text = { 0.95, 0.96, 1 }, rim = { 0.48, 0.36, 1 },
+    -- deco "frost": starfield window with glass panels, a chain of round orbs for the sidebar (UI/Deco.lua, art media/frost).
+    -- Font: Sora (Regular and SemiBold instances of the OFL variable font), bundled; refused files fall back to the game's.
+    deco = "frost",
+    font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Sora-SemiBold.ttf",
+             body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Sora-Regular.ttf",
+             number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Sora-SemiBold.ttf", bodyBump = 0 },
+    on = { 0.498, 0.906, 1 }, off = { 0.07, 0.075, 0.17 }, swRim = { 0.66, 0.69, 0.84 },
+    -- Glass kept readable: the window stays nearly opaque whatever the opacity slider says (bgFloor).
+    bg = { 0.047, 0.05, 0.133 }, bgAlpha = 0.97, bgFloor = 0.88,
+    side = { 0.03, 0.03, 0.06 }, sideAlpha = 0.5,
+    rule = { 0.498, 0.906, 1 }, ruleAlpha = 0.3,
+    accent = { 0.498, 0.906, 1 }, selAlpha = 0.16,
+    text = { 0.949, 0.957, 1 }, rim = { 0.48, 0.36, 1 },
   },
 }
 

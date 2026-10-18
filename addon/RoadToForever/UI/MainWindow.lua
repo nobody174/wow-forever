@@ -196,6 +196,9 @@ function MainWindow.SetNavLayout(layout)
       if layout == "grid" then
         b:SetSize(64, 64)
         b:SetPoint("TOPLEFT", frame, "TOPLEFT", 8 + ((idx - 1) % 2) * 70, -(TOP_H + 12) - math.floor((idx - 1) / 2) * 70)
+      elseif layout == "chain" then
+        b:SetSize(SIDE_W - 16, 32)
+        b:SetPoint("TOPLEFT", frame, "TOPLEFT", 8, -(TOP_H + 16) - (idx - 1) * 38)
       elseif layout == "top" then
         b:SetSize(TOP_W[key], 32)
         b:SetPoint("TOPLEFT", frame, "TOPLEFT", x, -(TOP_H + 6))
@@ -211,7 +214,7 @@ function MainWindow.SetNavLayout(layout)
     end
   end
   for _, h in ipairs(navHeads) do h:SetShown(layout == nil) end
-  if frame.r2fSide then frame.r2fSide:SetShown(layout ~= "top") end
+  if frame.r2fSide then frame.r2fSide:SetShown(layout ~= "top" and layout ~= "chain") end
   frame:SetHeight(WIN_H + (layout == "top" and STRIP or 0))
   placePages(layout == "top")
 end

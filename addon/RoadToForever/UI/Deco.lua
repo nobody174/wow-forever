@@ -86,6 +86,7 @@ local SHAPE = {
   azeroth = { btnCap = 16 / 128, btnCapW = 16, pad = 0, groove = 10, knob = { 22, 22 } },
   ember = { btnCap = 16 / 128, btnCapW = 16, pad = 0, groove = 12, knob = { 32, 22 } },
   obsidian = { btnCap = 12 / 128, btnCapW = 12, pad = 3, groove = 16, knob = { 26, 26 } },
+  frost = { btnCap = 16 / 128, btnCapW = 16, pad = 3, groove = 16, knob = { 28, 28 } },
 }
 local function shape() return SHAPE[Deco.set or "azeroth"] end
 
@@ -341,6 +342,59 @@ local function buildObsidian(frame, ctx, d)
   end
 end
 
+-- Frost & Void (media/frost): a starfield window, two soft glows, glass panels and a chain of round orbs as the sidebar.
+local FR = IMGROOT .. "frost\\frost_"
+-- Labels: #A9B0D6 normal, #F2F4FF hover and selected. Icons: #A9B0D6 normal, #7FE7FF hover and selected.
+local NAV_TEXT_FROST = { normal = { 0.663, 0.69, 0.839 }, hover = { 0.949, 0.957, 1 }, selected = { 0.949, 0.957, 1 } }
+local ICON_FROST = { normal = { 0.663, 0.69, 0.839 }, hover = { 0.498, 0.906, 1 }, selected = { 0.498, 0.906, 1 } }
+
+local function buildArcane(frame, ctx, d)
+  local e = { nav = {} }
+  d.fr = e
+  e.panel = itex(frame, "BACKGROUND", 1)
+  e.panel:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4)
+  e.panel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -4, 4)
+  e.panel:SetTexture(FR .. "panel", "REPEAT", "REPEAT")
+  e.panel:SetHorizTile(true)
+  e.panel:SetVertTile(true)
+  -- The board's window gradient (#14163A at the top to #07070F) is not in the tile: a shade over it, darker towards the bottom.
+  e.shade = itex(frame, "BACKGROUND", 2)
+  e.shade:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4)
+  e.shade:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -4, 4)
+  e.glowV = itex(frame, "BACKGROUND", 3)
+  e.glowV:SetSize(330, 250)
+  e.glowV:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", -40, 20)
+  e.glowV:SetTexture(FR .. "glow_violet")
+  e.glowV:SetBlendMode("ADD")
+  e.glowC = itex(frame, "BACKGROUND", 3)
+  e.glowC:SetSize(320, 220)
+  e.glowC:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 30, -10)
+  e.glowC:SetTexture(FR .. "glow_cyan")
+  e.glowC:SetBlendMode("ADD")
+  e.frame = Deco.NineSlice(frame, frame, frame, 32, 0.25, "BORDER", 2, true)
+  e.frame.set(FR .. "frame")
+  e.glass = Deco.NineSlice(frame, d.insetEdge, d.insetEdge, 22, 0.25, "BACKGROUND", 4)
+  e.glass.set(FR .. "glass")
+  e.link = itex(frame, "ARTWORK", 0)
+  e.link:SetWidth(8)
+  e.link:SetTexture(FR .. "link", "REPEAT", "REPEAT")
+  e.link:SetVertTile(true)
+  for key, b in pairs(ctx.nav) do
+    local n = { btn = b, orb = itex(b, "BACKGROUND", 1), icon = itex(b, "ARTWORK", 2) }
+    n.orb:SetSize(44, 44)
+    n.orb:SetPoint("CENTER", b, "LEFT", 16, 0)
+    n.orb:SetTexture(FR .. "orb_normal")
+    n.icon:SetSize(14, 14)
+    n.icon:SetPoint("CENTER", b, "LEFT", 16, 0)
+    n.icon:SetTexture(IMG .. "azeroth_icon_" .. (NAV_ICON[key] or "home"))
+    e.nav[key] = n
+    if b.HookScript then
+      b:HookScript("OnEnter", function() n.hover = true Deco.RefreshNav() end)
+      b:HookScript("OnLeave", function() n.hover = false Deco.RefreshNav() end)
+    end
+  end
+end
+
 -- Slider track and knob (the top bar's Size and Opacity). `sl` is our own slider; the template's own track textures are hidden
 -- while the images are on and put back otherwise.
 local DEFAULT_KNOB = "Interface\\Buttons\\UI-SliderBar-Button-Horizontal"
@@ -390,7 +444,7 @@ function Deco.AddSlider(frame, sl)
     local w = (sl.GetWidth and sl:GetWidth() or 84)
     local frac = (lo and hi and hi > lo and sl.GetValue) and (sl:GetValue() - lo) / (hi - lo) or 0
     local px = math.max(0, math.min(w, w * frac))
-    if Deco.set == "ember" then
+    if Deco.set == "ember" or Deco.set == "frost" then
       for _, t in ipairs(fill.parts) do t:Hide() end
       clip:SetTexture(P("slider_fill"))
       clip:SetTexCoord(0, w > 0 and px / w or 0, 0, 1)
@@ -476,7 +530,7 @@ function Deco.StyleSwitch(b, own, knob, small)
       e.track.set(P(on and "switch_on" or "switch_off"))
       e.kn:ClearAllPoints()
       if on then e.kn:SetPoint("RIGHT", b, "RIGHT", -1, 0) else e.kn:SetPoint("LEFT", b, "LEFT", 1, 0) end
-      if Deco.set == "ember" or Deco.set == "obsidian" then
+      if Deco.set == "ember" or Deco.set == "obsidian" or Deco.set == "frost" then
         -- two knobs: off and on
         e.kn:SetTexture(P(on and "switch_knob_on" or "switch_knob_off"))
         e.kn:SetVertexColor(1, 1, 1, 1)
@@ -590,7 +644,7 @@ local function refreshCards(th)
     if not Deco.plate then
       Deco.plate = Deco.NineSlice(cards[1].frame, cards[1].frame, cards[3].frame, 16, 0.25, "BACKGROUND", 1)
     end
-    local show = on and (Deco.set == "ember" or Deco.set == "obsidian")
+    local show = on and (Deco.set == "ember" or Deco.set == "obsidian" or Deco.set == "frost")
     for _, t in ipairs(Deco.plate.parts) do t:SetShown(show) end
     if show then Deco.plate.set(P("display")) end
     for _, c in ipairs(cards) do
@@ -603,6 +657,17 @@ function Deco.RefreshNav()
   local frame = Deco.frame
   local d = frame and frame.r2fDeco
   if not (d and d.img and d.imagesActive) then return end
+  if Deco.set == "frost" then
+    for key, n in pairs(d.fr.nav) do
+      local sel = key == selectedKey
+      local state = sel and "selected" or (n.hover and "hover" or "normal")
+      n.orb:SetTexture(FR .. (sel and "orb_on" or (n.hover and "orb_hover" or "orb_normal")))
+      local ic, tc = ICON_FROST[state], NAV_TEXT_FROST[state]
+      n.icon:SetVertexColor(ic[1], ic[2], ic[3], 1)
+      if n.btn.r2fText then n.btn.r2fText:SetTextColor(tc[1], tc[2], tc[3]) end
+    end
+    return
+  end
   if Deco.set == "obsidian" then
     for key, n in pairs(d.ob.nav) do
       local sel = key == selectedKey
@@ -645,7 +710,7 @@ local function applyImages(d, th, alpha)
   for _, t in ipairs(imgPieces) do t:Hide() end
   Deco.RefreshButtons()
   Deco.RefreshSwitches()
-  local layout = on and ((set == "ember" and "grid") or (set == "obsidian" and "top")) or nil
+  local layout = on and ((set == "ember" and "grid") or (set == "obsidian" and "top") or (set == "frost" and "chain")) or nil
   local grid = layout == "grid"
   if R2F.MainWindow and R2F.MainWindow.SetNavLayout then R2F.MainWindow.SetNavLayout(layout) end
   for key, n in pairs(i and i.nav or {}) do
@@ -655,6 +720,9 @@ local function applyImages(d, th, alpha)
       if grid then
         fs:SetPoint("BOTTOM", n.btn, "BOTTOM", 0, 8)
         fs:SetText(L.NAV_TILE and L.NAV_TILE[key] or (d.label and d.label(key)) or "")
+      elseif layout == "chain" then
+        fs:SetPoint("LEFT", n.btn, "LEFT", 40, 0)
+        fs:SetText(d.label and d.label(key) or "")
       elseif layout == "top" then
         fs:SetPoint("LEFT", n.btn, "LEFT", 32, 0)
         fs:SetText(L.NAV_TAB and L.NAV_TAB[key] or (d.label and d.label(key)) or "")
@@ -713,6 +781,27 @@ local function applyImages(d, th, alpha)
       h.line:Show()
       if h.wordWidth then h.word:Show() end
     end
+  elseif set == "frost" then
+    local e = d.fr
+    e.panel:SetAlpha(alpha)
+    e.panel:Show()
+    gradient(e.shade, "VERTICAL", { 0.027, 0.027, 0.059 }, { 0.078, 0.086, 0.227 }, 0.62 * alpha, 0)
+    e.shade:Show()
+    e.glowV:SetAlpha(alpha)
+    e.glowC:SetAlpha(alpha)
+    e.glowV:Show()
+    e.glowC:Show()
+    for _, t in ipairs(e.frame.parts) do t:Show() end
+    for _, t in ipairs(e.glass.parts) do t:SetAlpha(alpha) t:Show() end
+    for _, n in pairs(e.nav) do
+      n.orb:Show()
+      n.icon:Show()
+    end
+    -- The thin chain joining the orbs, from the first orb to the last.
+    e.link:ClearAllPoints()
+    e.link:SetPoint("TOPLEFT", Deco.frame, "TOPLEFT", 8 + 16 - 4, -(50 + 16 + 16))
+    e.link:SetPoint("BOTTOMLEFT", Deco.frame, "TOPLEFT", 8 + 16 - 4, -(50 + 16 + 16 + 5 * 38))
+    e.link:Show()
   elseif set == "obsidian" then
     local e = d.ob
     e.frame.set(OB .. "frame")
@@ -821,6 +910,7 @@ function Deco.Build(frame, ctx)
   buildImages(frame, ctx, d)
   buildEmber(frame, ctx, d)
   buildObsidian(frame, ctx, d)
+  buildArcane(frame, ctx, d)
 end
 
 -- The banner plate is about 200 px wide: a long window title (Road to Forever: Tweaks) is scaled down to fit it.

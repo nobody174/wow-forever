@@ -4714,6 +4714,32 @@ def test_step6_ui(templates, fx):
     check(all(os.path.exists(os.path.join(fontsdir, f)) for f in ("SpaceGrotesk-Medium.ttf", "JetBrainsMono-Bold.ttf", "OFL-SpaceGrotesk.txt", "OFL-JetBrainsMono.txt")),
           "the Obsidian Night fonts ship with their licence files")
     lua.execute("R2F.Images.azeroth = true")
+    # Frost & Void: starfield window, glass panels and a chain of round orbs in place of the sidebar list.
+    lua.execute("R2F.Images.frost = true R2F.Theme.Set('arcane')")
+    FRI = "R2FMain.r2fDeco.fr"
+    check(lua.eval("%s.panel:IsShown()" % FRI) is True and lua.eval("%s.shade:IsShown()" % FRI) is True
+          and lua.eval("%s.glowV:IsShown()" % FRI) is True and lua.eval("%s.glowC:IsShown()" % FRI) is True
+          and all(lua.eval("%s.frame.parts[%d]:IsShown()" % (FRI, k)) is True for k in range(1, 9))
+          and all(lua.eval("%s.glass.parts[%d]:IsShown()" % (FRI, k)) is True for k in range(1, 10)),
+          "frost: starfield, shade, both glows, the rounded frame and the glass panel are drawn")
+    check(all(lua.eval("%s.nav.%s.orb:IsShown()" % (FRI, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay"))
+          and lua.eval("%s.link:IsShown()" % FRI) is True, "frost: every sidebar button is an orb on the chain")
+    check(lua.eval("NAV.plan.r2fText.__text") == "Launch plan" and lua.eval("R2FMain.r2fSide:IsShown()") is False,
+          "frost: the names stay, the sidebar background is gone")
+    check(lua.eval("R2F.Theme.PanelAlpha(R2F.Theme.Get('arcane'), 0.3)") >= 0.85, "frost: stays nearly opaque at the lowest opacity")
+    check(lua.eval("%s.panel:IsShown()" % EMI) is False and lua.eval("R2FMain.r2fDeco.img.banner:IsShown()") is False,
+          "frost: nothing of Ember or Azeroth shows")
+    lua.execute("R2F.Theme.Set('classic')")
+    check(lua.eval("%s.panel:IsShown()" % FRI) is False and lua.eval("R2FMain.r2fSide:IsShown()") is True,
+          "classic after frost: sidebar background is back, nothing of frost left")
+    frnames = set(_re.findall(r'FR \.\. "([a-z_]+)"', deco_src)) | set(_re.findall(r'FR \.\. \(sel and "([a-z_]+)"', deco_src))
+    frnames |= {"orb_hover", "orb_on", "orb_normal", "btn_normal", "btn_hover", "btn_primary", "btn_primary_hover", "btn_disabled", "check_on",
+                "check_off", "switch_on", "switch_off", "switch_knob_on", "switch_knob_off", "slider_track", "slider_fill", "slider_knob", "display"}
+    frmissing = [n for n in sorted(frnames) if not os.path.exists(os.path.join(HERE, "..", "RoadToForever", "media", "frost", "frost_" + n + ".tga"))]
+    check(not frmissing, "every frost texture exists as a .tga in media/frost: %s" % frmissing)
+    check(all(os.path.exists(os.path.join(fontsdir, f)) for f in ("Sora-Regular.ttf", "Sora-SemiBold.ttf", "OFL-Sora.txt")),
+          "the Frost & Void fonts ship with their licence file")
+    lua.execute("R2F.Images.azeroth = true")
     # A long window title is scaled to fit the banner plate (200 px) in image mode.
     lua.execute("""R2F.Images.azeroth = true R2F.Theme.Set('azeroth') TSCALE = nil
       R2FMain.r2fTitle.GetStringWidth = function() return 300 end

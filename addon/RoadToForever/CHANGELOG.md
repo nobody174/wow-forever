@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.74.0 (2026-10-19)
+
+- **Frost & Void is a full theme now:** a deep indigo window with faint stars and two soft glows (violet lower left, cyan upper right), rounded corners with the small corner brackets, glass-like panels behind the pages and for the countdown, and the sidebar as a chain of round orbs joined by a thin line (the open one glows cyan). Violet-to-blue primary buttons, round tick boxes, pill switches with a glowing pearl, and sliders that fill from violet to cyan. Font: Sora (bundled, free to use, licence file included). The window stays nearly solid at low opacity so the text stays readable.
+
 ## 0.73.0 (2026-10-18)
 
 - **Obsidian Night is a full theme now, with a new layout:** the sidebar is replaced by a row of tabs under the top bar (Home, Launch plan, Builds, Gear, Macros, Tweaks, with a divider between the groups); the window is 44 px taller in this theme and the pages move up and sideways. Rounded dark frame, a card behind the pages, teal tabs with a glowing underline for the open one, teal switches, tick boxes, buttons and sliders, and the countdown on one dark plate. Fonts: Space Grotesk and JetBrains Mono (bundled, free to use, licence files included).

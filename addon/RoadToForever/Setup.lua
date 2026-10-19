@@ -180,14 +180,6 @@ function Setup.Execute(def)
     end
     say(L.SETUP_DONE_RAID)
   end
-  -- The bars sometimes stay hidden until a /reload: look again a moment later and say so.
-  _G.C_Timer.After(2.5, function()
-    local frames = { [2] = "MultiBarBottomLeft", [3] = "MultiBarBottomRight", [4] = "MultiBarRight", [5] = "MultiBarLeft" }
-    for _, bar in ipairs(def.bars) do
-      local f = _G[frames[bar] or ""]
-      if f and f.IsShown and not f:IsShown() then return say(L.SETUP_RELOAD) end
-    end
-  end)
   -- 2. the Edit Mode layout
   if def.layout then
     local idx, active = Setup.FindLayout(def.layout)
@@ -251,6 +243,13 @@ function Setup.Finish(def, r)
     if note then say(note) end
   end
   say(L.SETUP_FINISHED)
+  -- The game shows newly switched-on bars only after a reload: offer it.
+  if def.bars and R2F.UI and R2F.UI.Confirm and _G.ReloadUI then
+    R2F.UI.Confirm(L.SETUP_RELOAD_ASK, L.SETUP_RELOAD_GO, L.BTN_CANCEL, function()
+      if R2F.InCombat() then return say(L.SETUP_COMBAT) end
+      _G.ReloadUI()
+    end)
+  end
 end
 
 -- The entry point: checks, then a confirmation listing what will change.

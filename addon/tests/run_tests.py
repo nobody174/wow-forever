@@ -8803,6 +8803,11 @@ def test_setup():
     # Clear-all: every button is emptied first, even one holding a non-spell.
     lua.execute("""R2F.Setup.Undo() ACTIONS = { [3] = { kind = 'item', text = 'Mine' }, [150] = { kind = 'item', text = 'Far' } } R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()""")
     check(lua.eval("ACTIONS[3].text") == "Raptor+Clip" and lua.eval("ACTIONS[150]") is None, "setup: every button is emptied first, then the macros go on")
+    lua.execute("""R2F.Setup.Undo() RELOADED = false CONFIRMS = {} R2F.UI.Confirm = function(t, a, b, fn) table.insert(CONFIRMS, {text=t, fn=fn}) end
+      ReloadUI = function() RELOADED = true end R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()""")
+    check(lua.eval("#CONFIRMS") == 1 and lua.eval("RELOADED") is False, "setup: when done it offers a reload and does not reload by itself")
+    lua.execute("CONFIRMS[1].fn()")
+    check(lua.eval("RELOADED") is True, "setup: the reload button reloads the interface")
     lua.execute("R2F.Setup.Undo()")
     check("should be on the key E" in chat_all(lua), "setup: a key that differs is reported, not changed")
     check("no Edit Mode layout called" in chat_all(lua), "setup: a missing layout is reported")

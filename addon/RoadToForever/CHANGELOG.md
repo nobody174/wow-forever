@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.75.3 (2026-10-19)
+
+- **Setup Hunter asks to reload when it is done**, because the game only shows newly switched-on action bars after a reload. One click on "Reload now" (never in combat).
+
 ## 0.75.2 (2026-10-19)
 
 - **Setup Hunter also turns on the raid frame options** "Display class colors", "Display power bars" and "Display pets" (Undo puts them back).

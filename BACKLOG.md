@@ -8,6 +8,8 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 2. Run "Setup Hunter" once on the fresh character before anything else is placed (it now empties every action button first).
 3. Launch-day data refresh (BiS / items) before the countdown ends.
 
+4. **Ground markers (`/wm`)**: do not work solo; test in a group, then add macros/coordinates for the Hunter trainer and the general goods vendor in the Skyborne starting zone.
+
 ## 1. Bugs
 None open (talent-tree drift fixed 2026-10-16; before each release run `python addon/tools/gen_talent_data.py --drift`).
 

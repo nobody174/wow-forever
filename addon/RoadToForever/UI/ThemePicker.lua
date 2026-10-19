@@ -151,7 +151,7 @@ function Picker.Surprise()
   local cur = R2F.Theme.Get().key
   local pool = {}
   for _, key in ipairs(ORDER) do
-    if key ~= cur and key ~= previewing then pool[#pool + 1] = key end
+    if key ~= cur and key ~= previewing and key ~= revertTo then pool[#pool + 1] = key end
   end
   if #pool > 0 then Picker.Preview(pool[math.random(#pool)]) end
 end

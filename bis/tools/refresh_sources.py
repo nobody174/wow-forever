@@ -68,7 +68,9 @@ def coverage():
     for v in (rec.get("vendors") or {}).values():
         recorded.update(v.get("i", {}))
     for v in (rec.get("quests") or {}).values():
-        recorded.update(str(i) for i in v.get("c", []) + v.get("r", []))
+        for key in ("c", "r"):
+            ids = v.get(key) or []
+            recorded.update(str(i) for i in (ids.values() if isinstance(ids, dict) else ids))
     sets.append(("recorded", {k: 1 for k in recorded}))
     picks = {}
     for f in glob.glob(str(ROOT / "bis" / "raw" / "*.json")):

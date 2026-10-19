@@ -1447,6 +1447,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /cast [harm] Wing Clip
 ```
 
+**Serpent Sting** (`Serpent`) — Serpent Sting on your target.
+```
+#showtooltip Serpent Sting
+/cast [harm] Serpent Sting
+```
+
 #### Wand / auto-attack
 
 **Auto Shot (spam-safe)** (`AutoShot`) — Hunter exception: ! stops Auto Shot toggling off. Unlike wand Shoot, it works here.
@@ -1461,6 +1467,18 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Aspect of the Hawk
 /cast [combat] Aspect of the Hawk; Aspect of the Cheetah
+```
+
+**Aspect of the Monkey** (`AspMonkey`) — Always Monkey (no Hawk / Cheetah swap).
+```
+#showtooltip Aspect of the Monkey
+/cast Aspect of the Monkey
+```
+
+**Aspect of the Hawk** (`AspHawk`) — Always Hawk, also out of combat.
+```
+#showtooltip Aspect of the Hawk
+/cast Aspect of the Hawk
 ```
 
 #### Panic / defensive
@@ -1484,6 +1502,11 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 /petfollow [mod:shift]
 /petattack [nomod:shift, @mouseover, harm, exists][nomod:shift, harm]
+```
+
+**Pet follow (come back)** (`PetFollow`) — Calls the pet back to you. No #showtooltip: /petattack is not a spell, so it would show a red ?. Pick the icon yourself in the macro window: the claw icon from the pet bar's Attack button (Ability_GhoulFrenzy).
+```
+/petfollow
 ```
 
 **Call / Revive / Mend (one button)** (`PetMend`)

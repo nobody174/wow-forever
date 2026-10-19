@@ -173,6 +173,17 @@ function Minimap_.MenuItems()
     items[#items + 1] = { kind = "check", text = L.MENU_THREATMASTER, isChecked = Minimap_.ThreatMasterOn,
                           func = Minimap_.ToggleThreatMaster }
   end
+  -- One-click setup of a fresh character (Setup.lua): only for a class that has one.
+  local setup = R2F.Setup and R2F.Setup.ForClass()
+  if setup then
+    items[#items + 1] = { kind = "divider" }
+    items[#items + 1] = { kind = "button", text = L.MENU_SETUP:format(setup.class:sub(1, 1) .. setup.class:sub(2):lower()),
+                          func = function() R2F.Setup.Run(setup.key) end }
+    if R2F.Setup.CanUndo() then
+      items[#items + 1] = { kind = "button", text = L.MENU_SETUP_UNDO, func = function() R2F.Setup.Undo() end }
+    end
+    items[#items + 1] = { kind = "divider" }
+  end
   -- /reload without typing it (ReloadUI is not a protected function).
   items[#items + 1] = { kind = "button", text = L.MENU_RELOAD, func = function() ReloadUI() end }
   return items

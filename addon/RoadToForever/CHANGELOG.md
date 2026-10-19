@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.75.0 (2026-10-19)
+
+- **"Setup Hunter" on the minimap menu** (and `/r2f setup hunter`): one click to get a fresh Hunter ready. It first lists what it will do and asks. Then it turns Action Bars 2 to 6 on, turns auto loot on, switches to your Edit Mode layout called "Hunter", and puts macros on their buttons: Raptor Strike + Wing Clip on the main bar button 3, Auto Shot on bar 2 button 6, Serpent Sting on bar 2 button 5, Pet attack (mouseover / target of target) on bar 2 button 3, Pet follow on bar 2 button 9, Aspect of the Monkey on bar 5 button 2 and Aspect of the Hawk on bar 5 button 3. A button that already holds something is left alone and listed. It never changes your key bindings, it only tells you if the key on a button is not the one expected (E on bar 2 button 6, Q on button 5, 2 on the main bar's button 3). Macros of spells you have not learned yet show a ? until you learn them. Nothing runs in combat.
+- **"Undo last setup"** appears on the menu afterwards and puts the bars, auto loot and layout back and empties the buttons it filled.
+- New Hunter macros: Serpent Sting, Aspect of the Monkey, Aspect of the Hawk (always, not the Hawk / Cheetah one) and Pet follow (come back).
+
 ## 0.74.1 (2026-10-19)
 
 - **Minimap button menu: ThreatMaster on and off.** A "ThreatMaster (/tm)" entry, ticked while its window is shown, next to the Damage meter one. It does exactly what typing /tm does. It only appears when the ThreatMaster addon is installed.

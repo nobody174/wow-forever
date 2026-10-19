@@ -64,6 +64,15 @@ Use a test character for anything marked **TEST CHAR**.
 - Text readable in Sora; at the lowest Opacity the window should stay nearly solid.
 - Switch to the other themes and back: nothing of Frost & Void should stay behind.
 
+5.43. **Setup Hunter (0.75.0):** on a fresh Hunter (or after `/r2f setup undo`): right-click the minimap button > "Setup Hunter".
+- A window lists what it will do; press "Set up". Chat: bars 2 to 6 on, the Edit Mode layout "Hunter" now active, N macros placed, and a closing line.
+- Bars 2 to 6 appear, auto loot is on (Options), the Hunter layout is the active one in Edit Mode.
+- Button check: main bar button 3 = Raptor + Wing Clip (key 2); bar 2: button 3 pet attack, 5 Serpent Sting (Q), 6 Auto Shot (E), 9 pet follow; bar 5: button 2 Aspect of the Monkey, button 3 Aspect of the Hawk. Unlearned spells show a ?.
+- Is each macro on the RIGHT bar? ("Action Bar 2" in the game's options = the bar just above the main bar on your layout.) Tell me any that is on the wrong one.
+- Press "Setup Hunter" again: nothing new, "already there". Put a spell on a button and run it: that button is left alone and listed.
+- "Undo last setup" on the menu: bars, auto loot, layout back, the buttons it filled emptied.
+- Does switching the layout cause any "action blocked" / taint message? Anything that does not happen: say which step.
+
 ## Cannot be tested yet (reason)
 - 4.13 group picks: nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made.
 - 13.9 (owner: not seen in the beta yet, check after release) Druid spells that Forever gives its own versions of (Starsurge, Sunfire, Starfall, Lacerate): they are not runes (corrected 2026-10-17). Needs the level: does each macro cast it, and how is it learned (trainer or talent)? The Skull Bash, Survival Instincts, Lifebloom and Nourish macros were removed (those spells exist only as Season of Discovery leftovers).

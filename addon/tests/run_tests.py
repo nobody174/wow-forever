@@ -8296,6 +8296,7 @@ def main():
     test_gameplay_extras()
     test_combat_banner()
     test_recorder()
+    test_setup()
     test_gameplay_quests()
     test_copychat()
     test_questzone()
@@ -8743,6 +8744,69 @@ def test_recorder():
     T2.chat = lua.table()
     lua.execute("R2F.DEBUG.recorder()")
     check("1 creatures looted" in chat_all(lua) and "vendors" in chat_all(lua), "recorder: /r2f debug recorder prints the counts")
+
+
+def test_setup():
+    """Setup Hunter: bars 2-6, auto loot, the Edit Mode layout, our macros on their buttons; skips filled buttons; undo."""
+    lua, T = reminder_runtime("HUNTER")
+    lua.execute("R2F.MacroData = NS.MacroDataReal R2F.Bundle.Run()")           # the macros that ship with the addon
+    lua.execute("""
+      TOG = { false, false, false, false, false, false, false }
+      GetActionBarToggles = function() return unpack(TOG) end
+      SetActionBarToggles = function(...) TOG = { ... } end
+      ACTIONS = {}
+      GetActionInfo = function(s) local a = ACTIONS[s] if a then return a.kind, 1 end end
+      GetActionText = function(s) return ACTIONS[s] and ACTIONS[s].text end
+      GetCursorInfo = function() if TEST.cursor then return 'macro', 1 end end
+      ClearCursor = function() TEST.cursor = nil end
+      PlaceAction = function(s) if TEST.cursor then ACTIONS[s] = { kind = 'macro', text = TEST.cursor } TEST.cursor = nil end end
+      PickupAction = function(s) if ACTIONS[s] then TEST.cursor = ACTIONS[s].text ACTIONS[s] = nil end end
+      BINDS = { ACTIONBUTTON3 = '2', MULTIACTIONBAR1BUTTON6 = 'E', MULTIACTIONBAR1BUTTON5 = 'Q' }
+      GetBindingKey = function(cmd) return BINDS[cmd] end
+      LAYOUTS = { { layoutName = 'Modern' }, { layoutName = 'Classic' }, { layoutName = 'Hunter' } }
+      EditModeManagerFrame = { layoutInfo = { layouts = LAYOUTS, activeLayout = 1 } }
+      SETLAYOUT = nil
+      C_EditMode = { SetActiveLayout = function(i) SETLAYOUT = i EditModeManagerFrame.layoutInfo.activeLayout = i end }
+      CVARS = { autoLootDefault = '0' }
+      GetCVar = function(n) return CVARS[n] end
+      SetCVar = function(n, v) CVARS[n] = v end
+      function RUNTIMERS() local n = 0 while #TEST.timers > 0 and n < 400 do local l = TEST.timers TEST.timers = {} for _, f in ipairs(l) do f() end n = n + 1 end end
+    """)
+    check(lua.eval("R2F.Setup.Slot(1, 3)") == 3 and lua.eval("R2F.Setup.Slot(2, 6)") == 66 and lua.eval("R2F.Setup.Slot(5, 2)") == 38
+          and lua.eval("R2F.Setup.Slot(3, 1)") == 49 and lua.eval("R2F.Setup.Slot(4, 1)") == 25 and lua.eval("R2F.Setup.Slot(6, 1)") == 145,
+          "setup: bar and button to action slot (bar 2 = 61-72, bar 5 = 37-48, bar 6 = 145-156)")
+    for k in ("Raptor+Clip", "AutoShot", "Serpent", "PetAtkMOTT", "PetFollow", "AspMonkey", "AspHawk"):
+        check(lua.eval("R2F.Library.Get('HUNTER/%s') ~= nil" % k) is True, "setup: the library has the macro HUNTER/%s" % k)
+    lua.execute("R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()")
+    check(all(lua.eval("TOG[%d]" % i) is True for i in (1, 2, 3, 4, 5)) and lua.eval("TOG[6]") is False,
+          "setup: Action Bars 2 to 6 are on, 7 and 8 untouched")
+    check(lua.eval("CVARS.autoLootDefault") == "1", "setup: auto loot is on")
+    check(lua.eval("SETLAYOUT") == 3, "setup: the Edit Mode layout 'Hunter' (third in the game's list after Modern and Classic) is made active")
+    want = {3: "Raptor+Clip", 66: "AutoShot", 65: "Serpent", 63: "PetAtkMOTT", 69: "PetFollow", 38: "AspMonkey", 39: "AspHawk"}
+    for slot, name in want.items():
+        check(lua.eval("ACTIONS[%d] ~= nil and ACTIONS[%d].text" % (slot, slot)) == name, "setup: slot %d holds the macro %s" % (slot, name))
+    check("macros placed" in chat_all(lua), "setup: the chat says how many macros were placed")
+    check("should be on the key" not in chat_all(lua), "setup: no key warning when the keys are as listed")
+    # Undo puts everything back.
+    lua.execute("R2F.Setup.Undo()")
+    check(all(lua.eval("TOG[%d]" % i) is False for i in range(1, 8)) and lua.eval("CVARS.autoLootDefault") == "0"
+          and lua.eval("SETLAYOUT") == 1 and lua.eval("next(ACTIONS)") is None, "setup: undo restores the bars, auto loot, layout and empties the buttons it filled")
+    # A button that holds something is left alone; a wrong key is reported; a missing layout is reported.
+    lua.execute("""ACTIONS[3] = { kind = 'spell', text = 'Mine' } BINDS.MULTIACTIONBAR1BUTTON6 = 'F' LAYOUTS[3].layoutName = 'Other' TEST.chat = {}
+      R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()""")
+    check(lua.eval("ACTIONS[3].text") == "Mine" and "not empty" in chat_all(lua), "setup: a filled button is left alone and reported")
+    check("should be on the key E" in chat_all(lua), "setup: a key that differs is reported, not changed")
+    check("no Edit Mode layout called" in chat_all(lua), "setup: a missing layout is reported")
+    # Combat and class guards.
+    lua.execute("TEST.chat = {} R2F.inCombat = true R2F.Setup.Run('hunter') R2F.inCombat = false")
+    check("not in combat" in chat_all(lua), "setup: nothing runs in combat")
+    lua.execute("TEST.chat = {} R2F.playerClass = 'MAGE' R2F.Setup.Run('hunter')")
+    check("hunter; log in" in chat_all(lua), "setup: another class is told to log in on a hunter")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is False,
+          "setup: no menu entry for a Mage")
+    lua.execute("R2F.playerClass = 'HUNTER'")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is True,
+          "setup: the minimap menu offers 'Setup Hunter' to a Hunter")
 
 
 def test_combat_banner():

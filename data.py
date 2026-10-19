@@ -786,6 +786,7 @@ CLASSES = [
                   "Raptor Strike (on your next swing, no global cooldown) and Wing Clip on one button. Split in 0.56.1 because a macro "
                   "can stop at the first spell it can't cast, put back at the owner's request. If Wing Clip never goes off while "
                   "Raptor Strike is on cooldown, use the two single buttons.", short="Raptor+Clip"),
+                M("Serpent Sting", dpsHarm("Serpent Sting"), "Serpent Sting on your target.", short="Serpent"),
             ]),
             G(AUTO, [
                 M("Auto Shot (spam-safe)",
@@ -797,6 +798,9 @@ CLASSES = [
                 M("Aspect: Hawk in combat, Cheetah out",
                   "#showtooltip Aspect of the Hawk\n/cast [combat] Aspect of the Hawk; Aspect of the Cheetah",
                   short="AspectHawk"),
+                M("Aspect of the Monkey", plain("Aspect of the Monkey"), "Always Monkey (no Hawk / Cheetah swap).",
+                  short="AspMonkey"),
+                M("Aspect of the Hawk", plain("Aspect of the Hawk"), "Always Hawk, also out of combat.", short="AspHawk"),
             ]),
             G(PANIC, [
                 M("Feign Death (clean)",
@@ -810,6 +814,8 @@ CLASSES = [
                 M("Pet attack / Shift = follow", PETATK_SHIFT,
                   "Press to send the pet (mouseover first); Shift+press calls it back. " + PET_ICON_NOTE,
                   short="PetAtkShift", icon="Ability_GhoulFrenzy"),
+                M("Pet follow (come back)", "/petfollow", "Calls the pet back to you. " + PET_ICON_NOTE,
+                  short="PetFollow", icon="Ability_Hunter_BeastCall"),
                 M("Call / Revive / Mend (one button)",
                   "#showtooltip Mend Pet\n/cast [nopet] Call Pet; [@pet, dead] Revive Pet; Mend Pet", short="PetMend"),
                 M("Feed Pet",

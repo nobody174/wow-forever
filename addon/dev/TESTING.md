@@ -64,8 +64,6 @@ Use a test character for anything marked **TEST CHAR**.
 - Text readable in Sora; at the lowest Opacity the window should stay nearly solid.
 - Switch to the other themes and back: nothing of Frost & Void should stay behind.
 
-5.42. **ThreatMaster on the minimap menu (0.74.1):** right-click the minimap button: a "ThreatMaster (/tm)" tick next to "Damage meter (Blizzard)". Tick it: the ThreatMaster window shows or hides like /tm does, and the tick follows. No error, also if you use it in combat? (Tell me if the game blocks anything.)
-
 ## Cannot be tested yet (reason)
 - 4.13 group picks: nothing to see until the owner publishes a pick on the site (Saved builds > Group picks, owner login) and a new release is made.
 - 13.9 (owner: not seen in the beta yet, check after release) Druid spells that Forever gives its own versions of (Starsurge, Sunfire, Starfall, Lacerate): they are not runes (corrected 2026-10-17). Needs the level: does each macro cast it, and how is it learned (trainer or talent)? The Skull Bash, Survival Instincts, Lifebloom and Nourish macros were removed (those spells exist only as Season of Discovery leftovers).

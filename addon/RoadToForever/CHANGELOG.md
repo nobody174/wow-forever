@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.75.1 (2026-10-19)
+
+- **Setup Hunter: starting spells no longer block a button.** A spell sitting on one of the buttons the setup fills is lifted off so the macro can go there (Undo puts it back). Anything else on a button is still left alone.
+- The Auto Shot macro now shows your equipped ranged weapon as its icon (`#showtooltip 18`).
+- If the action bars are on but still hidden after the setup, chat tells you to type /reload.
+
 ## 0.75.0 (2026-10-19)
 
 - **"Setup Hunter" on the minimap menu** (and `/r2f setup hunter`): one click to get a fresh Hunter ready. It first lists what it will do and asks. Then it turns Action Bars 2 to 6 on, turns auto loot on, switches to your Edit Mode layout called "Hunter", and puts macros on their buttons: Raptor Strike + Wing Clip on the main bar button 3, Auto Shot on bar 2 button 6, Serpent Sting on bar 2 button 5, Pet attack (mouseover / target of target) on bar 2 button 3, Pet follow on bar 2 button 9, Aspect of the Monkey on bar 5 button 2 and Aspect of the Hawk on bar 5 button 3. A button that already holds something is left alone and listed. It never changes your key bindings, it only tells you if the key on a button is not the one expected (E on bar 2 button 6, Q on button 5, 2 on the main bar's button 3). Macros of spells you have not learned yet show a ? until you learn them. Nothing runs in combat.

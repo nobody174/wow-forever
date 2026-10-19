@@ -1457,7 +1457,7 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 **Auto Shot (spam-safe)** (`AutoShot`) — Hunter exception: ! stops Auto Shot toggling off. Unlike wand Shoot, it works here.
 ```
-#showtooltip Auto Shot
+#showtooltip 18
 /cast [@targettarget, harm, exists][harm] !Auto Shot
 ```
 

@@ -8792,9 +8792,12 @@ def test_setup():
     check(all(lua.eval("TOG[%d]" % i) is False for i in range(1, 8)) and lua.eval("CVARS.autoLootDefault") == "0"
           and lua.eval("SETLAYOUT") == 1 and lua.eval("next(ACTIONS)") is None, "setup: undo restores the bars, auto loot, layout and empties the buttons it filled")
     # A button that holds something is left alone; a wrong key is reported; a missing layout is reported.
-    lua.execute("""ACTIONS[3] = { kind = 'spell', text = 'Mine' } BINDS.MULTIACTIONBAR1BUTTON6 = 'F' LAYOUTS[3].layoutName = 'Other' TEST.chat = {}
+    lua.execute("""ACTIONS[3] = { kind = 'item', text = 'Mine' } BINDS.MULTIACTIONBAR1BUTTON6 = 'F' LAYOUTS[3].layoutName = 'Other' TEST.chat = {}
       R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()""")
     check(lua.eval("ACTIONS[3].text") == "Mine" and "not empty" in chat_all(lua), "setup: a filled button is left alone and reported")
+    # A starting spell on a target button is lifted off and put back by Undo.
+    lua.execute("""R2F.Setup.Undo() ACTIONS = { [3] = { kind = 'spell', text = 'Start' } } R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()""")
+    check(lua.eval("ACTIONS[3] ~= nil and ACTIONS[3].text") == "Raptor+Clip", "setup: a spell on a target button is cleared and the macro goes there")
     check("should be on the key E" in chat_all(lua), "setup: a key that differs is reported, not changed")
     check("no Edit Mode layout called" in chat_all(lua), "setup: a missing layout is reported")
     # Combat and class guards.

@@ -115,7 +115,15 @@ local function placeOne(row, undo, done)
   if not e then return done("missing") end
   local held = slotHolds(slot, e)
   if held == "ours" then return done("ours") end
-  if held == "other" then return done("occupied") end
+  if held == "other" then
+    -- A spell on the button (a starting spell) is lifted off and put back by Undo; anything else stays.
+    local kind, id = _G.GetActionInfo(slot)
+    if kind ~= "spell" or type(id) ~= "number" then return done("occupied") end
+    _G.PickupAction(slot)
+    _G.ClearCursor()
+    if _G.GetActionInfo(slot) then return done("occupied") end
+    undo.cleared[#undo.cleared + 1] = { slot = slot, spell = id }
+  end
   if not R2F.Macros.Ensure(row.id) then return done("failed") end
   -- The macro is on the cursor (a new one a frame later): wait for it, then drop it on the button.
   local tries = 0
@@ -147,7 +155,7 @@ local function keyNote(row)
 end
 
 function Setup.Execute(def)
-  local undo = { time = _G.time and _G.time() or 0, slots = {}, setup = def.key }
+  local undo = { time = _G.time and _G.time() or 0, slots = {}, cleared = {}, setup = def.key }
   -- 1. bars and auto loot
   undo.toggles = toggles()
   local want = toggles()
@@ -158,6 +166,14 @@ function Setup.Execute(def)
     R2F.QuickSettings.Write("autoLootDefault", "1")
   end
   say(L.SETUP_DONE_BARS:format(table.concat(def.bars, ", ")))
+  -- The bars sometimes stay hidden until a /reload: look again a moment later and say so.
+  _G.C_Timer.After(2.5, function()
+    local frames = { [2] = "MultiBarBottomLeft", [3] = "MultiBarBottomRight", [4] = "MultiBarRight", [5] = "MultiBarLeft" }
+    for _, bar in ipairs(def.bars) do
+      local f = _G[frames[bar] or ""]
+      if f and f.IsShown and not f:IsShown() then return say(L.SETUP_RELOAD) end
+    end
+  end)
   -- 2. the Edit Mode layout
   if def.layout then
     local idx, active = Setup.FindLayout(def.layout)
@@ -255,6 +271,13 @@ function Setup.Undo()
       _G.PickupAction(s.slot)
       _G.ClearCursor()
       cleared = cleared + 1
+    end
+  end
+  for _, c in ipairs(u.cleared or {}) do
+    if not _G.GetActionInfo(c.slot) and _G.PickupSpell then
+      _G.PickupSpell(c.spell)
+      _G.PlaceAction(c.slot)
+      _G.ClearCursor()
     end
   end
   db().setupUndo = nil

@@ -805,6 +805,7 @@ R2F.L = {
   SETUP_MISSING = "setup: no such macro in the library for: %s.",
   SETUP_FAILED = "setup: could not place: %s.",
   SETUP_KEY_DIFFERS = "setup: bar %d button %d should be on the key %s, it is %s (change it in Options > Key Bindings).",
+  SETUP_RELOAD = "setup: some action bars are on but not showing yet. Type /reload and they will appear.",
   SETUP_FINISHED = "setup finished. Macros of spells you have not learned yet show a ? until you learn them.",
   SETUP_NOTHING_TO_UNDO = "nothing to undo.",
   SETUP_UNDONE = "setup undone: bars, auto loot and layout put back, %d buttons emptied.",

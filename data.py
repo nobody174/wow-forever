@@ -790,7 +790,7 @@ CLASSES = [
             ]),
             G(AUTO, [
                 M("Auto Shot (spam-safe)",
-                  "#showtooltip Auto Shot\n/cast [@targettarget, harm, exists][harm] !Auto Shot",
+                  "#showtooltip 18\n/cast [@targettarget, harm, exists][harm] !Auto Shot",
                   "Hunter exception: ! stops Auto Shot toggling off. Unlike wand Shoot, it works here.",
                   short="AutoShot"),
             ]),

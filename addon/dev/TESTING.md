@@ -64,7 +64,7 @@ Use a test character for anything marked **TEST CHAR**.
 - Text readable in Sora; at the lowest Opacity the window should stay nearly solid.
 - Switch to the other themes and back: nothing of Frost & Void should stay behind.
 
-5.43. **Setup Hunter (0.75.0):** on a fresh Hunter (or after `/r2f setup undo`): right-click the minimap button > "Setup Hunter".
+5.43. **Setup Hunter (0.75.0, follow-ups in 0.75.1: starting spells cleared from target buttons, Auto Shot icon = ranged weapon, /reload hint if bars stay hidden):** on a fresh Hunter (or after `/r2f setup undo`): right-click the minimap button > "Setup Hunter".
 - A window lists what it will do; press "Set up". Chat: bars 2 to 6 on, the Edit Mode layout "Hunter" now active, N macros placed, and a closing line.
 - Bars 2 to 6 appear, auto loot is on (Options), the Hunter layout is the active one in Edit Mode.
 - Button check: main bar button 3 = Raptor + Wing Clip (key 2); bar 2: button 3 pet attack, 5 Serpent Sting (Q), 6 Auto Shot (E), 9 pet follow; bar 5: button 2 Aspect of the Monkey, button 3 Aspect of the Hawk. Unlearned spells show a ?.

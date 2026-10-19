@@ -5,6 +5,12 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-19 (addon versions checked)
+- addons.html: Road to Forever card fallback moved to 0.74.1 (newest `r2f-v*` tag, Oct 19, 2026; link, version, date, zip name). It matches
+  `RoadToForever.toc` (`## Version: 0.74.1`). The card still updates itself from GitHub in the browser. CurseForge cards (AtlasLoot Continued,
+  Forever Bestiary, Leatrix Maps, Questie, ThreatMaster) were not re-checked this run: CurseForge fetches were refused, so their
+  "Versions checked" date was left as is.
+
 ## 2026-10-18 (addon versions checked)
 - addons.html: Road to Forever card fallback moved to 0.69.1 (newest `r2f-v*` tag, Oct 18, 2026; link, version, date, zip name). The card
   still updates itself from GitHub in the browser. CurseForge cards (AtlasLoot Continued, Forever Bestiary, Leatrix Maps, Questie,

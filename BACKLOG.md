@@ -3,6 +3,11 @@
 Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md](CHANGELOG.md); someday ideas in
 [ROADMAP.md](ROADMAP.md); what needs in-game testing in [addon/dev/TESTING.md](addon/dev/TESTING.md).
 
+## 0. Launch-day reminders (2026-11-04)
+1. **Back up the beta settings once the release client is installed** (and again right before the beta ends 2026-10-21): `python addon/tools/backup_wtf.py`, then restore into the release client per `docs/beta-backup.md`. Backup goes to `D:\Claude AI Projects\wow-beta-backup\<date>`, outside the repo.
+2. Run "Setup Hunter" once on the fresh character before anything else is placed (it now empties every action button first).
+3. Launch-day data refresh (BiS / items) before the countdown ends.
+
 ## 1. Bugs
 None open (talent-tree drift fixed 2026-10-16; before each release run `python addon/tools/gen_talent_data.py --drift`).
 

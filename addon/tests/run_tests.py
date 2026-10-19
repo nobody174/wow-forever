@@ -8767,7 +8767,7 @@ def test_setup():
       EditModeManagerFrame = { layoutInfo = { layouts = LAYOUTS, activeLayout = 1 } }
       SETLAYOUT = nil
       C_EditMode = { SetActiveLayout = function(i) SETLAYOUT = i EditModeManagerFrame.layoutInfo.activeLayout = i end }
-      CVARS = { autoLootDefault = '0' }
+      CVARS = { autoLootDefault = '0', raidFramesDisplayClassColor = '0', raidFramesDisplayPowerBars = '0', raidOptionDisplayPets = '0' }
       GetCVar = function(n) return CVARS[n] end
       SetCVar = function(n, v) CVARS[n] = v end
       function RUNTIMERS() local n = 0 while #TEST.timers > 0 and n < 400 do local l = TEST.timers TEST.timers = {} for _, f in ipairs(l) do f() end n = n + 1 end end
@@ -8781,6 +8781,8 @@ def test_setup():
     check(all(lua.eval("TOG[%d]" % i) is True for i in (1, 2, 3, 4, 5)) and lua.eval("TOG[6]") is False,
           "setup: Action Bars 2 to 6 are on, 7 and 8 untouched")
     check(lua.eval("CVARS.autoLootDefault") == "1", "setup: auto loot is on")
+    check(all(lua.eval("CVARS.%s" % c) == "1" for c in ("raidFramesDisplayClassColor", "raidFramesDisplayPowerBars", "raidOptionDisplayPets")),
+          "setup: raid frames show class colours, power bars and pets")
     check(lua.eval("SETLAYOUT") == 3, "setup: the Edit Mode layout 'Hunter' (third in the game's list after Modern and Classic) is made active")
     want = {3: "Raptor+Clip", 66: "AutoShot", 65: "Serpent", 63: "PetAtkMOTT", 69: "PetFollow", 38: "AspMonkey", 39: "AspHawk"}
     for slot, name in want.items():
@@ -8789,15 +8791,19 @@ def test_setup():
     check("should be on the key" not in chat_all(lua), "setup: no key warning when the keys are as listed")
     # Undo puts everything back.
     lua.execute("R2F.Setup.Undo()")
-    check(all(lua.eval("TOG[%d]" % i) is False for i in range(1, 8)) and lua.eval("CVARS.autoLootDefault") == "0"
+    check(all(lua.eval("TOG[%d]" % i) is False for i in range(1, 8)) and lua.eval("CVARS.autoLootDefault") == "0" and lua.eval("CVARS.raidOptionDisplayPets") == "0"
           and lua.eval("SETLAYOUT") == 1 and lua.eval("next(ACTIONS)") is None, "setup: undo restores the bars, auto loot, layout and empties the buttons it filled")
     # A button that holds something is left alone; a wrong key is reported; a missing layout is reported.
     lua.execute("""ACTIONS[3] = { kind = 'item', text = 'Mine' } BINDS.MULTIACTIONBAR1BUTTON6 = 'F' LAYOUTS[3].layoutName = 'Other' TEST.chat = {}
-      R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()""")
+      R2F.Setup.LIST.hunter.clearAll = false R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS() R2F.Setup.LIST.hunter.clearAll = true""")
     check(lua.eval("ACTIONS[3].text") == "Mine" and "not empty" in chat_all(lua), "setup: a filled button is left alone and reported")
     # A starting spell on a target button is lifted off and put back by Undo.
     lua.execute("""R2F.Setup.Undo() ACTIONS = { [3] = { kind = 'spell', text = 'Start' } } R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()""")
     check(lua.eval("ACTIONS[3] ~= nil and ACTIONS[3].text") == "Raptor+Clip", "setup: a spell on a target button is cleared and the macro goes there")
+    # Clear-all: every button is emptied first, even one holding a non-spell.
+    lua.execute("""R2F.Setup.Undo() ACTIONS = { [3] = { kind = 'item', text = 'Mine' }, [150] = { kind = 'item', text = 'Far' } } R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()""")
+    check(lua.eval("ACTIONS[3].text") == "Raptor+Clip" and lua.eval("ACTIONS[150]") is None, "setup: every button is emptied first, then the macros go on")
+    lua.execute("R2F.Setup.Undo()")
     check("should be on the key E" in chat_all(lua), "setup: a key that differs is reported, not changed")
     check("no Edit Mode layout called" in chat_all(lua), "setup: a missing layout is reported")
     # Combat and class guards.

@@ -32,6 +32,7 @@ end
 Setup.LIST = {
   hunter = {
     key = "hunter", class = "HUNTER", layout = "Hunter", bars = { 2, 3, 4, 5, 6 }, autoLoot = true,
+    raidFrames = true, clearAll = true,
     place = {
       { bar = 1, button = 3, id = "HUNTER/Raptor+Clip", key = "2" },
       { bar = 2, button = 6, id = "HUNTER/AutoShot", key = "E" },
@@ -43,6 +44,9 @@ Setup.LIST = {
     },
   },
 }
+
+-- Raid frame options of the game's Options > Interface > Raid Frames (plain CVars): class colours, power bars, pets.
+local RAID_CVARS = { "raidFramesDisplayClassColor", "raidFramesDisplayPowerBars", "raidOptionDisplayPets" }
 
 local function db()
   return R2F.Library.db
@@ -96,6 +100,8 @@ function Setup.Describe(def)
   local lines = { L.SETUP_STEP_BARS:format(table.concat(def.bars, ", ")) }
   if def.autoLoot then lines[#lines + 1] = L.SETUP_STEP_LOOT end
   if def.layout then lines[#lines + 1] = L.SETUP_STEP_LAYOUT:format(def.layout) end
+  if def.raidFrames then lines[#lines + 1] = L.SETUP_STEP_RAID end
+  if def.clearAll then lines[#lines + 1] = L.SETUP_STEP_CLEAR end
   lines[#lines + 1] = L.SETUP_STEP_MACROS:format(#def.place)
   return lines
 end
@@ -166,6 +172,14 @@ function Setup.Execute(def)
     R2F.QuickSettings.Write("autoLootDefault", "1")
   end
   say(L.SETUP_DONE_BARS:format(table.concat(def.bars, ", ")))
+  if def.raidFrames then
+    undo.cvars = {}
+    for _, c in ipairs(RAID_CVARS) do
+      undo.cvars[c] = R2F.QuickSettings.Read(c)
+      R2F.QuickSettings.Write(c, "1")
+    end
+    say(L.SETUP_DONE_RAID)
+  end
   -- The bars sometimes stay hidden until a /reload: look again a moment later and say so.
   _G.C_Timer.After(2.5, function()
     local frames = { [2] = "MultiBarBottomLeft", [3] = "MultiBarBottomRight", [4] = "MultiBarRight", [5] = "MultiBarLeft" }
@@ -186,6 +200,22 @@ function Setup.Execute(def)
       local ok = _G.C_EditMode and pcall(_G.C_EditMode.SetActiveLayout, idx)
       say(ok and L.SETUP_DONE_LAYOUT:format(def.layout) or L.SETUP_LAYOUT_FAILED:format(def.layout))
     end
+  end
+  -- Every button on the main bar and Action Bars 2 to 8 is emptied first (spells are put back by Undo).
+  if def.clearAll and not R2F.InCombat() then
+    local n = 0
+    for _, first in pairs(BAR_FIRST) do
+      for slot = first, first + 11 do
+        local kind, id = _G.GetActionInfo(slot)
+        if kind then
+          _G.PickupAction(slot)
+          _G.ClearCursor()
+          if kind == "spell" and type(id) == "number" then undo.cleared[#undo.cleared + 1] = { slot = slot, spell = id } end
+          n = n + 1
+        end
+      end
+    end
+    say(L.SETUP_DONE_CLEAR:format(n))
   end
   db().setupUndo = undo
   -- 3. the macros, one button at a time after the layout has had a moment to apply
@@ -259,6 +289,7 @@ function Setup.Undo()
     local t = u.toggles
     pcall(_G.SetActionBarToggles, t[1], t[2], t[3], t[4], t[5], t[6], t[7])
   end
+  for c, v in pairs(u.cvars or {}) do R2F.QuickSettings.Write(c, v) end
   if u.autoLoot ~= nil then R2F.QuickSettings.Write("autoLootDefault", u.autoLoot) end
   if u.layout and _G.C_EditMode then
     local _, active = Setup.Layouts()

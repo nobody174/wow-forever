@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.75.2 (2026-10-19)
+
+- **Setup Hunter also turns on the raid frame options** "Display class colors", "Display power bars" and "Display pets" (Undo puts them back).
+- **Setup Hunter empties every action button first** (main bar and Action Bars 2 to 8), so the macros always have free buttons. It is meant for a fresh character; the confirmation says so. Undo puts removed spells back, not other things.
+
 ## 0.75.1 (2026-10-19)
 
 - **Setup Hunter: starting spells no longer block a button.** A spell sitting on one of the buttons the setup fills is lifted off so the macro can go there (Undo puts it back). Anything else on a button is still left alone.

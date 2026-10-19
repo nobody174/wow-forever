@@ -263,6 +263,8 @@ function MainWindow.ApplyLook()
   if selectedKey then showSelected(selectedKey) end
   R2F.Deco.Apply(frame, th, R2F.Theme.PanelAlpha(th, st.menuAlpha))
   if R2F.Home and R2F.Home.Layout then R2F.Home.Layout() end
+  -- The close button's picture depends on the image set, which Deco.Apply has just settled.
+  if frame.r2fClose and frame.r2fClose.r2fPaint then frame.r2fClose.r2fPaint() end
 end
 
 -- The sidebar as a list of wide buttons (the usual look), as a 2 x 3 grid of 64 px tiles (Ember & Iron, "grid") or as a row
@@ -288,7 +290,8 @@ local function placePages(top)
     elseif custom then
       p:SetPoint("TOPLEFT", frame, "TOPLEFT", curSideW + (wide and math.floor((content - custom.w) / 2) or 12), -(TOP_H + 4))
     else
-      p:SetPoint("TOPLEFT", frame, "TOPLEFT", wide and (curSideW + math.floor((content - PAGE_W) / 2)) or PAGE_X, PAGE_Y)
+      p:SetPoint("TOPLEFT", frame, "TOPLEFT", wide and (curSideW + math.floor((content - PAGE_W) / 2)) or PAGE_X,
+        PAGE_Y - ((R2F.Theme.Get().pageDy) or 0))
     end
   end
 end
@@ -368,7 +371,8 @@ function MainWindow.SetNavLayout(layout)
     end
   end
   if frame.r2fSide then frame.r2fSide:SetShown(layout ~= "top" and layout ~= "chain" and layout ~= "toc") end
-  frame:SetHeight(WIN_H + (layout == "top" and STRIP or 0))
+  local extraH = (R2F.Theme.Get().win or {}).extraH or 0
+  frame:SetHeight(WIN_H + extraH + (layout == "top" and STRIP or 0))
   topLayout = layout == "top"
   placePages(topLayout)
 end

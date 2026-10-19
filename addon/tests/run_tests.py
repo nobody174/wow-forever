@@ -4617,8 +4617,6 @@ def test_step6_ui(templates, fx):
     for fname in sorted(os.listdir(ui_dir)):
         if not fname.endswith(".lua"):
             continue
-        if fname == "ThemePicker.lua":
-            continue    # the gallery draws itself in fixed colours on purpose: it must look the same under every look
         src = open(os.path.join(ui_dir, fname), encoding="utf-8").read()
         for m in _re.finditer(r":SetTextColor\((?:1, 0\.82, 0|1, 1, 1|0\.5, 0\.5, 0\.5|0\.7, 0\.7, 0\.7|0\.75, 0\.75, 0\.75|0\.6, 0\.6, 0\.6|0\.6, 0\.6, 0\.65)\)", src):
             bad.append("%s: %s" % (fname, m.group(0)))
@@ -4848,6 +4846,15 @@ def test_step6_ui(templates, fx):
     pknames = set(_re.findall(r'PK \.\. "([a-z_]+)"', pk_src))
     pkmissing = [n for n in sorted(pknames) if not os.path.exists(os.path.join(HERE, "..", "RoadToForever", "media", "picker", "picker_" + n + ".tga"))]
     check(len(pknames) >= 12 and not pkmissing, "every gallery texture exists as a .tga in media/picker: %s" % pkmissing)
+    pk_other = _re.findall(r'IMG \.\. "([a-z]+)\\\\([a-z_0-9]+)"', pk_src)
+    pk_other_missing = [a + "/" + b for a, b in pk_other if not b.endswith("_") and not os.path.exists(os.path.join(HERE, "..", "RoadToForever", "media", a, b + ".tga"))]
+    check(len(pk_other) >= 14 and not pk_other_missing, "every look's art the gallery borrows exists: %s" % pk_other_missing)
+    # The gallery wears the look in use, and changes with it.
+    lua.execute("R2F.Images.gnomish = true R2F.Images.frost = true R2F.Theme.Set('gnomish') R2F.ThemePicker.Show()")
+    check(lua.eval("R2F.ThemePicker.Frame():IsShown()") is True, "picker: opens under the gnomish look")
+    lua.execute("R2F.Theme.Set('arcane')")
+    check(lua.eval("R2F.ThemePicker.Frame():IsShown()") is True, "picker: stays open when the look changes")
+    lua.execute("R2F.Theme.Set('classic') R2F.ThemePicker.Frame():Hide()")
     lua.execute("R2F.Images.azeroth = true")
     # A long window title is scaled to fit the crest (250 px) in image mode.
     lua.execute("""R2F.Images.azeroth = true R2F.Theme.Set('azeroth') TSCALE = nil

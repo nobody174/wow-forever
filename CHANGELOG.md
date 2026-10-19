@@ -1785,6 +1785,16 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.76.1 (2026-10-19): Theme test fixes
+
+- **Fixes from the first test of 0.76.0:**
+  - Obsidian Night and Gnomish Workshop: the Home cards in the lower rows sat above the window as blank boxes (they were placed upwards instead of downwards). They now sit under the countdown.
+  - The window close button showed the picture of the look you came from; it now always matches the look in use.
+  - The new looks are 40 px taller, so the buttons along the bottom of the Talents page (Reset, Save loadout, Loadouts, Recommended, Share, Learn this build) are inside the window. Pages in Ember & Iron, Frost & Void, Azeroth Reforged and Scribe's Tome start a little lower so the Tweaks tab buttons no longer touch the top bar.
+  - Frost & Void: the group with Size, Opacity, Reload UI and the close button is smaller and fits its pill; the top right corner bracket is gone (it sat on the close button).
+  - Scribe's Tome: no white glow over the contents line under the mouse.
+  - **The "Choose a look" gallery now wears the look in use**: its frame, cards and text come from that look (a flat panel in its colours for Classic).
+
 ## 0.76.0 (2026-10-19): Themes get their own layouts, two light themes, the gallery
 
 - **Every look now has its own layout, not just its own colours.** Each theme sets its window width, its own close (X) button, where Size and Opacity live and how Home is laid out:

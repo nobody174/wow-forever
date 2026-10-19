@@ -1,5 +1,15 @@
 # Road to Forever changelog
 
+## 0.76.1 (2026-10-19)
+
+- **Fixes from the first test of 0.76.0:**
+  - Obsidian Night and Gnomish Workshop: the Home cards in the lower rows sat above the window as blank boxes (they were placed upwards instead of downwards). They now sit under the countdown.
+  - The window close button showed the picture of the look you came from; it now always matches the look in use.
+  - The new looks are 40 px taller, so the buttons along the bottom of the Talents page (Reset, Save loadout, Loadouts, Recommended, Share, Learn this build) are inside the window. Pages in Ember & Iron, Frost & Void, Azeroth Reforged and Scribe's Tome start a little lower so the Tweaks tab buttons no longer touch the top bar.
+  - Frost & Void: the group with Size, Opacity, Reload UI and the close button is smaller and fits its pill; the top right corner bracket is gone (it sat on the close button).
+  - Scribe's Tome: no white glow over the contents line under the mouse.
+  - **The "Choose a look" gallery now wears the look in use**: its frame, cards and text come from that look (a flat panel in its colours for Classic).
+
 ## 0.76.0 (2026-10-19)
 
 - **Every look now has its own layout, not just its own colours.** Each theme sets its window width, its own close (X) button, where Size and Opacity live and how Home is laid out:

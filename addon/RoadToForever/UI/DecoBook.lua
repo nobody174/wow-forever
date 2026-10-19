@@ -114,7 +114,11 @@ function ex.hide(d)
   local e = d.sc
   if not e then return end
   for _, fs in ipairs(e.texts) do fs:Hide() end
-  for _, n in pairs(e.nav) do n.num:Hide() end
+  for _, n in pairs(e.nav) do
+    n.num:Hide()
+    local hl = n.btn.GetHighlightTexture and n.btn:GetHighlightTexture()
+    if hl and hl.SetAlpha then hl:SetAlpha(1) end
+  end
   for i, h in ipairs(e.heads) do
     if e.headOrig[i] then h:SetText(e.headOrig[i]) end
   end
@@ -156,6 +160,8 @@ function ex.apply(d, _, alpha)
   for _, n in pairs(e.nav) do
     n.num:Show()
     n.leader:Show()
+    local hl = n.btn.GetHighlightTexture and n.btn:GetHighlightTexture()
+    if hl and hl.SetAlpha then hl:SetAlpha(0) end
   end
   for i, h in ipairs(e.heads) do
     h:SetText(L.SCRIBE_BOOKS[i] or e.headOrig[i] or "")

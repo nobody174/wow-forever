@@ -451,8 +451,8 @@ local function buildArcane(frame, ctx, d)
   e.glass = Deco.NineSlice(frame, d.insetEdge, d.insetEdge, 22, 0.25, "BACKGROUND", 4)
   e.glass.set(FR .. "glass")
   e.brackets = {}
-  for _, c in ipairs({ { "TOPLEFT", "bracket_tl", 6, -6 }, { "TOPRIGHT", "bracket_tr", -6, -6 },
-                       { "BOTTOMLEFT", "bracket_bl", 6, 6 }, { "BOTTOMRIGHT", "bracket_br", -6, 6 } }) do
+  for _, c in ipairs({ { "TOPLEFT", "bracket_tl", 6, -6 }, { "BOTTOMLEFT", "bracket_bl", 6, 6 },
+                       { "BOTTOMRIGHT", "bracket_br", -6, 6 } }) do
     local t = itex(frame, "OVERLAY", 1)
     t:SetSize(32, 32)
     t:SetPoint(c[1], frame, c[1], c[3], c[4])
@@ -462,8 +462,8 @@ local function buildArcane(frame, ctx, d)
   -- The pill behind Size, Opacity, Reload UI and the close button (top right).
   e.pillAnchor = frame:CreateTexture(nil, "BACKGROUND", nil, 6)
   e.pillAnchor:SetColorTexture(0, 0, 0, 0)
-  e.pillAnchor:SetSize(372, 52)
-  e.pillAnchor:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -8, -3)
+  e.pillAnchor:SetSize(364, 44)
+  e.pillAnchor:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -14, -6)
   e.pill = threeSlice(frame, "BACKGROUND", 6, 32, 0.25, e.pillAnchor)
   e.pill.set(FR .. "pill")
   e.link = itex(frame, "ARTWORK", 0)

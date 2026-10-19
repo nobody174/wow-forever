@@ -33,7 +33,7 @@ Theme.LIST = {
     -- the game's font.
     deco = "azeroth",
     -- Shell: a wider window, art close button, big stone countdown boxes on a nested Home panel (UI/Home.lua).
-    win = { w = 980 }, close = "square", home = "azeroth",
+    win = { w = 980, extraH = 40 }, pageDy = 14, close = "square", home = "azeroth",
     font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Cinzel-Variable.ttf",
              body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\AlegreyaSans-Regular.ttf", bodyBump = 1 },
     panelTop = { 0.23, 0.205, 0.17 }, panelBottom = { 0.145, 0.13, 0.1 },
@@ -53,7 +53,7 @@ Theme.LIST = {
     -- Fonts: Space Grotesk (text) and JetBrains Mono (numbers), OFL, bundled; refused files fall back to the game's fonts.
     deco = "obsidian",
     -- Shell: a wider window, art close button, Size / Opacity in a plain row, cards on Home (UI/Home.lua).
-    win = { w = 960 }, close = "square", controls = "pill", home = "obsidian",
+    win = { w = 960, extraH = 40 }, close = "square", controls = "pill", home = "obsidian",
     font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\SpaceGrotesk-Medium.ttf",
              body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\SpaceGrotesk-Medium.ttf",
              number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\JetBrainsMono-Bold.ttf", bodyBump = 0 },
@@ -70,7 +70,8 @@ Theme.LIST = {
     -- Condensed (headings), Barlow (body), Chakra Petch (numbers), all OFL, bundled; refused files fall back to the game's fonts.
     deco = "ember",
     -- Shell: a wide window with a 300 px sidebar (a 4 x 2 tile grid, title card and the window gauges), a square close button.
-    win = { w = 1010 }, sideW = 304, gridCols = 4, close = "square", controls = "side", home = "ember",
+    win = { w = 1010, extraH = 40 }, pageDy = 14, sideW = 304, gridCols = 4, close = "square", controls = "side",
+    home = "ember",
     font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\BarlowCondensed-Bold.ttf",
              body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Barlow-Medium.ttf",
              number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\ChakraPetch-Bold.ttf", bodyBump = 0 },
@@ -90,7 +91,7 @@ Theme.LIST = {
     -- Font: Sora (Regular and SemiBold instances of the OFL variable font), bundled; refused files fall back to the game's.
     deco = "frost",
     -- Shell: a wider window, our own round close button, Size / Opacity in a row without tick marks (MainWindow).
-    win = { w = 960 }, close = "round", controls = "pill", home = "frost",
+    win = { w = 960, extraH = 40 }, pageDy = 14, close = "round", controls = "pill", home = "frost",
     font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Sora-SemiBold.ttf",
              body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Sora-Regular.ttf",
              number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Sora-SemiBold.ttf", bodyBump = 0 },
@@ -111,7 +112,7 @@ Theme.LIST = {
     font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\CormorantGaramond-SemiBold.ttf",
              body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\CormorantGaramond-SemiBold.ttf",
              number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\CormorantGaramond-SemiBold.ttf", bodyBump = 3 },
-    win = { w = 1060 }, sideW = 400, close = "square", controls = "pill", home = "scribe",
+    win = { w = 1060, extraH = 40 }, pageDy = 14, sideW = 400, close = "square", controls = "pill", home = "scribe",
     titleColor = { 0.96, 0.9, 0.76 }, barText = { 0.95, 0.89, 0.74 },
     on = { 0.247, 0.42, 0.294 }, off = { 0.9, 0.83, 0.66 }, swRim = { 0.4, 0.3, 0.2 },
     bg = { 0.91, 0.851, 0.71 }, bgAlpha = 1,
@@ -129,7 +130,7 @@ Theme.LIST = {
     font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Baloo2-Bold.ttf",
              body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Nunito-SemiBold.ttf",
              number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Baloo2-Bold.ttf", bodyBump = 1 },
-    win = { w = 1000 }, close = "round", controls = "pill", home = "gnomish",
+    win = { w = 1000, extraH = 40 }, close = "round", controls = "pill", home = "gnomish",
     titleColor = { 0.29, 0.208, 0.141 }, barText = { 0.29, 0.208, 0.141 },
     on = { 0.498, 0.878, 0.69 }, off = { 0.96, 0.92, 0.8 }, swRim = { 0.29, 0.208, 0.141 },
     bg = { 1, 0.957, 0.863 }, bgAlpha = 1,

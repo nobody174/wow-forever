@@ -407,8 +407,8 @@ end
 -- Pink: share with the site. White: a tip from the sun, the quick settings and the minimap options. The page is 920 x 540.
 local GN_CARDS = {
   { 0, 0, 548, 224, "blue" }, { 564, 0, 348, 224, "yellow" },
-  { 0, 240, 300, 124, "green" }, { 316, 240, 300, 124, "pink" }, { 632, 240, 280, 124, "white" },
-  { 0, 380, 548, 156, "white" }, { 564, 380, 348, 156, "white" },
+  { 0, -240, 300, 124, "green" }, { 316, -240, 300, 124, "pink" }, { 632, -240, 280, 124, "white" },
+  { 0, -380, 548, 156, "white" }, { 564, -380, 348, 156, "white" },
 }
 
 local function buildGnomish()
@@ -569,8 +569,8 @@ end
 
 -- Obsidian Night: info cards on a dark card, the countdown in mono numbers (18 d 01 h 44 m) with the minutes in teal.
 local OBS_CARDS = {
-  { 0, 0, 540, 276, "big" }, { 556, 0, 324, 100 }, { 556, 112, 324, 164 },
-  { 0, 288, 540, 208 }, { 556, 288, 324, 104 }, { 556, 404, 324, 92 },
+  { 0, 0, 540, 276, "big" }, { 556, 0, 324, 100 }, { 556, -112, 324, 164 },
+  { 0, -288, 540, 208 }, { 556, -288, 324, 104 }, { 556, -404, 324, 92 },
 }
 
 local function buildObsidian()
@@ -634,9 +634,9 @@ local function placeObsidian()
     { quickCols = 2, quickColW = 250, quickStart = -52 })
   -- The footer line sits in the strip along the window's bottom edge.
   ui.footer:ClearAllPoints()
-  ui.footer:SetPoint("TOPLEFT", page, "TOPLEFT", 16, -588)
+  ui.footer:SetPoint("TOPLEFT", page, "TOPLEFT", 16, -628)
   ui.update:ClearAllPoints()
-  ui.update:SetPoint("TOPLEFT", page, "TOPLEFT", 400, -588)
+  ui.update:SetPoint("TOPLEFT", page, "TOPLEFT", 400, -628)
 end
 
 local function placeEmber()

@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "art" / "sources"
 MEDIA = ROOT / "RoadToForever" / "media"
 POW2 = {32, 64, 128, 256, 512, 1024}
-SMALL_OK = {8, 16}          # strips may be thin on one side (edge strips, divider)
+SMALL_OK = {4, 8, 16}          # strips may be thin on one side (edge strips, divider)
 
 
 def bleed(im):

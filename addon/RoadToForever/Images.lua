@@ -5,5 +5,8 @@ R2F.Images = {
   azeroth = true,
   ember = true,
   frost = true,
+  gnomish = true,
   obsidian = true,
+  picker = true,
+  scribe = true,
 }

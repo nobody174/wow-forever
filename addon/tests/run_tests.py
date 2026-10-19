@@ -4617,6 +4617,8 @@ def test_step6_ui(templates, fx):
     for fname in sorted(os.listdir(ui_dir)):
         if not fname.endswith(".lua"):
             continue
+        if fname == "ThemePicker.lua":
+            continue    # the gallery draws itself in fixed colours on purpose: it must look the same under every look
         src = open(os.path.join(ui_dir, fname), encoding="utf-8").read()
         for m in _re.finditer(r":SetTextColor\((?:1, 0\.82, 0|1, 1, 1|0\.5, 0\.5, 0\.5|0\.7, 0\.7, 0\.7|0\.75, 0\.75, 0\.75|0\.6, 0\.6, 0\.6|0\.6, 0\.6, 0\.65)\)", src):
             bad.append("%s: %s" % (fname, m.group(0)))
@@ -4637,10 +4639,9 @@ def test_step6_ui(templates, fx):
     lua.execute("R2F.Images.azeroth = true R2F.Theme.Set('azeroth')")
     IM = "R2FMain.r2fDeco.img"
     check(lua.eval("%s.panel:IsShown()" % IM) is True and lua.eval("%s.banner:IsShown()" % IM) is True
-          and all(lua.eval("%s.corners[%d]:IsShown()" % (IM, k)) is True for k in (1, 2, 3, 4))
-          and all(lua.eval("%s.edges[%d]:IsShown()" % (IM, k)) is True for k in (1, 2, 3, 4))
-          and all(lua.eval("%s.gems[%d]:IsShown()" % (IM, k)) is True for k in (1, 2, 3, 4)),
-          "azeroth with images: tiles, four corners, four edges, four gems and the banner are drawn")
+          and all(lua.eval("%s.frameArt.parts[%d]:IsShown()" % (IM, k)) is True for k in range(1, 9))
+          and all(lua.eval("%s.crest.parts[%d]:IsShown()" % (IM, k)) is True for k in (1, 2, 3)),
+          "azeroth with images: tiles, the ornate frame and the crest are drawn")
     check(lua.eval("%s.panel:IsShown()" % D) is False and lua.eval("%s.bannerEdge:IsShown()" % D) is False
           and lua.eval("R2FMain.r2fRimLines[1]:IsShown()") is False,
           "azeroth with images: the rectangle look and the plain rim line are hidden")
@@ -4682,9 +4683,19 @@ def test_step6_ui(templates, fx):
           "ember: the tiles carry the short upper-case labels")
     check(lua.eval("R2F.Theme.Get().deco") == "ember" and "BarlowCondensed" in lua.eval("R2F.Theme.Get().font.heading"),
           "ember: Barlow Condensed for headings")
+    check(lua.eval("R2FMain:GetWidth()") == 1010 and lua.eval("R2FMain.r2fClose:IsShown()") is True
+          and lua.eval("R2FMain.r2fSizeSlider.r2fTicks[1]:IsShown()") is False
+          and lua.eval("%s.card.parts[1]:IsShown()" % EMI) is True and lua.eval("%s.gaugeHead:IsShown()" % EMI) is True,
+          "ember: a wide window, our own close button, the title card and the gauge panel, sliders without tick marks")
+    check(lua.eval("R2FMain.r2fSide:GetWidth()") == 300, "ember: the sidebar is 300 px wide")
+    lua.execute("R2F.MainWindow.SelectTab('plan')")
+    check(lua.eval("%s.cardTitle.__text" % EMI) == "LAUNCH PLAN" and "launch plan" in lua.eval("%s.cardDesc.__text" % EMI).lower(),
+          "ember: the title card follows the page")
     lua.execute("R2F.Theme.Set('azeroth')")
     check(lua.eval("%s.panel:IsShown()" % EMI) is False and lua.eval("NAV.plan.r2fText.__text") == "Launch plan",
           "back to Azeroth: the ember pieces are gone and the sidebar names are back")
+    check(lua.eval("R2FMain:GetWidth()") == 980 and lua.eval("%s.gaugeHead:IsShown()" % EMI) is False,
+          "back to Azeroth: its own width, no gauge panel")
     lua.execute("R2F.Theme.Set('classic')")
     check(lua.eval("NAV.talents.r2fText.__text") == "Builds & talents" and lua.eval("%s.panel:IsShown()" % EMI) is False,
           "classic: list sidebar again, nothing of ember left")
@@ -4714,6 +4725,10 @@ def test_step6_ui(templates, fx):
     check(len(lua_table_to_list(lua.eval("R2F.MainWindow.NavSeparators()"))) == 2, "obsidian: two separators between the tab groups")
     check(lua.eval("R2FMain.r2fDeco.img.banner:IsShown()") is False and lua.eval("%s.panel:IsShown()" % EMI) is False,
           "obsidian: nothing of Azeroth or Ember shows")
+    check(lua.eval("R2FMain:GetWidth()") == 960 and lua.eval("R2FMain.r2fClose:IsShown()") is True
+          and all(lua.eval("%s.topbar.parts[%d]:IsShown()" % (OBI, k)) is True for k in (1, 2, 3))
+          and all(lua.eval("%s.footer.parts[%d]:IsShown()" % (OBI, k)) is True for k in (1, 2, 3)),
+          "obsidian: a wider window, our own close button, the top bar and the footer strip")
     lua.execute("R2F.Theme.Set('classic')")
     check(lua.eval("%s.frame.parts[1]:IsShown()" % OBI) is False and lua.eval("R2FMain.r2fSide:IsShown()") is True
           and lua.eval("NAV.talents.r2fText.__text") == "Builds & talents", "classic after obsidian: sidebar and names are back")
@@ -4740,9 +4755,19 @@ def test_step6_ui(templates, fx):
     check(lua.eval("R2F.Theme.PanelAlpha(R2F.Theme.Get('arcane'), 0.3)") >= 0.85, "frost: stays nearly opaque at the lowest opacity")
     check(lua.eval("%s.panel:IsShown()" % EMI) is False and lua.eval("R2FMain.r2fDeco.img.banner:IsShown()") is False,
           "frost: nothing of Ember or Azeroth shows")
+    check(lua.eval("R2FMain:GetWidth()") == 960 and lua.eval("R2FMain.r2fClose:IsShown()") is True
+          and lua.eval("R2FMain.CloseButton:IsShown()") is False,
+          "frost: a wider window with our own close button instead of the game's")
+    check(lua.eval("R2FMain.r2fSizeSlider.r2fTicks[1]:IsShown()") is False, "frost: Size and Opacity have no tick marks")
+    lua.execute("R2FMain.r2fClose:Fire('OnClick')")
+    check(lua.eval("R2FMain:IsShown()") is False, "frost: our close button hides the window")
+    lua.execute("R2F.MainWindow.Show('home')")
     lua.execute("R2F.Theme.Set('classic')")
     check(lua.eval("%s.panel:IsShown()" % FRI) is False and lua.eval("R2FMain.r2fSide:IsShown()") is True,
           "classic after frost: sidebar background is back, nothing of frost left")
+    check(lua.eval("R2FMain:GetWidth()") == 820 and lua.eval("R2FMain.r2fClose:IsShown()") is False
+          and lua.eval("R2FMain.CloseButton:IsShown()") is True and lua.eval("R2FMain.r2fSizeSlider.r2fTicks[1]:IsShown()") is True,
+          "classic after frost: the original width, the game's close button and the tick marks are back")
     frnames = set(_re.findall(r'FR \.\. "([a-z_]+)"', deco_src)) | set(_re.findall(r'FR \.\. \(sel and "([a-z_]+)"', deco_src))
     frnames |= {"orb_hover", "orb_on", "orb_normal", "btn_normal", "btn_hover", "btn_primary", "btn_primary_hover", "btn_disabled", "check_on",
                 "check_off", "switch_on", "switch_off", "switch_knob_on", "switch_knob_off", "slider_track", "slider_fill", "slider_knob", "display"}
@@ -4750,13 +4775,86 @@ def test_step6_ui(templates, fx):
     check(not frmissing, "every frost texture exists as a .tga in media/frost: %s" % frmissing)
     check(all(os.path.exists(os.path.join(fontsdir, f)) for f in ("Sora-Regular.ttf", "Sora-SemiBold.ttf", "OFL-Sora.txt")),
           "the Frost & Void fonts ship with their licence file")
+    # Scribe's Tome (light): leather cover, two pages, the sidebar as a table of contents.
+    lua.execute("R2F.Images.scribe = true R2F.Theme.Set('scribe')")
+    SCI = "R2FMain.r2fDeco.sc"
+    check(lua.eval("R2FMain:GetWidth()") == 1060 and lua.eval("R2FMain.r2fSide:GetWidth()") == 396
+          and lua.eval("R2FMain.r2fSide:IsShown()") is False, "scribe: a book-wide window, no sidebar background")
+    check(all(lua.eval("%s.cover.parts[%d]:IsShown()" % (SCI, k)) is True for k in range(1, 9))
+          and all(lua.eval("%s.pageL.parts[%d]:IsShown()" % (SCI, k)) is True for k in range(1, 10))
+          and lua.eval("%s.spine:IsShown()" % SCI) is True and lua.eval("%s.contents:IsShown()" % SCI) is True,
+          "scribe: cover, both pages, spine and the Contents heading are drawn")
+    check(all(lua.eval("%s.nav.%s.leader:IsShown()" % (SCI, k)) is True and lua.eval("%s.nav.%s.num:IsShown()" % (SCI, k)) is True
+              for k in ("home", "plan", "talents", "bis", "macros", "gameplay")), "scribe: every contents line has a leader and a page number")
+    check(lua.eval("%s.nav.home.marker:IsShown()" % SCI) is not lua.eval("%s.nav.plan.marker:IsShown()" % SCI),
+          "scribe: only the open page has the bookmark")
+    check(lua.eval("R2FMain.r2fClose:IsShown()") is True, "scribe: our own close button")
+    lua.execute("R2F.Theme.Set('classic')")
+    check(lua.eval("%s.contents:IsShown()" % SCI) is False and lua.eval("%s.cover.parts[1]:IsShown()" % SCI) is False
+          and lua.eval("R2FMain:GetWidth()") == 820 and lua.eval("R2FMain.r2fSide:IsShown()") is True,
+          "classic after scribe: nothing of the book is left")
+    # Gnomish Workshop (light): cream window, coloured tabs along the top.
+    lua.execute("R2F.Images.gnomish = true R2F.Theme.Set('gnomish')")
+    GNI = "R2FMain.r2fDeco.gn"
+    check(lua.eval("R2FMain:GetWidth()") == 1000 and lua.eval("R2FMain.r2fSide:IsShown()") is False
+          and all(lua.eval("%s.frame.parts[%d]:IsShown()" % (GNI, k)) is True for k in range(1, 10))
+          and all(lua.eval("%s.plate.parts[%d]:IsShown()" % (GNI, k)) is True for k in range(1, 10)),
+          "gnomish: a cream window with the page the tabs sit on")
+    lua.execute("R2F.MainWindow.SelectTab('plan')")
+    check(lua.eval("%s.nav.plan.bg.parts[1].__tex" % GNI).endswith("gnomish_tab_active")
+          and lua.eval("%s.nav.talents.bg.parts[1].__tex" % GNI).endswith("gnomish_tab_coral")
+          and lua.eval("%s.nav.home.bg.parts[1].__tex" % GNI).endswith("gnomish_tab_cyan"),
+          "gnomish: the open tab is cream, the others keep their colours")
+    check(lua.eval("R2FMain.r2fClose:IsShown()") is True and lua.eval("R2F.Theme.Get().close") == "round", "gnomish: our own round close button")
+    lua.execute("R2F.Theme.Set('classic')")
+    check(lua.eval("%s.frame.parts[1]:IsShown()" % GNI) is False and lua.eval("R2FMain:GetWidth()") == 820,
+          "classic after gnomish: nothing of the toy window is left")
+    book_src = open(os.path.join(HERE, "..", "RoadToForever", "UI", "DecoBook.lua"), encoding="utf-8").read()
+    toy_src = open(os.path.join(HERE, "..", "RoadToForever", "UI", "DecoToy.lua"), encoding="utf-8").read()
+    home_src = open(os.path.join(HERE, "..", "RoadToForever", "UI", "Home.lua"), encoding="utf-8").read()
+    scnames = set(_re.findall(r'SC \.\. "([a-z_]+)"', book_src)) | {"seal_red", "seal_green"}
+    scnames |= {"btn_seal", "btn_seal_hover", "btn_stamp", "btn_stamp_hover", "btn_off", "check_on", "check_off", "switch_on", "switch_off",
+                "switch_knob_on", "switch_knob_off", "slider_track", "slider_fill", "slider_knob", "close_normal", "close_hover"}
+    scmissing = [n for n in sorted(scnames) if not os.path.exists(os.path.join(HERE, "..", "RoadToForever", "media", "scribe", "scribe_" + n + ".tga"))]
+    check(not scmissing, "every scribe texture exists as a .tga in media/scribe: %s" % scmissing)
+    gnnames = {n for n in _re.findall(r'GN \.\. "([a-z_]+)"', toy_src) if not n.endswith("_")} | {"tab_" + c for c in ("active", "cyan", "yellow", "coral", "green", "purple", "orange")}
+    gnnames |= {"card_" + c for c in ("blue", "yellow", "green", "pink", "white")}
+    gnnames |= {"btn_primary", "btn_primary_hover", "btn_normal", "btn_normal_hover", "btn_off", "check_on", "check_off", "switch_on", "switch_off",
+                "switch_knob_on", "switch_knob_off", "slider_track", "slider_fill", "slider_knob", "close_normal", "close_hover"}
+    gnmissing = [n for n in sorted(gnnames) if not os.path.exists(os.path.join(HERE, "..", "RoadToForever", "media", "gnomish", "gnomish_" + n + ".tga"))]
+    check(not gnmissing, "every gnomish texture exists as a .tga in media/gnomish: %s" % gnmissing)
+    check(all(os.path.exists(os.path.join(fontsdir, f)) for f in ("CormorantGaramond-SemiBold.ttf", "OFL-CormorantGaramond.txt",
+                                                                    "Baloo2-Bold.ttf", "Nunito-SemiBold.ttf", "OFL-Baloo2.txt", "OFL-Nunito.txt")),
+          "the Scribe's Tome and Gnomish Workshop fonts ship with their licence files")
+    # The "Choose a look" gallery: preview, keep, revert, surprise.
+    lua.execute("R2F.Theme.Set('classic') R2F.ThemePicker.Show()")
+    PKF = "R2F.ThemePicker.Frame()"
+    check(lua.eval("%s:IsShown()" % PKF) is True, "picker: the gallery opens")
+    check(lua.eval("R2F.Theme.Get().key") == "classic", "picker: nothing changes until a card is clicked")
+    lua.execute("R2F.ThemePicker.Preview('arcane')")
+    check(lua.eval("R2F.Theme.Get().key") == "arcane", "picker: a card click tries the look on the window at once")
+    lua.execute("R2F.ThemePicker.Preview('classic')")
+    check(lua.eval("R2F.Theme.Get().key") == "classic", "picker: clicking the old look during a preview goes back")
+    lua.execute("R2F.ThemePicker.Preview('forge')")
+    lua.execute("%s:Hide()" % PKF)
+    check(lua.eval("R2F.Theme.Get().key") == "classic", "picker: closing the gallery while trying a look puts the old one back")
+    lua.execute("R2F.ThemePicker.Show() R2F.ThemePicker.Preview('forge')")
+    lua.execute("R2F.ThemePicker.Frame():Hide() R2F.ThemePicker.Show()")
+    lua.execute("R2F.ThemePicker.Preview('forge')")
+    lua.execute("R2F.ThemePicker.Surprise()")
+    check(lua.eval("R2F.Theme.Get().key") not in ("classic", "forge"), "picker: Surprise me tries another look")
+    lua.execute("R2F.Theme.Set('classic')")
+    pk_src = open(os.path.join(HERE, "..", "RoadToForever", "UI", "ThemePicker.lua"), encoding="utf-8").read()
+    pknames = set(_re.findall(r'PK \.\. "([a-z_]+)"', pk_src))
+    pkmissing = [n for n in sorted(pknames) if not os.path.exists(os.path.join(HERE, "..", "RoadToForever", "media", "picker", "picker_" + n + ".tga"))]
+    check(len(pknames) >= 12 and not pkmissing, "every gallery texture exists as a .tga in media/picker: %s" % pkmissing)
     lua.execute("R2F.Images.azeroth = true")
-    # A long window title is scaled to fit the banner plate (200 px) in image mode.
+    # A long window title is scaled to fit the crest (250 px) in image mode.
     lua.execute("""R2F.Images.azeroth = true R2F.Theme.Set('azeroth') TSCALE = nil
       R2FMain.r2fTitle.GetStringWidth = function() return 300 end
       R2FMain.r2fTitle.SetScale = function(self, v) TSCALE = v end
       R2F.Deco.FitTitle(R2FMain)""")
-    check(abs(lua.eval("TSCALE") - 200 / 300.0) < 1e-6, "azeroth with images: a long title is scaled to fit the banner plate")
+    check(abs(lua.eval("TSCALE") - 250 / 300.0) < 1e-6, "azeroth with images: a long title is scaled to fit the banner plate")
     lua.execute("R2FMain.r2fTitle.GetStringWidth = nil R2FMain.r2fTitle.SetScale = nil")
     lua.execute("R2F.Images.azeroth = false R2F.Theme.Set('azeroth')")
     check(lua.eval("%s.panel:IsShown()" % D) is True and lua.eval("%s.panel:IsShown()" % IM) is False,

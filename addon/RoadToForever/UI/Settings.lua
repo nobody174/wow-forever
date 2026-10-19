@@ -70,19 +70,55 @@ local function showQuickTip(b)
   GameTooltip:Show()
 end
 
-local function heading(f, x, y, text)
+-- Every element is placed from the origin of its block ("quick", "minimap", "theme"), so a theme's Home layout can move a block
+-- with Settings.Place. Classic origins are the ones below; elements keep their offset inside the block.
+local placed = {}
+local ORIGIN = { quick = { LEFT, TOP }, minimap = { LEFT, TOP - 222 }, theme = { 130, TOP - 218 } }
+for _, o in pairs(ORIGIN) do o.home = { o[1], o[2] } end
+local function put(el, block, dx, dy, idx)
+  placed[#placed + 1] = { el = el, block = block, dx = dx, dy = dy, idx = idx }
+  el:ClearAllPoints()
+  el:SetPoint("TOPLEFT", page, "TOPLEFT", ORIGIN[block][1] + dx, ORIGIN[block][2] + dy)
+end
+
+-- origins: { quick = { x, y }, minimap = { x, y }, theme = { x, y } } in page coordinates (nil = Classic's places).
+-- `width` is the text width of the Quick settings note.
+-- opts (optional): { quickCols, quickColW, quickStart, miniCols, miniColW } lay the switches out in columns.
+function Settings.Place(origins, width, opts)
+  origins = origins or {}
+  opts = opts or {}
+  for block, o in pairs(ORIGIN) do
+    local n = origins[block]
+    o[1], o[2] = n and n[1] or o.home[1], n and n[2] or o.home[2]
+  end
+  for _, p in ipairs(placed) do
+    local dx, dy = p.dx, p.dy
+    if p.idx and p.block == "quick" and opts.quickCols then
+      dx = 4 + ((p.idx - 1) % opts.quickCols) * opts.quickColW
+      dy = (opts.quickStart or -70) - math.floor((p.idx - 1) / opts.quickCols) * 26
+    elseif p.idx and p.block == "minimap" and opts.miniCols then
+      dx = 4 + ((p.idx - 1) % opts.miniCols) * opts.miniColW
+      dy = -28 - math.floor((p.idx - 1) / opts.miniCols) * 26
+    end
+    p.el:ClearAllPoints()
+    p.el:SetPoint("TOPLEFT", page, "TOPLEFT", ORIGIN[p.block][1] + dx, ORIGIN[p.block][2] + dy)
+  end
+  if ui.qsNote then ui.qsNote:SetWidth(width or 300) end
+end
+
+local function heading(f, block, dx, dy, text)
   local h = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
-  h:SetPoint("TOPLEFT", x, y)
+  put(h, block, dx, dy)
   h:SetText(text)
   return h
 end
 
 local function buildMinimap(f)
-  heading(f, LEFT, TOP - 222, L.SETTINGS_MINIMAP)
+  heading(f, "minimap", 0, 0, L.SETTINGS_MINIMAP)
   -- Values are flipped from the saved setting, then the boxes are redrawn
   -- from it (refresh), instead of reading GetChecked after the click.
   ui.show = UI.CheckButton(f, L.SETTINGS_MINIMAP_SHOW)
-  ui.show:SetPoint("TOPLEFT", LEFT + 4, TOP - 250)
+  put(ui.show, "minimap", 4, -28, 1)
   ui.show:SetScript("OnClick", function()
     local mm = Library.db.minimap
     mm.hide = not mm.hide
@@ -90,7 +126,7 @@ local function buildMinimap(f)
     applyMinimap()
   end)
   ui.lock = UI.CheckButton(f, L.SETTINGS_MINIMAP_LOCK)
-  ui.lock:SetPoint("TOPLEFT", LEFT + 4, TOP - 276)
+  put(ui.lock, "minimap", 4, -54, 2)
   ui.lock:SetScript("OnClick", function()
     local mm = Library.db.minimap
     mm.lock = not mm.lock
@@ -100,9 +136,9 @@ local function buildMinimap(f)
 end
 
 local function buildQuick(f)
-  heading(f, LEFT, TOP, L.QS_TITLE)
+  heading(f, "quick", 0, 0, L.QS_TITLE)
   local note = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
-  note:SetPoint("TOPLEFT", LEFT + 4, TOP - 28)
+  put(note, "quick", 4, -28)
   note:SetWidth(300)
   note:SetJustifyH("LEFT")
   R2F.Theme.PaintText(note, "note")
@@ -112,7 +148,7 @@ local function buildQuick(f)
   ui.quick = {}
   for i, item in ipairs(R2F.QuickSettings.ITEMS) do
     local b = UI.CheckButton(f, item.label)
-    b:SetPoint("TOPLEFT", LEFT + 4, TOP - 70 - (i - 1) * 26)
+    put(b, "quick", 4, -70 - (i - 1) * 26, i)
     b.qsItem = item
     -- Tooltips still show while the box is greyed out (combat / missing),
     -- so the player can see why.
@@ -127,30 +163,12 @@ local function buildQuick(f)
   end
 end
 
--- Theme picker: a button that opens the addon's own menu (no
--- UIDropDownMenu, which taints). Applying a theme only recolours R2F frames.
-local function themeItems()
-  local items = {}
-  local cur = R2F.Theme.Get().key
-  for _, t in ipairs(R2F.Theme.LIST) do
-    items[#items + 1] = {
-      kind = "check", text = t.name,
-      isChecked = function() return t.key == cur end,
-      func = function()
-        R2F.Theme.Set(t.key)           -- recolours our own frames (MainWindow listens), nothing of the game's
-        ui.theme:SetText(L.SETTINGS_THEME_BTN:format(t.name))
-        if ui.theme.r2fFit then ui.theme.r2fFit() end
-      end,
-    }
-  end
-  return items
-end
-
+-- Theme: a button that opens the "Choose a look" gallery (UI/ThemePicker.lua); applying a look only recolours R2F frames.
 local function buildTheme(f)
   -- On the Minimap heading's row, right of it: the right column starts at x = 340 and the minimap switches sit below.
   local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   b:SetSize(170, 22)
-  b:SetPoint("TOPLEFT", 130, TOP - 218)
+  put(b, "theme", 0, 0)
   b:SetText(L.SETTINGS_THEME_BTN:format(R2F.Theme.Get().name))
   -- As wide as its label: a theme's font can be wider than the game's.
   local function fit()
@@ -162,7 +180,9 @@ local function buildTheme(f)
   fit()
   R2F.Theme.OnChange(function() if b.r2fFit then b.r2fFit() end end)
   UI.ThemeButton(b)
-  b:SetScript("OnClick", function() UI.ContextMenu(themeItems()) end)
+  b:SetScript("OnClick", function() R2F.ThemePicker.Toggle() end)
+  -- Whoever changes the look (the gallery, a command), the button names the one in use.
+  R2F.Theme.OnChange(function(t) b:SetText(L.SETTINGS_THEME_BTN:format(t.name)) if b.r2fFit then b.r2fFit() end end)
   b:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     GameTooltip:SetText(L.SETTINGS_THEME_TIP, 1, 1, 1, 1, true)

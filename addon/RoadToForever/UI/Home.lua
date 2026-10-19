@@ -116,10 +116,26 @@ function Home.UpdateCountdown()
   local values = { d, h, m }
   for k, card in ipairs(ui.cards) do
     card.num:SetText(("%02d"):format(values[k]))
-    card.frame:SetShown(not live)
+    card.frame:SetShown(not live and not ui.frost and not ui.obsidian)
   end
   ui.cdHead:SetShown(not live)
   ui.cdLive:SetShown(live)
+  if ui.ob then
+    for k = 1, 3 do ui.ob.num[k]:SetText(("%02d"):format(values[k])) end
+    for k = 1, 3 do
+      ui.ob.num[k]:SetShown(ui.obsidian == true and not live)
+      ui.ob.unit[k]:SetShown(ui.obsidian == true and not live)
+    end
+  end
+  if ui.fr then
+    local fr = ui.fr
+    fr.days:SetText(tostring(d))
+    fr.hm:SetText(("%02d %s    %02d %s"):format(h, L.HOME_CD_HOURS:lower(), m, L.HOME_CD_MINUTES:lower()))
+    fr.ring.set(math.min(d, 30) / 30)
+    fr.days:SetShown(ui.frost and not live)
+    fr.daysLabel:SetShown(ui.frost and not live)
+    fr.hm:SetShown(ui.frost and not live)
+  end
 end
 
 -- "18d 01h 44m" until the launch, then "Forever is live". `now` is a Unix time (default: the server's).
@@ -132,7 +148,6 @@ end
 
 local function build(f)
   ui.head = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
-  ui.head:SetPoint("TOPLEFT", 0, -2)
   ui.head:SetText(L.ADDON_NAME)
   ui.tagline = f:CreateFontString(nil, "ARTWORK", "R2FBody")
   ui.tagline:SetPoint("TOPLEFT", ui.head, "BOTTOMLEFT", 0, -6)
@@ -144,7 +159,6 @@ local function build(f)
   ui.cards = {}
   for k, label in ipairs({ L.HOME_CD_DAYS, L.HOME_CD_HOURS, L.HOME_CD_MINUTES }) do
     local card = R2F.Deco.Card(f, 70, 84)
-    card.frame:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(3 - k) * 76, -2)
     card.num = card.frame:CreateFontString(nil, "ARTWORK", "R2FNumber")
     card.num:SetPoint("CENTER", card.frame, "CENTER", 0, 8)
     R2F.Theme.PaintText(card.num, "heading")
@@ -155,11 +169,9 @@ local function build(f)
     ui.cards[k] = card
   end
   ui.cdHead = f:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
-  ui.cdHead:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -92)
   ui.cdHead:SetText(L.HOME_COUNTDOWN_DATE)
   R2F.Theme.PaintText(ui.cdHead, "tagline")
   ui.cdLive = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
-  ui.cdLive:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -30)
   ui.cdLive:SetText(L.HOME_COUNTDOWN_LIVE)
   Home.UpdateCountdown()
   local waited = 0
@@ -174,10 +186,8 @@ local function build(f)
 
   -- What to train next (Training.lua), right column.
   ui.trainHead = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
-  ui.trainHead:SetPoint("TOPLEFT", 340, -150)
   ui.trainHead:SetText(L.TRAIN_HEAD)
   ui.trainNow = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
-  ui.trainNow:SetPoint("TOPLEFT", 344, -176)
   ui.trainNow:SetWidth(300)
   ui.trainNow:SetJustifyH("LEFT")
   ui.trainNext = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
@@ -192,10 +202,8 @@ local function build(f)
 
   -- Share with the site (right column, under the bag switches).
   ui.shareHead = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
-  ui.shareHead:SetPoint("TOPLEFT", 340, -250)
   ui.shareHead:SetText(L.HOME_SHARE)
   ui.shareText = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
-  ui.shareText:SetPoint("TOPLEFT", 344, -278)
   ui.shareText:SetWidth(300)
   ui.shareText:SetJustifyH("LEFT")
   R2F.Theme.PaintText(ui.shareText, "note")
@@ -205,7 +213,6 @@ local function build(f)
   ui.profs = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   R2F.UI.ThemeButton(ui.profs, true)
   ui.profs:SetSize(160, 24)
-  ui.profs:SetPoint("TOPLEFT", 344, -352)
   ui.profs:SetText(L.HOME_PROFS)
   ui.profs:SetScript("OnClick", function() R2F.Professions.Export() end)
   ui.profs:SetScript("OnEnter", function(self)
@@ -217,21 +224,545 @@ local function build(f)
   ui.profs:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
   ui.nextTalentHead = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
-  ui.nextTalentHead:SetPoint("TOPLEFT", 340, -404)
   ui.nextTalentHead:SetText(L.HOME_NEXT_TALENT)
   ui.nextTalent = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
-  ui.nextTalent:SetPoint("TOPLEFT", 344, -430)
   ui.nextTalent:SetWidth(300)
   ui.nextTalent:SetJustifyH("LEFT")
   R2F.Theme.PaintText(ui.nextTalent, "heading")
   if ui.nextTalent.SetMaxLines then ui.nextTalent:SetMaxLines(3) end
   ui.combat = f:CreateFontString(nil, "ARTWORK", "GameFontRed")
-  ui.combat:SetPoint("TOPLEFT", 344, -384)
   ui.combat:SetText(L.IN_COMBAT)
 
   -- The game / minimap / bag options.
   R2F.Settings.Build(f)
   return f
+end
+
+-- ---------------------------------------------------------------------------
+-- Layouts. Every theme shows the same things; a theme may lay them out its own way (Theme token `home`). `placeClassic` is the
+-- original arrangement of the 650 x 540 page; `placeFrost` is the 790 x 540 card layout of Frost & Void.
+-- ---------------------------------------------------------------------------
+local function at(el, x, y, w)
+  el:ClearAllPoints()
+  el:SetPoint("TOPLEFT", page, "TOPLEFT", x, y)
+  if w then el:SetWidth(w) end
+end
+
+local function placeClassic()
+  at(ui.head, 0, -2)
+  for k, card in ipairs(ui.cards) do
+    card.frame:ClearAllPoints()
+    card.frame:SetPoint("TOPRIGHT", page, "TOPRIGHT", -(3 - k) * 76, -2)
+  end
+  ui.cdHead:ClearAllPoints()
+  ui.cdHead:SetPoint("TOPRIGHT", page, "TOPRIGHT", -4, -92)
+  ui.cdLive:ClearAllPoints()
+  ui.cdLive:SetPoint("TOPRIGHT", page, "TOPRIGHT", -4, -30)
+  at(ui.plan, 0, -52)
+  ui.plan:SetWidth(420)
+  ui.plan.sub:SetWidth(420 - 80)
+  at(ui.trainHead, 340, -150)
+  at(ui.trainNow, 344, -176, 300)
+  ui.trainNext:SetWidth(300)
+  at(ui.shareHead, 340, -250)
+  at(ui.shareText, 344, -278, 300)
+  at(ui.profs, 344, -352)
+  at(ui.nextTalentHead, 340, -404)
+  at(ui.nextTalent, 344, -430, 300)
+  at(ui.combat, 344, -384)
+  R2F.Settings.Place(nil, 300)
+end
+
+-- Frost & Void: glass cards. Countdown ring left, then launch plan and training on the right, the settings along the bottom.
+local FROST_CARDS = {
+  { 0, 0, 400, 262 }, { 416, 0, 374, 72, "highlight" }, { 416, -84, 374, 178 },
+  { 0, -274, 400, 224 }, { 416, -274, 374, 98 }, { 416, -384, 374, 118 },
+}
+
+local function buildFrost()
+  local fr = {}
+  ui.fr = fr
+  fr.cards = {}
+  for _, c in ipairs(FROST_CARDS) do fr.cards[#fr.cards + 1] = R2F.Deco.GlassCard(page, c[1], c[2], c[3], c[4], c[5]) end
+  fr.centre = page:CreateTexture(nil, "ARTWORK")
+  fr.centre:SetColorTexture(0, 0, 0, 0)
+  fr.centre:SetSize(2, 2)
+  fr.centre:SetPoint("TOPLEFT", page, "TOPLEFT", 199, -127)
+  fr.art = R2F.Deco.RingArt(page, fr.centre)
+  fr.ring = R2F.Deco.Ring(page, fr.centre, 84, 72, 6, { 0.48, 0.36, 1 }, { 0.5, 0.9, 1 }, { 0.16, 0.18, 0.4, 0.9 })
+  fr.head = page:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
+  fr.head:SetText(L.HOME_COUNTDOWN_HEAD)
+  R2F.Theme.PaintText(fr.head, "group")
+  fr.days = page:CreateFontString(nil, "ARTWORK", "R2FNumber")
+  R2F.Theme.PaintText(fr.days, "body")
+  fr.daysLabel = page:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
+  fr.daysLabel:SetText(L.HOME_CD_DAYS)
+  R2F.Theme.PaintText(fr.daysLabel, "group")
+  fr.hm = page:CreateFontString(nil, "ARTWORK", "R2FBody")
+  fr.hm:SetJustifyH("LEFT")
+  return fr
+end
+
+-- The big days number: the theme's number face at 60 px (the shared number font is smaller).
+local function bigNumber(fs)
+  local th = R2F.Theme.Get()
+  local face = th.font and th.font.number
+  if face and fs.SetFont then pcall(fs.SetFont, fs, face, 60, "") end
+end
+
+local function placeFrost()
+  local fr = ui.fr or buildFrost()
+  fr.head:ClearAllPoints()
+  fr.head:SetPoint("TOPLEFT", page, "TOPLEFT", 24, -20)
+  fr.days:ClearAllPoints()
+  fr.days:SetPoint("CENTER", fr.centre, "CENTER", 0, 10)
+  bigNumber(fr.days)
+  fr.daysLabel:ClearAllPoints()
+  fr.daysLabel:SetPoint("CENTER", fr.centre, "CENTER", 0, -36)
+  at(fr.hm, 28, -234)
+  ui.cdHead:ClearAllPoints()
+  ui.cdHead:SetPoint("TOPRIGHT", page, "TOPLEFT", 388, -234)
+  ui.cdLive:ClearAllPoints()
+  ui.cdLive:SetPoint("CENTER", fr.centre, "CENTER", 0, 0)
+  at(ui.plan, 424, -8)
+  ui.plan:SetWidth(358)
+  ui.plan.sub:SetWidth(358 - 80)
+  at(ui.trainHead, 428, -96)
+  at(ui.trainNow, 432, -122, 340)
+  ui.trainNext:SetWidth(340)
+  at(ui.nextTalentHead, 428, -192)
+  at(ui.nextTalent, 432, -214, 340)
+  at(ui.shareHead, 428, -396)
+  at(ui.shareText, 432, -422, 340)
+  at(ui.profs, 432, -468)
+  at(ui.combat, 432, -506)
+  R2F.Settings.Place({ quick = { 16, -286 }, minimap = { 428, -286 }, theme = { 558, -282 } }, 360)
+end
+
+-- Ember & Iron: the countdown on one wide plate, then "work orders" (rows: launch plan, training, next talent, share with the
+-- site), then the settings in two columns. The page is 690 x 580.
+local EMBER_ROWS = 4
+local ROW_Y, ROW_STEP, ROW_H = -150, 46, 40
+
+local function buildEmber()
+  local em = { rows = {} }
+  ui.em = em
+  em.head = page:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
+  em.head:SetText(L.HOME_WORK_ORDERS)
+  R2F.Theme.PaintText(em.head, "heading")
+  local titles = { L.HOME_PLAN, L.TRAIN_HEAD, L.HOME_NEXT_TALENT, L.HOME_SHARE }
+  for i = 1, EMBER_ROWS do
+    local row = CreateFrame("Button", nil, page)
+    row:SetSize(690, ROW_H)
+    row.art = R2F.Deco.Row(row)
+    row.bullet = row:CreateTexture(nil, "ARTWORK")
+    row.bullet:SetSize(8, 8)
+    row.bullet:SetPoint("LEFT", row, "LEFT", 14, 0)
+    row.bullet:SetTexture("Interface\\AddOns\\RoadToForever\\media\\dot")
+    row.title = row:CreateFontString(nil, "ARTWORK", "R2FHeading")
+    row.title:SetPoint("LEFT", row, "LEFT", 32, 0)
+    row.title:SetWidth(150)
+    row.title:SetJustifyH("LEFT")
+    row.title:SetText(titles[i])
+    R2F.Theme.PaintText(row.title, "body")
+    row.sub = row:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
+    row.sub:SetPoint("LEFT", row, "LEFT", 190, 0)
+    row.sub:SetWidth(i == EMBER_ROWS and 270 or 480)
+    row.sub:SetJustifyH("LEFT")
+    if row.sub.SetMaxLines then row.sub:SetMaxLines(2) end
+    R2F.Theme.PaintText(row.sub, "note")
+    row:Hide()
+    em.rows[i] = row
+  end
+  em.rows[1]:SetScript("OnClick", function() R2F.MainWindow.SelectTab("plan") end)
+  em.rows[1]:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+  return em
+end
+
+-- The old widgets keep refreshing (their text feeds the rows) but are not drawn while the work orders are.
+local function oldShown(on)
+  for _, el in ipairs({ ui.head, ui.tagline, ui.plan, ui.trainHead, ui.trainNow, ui.trainNext, ui.shareHead, ui.shareText,
+                        ui.nextTalentHead, ui.nextTalent }) do
+    el:SetShown(on)
+  end
+end
+
+local function refreshEmber()
+  local em = ui.em
+  if not em then return end
+  em.rows[1].sub:SetText(ui.plan.sub:GetText() or "")
+  local now, nxt = ui.trainNow:GetText() or "", ui.trainNext:GetText() or ""
+  em.rows[2].sub:SetText(nxt ~= "" and (now .. "  " .. nxt) or now)
+  em.rows[3].sub:SetText(ui.nextTalent:GetText() or "")
+  em.rows[4].sub:SetText(L.HOME_PROFS_TIP)
+end
+
+local function bigCardNumber(card, size)
+  local th = R2F.Theme.Get()
+  local face = th.font and (th.font.number or th.font.heading)
+  if face and card.num.SetFont then pcall(card.num.SetFont, card.num, face, size or 54, "") end
+end
+
+-- Gnomish Workshop: coloured toy cards. Blue: the countdown in digit boxes. Yellow: launch plan and next talent. Green: training.
+-- Pink: share with the site. White: a tip from the sun, the quick settings and the minimap options. The page is 920 x 540.
+local GN_CARDS = {
+  { 0, 0, 548, 224, "blue" }, { 564, 0, 348, 224, "yellow" },
+  { 0, 240, 300, 124, "green" }, { 316, 240, 300, 124, "pink" }, { 632, 240, 280, 124, "white" },
+  { 0, 380, 548, 156, "white" }, { 564, 380, 348, 156, "white" },
+}
+
+local function buildGnomish()
+  local gn = { cards = {} }
+  ui.gn = gn
+  for _, c in ipairs(GN_CARDS) do gn.cards[#gn.cards + 1] = R2F.Deco.ToyCard(page, c[1], c[2], c[3], c[4], c[5]) end
+  gn.head = page:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
+  gn.head:SetText(L.HOME_COUNTDOWN_HEAD)
+  R2F.Theme.PaintText(gn.head, "body")
+  gn.digits = {}
+  for k, card in ipairs(ui.cards) do gn.digits[k] = R2F.Deco.ToyDigit(card.frame, k == 3) end
+  gn.sun = R2F.Deco.ToySun(page, 112)
+  gn.tip = page:CreateFontString(nil, "ARTWORK", "R2FBody")
+  gn.tip:SetText(L.GNOMISH_TIP)
+  gn.tip:SetJustifyH("LEFT")
+  R2F.Theme.PaintText(gn.tip, "body")
+  return gn
+end
+
+local function placeGnomish()
+  local gn = ui.gn or buildGnomish()
+  at(ui.head, 24, -22)
+  gn.head:ClearAllPoints()
+  gn.head:SetPoint("TOPLEFT", page, "TOPLEFT", 24, -20)
+  for k, card in ipairs(ui.cards) do
+    card.frame:SetSize(112, 124)
+    card.frame:ClearAllPoints()
+    card.frame:SetPoint("TOPLEFT", page, "TOPLEFT", 24 + (k - 1) * 128, -52)
+    card.num:ClearAllPoints()
+    card.num:SetPoint("CENTER", card.frame, "CENTER", 0, 10)
+    bigCardNumber(card, 56)
+    card.label:ClearAllPoints()
+    card.label:SetPoint("BOTTOM", card.frame, "BOTTOM", 0, 14)
+  end
+  ui.cdHead:ClearAllPoints()
+  ui.cdHead:SetPoint("TOPLEFT", page, "TOPLEFT", 420, -96)
+  ui.cdHead:SetWidth(120)
+  ui.cdHead:SetJustifyH("LEFT")
+  ui.cdLive:ClearAllPoints()
+  ui.cdLive:SetPoint("TOPLEFT", page, "TOPLEFT", 40, -110)
+  at(ui.plan, 580, -16)
+  ui.plan:SetWidth(320)
+  ui.plan.sub:SetWidth(320 - 80)
+  at(ui.nextTalentHead, 580, -110)
+  at(ui.nextTalent, 584, -136, 316)
+  at(ui.trainHead, 18, -254)
+  at(ui.trainNow, 22, -280, 268)
+  ui.trainNext:SetWidth(268)
+  at(ui.shareHead, 334, -254)
+  at(ui.shareText, 338, -280, 268)
+  at(ui.profs, 338, -334)
+  at(ui.combat, 24, -196)
+  gn.sun:ClearAllPoints()
+  gn.sun:SetPoint("TOPRIGHT", page, "TOPRIGHT", -2, -236)
+  gn.tip:ClearAllPoints()
+  gn.tip:SetPoint("TOPLEFT", page, "TOPLEFT", 650, -262)
+  gn.tip:SetWidth(150)
+  R2F.Settings.Place({ quick = { 20, -396 }, minimap = { 580, -396 }, theme = { 700, -392 } }, 500,
+    { quickCols = 2, quickColW = 260, quickStart = -52 })
+end
+
+-- Scribe's Tome: the countdown as three wax seals (red, red, green) with the numbers on them, the launch plan beside them, the
+-- usual columns below. The page is the classic 650 x 540, set one block lower.
+local SEAL_ART = { "seal_red", "seal_red", "seal_green" }
+local SEAL_INK = { 0.96, 0.9, 0.78 }
+
+local function placeScribe()
+  at(ui.head, 0, -2)
+  for k, card in ipairs(ui.cards) do
+    card.frame:SetSize(105, 130)
+    card.frame:ClearAllPoints()
+    card.frame:SetPoint("TOPLEFT", page, "TOPLEFT", (k - 1) * 112, -62)
+    if not card.seal then
+      card.seal = card.frame:CreateTexture(nil, "BACKGROUND", nil, 2)
+      card.seal:SetSize(105, 105)
+      card.seal:SetPoint("TOP", card.frame, "TOP", 0, 0)
+    end
+    card.seal:SetTexture(R2F.Deco.IMGROOT .. "scribe\\scribe_" .. SEAL_ART[k])
+    card.seal:Show()
+    card.num:ClearAllPoints()
+    card.num:SetPoint("CENTER", card.seal, "CENTER", 0, 4)
+    bigCardNumber(card, 46)
+    card.num:SetTextColor(SEAL_INK[1], SEAL_INK[2], SEAL_INK[3])
+    card.label:ClearAllPoints()
+    card.label:SetPoint("BOTTOM", card.frame, "BOTTOM", 0, 4)
+  end
+  ui.cdHead:ClearAllPoints()
+  ui.cdHead:SetPoint("TOPLEFT", page, "TOPLEFT", 0, -198)
+  ui.cdHead:SetWidth(0)
+  ui.cdHead:SetJustifyH("LEFT")
+  ui.cdLive:ClearAllPoints()
+  ui.cdLive:SetPoint("TOPLEFT", page, "TOPLEFT", 0, -100)
+  at(ui.plan, 360, -66)
+  ui.plan:SetWidth(290)
+  ui.plan.sub:SetWidth(290 - 80)
+  at(ui.trainHead, 340, -232)
+  at(ui.trainNow, 344, -258, 300)
+  ui.trainNext:SetWidth(300)
+  at(ui.shareHead, 340, -330)
+  at(ui.shareText, 344, -358, 300)
+  at(ui.profs, 344, -432)
+  at(ui.nextTalentHead, 340, -474)
+  at(ui.nextTalent, 344, -498, 300)
+  at(ui.combat, 344, -454)
+  R2F.Settings.Place({ quick = { 0, -232 }, minimap = { 0, -452 }, theme = { 130, -448 } }, 300)
+end
+
+-- Azeroth Reforged: a nested gold-dashed panel behind the page, "Forever launches in" over three big stone boxes, the launch plan
+-- under them; training, next talent and the share card in a right column; the settings along the bottom. The page is 760 x 560.
+local function buildAzeroth()
+  local az = {}
+  ui.az = az
+  az.panel = R2F.Deco.NestedPanel(page, 0, 0, 760, 560)
+  az.head = page:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
+  az.head:SetText(L.HOME_COUNTDOWN_HEAD)
+  R2F.Theme.PaintText(az.head, "heading")
+  return az
+end
+
+local function placeAzeroth()
+  local az = ui.az or buildAzeroth()
+  at(ui.head, 28, -22)
+  at(az.head, 30, -84)
+  for k, card in ipairs(ui.cards) do
+    card.frame:SetSize(128, 112)
+    card.frame:ClearAllPoints()
+    card.frame:SetPoint("TOPLEFT", page, "TOPLEFT", 28 + (k - 1) * 140, -108)
+    card.num:ClearAllPoints()
+    card.num:SetPoint("CENTER", card.frame, "CENTER", 0, 12)
+    bigCardNumber(card, 50)
+    card.label:ClearAllPoints()
+    card.label:SetPoint("BOTTOM", card.frame, "BOTTOM", 0, 16)
+  end
+  ui.cdHead:ClearAllPoints()
+  ui.cdHead:SetPoint("TOPLEFT", page, "TOPLEFT", 30, -232)
+  ui.cdHead:SetWidth(0)
+  ui.cdHead:SetJustifyH("LEFT")
+  ui.cdLive:ClearAllPoints()
+  ui.cdLive:SetPoint("TOPLEFT", page, "TOPLEFT", 30, -140)
+  at(ui.plan, 28, -262)
+  ui.plan:SetWidth(400)
+  ui.plan.sub:SetWidth(400 - 80)
+  at(ui.trainHead, 460, -84)
+  at(ui.trainNow, 464, -110, 270)
+  ui.trainNext:SetWidth(270)
+  at(ui.nextTalentHead, 460, -200)
+  at(ui.nextTalent, 464, -224, 270)
+  at(ui.shareHead, 460, -296)
+  at(ui.shareText, 464, -322, 270)
+  at(ui.profs, 464, -392)
+  at(ui.combat, 30, -318)
+  R2F.Settings.Place({ quick = { 28, -336 }, minimap = { 460, -440 }, theme = { 590, -436 } }, 340)
+  ui.footer:ClearAllPoints()
+  ui.footer:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", 30, 14)
+  ui.update:ClearAllPoints()
+  ui.update:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", 30, 32)
+end
+
+-- Obsidian Night: info cards on a dark card, the countdown in mono numbers (18 d 01 h 44 m) with the minutes in teal.
+local OBS_CARDS = {
+  { 0, 0, 540, 276, "big" }, { 556, 0, 324, 100 }, { 556, 112, 324, 164 },
+  { 0, 288, 540, 208 }, { 556, 288, 324, 104 }, { 556, 404, 324, 92 },
+}
+
+local function buildObsidian()
+  local ob = { cards = {} }
+  ui.ob = ob
+  for _, c in ipairs(OBS_CARDS) do ob.cards[#ob.cards + 1] = R2F.Deco.ObsidianCard(page, c[1], c[2], c[3], c[4], c[5]) end
+  ob.circle = R2F.Deco.CircleAccent(page, ob.cards[1])
+  ob.head = page:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
+  ob.head:SetText(L.HOME_COUNTDOWN_HEAD)
+  R2F.Theme.PaintText(ob.head, "heading")
+  ob.num, ob.unit = {}, {}
+  for k, unit in ipairs({ L.HOME_CD_D, L.HOME_CD_H, L.HOME_CD_M }) do
+    ob.num[k] = page:CreateFontString(nil, "ARTWORK", "R2FNumber")
+    R2F.Theme.PaintText(ob.num[k], k == 3 and "heading" or "body")
+    ob.unit[k] = page:CreateFontString(nil, "ARTWORK", "R2FHeading")
+    ob.unit[k]:SetText(unit)
+    R2F.Theme.PaintText(ob.unit[k], "dim")
+  end
+  return ob
+end
+
+local function bigObsNumber(fs)
+  local th = R2F.Theme.Get()
+  local face = th.font and th.font.number
+  if face and fs.SetFont then pcall(fs.SetFont, fs, face, 72, "") end
+end
+
+local function placeObsidian()
+  local ob = ui.ob or buildObsidian()
+  ob.head:ClearAllPoints()
+  ob.head:SetPoint("TOPLEFT", page, "TOPLEFT", 28, -28)
+  for k = 1, 3 do
+    ob.num[k]:ClearAllPoints()
+    ob.unit[k]:ClearAllPoints()
+    if k == 1 then
+      ob.num[k]:SetPoint("TOPLEFT", page, "TOPLEFT", 28, -92)
+    else
+      ob.num[k]:SetPoint("BOTTOMLEFT", ob.unit[k - 1], "BOTTOMRIGHT", 22, -6)
+    end
+    bigObsNumber(ob.num[k])
+    ob.unit[k]:SetPoint("BOTTOMLEFT", ob.num[k], "BOTTOMRIGHT", 6, 8)
+  end
+  ui.cdHead:ClearAllPoints()
+  ui.cdHead:SetPoint("TOPLEFT", page, "TOPLEFT", 28, -214)
+  ui.cdHead:SetJustifyH("LEFT")
+  ui.cdLive:ClearAllPoints()
+  ui.cdLive:SetPoint("TOPLEFT", page, "TOPLEFT", 28, -110)
+  at(ui.plan, 564, -24)
+  ui.plan:SetWidth(308)
+  ui.plan.sub:SetWidth(308 - 80)
+  at(ui.trainHead, 572, -124)
+  at(ui.trainNow, 576, -150, 296)
+  ui.trainNext:SetWidth(296)
+  at(ui.nextTalentHead, 572, -222)
+  at(ui.nextTalent, 576, -246, 296)
+  at(ui.shareHead, 572, -416)
+  at(ui.shareText, 576, -440, 296)
+  at(ui.profs, 576, -466)
+  at(ui.combat, 28, -250)
+  R2F.Settings.Place({ quick = { 28, -300 }, minimap = { 572, -300 }, theme = { 700, -296 } }, 480,
+    { quickCols = 2, quickColW = 250, quickStart = -52 })
+  -- The footer line sits in the strip along the window's bottom edge.
+  ui.footer:ClearAllPoints()
+  ui.footer:SetPoint("TOPLEFT", page, "TOPLEFT", 16, -588)
+  ui.update:ClearAllPoints()
+  ui.update:SetPoint("TOPLEFT", page, "TOPLEFT", 400, -588)
+end
+
+local function placeEmber()
+  local em = ui.em or buildEmber()
+  for k, card in ipairs(ui.cards) do
+    card.frame:SetSize(160, 100)
+    card.frame:ClearAllPoints()
+    card.frame:SetPoint("TOPLEFT", page, "TOPLEFT", (k - 1) * 168, 0)
+    card.num:ClearAllPoints()
+    card.num:SetPoint("CENTER", card.frame, "CENTER", 0, 10)
+    bigCardNumber(card)
+    card.label:ClearAllPoints()
+    card.label:SetPoint("BOTTOM", card.frame, "BOTTOM", 0, 12)
+  end
+  ui.cdHead:ClearAllPoints()
+  ui.cdHead:SetPoint("TOPLEFT", page, "TOPLEFT", 516, -40)
+  ui.cdHead:SetWidth(170)
+  ui.cdHead:SetJustifyH("LEFT")
+  ui.cdLive:ClearAllPoints()
+  ui.cdLive:SetPoint("TOPLEFT", page, "TOPLEFT", 516, -30)
+  at(em.head, 2, -126)
+  for i, row in ipairs(em.rows) do
+    row:ClearAllPoints()
+    row:SetPoint("TOPLEFT", page, "TOPLEFT", 0, ROW_Y - (i - 1) * ROW_STEP)
+  end
+  ui.profs:ClearAllPoints()
+  ui.profs:SetPoint("TOPLEFT", page, "TOPLEFT", 510, ROW_Y - 3 * ROW_STEP - 8)
+  ui.profs:SetWidth(170)
+  at(ui.combat, 200, -126)
+  R2F.Settings.Place({ quick = { 0, -344 }, minimap = { 0, -486 }, theme = { 130, -482 } }, 650,
+    { quickCols = 2, quickColW = 330, quickStart = -52, miniCols = 2, miniColW = 330 })
+end
+
+-- Called by MainWindow after every look change (and once the window is built): pick the layout of the theme in use.
+function Home.Layout()
+  if not page then return end
+  local th = R2F.Theme.Get()
+  local D = R2F.Deco
+  local frost = th.home == "frost" and D.imagesOn == true and D.set == "frost"
+  local ember = th.home == "ember" and D.imagesOn == true and D.set == "ember"
+  local obsidian = th.home == "obsidian" and D.imagesOn == true and D.set == "obsidian"
+  local azeroth = th.home == "azeroth" and D.imagesOn == true and D.set == "azeroth"
+  local scribe = th.home == "scribe" and D.imagesOn == true and D.set == "scribe"
+  local gnomish = th.home == "gnomish" and D.imagesOn == true and D.set == "gnomish"
+  ui.frost, ui.ember, ui.obsidian = frost, ember, obsidian
+  if frost then
+    placeFrost()
+    R2F.MainWindow.SetPageSize("home", 790, 540)
+  elseif ember then
+    placeEmber()
+    R2F.MainWindow.SetPageSize("home", 690, 580)
+  elseif obsidian then
+    placeObsidian()
+    R2F.MainWindow.SetPageSize("home", 880, 500)
+  elseif azeroth then
+    placeAzeroth()
+    R2F.MainWindow.SetPageSize("home", 760, 560)
+  elseif scribe then
+    placeScribe()
+    R2F.MainWindow.SetPageSize("home", 650, 560)
+  elseif gnomish then
+    placeGnomish()
+    R2F.MainWindow.SetPageSize("home", 920, 540)
+  else
+    placeClassic()
+    R2F.MainWindow.SetPageSize("home", Home.PAGE.w, Home.PAGE.h)
+  end
+  oldShown(not ember)
+  if not ember and not azeroth and not scribe and not gnomish then
+    ui.profs:SetWidth(160)
+    for _, card in ipairs(ui.cards) do
+      if card.seal then card.seal:Hide() end
+      R2F.Theme.PaintText(card.num, "heading")
+      card.frame:SetSize(70, 84)
+      card.num:ClearAllPoints()
+      card.num:SetPoint("CENTER", card.frame, "CENTER", 0, 8)
+      card.label:ClearAllPoints()
+      card.label:SetPoint("BOTTOM", card.frame, "BOTTOM", 0, 14)
+      if card.num.SetFontObject and R2F.Theme.FontObject("R2FNumber") then card.num:SetFontObject("R2FNumber") end
+    end
+    ui.cdHead:SetWidth(0)
+    ui.cdHead:SetJustifyH("RIGHT")
+  end
+  ui.head:SetShown(not frost and not ember and not obsidian and not gnomish)
+  ui.tagline:SetShown(not frost and not ember and not obsidian and not gnomish)
+  D.ShowCards("gnomish", gnomish)
+  if ui.gn then
+    ui.gn.head:SetShown(gnomish)
+    ui.gn.sun:SetShown(gnomish)
+    ui.gn.tip:SetShown(gnomish)
+    for _, bar in ipairs(ui.gn.digits) do bar.show(gnomish) end
+  end
+  D.ShowCards("frost", frost)
+  D.ShowCards("obsidian", obsidian)
+  if ui.ob then
+    ui.ob.head:SetShown(obsidian)
+    ui.ob.circle:SetShown(obsidian)
+    for k = 1, 3 do
+      ui.ob.num[k]:SetShown(obsidian)
+      ui.ob.unit[k]:SetShown(obsidian)
+    end
+  end
+  if ui.az then
+    ui.az.panel.show(azeroth)
+    ui.az.head:SetShown(azeroth)
+  end
+  if not obsidian and not azeroth then
+    ui.footer:ClearAllPoints()
+    ui.footer:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", 0, 10)
+    ui.update:ClearAllPoints()
+    ui.update:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", 0, 28)
+  end
+  if ui.fr then
+    ui.fr.head:SetShown(frost)
+    ui.fr.ring.show(frost)
+    ui.fr.art.show(frost)
+  end
+  if ui.em then
+    ui.em.head:SetShown(ember)
+    for _, row in ipairs(ui.em.rows) do
+      row:SetShown(ember)
+      row.art.show(ember)
+    end
+  end
+  refreshEmber()
+  Home.UpdateCountdown()
 end
 
 -- Reads the TOC's own ## Version / ## Author so the footer can't drift out of
@@ -283,6 +814,7 @@ end
 function Home.Build(f)
   page = build(f)
   buildFooter(f)
+  placeClassic()
   return page
 end
 
@@ -298,6 +830,7 @@ function Home.Refresh()
   local newer = R2F.Version.Newer()
   ui.update:SetText(newer and (L.HOME_UPDATE:format(newer) .. "  " .. R2F.Version.URL) or "")
   ui.combat:SetShown(R2F.InCombat())
+  if ui.ember then oldShown(false) refreshEmber() end
   R2F.Settings.Refresh()
 end
 

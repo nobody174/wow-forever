@@ -736,6 +736,8 @@ end
 function methods:SetID(i) self.__id = i end
 function methods:GetID() return self.__id end
 function methods:SetSize(w, h) self.__w, self.__h = w, h end
+function methods:SetWidth(w) self.__w = w end
+function methods:SetHeight(h) self.__h = h end
 function methods:GetWidth() return self.__w or 0 end
 function methods:GetHeight() return self.__h or 0 end
 -- BiZNav (v0.39.0): the arrow texture turns; tests read the angle back.

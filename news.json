@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-10-19",
+      "title": "Road to Forever addon 0.76.0: every look has its own layout",
+      "text": "The window looks have been rebuilt: each one now has its own shape, buttons and Home page instead of just other colours. Two new light looks (Scribe's Tome and Gnomish Workshop) and a gallery to try them: click the Theme button on Home, pick a card, keep it or go back.",
+      "link": "addons.html"
+    },
+    {
       "date": "2026-10-17",
       "title": "Road to Forever addon 0.68.0: themes for the window",
       "text": "Home has a new Theme button with four more looks besides the current one: Azeroth Reforged, Obsidian Night, Ember & Iron and Frost & Void. The choice is remembered. Also new in 0.67.0: a recorder that notes where items drop, who sells them and what quests give, to build our own item database.",

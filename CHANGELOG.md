@@ -1785,6 +1785,18 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.76.0 (2026-10-19): Themes get their own layouts, two light themes, the gallery
+
+- **Every look now has its own layout, not just its own colours.** Each theme sets its window width, its own close (X) button, where Size and Opacity live and how Home is laid out:
+  - **Frost & Void:** a wider window, a round close button, and Home as glass cards with the countdown as a ring (days in the middle, hours and minutes under it).
+  - **Ember & Iron:** a wide window with a 4 x 2 tile sidebar, a title card that follows the page and a "Window gauges" panel holding Size and Opacity; Home has the big countdown plate, then "Work orders" rows and the settings in two columns.
+  - **Obsidian Night:** a wider window with a top bar, cards on Home (countdown in mono numbers with the minutes in teal, launch plan, training, share) and a footer strip with the version line.
+  - **Azeroth Reforged:** a wider window with the ornate gold frame and a crest on top, big stone countdown boxes under "Forever launches in" on a nested gold-dashed Home panel.
+- **Two new light themes:** **Scribe's Tome** (a leather-bound book: the sidebar is a table of contents with dotted leaders and page numbers, the countdown is three wax seals) and **Gnomish Workshop** (cream and chunky, coloured tabs along the top, coloured cards, digit boxes for the countdown and a sun mascot). Fonts: Cormorant Garamond, Baloo 2 and Nunito (bundled, free to use, licence files included).
+- **"Choose a look" gallery:** the Theme button on Home opens a gallery of all looks with a picture each. Click a card to try it on your window; "Keep this look" keeps it, "Revert" (or eight seconds, or closing the gallery) goes back. "Surprise me" tries a random one.
+- **Own close buttons** for every look except Classic; Size / Opacity no longer have tick marks outside Classic and Azeroth.
+- **Setup Hunter: the reload prompt** now opens from a timer, which should stop "Interface action failed because of an AddOn" when you press "Reload now" (not yet confirmed in game).
+
 ## 0.75.3 (2026-10-19): Setup reload prompt
 
 - Setup.Finish offers ReloadUI via R2F.UI.Confirm; removed the 2.5 s hidden-bar check and SETUP_RELOAD.

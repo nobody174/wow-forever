@@ -10,6 +10,11 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 
 4. **Ground markers (`/wm`)**: do not work solo; test in a group, then add macros/coordinates for the Hunter trainer and the general goods vendor in the Skyborne starting zone.
 
+## 0b. Themes: follow-ups after the 0.76.0 test
+1. **Other tabs per theme** (Plan, Talents, Gear, Macros, Tweaks): they sit on each theme's page plate but are still the old layouts. Redesign each to match its theme's Home once the Home layouts are confirmed in game.
+2. **Frost & Void**: the ring only shows the last 30 days; the "Your journey" checklist and extra sidebar entries (Professions, Reminders, Settings) of the mockups are not built (no matching pages). Theme settings panel (effects level, text size, high contrast, profiles, day / night) of theme_picker.png is not built either.
+3. **Hover preview** in the gallery (the mockup previews on hover; ours previews on click with Keep / Revert).
+
 ## 1. Bugs
 None open (talent-tree drift fixed 2026-10-16; before each release run `python addon/tools/gen_talent_data.py --drift`).
 

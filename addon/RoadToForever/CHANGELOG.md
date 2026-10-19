@@ -1,5 +1,17 @@
 # Road to Forever changelog
 
+## 0.76.0 (2026-10-19)
+
+- **Every look now has its own layout, not just its own colours.** Each theme sets its window width, its own close (X) button, where Size and Opacity live and how Home is laid out:
+  - **Frost & Void:** a wider window, a round close button, and Home as glass cards with the countdown as a ring (days in the middle, hours and minutes under it).
+  - **Ember & Iron:** a wide window with a 4 x 2 tile sidebar, a title card that follows the page and a "Window gauges" panel holding Size and Opacity; Home has the big countdown plate, then "Work orders" rows and the settings in two columns.
+  - **Obsidian Night:** a wider window with a top bar, cards on Home (countdown in mono numbers with the minutes in teal, launch plan, training, share) and a footer strip with the version line.
+  - **Azeroth Reforged:** a wider window with the ornate gold frame and a crest on top, big stone countdown boxes under "Forever launches in" on a nested gold-dashed Home panel.
+- **Two new light themes:** **Scribe's Tome** (a leather-bound book: the sidebar is a table of contents with dotted leaders and page numbers, the countdown is three wax seals) and **Gnomish Workshop** (cream and chunky, coloured tabs along the top, coloured cards, digit boxes for the countdown and a sun mascot). Fonts: Cormorant Garamond, Baloo 2 and Nunito (bundled, free to use, licence files included).
+- **"Choose a look" gallery:** the Theme button on Home opens a gallery of all looks with a picture each. Click a card to try it on your window; "Keep this look" keeps it, "Revert" (or eight seconds, or closing the gallery) goes back. "Surprise me" tries a random one.
+- **Own close buttons** for every look except Classic; Size / Opacity no longer have tick marks outside Classic and Azeroth.
+- **Setup Hunter: the reload prompt** now opens from a timer, which should stop "Interface action failed because of an AddOn" when you press "Reload now" (not yet confirmed in game).
+
 ## 0.75.3 (2026-10-19)
 
 - **Setup Hunter asks to reload when it is done**, because the game only shows newly switched-on action bars after a reload. One click on "Reload now" (never in combat).

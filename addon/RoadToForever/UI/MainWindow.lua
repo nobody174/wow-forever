@@ -81,6 +81,8 @@ local TOP_H, SIDE_W = 50, 150
 local PAGE_W, PAGE_H = 540, 500
 local PAGE_X = SIDE_W + math.floor((WIN_W - SIDE_W - PAGE_W) / 2)
 local PAGE_Y = -(TOP_H - 44)
+local curSideW = SIDE_W    -- the sidebar's width now (Theme token sideW)
+local curW = WIN_W          -- the window's width now: a theme can ask for a wider one (Theme token win.w)
 
 -- Sidebar order: a group heading (or none) and the tabs under it.
 MainWindow.NAV = {
@@ -130,6 +132,109 @@ local function showSelected(key)
   end
 end
 
+-- Our own close button for the themes that ask for one (Theme token `close`: "square" or "round"): the same job as the game's red
+-- X (hide the window), drawn from colour textures in the theme's colours. Classic keeps the game's button.
+local DOT = "Interface\\AddOns\\RoadToForever\\media\\dot"
+local function buildOwnClose(f)
+  local b = CreateFrame("Button", nil, f)
+  b:SetSize(32, 32)
+  b:SetPoint("TOPRIGHT", f, "TOPRIGHT", -12, -11)
+  b.r2fRing = b:CreateTexture(nil, "BACKGROUND", nil, 1)
+  b.r2fRing:SetAllPoints(b)
+  b.r2fFill = b:CreateTexture(nil, "BACKGROUND", nil, 2)
+  b.r2fFill:SetPoint("TOPLEFT", b, "TOPLEFT", 1, -1)
+  b.r2fFill:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -1, 1)
+  b.r2fX = b:CreateFontString(nil, "ARTWORK", "R2FHeading")
+  b.r2fX:SetPoint("CENTER", b, "CENTER", 0, 1)
+  b.r2fX:SetText("X")
+  b:SetScript("OnEnter", function(self) self.r2fHover = true if self.r2fPaint then self.r2fPaint() end end)
+  b:SetScript("OnLeave", function(self) self.r2fHover = false if self.r2fPaint then self.r2fPaint() end end)
+  b:SetScript("OnClick", function() f:Hide() end)
+  b:Hide()
+  return b
+end
+
+local function paintOwnClose(b, th)
+  local round = th.close == "round"
+  local hot = b.r2fHover
+  local barText = th.barText or th.text
+  -- The theme's own close picture (Frost & Void): the art carries the round plate, we only draw the X.
+  local art = R2F.Deco and R2F.Deco.CloseArt and R2F.Deco.CloseArt(hot)
+  if art then
+    b.r2fRing:SetTexture(art)
+    b.r2fRing:SetVertexColor(1, 1, 1, 1)
+    b.r2fFill:SetTexture(nil)
+    local xc = hot and th.accent or barText
+    b.r2fX:SetTextColor(xc[1], xc[2], xc[3])
+    return
+  end
+  local rim, ac, sd = th.rim, th.accent, th.side
+  if round then
+    b.r2fRing:SetTexture(DOT)
+    b.r2fFill:SetTexture(DOT)
+  else
+    b.r2fRing:SetTexture(nil)
+    b.r2fFill:SetTexture(nil)
+  end
+  local rc = hot and ac or rim
+  if round then
+    b.r2fRing:SetVertexColor(rc[1], rc[2], rc[3], 1)
+    b.r2fFill:SetVertexColor(sd[1] * 0.6, sd[2] * 0.6, sd[3] * 0.6, 1)
+  else
+    b.r2fRing:SetColorTexture(rc[1], rc[2], rc[3], 1)
+    b.r2fFill:SetColorTexture(sd[1] * 0.6, sd[2] * 0.6, sd[3] * 0.6, 1)
+  end
+  local xc = hot and ac or barText
+  b.r2fX:SetTextColor(xc[1], xc[2], xc[3])
+end
+
+-- Where Size, Opacity and Reload UI sit (Theme token `controls`): "top" (the original place, with tick marks), "pill" (the same
+-- row without tick marks, in a rounded group) or "side" (stacked under the tab tiles in the sidebar).
+local function placeControls(th)
+  local f = frame
+  local own = th.close ~= nil
+  local mode = th.controls or "top"
+  local reload = f.r2fReload
+  local rightPad = own and 44 or 36
+  reload:ClearAllPoints()
+  reload:SetPoint("TOPRIGHT", f, "TOPRIGHT", -rightPad, own and -14 or -11)
+  local size, opa = f.r2fSizeSlider, f.r2fOpacitySlider
+  size.r2fWidth(mode == "side" and 200 or 84)
+  opa.r2fWidth(mode == "side" and 200 or 84)
+  if mode == "side" then
+    -- Inside the gauge panel of the sidebar (Deco draws it at y 332 under the top of the window).
+    size.r2fPlace(34, -(TOP_H + 12 + 144 + 14 + 100 + 12 + 40))
+    opa.r2fPlace(34, -(TOP_H + 12 + 144 + 14 + 100 + 12 + 40 + 48))
+  else
+    local base = rightPad + 84 + 8
+    size.r2fPlace(curW - base - 2 * 92, -5)
+    opa.r2fPlace(curW - base - 92, -5)
+  end
+  for _, sl in ipairs({ size, opa }) do
+    for _, t in ipairs(sl.r2fTicks or {}) do t:SetShown(mode == "top") end
+    -- Light themes put the labels on a dark (leather) or coloured bar: their own text colour.
+    if th.barText and sl.r2fLabel then sl.r2fLabel:SetTextColor(th.barText[1], th.barText[2], th.barText[3]) end
+  end
+end
+
+-- The window's width, close button and control placement for theme th.
+local function applyShell(th)
+  curW = (th.win and th.win.w) or WIN_W
+  curSideW = th.sideW or SIDE_W
+  if frame.r2fSide then frame.r2fSide:SetWidth(curSideW - 4) end
+  if R2F.Deco and R2F.Deco.SetSideWidth then R2F.Deco.SetSideWidth(curSideW) end
+  local h = frame:GetHeight()
+  frame:SetSize(curW, (h and h > 0) and h or WIN_H)
+  local own = th.close ~= nil
+  if frame.CloseButton then frame.CloseButton:SetShown(not own) end
+  if frame.r2fClose then
+    frame.r2fClose:SetShown(own)
+    if own then paintOwnClose(frame.r2fClose, th) end
+    frame.r2fClose.r2fPaint = function() paintOwnClose(frame.r2fClose, R2F.Theme.Get()) end
+  end
+  placeControls(th)
+end
+
 -- Apply the saved size and opacity. The backdrop frame carries the opacity
 -- (text and controls stay fully readable).
 function MainWindow.ApplyLook()
@@ -145,6 +250,7 @@ function MainWindow.ApplyLook()
   -- Classic keeps Blizzard's dialog border exactly as it was. Other themes hide it (the dialog art is a fixed bronze
   -- texture that a tint only muddies) and show a thin line in the theme's rim colour instead.
   local classic = th.key == "classic"
+  applyShell(th)
   if frame.SetBackdropBorderColor then frame:SetBackdropBorderColor(1, 1, 1, classic and 1 or 0) end
   for _, line in ipairs(frame.r2fRimLines or {}) do
     line:SetColorTexture(th.rim[1], th.rim[2], th.rim[3], 1)
@@ -156,6 +262,7 @@ function MainWindow.ApplyLook()
   end
   if selectedKey then showSelected(selectedKey) end
   R2F.Deco.Apply(frame, th, R2F.Theme.PanelAlpha(th, st.menuAlpha))
+  if R2F.Home and R2F.Home.Layout then R2F.Home.Layout() end
 end
 
 -- The sidebar as a list of wide buttons (the usual look), as a 2 x 3 grid of 64 px tiles (Ember & Iron, "grid") or as a row
@@ -165,24 +272,38 @@ local GRID_ORDER = { "home", "plan", "talents", "bis", "macros", "gameplay" }
 local TOP_W = { home = 84, plan = 112, talents = 96, bis = 84, macros = 92, gameplay = 92 }
 local TOP_SEPARATORS_AFTER = { plan = true, bis = true }
 local navSeps = {}
+local tocY = {}
 local STRIP = 44
 
 local function placePages(top)
+  -- A wider window keeps every page centred in the content area.
+  local wide = curW ~= WIN_W or curSideW ~= SIDE_W
+  local content = curW - curSideW
   for key, p in pairs(pages) do
     local custom = pageCustom[key]
     p:ClearAllPoints()
     if top then
       local w = custom and custom.w or PAGE_W
-      p:SetPoint("TOPLEFT", frame, "TOPLEFT", math.floor((WIN_W - w) / 2), -(TOP_H + 4 + STRIP + 8))
+      p:SetPoint("TOPLEFT", frame, "TOPLEFT", math.floor((curW - w) / 2), -(TOP_H + 4 + STRIP + 8))
     elseif custom then
-      p:SetPoint("TOPLEFT", frame, "TOPLEFT", SIDE_W + 12, -(TOP_H + 4))
+      p:SetPoint("TOPLEFT", frame, "TOPLEFT", curSideW + (wide and math.floor((content - custom.w) / 2) or 12), -(TOP_H + 4))
     else
-      p:SetPoint("TOPLEFT", frame, "TOPLEFT", PAGE_X, PAGE_Y)
+      p:SetPoint("TOPLEFT", frame, "TOPLEFT", wide and (curSideW + math.floor((content - PAGE_W) / 2)) or PAGE_X, PAGE_Y)
     end
   end
 end
 
 function MainWindow.NavSeparators() return navSeps end
+
+-- A page whose size changes with the theme's layout (Home in Frost & Void): resize it and re-centre it.
+local topLayout = false
+function MainWindow.SetPageSize(key, w, h)
+  local p = pages[key]
+  if not p then return end
+  pageCustom[key] = { w = w, h = h }
+  p:SetSize(w, h)
+  placePages(topLayout)
+end
 
 function MainWindow.SetNavLayout(layout)
   if not frame then return end
@@ -194,8 +315,15 @@ function MainWindow.SetNavLayout(layout)
     if b then
       b:ClearAllPoints()
       if layout == "grid" then
+        local cols = R2F.Theme.Get().gridCols or 2
+        local step = cols > 2 and 72 or 70
         b:SetSize(64, 64)
-        b:SetPoint("TOPLEFT", frame, "TOPLEFT", 8 + ((idx - 1) % 2) * 70, -(TOP_H + 12) - math.floor((idx - 1) / 2) * 70)
+        b:SetPoint("TOPLEFT", frame, "TOPLEFT", (cols > 2 and 12 or 8) + ((idx - 1) % cols) * step,
+          -(TOP_H + 12) - math.floor((idx - 1) / cols) * step)
+      elseif layout == "toc" then
+        -- A table of contents: wide lines with a group heading over each group (Scribe's Tome).
+        b:SetSize(curSideW - 70, 34)
+        b:SetPoint("TOPLEFT", frame, "TOPLEFT", 44, tocY[key] or -(TOP_H + 12))
       elseif layout == "chain" then
         b:SetSize(SIDE_W - 16, 32)
         b:SetPoint("TOPLEFT", frame, "TOPLEFT", 8, -(TOP_H + 16) - (idx - 1) * 38)
@@ -213,10 +341,36 @@ function MainWindow.SetNavLayout(layout)
       end
     end
   end
-  for _, h in ipairs(navHeads) do h:SetShown(layout == nil) end
-  if frame.r2fSide then frame.r2fSide:SetShown(layout ~= "top" and layout ~= "chain") end
+  for _, h in ipairs(navHeads) do h:SetShown(layout == nil or layout == "toc") end
+  if layout == "toc" then
+    local y = -(TOP_H + 96)
+    local hi = 0
+    for _, group in ipairs(MainWindow.NAV) do
+      if group.heading then
+        hi = hi + 1
+        local h = navHeads[hi]
+        if h then
+          h:ClearAllPoints()
+          h:SetPoint("TOPLEFT", frame, "TOPLEFT", 44, y - 6)
+        end
+        y = y - 28
+      end
+      for _, key in ipairs(group.tabs) do
+        tocY[key] = y
+        local b = tabButtons[key]
+        if b then
+          b:ClearAllPoints()
+          b:SetPoint("TOPLEFT", frame, "TOPLEFT", 44, y)
+        end
+        y = y - 38
+      end
+      y = y - 6
+    end
+  end
+  if frame.r2fSide then frame.r2fSide:SetShown(layout ~= "top" and layout ~= "chain" and layout ~= "toc") end
   frame:SetHeight(WIN_H + (layout == "top" and STRIP or 0))
-  placePages(layout == "top")
+  topLayout = layout == "top"
+  placePages(topLayout)
 end
 
 -- Any theme change (the Home page picker, a future slash command) recolours the window.
@@ -229,6 +383,7 @@ local STEP = 10
 local function topSlider(parent, label, min, max, get, set, x)
   local fs = parent:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
   fs:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -5)
+  R2F.Theme.PaintText(fs, "heading")
   local function snap(v)
     v = math.floor(v / STEP + 0.5) * STEP
     return math.max(min, math.min(max, v))
@@ -240,6 +395,13 @@ local function topSlider(parent, label, min, max, get, set, x)
   local knob = sl.GetThumbTexture and sl:GetThumbTexture()
   if knob then R2F.Theme.PaintVertex(knob, "thumb") end
   sl:SetWidth(84)
+  -- Where the label and bar sit: `px, py` from `rel`'s corner (default the window's top left). Themes move the pair.
+  function sl.r2fPlace(px, py, rel, point)
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", rel or parent, point or "TOPLEFT", px, py)
+    sl:ClearAllPoints()
+    sl:SetPoint("TOPLEFT", rel or parent, point or "TOPLEFT", px, py - 12)
+  end
   sl:SetMinMaxValues(min, max)
   sl:SetValueStep(STEP)
   if sl.SetObeyStepOnDrag then sl:SetObeyStepOnDrag(true) end
@@ -262,6 +424,10 @@ local function topSlider(parent, label, min, max, get, set, x)
   -- OnValueChanged. The value is applied once, on release, and only when the press began on the thumb
   -- (judged from where the thumb was before the press, i.e. from the applied value).
   local TRACK_W = 84
+  function sl.r2fWidth(w)
+    TRACK_W = w
+    sl:SetWidth(w)
+  end
   local function pressedOnThumb()
     local left, scale = sl:GetLeft(), sl:GetEffectiveScale()
     if type(left) == "number" and type(scale) == "number" and scale > 0 and GetCursorPosition then
@@ -306,6 +472,7 @@ local function topSlider(parent, label, min, max, get, set, x)
   -- written under them. The thumb's centre travels about 8 px in from each
   -- end of the bar.
   local n = (max - min) / STEP
+  sl.r2fTicks = {}
   for i = 0, n do
     local t = parent:CreateTexture(nil, "ARTWORK")
     local major = (i == 0 or i == n or min + i * STEP == 100)
@@ -313,10 +480,12 @@ local function topSlider(parent, label, min, max, get, set, x)
     local tx = 8 + (84 - 16) * i / n
     t:SetPoint("TOP", sl, "BOTTOMLEFT", tx, 2)
     R2F.Theme.PaintTex(t, "tick")
+    sl.r2fTicks[#sl.r2fTicks + 1] = t
     if major then
       local m = parent:CreateFontString(nil, "ARTWORK", "R2FDimSmall")
       m:SetPoint("TOP", sl, "BOTTOMLEFT", tx, -4)
       m:SetText(tostring(min + i * STEP))
+      sl.r2fTicks[#sl.r2fTicks + 1] = m
     end
   end
   sl.r2fLabel = fs
@@ -377,6 +546,7 @@ local function build()
   local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
   close:SetPoint("TOPRIGHT", f, "TOPRIGHT", -2, -2)
   f.CloseButton = close
+  f.r2fClose = buildOwnClose(f)
   local reload = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   reload:SetSize(84, 22)
   reload:SetPoint("TOPRIGHT", f, "TOPRIGHT", -36, -11)
@@ -479,6 +649,7 @@ function MainWindow.SelectTab(key)
   end
   pages[key]:Show()
   frame.r2fTitle:SetText(L[TITLES[key]])
+  R2F.Deco.SetPageInfo(L[LABELS[key]], L.NAV_DESC and L.NAV_DESC[key])
   R2F.Deco.FitTitle(frame)
   showSelected(key)
   settings().lastTab = key

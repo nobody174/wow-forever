@@ -245,10 +245,15 @@ function Setup.Finish(def, r)
   say(L.SETUP_FINISHED)
   -- The game shows newly switched-on bars only after a reload: offer it.
   if def.bars and R2F.UI and R2F.UI.Confirm and _G.ReloadUI then
-    R2F.UI.Confirm(L.SETUP_RELOAD_ASK, L.SETUP_RELOAD_GO, L.BTN_CANCEL, function()
-      if R2F.InCombat() then return say(L.SETUP_COMBAT) end
-      _G.ReloadUI()
-    end)
+    -- Opened from a fresh timer call: a dialog built inside this run inherits the taint of the layout switch, and the game
+    -- then blocks ReloadUI from its button ("Interface action failed because of an AddOn").
+    local function ask()
+      R2F.UI.Confirm(L.SETUP_RELOAD_ASK, L.SETUP_RELOAD_GO, L.BTN_CANCEL, function()
+        if R2F.InCombat() then return say(L.SETUP_COMBAT) end
+        _G.ReloadUI()
+      end)
+    end
+    if _G.C_Timer and _G.C_Timer.After then _G.C_Timer.After(0.3, ask) else ask() end
   end
 end
 

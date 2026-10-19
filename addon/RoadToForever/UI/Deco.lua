@@ -14,6 +14,11 @@ R2F.Deco = Deco
 
 local DOT = "Interface\\AddOns\\RoadToForever\\media\\dot"
 
+-- Further image sets live in their own files (UI/DecoBook.lua, UI/DecoToy.lua) and register here: Deco.extra[set] = { layout,
+-- build, apply, refreshNav }. build(frame, ctx, d) runs once with the window, apply(d, th, alpha) shows the set's pieces,
+-- refreshNav(d, key) repaints the navigation for the selected key.
+Deco.extra = {}
+
 local pieces = {}        -- every texture we made, to show / hide together
 local built
 local selectedKey
@@ -71,9 +76,16 @@ end
 local IMG = "Interface\\AddOns\\RoadToForever\\media\\azeroth\\"
 local IMGROOT = "Interface\\AddOns\\RoadToForever\\media\\"
 -- Art of the shared pieces (buttons, switches, check boxes, sliders) of the image set in use (azeroth until another is chosen).
+-- Sets whose art names a shared piece differently: shared name -> file name (without the set prefix).
+local ALIAS = {
+  scribe = { btn_normal = "btn_stamp", btn_hover = "btn_stamp_hover", btn_primary = "btn_seal",
+             btn_primary_hover = "btn_seal_hover", btn_disabled = "btn_off" },
+  gnomish = { btn_hover = "btn_normal_hover", btn_disabled = "btn_off" },
+}
 local function P(name)
   local set = Deco.set or "azeroth"
-  return IMGROOT .. set .. "\\" .. set .. "_" .. name
+  local a = ALIAS[set]
+  return IMGROOT .. set .. "\\" .. set .. "_" .. ((a and a[name]) or name)
 end
 Deco.P = P
 local imgPieces = {}
@@ -84,11 +96,19 @@ local TRACK_CAP = 8 / 128
 -- reaches beyond the button (Obsidian's glow sits in a 3 px margin of the art).
 local SHAPE = {
   azeroth = { btnCap = 16 / 128, btnCapW = 16, pad = 0, groove = 10, knob = { 22, 22 } },
-  ember = { btnCap = 16 / 128, btnCapW = 16, pad = 0, groove = 12, knob = { 32, 22 } },
-  obsidian = { btnCap = 12 / 128, btnCapW = 12, pad = 3, groove = 16, knob = { 26, 26 } },
-  frost = { btnCap = 16 / 128, btnCapW = 16, pad = 3, groove = 16, knob = { 28, 28 } },
+  ember = { btnCap = 16 / 128, btnCapW = 16, pad = 0, groove = 12, knob = { 32, 22 }, twoKnobs = true, clipFill = true,
+            plate = true },
+  obsidian = { btnCap = 12 / 128, btnCapW = 12, pad = 3, groove = 16, knob = { 26, 26 }, twoKnobs = true, plate = true },
+  frost = { btnCap = 16 / 128, btnCapW = 16, pad = 3, groove = 16, knob = { 28, 28 }, twoKnobs = true, clipFill = true,
+            plate = true },
+  -- Light sets: `primaryText` is the label colour on the primary button's art.
+  scribe = { btnCap = 16 / 128, btnCapW = 16, pad = 0, groove = 6, knob = { 32, 32 }, twoKnobs = true, clipFill = true,
+             primaryText = { 0.97, 0.93, 0.84 } },
+  gnomish = { btnCap = 16 / 128, btnCapW = 16, pad = 0, groove = 9, knob = { 32, 32 }, twoKnobs = true, clipFill = true,
+              primaryText = { 0.29, 0.208, 0.141 } },
 }
 local function shape() return SHAPE[Deco.set or "azeroth"] end
+Deco.shape = shape
 
 local function itex(parent, layer, sub)
   local t = parent:CreateTexture(nil, layer or "BACKGROUND", nil, sub or 0)
@@ -96,6 +116,9 @@ local function itex(parent, layer, sub)
   t:Hide()
   return t
 end
+
+Deco.itex = itex
+Deco.IMGROOT = IMGROOT
 
 -- The image set of a theme (its `deco` token) when the slices of that set are installed, else nil.
 local function imageSet(th)
@@ -105,14 +128,15 @@ end
 
 -- A three-part bar (left cap, stretchy middle, right cap) on `parent`, filled from one texture file; `capw` is the cap's
 -- display width in px, `cap` its width in texture coordinates. Returns { parts, set = function(file) }.
-local function threeSlice(parent, layer, sub, capw, cap)
+local function threeSlice(parent, layer, sub, capw, cap, rel)
+  rel = rel or parent
   local l, m, r = itex(parent, layer, sub), itex(parent, layer, sub), itex(parent, layer, sub)
-  l:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0)
-  l:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", 0, 0)
+  l:SetPoint("TOPLEFT", rel, "TOPLEFT", 0, 0)
+  l:SetPoint("BOTTOMLEFT", rel, "BOTTOMLEFT", 0, 0)
   l:SetWidth(capw)
   l:SetTexCoord(0, cap, 0, 1)
-  r:SetPoint("TOPRIGHT", parent, "TOPRIGHT", 0, 0)
-  r:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 0, 0)
+  r:SetPoint("TOPRIGHT", rel, "TOPRIGHT", 0, 0)
+  r:SetPoint("BOTTOMRIGHT", rel, "BOTTOMRIGHT", 0, 0)
   r:SetWidth(capw)
   r:SetTexCoord(1 - cap, 1, 0, 1)
   m:SetPoint("TOPLEFT", l, "TOPRIGHT", 0, 0)
@@ -140,7 +164,10 @@ local function threeSlice(parent, layer, sub, capw, cap)
   return bar
 end
 
+local function exportThreeSlice() Deco.threeSlice = threeSlice end
+exportThreeSlice()
 local NAV_ICON = { home = "home", plan = "plan", talents = "talents", bis = "gear", macros = "macros", gameplay = "tweaks" }
+Deco.NAV_ICON = NAV_ICON
 -- The group heading images (word baked in) and how wide the word is, so the fading line can start after it.
 local HEAD_IMG = { JOURNEY = { "azeroth_head_journey", 76 }, CHARACTER = { "azeroth_head_character", 100 },
                    UI = { "azeroth_head_ui", 17 } }
@@ -213,11 +240,16 @@ local function buildImages(frame, ctx, d)
     t:SetTexture(IMG .. "azeroth_gem")
     i.gems[#i.gems + 1] = t
   end
-  -- Banner: hangs 20 px above the top edge, between the logo and the Size slider (x 252 to 500).
+  -- The ornate gold frame (one 9-slice, finials in the corners) in place of the corner and edge pieces above.
+  i.frameArt = Deco.NineSlice(frame, frame, frame, 32, 0.25, "BORDER", 1, true)
+  i.frameArt.set(IMG .. "azeroth_frame_ornate")
+  -- Crest: the pointed banner hangs 22 px above the top edge, centred; the title sits on it. `banner` is its anchor.
   i.banner = itex(frame, "BORDER", 3)
-  i.banner:SetSize(248, 62)
-  i.banner:SetPoint("TOPLEFT", frame, "TOPLEFT", 252, 20)
-  i.banner:SetTexture(IMG .. "azeroth_banner")
+  i.banner:SetColorTexture(0, 0, 0, 0)
+  i.banner:SetSize(320, 64)
+  i.banner:SetPoint("TOP", frame, "TOP", 0, 22)
+  i.crest = threeSlice(frame, "BORDER", 3, 64, 0.25, i.banner)
+  i.crest.set(IMG .. "azeroth_crest")
   -- Sidebar buttons: three-slice bar per state plus the gem.
   for key, b in pairs(ctx.nav) do
     local n = { bar = threeSlice(b, "BACKGROUND", 1, 16, BTN_CAP), key = key }
@@ -285,6 +317,34 @@ local function buildEmber(frame, ctx, d)
     t:SetTexture(EM .. "rivet")
     e.rivets[#e.rivets + 1] = t
   end
+  -- The title card and the window gauges panel under the tile grid (the sliders themselves are MainWindow's).
+  e.texts = {}
+  e.cardAnchor = frame:CreateTexture(nil, "BACKGROUND", nil, 5)
+  e.cardAnchor:SetColorTexture(0, 0, 0, 0)
+  e.cardAnchor:SetSize(280, 100)
+  e.cardAnchor:SetPoint("TOPLEFT", frame, "TOPLEFT", 12, -(ctx.topH + 12 + 144 + 14))
+  e.card = Deco.NineSlice(frame, e.cardAnchor, e.cardAnchor, 16, 0.25, "BACKGROUND", 5)
+  e.card.set(EM .. "gauge")
+  e.gaugeAnchor = frame:CreateTexture(nil, "BACKGROUND", nil, 5)
+  e.gaugeAnchor:SetColorTexture(0, 0, 0, 0)
+  e.gaugeAnchor:SetSize(280, 130)
+  e.gaugeAnchor:SetPoint("TOPLEFT", frame, "TOPLEFT", 12, -(ctx.topH + 12 + 144 + 14 + 100 + 12))
+  e.gauge = Deco.NineSlice(frame, e.gaugeAnchor, e.gaugeAnchor, 16, 0.25, "BACKGROUND", 5)
+  e.gauge.set(EM .. "gauge")
+  e.cardTitle = frame:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
+  e.cardTitle:SetPoint("TOPLEFT", e.cardAnchor, "TOPLEFT", 16, -14)
+  R2F.Theme.PaintText(e.cardTitle, "heading")
+  e.cardDesc = frame:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
+  e.cardDesc:SetPoint("TOPLEFT", e.cardAnchor, "TOPLEFT", 16, -46)
+  e.cardDesc:SetWidth(248)
+  e.cardDesc:SetJustifyH("LEFT")
+  R2F.Theme.PaintText(e.cardDesc, "tagline")
+  e.gaugeHead = frame:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
+  e.gaugeHead:SetPoint("TOPLEFT", e.gaugeAnchor, "TOPLEFT", 20, -14)
+  e.gaugeHead:SetText(L.GAUGES_HEAD)
+  R2F.Theme.PaintText(e.gaugeHead, "heading")
+  e.texts = { e.cardTitle, e.cardDesc, e.gaugeHead }
+  for _, fs in ipairs(e.texts) do fs:Hide() end
   for key, b in pairs(ctx.nav) do
     local n = { btn = b, slot = itex(b, "BACKGROUND", 1), icon = itex(b, "ARTWORK", 2) }
     n.slot:SetAllPoints(b)
@@ -314,7 +374,7 @@ local function buildObsidian(frame, ctx, d)
   e.region = frame:CreateTexture(nil, "BACKGROUND", nil, 1)
   e.region:SetColorTexture(0, 0, 0, 0)
   e.region:SetPoint("TOPLEFT", frame, "TOPLEFT", 12, -(ctx.topH + TAB_TOP + TAB_H + 10))
-  e.region:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -12, 12)
+  e.region:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -12, 38)
   e.plate = Deco.NineSlice(frame, e.region, e.region, 24, 0.1875, "BACKGROUND", 2)
   e.plate.set(OB .. "plate")
   -- The thin line under the tab strip (the one under the top bar is the window's own rule).
@@ -340,6 +400,21 @@ local function buildObsidian(frame, ctx, d)
     t:SetTexture(OB .. "tab_sep")
     e.seps[k] = t
   end
+  -- The top bar and the footer strip, one pixel inside the frame (fixed-height art, stretched across).
+  e.topAnchor = frame:CreateTexture(nil, "BACKGROUND", nil, 2)
+  e.topAnchor:SetColorTexture(0, 0, 0, 0)
+  e.topAnchor:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1)
+  e.topAnchor:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -1, -1)
+  e.topAnchor:SetHeight(ctx.topH)
+  e.topbar = threeSlice(frame, "BACKGROUND", 2, 16, 0.125, e.topAnchor)
+  e.topbar.set(OB .. "topbar")
+  e.footAnchor = frame:CreateTexture(nil, "BACKGROUND", nil, 2)
+  e.footAnchor:SetColorTexture(0, 0, 0, 0)
+  e.footAnchor:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 1, 1)
+  e.footAnchor:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1)
+  e.footAnchor:SetHeight(32)
+  e.footer = threeSlice(frame, "BACKGROUND", 2, 16, 0.125, e.footAnchor)
+  e.footer.set(OB .. "footer")
 end
 
 -- Frost & Void (media/frost): a starfield window, two soft glows, glass panels and a chain of round orbs as the sidebar.
@@ -375,6 +450,22 @@ local function buildArcane(frame, ctx, d)
   e.frame.set(FR .. "frame")
   e.glass = Deco.NineSlice(frame, d.insetEdge, d.insetEdge, 22, 0.25, "BACKGROUND", 4)
   e.glass.set(FR .. "glass")
+  e.brackets = {}
+  for _, c in ipairs({ { "TOPLEFT", "bracket_tl", 6, -6 }, { "TOPRIGHT", "bracket_tr", -6, -6 },
+                       { "BOTTOMLEFT", "bracket_bl", 6, 6 }, { "BOTTOMRIGHT", "bracket_br", -6, 6 } }) do
+    local t = itex(frame, "OVERLAY", 1)
+    t:SetSize(32, 32)
+    t:SetPoint(c[1], frame, c[1], c[3], c[4])
+    t:SetTexture(FR .. c[2])
+    e.brackets[#e.brackets + 1] = t
+  end
+  -- The pill behind Size, Opacity, Reload UI and the close button (top right).
+  e.pillAnchor = frame:CreateTexture(nil, "BACKGROUND", nil, 6)
+  e.pillAnchor:SetColorTexture(0, 0, 0, 0)
+  e.pillAnchor:SetSize(372, 52)
+  e.pillAnchor:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -8, -3)
+  e.pill = threeSlice(frame, "BACKGROUND", 6, 32, 0.25, e.pillAnchor)
+  e.pill.set(FR .. "pill")
   e.link = itex(frame, "ARTWORK", 0)
   e.link:SetWidth(8)
   e.link:SetTexture(FR .. "link", "REPEAT", "REPEAT")
@@ -444,7 +535,7 @@ function Deco.AddSlider(frame, sl)
     local w = (sl.GetWidth and sl:GetWidth() or 84)
     local frac = (lo and hi and hi > lo and sl.GetValue) and (sl:GetValue() - lo) / (hi - lo) or 0
     local px = math.max(0, math.min(w, w * frac))
-    if Deco.set == "ember" or Deco.set == "frost" then
+    if shape().clipFill then
       for _, t in ipairs(fill.parts) do t:Hide() end
       clip:SetTexture(P("slider_fill"))
       clip:SetTexCoord(0, w > 0 and px / w or 0, 0, 1)
@@ -506,7 +597,12 @@ function Deco.RefreshButtons()
     -- The gold primary button carries dark text on the gold art.
     local fs = e.primary and e.btn.GetFontString and e.btn:GetFontString()
     if fs then
-      if on then fs:SetTextColor(0.165, 0.102, 0.008) else R2F.Theme.PaintText(fs, "heading") end
+      if on then
+        local pc = shape().primaryText or { 0.165, 0.102, 0.008 }
+        fs:SetTextColor(pc[1], pc[2], pc[3])
+      else
+        R2F.Theme.PaintText(fs, "heading")
+      end
     end
   end
 end
@@ -530,7 +626,7 @@ function Deco.StyleSwitch(b, own, knob, small)
       e.track.set(P(on and "switch_on" or "switch_off"))
       e.kn:ClearAllPoints()
       if on then e.kn:SetPoint("RIGHT", b, "RIGHT", -1, 0) else e.kn:SetPoint("LEFT", b, "LEFT", 1, 0) end
-      if Deco.set == "ember" or Deco.set == "obsidian" or Deco.set == "frost" then
+      if shape().twoKnobs then
         -- two knobs: off and on
         e.kn:SetTexture(P(on and "switch_knob_on" or "switch_knob_off"))
         e.kn:SetVertexColor(1, 1, 1, 1)
@@ -623,6 +719,215 @@ function Deco.Card(parent, w, h)
   return c
 end
 
+-- Glass cards for a theme's Home layout (Frost & Void): the glass art of media/frost as a 9-slice at x, y (from the page's
+-- top left) of size w x h, drawn as textures of the page itself so the page's text stays above them. Hidden until
+-- Deco.ShowCards(theme, true).
+local glassCards = {}
+function Deco.GlassCard(parent, x, y, w, h, kind)
+  local a = parent:CreateTexture(nil, "BACKGROUND", nil, 5)
+  a:SetColorTexture(0, 0, 0, 0)
+  -- The art keeps a 4 px transparent margin for its glow: the texture is 8 px larger than the card body.
+  a:SetPoint("TOPLEFT", parent, "TOPLEFT", x - 4, y + 4)
+  a:SetSize(w + 8, h + 8)
+  local bar = Deco.NineSlice(parent, a, a, 32, 0.25, "BACKGROUND", 5)
+  bar.kind = kind or "normal"
+  bar.theme = "frost"
+  bar.anchor = a
+  glassCards[#glassCards + 1] = bar
+  return bar
+end
+
+-- Obsidian Night's cards: "big" (the countdown card) or "info" (the small ones), at x, y of size w x h, no margin.
+function Deco.ObsidianCard(parent, x, y, w, h, kind)
+  local a = parent:CreateTexture(nil, "BACKGROUND", nil, 5)
+  a:SetColorTexture(0, 0, 0, 0)
+  a:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
+  a:SetSize(w, h)
+  local big = kind == "big"
+  local bar = Deco.NineSlice(parent, a, a, big and 24 or 16, big and 0.1875 or 0.25, "BACKGROUND", 5)
+  bar.kind = big and "big" or "info"
+  bar.theme = "obsidian"
+  bar.anchor = a
+  glassCards[#glassCards + 1] = bar
+  return bar
+end
+
+-- Cards made by another set's file (UI/DecoToy.lua) register here; `bar.file` is their art.
+function Deco.RegisterCard(bar) glassCards[#glassCards + 1] = bar end
+
+-- Show the cards of one theme ("frost", "obsidian" or "gnomish") and hide the rest.
+function Deco.ShowCards(theme, on)
+  for _, bar in ipairs(glassCards) do
+    local mine = bar.theme == theme
+    if mine and on then
+      if bar.file then
+        bar.set(bar.file)
+      elseif bar.theme == "obsidian" then
+        if bar.kind == "big" then bar.set(OB .. "card_big") else bar.set(OB .. "card_info") end
+      elseif bar.kind == "highlight" then bar.set(FR .. "card_highlight")
+      elseif bar.kind == "dark" then bar.set(FR .. "card_dark")
+      else bar.set(FR .. "card_normal") end
+    end
+    for _, t in ipairs(bar.parts) do
+      t:SetAlpha(Deco.alpha or 1)
+      t:SetShown(mine and on == true)
+    end
+  end
+end
+
+-- The faint circle in the top right corner of Obsidian's countdown card; `card` is the bar ObsidianCard returned.
+function Deco.CircleAccent(parent, card)
+  local t = parent:CreateTexture(nil, "BACKGROUND", nil, 6)
+  t:SetSize(150, 150)
+  t:SetPoint("TOPRIGHT", card.anchor, "TOPRIGHT", -8, -8)
+  t:SetTexture(OB .. "circle_accent")
+  t:Hide()
+  return t
+end
+
+-- The glass disc and the thin track the countdown ring runs on: `anchor` is the ring's centre. Shown with show(true).
+function Deco.RingArt(parent, anchor)
+  local art = {}
+  art.orb = parent:CreateTexture(nil, "ARTWORK", nil, 0)
+  art.orb:SetSize(222, 222)
+  art.orb:SetPoint("CENTER", anchor, "CENTER", 0, 0)
+  art.orb:SetTexture(FR .. "orb_frame")
+  art.track = parent:CreateTexture(nil, "ARTWORK", nil, 0)
+  art.track:SetSize(196, 196)
+  art.track:SetPoint("CENTER", anchor, "CENTER", 0, 0)
+  art.track:SetTexture(FR .. "ring_track_mid")
+  function art.show(on)
+    art.orb:SetShown(on == true)
+    art.track:SetShown(on == true)
+  end
+  return art
+end
+
+-- The picture of a theme's own close button, when its image set is on: nil otherwise (the button then draws itself).
+function Deco.CloseArt(hot)
+  if not Deco.imagesOn then return nil end
+  local ex = Deco.extra[Deco.set or ""]
+  if ex and ex.closeArt then return ex.closeArt(hot) end
+  if Deco.set == "frost" then
+    if hot then return FR .. "close_hover" end
+    return FR .. "close_normal"
+  end
+  if Deco.set == "ember" then
+    if hot then return EM .. "close_hover" end
+    return EM .. "close_normal"
+  end
+  if Deco.set == "obsidian" then
+    if hot then return OB .. "close_hover" end
+    return OB .. "close_normal"
+  end
+  if Deco.set == "azeroth" then
+    if hot then return IMG .. "azeroth_close_hover" end
+    return IMG .. "azeroth_close_normal"
+  end
+  return nil
+end
+
+-- Azeroth Reforged's nested Home panel: four 32 px corners, edges TILED in 64 px pieces (the dashed gold line must not stretch)
+-- and a stretched flat centre, from x, y (the page's top left) at the fixed size w x h. np.show(true / false) toggles it.
+function Deco.NestedPanel(parent, x, y, w, h)
+  local np = { parts = {} }
+  local function piece(l, r, t, b, px, py, pw, ph)
+    local tx = itex(parent, "BACKGROUND", 3)
+    tx:SetTexture(IMG .. "azeroth_panel_nested")
+    tx:SetTexCoord(l, r, t, b)
+    tx:SetSize(pw, ph)
+    tx:SetPoint("TOPLEFT", parent, "TOPLEFT", px, py)
+    np.parts[#np.parts + 1] = tx
+  end
+  piece(0, 0.25, 0, 0.25, x, y, 32, 32)
+  piece(0.75, 1, 0, 0.25, x + w - 32, y, 32, 32)
+  piece(0, 0.25, 0.75, 1, x, y - h + 32, 32, 32)
+  piece(0.75, 1, 0.75, 1, x + w - 32, y - h + 32, 32, 32)
+  local px = 0
+  while px < w - 64 do
+    local len = math.min(64, w - 64 - px)
+    piece(0.25, 0.25 + len / 128, 0, 0.25, x + 32 + px, y, len, 32)
+    piece(0.25, 0.25 + len / 128, 0.75, 1, x + 32 + px, y - h + 32, len, 32)
+    px = px + len
+  end
+  local py = 0
+  while py < h - 64 do
+    local len = math.min(64, h - 64 - py)
+    piece(0, 0.25, 0.25, 0.25 + len / 128, x, y - 32 - py, 32, len)
+    piece(0.75, 1, 0.25, 0.25 + len / 128, x + w - 32, y - 32 - py, 32, len)
+    py = py + len
+  end
+  piece(0.25, 0.75, 0.25, 0.75, x + 32, y - 32, w - 64, h - 64)
+  function np.show(on)
+    for _, t in ipairs(np.parts) do
+      t:SetAlpha(Deco.alpha or 1)
+      t:SetShown(on == true)
+    end
+  end
+  return np
+end
+
+-- The page name and its one-line description on the title card of Ember & Iron's sidebar.
+function Deco.SetPageInfo(title, desc)
+  local d = Deco.frame and Deco.frame.r2fDeco
+  local e = d and d.em
+  if not e then return end
+  e.cardTitle:SetText((title or ""):upper())
+  e.cardDesc:SetText(desc or "")
+end
+
+-- Re-anchor the page plate when a theme asks for another sidebar width.
+function Deco.SetSideWidth(w)
+  local d = Deco.frame and Deco.frame.r2fDeco
+  if not (d and d.insetEdge) then return end
+  d.insetEdge:ClearAllPoints()
+  d.insetEdge:SetPoint("TOPLEFT", Deco.frame, "TOPLEFT", w + 2, -(d.topH + 6))
+  d.insetEdge:SetPoint("BOTTOMRIGHT", Deco.frame, "BOTTOMRIGHT", -8, 8)
+  for _, ex in pairs(Deco.extra) do
+    if ex.sideWidth then ex.sideWidth(d, w) end
+  end
+end
+
+-- A work-order row's art (Ember & Iron): a three-part plate on a button; bar.show(true / false) toggles it.
+function Deco.Row(btn)
+  local bar = threeSlice(btn, "BACKGROUND", 1, 12, 12 / 128)
+  bar.set(EM .. "row_normal")
+  function bar.show(on)
+    for _, t in ipairs(bar.parts) do t:SetShown(on == true) end
+  end
+  return bar
+end
+
+-- A ring of `count` round dots of `size` px on a circle of `radius` px around `anchor`'s centre (the countdown ring). The first
+-- dot is at the top, they run clockwise. set(frac) lights the first frac of them, with a gradient from `lo` to `hi`; the rest
+-- stay in `dim`. Colours are { r, g, b, a }.
+function Deco.Ring(parent, anchor, radius, count, size, lo, hi, dim)
+  local ring = { dots = {} }
+  for i = 1, count do
+    local t = parent:CreateTexture(nil, "ARTWORK", nil, 1)
+    t:SetTexture(DOT)
+    t:SetSize(size, size)
+    local ang = 2 * math.pi * (i - 1) / count
+    t:SetPoint("CENTER", anchor, "CENTER", radius * math.sin(ang), radius * math.cos(ang))
+    ring.dots[i] = t
+  end
+  function ring.set(frac)
+    local lit = math.floor(math.max(0, math.min(1, frac)) * count + 0.5)
+    for i, t in ipairs(ring.dots) do
+      if i <= lit then
+        local k = lit > 1 and (i - 1) / (lit - 1) or 1
+        t:SetVertexColor(lo[1] + (hi[1] - lo[1]) * k, lo[2] + (hi[2] - lo[2]) * k, lo[3] + (hi[3] - lo[3]) * k, 1)
+      else
+        t:SetVertexColor(dim[1], dim[2], dim[3], dim[4] or 1)
+      end
+    end
+  end
+  function ring.show(on)
+    for _, t in ipairs(ring.dots) do t:SetShown(on == true) end
+  end
+  return ring
+end
+
 local function refreshCards(th)
   local on = Deco.imagesOn == true
   for _, c in ipairs(cards) do
@@ -644,7 +949,7 @@ local function refreshCards(th)
     if not Deco.plate then
       Deco.plate = Deco.NineSlice(cards[1].frame, cards[1].frame, cards[3].frame, 16, 0.25, "BACKGROUND", 1)
     end
-    local show = on and (Deco.set == "ember" or Deco.set == "obsidian" or Deco.set == "frost")
+    local show = on and shape().plate == true
     for _, t in ipairs(Deco.plate.parts) do t:SetShown(show) end
     if show then Deco.plate.set(P("display")) end
     for _, c in ipairs(cards) do
@@ -657,6 +962,11 @@ function Deco.RefreshNav()
   local frame = Deco.frame
   local d = frame and frame.r2fDeco
   if not (d and d.img and d.imagesActive) then return end
+  local ex = Deco.extra[Deco.set or ""]
+  if ex then
+    ex.refreshNav(d, selectedKey)
+    return
+  end
   if Deco.set == "frost" then
     for key, n in pairs(d.fr.nav) do
       local sel = key == selectedKey
@@ -708,9 +1018,15 @@ local function applyImages(d, th, alpha)
   Deco.imagesOn = on
   Deco.set = on and set or nil
   for _, t in ipairs(imgPieces) do t:Hide() end
+  if d.em then for _, fs in ipairs(d.em.texts) do fs:Hide() end end
+  for _, ex in pairs(Deco.extra) do
+    if ex.hide then ex.hide(d) end
+  end
   Deco.RefreshButtons()
   Deco.RefreshSwitches()
-  local layout = on and ((set == "ember" and "grid") or (set == "obsidian" and "top") or (set == "frost" and "chain")) or nil
+  local ex = on and Deco.extra[set] or nil
+  local layout = on and ((set == "ember" and "grid") or (set == "obsidian" and "top") or (set == "frost" and "chain")
+    or (ex and ex.layout)) or nil
   local grid = layout == "grid"
   if R2F.MainWindow and R2F.MainWindow.SetNavLayout then R2F.MainWindow.SetNavLayout(layout) end
   for key, n in pairs(i and i.nav or {}) do
@@ -726,6 +1042,9 @@ local function applyImages(d, th, alpha)
       elseif layout == "top" then
         fs:SetPoint("LEFT", n.btn, "LEFT", 32, 0)
         fs:SetText(L.NAV_TAB and L.NAV_TAB[key] or (d.label and d.label(key)) or "")
+      elseif layout == "toc" then
+        fs:SetPoint("LEFT", n.btn, "LEFT", 30, 0)
+        fs:SetText(d.label and d.label(key) or "")
       else
         fs:SetPoint("LEFT", n.btn, "LEFT", on and 32 or 14, 0)
         if d.label then fs:SetText(d.label(key)) end
@@ -764,9 +1083,8 @@ local function applyImages(d, th, alpha)
     i.inset:SetAlpha(alpha)
     i.panel:Show()
     i.inset:Show()
-    for _, t in ipairs(i.corners) do t:Show() end
-    for _, t in ipairs(i.edges) do t:Show() end
-    for _, t in ipairs(i.gems) do t:Show() end
+    for _, t in ipairs(i.frameArt.parts) do t:Show() end
+    for _, t in ipairs(i.crest.parts) do t:Show() end
     i.banner:Show()
     for _, n in pairs(i.nav) do
       for _, t in ipairs(n.bar.parts) do t:Show() end
@@ -793,6 +1111,8 @@ local function applyImages(d, th, alpha)
     e.glowC:Show()
     for _, t in ipairs(e.frame.parts) do t:Show() end
     for _, t in ipairs(e.glass.parts) do t:SetAlpha(alpha) t:Show() end
+    for _, t in ipairs(e.brackets) do t:Show() end
+    for _, t in ipairs(e.pill.parts) do t:Show() end
     for _, n in pairs(e.nav) do
       n.orb:Show()
       n.icon:Show()
@@ -802,12 +1122,16 @@ local function applyImages(d, th, alpha)
     e.link:SetPoint("TOPLEFT", Deco.frame, "TOPLEFT", 8 + 16 - 4, -(50 + 16 + 16))
     e.link:SetPoint("BOTTOMLEFT", Deco.frame, "TOPLEFT", 8 + 16 - 4, -(50 + 16 + 16 + 5 * 38))
     e.link:Show()
+  elseif ex then
+    ex.apply(d, th, alpha)
   elseif set == "obsidian" then
     local e = d.ob
     e.frame.set(OB .. "frame")
     for _, t in ipairs(e.frame.parts) do t:Show() end
     for _, t in ipairs(e.plate.parts) do t:SetAlpha(alpha) t:Show() end
     e.rule:Show()
+    for _, t in ipairs(e.topbar.parts) do t:Show() end
+    for _, t in ipairs(e.footer.parts) do t:Show() end
     for _, n in pairs(e.nav) do n.icon:Show() end
     local seps = R2F.MainWindow and R2F.MainWindow.NavSeparators and R2F.MainWindow.NavSeparators() or {}
     for k, t in ipairs(e.seps) do
@@ -825,6 +1149,9 @@ local function applyImages(d, th, alpha)
     for _, t in ipairs(e.plate.parts) do t:SetAlpha(alpha) t:Show() end
     for _, t in ipairs(e.frame.parts) do t:Show() end
     for _, t in ipairs(e.rivets) do t:Show() end
+    for _, t in ipairs(e.card.parts) do t:Show() end
+    for _, t in ipairs(e.gauge.parts) do t:Show() end
+    for _, fs in ipairs(e.texts) do fs:Show() end
     for _, n in pairs(e.nav) do
       n.slot:Show()
       n.icon:Show()
@@ -838,7 +1165,7 @@ end
 function Deco.Build(frame, ctx)
   if built then return end
   built = true
-  local d = { nav = {}, heads = {}, label = ctx.label }
+  local d = { nav = {}, heads = {}, label = ctx.label, topH = ctx.topH }
   frame.r2fDeco = d
   Deco.frame = frame
 
@@ -911,6 +1238,7 @@ function Deco.Build(frame, ctx)
   buildEmber(frame, ctx, d)
   buildObsidian(frame, ctx, d)
   buildArcane(frame, ctx, d)
+  for _, ex in pairs(Deco.extra) do ex.build(frame, ctx, d) end
 end
 
 -- The banner plate is about 200 px wide: a long window title (Road to Forever: Tweaks) is scaled down to fit it.
@@ -919,7 +1247,7 @@ function Deco.FitTitle(frame)
   if not (t and t.SetScale) then return end
   t:SetScale(1)
   local w = t.GetStringWidth and t:GetStringWidth() or 0
-  if Deco.set == "azeroth" and w > 200 then t:SetScale(200 / w) end
+  if Deco.set == "azeroth" and w > 250 then t:SetScale(250 / w) end
 end
 
 function Deco.Select(key)
@@ -930,6 +1258,7 @@ end
 -- Show / recolour for theme th (th.deco == "azeroth"), or hide everything.
 local applyMain
 function Deco.Apply(frame, th, alpha)
+  Deco.alpha = alpha
   applyMain(frame, th, alpha)
   refreshCards(th)
 end

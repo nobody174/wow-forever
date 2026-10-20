@@ -197,12 +197,16 @@ local function placeControls(th)
   local reload = f.r2fReload
   local compact = th.compact == true
   local px, py = (th.barPad and th.barPad[1]) or 0, (th.barPad and th.barPad[2]) or 0
-  local rightPad = own and (compact and (12 + px + 26 + 6) or 44) or 36
-  local rw = compact and 70 or 84
-  local sw = compact and 70 or 84
-  reload:SetSize(rw, compact and 20 or 22)
+  -- th.ctl (Frost & Void): an even smaller group, further in from the frame.
+  local ctl = th.ctl
+  if ctl then px, py = ctl.px, ctl.py end
+  local cs = ctl and ctl.close or 26
+  local rightPad = own and (compact and (12 + px + cs + 6) or 44) or 36
+  local rw = ctl and ctl.rw or (compact and 70 or 84)
+  local sw = ctl and ctl.sw or (compact and 70 or 84)
+  reload:SetSize(rw, ctl and 18 or (compact and 20 or 22))
   reload:ClearAllPoints()
-  reload:SetPoint("TOPRIGHT", f, "TOPRIGHT", -rightPad, own and -(compact and 13 + py or 14) or -11)
+  reload:SetPoint("TOPRIGHT", f, "TOPRIGHT", -rightPad, own and (ctl and -(py + 10) or -(compact and 13 + py or 14)) or -11)
   local size, opa = f.r2fSizeSlider, f.r2fOpacitySlider
   size.r2fWidth(mode == "side" and 200 or sw)
   opa.r2fWidth(mode == "side" and 200 or sw)
@@ -213,8 +217,9 @@ local function placeControls(th)
   else
     local base = rightPad + rw + 8
     local step = sw + 8
-    size.r2fPlace(curW - base - 2 * step, -(compact and 6 + py or 5))
-    opa.r2fPlace(curW - base - step, -(compact and 6 + py or 5))
+    local ly = ctl and -(py - 1) or -(compact and 6 + py or 5)
+    size.r2fPlace(curW - base - 2 * step, ly)
+    opa.r2fPlace(curW - base - step, ly)
   end
   for _, sl in ipairs({ size, opa }) do
     for _, t in ipairs(sl.r2fTicks or {}) do t:SetShown(mode == "top") end
@@ -241,10 +246,12 @@ local function applyShell(th)
     frame.r2fLogo:SetPoint("TOPLEFT", frame, "TOPLEFT", 12 + px, -(7 + py))
   end
   if frame.r2fClose then
-    local cs = th.compact and 26 or 32
+    local cs = (th.ctl and th.ctl.close) or (th.compact and 26 or 32)
+    local cx, cy = px, py
+    if th.ctl then cx, cy = th.ctl.px, th.ctl.py - 3 end
     frame.r2fClose:SetSize(cs, cs)
     frame.r2fClose:ClearAllPoints()
-    frame.r2fClose:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(12 + px), -((th.compact and 11 or 11) + py))
+    frame.r2fClose:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(12 + cx), -(11 + cy))
     frame.r2fClose:SetShown(own)
     if own then paintOwnClose(frame.r2fClose, th) end
     frame.r2fClose.r2fPaint = function() paintOwnClose(frame.r2fClose, R2F.Theme.Get()) end

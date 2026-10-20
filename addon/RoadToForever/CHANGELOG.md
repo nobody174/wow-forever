@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.76.3 (2026-10-20)
+
+- **Talented perk switch** (Builds tab) now sits on the class row, right after the class name, so it can no longer touch the Load button in any look.
+- **Frost & Void:** the group with Size, Opacity, Reload UI and the close button is smaller again and moved further in from the top right frame.
+
 ## 0.76.2 (2026-10-20)
 
 - **More fixes from the 0.76.1 test:**

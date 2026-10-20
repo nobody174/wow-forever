@@ -4,6 +4,9 @@ The record of what the owner has tested and confirmed. Open tasks are in `TESTIN
 confirmed it is deleted from that file and added here in the same pass (newest round first). Numbers are the
 `section.item` numbers of TESTING.md at the time.
 
+## 2026-10-21 (0.77.1)
+- 5.62 Setup Druid (macros, spells, atk, Hearthstone on bar 6 button 12, the Druid's own key bindings), 5.63 the same extra buttons on the Hunter (keys fine there too).
+
 ## 2026-10-20 (0.76.4)
 - 5.43 Setup Hunter's reload (the button opens /reload in the chat, Enter reloads), 5.61 Launch plan waypoint spacing and shopping list button, Ember corner, the gallery closing with the window; with that 5.52, 5.56 and 5.57 (Ember, Gnomish, light-theme readability) are done too.
 

@@ -652,13 +652,13 @@ function Tab.Build(f)
   for i, t in ipairs(BiZ.Types()) do
     local box = UI.CheckButton(f, L["BIZ_TYPE_" .. t:upper()])
     local col, row = (i - 1) % 2, math.floor((i - 1) / 2)
-    box:SetPoint("TOPLEFT", 4 + col * 150, -fy - row * 20)
+    box:SetPoint("TOPLEFT", 4 + col * 150, -fy - row * 28)
     box:SetScript("OnClick", function(self) BiZ.SetTypeOn(t, self:GetChecked()); refresh() end)
     typeBoxes[t] = box
   end
   local n = #BiZ.Types()
   ui.known = UI.CheckButton(f, L.BIZ_KNOWN_ONLY)
-  ui.known:SetPoint("TOPLEFT", 4 + (n % 2) * 150, -fy - math.floor(n / 2) * 20)
+  ui.known:SetPoint("TOPLEFT", 4 + (n % 2) * 150, -fy - math.floor(n / 2) * 28)
   ui.known:SetScript("OnClick", function(self) BiZ.SetKnownOnly(self:GetChecked()); refresh() end)
 
   -- Slot panel (right).

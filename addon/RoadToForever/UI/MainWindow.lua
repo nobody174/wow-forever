@@ -195,20 +195,26 @@ local function placeControls(th)
   local own = th.close ~= nil
   local mode = th.controls or "top"
   local reload = f.r2fReload
-  local rightPad = own and 44 or 36
+  local compact = th.compact == true
+  local px, py = (th.barPad and th.barPad[1]) or 0, (th.barPad and th.barPad[2]) or 0
+  local rightPad = own and (compact and (12 + px + 26 + 6) or 44) or 36
+  local rw = compact and 70 or 84
+  local sw = compact and 70 or 84
+  reload:SetSize(rw, compact and 20 or 22)
   reload:ClearAllPoints()
-  reload:SetPoint("TOPRIGHT", f, "TOPRIGHT", -rightPad, own and -14 or -11)
+  reload:SetPoint("TOPRIGHT", f, "TOPRIGHT", -rightPad, own and -(compact and 13 + py or 14) or -11)
   local size, opa = f.r2fSizeSlider, f.r2fOpacitySlider
-  size.r2fWidth(mode == "side" and 200 or 84)
-  opa.r2fWidth(mode == "side" and 200 or 84)
+  size.r2fWidth(mode == "side" and 200 or sw)
+  opa.r2fWidth(mode == "side" and 200 or sw)
   if mode == "side" then
     -- Inside the gauge panel of the sidebar (Deco draws it at y 332 under the top of the window).
     size.r2fPlace(34, -(TOP_H + 12 + 144 + 14 + 100 + 12 + 40))
     opa.r2fPlace(34, -(TOP_H + 12 + 144 + 14 + 100 + 12 + 40 + 48))
   else
-    local base = rightPad + 84 + 8
-    size.r2fPlace(curW - base - 2 * 92, -5)
-    opa.r2fPlace(curW - base - 92, -5)
+    local base = rightPad + rw + 8
+    local step = sw + 8
+    size.r2fPlace(curW - base - 2 * step, -(compact and 6 + py or 5))
+    opa.r2fPlace(curW - base - step, -(compact and 6 + py or 5))
   end
   for _, sl in ipairs({ size, opa }) do
     for _, t in ipairs(sl.r2fTicks or {}) do t:SetShown(mode == "top") end
@@ -227,7 +233,18 @@ local function applyShell(th)
   frame:SetSize(curW, (h and h > 0) and h or WIN_H)
   local own = th.close ~= nil
   if frame.CloseButton then frame.CloseButton:SetShown(not own) end
+  local px, py = (th.barPad and th.barPad[1]) or 0, (th.barPad and th.barPad[2]) or 0
+  if frame.r2fLogo then
+    local ls = th.compact and 26 or 30
+    frame.r2fLogo:SetSize(ls, ls)
+    frame.r2fLogo:ClearAllPoints()
+    frame.r2fLogo:SetPoint("TOPLEFT", frame, "TOPLEFT", 12 + px, -(7 + py))
+  end
   if frame.r2fClose then
+    local cs = th.compact and 26 or 32
+    frame.r2fClose:SetSize(cs, cs)
+    frame.r2fClose:ClearAllPoints()
+    frame.r2fClose:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(12 + px), -((th.compact and 11 or 11) + py))
     frame.r2fClose:SetShown(own)
     if own then paintOwnClose(frame.r2fClose, th) end
     frame.r2fClose.r2fPaint = function() paintOwnClose(frame.r2fClose, R2F.Theme.Get()) end

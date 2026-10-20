@@ -92,6 +92,7 @@ Theme.LIST = {
     deco = "frost",
     -- Shell: a wider window, our own round close button, Size / Opacity in a row without tick marks (MainWindow).
     win = { w = 960, extraH = 40 }, pageDy = 14, close = "round", controls = "pill", home = "frost",
+    compact = true, barPad = { 18, 8 },
     font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Sora-SemiBold.ttf",
              body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Sora-Regular.ttf",
              number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Sora-SemiBold.ttf", bodyBump = 0 },
@@ -113,6 +114,7 @@ Theme.LIST = {
              body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\CormorantGaramond-SemiBold.ttf",
              number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\CormorantGaramond-SemiBold.ttf", bodyBump = 3 },
     win = { w = 1060, extraH = 40 }, pageDy = 14, sideW = 400, close = "square", controls = "pill", home = "scribe",
+    compact = true, barPad = { 24, 10 },
     titleColor = { 0.96, 0.9, 0.76 }, barText = { 0.95, 0.89, 0.74 },
     on = { 0.247, 0.42, 0.294 }, off = { 0.9, 0.83, 0.66 }, swRim = { 0.4, 0.3, 0.2 },
     bg = { 0.91, 0.851, 0.71 }, bgAlpha = 1,

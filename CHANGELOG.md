@@ -1785,6 +1785,12 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.76.2 (2026-10-20): Theme test fixes, round 2
+
+- **More fixes from the 0.76.1 test:**
+  - Obsidian Night: on Home the Share card is taller, so "Export professions" sits under its text. The Launch plan shopping list has more room between the switch and the quest name, and so do the step rows. The Talented perk switch on the Builds tab is clear of the Load button. The source switches under the doll on the Gear tab have more room between them.
+  - Frost & Void and Scribe's Tome: the logo, the title and the Size / Opacity / Reload UI / close group are smaller and moved in from the frame (down and to the left), so nothing touches the top corners any more.
+
 ## 0.76.1 (2026-10-19): Theme test fixes
 
 - **Fixes from the first test of 0.76.0:**

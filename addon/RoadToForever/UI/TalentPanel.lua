@@ -291,7 +291,7 @@ local function build(f)
 
   -- Talented legacy perk (+5 points): only changes the level line under a build.
   ui.perk = UI.Switch(f, L.TALENT_PERK)
-  ui.perk:SetPoint("TOPRIGHT", -190, -76)
+  ui.perk:SetPoint("TOPRIGHT", -222, -76)
   ui.perk:SetScript("OnClick", function(self)
     R2F.Library.db.settings.talented = self:GetChecked() and true or false
     TalentPanel.Refresh()

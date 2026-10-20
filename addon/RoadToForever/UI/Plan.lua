@@ -153,18 +153,18 @@ local function layout()
       r.check:SetChecked(Plan.IsDone(s.id))
       r.check:Show()
       r.lvl:ClearAllPoints()
-      r.lvl:SetPoint("TOPLEFT", content, "TOPLEFT", 28, -y - 3)
+      r.lvl:SetPoint("TOPLEFT", content, "TOPLEFT", 46, -y - 3)
       r.lvl:SetText(s.lvl or "")
       r.lvl:Show()
       r.title:ClearAllPoints()
-      r.title:SetPoint("TOPLEFT", content, "TOPLEFT", 78, -y)
+      r.title:SetPoint("TOPLEFT", content, "TOPLEFT", 96, -y)
       r.title:SetText(titleWithTags(s))
       if Plan.IsDone(s.id) then R2F.Theme.PaintText(r.title, "dim") else R2F.Theme.PaintText(r.title, "body") end
       r.title:Show()
       local used = math.max(r.title:GetStringHeight(), 14) + 2
       if s.n and s.n ~= "" then
         r.note:ClearAllPoints()
-        r.note:SetPoint("TOPLEFT", content, "TOPLEFT", 78, -(y + used))
+        r.note:SetPoint("TOPLEFT", content, "TOPLEFT", 96, -(y + used))
         r.note:SetText(s.n)
         r.note:Show()
         used = used + math.max(r.note:GetStringHeight(), 12) + 2
@@ -179,14 +179,14 @@ local function layout()
         if not Plan.HasPosition(pt) then
           p.btn:Hide()
           p.text:ClearAllPoints()
-          p.text:SetPoint("TOPLEFT", content, "TOPLEFT", 78, py - 2)
+          p.text:SetPoint("TOPLEFT", content, "TOPLEFT", 96, py - 2)
           text = text .. " |cffff8040(" .. L.PLAN_UNKNOWN_POS .. ")|r"
         else
           p.btn.point = pt
           p.btn.stepId = s.id
           p.btn:SetText(arrow and L.PLAN_WAYPOINT or L.PLAN_WAYLINE_BTN)
           p.btn:ClearAllPoints()
-          p.btn:SetPoint("TOPLEFT", content, "TOPLEFT", 78, py)
+          p.btn:SetPoint("TOPLEFT", content, "TOPLEFT", 96, py)
           p.btn:Show()
           p.text:ClearAllPoints()
           p.text:SetPoint("TOPLEFT", content, "TOPLEFT", 78 + 100, py - 2)
@@ -217,7 +217,7 @@ local function layout()
         g.hit.w = w
         g.hit:Show()
         g:ClearAllPoints()
-        g:SetPoint("TOPLEFT", content, "TOPLEFT", 78, -(y + used))
+        g:SetPoint("TOPLEFT", content, "TOPLEFT", 96, -(y + used))
         g:SetText(w.text)
         g:Show()
         used = used + 16
@@ -352,7 +352,7 @@ local function layoutBuy()
       local head = q.name .. " |cff999999(" .. L.PLAN_BUY_LEVEL:format(q.zone, q.q) .. ")|r"
       if q.st == "verify" then head = head .. " |cffff8040(" .. L.PLAN_BUY_VERIFY .. ")|r" end
       r.title:ClearAllPoints()
-      r.title:SetPoint("TOPLEFT", content, "TOPLEFT", 40, -y)
+      r.title:SetPoint("TOPLEFT", content, "TOPLEFT", 58, -y)
       r.title:SetText(head)
       if bought then R2F.Theme.PaintText(r.title, "dim") else R2F.Theme.PaintText(r.title, "body") end
       r.title:Show()
@@ -362,7 +362,7 @@ local function layoutBuy()
         b.itemName = it[1]
         b.text:SetText(it[2] .. "x " .. it[1])
         b:ClearAllPoints()
-        b:SetPoint("TOPLEFT", content, "TOPLEFT", 40, -(y + used))
+        b:SetPoint("TOPLEFT", content, "TOPLEFT", 58, -(y + used))
         b:Show()
         used = used + 15
       end
@@ -372,7 +372,7 @@ local function layoutBuy()
       if q.xp then extra = (extra and extra .. " " or "") .. q.xp end
       if extra and extra ~= "" then
         r.note:ClearAllPoints()
-        r.note:SetPoint("TOPLEFT", content, "TOPLEFT", 40, -(y + used))
+        r.note:SetPoint("TOPLEFT", content, "TOPLEFT", 58, -(y + used))
         r.note:SetText(extra)
         r.note:Show()
         used = used + math.max(r.note:GetStringHeight(), 12) + 2

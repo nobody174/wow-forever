@@ -570,7 +570,7 @@ end
 -- Obsidian Night: info cards on a dark card, the countdown in mono numbers (18 d 01 h 44 m) with the minutes in teal.
 local OBS_CARDS = {
   { 0, 0, 540, 276, "big" }, { 556, 0, 324, 100 }, { 556, -112, 324, 164 },
-  { 0, -288, 540, 208 }, { 556, -288, 324, 104 }, { 556, -404, 324, 92 },
+  { 0, -288, 540, 208 }, { 556, -288, 324, 104 }, { 556, -404, 324, 148 },
 }
 
 local function buildObsidian()
@@ -628,7 +628,7 @@ local function placeObsidian()
   at(ui.nextTalent, 576, -246, 296)
   at(ui.shareHead, 572, -416)
   at(ui.shareText, 576, -440, 296)
-  at(ui.profs, 576, -466)
+  at(ui.profs, 576, -504)
   at(ui.combat, 28, -250)
   R2F.Settings.Place({ quick = { 28, -300 }, minimap = { 572, -300 }, theme = { 700, -296 } }, 480,
     { quickCols = 2, quickColW = 250, quickStart = -52 })
@@ -690,7 +690,7 @@ function Home.Layout()
     R2F.MainWindow.SetPageSize("home", 690, 580)
   elseif obsidian then
     placeObsidian()
-    R2F.MainWindow.SetPageSize("home", 880, 500)
+    R2F.MainWindow.SetPageSize("home", 880, 560)
   elseif azeroth then
     placeAzeroth()
     R2F.MainWindow.SetPageSize("home", 760, 560)

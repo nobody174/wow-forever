@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.76.2 (2026-10-20)
+
+- **More fixes from the 0.76.1 test:**
+  - Obsidian Night: on Home the Share card is taller, so "Export professions" sits under its text. The Launch plan shopping list has more room between the switch and the quest name, and so do the step rows. The Talented perk switch on the Builds tab is clear of the Load button. The source switches under the doll on the Gear tab have more room between them.
+  - Frost & Void and Scribe's Tome: the logo, the title and the Size / Opacity / Reload UI / close group are smaller and moved in from the frame (down and to the left), so nothing touches the top corners any more.
+
 ## 0.76.1 (2026-10-19)
 
 - **Fixes from the first test of 0.76.0:**

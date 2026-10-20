@@ -4,6 +4,9 @@ The record of what the owner has tested and confirmed. Open tasks are in `TESTIN
 confirmed it is deleted from that file and added here in the same pass (newest round first). Numbers are the
 `section.item` numbers of TESTING.md at the time.
 
+## 2026-10-20 (0.76.4)
+- 5.43 Setup Hunter's reload (the button opens /reload in the chat, Enter reloads), 5.61 Launch plan waypoint spacing and shopping list button, Ember corner, the gallery closing with the window; with that 5.52, 5.56 and 5.57 (Ember, Gnomish, light-theme readability) are done too.
+
 ## 2026-10-20 (0.76.3)
 - 5.50 the Choose a look gallery (preview, keep, revert, Surprise me, wears the look in use), 5.51 Frost & Void, 5.53 Obsidian Night, 5.54 Azeroth Reforged (colours solid enough), 5.55 Scribe's Tome, 5.58 to 5.60 the first three fix rounds, 5.32 the recorder counts (35 creatures, 3 chests or nodes, 15 vendors, 39 quests).
 

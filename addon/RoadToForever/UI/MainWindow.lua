@@ -361,7 +361,14 @@ function MainWindow.SetNavLayout(layout)
       end
     end
   end
-  for _, h in ipairs(navHeads) do h:SetShown(layout == nil or layout == "toc") end
+  for _, h in ipairs(navHeads) do
+    h:SetShown(layout == nil or layout == "toc")
+    -- The contents look moves the headings; the list look puts them back where the sidebar built them.
+    if layout ~= "toc" and h.r2fY then
+      h:ClearAllPoints()
+      h:SetPoint("TOPLEFT", frame, "TOPLEFT", 16, h.r2fY)
+    end
+  end
   if layout == "toc" then
     local y = -(TOP_H + 96)
     local hi = 0
@@ -593,6 +600,7 @@ local function build()
       local h = f:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
       groupHeads[#groupHeads + 1] = h
       h:SetPoint("TOPLEFT", f, "TOPLEFT", 16, y)
+      h.r2fY = y
       h:SetText(L[group.heading]:upper())
       R2F.Theme.PaintText(h, "group")
       y = y - 18

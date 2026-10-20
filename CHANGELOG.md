@@ -1790,6 +1790,7 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 - **More fixes from the 0.76.1 test:**
   - Obsidian Night: on Home the Share card is taller, so "Export professions" sits under its text. The Launch plan shopping list has more room between the switch and the quest name, and so do the step rows. The Talented perk switch on the Builds tab is clear of the Load button. The source switches under the doll on the Gear tab have more room between them.
   - Frost & Void and Scribe's Tome: the logo, the title and the Size / Opacity / Reload UI / close group are smaller and moved in from the frame (down and to the left), so nothing touches the top corners any more.
+  - Azeroth Reforged (and any look after visiting Scribe's Tome): the sidebar headings JOURNEY / CHARACTER / UI no longer sit under the buttons; they go back to their own places when you leave the contents look.
 
 ## 0.76.1 (2026-10-19): Theme test fixes
 

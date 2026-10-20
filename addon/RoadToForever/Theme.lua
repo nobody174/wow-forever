@@ -71,7 +71,7 @@ Theme.LIST = {
     deco = "ember",
     -- Shell: a wide window with a 300 px sidebar (a 4 x 2 tile grid, title card and the window gauges), a square close button.
     win = { w = 1010, extraH = 40 }, pageDy = 14, sideW = 304, gridCols = 4, close = "square", controls = "side",
-    home = "ember",
+    home = "ember", barPad = { 20, 8 },
     font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\BarlowCondensed-Bold.ttf",
              body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\Barlow-Medium.ttf",
              number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\ChakraPetch-Bold.ttf", bodyBump = 0 },

@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.76.4 (2026-10-20)
+
+- **Setup Hunter's reload button** now opens the chat line with `/reload` ready: press Enter. Calling the reload from our button after the setup was blocked by the game, so this uses the game's own chat code instead (the window's Reload UI button was never affected).
+- **Launch plan:** the Waypoint button no longer overlaps the place text (after the wider tick boxes of 0.76.2), and the "Quest shopping list" button is as wide as its label and a little lower.
+- **Ember & Iron:** the logo and the close button are clear of the corner rivets.
+- **The "Choose a look" gallery closes together with the main window.**
+
 ## 0.76.3 (2026-10-20)
 
 - **Talented perk switch** (Builds tab) now sits on the class row, right after the class name, so it can no longer touch the Load button in any look.

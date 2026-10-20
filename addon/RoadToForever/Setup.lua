@@ -245,12 +245,17 @@ function Setup.Finish(def, r)
   say(L.SETUP_FINISHED)
   -- The game shows newly switched-on bars only after a reload: offer it.
   if def.bars and R2F.UI and R2F.UI.Confirm and _G.ReloadUI then
-    -- Opened from a fresh timer call: a dialog built inside this run inherits the taint of the layout switch, and the game
-    -- then blocks ReloadUI from its button ("Interface action failed because of an AddOn").
+    -- Calling ReloadUI from our button after the setup is blocked by the game ("Interface action failed because of an AddOn"),
+    -- though it works from the window's Reload UI button. So the button puts "/reload" in the chat line instead: Enter runs
+    -- it with the game's own code, which is never blocked. (A timer opens the dialog so it starts from a fresh call.)
     local function ask()
       R2F.UI.Confirm(L.SETUP_RELOAD_ASK, L.SETUP_RELOAD_GO, L.BTN_CANCEL, function()
         if R2F.InCombat() then return say(L.SETUP_COMBAT) end
-        _G.ReloadUI()
+        if _G.ChatFrame_OpenChat then
+          _G.ChatFrame_OpenChat("/reload")
+        else
+          _G.ReloadUI()
+        end
       end)
     end
     if _G.C_Timer and _G.C_Timer.After then _G.C_Timer.After(0.3, ask) else ask() end

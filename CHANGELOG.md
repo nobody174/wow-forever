@@ -1785,6 +1785,13 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.76.4 (2026-10-20): Theme test fixes, round 4
+
+- **Setup Hunter's reload button** now opens the chat line with `/reload` ready: press Enter. Calling the reload from our button after the setup was blocked by the game, so this uses the game's own chat code instead (the window's Reload UI button was never affected).
+- **Launch plan:** the Waypoint button no longer overlaps the place text (after the wider tick boxes of 0.76.2), and the "Quest shopping list" button is as wide as its label and a little lower.
+- **Ember & Iron:** the logo and the close button are clear of the corner rivets.
+- **The "Choose a look" gallery closes together with the main window.**
+
 ## 0.76.3 (2026-10-20): Theme test fixes, round 3
 
 - **Talented perk switch** (Builds tab) now sits on the class row, right after the class name, so it can no longer touch the Load button in any look.

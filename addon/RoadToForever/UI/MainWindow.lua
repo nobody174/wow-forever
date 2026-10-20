@@ -201,12 +201,12 @@ local function placeControls(th)
   local ctl = th.ctl
   if ctl then px, py = ctl.px, ctl.py end
   local cs = ctl and ctl.close or 26
-  local rightPad = own and (compact and (12 + px + cs + 6) or 44) or 36
+  local rightPad = own and (compact and (12 + px + cs + 6) or (44 + px)) or 36
   local rw = ctl and ctl.rw or (compact and 70 or 84)
   local sw = ctl and ctl.sw or (compact and 70 or 84)
   reload:SetSize(rw, ctl and 18 or (compact and 20 or 22))
   reload:ClearAllPoints()
-  reload:SetPoint("TOPRIGHT", f, "TOPRIGHT", -rightPad, own and (ctl and -(py + 10) or -(compact and 13 + py or 14)) or -11)
+  reload:SetPoint("TOPRIGHT", f, "TOPRIGHT", -rightPad, own and (ctl and -(py + 10) or -(compact and 13 + py or 14 + py)) or -11)
   local size, opa = f.r2fSizeSlider, f.r2fOpacitySlider
   size.r2fWidth(mode == "side" and 200 or sw)
   opa.r2fWidth(mode == "side" and 200 or sw)
@@ -653,6 +653,9 @@ local function build()
   end)
   f:SetScript("OnHide", function()
     UI.PlaySound("IG_SPELLBOOK_CLOSE")
+    -- The "Choose a look" gallery belongs to this window: it closes with it.
+    local gallery = R2F.ThemePicker and R2F.ThemePicker.Frame()
+    if gallery and gallery:IsShown() then gallery:Hide() end
     if current then pageHidden(current) end
   end)
   frame = f

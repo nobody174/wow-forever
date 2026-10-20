@@ -4,6 +4,9 @@ The record of what the owner has tested and confirmed. Open tasks are in `TESTIN
 confirmed it is deleted from that file and added here in the same pass (newest round first). Numbers are the
 `section.item` numbers of TESTING.md at the time.
 
+## 2026-10-20 (0.76.3)
+- 5.50 the Choose a look gallery (preview, keep, revert, Surprise me, wears the look in use), 5.51 Frost & Void, 5.53 Obsidian Night, 5.54 Azeroth Reforged (colours solid enough), 5.55 Scribe's Tome, 5.58 to 5.60 the first three fix rounds, 5.32 the recorder counts (35 creatures, 3 chests or nodes, 15 vendors, 39 quests).
+
 ## 2026-10-19
 - 5.25 Seal and Slice and Dice timers, 5.33 theme switching basics, 5.43 Setup Hunter (all but the reload button).
 

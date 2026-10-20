@@ -189,7 +189,7 @@ local function layout()
           p.btn:SetPoint("TOPLEFT", content, "TOPLEFT", 96, py)
           p.btn:Show()
           p.text:ClearAllPoints()
-          p.text:SetPoint("TOPLEFT", content, "TOPLEFT", 78 + 100, py - 2)
+          p.text:SetPoint("TOPLEFT", content, "TOPLEFT", 96 + 104, py - 2)
           if Plan.MayHaveMoved(pt) then text = text .. " |cff999999(" .. L.PLAN_MAY_MOVE .. ")|r" end
         end
         p.text:SetText(text)
@@ -393,6 +393,10 @@ local function refresh()
   local planId = Plan.Selected()
   for id, b in pairs(picks) do b:SetChecked(id == planId) end
   ui.buyBtn:SetText(view == "buy" and L.PLAN_BUY_BACK or L.PLAN_BUY_BTN)
+  -- As wide as its label: a look's font can be wider than the game's.
+  local bfs = ui.buyBtn.GetFontString and ui.buyBtn:GetFontString()
+  local bw = bfs and bfs.GetStringWidth and bfs:GetStringWidth() or 0
+  ui.buyBtn:SetWidth(math.max(150, math.ceil(bw) + 36))
   if view == "buy" then
     local done, total = Plan.QuestProgress()
     ui.progress:SetText(L.PLAN_BUY_PROGRESS:format(done, total))
@@ -436,7 +440,7 @@ function Tab.Build(f)
   ui.buyBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   R2F.UI.ThemeButton(ui.buyBtn)
   ui.buyBtn:SetSize(150, 22)
-  ui.buyBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -24, -120)
+  ui.buyBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -24, -126)
   ui.buyBtn:SetText(L.PLAN_BUY_BTN)
   ui.buyBtn:SetScript("OnClick", function()
     view = view == "buy" and "steps" or "buy"

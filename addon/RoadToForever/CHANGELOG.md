@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.77.1 (2026-10-21)
+
+- **Setup Druid sets the Druid's key bindings, for this character only.** The Warrior / Druid layout has its own bars (forms), so its keys differ from the account's: Q, E, F, CapsLock, the mouse wheel, Ctrl-1 to 5 and the rest now point at the Druid's buttons (59 bindings, taken from your Druid's own bindings file). It turns on "Character Specific Key Bindings" for that character, so your other characters keep the account keys. "Undo last setup" puts the old keys back.
+- Setup Druid: your General macro is found under the name **atk** (it also still accepts "Attack"). The Hearthstone (both setups) is on bar 6 button **12**.
+
 ## 0.77.0 (2026-10-21)
 
 - **"Setup Druid"** (minimap menu, or `/r2f setup druid`): the same one-click setup as the Hunter's (Action Bars 2 to 6, auto loot, raid frame options, the Edit Mode layout "Warrior/Druid", every button emptied first), with the Druid's buttons. Main bar: Attack (your own General macro) 2, Healing Touch 8, Regrowth 9, Rejuvenation 10, Moonfire 11, Wrath 12. Bar 3: the Teleport: Moonglade spell on button 4. Bar 4: Cat / Bear Form on 5. Bar 5: Thorns 3, Mark of the Wild 4.

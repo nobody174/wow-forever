@@ -8933,7 +8933,12 @@ def test_setup():
       PickupSpell = function(id) TEST.ckind = 'spell' TEST.cid = id end
       PickupItem = function(id) TEST.ckind = 'item' TEST.cid = id end
       GetItemCount = function(id) return id == 6948 and 1 or 0 end
-      TEST.addMacro('Sit', '/sit') TEST.addMacro('Mark1', '/m1') TEST.addMacro('Mark2', '/m2')
+      TEST.addMacro('Sit', '/sit') TEST.addMacro('Mark1', '/m1') TEST.addMacro('Mark2', '/m2') TEST.addMacro('atk', '/startattack')
+      KEYS = { Q = 'MULTIACTIONBAR1BUTTON5', F = 'MULTIACTIONBAR1BUTTON2' } SAVEDSET = nil
+      GetBindingAction = function(k) return KEYS[k] or '' end
+      SetBinding = function(k, c) KEYS[k] = c return true end
+      SaveBindings = function(w) SAVEDSET = w end
+      GetCurrentBindingSet = function() return 1 end
       TEST.classToken = 'DRUID'
     """)
     for k in ("HTouch", "Regrowth", "Rejuv", "Moonfire", "Wrath", "CatBear", "MotW", "Thorns"):
@@ -8950,16 +8955,20 @@ def test_setup():
     for slot, sid in spells.items():
         check(lua.eval("ACTIONS[%d] ~= nil and ACTIONS[%d].kind == 'spell' and ACTIONS[%d].id" % (slot, slot, slot)) == sid,
               "setup druid: slot %d holds the spell %d" % (slot, sid))
-    check(lua.eval("ACTIONS[155] ~= nil and ACTIONS[155].kind == 'item' and ACTIONS[155].id") == 6948,
-          "setup druid: the Hearthstone is on bar 6 button 11")
-    check(lua.eval("ACTIONS[2]") is None and "Attack" in chat_all(lua),
-          "setup druid: a General macro that is not there (Attack) is reported, the button left empty")
+    check(lua.eval("ACTIONS[156] ~= nil and ACTIONS[156].kind == 'item' and ACTIONS[156].id") == 6948,
+          "setup druid: the Hearthstone is on bar 6 button 12")
+    check(lua.eval("ACTIONS[2] ~= nil and ACTIONS[2].text") == "atk", "setup druid: the General macro atk is on the main bar button 2")
+    check(lua.eval("KEYS.Q") == "ACTIONBUTTON11" and lua.eval("KEYS.F") == "ACTIONBUTTON8" and lua.eval("KEYS['1']") == "ACTIONBUTTON2"
+          and lua.eval("KEYS['6']") is None and lua.eval("SAVEDSET") == 2,
+          "setup druid: the Druid key bindings are set and saved for this character (set 2), NONE unbinds")
     lua.execute("R2F.Setup.Undo()")
     check(lua.eval("next(ACTIONS)") is None, "setup druid: undo empties the macros, spells and the item it placed")
+    check(lua.eval("KEYS.Q") == "MULTIACTIONBAR1BUTTON5" and lua.eval("SAVEDSET") == 1,
+          "setup druid: undo puts the old key bindings back and returns to the account's set")
     # The hunter gets the same racials, Hearthstone and General macros.
     lua.execute("TEST.chat = {} TEST.classToken = 'HUNTER' R2F.playerClass = 'HUNTER' R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()")
     check(lua.eval("ACTIONS[67] ~= nil and ACTIONS[67].id") == 1001 and lua.eval("ACTIONS[70] ~= nil and ACTIONS[70].id") == 1002
-          and lua.eval("ACTIONS[155] ~= nil and ACTIONS[155].id") == 6948 and lua.eval("ACTIONS[146] ~= nil and ACTIONS[146].text") == "Mark1",
+          and lua.eval("ACTIONS[156] ~= nil and ACTIONS[156].id") == 6948 and lua.eval("ACTIONS[146] ~= nil and ACTIONS[146].text") == "Mark1",
           "setup hunter: Walk on Air, Read Ley Line, the Hearthstone and Mark1 are on the same buttons")
     lua.execute("R2F.Setup.Undo() R2F.playerClass = 'HUNTER'")
     # Combat and class guards.

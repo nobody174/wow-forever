@@ -5,6 +5,7 @@
 --   2. Your saved Edit Mode layout of that name (for the Hunter setup: the layout called "Hunter") becomes the active one.
 --   3. Our macros go on the action buttons listed for that class. A button that already holds something is never overwritten.
 --   4. The keys on those buttons are checked against your key bindings (read only: it says so if one differs, it never rebinds).
+--      The Druid setup is the exception: it sets the Druid's own key bindings, saved for that character only.
 -- Nothing runs in combat. "Undo last setup" puts the bars, auto loot, layout and the buttons it filled back.
 --
 -- Read-only on game tables; the writes are the game's own calls a player would make by hand (the Options checkboxes, picking a
@@ -43,13 +44,37 @@ local COMMON = {
   { bar = 6, button = 1, general = { "Sit" }, label = "Sit" },
   { bar = 6, button = 2, general = { "Mark1" }, label = "Mark1" },
   { bar = 6, button = 3, general = { "Mark2" }, label = "Mark2" },
-  { bar = 6, button = 11, item = 6948, label = "Hearthstone" },
+  { bar = 6, button = 12, item = 6948, label = "Hearthstone" },
 }
 
 local function withCommon(rows)
   for _, row in ipairs(COMMON) do rows[#rows + 1] = row end
   return rows
 end
+
+-- The Druid's key bindings (the owner's own, from the Druid character's bindings-cache.wtf): { key, command }. They are saved
+-- for this character only: the Warrior / Druid layout has different bars (forms), so it does not share the account's keys.
+local DRUID_BINDINGS = {
+  { "BUTTON3", "MULTIACTIONBAR1BUTTON7" }, { "Q", "ACTIONBUTTON11" }, { "LEFT", "STRAFELEFT" },
+  { "E", "ACTIONBUTTON12" }, { "RIGHT", "STRAFERIGHT" }, { "A", "TURNLEFT" }, { "D", "TURNRIGHT" },
+  { "X", "MULTIACTIONBAR3BUTTON5" }, { "Z", "MULTIACTIONBAR3BUTTON6" }, { "1", "ACTIONBUTTON2" },
+  { "2", "ACTIONBUTTON3" }, { "3", "ACTIONBUTTON4" }, { "4", "ACTIONBUTTON5" }, { "5", "ACTIONBUTTON6" },
+  { "6", "NONE" }, { "7", "NONE" }, { "8", "NONE" }, { "9", "NONE" }, { "0", "NONE" }, { "-", "NONE" },
+  { "=", "NONE" }, { "CTRL-1", "MULTIACTIONBAR1BUTTON2" }, { "CTRL-2", "MULTIACTIONBAR1BUTTON3" },
+  { "CTRL-3", "MULTIACTIONBAR1BUTTON4" }, { "CTRL-4", "MULTIACTIONBAR1BUTTON5" },
+  { "CTRL-5", "MULTIACTIONBAR1BUTTON6" }, { "SHIFT-1", "NONE" }, { "SHIFT-2", "NONE" }, { "SHIFT-3", "NONE" },
+  { "SHIFT-4", "NONE" }, { "SHIFT-5", "NONE" }, { "SHIFT-6", "NONE" }, { "F1", "MULTIACTIONBAR4BUTTON1" },
+  { "F2", "MULTIACTIONBAR4BUTTON2" }, { "F3", "MULTIACTIONBAR4BUTTON3" }, { "F4", "MULTIACTIONBAR4BUTTON4" },
+  { "G", "TOGGLEPINGLISTENER" }, { "F", "ACTIONBUTTON8" }, { "B", "OPENALLBAGS" }, { "SHIFT-B", "NONE" },
+  { "MOUSEWHEELUP", "ACTIONBUTTON9" }, { "MOUSEWHEELDOWN", "MULTIACTIONBAR1BUTTON9" },
+  { "CTRL-MOUSEWHEELUP", "CAMERAZOOMIN" }, { "CTRL-MOUSEWHEELDOWN", "CAMERAZOOMOUT" },
+  { "BUTTON5", "ACTIONBUTTON10" }, { "CAPSLOCK", "ACTIONBUTTON7" }, { "ALT-E", "MULTIACTIONBAR1BUTTON12" },
+  { "ALT-Q", "MULTIACTIONBAR1BUTTON11" }, { "ALT-BUTTON5", "MULTIACTIONBAR1BUTTON10" },
+  { "CTRL-F", "MULTIACTIONBAR1BUTTON8" }, { "ALT-1", "MULTIACTIONBAR5BUTTON2" },
+  { "ALT-2", "MULTIACTIONBAR5BUTTON3" }, { "ALT-3", "NONE" }, { "ALT-4", "NONE" },
+  { "ALT-MOUSEWHEELUP", "BONUSACTIONBUTTON1" }, { "ALT-MOUSEWHEELDOWN", "BONUSACTIONBUTTON2" },
+  { "|", "ACTIONBUTTON1" }, { "CTRL-|", "MULTIACTIONBAR1BUTTON1" }, { ";", "QUESTIE_TOGGLE_JOURNEY" },
+}
 
 Setup.LIST = {
   hunter = {
@@ -67,9 +92,9 @@ Setup.LIST = {
   },
   druid = {
     key = "druid", class = "DRUID", layout = "Warrior/Druid", bars = { 2, 3, 4, 5, 6 }, autoLoot = true,
-    raidFrames = true, clearAll = true,
+    raidFrames = true, clearAll = true, bindings = DRUID_BINDINGS, bindingsName = "Druid",
     place = withCommon({
-      { bar = 1, button = 2, general = { "Attack" }, label = "Attack" },
+      { bar = 1, button = 2, general = { "atk", "Attack" }, label = "atk" },
       { bar = 1, button = 8, id = "DRUID/HTouch" },
       { bar = 1, button = 9, id = "DRUID/Regrowth" },
       { bar = 1, button = 10, id = "DRUID/Rejuv" },
@@ -138,6 +163,7 @@ function Setup.Describe(def)
   local lines = { L.SETUP_STEP_BARS:format(table.concat(def.bars, ", ")) }
   if def.autoLoot then lines[#lines + 1] = L.SETUP_STEP_LOOT end
   if def.layout then lines[#lines + 1] = L.SETUP_STEP_LAYOUT:format(def.layout) end
+  if def.bindings then lines[#lines + 1] = L.SETUP_STEP_BINDINGS:format(def.bindingsName or def.key) end
   if def.raidFrames then lines[#lines + 1] = L.SETUP_STEP_RAID end
   if def.clearAll then lines[#lines + 1] = L.SETUP_STEP_CLEAR end
   lines[#lines + 1] = L.SETUP_STEP_MACROS:format(#def.place)
@@ -267,6 +293,27 @@ local function keyNote(row)
   return L.SETUP_KEY_DIFFERS:format(row.bar, row.button, row.key, tostring(k1 or "-"))
 end
 
+-- Key bindings: the game keeps the bindings in memory and SaveBindings(set) writes them to the account's set (1) or this
+-- character's (2) and makes that one the active set, which is what ticking "Character Specific Key Bindings" does. Out of combat
+-- only. Undo puts the old commands back and returns to the old set.
+function Setup.ApplyBindings(def, undo)
+  if not (_G.SetBinding and _G.SaveBindings and _G.GetBindingAction) then return say(L.SETUP_BINDINGS_FAILED) end
+  local current = _G.GetCurrentBindingSet and _G.GetCurrentBindingSet() or 1
+  local old = {}
+  for _, b in ipairs(def.bindings) do
+    old[#old + 1] = { b[1], _G.GetBindingAction(b[1]) or "" }
+  end
+  local n = 0
+  for _, b in ipairs(def.bindings) do
+    local ok
+    if b[2] == "NONE" then ok = _G.SetBinding(b[1]) else ok = _G.SetBinding(b[1], b[2]) end
+    if ok ~= false then n = n + 1 end
+  end
+  _G.SaveBindings(2)
+  undo.bindings = { set = current, old = old }
+  say(L.SETUP_DONE_BINDINGS:format(n))
+end
+
 function Setup.Execute(def)
   local undo = { time = _G.time and _G.time() or 0, slots = {}, cleared = {}, setup = def.key }
   -- 1. bars and auto loot
@@ -300,6 +347,8 @@ function Setup.Execute(def)
       say(ok and L.SETUP_DONE_LAYOUT:format(def.layout) or L.SETUP_LAYOUT_FAILED:format(def.layout))
     end
   end
+  -- 2b. key bindings, for this character only
+  if def.bindings then Setup.ApplyBindings(def, undo) end
   -- Every button on the main bar and Action Bars 2 to 8 is emptied first (spells are put back by Undo).
   if def.clearAll and not R2F.InCombat() then
     local n = 0
@@ -411,6 +460,12 @@ function Setup.Undo()
   if u.layout and _G.C_EditMode then
     local _, active = Setup.Layouts()
     if active ~= u.layout then pcall(_G.C_EditMode.SetActiveLayout, u.layout) end
+  end
+  if u.bindings and _G.SetBinding and _G.SaveBindings then
+    for _, b in ipairs(u.bindings.old) do
+      if b[2] == "" then _G.SetBinding(b[1]) else _G.SetBinding(b[1], b[2]) end
+    end
+    _G.SaveBindings(u.bindings.set or 1)
   end
   local cleared = 0
   for _, s in ipairs(u.slots or {}) do

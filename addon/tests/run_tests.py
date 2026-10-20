@@ -8892,7 +8892,7 @@ def test_setup():
     want = {3: "Raptor+Clip", 66: "AutoShot", 65: "Serpent", 63: "PetAtkMOTT", 69: "PetFollow", 38: "AspMonkey", 39: "AspHawk"}
     for slot, name in want.items():
         check(lua.eval("ACTIONS[%d] ~= nil and ACTIONS[%d].text" % (slot, slot)) == name, "setup: slot %d holds the macro %s" % (slot, name))
-    check("macros placed" in chat_all(lua), "setup: the chat says how many macros were placed")
+    check("placed (macros" in chat_all(lua), "setup: the chat says how many buttons were filled")
     check("should be on the key" not in chat_all(lua), "setup: no key warning when the keys are as listed")
     # Undo puts everything back.
     lua.execute("R2F.Setup.Undo()")
@@ -8917,6 +8917,51 @@ def test_setup():
     lua.execute("R2F.Setup.Undo()")
     check("should be on the key E" in chat_all(lua), "setup: a key that differs is reported, not changed")
     check("no Edit Mode layout called" in chat_all(lua), "setup: a missing layout is reported")
+    # Setup Druid, and the spell / item / General macro rows both setups share.
+    lua.execute("""
+      TEST.chat = {} R2F.playerClass = 'DRUID' ACTIONS = {} TEST.cursor = nil
+      R2F.Ranks.Book = function() return { ['walk on air'] = { ids = { 1001 } }, ['read ley line'] = { ids = { 1002 } },
+                                           ['teleport: moonglade'] = { ids = { 1003 } } } end
+      GetActionInfo = function(s) local a = ACTIONS[s] if a then return a.kind, a.id or 1 end end
+      GetCursorInfo = function() if TEST.cursor then return 'macro', 1 end return TEST.ckind, TEST.cid end
+      ClearCursor = function() TEST.cursor = nil TEST.ckind = nil TEST.cid = nil TEST.ctext = nil end
+      PlaceAction = function(s)
+        if TEST.cursor then ACTIONS[s] = { kind = 'macro', text = TEST.cursor } TEST.cursor = nil
+        elseif TEST.ckind then ACTIONS[s] = { kind = TEST.ckind, id = TEST.cid, text = TEST.ctext } ClearCursor() end
+      end
+      PickupAction = function(s) local a = ACTIONS[s] if a then TEST.ckind, TEST.cid, TEST.ctext = a.kind, a.id, a.text ACTIONS[s] = nil end end
+      PickupSpell = function(id) TEST.ckind = 'spell' TEST.cid = id end
+      PickupItem = function(id) TEST.ckind = 'item' TEST.cid = id end
+      GetItemCount = function(id) return id == 6948 and 1 or 0 end
+      TEST.addMacro('Sit', '/sit') TEST.addMacro('Mark1', '/m1') TEST.addMacro('Mark2', '/m2')
+      TEST.classToken = 'DRUID'
+    """)
+    for k in ("HTouch", "Regrowth", "Rejuv", "Moonfire", "Wrath", "CatBear", "MotW", "Thorns"):
+        check(lua.eval("R2F.Library.Get('DRUID/%s') ~= nil" % k) is True, "setup druid: the library has the macro DRUID/%s" % k)
+    check(lua.eval("R2F.Setup.LIST.druid.layout") == "Warrior/Druid" and lua.eval("#R2F.Setup.LIST.druid.bars") == 5,
+          "setup druid: the Warrior/Druid layout and Action Bars 2 to 6")
+    lua.execute("R2F.Setup.Execute(R2F.Setup.LIST.druid) RUNTIMERS()")
+    macros = {8: "HTouch", 9: "Regrowth", 10: "Rejuv", 11: "Moonfire", 12: "Wrath", 29: "CatBear", 40: "MotW", 39: "Thorns",
+              145: "Sit", 146: "Mark1", 147: "Mark2"}
+    for slot, name in macros.items():
+        check(lua.eval("ACTIONS[%d] ~= nil and ACTIONS[%d].kind == 'macro' and ACTIONS[%d].text" % (slot, slot, slot)) == name,
+              "setup druid: slot %d holds the macro %s" % (slot, name))
+    spells = {67: 1001, 70: 1002, 52: 1003}
+    for slot, sid in spells.items():
+        check(lua.eval("ACTIONS[%d] ~= nil and ACTIONS[%d].kind == 'spell' and ACTIONS[%d].id" % (slot, slot, slot)) == sid,
+              "setup druid: slot %d holds the spell %d" % (slot, sid))
+    check(lua.eval("ACTIONS[155] ~= nil and ACTIONS[155].kind == 'item' and ACTIONS[155].id") == 6948,
+          "setup druid: the Hearthstone is on bar 6 button 11")
+    check(lua.eval("ACTIONS[2]") is None and "Attack" in chat_all(lua),
+          "setup druid: a General macro that is not there (Attack) is reported, the button left empty")
+    lua.execute("R2F.Setup.Undo()")
+    check(lua.eval("next(ACTIONS)") is None, "setup druid: undo empties the macros, spells and the item it placed")
+    # The hunter gets the same racials, Hearthstone and General macros.
+    lua.execute("TEST.chat = {} TEST.classToken = 'HUNTER' R2F.playerClass = 'HUNTER' R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()")
+    check(lua.eval("ACTIONS[67] ~= nil and ACTIONS[67].id") == 1001 and lua.eval("ACTIONS[70] ~= nil and ACTIONS[70].id") == 1002
+          and lua.eval("ACTIONS[155] ~= nil and ACTIONS[155].id") == 6948 and lua.eval("ACTIONS[146] ~= nil and ACTIONS[146].text") == "Mark1",
+          "setup hunter: Walk on Air, Read Ley Line, the Hearthstone and Mark1 are on the same buttons")
+    lua.execute("R2F.Setup.Undo() R2F.playerClass = 'HUNTER'")
     # Combat and class guards.
     lua.execute("TEST.chat = {} R2F.inCombat = true R2F.Setup.Run('hunter') R2F.inCombat = false")
     check("not in combat" in chat_all(lua), "setup: nothing runs in combat")

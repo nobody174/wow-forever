@@ -1785,6 +1785,11 @@ CHANGELOG); entries from 0.54.0 on are written here again.
 ## 0.66.3 (2026-10-16): guided talent mode removed
 - Deleted UI/TalentGuide.lua (the glow over Blizzard's talent button) and the guided mode in Talents.lua / TalentPanel.lua / Locale.lua / Core.lua (owner's yes; last present in r2f-v0.66.2). `Talents.LearnMode()` returns "none" where it returned "guided" (no write API, or the session saw a write blocked): Learn talents then only prints `TALENT_UNAVAILABLE` (spend the points in Blizzard's window, /reload tries again), no popup, nothing written; a resumed run whose mode turned "none" stops with the same line. "staged" stops are no longer resumable. The note line on the Talents tab and the TALENT_GUIDE_* / TALENT_CONFIRM_GUIDED lines are gone. Direct, traits and preview learning untouched. Tests: the guided block became "learning off" checks; the source test checks the file and its TOC line are gone (24519 checks pass).
 
+## 0.77.0 (2026-10-21): Setup Druid
+
+- **"Setup Druid"** (minimap menu, or `/r2f setup druid`): the same one-click setup as the Hunter's (Action Bars 2 to 6, auto loot, raid frame options, the Edit Mode layout "Warrior/Druid", every button emptied first), with the Druid's buttons. Main bar: Attack (your own General macro) 2, Healing Touch 8, Regrowth 9, Rejuvenation 10, Moonfire 11, Wrath 12. Bar 3: the Teleport: Moonglade spell on button 4. Bar 4: Cat / Bear Form on 5. Bar 5: Thorns 3, Mark of the Wild 4.
+- **Both setups (Hunter and Druid) now also place:** the racial spells Walk on Air (bar 2 button 7) and Read Ley Line (bar 2 button 10), taken from your spellbook; the Hearthstone from your bags (bar 6 button 11); and your own General macros Sit, Mark1 and Mark2 (bar 6 buttons 1, 2 and 3), found by name. Anything not found (not learned yet, not in your bags, no General macro of that name) is listed in the chat and its button left empty. "Undo last setup" empties these buttons too.
+
 ## 0.76.4 (2026-10-20): Theme test fixes, round 4
 
 - **Setup Hunter's reload button** now opens the chat line with `/reload` ready: press Enter. Calling the reload from our button after the setup was blocked by the game, so this uses the game's own chat code instead (the window's Reload UI button was never affected).

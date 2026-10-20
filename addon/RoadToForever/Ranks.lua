@@ -110,6 +110,9 @@ local function scanSpellbook()
   return found
 end
 
+-- The spellbook by lower-case name (also used by Setup.lua): { rank, ids }.
+function Ranks.Book() return scanSpellbook() end
+
 -- "Charge(Rank 2)" -> "Charge", 2.   "Charge" -> "Charge", nil.
 local function parseName(name)
   local base, rank = name:match("^(.-)%s*%(%s*[Rr]ank%s+(%d+)%s*%)$")

@@ -26,14 +26,36 @@ function Setup.Slot(bar, button)
   return BAR_FIRST[bar] + button - 1
 end
 
--- The setups. `place` rows: bar (1 = the main bar), button, the macro's library id, and optionally `key` (the key that should be
--- on that button). Hunter: Raptor + Wing Clip on button 3 of the main bar, Auto Shot / Serpent Sting / pet attack / pet follow on
--- bar 2, the two Aspects on bar 5. Macros of spells you have not learned yet show a ? until you learn them.
+-- The setups. `place` rows: bar (1 = the main bar), button, WHAT goes there, and optionally `key` (the key that should be on that
+-- button). What is one of:
+--   id = "HUNTER/AutoShot"        one of our macros (the library id); macros of spells you have not learned yet show a ?
+--   spell = { "Walk on Air" }     a spell of your spellbook by name, and/or match = { "ley%s*line" } (lower-case patterns)
+--   item = 6948                   an item from your bags (6948 = Hearthstone)
+--   general = { "Mark1" }         one of your own macros of the game's General tab, by name (any capitals)
+-- `label` names it in the chat report.
+-- Hunter: Raptor + Wing Clip on button 3 of the main bar, Auto Shot / Serpent Sting / pet attack / pet follow on bar 2, the two
+-- Aspects on bar 5. Druid: the caster and healing macros on the main bar, Cat / Bear form on bar 4, the buffs on bar 5, the
+-- Moonglade teleport on bar 3. Both: the Skyborne racials on bar 2, the Hearthstone and the General macros on bar 6.
+local COMMON = {
+  { bar = 2, button = 7, spell = { "Walk on Air" }, label = "Walk on Air" },
+  { bar = 2, button = 10, spell = { "Read Ley Line", "Read Layline" }, match = { "ley%s*line", "lay%s*line" },
+    label = "Read Ley Line" },
+  { bar = 6, button = 1, general = { "Sit" }, label = "Sit" },
+  { bar = 6, button = 2, general = { "Mark1" }, label = "Mark1" },
+  { bar = 6, button = 3, general = { "Mark2" }, label = "Mark2" },
+  { bar = 6, button = 11, item = 6948, label = "Hearthstone" },
+}
+
+local function withCommon(rows)
+  for _, row in ipairs(COMMON) do rows[#rows + 1] = row end
+  return rows
+end
+
 Setup.LIST = {
   hunter = {
     key = "hunter", class = "HUNTER", layout = "Hunter", bars = { 2, 3, 4, 5, 6 }, autoLoot = true,
     raidFrames = true, clearAll = true,
-    place = {
+    place = withCommon({
       { bar = 1, button = 3, id = "HUNTER/Raptor+Clip", key = "2" },
       { bar = 2, button = 6, id = "HUNTER/AutoShot", key = "E" },
       { bar = 2, button = 5, id = "HUNTER/Serpent", key = "Q" },
@@ -41,7 +63,23 @@ Setup.LIST = {
       { bar = 2, button = 9, id = "HUNTER/PetFollow" },
       { bar = 5, button = 2, id = "HUNTER/AspMonkey" },
       { bar = 5, button = 3, id = "HUNTER/AspHawk" },
-    },
+    }),
+  },
+  druid = {
+    key = "druid", class = "DRUID", layout = "Warrior/Druid", bars = { 2, 3, 4, 5, 6 }, autoLoot = true,
+    raidFrames = true, clearAll = true,
+    place = withCommon({
+      { bar = 1, button = 2, general = { "Attack" }, label = "Attack" },
+      { bar = 1, button = 8, id = "DRUID/HTouch" },
+      { bar = 1, button = 9, id = "DRUID/Regrowth" },
+      { bar = 1, button = 10, id = "DRUID/Rejuv" },
+      { bar = 1, button = 11, id = "DRUID/Moonfire" },
+      { bar = 1, button = 12, id = "DRUID/Wrath" },
+      { bar = 3, button = 4, spell = { "Teleport: Moonglade" }, label = "Teleport: Moonglade" },
+      { bar = 4, button = 5, id = "DRUID/CatBear" },
+      { bar = 5, button = 3, id = "DRUID/Thorns" },
+      { bar = 5, button = 4, id = "DRUID/MotW" },
+    }),
   },
 }
 
@@ -106,20 +144,89 @@ function Setup.Describe(def)
   return lines
 end
 
-local function slotHolds(slot, e)
-  local kind = _G.GetActionInfo(slot)
+-- Finding what a row wants. Each returns a `what` table { kind = "macro" | "spell" | "item", id / name, pickup } or nil.
+local function lowerSet(list)
+  local set = {}
+  for _, n in ipairs(list or {}) do set[n:lower()] = true end
+  return set
+end
+
+-- A spell of the spellbook: by exact name first, then by pattern.
+function Setup.FindSpell(row, book)
+  book = book or (R2F.Ranks and R2F.Ranks.Book and R2F.Ranks.Book()) or {}
+  for _, n in ipairs(row.spell or {}) do
+    local e = book[n:lower()]
+    if e and e.ids and e.ids[1] then return e.ids[1], n end
+  end
+  for name, e in pairs(book) do
+    for _, pat in ipairs(row.match or {}) do
+      if name:find(pat) and e.ids and e.ids[1] then return e.ids[1], name end
+    end
+  end
+  return nil
+end
+
+-- One of your own macros on the game's General tab (account macros come first in the game's list).
+function Setup.FindGeneral(row)
+  if not _G.GetNumMacros then return nil end
+  local want = lowerSet(row.general)
+  local nAccount = _G.GetNumMacros()
+  for i = 1, nAccount or 0 do
+    local name = _G.GetMacroInfo(i)
+    if name and want[name:lower()] then return i, name end
+  end
+  return nil
+end
+
+local function itemCount(id)
+  local get = (_G.C_Item and _G.C_Item.GetItemCount) or _G.GetItemCount
+  return get and get(id) or 0
+end
+
+local function resolve(row, ctx)
+  if row.id then
+    local e = R2F.Library.Get(row.id)
+    if not e then return nil end
+    return { kind = "macro", name = e.short, pickup = function() return R2F.Macros.Ensure(row.id) end }
+  end
+  if row.spell or row.match then
+    ctx.book = ctx.book or (R2F.Ranks and R2F.Ranks.Book and R2F.Ranks.Book()) or {}
+    local id = Setup.FindSpell(row, ctx.book)
+    if not id then return nil end
+    local pick = (_G.C_Spell and _G.C_Spell.PickupSpell) or _G.PickupSpell
+    if not pick then return nil end
+    return { kind = "spell", id = id, name = row.label, pickup = function() pick(id) return true end }
+  end
+  if row.item then
+    if itemCount(row.item) <= 0 then return nil end
+    local pick = (_G.C_Item and _G.C_Item.PickupItem) or _G.PickupItem
+    if not pick then return nil end
+    return { kind = "item", id = row.item, name = row.label, pickup = function() pick(row.item) return true end }
+  end
+  if row.general then
+    local index, name = Setup.FindGeneral(row)
+    if not index or not _G.PickupMacro then return nil end
+    return { kind = "macro", name = name, pickup = function() _G.PickupMacro(index) return true end }
+  end
+  return nil
+end
+
+local function slotHolds(slot, what)
+  local kind, id = _G.GetActionInfo(slot)
   if not kind then return "empty" end
-  if kind == "macro" and e and _G.GetActionText and _G.GetActionText(slot) == e.short then return "ours" end
+  if what and kind == what.kind then
+    if kind == "macro" and _G.GetActionText and _G.GetActionText(slot) == what.name then return "ours" end
+    if kind ~= "macro" and id == what.id then return "ours" end
+  end
   return "other"
 end
 
--- Puts one of our macros on one button. Calls done(result): "placed", "ours" (already there), "occupied", "missing"
--- or "failed".
-local function placeOne(row, undo, done)
+-- Puts one thing on one button. Calls done(result): "placed", "ours" (already there), "occupied", "missing" or "failed".
+local function placeOne(row, undo, ctx, done)
   local slot = Setup.Slot(row.bar, row.button)
-  local e = R2F.Library.Get(row.id)
-  if not e then return done("missing") end
-  local held = slotHolds(slot, e)
+  local what = resolve(row, ctx)
+  if not what then return done("missing") end
+  local held = slotHolds(slot, what)
   if held == "ours" then return done("ours") end
   if held == "other" then
     -- A spell on the button (a starting spell) is lifted off and put back by Undo; anything else stays.
@@ -130,16 +237,16 @@ local function placeOne(row, undo, done)
     if _G.GetActionInfo(slot) then return done("occupied") end
     undo.cleared[#undo.cleared + 1] = { slot = slot, spell = id }
   end
-  if not R2F.Macros.Ensure(row.id) then return done("failed") end
-  -- The macro is on the cursor (a new one a frame later): wait for it, then drop it on the button.
+  if not what.pickup() then return done("failed") end
+  -- The thing is on the cursor (a new macro a frame later): wait for it, then drop it on the button.
   local tries = 0
   local function step()
     tries = tries + 1
-    if _G.GetCursorInfo() == "macro" then
+    if _G.GetCursorInfo() == what.kind then
       _G.PlaceAction(slot)
       _G.ClearCursor()
-      if slotHolds(slot, e) == "ours" then
-        undo.slots[#undo.slots + 1] = { slot = slot, name = e.short }
+      if slotHolds(slot, what) == "ours" then
+        undo.slots[#undo.slots + 1] = { slot = slot, name = what.name, kind = what.kind }
         return done("placed")
       end
       return done("failed")
@@ -212,6 +319,7 @@ function Setup.Execute(def)
   db().setupUndo = undo
   -- 3. the macros, one button at a time after the layout has had a moment to apply
   local results = { placed = 0, ours = 0, occupied = {}, missing = {}, failed = {} }
+  local ctx = {}
   local i = 0
   local function nextRow()
     i = i + 1
@@ -221,11 +329,11 @@ function Setup.Execute(def)
       say(L.SETUP_STOPPED_COMBAT)
       return Setup.Finish(def, results)
     end
-    placeOne(row, undo, function(r)
+    placeOne(row, undo, ctx, function(r)
       if r == "placed" or r == "ours" then
         results[r] = results[r] + 1
       else
-        results[r][#results[r] + 1] = ("bar %d button %d"):format(row.bar, row.button)
+        results[r][#results[r] + 1] = ("bar %d button %d (%s)"):format(row.bar, row.button, row.label or row.id or "?")
       end
       _G.C_Timer.After(0.1, nextRow)
     end)
@@ -306,8 +414,10 @@ function Setup.Undo()
   end
   local cleared = 0
   for _, s in ipairs(u.slots or {}) do
-    -- only a button that still holds the macro we put there
-    if _G.GetActionInfo(s.slot) == "macro" and _G.GetActionText and _G.GetActionText(s.slot) == s.name then
+    -- only a button that still holds what we put there (a macro by name; a spell or an item by its kind)
+    local held = _G.GetActionInfo(s.slot)
+    local kind = s.kind or "macro"
+    if held == kind and (kind ~= "macro" or (_G.GetActionText and _G.GetActionText(s.slot) == s.name)) then
       _G.PickupAction(s.slot)
       _G.ClearCursor()
       cleared = cleared + 1

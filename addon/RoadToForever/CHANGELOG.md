@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.77.0 (2026-10-21)
+
+- **"Setup Druid"** (minimap menu, or `/r2f setup druid`): the same one-click setup as the Hunter's (Action Bars 2 to 6, auto loot, raid frame options, the Edit Mode layout "Warrior/Druid", every button emptied first), with the Druid's buttons. Main bar: Attack (your own General macro) 2, Healing Touch 8, Regrowth 9, Rejuvenation 10, Moonfire 11, Wrath 12. Bar 3: the Teleport: Moonglade spell on button 4. Bar 4: Cat / Bear Form on 5. Bar 5: Thorns 3, Mark of the Wild 4.
+- **Both setups (Hunter and Druid) now also place:** the racial spells Walk on Air (bar 2 button 7) and Read Ley Line (bar 2 button 10), taken from your spellbook; the Hearthstone from your bags (bar 6 button 11); and your own General macros Sit, Mark1 and Mark2 (bar 6 buttons 1, 2 and 3), found by name. Anything not found (not learned yet, not in your bags, no General macro of that name) is listed in the chat and its button left empty. "Undo last setup" empties these buttons too.
+
 ## 0.76.4 (2026-10-20)
 
 - **Setup Hunter's reload button** now opens the chat line with `/reload` ready: press Enter. Calling the reload from our button after the setup was blocked by the game, so this uses the game's own chat code instead (the window's Reload UI button was never affected).

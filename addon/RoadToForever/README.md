@@ -11,28 +11,55 @@ Made by nobody174. All Rights Reserved (see `LICENSE`).
 
 Open it with `/r2f` (or the minimap button). It has six pages:
 
-- **Home**: the next step of your launch plan, a share card for your professions, and the
-  quick settings (game options, minimap button, movable bags).
+- **Home**: the countdown to launch, the next step of your launch plan, what to train next,
+  a share card for your professions, and the quick settings (a few game options, the minimap
+  button). The **Theme** button opens the "Choose a look" gallery (see Looks below).
+- **Launch plan**: the launch-day checklist from the site, with tick boxes. Each step can
+  point the built-in arrow (BiZNav) at its spot; `/bizway` and Alt + right-click on the world
+  map do the same for any spot. A **Quest shopping list** button swaps the steps for the
+  quests whose items you can buy instead of farm, with a tick box for each.
+- **Builds & talents**: a talent calculator for every class. Click freely without spending
+  anything, pick any class by its icon (try your friend's Warrior while you play a Priest),
+  save the build, share it with teammates who also have the addon, start from our
+  recommended Tank / DPS / Healer builds, and, only on your own class after a trainer reset,
+  learn it one point at a time. A confirmation comes first, and it never learns in combat.
+- **Gear (Mr.BiZ)**: best in slot gear for every class and spec, with where it drops, how
+  sure the source is, and a per-character wishlist.
 - **Macros**: a spellbook-style book of every macro on the site, built into the addon. Drag
   one to your bars to create the real game macro. New addon versions update the macros the
   addon made, but never one you edited yourself. The Options button holds which slots new
   macros use, Import (for a custom pick from the site) and Remove all.
-- **Talents**: a talent calculator for every class. Click freely without spending anything,
-  pick any class by its icon (try your friend's Warrior while you play a Priest), save the
-  build, share it with teammates who also have the addon, start from our recommended Tank /
-  DPS / Healer builds, and, only on your own class after a trainer reset, learn it one point
-  at a time. A confirmation comes first, and it never learns in combat.
-- **Plan**: the launch-day checklist from the site, with tick boxes. Each step can point
-  the built-in arrow (BiZNav) at its spot; `/bizway` and Alt + right-click on the world map
-  do the same for any spot. A **Quest shopping list** button swaps the steps for the quests whose items
-  you can buy instead of farm, with a tick box for each.
-- **BiS (Mr.BiZ)**: best in slot gear for every class and spec at level 30, with where it
-  drops, how sure the source is, and a per-character wishlist.
-- **Tweaks**: small optional helpers, all **off until you tick them**: auto-repair, sell
-  grey items, quest auto-accept and turn-in, fast looting, free bag slots, a copy-chat box,
-  an "ability ready" alert, and on-screen icons and reminders
+- **Tweaks**: small optional helpers, grouped on seven pages (Quests, Vendors & loot,
+  Chat & screen, Bags, Alerts, Waypoint arrow, Class icons), all **off until you tick them**:
+  auto-repair, sell grey items, quest auto-accept and turn-in, fast looting, free bag slots,
+  movable bags, a copy-chat box, an "ability ready" alert, and on-screen icons and reminders
   (Warrior stance, Hunter ammo, pet, gear repair, rested XP, missing tracking, missing group
-  buffs, Seal and Slice and Dice timers, food).
+  buffs, Walk on Air, Seal and Slice and Dice timers, food, a combat banner).
+
+### Looks
+
+Seven looks for the window: Classic (the original), Azeroth Reforged, Obsidian Night,
+Ember & Iron, Frost & Void, Scribe's Tome and Gnomish Workshop. The Theme button on Home opens
+a gallery: click a card to try that look on your window, then **Keep this look** or
+**Revert** (it also goes back by itself after eight seconds). "Surprise me" tries a random one.
+The size and opacity of the window are set at the top (or in the sidebar, in Ember & Iron).
+
+### Setup Hunter / Setup Druid
+
+On a fresh Hunter or Druid, the minimap button's menu has **Setup Hunter** / **Setup Druid**
+(or `/r2f setup hunter` / `/r2f setup druid`). It first lists what it will do and asks. Then it
+turns Action Bars 2 to 6 and auto loot on, turns on the raid frame options (class colours,
+power bars, pets), switches to your saved Edit Mode layout of that class's name ("Hunter",
+"Warrior/Druid"), empties every action button and puts the macros, spells and items on their
+buttons. The Druid setup also sets the Druid's key bindings, for that character only.
+**Undo last setup** is on the same menu. It needs your own Edit Mode layout to exist; the
+button lists are the owner's own and are meant for his characters.
+
+### The recorder
+
+On by default, it writes down in your own saved variables what loot windows, vendors and quest
+reward windows showed (`/r2f record` says how much; `/r2f record off` stops it). It is for
+building Mr.BiZ's own item database. Nothing is sent anywhere unless you send the file yourself.
 
 It also keeps spell ranks right in the macros it makes: on WoW Forever a plain spell name can
 resolve to a rank you haven't learned, so the addon writes in the highest rank you know.
@@ -46,15 +73,16 @@ everything moves between the site and the game by copy and paste.
 
 **One thing it sends:** by default it tells your guild and group, through the game's
 addon-message channel, which addon version you run (one short line, shown to nobody; it is how
-`/r2f update` can tell you a newer version exists). It sends nothing else about you.
+`/r2f update` can tell you a newer version exists, and you can turn it off in Tweaks > Chat &
+screen). It sends nothing else about you.
 
 ## Getting started
 
 1. On the site, tick macros in **Export macros** and copy the import string. In game, type
    `/r2f import` and paste it.
-2. For talents: open the **Talents** tab and click a build together (or paste a link from
-   the site's calculator and press **Load**). **Save loadout**, **Share** it, or **Learn this
-   build** (your own class, after a trainer reset).
+2. For talents: open the **Builds & talents** tab and click a build together (or paste a link
+   from the site's calculator and press **Load**). **Save loadout**, **Share** it, or **Learn
+   this build** (your own class, after a trainer reset).
 3. `/r2f copybuild` copies your current talents as a link for the site.
 4. Open each profession window once, then `/r2f profs` copies your recipes for the site's
    Professions page.
@@ -63,9 +91,9 @@ addon-message channel, which addon version you run (one short line, shown to nob
 
 | Command | What it does |
 | --- | --- |
-| `/r2f` | open or close the window |
+| `/r2f` | open or close the window (`/r2f open` only opens it) |
 | `/bizway <x> <y> [label]`, `/r2f way`, `/r2f clear` | point the arrow at a spot; clear it (`/bizway size large` resizes) |
-| `/r2f macros`, `/r2f talents` (`/r2ft`), `/r2f plan`, `/r2f gameplay`, `/r2f settings` | open that tab |
+| `/r2f macros`, `/r2f talents` (`/r2ft`), `/r2f plan`, `/r2f gameplay`, `/r2f settings` | open that tab (`gameplay` = Tweaks, `settings` = Home) |
 | `/biz`, `/mrbiz`, `/r2f bis` | best in slot (`/biz wish` opens the wishlist) |
 | `/r2f import` | paste a macro import string from the site |
 | `/r2f copybuild` | your talents as a link for the site |
@@ -73,17 +101,30 @@ addon-message channel, which addon version you run (one short line, shown to nob
 | `/r2f copychat [window]` | a box with chat text you can select and copy |
 | `/r2f stance`, `/r2f ammo`, `/r2f repair`, `/r2f pet`, `/r2f rested` | show or hide that icon (add `lock` to lock it, except rested) |
 | `/r2f reminders` | the reminders settings |
+| `/r2f setup hunter`, `/r2f setup druid`, `/r2f setup undo` | the one-click setups and taking the last one back |
+| `/r2f record`, `/r2f record on` / `off` | what the recorder has seen; switch it |
 | `/r2f update` | is there a newer version (as heard from guild and group) |
 | `/r2f minimap` | show or hide the minimap button |
 | `/r2f debug` | troubleshooting tools; paste what they print into a report |
 | `/r2f help` | this list in game |
 
-## Safe to use
+## What it changes in your game
 
-The addon mostly creates its own frames and reads game data. It touches Blizzard's interface
-in two small, optional ways: it can move the bag windows (Home settings) and can filter the
-red error text in the middle of the screen (Tweaks). Anything that writes (making macros, learning talents) waits until you are out of
-combat. Learning talents is the one action that can't be undone, so it always asks first.
+Most of the addon creates its own frames and reads game data. It writes to the game only in
+these ways, each one something a player would do by hand:
+
+- **Macros** you drag out of the book are created as real game macros, and **Setup** places
+  macros, spells and items on your action buttons.
+- **Quick settings** on Home and some Tweaks change game settings (camera zoom, guild names,
+  PvP titles, the 24-hour clock, weather) the same way the game's own options do.
+- **Setup** also switches action bars and auto loot on, picks your Edit Mode layout, turns on
+  the raid frame options and, for the Druid, sets key bindings. It asks first and lists the steps;
+  "Undo last setup" puts it back.
+- It can move the bag windows (Tweaks > Bags) and filter the red error text in the middle of
+  the screen (Tweaks > Chat & screen).
+
+Anything that writes waits until you are out of combat. Learning talents is the one action
+that can't be undone, so it always asks first.
 
 ## Problems and feedback
 
@@ -97,5 +138,9 @@ your report. `/r2f copychat` is handy for copying Lua errors out of chat.
 ## Credits
 
 Best in slot data comes from [ForeverDB](https://foreverdb.net/) and Wowhead; the addon
-shows the source next to each pick. The quest-reward weapons on the Plan tab (and the
+shows the source next to each pick. The quest-reward weapons on the Launch plan tab (and the
 item rarity colours) come from [Wowhead](https://www.wowhead.com/forever)'s Forever item data.
+
+The window looks use free fonts bundled with the addon (each with its licence file in
+`media/fonts`): Cinzel, Alegreya Sans, Barlow, Barlow Condensed, Chakra Petch, Space Grotesk,
+JetBrains Mono, Sora, Cormorant Garamond, Baloo 2 and Nunito.

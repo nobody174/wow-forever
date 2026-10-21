@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.77.2 (2026-10-21)
+
+- **Setup Hunter / Setup Druid are now only offered to characters that have the matching Edit Mode layout saved** ("Hunter", "Warrior/Druid"). Everyone else sees no menu entry and no help lines for them, and `/r2f setup` just says the layout is missing. They are the owner's personal shortcuts; the README no longer describes them.
+
 ## 0.77.1 (2026-10-21)
 
 - **Setup Druid sets the Druid's key bindings, for this character only.** The Warrior / Druid layout has its own bars (forms), so its keys differ from the account's: Q, E, F, CapsLock, the mouse wheel, Ctrl-1 to 5 and the rest now point at the Druid's buttons (59 bindings, taken from your Druid's own bindings file). It turns on "Character Specific Key Bindings" for that character, so your other characters keep the account keys. "Undo last setup" puts the old keys back.

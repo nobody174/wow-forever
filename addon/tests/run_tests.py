@@ -4466,7 +4466,7 @@ def test_step6_ui(templates, fx):
     slash("minimap")
     T.chat = lua.table()
     slash("help")
-    help_lines = lua_table_to_list(L.HELP_LINES)
+    help_lines = [h for h in lua_table_to_list(L.HELP_LINES) if not h.startswith("/r2f setup")]   # shown only where a setup is available
     chat = chat_lines(lua)
     check(len(chat) == len(help_lines) and all(c.endswith(h) for c, h in zip(chat, help_lines)), "/r2f help prints the list")
     for cmd in ("/r2f macros", "/r2ft", "/r2f talents", "/r2f minimap", "/r2f help"):
@@ -8978,7 +8978,12 @@ def test_setup():
     check("hunter; log in" in chat_all(lua), "setup: another class is told to log in on a hunter")
     check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is False,
           "setup: no menu entry for a Mage")
-    lua.execute("R2F.playerClass = 'HUNTER'")
+    lua.execute("R2F.playerClass = 'HUNTER' LAYOUTS[3].layoutName = 'Other'")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is False,
+          "setup: a Hunter without the Edit Mode layout 'Hunter' is not offered the setup (it is for the owner's characters)")
+    lua.execute("TEST.chat = {} R2F.Setup.Run('hunter')")
+    check("no Edit Mode layout called" in chat_all(lua), "setup: the command says the layout is missing, before asking anything")
+    lua.execute("LAYOUTS[3].layoutName = 'Hunter'")
     check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is True,
           "setup: the minimap menu offers 'Setup Hunter' to a Hunter")
 

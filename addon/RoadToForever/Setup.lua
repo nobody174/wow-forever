@@ -426,9 +426,21 @@ function Setup.Run(key)
   if R2F.playerClass ~= def.class then return say(L.SETUP_WRONG_CLASS:format(def.class:lower())) end
   if R2F.InCombat() then return say(L.SETUP_COMBAT) end
   if not (_G.GetActionBarToggles and _G.SetActionBarToggles and _G.PlaceAction) then return say(L.SETUP_NO_API) end
+  if not Setup.Available(def) then return say(L.SETUP_NO_LAYOUT:format(def.layout or "?")) end
   R2F.UI.Confirm(L.SETUP_CONFIRM:format(table.concat(Setup.Describe(def), "\n")), L.SETUP_GO, L.BTN_CANCEL, function()
     Setup.Execute(def)
   end)
+end
+
+-- A setup is for characters that have its Edit Mode layout saved ("Hunter", "Warrior/Druid"): everyone else never sees it.
+function Setup.Available(def)
+  return def ~= nil and def.layout ~= nil and (Setup.FindLayout(def.layout)) ~= nil
+end
+
+-- Is there a setup this character can use? (The menu entry and the help lines depend on it.)
+function Setup.AvailableHere()
+  local def = Setup.ForClass()
+  return def ~= nil and Setup.Available(def)
 end
 
 -- Which setup belongs to this character (nil when there is none).

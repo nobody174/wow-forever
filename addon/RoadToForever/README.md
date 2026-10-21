@@ -44,17 +44,6 @@ a gallery: click a card to try that look on your window, then **Keep this look**
 **Revert** (it also goes back by itself after eight seconds). "Surprise me" tries a random one.
 The size and opacity of the window are set at the top (or in the sidebar, in Ember & Iron).
 
-### Setup Hunter / Setup Druid
-
-On a fresh Hunter or Druid, the minimap button's menu has **Setup Hunter** / **Setup Druid**
-(or `/r2f setup hunter` / `/r2f setup druid`). It first lists what it will do and asks. Then it
-turns Action Bars 2 to 6 and auto loot on, turns on the raid frame options (class colours,
-power bars, pets), switches to your saved Edit Mode layout of that class's name ("Hunter",
-"Warrior/Druid"), empties every action button and puts the macros, spells and items on their
-buttons. The Druid setup also sets the Druid's key bindings, for that character only.
-**Undo last setup** is on the same menu. It needs your own Edit Mode layout to exist; the
-button lists are the owner's own and are meant for his characters.
-
 ### The recorder
 
 On by default, it writes down in your own saved variables what loot windows, vendors and quest
@@ -101,7 +90,6 @@ screen). It sends nothing else about you.
 | `/r2f copychat [window]` | a box with chat text you can select and copy |
 | `/r2f stance`, `/r2f ammo`, `/r2f repair`, `/r2f pet`, `/r2f rested` | show or hide that icon (add `lock` to lock it, except rested) |
 | `/r2f reminders` | the reminders settings |
-| `/r2f setup hunter`, `/r2f setup druid`, `/r2f setup undo` | the one-click setups and taking the last one back |
 | `/r2f record`, `/r2f record on` / `off` | what the recorder has seen; switch it |
 | `/r2f update` | is there a newer version (as heard from guild and group) |
 | `/r2f minimap` | show or hide the minimap button |
@@ -113,13 +101,9 @@ screen). It sends nothing else about you.
 Most of the addon creates its own frames and reads game data. It writes to the game only in
 these ways, each one something a player would do by hand:
 
-- **Macros** you drag out of the book are created as real game macros, and **Setup** places
-  macros, spells and items on your action buttons.
+- **Macros** you drag out of the book are created as real game macros.
 - **Quick settings** on Home and some Tweaks change game settings (camera zoom, guild names,
   PvP titles, the 24-hour clock, weather) the same way the game's own options do.
-- **Setup** also switches action bars and auto loot on, picks your Edit Mode layout, turns on
-  the raid frame options and, for the Druid, sets key bindings. It asks first and lists the steps;
-  "Undo last setup" puts it back.
 - It can move the bag windows (Tweaks > Bags) and filter the red error text in the middle of
   the screen (Tweaks > Chat & screen).
 

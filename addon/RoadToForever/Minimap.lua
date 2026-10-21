@@ -173,9 +173,9 @@ function Minimap_.MenuItems()
     items[#items + 1] = { kind = "check", text = L.MENU_THREATMASTER, isChecked = Minimap_.ThreatMasterOn,
                           func = Minimap_.ToggleThreatMaster }
   end
-  -- One-click setup of a fresh character (Setup.lua): only for a class that has one.
+  -- One-click setup of a fresh character (Setup.lua): only for a class that has one, and a character with its Edit Mode layout.
   local setup = R2F.Setup and R2F.Setup.ForClass()
-  if setup then
+  if setup and R2F.Setup.Available(setup) then
     items[#items + 1] = { kind = "divider" }
     items[#items + 1] = { kind = "button", text = L.MENU_SETUP:format(setup.class:sub(1, 1) .. setup.class:sub(2):lower()),
                           func = function() R2F.Setup.Run(setup.key) end }

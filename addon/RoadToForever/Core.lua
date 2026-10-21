@@ -169,7 +169,11 @@ R2F.Bindings = {
 -- toggles, like the minimap button's left-click and the Toggle key.
 -- /r2f import still works: Macros tab + Import window.
 local function printHelp()
-  for _, line in ipairs(L.HELP_LINES) do R2F.Print(line) end
+  -- The setup lines are for characters that have a setup (and its Edit Mode layout): nobody else is shown them.
+  local showSetup = R2F.Setup and R2F.Setup.AvailableHere()
+  for _, line in ipairs(L.HELP_LINES) do
+    if showSetup or not line:find("^/r2f setup") then R2F.Print(line) end
+  end
 end
 
 local COMMANDS = {

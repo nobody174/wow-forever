@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.79.1 (2026-10-21)
+
+- **Cooldown numbers now work in combat.** In a fight the game hands addons the cooldown as a value they cannot read, so our own numbers went blank. The "Cooldown numbers on the buttons" box now turns on the game's own setting "Show Numbers for Cooldowns" (the game draws those itself, in combat too) and puts the old value back when you untick it. Our own numbers are only the fallback for a client without that setting (and stay blank in combat there). `/r2f debug bars` now also says whether the setting exists and how many cooldowns are unreadable.
+
 ## 0.79.0 (2026-10-21)
 
 - **Tweaks > Action bars** (new page, all four boxes off until ticked): **Red when out of range** (a red veil over the icon while the spell cannot reach your target), **Red when you lack mana, rage or energy**, **Cooldown numbers on the buttons** (the seconds left as a number on the button: 2h, 5m, 12, then 3.4 under ten seconds, yellow under 5 s and red under 2 s; the global cooldown gets none) and **Bigger cooldown numbers**. It works on the main bar and every extra bar (Action Bars 2 to 8). The addon only reads the game's buttons and draws its own frames on top of them, so nothing of the game's is changed and it cannot taint. If you also see the game's own small cooldown numbers, turn off "Show Numbers for Cooldowns" in the game's options. `/r2f debug bars` prints what this client gives, for a bug report.

@@ -3,8 +3,11 @@
 -- Three things the game's own bars do only partly, each one box on the Tweaks page (all OFF until ticked):
 --   * Red when out of range: a red veil over the icon while the spell cannot reach your target (IsActionInRange).
 --   * Red when you lack mana, rage or energy (the second answer of IsUsableAction).
---   * Cooldown numbers: the seconds left in big numbers on the button (GetActionCooldown), 2h / 5m / 12 / 3.4, turning
---     yellow under 5 s and red under 2 s. The global cooldown (2.5 s or less) gets no number.
+--   * Cooldown numbers. In combat the game hands addons the cooldown as a "secret value" that cannot be read, so our own numbers
+--     (2h / 5m / 12 / 3.4, yellow under 5 s, red under 2 s, from GetActionCooldown) go blank in a fight. The game draws its
+--     own numbers on every cooldown without reading them (the option "Show Numbers for Cooldowns", CVar countdownForCooldowns),
+--     in combat too: when the client has that setting this box turns it on (and puts it back when the box is unticked) and our
+--     own numbers are left out so nothing shows twice. Our own numbers stay the fallback for a client without the setting.
 -- Done the way other addons do it (tullaRange, OmniCC, RedRange): the game's buttons are only READ (their action slot);
 -- everything drawn is our own child frame on top of each button, kept in our own table, so nothing of the game's is written to
 -- and nothing can taint. Our frames are made out of combat. A shared 0.1 s timer refreshes them while a box is on.
@@ -36,8 +39,32 @@ local function on(key)
   return Gameplay.IsOn(key)
 end
 
+local CD_CVAR = "countdownForCooldowns"
+
 local function anyOn()
   return on("barrange") or on("barresource") or on("barcd")
+end
+
+-- Does this client have the game's own cooldown numbers setting?
+local function gameNumbers()
+  return R2F.QuickSettings and R2F.QuickSettings.Read(CD_CVAR) ~= nil
+end
+
+local function ownNumbers()
+  return on("barcd") and not gameNumbers()
+end
+
+-- Turns the game's numbers on while the box is ticked and puts the old value back when it is not (never in combat: CVars wait).
+local function syncGameNumbers()
+  if not gameNumbers() or (_G.InCombatLockdown and _G.InCombatLockdown()) then return end
+  local db = R2F.Library.db
+  if on("barcd") then
+    if db.barsCdPrev == nil then db.barsCdPrev = R2F.QuickSettings.Read(CD_CVAR) end
+    R2F.QuickSettings.Write(CD_CVAR, "1")
+  elseif db.barsCdPrev ~= nil then
+    R2F.QuickSettings.Write(CD_CVAR, db.barsCdPrev)
+    db.barsCdPrev = nil
+  end
 end
 
 local function collect()
@@ -136,7 +163,7 @@ local function update(button, o, now)
   o.tint:SetShown(red)
   -- the number
   local shown = false
-  if on("barcd") then
+  if ownNumbers() then
     local start, duration, enabled = cooldown(slot)
     if type(start) == "number" and type(duration) == "number" and not isSecret(start) and not isSecret(duration)
         and enabled ~= false and enabled ~= 0 and duration > GCD and start > 0 then
@@ -186,13 +213,17 @@ end
 
 -- Starts or stops the timer: it runs only while a box is ticked.
 function Bars.Apply()
+  syncGameNumbers()
   if not driver then
     driver = _G.CreateFrame("Frame")
     for _, e in ipairs({ "PLAYER_ENTERING_WORLD", "PLAYER_REGEN_ENABLED", "ACTIONBAR_SLOT_CHANGED", "UPDATE_BONUS_ACTIONBAR" }) do
       pcall(driver.RegisterEvent, driver, e)
     end
     driver:SetScript("OnEvent", function(_, event)
-      if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_REGEN_ENABLED" then collect() end
+      if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_REGEN_ENABLED" then
+        collect()
+        syncGameNumbers()
+      end
       if anyOn() then pcall(Bars.Refresh) end
     end)
   end
@@ -219,6 +250,21 @@ function Bars.Debug()
     if n > 0 then per[#per + 1] = prefix .. " x" .. n end
   end
   R2F.Print(L.BARS_DEBUG_BUTTONS:format(#buttons, table.concat(per, ", ")))
+  -- Which cooldowns can be read right now (in combat the game makes them secret).
+  local total, hidden = 0, 0
+  for _, btn in ipairs(buttons) do
+    local slot = btn.action
+    if type(slot) == "number" and _G.HasAction and _G.HasAction(slot) then
+      local start, duration = cooldown(slot)
+      if isSecret(start) or isSecret(duration) then
+        total, hidden = total + 1, hidden + 1
+      elseif type(start) == "number" and type(duration) == "number" and start > 0 and duration > GCD then
+        total = total + 1
+      end
+    end
+  end
+  R2F.Print(L.BARS_DEBUG_CD:format(tostring((R2F.QuickSettings.Read(CD_CVAR))), tostring(gameNumbers()), total, hidden,
+    tostring(_G.InCombatLockdown and _G.InCombatLockdown())))
   local b = _G.ActionButton1
   if b then
     local slot = b.action

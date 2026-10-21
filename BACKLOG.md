@@ -16,6 +16,7 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 3. **Hover preview** in the gallery (the mockup previews on hover; ours previews on click with Keep / Revert).
 
 ## 0c. Launch route (owner, 2026-10-21)
+0. Known gate from run 1: "Harvesting Windstones" (Dalia the Collector, 43.3,24.0) cannot be picked up before level 2.
 1. Walk the Skyborne Hunter start with the route log (TESTING 5.65), then turn the file (`python addon/tools/route_report.py`) into the launch plan steps: quest ids, givers, coordinates, level gates, follow-ups, a good order.
 2. **Follow the plan**: a switch on the Launch plan tab that ticks a step by itself when its quest is turned in (or its level is reached) and moves the arrow to the next waypoint. Needs the quest ids from step 1; manual ticks stay as the fallback.
 

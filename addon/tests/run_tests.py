@@ -9133,6 +9133,18 @@ def test_action_bars():
     check(lua.eval("%s.text:IsShown()" % OV) is False and lua.eval("%s.tint:IsShown()" % OV) is False, "bars: everything hides when the boxes are off")
     # no game table is written to: the button keeps only the fields the game gave it
     check(lua.eval("BTN.R2Foverlay") is None, "bars: nothing of ours is written onto the game's button")
+    # A client with the game's own cooldown numbers setting: the box turns it on (works in combat) and our own numbers stay out.
+    lua.execute("""
+      CV = { countdownForCooldowns = '0' }
+      GetCVar = function(n) return CV[n] end
+      SetCVar = function(n, v) CV[n] = v end
+      CD[1] = { 95, 30 } RANGE[1] = nil HAS[1] = true
+    """)
+    lua.execute("R2F.Gameplay.SetOn('barcd', true) R2F.ActionBars.Refresh()")
+    check(lua.eval("CV.countdownForCooldowns") == "1", "bars: the box turns the game's own cooldown numbers on")
+    check(lua.eval("%s.text:IsShown()" % OV) is False, "bars: our own numbers stay out then, so nothing shows twice")
+    lua.execute("R2F.Gameplay.SetOn('barcd', false)")
+    check(lua.eval("CV.countdownForCooldowns") == "0", "bars: unticking puts the game's setting back as it was")
     lua.execute("TEST.chat = {} R2F.ActionBars.Debug()")
     check("buttons found" in chat_all(lua), "bars: /r2f debug bars reports")
 

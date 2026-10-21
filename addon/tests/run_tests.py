@@ -2662,8 +2662,8 @@ def test_gameplay():
     labels = {lua.eval("GB[%d].r2fLabel.__text" % i): i for i in range(1, lua.eval("#GB") + 1)}
     wanted = [lua.eval("R2F.L.%s" % k) for k in ("GP_REPAIR", "GP_SELLGRAY", "GP_DUELS", "GP_ERRORFILTER", "GP_XPBAR")]
     check(all(w in labels for w in wanted), "17 the tab has one box per feature")
-    pages = [lua.eval("R2F.GameplayTab.PAGES[%d].key" % i) for i in range(1, 8)]
-    check(pages == ["quests", "vendors", "screen", "bags", "alerts", "arrow", "icons"], "17.1 the tab has seven pages: %s" % pages)
+    pages = [lua.eval("R2F.GameplayTab.PAGES[%d].key" % i) for i in range(1, 9)]
+    check(pages == ["quests", "vendors", "screen", "bags", "alerts", "arrow", "icons", "bars"], "17.1 the tab has eight pages: %s" % pages)
     # Phase 3: alert text size/outline, reset page, changed dot.
     lua.execute("R2F.GameplayTab.ShowPage('alerts') R2F.GameplayTab.ResetPage()")
     check(lua.eval("R2F.GameplayTab.PAGES[5].key") == "alerts" and lua.eval("R2FDB.fct.textScale") == 1 and lua.eval("R2FDB.fct.outline") == "none",
@@ -8403,6 +8403,7 @@ def main():
     test_recorder()
     test_setup()
     test_route_log()
+    test_action_bars()
     test_gameplay_quests()
     test_copychat()
     test_questzone()
@@ -9079,6 +9080,61 @@ def test_route_log():
     text = rr.render(run, 1)
     check("ACCEPT #1" in text and "| 1 | A |" in text and "#2" in text.split("| 1 | A |")[1].split("\n")[0] and "map 1411: 5" in text,
           "route report: the timeline, the quest table with the follow-up of a hand-in, and the path length")
+
+
+def test_action_bars():
+    """Tweaks > Action bars: a red veil out of range or without resources, cooldown numbers; our own child frames only."""
+    lua, T = reminder_runtime("HUNTER")
+    lua.execute("""
+      BTN = CreateFrame('Button', 'ActionButton1', UIParent)
+      BTN:SetSize(36, 36)
+      BTN.action = 1
+      BTN.icon = BTN:CreateTexture(nil, 'ARTWORK')
+      BTN2 = CreateFrame('Button', 'MultiBarBottomLeftButton1', UIParent)
+      BTN2:SetSize(36, 36)
+      BTN2.action = 61
+      HAS = { [1] = true, [61] = true }
+      HasAction = function(s) return HAS[s] end
+      RANGE = {} NORES = {} CD = {}
+      IsActionInRange = function(s) return RANGE[s] end
+      IsUsableAction = function(s) return true, NORES[s] end
+      GetActionCooldown = function(s) local c = CD[s] if c then return c[1], c[2], 1 end return 0, 0, 1 end
+      GetTime = function() return 100 end
+    """)
+    OV = "R2F.ActionBars.Overlay(BTN)"
+    check(lua.eval("R2F.Gameplay.SetOn('barrange', true)") is True, "bars: the range box can be ticked")
+    check(lua.eval("%s ~= nil" % OV) is True and lua.eval("%s.tint:IsShown()" % OV) is False, "bars: our own frame is made, the veil hidden while in range / no range")
+    lua.execute("RANGE[1] = false R2F.ActionBars.Refresh()")
+    check(lua.eval("%s.tint:IsShown()" % OV) is True, "bars: out of range shows the red veil")
+    lua.execute("RANGE[1] = true R2F.ActionBars.Refresh()")
+    check(lua.eval("%s.tint:IsShown()" % OV) is False, "bars: back in range hides it")
+    lua.execute("NORES[1] = true R2F.ActionBars.Refresh()")
+    check(lua.eval("%s.tint:IsShown()" % OV) is False, "bars: no resource veil while that box is off")
+    lua.execute("R2F.Gameplay.SetOn('barresource', true) R2F.ActionBars.Refresh()")
+    check(lua.eval("%s.tint:IsShown()" % OV) is True, "bars: not enough mana / rage / energy shows the red veil")
+    lua.execute("NORES[1] = nil RANGE[61] = false R2F.ActionBars.Refresh()")
+    check(lua.eval("R2F.ActionBars.Overlay(BTN2).tint:IsShown()") is True and lua.eval("%s.tint:IsShown()" % OV) is False,
+          "bars: every bar's buttons are handled on their own")
+    lua.execute("HAS[61] = nil R2F.ActionBars.Refresh()")
+    check(lua.eval("R2F.ActionBars.Overlay(BTN2).tint:IsShown()") is False, "bars: an empty button shows nothing")
+    # cooldown numbers
+    lua.execute("CD[1] = { 95, 30 } R2F.ActionBars.Refresh()")
+    check(lua.eval("%s.text:IsShown()" % OV) is False, "bars: no number while that box is off")
+    lua.execute("R2F.Gameplay.SetOn('barcd', true) R2F.ActionBars.Refresh()")
+    check(lua.eval("%s.text:IsShown()" % OV) is True and lua.eval("%s.text.__text" % OV) == "25", "bars: 25 seconds left shows 25")
+    lua.execute("CD[1] = { 98, 8 } R2F.ActionBars.Refresh()")
+    check(lua.eval("%s.text.__text" % OV) == "6.0", "bars: under ten seconds shows a decimal")
+    lua.execute("CD[1] = { 90, 1.5 } R2F.ActionBars.Refresh()")
+    check(lua.eval("%s.text:IsShown()" % OV) is False, "bars: the global cooldown gets no number")
+    lua.execute("CD[1] = { 50, 350 } R2F.ActionBars.Refresh()")
+    check(lua.eval("%s.text.__text" % OV) == "5m", "bars: minutes show as 5m")
+    check(lua.eval("R2F.ActionBars.Format(7200)") == "2h" and lua.eval("R2F.ActionBars.Format(59)") == "59", "bars: hours and seconds format")
+    lua.execute("R2F.Gameplay.SetOn('barcd', false) R2F.Gameplay.SetOn('barrange', false) R2F.Gameplay.SetOn('barresource', false)")
+    check(lua.eval("%s.text:IsShown()" % OV) is False and lua.eval("%s.tint:IsShown()" % OV) is False, "bars: everything hides when the boxes are off")
+    # no game table is written to: the button keeps only the fields the game gave it
+    check(lua.eval("BTN.R2Foverlay") is None, "bars: nothing of ours is written onto the game's button")
+    lua.execute("TEST.chat = {} R2F.ActionBars.Debug()")
+    check("buttons found" in chat_all(lua), "bars: /r2f debug bars reports")
 
 
 def test_combat_banner():

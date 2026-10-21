@@ -233,6 +233,7 @@ local DEBUG = {
   traits = function() R2F.Talents.DebugTraits() end,
   timers = function() R2F.Timers.Debug() end,
   recorder = function() R2F.Recorder.Debug() end,
+  bars = function() R2F.ActionBars.Debug() end,
   corpse = function() R2F.Nav.DebugCorpse() end,
 }
 local DEBUG_ALIASES = { rankdebug = "rank", profdebug = "profs" }

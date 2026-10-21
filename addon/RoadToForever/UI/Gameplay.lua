@@ -44,6 +44,7 @@ Tab.PAGES = {
   { key = "alerts", label = "GP_PAGE_ALERTS", features = { "reactalert", "reactlock", "reactblizz", "training" } },
   { key = "arrow", label = "GP_PAGE_ARROW", features = { "navfollow", "corpsearrow" } },
   { key = "icons", label = "GP_PAGE_ICONS", features = {} },
+  { key = "bars", label = "GP_PAGE_BARS", features = { "barrange", "barresource", "barcd", "barcdbig" } },
 }
 
 local function visible()

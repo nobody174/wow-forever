@@ -29,12 +29,14 @@ Open it with `/r2f` (or the minimap button). It has six pages:
   one to your bars to create the real game macro. New addon versions update the macros the
   addon made, but never one you edited yourself. The Options button holds which slots new
   macros use, Import (for a custom pick from the site) and Remove all.
-- **Tweaks**: small optional helpers, grouped on seven pages (Quests, Vendors & loot,
-  Chat & screen, Bags, Alerts, Waypoint arrow, Class icons), all **off until you tick them**:
+- **Tweaks**: small optional helpers, grouped on eight pages (Quests, Vendors & loot,
+  Chat & screen, Bags, Alerts, Waypoint arrow, Class icons, Action bars), all **off until you tick them**:
   auto-repair, sell grey items, quest auto-accept and turn-in, fast looting, free bag slots,
   movable bags, a copy-chat box, an "ability ready" alert, and on-screen icons and reminders
   (Warrior stance, Hunter ammo, pet, gear repair, rested XP, missing tracking, missing group
-  buffs, Walk on Air, Seal and Slice and Dice timers, food, a combat banner).
+  buffs, Walk on Air, Seal and Slice and Dice timers, food, a combat banner), and on the
+  action bars a red veil when a spell is out of range or you lack the mana, rage or energy,
+  and big cooldown numbers.
 
 ### Looks
 

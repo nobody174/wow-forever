@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.79.0 (2026-10-21)
+
+- **Tweaks > Action bars** (new page, all four boxes off until ticked): **Red when out of range** (a red veil over the icon while the spell cannot reach your target), **Red when you lack mana, rage or energy**, **Cooldown numbers on the buttons** (the seconds left as a number on the button: 2h, 5m, 12, then 3.4 under ten seconds, yellow under 5 s and red under 2 s; the global cooldown gets none) and **Bigger cooldown numbers**. It works on the main bar and every extra bar (Action Bars 2 to 8). The addon only reads the game's buttons and draws its own frames on top of them, so nothing of the game's is changed and it cannot taint. If you also see the game's own small cooldown numbers, turn off "Show Numbers for Cooldowns" in the game's options. `/r2f debug bars` prints what this client gives, for a bug report.
+
 ## 0.78.0 (2026-10-21)
 
 - **Route log** (`/r2f route start [name]`, `/r2f route note <text>`, `/r2f route stop`, `/r2f route` for the status): off until you start it. While it records it writes down, in your own saved variables only, a timeline of your play: quests offered (by whom, where), accepted (quest level, objectives), objective progress (where a kill or item counted), handed in (xp, money) and abandoned; levels, zone changes and deaths; the NPCs you open a window with (quest giver, trainer, vendor, flight master, innkeeper); your own notes; and your position every ten seconds (the path you walked). Every record has the time since the start, your level and xp and the map position. It stores class and race, never your character name. A run that is on when you log out goes on at the next login. `python addon/tools/route_report.py` turns the saved file into a readable timeline, a quest table (with the quests each hand-in unlocked) and the path length per map.

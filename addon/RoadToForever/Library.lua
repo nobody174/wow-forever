@@ -219,6 +219,11 @@ function Library.Init()
     if type(rc[key]) ~= "table" then rc[key] = {} end
   end
   rc.version = 1
+  -- Route log (RouteLog.lua): the runs written with /r2f route start. Off until started.
+  if type(db.route) ~= "table" then db.route = {} end
+  if type(db.route.runs) ~= "table" then db.route.runs = {} end
+  db.route.version = 1
+  if db.route.active ~= nil and not db.route.runs[db.route.active] then db.route.active = nil end
   rc.since = rc.since or (_G.date and _G.date("%Y-%m-%d") or nil)
   -- Buff countdown reminders (Timers.lua): one table per tracked buff.
   if type(db.timers) ~= "table" then db.timers = {} end

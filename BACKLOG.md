@@ -15,6 +15,10 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 2. **Frost & Void**: the ring only shows the last 30 days; the "Your journey" checklist and extra sidebar entries (Professions, Reminders, Settings) of the mockups are not built (no matching pages). Theme settings panel (effects level, text size, high contrast, profiles, day / night) of theme_picker.png is not built either.
 3. **Hover preview** in the gallery (the mockup previews on hover; ours previews on click with Keep / Revert).
 
+## 0c. Launch route (owner, 2026-10-21)
+1. Walk the Skyborne Hunter start with the route log (TESTING 5.65), then turn the file (`python addon/tools/route_report.py`) into the launch plan steps: quest ids, givers, coordinates, level gates, follow-ups, a good order.
+2. **Follow the plan**: a switch on the Launch plan tab that ticks a step by itself when its quest is turned in (or its level is reached) and moves the arrow to the next waypoint. Needs the quest ids from step 1; manual ticks stay as the fallback.
+
 ## 1. Bugs
 None open (talent-tree drift fixed 2026-10-16; before each release run `python addon/tools/gen_talent_data.py --drift`).
 

@@ -8402,6 +8402,7 @@ def main():
     test_combat_banner()
     test_recorder()
     test_setup()
+    test_route_log()
     test_gameplay_quests()
     test_copychat()
     test_questzone()
@@ -8986,6 +8987,98 @@ def test_setup():
     lua.execute("LAYOUTS[3].layoutName = 'Hunter'")
     check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is True,
           "setup: the minimap menu offers 'Setup Hunter' to a Hunter")
+
+
+def test_route_log():
+    """The route log: off until started; quests, levels, NPCs, notes and the path go into R2FDB.route; no character name."""
+    lua, T = reminder_runtime("HUNTER")
+    lua.execute("""
+      QUESTS = { { title = 'Wolves', level = 3, suggestedGroup = 0, isHeader = false, questID = 4001 } }
+      OBJ = { { text = 'Wolf slain: 0/5', numFulfilled = 0, numRequired = 5, type = 'monster' } }
+      C_QuestLog = {
+        GetTitleForQuestID = function(q) return 'Wolves' end,
+        GetLogIndexForQuestID = function(q) return 1 end,
+        GetInfo = function(i) return QUESTS[i] end,
+        GetNumQuestLogEntries = function() return #QUESTS end,
+        GetQuestObjectives = function(q) return OBJ end,
+      }
+      POS = { 0.123, 0.456 }
+      C_Map = { GetBestMapForUnit = function() return 1411 end,
+                GetPlayerMapPosition = function() return { GetXY = function() return POS[1], POS[2] end } end }
+      LEVEL = 3 XPNOW = 120
+      UnitLevel = function() return LEVEL end
+      UnitXP = function() return XPNOW end
+      UnitGUID = function(u) if u == 'questnpc' then return 'Creature-0-1465-0-4-6168-000012AB34' end end
+      UnitName = function(u) return 'Hunter Trainer' end
+      GetQuestID = function() return 4001 end
+      GetTitleText = function() return 'Wolves' end
+      GetSubZoneText = function() return 'Thendal Village' end
+      GetZoneText = function() return 'Zephras Isle' end
+      NOW = 1000 GetServerTime = function() return NOW end
+    """)
+    check(lua.eval("R2F.RouteLog.IsOn()") is False and lua.eval("#R2FDB.route.runs") == 0, "route: off until started, no runs")
+    lua.execute("R2F.RouteLog.OnEvent('QUEST_ACCEPTED', 1, 4001)")
+    check(lua.eval("#R2FDB.route.runs") == 0, "route: nothing is written while it is off")
+    lua.execute("R2F.RouteLog.Start('first walk')")
+    check(lua.eval("R2F.RouteLog.IsOn()") is True and lua.eval("R2FDB.route.active") == 1 and lua.eval("R2FDB.route.runs[1].label") == "first walk",
+          "route: /r2f route start begins run 1 with its name")
+    check(lua.eval("R2FDB.route.runs[1].class") == "HUNTER" and lua.eval("R2FDB.route.runs[1].name") is None,
+          "route: the class is stored, no character name")
+    check(lua.eval("R2FDB.route.runs[1].events[2].e") == "have" and lua.eval("R2FDB.route.runs[1].events[2].q") == 4001,
+          "route: a quest already in the log when it starts is written down")
+    lua.execute("NOW = 1005 R2F.RouteLog.OnEvent('QUEST_DETAIL') R2F.RouteLog.OnEvent('QUEST_DETAIL')")
+    check(lua.eval("R2FDB.route.runs[1].events[3].e") == "offer" and lua.eval("R2FDB.route.runs[1].events[3].npc") == 6168
+          and lua.eval("R2FDB.route.runs[1].events[3].t") == 5 and lua.eval("R2FDB.route.runs[1].events[3].x") == 12.3,
+          "route: an offered quest has the giver, the time since the start and the map position")
+    check(lua.eval("#R2FDB.route.runs[1].events") == 3, "route: an offer reopened is written once")
+    lua.execute("NOW = 1010 R2F.RouteLog.OnEvent('QUEST_ACCEPTED', 2, 4002)")
+    check(lua.eval("R2FDB.route.runs[1].events[4].e") == "accept" and lua.eval("R2FDB.route.runs[1].events[4].q") == 4002
+          and lua.eval("R2FDB.route.runs[1].events[4].ql") == 3 and lua.eval("R2FDB.route.runs[1].events[4].obj[1][1]") == "Wolf slain: 0/5",
+          "route: an accepted quest has its level and objectives (Classic's two-argument form too)")
+    lua.execute("""NOW = 1020 OBJ[1].numFulfilled = 2 GetTime = function() return 10 end R2F.RouteLog.OnEvent('QUEST_LOG_UPDATE')
+      GetTime = function() return 20 end R2F.RouteLog.OnEvent('QUEST_LOG_UPDATE')""")
+    check(lua.eval("#R2FDB.route.runs[1].events") == 5 and lua.eval("R2FDB.route.runs[1].events[5].e") == "prog"
+          and lua.eval("R2FDB.route.runs[1].events[5].n") == 2, "route: an objective that counted up is written once, with its count")
+    lua.execute("NOW = 1030 XPNOW = 400 R2F.RouteLog.OnEvent('QUEST_TURNED_IN', 4001, 250, 55) R2F.RouteLog.OnEvent('QUEST_REMOVED', 4001)")
+    check(lua.eval("R2FDB.route.runs[1].events[6].e") == "done" and lua.eval("R2FDB.route.runs[1].events[6].xpGain") == 250
+          and lua.eval("#R2FDB.route.runs[1].events") == 6, "route: a hand-in is written with its xp, and its removal from the log is not an abandon")
+    lua.execute("NOW = 1040 R2F.RouteLog.OnEvent('QUEST_REMOVED', 4002)")
+    check(lua.eval("R2FDB.route.runs[1].events[7].e") == "drop", "route: a quest that leaves the log without a hand-in is an abandon")
+    lua.execute("NOW = 1050 LEVEL = 4 R2F.RouteLog.OnEvent('PLAYER_LEVEL_UP', 4) R2F.RouteLog.OnEvent('PLAYER_DEAD')")
+    check(lua.eval("R2FDB.route.runs[1].events[8].e") == "level" and lua.eval("R2FDB.route.runs[1].events[8].to") == 4
+          and lua.eval("R2FDB.route.runs[1].events[9].e") == "dead", "route: levels and deaths")
+    lua.execute("R2F.RouteLog.OnEvent('ZONE_CHANGED') R2F.RouteLog.OnEvent('ZONE_CHANGED') UnitGUID = function(u) if u == 'npc' then return 'Creature-0-1-0-4-777-0001' end end "
+                "R2F.RouteLog.OnEvent('TRAINER_SHOW') R2F.RouteLog.OnEvent('TRAINER_SHOW') R2F.RouteLog.OnEvent('MERCHANT_SHOW')")
+    kinds = [lua.eval("R2FDB.route.runs[1].events[%d].e" % i) for i in range(10, 13)]
+    check(kinds == ["zone", "npc", "npc"], "route: a zone change and each kind of NPC window are written once: %s" % kinds)
+    lua.execute("R2F.RouteLog.Note('boars here are slow')")
+    check(lua.eval("R2FDB.route.runs[1].events[13].tx") == "boars here are slow", "route: /r2f route note adds your own note")
+    lua.execute("T = TEST T.timers = {} R2F.RouteLog.Stop()")
+    check(lua.eval("R2F.RouteLog.IsOn()") is False and lua.eval("R2FDB.route.active") is None and lua.eval("R2FDB.route.runs[1].events[14].e") == "stop",
+          "route: stop ends the run and the run stays saved")
+    lua.execute("NOW = 2000 R2F.RouteLog.OnEvent('PLAYER_DEAD')")
+    check(lua.eval("#R2FDB.route.runs[1].events") == 14, "route: nothing more is written after stop")
+    # A run that was on when you logged out goes on at the next login.
+    lua.execute("R2FDB.route.active = 1 R2F.RouteLog.Init()")
+    check(lua.eval("R2F.RouteLog.IsOn()") is True and lua.eval("R2FDB.route.runs[1].events[15].e") == "login",
+          "route: a run that was on at logout resumes at login")
+    lua.execute("TEST.chat = {} R2F.RouteLog.Command('status')")
+    check("recording run 1" in chat_all(lua), "route: status says what is recording")
+    help_lines = lua_table_to_list(lua.eval("R2F.L.HELP_LINES"))
+    check(any(h.startswith("/r2f route") for h in help_lines), "help lists /r2f route")
+    # The report script turns a run into a timeline and a quest table.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("route_report", os.path.join(HERE, "..", "tools", "route_report.py"))
+    rr = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rr)
+    run = {"label": "t", "race": "SKYBORNE", "class": "HUNTER", "level": 1, "trail": [[0, 1411, 10.0, 10.0], [10, 1411, 13.0, 14.0]],
+           "events": [{"e": "start", "t": 0, "lv": 1, "z": "Zephras Isle", "sz": "Thendal"},
+                      {"e": "accept", "t": 10, "lv": 1, "q": 1, "title": "A", "ql": 1, "obj": [["Kill: 0/3", 0, 3]]},
+                      {"e": "done", "t": 100, "lv": 2, "q": 1, "xpGain": 90},
+                      {"e": "accept", "t": 130, "lv": 2, "q": 2, "title": "B", "ql": 2}]}
+    text = rr.render(run, 1)
+    check("ACCEPT #1" in text and "| 1 | A |" in text and "#2" in text.split("| 1 | A |")[1].split("\n")[0] and "map 1411: 5" in text,
+          "route report: the timeline, the quest table with the follow-up of a hand-in, and the path length")
 
 
 def test_combat_banner():

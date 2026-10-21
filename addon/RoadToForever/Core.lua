@@ -36,6 +36,7 @@ handlers.PLAYER_LOGIN = function()
   R2F.Pet.Init()
   R2F.Timers.Init()
   R2F.Recorder.Init()
+  R2F.RouteLog.Init()
   R2F.Rested.Init()
   R2F.CombatBanner.Init()
   R2F.Version.Init()
@@ -279,6 +280,9 @@ SlashCmdList.R2F = function(msg)
     elseif not runDebug(tool, arg) then
       R2F.Print(L.UNKNOWN_DEBUG:format(tool))
     end
+  elseif word == "route" then
+    -- /r2f route start [name]  |  stop  |  note <text>  |  (status)
+    R2F.RouteLog.Command(rest)
   elseif word == "setup" then
     -- /r2f setup hunter   |   /r2f setup undo   |   /r2f setup (your class)
     local which = rest ~= "" and rest or (R2F.Setup.ForClass() and R2F.Setup.ForClass().key) or ""

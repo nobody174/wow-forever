@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.78.0 (2026-10-21)
+
+- **Route log** (`/r2f route start [name]`, `/r2f route note <text>`, `/r2f route stop`, `/r2f route` for the status): off until you start it. While it records it writes down, in your own saved variables only, a timeline of your play: quests offered (by whom, where), accepted (quest level, objectives), objective progress (where a kill or item counted), handed in (xp, money) and abandoned; levels, zone changes and deaths; the NPCs you open a window with (quest giver, trainer, vendor, flight master, innkeeper); your own notes; and your position every ten seconds (the path you walked). Every record has the time since the start, your level and xp and the map position. It stores class and race, never your character name. A run that is on when you log out goes on at the next login. `python addon/tools/route_report.py` turns the saved file into a readable timeline, a quest table (with the quests each hand-in unlocked) and the path length per map.
+
 ## 0.77.2 (2026-10-21)
 
 - **Setup Hunter / Setup Druid are now only offered to characters that have the matching Edit Mode layout saved** ("Hunter", "Warrior/Druid"). Everyone else sees no menu entry and no help lines for them, and `/r2f setup` just says the layout is missing. They are the owner's personal shortcuts; the README no longer describes them.

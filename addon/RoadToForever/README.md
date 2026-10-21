@@ -44,6 +44,13 @@ a gallery: click a card to try that look on your window, then **Keep this look**
 **Revert** (it also goes back by itself after eight seconds). "Surprise me" tries a random one.
 The size and opacity of the window are set at the top (or in the sidebar, in Ember & Iron).
 
+### The route log
+
+Off until you start it (`/r2f route start`). It writes down your route as you play (quests
+and the order you did them, levels, the NPCs you opened windows with, your path and your own
+notes) in your saved variables only, for working out the best way to start a new character.
+`/r2f route note <text>` adds a note, `/r2f route stop` ends it. No character name is stored.
+
 ### The recorder
 
 On by default, it writes down in your own saved variables what loot windows, vendors and quest
@@ -91,6 +98,7 @@ screen). It sends nothing else about you.
 | `/r2f stance`, `/r2f ammo`, `/r2f repair`, `/r2f pet`, `/r2f rested` | show or hide that icon (add `lock` to lock it, except rested) |
 | `/r2f reminders` | the reminders settings |
 | `/r2f record`, `/r2f record on` / `off` | what the recorder has seen; switch it |
+| `/r2f route start`, `/r2f route note <text>`, `/r2f route stop` | the route log |
 | `/r2f update` | is there a newer version (as heard from guild and group) |
 | `/r2f minimap` | show or hide the minimap button |
 | `/r2f debug` | troubleshooting tools; paste what they print into a report |

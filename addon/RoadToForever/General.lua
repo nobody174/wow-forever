@@ -66,13 +66,6 @@ General.CVARS = {
   "speechToText", "textToSpeech", "chatClassColorOverride", "wholeChatWindowClickable", "showTimestamps",
 }
 
-local function api(name)
-  local fn = _G[name]
-  if type(fn) == "function" then return fn end
-  local ns = _G.C_CVar
-  if type(ns) == "table" and type(ns[name]) == "function" then return ns[name] end
-end
-
 local function db()
   return R2F.Library.db
 end

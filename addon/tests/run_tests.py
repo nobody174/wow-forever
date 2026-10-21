@@ -8889,7 +8889,12 @@ def test_general():
     check(any("no general settings saved yet" in c for c in chat_lines(lua)), "general: /r2f general says nothing is saved")
     check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_GENERAL_APPLY then return true end end return false end)()") is False,
           "general: no Apply entry on the menu before saving")
+    lua.execute("""CVARS.enableSwingTimer = '1'
+      C_Console = { GetAllCommands = function() return { { command = 'enableSwingTimer', commandType = 0 }, { command = 'swingCmd', commandType = 1 } } end }""")
+    lua.execute("TEST.chat = {} R2F.General.Command('swing')")
+    check(any("enableSwingTimer = 1" in c for c in chat_lines(lua)), "general: /r2f general swing lists the swing settings")
     lua.execute("R2F.General.Save()")
+    check(lua.eval("R2FDB.general.cvars.enableSwingTimer") == "1", "general: the swing timer setting is saved with the rest")
     check(lua.eval("R2F.General.Has()") is True, "general: saved")
     check(lua.eval("R2FDB.general.cvars.autoLootDefault") == "1" and lua.eval("R2FDB.general.cvars.nameplateShowClassColor") == "1",
           "general: game settings kept")
@@ -8955,7 +8960,12 @@ def test_setup():
           "setup: bar and button to action slot (bar 2 = 61-72, bar 5 = 37-48, bar 6 = 145-156)")
     for k in ("Raptor+Clip", "AutoShot", "Serpent", "PetAtkMOTT", "PetFollow", "AspMonkey", "AspHawk"):
         check(lua.eval("R2F.Library.Get('HUNTER/%s') ~= nil" % k) is True, "setup: the library has the macro HUNTER/%s" % k)
+    lua.execute("""CVARS.enableSwingTimer = '0' CVARS.swingOther = '5'
+      C_Console = { GetAllCommands = function() return { { command = 'enableSwingTimer', commandType = 0 },
+        { command = 'swingOther', commandType = 0 }, { command = 'swingCommand', commandType = 1 } } end }""")
     lua.execute("R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()")
+    check(lua.eval("CVARS.enableSwingTimer") == "1" and lua.eval("CVARS.swingOther") == "5",
+          "setup: the swing timer switch is turned on, a swing setting that is not 0/1 is left alone")
     check(all(lua.eval("TOG[%d]" % i) is True for i in (1, 2, 3, 4, 5)) and lua.eval("TOG[6]") is False,
           "setup: Action Bars 2 to 6 are on, 7 and 8 untouched")
     check(lua.eval("CVARS.autoLootDefault") == "1", "setup: auto loot is on")
@@ -8969,6 +8979,7 @@ def test_setup():
     check("should be on the key" not in chat_all(lua), "setup: no key warning when the keys are as listed")
     # Undo puts everything back.
     lua.execute("R2F.Setup.Undo()")
+    check(lua.eval("CVARS.enableSwingTimer") == "0", "setup: undo turns the swing timer back off")
     check(all(lua.eval("TOG[%d]" % i) is False for i in range(1, 8)) and lua.eval("CVARS.autoLootDefault") == "0" and lua.eval("CVARS.raidOptionDisplayPets") == "0"
           and lua.eval("SETLAYOUT") == 1 and lua.eval("next(ACTIONS)") is None, "setup: undo restores the bars, auto loot, layout and empties the buttons it filled")
     # A button that holds something is left alone; a wrong key is reported; a missing layout is reported.

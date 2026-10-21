@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.80.1 (2026-10-21)
+
+- **The swing timer is switched on by the setups and the general settings.** Setup Hunter and Setup Druid now turn on the game's "Enable Swing Timer" (Options > Advanced Options), and Undo puts it back. "My general settings" saves and applies it too. The addon does not know the setting's internal name, so it searches the game's list of settings for names containing "swing" and only touches ones that are plain on/off. `/r2f general swing` lists what it finds (send me that if the timer does not turn on).
+
 ## 0.80.0 (2026-10-21)
 
 - **My general settings** (new): set one character up the way you like it, then right-click the minimap button > **Save my general settings** (or `/r2f general save`). On any other character, right-click > **Apply my general settings** (or `/r2f general apply`): it lists what it will do, asks, then sets the same game settings (camera, auto loot, names and nameplates, class colours, silhouette, raid frames, floating combat text, chat behaviour and more), switches on the same Action Bars, and sets up your chat windows (made if missing, with their message types and channels, font size, colour, locked) and the class colours on names in chat. The Combat Log window is never touched. Graphics, sound and the Edit Mode layouts (where the chat windows sit) are already shared by your account, and what is on the buttons stays per class (Setup Hunter / Setup Druid). `/r2f general clear` forgets the saved settings. Written without being able to try it in the game: see TESTING 5.68.

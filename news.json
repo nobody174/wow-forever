@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-21",
+      "title": "Road to Forever addon 0.80.1: swing timer in the setups",
+      "text": "Setup Hunter, Setup Druid and your saved general settings now also turn the swing timer on.",
+      "link": "addons.html"
+    },
+    {
+      "date": "2026-10-21",
       "title": "Road to Forever addon 0.80.0: your general settings on every character",
       "text": "Set up one character, then save it from the minimap menu. On any other character, one click applies the same game settings, action bars and chat windows.",
       "link": "addons.html"

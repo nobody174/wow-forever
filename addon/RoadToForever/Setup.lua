@@ -166,6 +166,7 @@ function Setup.Describe(def)
   if def.bindings then lines[#lines + 1] = L.SETUP_STEP_BINDINGS:format(def.bindingsName or def.key) end
   if def.raidFrames then lines[#lines + 1] = L.SETUP_STEP_RAID end
   if def.clearAll then lines[#lines + 1] = L.SETUP_STEP_CLEAR end
+  if R2F.General and #R2F.General.SwingCVars() > 0 then lines[#lines + 1] = L.SETUP_STEP_SWING end
   lines[#lines + 1] = L.SETUP_STEP_MACROS:format(#def.place)
   return lines
 end
@@ -334,6 +335,17 @@ function Setup.Execute(def)
     end
     say(L.SETUP_DONE_RAID)
   end
+  -- 1b. the swing timer (Options > Advanced Options): every on/off game setting with "swing" in its name is switched on
+  if R2F.General then
+    for _, sc in ipairs(R2F.General.SwingCVars()) do
+      if sc.value == "0" then
+        undo.swing = undo.swing or {}
+        undo.swing[sc.name] = sc.value
+        R2F.QuickSettings.Write(sc.name, "1")
+      end
+    end
+    if undo.swing then say(L.SETUP_DONE_SWING) end
+  end
   -- 2. the Edit Mode layout
   if def.layout then
     local idx, active = Setup.FindLayout(def.layout)
@@ -468,6 +480,7 @@ function Setup.Undo()
     pcall(_G.SetActionBarToggles, t[1], t[2], t[3], t[4], t[5], t[6], t[7])
   end
   for c, v in pairs(u.cvars or {}) do R2F.QuickSettings.Write(c, v) end
+  for c, v in pairs(u.swing or {}) do R2F.QuickSettings.Write(c, v) end
   if u.autoLoot ~= nil then R2F.QuickSettings.Write("autoLootDefault", u.autoLoot) end
   if u.layout and _G.C_EditMode then
     local _, active = Setup.Layouts()

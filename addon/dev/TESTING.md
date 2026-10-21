@@ -2,7 +2,7 @@
 
 Reply with the number: `5.25 done`, `5.38 needs more testing`, `5.41 not working: <what you saw>`. Numbers never change (gaps are fine).
 **Only open tasks live here.** A confirmed test moves to `COMPLETED_TESTING.md`.
-Checked against release 0.80.0 on 2026-10-20.
+Checked against release 0.80.1 on 2026-10-20.
 
 **Setup:** newest release zip in AddOns, `/console scriptErrors 1`. Taint check: `/console taintLog 1`, play, `/reload`, search `Logs\taint.log` for `RoadToForever`.
 
@@ -20,6 +20,8 @@ For every look (Home > Theme > "Open the gallery"): compare with its picture in 
 - **5.67 Paladin seal timer (0.79.2):** cast Seal of Righteousness (and swap to another seal) out of combat and in a fight. The countdown on the seal icon must start at 30 seconds every time, never 1800. If it still shows 1800, run `/r2f debug timers` and send what it prints.
 
 - **5.68 General settings (0.80.0):** on the Horde Testpala (chat windows and options the way you like them) right-click the minimap button > Save my general settings; chat says how many game settings and chat windows it kept. Log in on another character, right-click > Apply my general settings, answer Apply, then `/reload`. Check: Action Bars 2 to 6 on, auto loot on, class colours on nameplates / silhouette / camera zoom as on the Testpala, your chat windows exist with the right message types ticked (yell and General off where you had them off) and the class colours on names in chat. Anything missing or wrong: tell me which, and the red line from the chat if there is one.
+
+- **5.69 Swing timer (0.80.1):** on a character where Options > Advanced Options > Enable Swing Timer is OFF, run Setup Hunter / Setup Druid (or Apply my general settings): the swing timer must be ticked afterwards. If not, type `/r2f general swing` and send me what it prints.
 
 ## Cannot be tested yet (needs higher level / talents / release)
 4.13 group picks (needs an owner publish) · 13.9 Druid Starsurge / Sunfire / Starfall / Lacerate macros · 13.11 Dire Bear Form at 40 · 14.1 Hunter Strider Kick · 14.2 Paladin Twist of Light seal swap · 14.4 Shaman Elemental Mastery

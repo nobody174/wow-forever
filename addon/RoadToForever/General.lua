@@ -84,9 +84,33 @@ end
 -- Reading this character
 -- ---------------------------------------------------------------------------
 
+-- The swing timer switch (Options > Advanced Options > "Enable Swing Timer") is a game setting whose CVar name we are not
+-- sure of, so the client's own list of console variables is searched for names with "swing" in them.
+-- Returns { { name, value }, ... } sorted by name; empty when the client cannot list them.
+function General.SwingCVars()
+  local out = {}
+  local c = _G.C_Console
+  if not (c and c.GetAllCommands) then return out end
+  local ok, list = pcall(c.GetAllCommands)
+  if not (ok and type(list) == "table") then return out end
+  for _, info in ipairs(list) do
+    local name = type(info) == "table" and info.command
+    -- commandType 0 = a console variable (the others are commands, macros and scripts)
+    if type(name) == "string" and name:lower():find("swing") and (info.commandType == nil or info.commandType == 0) then
+      local v = R2F.QuickSettings.Read(name)
+      if v ~= nil then out[#out + 1] = { name = name, value = v } end
+    end
+  end
+  table.sort(out, function(a, b) return a.name < b.name end)
+  return out
+end
+
 local function readCVars()
   local out, n = {}, 0
-  for _, name in ipairs(General.CVARS) do
+  local names = {}
+  for _, name in ipairs(General.CVARS) do names[#names + 1] = name end
+  for _, sc in ipairs(General.SwingCVars()) do names[#names + 1] = sc.name end
+  for _, name in ipairs(names) do
     local v = R2F.QuickSettings.Read(name)
     if v ~= nil then out[name] = v n = n + 1 end
   end
@@ -281,6 +305,10 @@ function General.Command(rest)
   if rest == "save" then General.Save()
   elseif rest == "apply" then General.Apply()
   elseif rest == "clear" then General.Clear()
+  elseif rest == "swing" then
+    local list = General.SwingCVars()
+    if #list == 0 then say(L.GENERAL_SWING_NONE) end
+    for _, sc in ipairs(list) do say(L.GENERAL_SWING_LINE:format(sc.name, sc.value)) end
   else
     say(General.Has() and L.GENERAL_STATUS:format(General.CountCVars(db().general.cvars), #db().general.chat.windows)
         or L.GENERAL_NOTHING_SAVED)

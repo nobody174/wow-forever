@@ -8752,9 +8752,9 @@ def test_timers_in_combat():
     check(lua.eval("R2FSealFrame.icon.__tex") == "sealIcon", "combat timer: the estimate keeps the seal's icon")
     # Recast in the fight (a new seal): the estimate restarts from the last full duration.
     lua.execute("TEST.now = 600 R2F.Timers.OnCast(77) TD.module.Apply()")
-    check(lua.eval("R2FSealFrame.count.__text") == "~1800", "combat timer: casting the seal again restarts the estimate")
+    check(lua.eval("R2FSealFrame.count.__text") == "~30", "combat timer: casting the seal again restarts the estimate")
     lua.execute("R2F.Timers.OnCast(999) TD.module.Apply()")
-    check(lua.eval("R2FSealFrame.count.__text") == "~1800", "combat timer: another spell changes nothing")
+    check(lua.eval("R2FSealFrame.count.__text") == "~30", "combat timer: another spell changes nothing")
     # The estimate runs out: nothing is shown.
     lua.execute("TEST.now = 2500 TD.module.Apply()")
     check(lua.eval("R2FSealFrame:IsShown()") is False, "combat timer: estimate past its end: hidden")
@@ -8766,17 +8766,17 @@ def test_timers_in_combat():
     lua.execute("TEST.now = 600 TEST.auras = { { name = 'Seal of Command', spellId = 77, expirationTime = 2300, duration = 1800 } } "
                 "TD.module.Apply() TEST.now = 610 C_UnitAuras.GetUnitAuras = function() error('restricted') end TD.module.Apply()")
     check(lua.eval("R2FSealFrame.count.__text") == "~1690", "combat timer: the aura call failing: still counts from the last look: %r" % lua.eval("R2FSealFrame.count.__text"))
-    # A seal swapped in the fight shows the NEW seal's icon and a fresh 30 minutes, even when the first one was never seen
+    # A seal swapped in the fight shows the NEW seal's icon and a fresh 30 seconds, even when the first one was never seen
     # (the aura is hidden): the timer must not stay on the first seal.
     lua.execute("""TEST.now = 700 TEST.auras = { { name = 'SECRET', spellId = 'SECRET', expirationTime = 'SECRET' } }
       C_Spell.GetSpellName = function(id) return ({ [77] = 'Seal of Command', [78] = 'Seal of Righteousness' })[id] end
       C_Spell.GetSpellTexture = function(id) return 'tex' .. id end
       R2F.playerClass = 'PALADIN'
       R2F.Timers.OnCast(77) TD.module.Apply()""")
-    check(lua.eval("R2FSealFrame.icon.__tex") == "tex77" and lua.eval("R2FSealFrame.count.__text") == "~1800",
-          "combat timer: first seal cast in the fight, never seen: icon and 30 minutes")
+    check(lua.eval("R2FSealFrame.icon.__tex") == "tex77" and lua.eval("R2FSealFrame.count.__text") == "~30",
+          "combat timer: first seal cast in the fight, never seen: icon and 30 seconds")
     lua.execute("TEST.now = 705 R2F.Timers.OnCast(78) TD.module.Apply()")
-    check(lua.eval("R2FSealFrame.icon.__tex") == "tex78" and lua.eval("R2FSealFrame.count.__text") == "~1800",
+    check(lua.eval("R2FSealFrame.icon.__tex") == "tex78" and lua.eval("R2FSealFrame.count.__text") == "~30",
           "combat timer: the next seal replaces the first one's icon and time: %r" % lua.eval("R2FSealFrame.icon.__tex"))
     # Nothing ever seen and everything hidden: nothing shown (never a guess).
     lua2, _ = reminder_runtime("ROGUE")

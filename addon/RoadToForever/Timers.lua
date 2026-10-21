@@ -31,7 +31,7 @@ Timers.TRACK = {
   -- icon is the seal's own) and the Rogue's Slice and Dice, with the seconds left.
   -- `fixed`: the buff always lasts this many seconds; `perCombo`: { base, per point }, the length depends on your combo
   -- points when you cast it. Used when you cast it in a fight and the game hides the aura, so there was no look to copy.
-  { key = "seal", class = "PALADIN", names = {}, spells = {}, like = { "^Seal of" }, fixed = 1800,
+  { key = "seal", class = "PALADIN", names = {}, spells = {}, like = { "^Seal of" }, fixed = 30,
     icon = "Interface\\Icons\\Spell_Holy_SealOfMight",
     title = "REM_SEAL_TITLE", show = "TIMER_SHOW", lock = "TIMER_LOCK", size = "TIMER_SIZE" },
   { key = "sliceanddice", class = "ROGUE", names = { "Slice and Dice" }, spells = {}, perCombo = { 6, 3 },

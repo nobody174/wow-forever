@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.79.2 (2026-10-21)
+
+- **The Paladin seal timer no longer jumps to 1800.** When the game hides your buffs (in a fight, or right as you cast), the timer counts down from its own guess, and that guess for a seal was 30 minutes instead of the real 30 seconds. It now starts from 30 seconds; whenever the game lets the addon read the buff, the real time is used as before.
+
 ## 0.79.1 (2026-10-21)
 
 - **Cooldown numbers now work in combat.** In a fight the game hands addons the cooldown as a value they cannot read, so our own numbers went blank. The "Cooldown numbers on the buttons" box now turns on the game's own setting "Show Numbers for Cooldowns" (the game draws those itself, in combat too) and puts the old value back when you untick it. Our own numbers are only the fallback for a client without that setting (and stay blank in combat there). `/r2f debug bars` now also says whether the setting exists and how many cooldowns are unreadable.

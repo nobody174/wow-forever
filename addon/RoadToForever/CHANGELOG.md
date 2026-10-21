@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.80.0 (2026-10-21)
+
+- **My general settings** (new): set one character up the way you like it, then right-click the minimap button > **Save my general settings** (or `/r2f general save`). On any other character, right-click > **Apply my general settings** (or `/r2f general apply`): it lists what it will do, asks, then sets the same game settings (camera, auto loot, names and nameplates, class colours, silhouette, raid frames, floating combat text, chat behaviour and more), switches on the same Action Bars, and sets up your chat windows (made if missing, with their message types and channels, font size, colour, locked) and the class colours on names in chat. The Combat Log window is never touched. Graphics, sound and the Edit Mode layouts (where the chat windows sit) are already shared by your account, and what is on the buttons stays per class (Setup Hunter / Setup Druid). `/r2f general clear` forgets the saved settings. Written without being able to try it in the game: see TESTING 5.68.
+
 ## 0.79.2 (2026-10-21)
 
 - **The Paladin seal timer no longer jumps to 1800.** When the game hides your buffs (in a fight, or right as you cast), the timer counts down from its own guess, and that guess for a seal was 30 minutes instead of the real 30 seconds. It now starts from 30 seconds; whenever the game lets the addon read the buff, the real time is used as before.

@@ -4382,7 +4382,7 @@ def test_step6_ui(templates, fx):
     lua.execute("R2FMinimapButton:Click('RightButton')")
     expected = [("title", "Road to Forever"), ("button", L.MENU_OPEN), ("button", L.MENU_MACROS),
                 ("button", L.MENU_TALENTS), ("divider", None), ("check", L.MENU_LOCK), ("button", L.MENU_HIDE),
-                ("divider", None), ("button", L.MENU_RELOAD)]
+                ("divider", None), ("button", L.MENU_GENERAL_SAVE), ("divider", None), ("button", L.MENU_RELOAD)]
     if templates:
         menu = lua.eval("TEST.menu")
         got = [(menu[i].kind, menu[i].text) for i in range(1, len(menu) + 1)]
@@ -4448,7 +4448,7 @@ def test_step6_ui(templates, fx):
     check(lua.eval("R2FDB.minimap.hide") is True and lua.eval("R2FMinimapButton:IsShown()") is False,
           "menu > Hide minimap button hides it")
     T.reloaded = 0
-    click(9)
+    click(11)
     check(T.reloaded == 1 and lua.eval("TEST.reloaded") == 1, "menu > Reload UI calls ReloadUI")
     check(any("minimap button hidden. Type /r2f minimap to show it again." in c for c in chat_lines(lua)),
           "hiding prints how to get it back (12.2)")
@@ -5076,7 +5076,7 @@ def test_minimap_libdbicon(fx):
     lua.execute("LDB.objects.RoadToForever.OnClick(UIParent, 'LeftButton')")
     check(lua.eval("R2F.MainWindow.IsShown()") is True, "LDB OnClick left = open the main window")
     lua.execute("LDB.objects.RoadToForever.OnClick(UIParent, 'RightButton')")
-    check(lua.eval("TEST.menu ~= nil and #TEST.menu == 9"), "LDB OnClick right = the menu")
+    check(lua.eval("TEST.menu ~= nil and #TEST.menu == 11"), "LDB OnClick right = the menu")
     lua.execute("GameTooltip:SetOwner() LDB.objects.RoadToForever.OnTooltipShow(GameTooltip)")
     check(lua_table_to_list(lua.eval("GameTooltip.lines"))[0] == "Road to Forever", "LDB tooltip filled by FillTooltip")
 
@@ -8402,6 +8402,7 @@ def main():
     test_combat_banner()
     test_recorder()
     test_setup()
+    test_general()
     test_route_log()
     test_action_bars()
     test_gameplay_quests()
@@ -8851,6 +8852,76 @@ def test_recorder():
     T2.chat = lua.table()
     lua.execute("R2F.DEBUG.recorder()")
     check("1 creatures looted" in chat_all(lua) and "vendors" in chat_all(lua), "recorder: /r2f debug recorder prints the counts")
+
+
+def test_general():
+    """General settings: save this character's game and chat settings on the account, apply them to another character."""
+    lua, T = reminder_runtime("PALADIN")
+    lua.execute("""
+      CVARS = { autoLootDefault = '1', cameraDistanceMaxZoomFactor = '4', nameplateShowClassColor = '1', occludedSilhouettePlayer = '1' }
+      GetCVar = function(n) return CVARS[n] end
+      SetCVar = function(n, v) CVARS[n] = v end
+      TOG = { false, true, true, true, true, true, false }
+      GetActionBarToggles = function() return unpack(TOG) end
+      SetActionBarToggles = function(...) TOG = { ... } end
+      NUM_CHAT_WINDOWS = 10
+      WIN = { { 'General', 14, 0, 0, 0, 0.4, true, true, 1 }, { 'Combat Log', 14, 0, 0, 0, 0.4, true, true, 2 },
+              { 'Whispers', 12, 0.1, 0.1, 0.1, 0.5, true, false, 0 }, { '' } }
+      GetChatWindowInfo = function(i) if WIN[i] then return unpack(WIN[i]) end return '' end
+      MSG = { [1] = { 'SAY', 'PARTY', 'GUILD' }, [3] = { 'WHISPER' } }
+      GetChatWindowMessages = function(i) return unpack(MSG[i] or {}) end
+      GetChatWindowChannels = function(i) if i == 1 then return 'Trade', 2 end end
+      ChatTypeInfo = { SAY = { colorNameByClass = true }, YELL = { colorNameByClass = false }, GUILD = { colorNameByClass = true } }
+      CALLS = {}
+      local function rec(n) return function(...) CALLS[#CALLS + 1] = n return ... end end
+      FCF_SetChatWindowFontSize = rec('size') FCF_SetWindowColor = rec('color') FCF_SetWindowAlpha = rec('alpha')
+      ChatFrame_RemoveAllMessageGroups = rec('clearGroups') ChatFrame_RemoveAllChannels = rec('clearChannels')
+      ChatFrame_AddMessageGroup = function(f, g) CALLS[#CALLS + 1] = 'group:' .. g end
+      ChatFrame_AddChannel = function(f, c) CALLS[#CALLS + 1] = 'channel:' .. c end
+      FCF_SetLocked = rec('lock')
+      ToggleChatColorNamesByClassGroup = function(on, k) CALLS[#CALLS + 1] = 'class:' .. k end
+      NEWWIN = {}
+      FCF_OpenNewWindow = function(name) NEWWIN[#NEWWIN + 1] = name return { GetID = function() return 4 end } end
+      for i = 1, 10 do _G['ChatFrame' .. i] = { GetID = function() return i end } end
+    """)
+    check(lua.eval("R2F.General.Has()") is False, "general: nothing saved at first")
+    lua.execute("TEST.chat = {} R2F.General.Command('')")
+    check(any("no general settings saved yet" in c for c in chat_lines(lua)), "general: /r2f general says nothing is saved")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_GENERAL_APPLY then return true end end return false end)()") is False,
+          "general: no Apply entry on the menu before saving")
+    lua.execute("R2F.General.Save()")
+    check(lua.eval("R2F.General.Has()") is True, "general: saved")
+    check(lua.eval("R2FDB.general.cvars.autoLootDefault") == "1" and lua.eval("R2FDB.general.cvars.nameplateShowClassColor") == "1",
+          "general: game settings kept")
+    check(lua.eval("R2FDB.general.cvars.cameraSmoothStyle") is None, "general: a CVar this client does not know is not kept")
+    check(lua.eval("#R2FDB.general.chat.windows") == 2 and lua.eval("R2FDB.general.chat.windows[2].name") == "Whispers",
+          "general: General and Whispers kept, the Combat Log and empty windows left out")
+    check(lua.eval("R2FDB.general.chat.windows[1].groups[3]") == "GUILD" and lua.eval("R2FDB.general.chat.windows[1].channels[1]") == "Trade",
+          "general: message types and channels kept")
+    check(lua_table_to_list(lua.eval("R2FDB.general.chat.classNames")) == ["GUILD", "SAY"], "general: class-coloured names kept")
+    check(lua.eval("R2FDB.general.bars[6]") is True and lua.eval("R2FDB.general.bars[1]") is False, "general: action bars kept")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_GENERAL_APPLY then return true end end return false end)()") is True,
+          "general: the menu offers Apply once something is saved")
+    # Another character: other values, the Whispers window does not exist yet.
+    lua.execute("""CVARS.autoLootDefault = '0' CVARS.nameplateShowClassColor = '0' TOG = { false, false, false, false, false, false, false }
+      WIN = { { 'General', 14, 0, 0, 0, 0.4, true, false, 1 }, { 'Combat Log', 14, 0, 0, 0, 0.4, true, true, 2 } } CALLS = {}
+      CONFIRMS = {} R2F.UI.Confirm = function(t, a, b, fn) table.insert(CONFIRMS, { text = t, fn = fn }) end
+      R2F.General.Apply()""")
+    check(lua.eval("#CONFIRMS") == 1 and "2 chat windows" in lua.eval("CONFIRMS[1].text"), "general: Apply lists what it will do and asks first")
+    check(lua.eval("CVARS.autoLootDefault") == "0", "general: nothing changed before the yes")
+    lua.execute("CONFIRMS[1].fn()")
+    check(lua.eval("CVARS.autoLootDefault") == "1" and lua.eval("CVARS.nameplateShowClassColor") == "1", "general: game settings applied")
+    check(lua.eval("TOG[2]") is True and lua.eval("TOG[6]") is True and lua.eval("TOG[1]") is False, "general: action bars applied")
+    check(lua_table_to_list(lua.eval("NEWWIN")) == ["Whispers"], "general: the missing window is made, the existing one reused")
+    calls = lua_table_to_list(lua.eval("CALLS"))
+    check("group:SAY" in calls and "group:GUILD" in calls and "group:WHISPER" in calls and "channel:Trade" in calls,
+          "general: message types and channels set: %s" % calls)
+    check("class:SAY" in calls and "class:GUILD" in calls and "class:YELL" not in calls, "general: class colours on names applied")
+    # Not in combat only.
+    lua.execute("CVARS.autoLootDefault = '0' R2F.inCombat = true R2F.General.Execute() R2F.inCombat = false")
+    check(lua.eval("CVARS.autoLootDefault") == "0", "general: nothing is written in combat")
+    lua.execute("R2F.General.Command('clear')")
+    check(lua.eval("R2F.General.Has()") is False, "general: clear forgets them")
 
 
 def test_setup():

@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-10-21",
+      "title": "Road to Forever addon 0.80.0: your general settings on every character",
+      "text": "Set up one character, then save it from the minimap menu. On any other character, one click applies the same game settings, action bars and chat windows.",
+      "link": "addons.html"
+    },
+    {
+      "date": "2026-10-21",
       "title": "Road to Forever addon 0.79.2: Paladin seal timer fixed",
       "text": "The countdown on the Paladin seal icon sometimes started at 1800 instead of 30 seconds. It now always starts at 30.",
       "link": "addons.html"

@@ -288,6 +288,8 @@ SlashCmdList.R2F = function(msg)
     -- /r2f setup hunter   |   /r2f setup undo   |   /r2f setup (your class)
     local which = rest ~= "" and rest or (R2F.Setup.ForClass() and R2F.Setup.ForClass().key) or ""
     if which == "undo" then R2F.Setup.Undo() else R2F.Setup.Run(which) end
+  elseif word == "general" then
+    R2F.General.Command(rest)
   elseif not (word and runDebug(word, rest)) then
     R2F.Print(L.UNKNOWN_COMMAND:format(msg))
   end

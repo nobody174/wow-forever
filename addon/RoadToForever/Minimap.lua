@@ -184,6 +184,14 @@ function Minimap_.MenuItems()
     end
     items[#items + 1] = { kind = "divider" }
   end
+  -- Your general settings (General.lua): saved once, applied on any character.
+  if R2F.General then
+    items[#items + 1] = { kind = "button", text = L.MENU_GENERAL_SAVE, func = function() R2F.General.Save() end }
+    if R2F.General.Has() then
+      items[#items + 1] = { kind = "button", text = L.MENU_GENERAL_APPLY, func = function() R2F.General.Apply() end }
+    end
+    items[#items + 1] = { kind = "divider" }
+  end
   -- /reload without typing it (ReloadUI is not a protected function).
   items[#items + 1] = { kind = "button", text = L.MENU_RELOAD, func = function() ReloadUI() end }
   return items

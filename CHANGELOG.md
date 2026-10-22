@@ -7,9 +7,11 @@ user-facing release notes.
 
 ## 2026-10-22 (addon versions checked)
 - addons.html: Road to Forever card fallback moved to 0.80.1 (newest `r2f-v*` tag, Oct 22, 2026; link, version, zip name). It matches
-  `RoadToForever.toc` (`## Version: 0.80.1`). CurseForge cards (AtlasLoot Continued, Forever Bestiary, Leatrix Maps, Questie, ThreatMaster)
-  were not re-checked this run: the CurseForge file pages were refused by the fetch permission (not answered in time), so their
-  "Versions checked" date was left as is.
+  `RoadToForever.toc` (`## Version: 0.80.1`).
+- CurseForge re-checked the same day: Forever Bestiary 0.6.0, Leatrix Maps 1.60.23-forever, Questie v12.1.0+v1.0.6 and ThreatMaster 0.4.0
+  are still the newest Forever files, so their cards are unchanged. AtlasLoot Continued shows a newer file (12599, Oct 22) but its file
+  row reads "Classic TBC +2", so Forever is not confirmed; its card stays on 12488 until the file page confirms the flavor.
+- The first attempt in the scheduled run was refused by the fetch permission (not answered in time), which is why this check was repeated.
 
 ## 2026-10-21 (addon versions checked)
 - addons.html: Road to Forever card fallback moved to 0.77.1 (newest `r2f-v*` tag, Oct 20, 2026; link, version, zip name). It matches

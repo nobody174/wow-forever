@@ -68,6 +68,7 @@ h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6
 .lede{color:var(--muted);margin:0 0 16px;max-width:66ch}
 .meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
 .chip{font:600 12px/1 var(--sans);letter-spacing:.03em;text-transform:uppercase;padding:7px 10px;border-radius:999px;border:1px solid var(--edge);background:var(--panel);color:var(--text)}
+.chip-ico{width:16px;height:16px;border-radius:3px;vertical-align:-3px;margin-right:2px}
 .chip.gold{border-color:var(--gold);color:var(--gold)}
 .draft{background:rgba(232,163,61,.08);border:1px solid rgba(232,163,61,.45);border-radius:6px;padding:12px 14px;color:var(--text);font-size:14px;margin:0 0 22px}
 .draft strong{color:var(--warn)}
@@ -75,9 +76,18 @@ h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6
 /* Pickers: race, class and the 2 Hunters side option */
 .picker-wrap{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 18px;margin:0 0 22px}
 .pick{display:flex;flex-direction:column;gap:6px}
-.pick label,.switch-label{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-.pick select{font:600 15px var(--sans);color:var(--text);background:var(--panel);border:1px solid var(--edge);border-radius:6px;padding:10px 12px;min-width:200px;cursor:pointer}
-.pick select:focus-visible,.preset:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.pick-label,.switch-label{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.dd{position:relative;min-width:220px}
+.dd-btn{width:100%;display:flex;align-items:center;gap:10px;font:600 15px var(--sans);color:var(--text);background:var(--panel);border:1px solid var(--edge);border-radius:6px;padding:8px 12px;cursor:pointer;text-align:left}
+.dd-btn::after{content:"";margin-left:auto;border:5px solid transparent;border-top-color:var(--muted);border-bottom:0}
+.dd-btn:hover{border-color:var(--gold)}
+.dd-list{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 4px);margin:0;padding:4px;list-style:none;background:var(--panel);border:1px solid var(--edge);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.55)}
+.dd-list[hidden]{display:none}
+.dd-list li{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:5px;font:600 15px var(--sans);cursor:pointer}
+.dd-list li[aria-selected="true"]{background:rgba(255,209,0,.08)}
+.dd-list li.active{background:#232c52}
+.dd-ico{width:24px;height:24px;border-radius:5px;border:1px solid var(--edge);flex:none;background:#0A0F20}
+.dd-btn:focus-visible,.preset:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .preset{font:600 14px/1 var(--sans);color:var(--muted);background:transparent;border:1px solid var(--edge);border-radius:6px;padding:12px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
 .preset::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--hunt)}
 .preset:hover{color:var(--text)}
@@ -110,6 +120,9 @@ ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--mut
 .tag.aud{color:var(--tc,var(--muted));border:1px solid var(--tc,var(--edge))}
 .gear{display:block;font-size:13px;margin-top:4px;color:var(--text)}
 .gear b{color:var(--gold);font-weight:600}
+.gear a.q2{color:#1eff00}
+.gear a.q3{color:#4da3ff}
+.gear a.q4{color:#c06cff}
 .gear a{color:var(--text);text-decoration:none;border-bottom:1px dotted var(--edge)}
 .gear a:hover{color:var(--gold);border-color:var(--gold)}
 .gear.muted{color:var(--muted)}
@@ -138,7 +151,7 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
 @media (max-width:560px){
   ul.check label{flex-wrap:wrap}
   .lvl{min-width:0}
-  .pick,.pick select{width:100%}
+  .pick,.dd{width:100%}
 }
 
 /* Buyable-quests sidebar */
@@ -215,8 +228,8 @@ body.buy-open .buy-drawer{transform:none}
   </div>
 
   <div class="picker-wrap">
-    <div class="pick"><label for="pick-race">Race</label><select id="pick-race"></select></div>
-    <div class="pick"><label for="pick-class">Class</label><select id="pick-class"></select></div>
+    <div class="pick"><span class="pick-label" id="lbl-race">Race</span><div class="dd" id="pick-race"></div></div>
+    <div class="pick"><span class="pick-label" id="lbl-class">Class</span><div class="dd" id="pick-class"></div></div>
     <div class="pick"><span class="switch-label" id="preset-label">Side option</span><button type="button" class="preset" id="preset-btn" aria-pressed="false" aria-labelledby="preset-label preset-btn"></button></div>
   </div>
   <p class="weapon-note">Weapon lines list the best quest rewards your class can use for each step, strongest damage first (casters: check the stats). The site cannot see your gear. Quest rewards are known up to level 32; dungeon and vendor weapons are on <a href="bis.html">Mr.BiZ</a>. Dual wield is not counted.</p>
@@ -871,7 +884,7 @@ body.buy-open .buy-drawer{transform:none}
     });
   }
   function itemLink(w) {
-    return '<a href="https://www.wowhead.com/forever/item=' + w[0] + '" target="_blank" rel="noopener">' + w[1] + "</a>";
+    return '<a class="q' + w[6] + '" href="https://www.wowhead.com/forever/item=' + w[0] + '" target="_blank" rel="noopener">' + w[1] + "</a>";
   }
   function weaponText(w, withDps) {
     return itemLink(w) + " (" + w[2] + (withDps && w[7] ? ", " + w[7].toFixed(1) + " dps" : "") + " — " + w[4] + ")";
@@ -946,27 +959,86 @@ body.buy-open .buy-drawer{transform:none}
     p.querySelector(".count").textContent = done + " / " + all.length;
   }
 
-  var raceSel = document.getElementById("pick-race");
-  var classSel = document.getElementById("pick-class");
   var presetBtn = document.getElementById("preset-btn");
-
-  raceSel.innerHTML = RACE_ORDER.map(function (r) { return '<option value="' + r + '">' + RACES[r].label + "</option>"; }).join("");
   presetBtn.textContent = PRESETS.hunter.label;
 
-  function fillClasses() {
-    classSel.innerHTML = RACES[cur.race].classes.map(function (c) {
-      return '<option value="' + c + '">' + CLASSES[c].label + "</option>";
-    }).join("");
+  // Icons come from Wowhead's image host (the Builds page uses it too). Race icons are the male portraits.
+  var ICON = "https://wow.zamimg.com/images/wow/icons/medium/";
+  function raceIcon(r) { return ICON + "race_" + r + "_male.jpg"; }
+  function classIcon(c) { return ICON + "classicon_" + c.toLowerCase() + ".jpg"; }
+
+  // A dropdown with an icon and a colour per option (a native <select> can't show icons). Button + listbox,
+  // keyboard: Arrow keys, Enter / Space, Escape, Home / End.
+  function makeDropdown(root, labelId, onPick) {
+    var btn = document.createElement("button");
+    btn.type = "button"; btn.className = "dd-btn";
+    btn.setAttribute("aria-haspopup", "listbox"); btn.setAttribute("aria-expanded", "false");
+    var list = document.createElement("ul");
+    list.className = "dd-list"; list.setAttribute("role", "listbox"); list.setAttribute("aria-labelledby", labelId); list.hidden = true;
+    root.appendChild(btn); root.appendChild(list);
+    var opts = [], value = null, active = 0;
+    function inner(o) {
+      return (o.icon ? '<img class="dd-ico" src="' + o.icon + '" alt="" width="24" height="24">' : "") +
+        "<span" + (o.color ? ' style="color:' + o.color + '"' : "") + ">" + o.label + "</span>";
+    }
+    function mark() {
+      Array.prototype.forEach.call(list.children, function (li, i) { li.classList.toggle("active", i === active); });
+      if (list.children[active]) btn.setAttribute("aria-activedescendant", list.children[active].id);
+    }
+    function close() { list.hidden = true; btn.setAttribute("aria-expanded", "false"); btn.removeAttribute("aria-activedescendant"); }
+    function open() {
+      list.hidden = false; btn.setAttribute("aria-expanded", "true");
+      active = Math.max(0, opts.map(function (o) { return o.value; }).indexOf(value));
+      mark();
+    }
+    function pick(i) { close(); if (opts[i] && opts[i].value !== value) onPick(opts[i].value); }
+    btn.addEventListener("click", function () { if (list.hidden) open(); else close(); });
+    btn.addEventListener("keydown", function (e) {
+      var k = e.key;
+      if (list.hidden) {
+        if (k === "ArrowDown" || k === "ArrowUp") { e.preventDefault(); open(); }
+        return;
+      }
+      if (k === "ArrowDown") { e.preventDefault(); active = Math.min(active + 1, opts.length - 1); mark(); }
+      else if (k === "ArrowUp") { e.preventDefault(); active = Math.max(active - 1, 0); mark(); }
+      else if (k === "Home") { e.preventDefault(); active = 0; mark(); }
+      else if (k === "End") { e.preventDefault(); active = opts.length - 1; mark(); }
+      else if (k === "Enter" || k === " ") { e.preventDefault(); pick(active); }
+      else if (k === "Escape" || k === "Tab") { close(); }
+    });
+    list.addEventListener("mousedown", function (e) { e.preventDefault(); });
+    list.addEventListener("click", function (e) {
+      var li = e.target.closest("li");
+      if (li) pick(Array.prototype.indexOf.call(list.children, li));
+    });
+    document.addEventListener("click", function (e) { if (!root.contains(e.target)) close(); });
+    return {
+      set: function (options, selected) {
+        opts = options; value = selected;
+        list.innerHTML = options.map(function (o, i) {
+          return '<li role="option" id="' + root.id + "-o" + i + '" aria-selected="' + (o.value === selected) + '">' + inner(o) + "</li>";
+        }).join("");
+        var cur = options.filter(function (o) { return o.value === selected; })[0];
+        btn.innerHTML = cur ? inner(cur) : "";
+      }
+    };
   }
+
+  var raceDD = makeDropdown(document.getElementById("pick-race"), "lbl-race", function (race) {
+    var classes = RACES[race].classes;
+    setPlan({ race: race, cls: classes.indexOf(cur.cls) !== -1 ? cur.cls : classes[0], preset: null }, true);
+  });
+  var classDD = makeDropdown(document.getElementById("pick-class"), "lbl-class", function (cls) {
+    setPlan({ race: cur.race, cls: cls, preset: null }, true);
+  });
 
   function render() {
     var sel = cur, race = RACES[sel.race];
     document.documentElement.style.setProperty("--cc", CLASSES[sel.cls].color);
-    raceSel.value = sel.race;
-    fillClasses();
-    classSel.value = sel.cls;
+    raceDD.set(RACE_ORDER.map(function (r) { return { value: r, label: RACES[r].label, icon: raceIcon(r) }; }), sel.race);
+    classDD.set(race.classes.map(function (c) { return { value: c, label: CLASSES[c].label, icon: classIcon(c), color: CLASSES[c].color }; }), sel.cls);
     presetBtn.setAttribute("aria-pressed", String(!!sel.preset));
-    document.getElementById("race-chip").textContent = race.label;
+    document.getElementById("race-chip").innerHTML = '<img class="chip-ico" src="' + raceIcon(sel.race) + '" alt="" width="16" height="16"> ' + race.label;
     var chip = document.getElementById("class-chip");
     chip.textContent = sel.preset ? "2× " + CLASSES[sel.cls].label : CLASSES[sel.cls].label;
     chip.style.borderColor = chip.style.color = CLASSES[sel.cls].color;
@@ -974,6 +1046,8 @@ body.buy-open .buy-drawer{transform:none}
     document.getElementById("race-note").hidden = !race.draft;
     document.querySelectorAll(".phase").forEach(function (el) { renderChecklist(el, PHASES[el.dataset.phase], sel); });
     renderTips(sel);
+    // Wowhead's tooltip script finds the item links by itself on hover; ask it to rescan the ones just drawn.
+    try { if (window.$WowheadPower && window.$WowheadPower.refreshLinks) window.$WowheadPower.refreshLinks(); } catch (e) { /* tooltips are optional */ }
     var hidePlans = function (card) {
       var races = (card.dataset.race || "").split(" ").filter(Boolean);
       return races.length && races.indexOf(sel.race) === -1;
@@ -996,14 +1070,6 @@ body.buy-open .buy-drawer{transform:none}
     render();
   }
 
-  raceSel.addEventListener("change", function () {
-    var race = raceSel.value;
-    var classes = RACES[race].classes;
-    setPlan({ race: race, cls: classes.indexOf(cur.cls) !== -1 ? cur.cls : classes[0], preset: null }, true);
-  });
-  classSel.addEventListener("change", function () {
-    setPlan({ race: cur.race, cls: classSel.value, preset: null }, true);
-  });
   presetBtn.addEventListener("click", function () {
     setPlan(cur.preset ? { race: cur.race, cls: cur.cls, preset: null } : parsePlan("hunter"), true);
   });
@@ -1229,6 +1295,8 @@ body.buy-open .buy-drawer{transform:none}
   if (location.hash === "#buyable") openDrawer();
 })();
 </script>
+<script>var whTooltips = { colorLinks: false, iconizeLinks: false, renameLinks: false };</script>
+<script src="https://wow.zamimg.com/js/tooltips.js" defer></script>
 <script src="footer.js" defer></script>
 </body>
 </html>

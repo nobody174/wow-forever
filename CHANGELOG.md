@@ -18,6 +18,10 @@ user-facing release notes.
   row reads "Classic TBC +2", so Forever is not confirmed; its card stays on 12488 until the file page confirms the flavor.
 - The first attempt in the scheduled run was refused by the fetch permission (not answered in time), which is why this check was repeated.
 
+## 2026-10-25 (launch plan: Zephras giver coordinates)
+- Waypoints for every Zephras route step (giver NPC coordinates from Wowhead Forever NPC pages, one page at a time with 6 s pauses; 43 of 43
+  quests, no block). Site and addon both show them; subzones are not on the NPC pages.
+
 ## 2026-10-25 (launch plan: dropdown icons, weapon tooltips)
 - `launch-plan.html`: the race and class pickers are custom dropdowns (keyboard friendly) with a race portrait per race and the class icon and class colour per class; the race chip shows the icon. Weapon names are coloured by rarity and show Wowhead's item tooltip on hover (the same `tooltips.js` the Professions page loads); a click still opens the item on Wowhead Forever.
 

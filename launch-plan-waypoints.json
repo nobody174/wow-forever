@@ -13,12 +13,46 @@
     "n-zephras": { "skyborne": [
       { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.8, "y": 23.1, "label": "Zephras Isle starting area (Thendal Village)", "conf": "exact", "src": "owner /r2f here 2026-10-16" } ] },
     "zs-start": { "default": [
-      { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.8, "y": 23.4, "label": "Ailee Farheart (Coming of Age)", "conf": "exact", "src": "Wowhead Forever NPC page" } ] },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.8, "y": 23.4, "label": "Ailee Farheart (Coming of Age)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.0, "y": 23.4, "label": "Rorian the Dayseeker (turn in, then Harmony in Balance)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
+    "zs-class": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.0, "y": 23.4, "label": "Rorian the Dayseeker (class quest)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
+    "zs-infest": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 43.4, "y": 24.8, "label": "Elatrell Featherlight", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
     "zs-windstones": { "default": [
-      { "zone": "Zephras Isle", "mapHint": 2521, "x": 43.3, "y": 24.0, "label": "Dalia the Collector (Harvesting Windstones)", "conf": "exact", "src": "owner route log run 1" },
-      { "zone": "Zephras Isle", "mapHint": 2521, "x": 43.6, "y": 24.0, "label": "Myriaal Mistwake (Falling With Style)", "conf": "exact", "src": "Wowhead Forever NPC page" } ] },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 43.3, "y": 24.0, "label": "Dalia the Collector (Harvesting Windstones)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 43.6, "y": 24.0, "label": "Myriaal Mistwake (Falling With Style)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 43.8, "y": 24.0, "label": "Halaan Hawk-Eye (The Anchors of Zephras)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 43.2, "y": 24.8, "label": "Falorne Fallwind (Reading the Leylines)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
+    "zs-rorian": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.0, "y": 23.4, "label": "Rorian the Dayseeker", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 47.2, "y": 21.8, "label": "Yala Windwatcher (Agitators, Return to Rorian)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.6, "y": 23.6, "label": "Aetheen of the Gales (Foul Matriarch, The Next Step)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
+    "zs-shendar": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 45.4, "y": 45.4, "label": "Constable Aonda, Shen'dar Village", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 44.4, "y": 45.0, "label": "Teeri Wellwind", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
     "zs-cult": { "default": [
-      { "zone": "Zephras Isle", "mapHint": 2521, "x": 46.8, "y": 56.2, "label": "Missionary Jasaan (Among the Faithful)", "conf": "exact", "src": "Wowhead Forever NPC page" } ] },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 45.4, "y": 45.4, "label": "Constable Aonda (Infiltrating the Cult)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 44.8, "y": 45.4, "label": "Sania Silverstream (Falaath Village)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 46.8, "y": 56.2, "label": "Missionary Jasaan (Among the Faithful)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
+    "zs-watch": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 45.4, "y": 45.4, "label": "Constable Aonda (The Western Watch)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 45.2, "y": 45.2, "label": "Danarii Bellowveil (Stolen Supplies)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 66.2, "y": 76.6, "label": "Valennia Stormfist (Bugged)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
+    "zs-farm": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 62.0, "y": 73.2, "label": "Alvarion Windfield (Blood Tithe)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 46.6, "y": 81.8, "label": "Aamelia Windfield (Standing Our Ground)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 48.0, "y": 77.8, "label": "Malfunctioning Cyclone Construct (What Is My Purpose?, a mob)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
+    "zs-valanaar": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 45.4, "y": 45.4, "label": "Constable Aonda (To Valanaar)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 66.2, "y": 76.6, "label": "Valennia Stormfist (The Supreme Magister)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
+    "zs-scholar": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 66.2, "y": 79.8, "label": "Fillion Flamebreeze (Fillion's Mission)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
+    "zs-plot": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 66.2, "y": 76.6, "label": "Valennia Stormfist (The High Elder's Request, Prepare for Battle)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
+    "zs-finale": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 65.2, "y": 50.4, "label": "Valennia Stormfist (Confront Lorthuna)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 66.2, "y": 76.4, "label": "Talaanis Shadowsong (What Comes Next)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" } ] },
     "hu-northshire": { "default": [
       { "zone": "Elwynn Forest", "label": "Northshire Abbey, Northshire Valley", "conf": "check", "src": "Wowhead lists Elwynn Forest as level 1-10; subzones are Classic knowledge" } ] },
     "hu-elwynn": { "default": [
@@ -35,8 +69,8 @@
       { "zone": "Dun Morogh", "mapHint": 1426, "x": 47.4, "y": 52.5, "label": "Kharanos inn (Thunderbrew Distillery)", "conf": "classic", "src": "classic" } ] },
     "h-pet": {
       "skyborne": [
-        { "zone": "Zephras Isle", "x": 45.2, "y": 44.2, "label": "Elayaa Easewind, hunter trainer (middle village; Taming the Beast)", "conf": "approx", "src": "wh-zephras" },
-        { "zone": "Zephras Isle", "x": 59.6, "y": 72.6, "label": "Quel'ana Quickgale, hunter trainer (southern town; Taming the Beast)", "conf": "approx", "src": "wh-zephras" } ],
+        { "zone": "Zephras Isle", "x": 45.2, "y": 44.2, "label": "Elayaa Easewind, hunter trainer (middle village; Taming the Beast)", "conf": "exact", "src": "wh-zephras" },
+        { "zone": "Zephras Isle", "x": 59.6, "y": 72.6, "label": "Quel'ana Quickgale, hunter trainer (southern town; Taming the Beast)", "conf": "exact", "src": "wh-zephras" } ],
       "dwarf": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 45.8, "y": 53.0, "label": "Grif Wildheart, hunter trainer in Kharanos", "conf": "classic", "src": "classic" } ] },
     "wd-bear": { "skyborne": [
       { "zone": "Zephras Isle", "x": 45.2, "y": 44.2, "label": "Naeluna Swiftmend, druid trainer (middle village)", "conf": "approx", "src": "wh-zephras" },
@@ -53,6 +87,7 @@
         { "zone": "Zephras Isle", "x": 63.0, "y": 77.8, "label": "Antelariaa Cloudgaze, general goods (southern town)", "conf": "approx", "src": "wh-zephras" } ],
       "dwarf": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 47.4, "y": 52.5, "label": "Kharanos vendors", "conf": "classic", "src": "classic" } ] },
     "n-dalaran": { "skyborne": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 66.4, "y": 79.8, "label": "Elaadrin Evengale (The Magical City of Dalaran)", "conf": "exact", "src": "Wowhead Forever NPC page, read 2026-10-25" },
       { "zone": "Zephras Isle", "mapHint": 2521, "x": 65.8, "y": 83.4, "label": "Skycutter to Dalaran (Valanaar)", "conf": "exact", "src": "owner /r2f here 2026-10-16; the way back leaves Dalaran at 12.7, 52.1 on the Alterac Mountains map" },
       { "zone": "Alterac Mountains", "mapHint": 1416, "x": 12.0, "y": 56.3, "label": "Skyborne portal to Stormwind (The Sky Enclave, Dalaran)", "conf": "exact", "src": "owner /r2f here 2026-10-16" } ] },
     "n-if": { "default": [

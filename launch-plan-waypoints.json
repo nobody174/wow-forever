@@ -1,5 +1,5 @@
 {
-  "_about": "Waypoints for the in-game Launch Plan tab (ADDON_PLAN 15.5). Keyed by launch-plan.html item id; only launch-day phases (night, p1, p2, p3), not the pre-launch 'before' list or the 'beta' test list. Each step has a list of points (default) and optional per-plan lists (hwd / hunter / h3d / trio) that replace the default for that plan. A point: zone = English zone name (the addon resolves it to a uiMapID at runtime, mapHint is only a hint), x/y in map percent, label, conf: 'exact' (Forever source), 'classic' (Classic position of a place that still exists; may have moved in Forever), 'approx' (area only, a rough spot), 'check' (no position known: the addon shows the label and asks the player to note it). Researched 2026-10-09.",
+  "_about": "Waypoints for the in-game Launch Plan tab (ADDON_PLAN 15.5). Keyed by launch-plan.html item id; only launch-day phases (night, p1, p2, p3), not the pre-launch 'before' list or the 'beta' test list. Each step has a list of points (default) and optional per-race lists (skyborne / dwarf / gnome / human / nightelf) that replace the default for that race. A point: zone = English zone name (the addon resolves it to a uiMapID at runtime, mapHint is only a hint), x/y in map percent, label, conf: 'exact' (Forever source), 'classic' (Classic position of a place that still exists; may have moved in Forever), 'approx' (area only, a rough spot), 'check' (no position known: the addon shows the label and asks the player to note it). Researched 2026-10-09.",
   "_sources": {
     "wt-hot": "https://www.warcrafttavern.com/forever/news/how-to-find-the-hall-of-thanes-dungeon-quests/",
     "wh-dungeons": "https://www.wowhead.com/forever/guide/dungeons-overview-locations-details",
@@ -10,32 +10,42 @@
     "classic": "Classic (1.12) positions of towns, inns and dungeon entrances that exist in both games"
   },
   "steps": {
-    "n-zephras": { "default": [
+    "n-zephras": { "skyborne": [
       { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.8, "y": 23.1, "label": "Zephras Isle starting area (Thendal Village)", "conf": "exact", "src": "owner /r2f here 2026-10-16" } ] },
-    "tr-coldridge": { "trio": [
+    "hu-northshire": { "default": [
+      { "zone": "Elwynn Forest", "label": "Northshire Abbey, Northshire Valley", "conf": "check", "src": "Wowhead lists Elwynn Forest as level 1-10; subzones are Classic knowledge" } ] },
+    "hu-elwynn": { "default": [
+      { "zone": "Elwynn Forest", "x": 42.0, "y": 65.0, "label": "Goldshire, Lion's Pride Inn", "conf": "approx", "src": "classic" } ] },
+    "ne-shadowglen": { "default": [
+      { "zone": "Teldrassil", "label": "Shadowglen, the Night Elf start", "conf": "check", "src": "Wowhead lists Teldrassil as level 1-11; subzones are Classic knowledge" } ] },
+    "ne-teldrassil": { "default": [
+      { "zone": "Teldrassil", "label": "Dolanaar inn", "conf": "check", "src": "classic" } ] },
+    "ne-boat": { "default": [
+      { "zone": "Teldrassil", "label": "Rut'theran Village dock, boat to Auberdine", "conf": "check", "src": "classic" } ] },
+    "tr-coldridge": { "default": [
       { "zone": "Dun Morogh", "mapHint": 1426, "x": 28.8, "y": 67.6, "label": "Anvilmar, Coldridge Valley", "conf": "classic", "src": "classic" } ] },
-    "tr-dunmorogh": { "trio": [
+    "tr-dunmorogh": { "default": [
       { "zone": "Dun Morogh", "mapHint": 1426, "x": 47.4, "y": 52.5, "label": "Kharanos inn (Thunderbrew Distillery)", "conf": "classic", "src": "classic" } ] },
     "h-pet": {
-      "default": [
+      "skyborne": [
         { "zone": "Zephras Isle", "x": 45.2, "y": 44.2, "label": "Elayaa Easewind, hunter trainer (middle village; Taming the Beast)", "conf": "approx", "src": "wh-zephras" },
         { "zone": "Zephras Isle", "x": 59.6, "y": 72.6, "label": "Quel'ana Quickgale, hunter trainer (southern town; Taming the Beast)", "conf": "approx", "src": "wh-zephras" } ],
-      "trio": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 45.8, "y": 53.0, "label": "Grif Wildheart, hunter trainer in Kharanos", "conf": "classic", "src": "classic" } ] },
-    "wd-bear": { "default": [
+      "dwarf": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 45.8, "y": 53.0, "label": "Grif Wildheart, hunter trainer in Kharanos", "conf": "classic", "src": "classic" } ] },
+    "wd-bear": { "skyborne": [
       { "zone": "Zephras Isle", "x": 45.2, "y": 44.2, "label": "Naeluna Swiftmend, druid trainer (middle village)", "conf": "approx", "src": "wh-zephras" },
       { "zone": "Zephras Isle", "x": 64.0, "y": 75.0, "label": "Lotheluum Starbreeze, druid trainer (southern town)", "conf": "approx", "src": "wh-zephras" } ] },
-    "wd-def": { "default": [
+    "wd-def": { "skyborne": [
       { "zone": "Zephras Isle", "x": 44.8, "y": 45.2, "label": "Corsan Earthrazer, warrior trainer (middle village)", "conf": "approx", "src": "wh-zephras" },
       { "zone": "Zephras Isle", "x": 59.8, "y": 72.8, "label": "Seena Skybreaker, warrior trainer (southern town)", "conf": "approx", "src": "wh-zephras" } ] },
-    "n-camp": { "default": [
+    "n-camp": { "skyborne": [
       { "zone": "Zephras Isle", "x": 41.6, "y": 44.8, "label": "Raan Wildwind, The Great Outdoors", "conf": "approx", "src": "wh-zephras" },
       { "zone": "Zephras Isle", "x": 43.8, "y": 43.8, "label": "Zerril Softbreeze, cooking trainer (middle village)", "conf": "approx", "src": "wh-zephras" } ] },
     "h-ammo": {
-      "default": [
+      "skyborne": [
         { "zone": "Zephras Isle", "x": 44.6, "y": 45.4, "label": "Veena Vericloud, general goods (middle village)", "conf": "approx", "src": "wh-zephras" },
         { "zone": "Zephras Isle", "x": 63.0, "y": 77.8, "label": "Antelariaa Cloudgaze, general goods (southern town)", "conf": "approx", "src": "wh-zephras" } ],
-      "trio": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 47.4, "y": 52.5, "label": "Kharanos vendors", "conf": "classic", "src": "classic" } ] },
-    "n-dalaran": { "default": [
+      "dwarf": [ { "zone": "Dun Morogh", "mapHint": 1426, "x": 47.4, "y": 52.5, "label": "Kharanos vendors", "conf": "classic", "src": "classic" } ] },
+    "n-dalaran": { "skyborne": [
       { "zone": "Zephras Isle", "mapHint": 2521, "x": 65.8, "y": 83.4, "label": "Skycutter to Dalaran (Valanaar)", "conf": "exact", "src": "owner /r2f here 2026-10-16; the way back leaves Dalaran at 12.7, 52.1 on the Alterac Mountains map" },
       { "zone": "Alterac Mountains", "mapHint": 1416, "x": 12.0, "y": 56.3, "label": "Skyborne portal to Stormwind (The Sky Enclave, Dalaran)", "conf": "exact", "src": "owner /r2f here 2026-10-16" } ] },
     "n-if": { "default": [
@@ -43,7 +53,7 @@
       { "zone": "Dun Morogh", "mapHint": 1426, "x": 64.8, "y": 58.5, "label": "Earthseer Farsen (Hall of Thanes quest chain)", "conf": "exact", "src": "wt-hot" } ] },
     "p1-filler": { "default": [
       { "zone": "Loch Modan", "mapHint": 1432, "x": 35.5, "y": 48.4, "label": "Thelsamar", "conf": "classic", "src": "classic" } ] },
-    "tr-rf": { "trio": [
+    "tr-rf": { "default": [
       { "zone": "Ironforge", "mapHint": 1455, "x": 23.4, "y": 6.2, "label": "Brandur Ironhammer, paladin trainer", "conf": "approx", "src": "wh-ironforge" } ] },
     "p1-hot": { "default": [
       { "zone": "Ironforge", "mapHint": 1455, "x": 43.5, "y": 52.0, "label": "Hall of Thanes entrance", "conf": "exact", "src": "wt-hot" },

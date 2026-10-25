@@ -10,7 +10,7 @@
 -- is not an upgrade. An item the game has not loaded yet is asked for and shown once its stats arrive (the Plan tab
 -- redraws on GET_ITEM_INFO_RECEIVED).
 -- Class weapon use is Forever's table (ForeverDB "Trainers & weapon skills", checked 2026-10-17: it differs from Classic only in
--- that Rogues can use one-handed axes); quests locked to the other faction are skipped.
+-- that Rogues can use one-handed axes), kept in bis/build_quest_weapons.py; quests locked to the other faction are skipped.
 -- Read-only: item info and equipped links, nothing written to the game.
 
 local _, R2F = ...
@@ -25,20 +25,10 @@ local function set(...)
   return t
 end
 
--- Weapon kinds (the data's `kind`) each class can use. Forever's proficiencies; dual wield is not modelled.
-QW.USE = {
-  WARRIOR = set("1h axe", "2h axe", "1h mace", "2h mace", "1h sword", "2h sword", "dagger", "fist", "polearm", "staff",
-                "bow", "gun", "crossbow", "thrown", "shield"),
-  PALADIN = set("1h axe", "2h axe", "1h mace", "2h mace", "1h sword", "2h sword", "polearm", "shield"),
-  HUNTER = set("1h axe", "2h axe", "1h sword", "2h sword", "dagger", "fist", "polearm", "staff", "bow", "gun", "crossbow",
-               "thrown"),
-  ROGUE = set("dagger", "fist", "1h axe", "1h mace", "1h sword", "bow", "gun", "crossbow", "thrown"),
-  PRIEST = set("dagger", "1h mace", "staff", "wand"),
-  MAGE = set("dagger", "1h sword", "staff", "wand"),
-  WARLOCK = set("dagger", "1h sword", "staff", "wand"),
-  DRUID = set("dagger", "fist", "1h mace", "2h mace", "polearm", "staff"),
-  SHAMAN = set("1h axe", "2h axe", "1h mace", "2h mace", "dagger", "fist", "staff", "shield"),
-}
+-- Weapon kinds (the data's `kind`) each class can use. Forever's proficiencies; dual wield is not modelled. The table lives
+-- in bis/build_quest_weapons.py (CLASS_USE) and comes with the data, so the site and the addon share one copy.
+QW.USE = {}
+for class, kinds in pairs((R2F.QuestWeaponData and R2F.QuestWeaponData.use) or {}) do QW.USE[class] = set(unpack(kinds)) end
 
 function QW.CanUse(class, kind)
   local use = QW.USE[class or ""]
@@ -120,6 +110,9 @@ function QW.StepLines(planId)
   local out = {}
   if not (R2F.Plan and R2F.GearScore and R2F.Item) then return out end
   local class, side = playerClass(), playerSide()
+  -- Scores are against your own gear and spec, so a previewed other class gets no weapon lines.
+  local sel = R2F.Plan.Parse(planId)
+  if not sel or sel.cls ~= class then return out end
   local specId = R2F.GearScore.SpecId()
   local route = specId and R2F.BiZ.RouteWeapons(specId, planId) or {}
   local spec = specId and R2F.BiZ.Spec(specId)

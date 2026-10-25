@@ -1,15 +1,17 @@
 -- Plan.lua: the Launch Plan in game. Logic only; the tab
 -- is UI/Plan.lua, the data is PlanData.lua (generated from the site, see below).
 --
--- * Plans: the same group plans as launch-plan.html (hwd, hunter, h3d, trio) with the
---   site's rules: an item's own fields apply to every plan unless it has a key in `ov` for
---   that plan or for a plan up its `base` chain (the nearest one wins); `false` hides the
---   item, a table replaces the fields it names. Only the launch-day phases (night, p1, p2,
---   p3) are in the data.
--- * Ticks: R2FCharDB.plan.done[stepId] = true, per character, shared by every plan (a step
---   keeps its tick if you switch plans, like the site). R2FCharDB.plan.selected = the plan.
--- * Waypoints: PlanData.waypoints[stepId] = { default = {points}, <plan> = {points} }; a
---   plan's own list replaces the default for that plan. A point has zone (English name),
+-- * Plans: a plan id is "race:CLASS" ("skyborne:HUNTER", the Alliance races and classes of launch-plan.html) or a
+--   preset id ("hunter" = 2 Hunters, Skyborne Hunter plus the duo tips). The plan is the logged-in character's own
+--   race and class (UnitRace / UnitClass) unless a preview is set (R2FCharDB.plan.selected, "Preview another
+--   combination"). Horde characters have no plan. The site's rules: a step with `only` is shown to those races /
+--   classes only; then the layers of `ov` apply in order race, class, preset: a table replaces the fields it
+--   names, `false` hides the step for good. Only the launch-day phases (night, p1, p2, p3)
+--   are in the data.
+-- * Ticks: R2FCharDB.plan.done[stepId] = true, per character, shared by every plan (a step keeps its tick if you
+--   switch race or class, like the site).
+-- * Waypoints: PlanData.waypoints[stepId] = { default = {points}, <race> = {points} }; a
+--   race's own list replaces the default for that race. A point has zone (English name),
 --   x / y in map percent, label and conf: exact | classic | approx | check. `check` = no
 --   position known yet (label only, no button), unless the point has `dungeon` = the dungeon's name: then
 --   the position is the dungeon entrance the game's own world map shows (C_EncounterJournal.GetDungeonEntrancesForMap,
@@ -36,48 +38,97 @@ local function cdb() return R2F.Library.cdb.plan end
 -- Plans and steps
 -- ---------------------------------------------------------------------------
 
--- The override for `planId`: its own key first, then up its base chain. nil = none,
--- false = hidden, table = fields to replace. (Site: override() in launch-plan.html.)
-local function override(item, planId)
-  local ov = item.ov
-  if not ov then return nil end
-  local p = planId
-  while p do
-    if ov[p] ~= nil then return ov[p] end
-    local def = data().plans[p]
-    p = def and def.base
+local function contains(list, v)
+  for _, x in ipairs(list) do
+    if x == v then return true end
   end
+  return false
+end
+
+-- { race =, cls =, preset = } for a plan id, or nil when the id is not a valid combination.
+function Plan.Parse(planId)
+  local d = data()
+  if type(planId) ~= "string" then return nil end
+  local pr = d.presets[planId]
+  if pr then return { race = pr.race, cls = pr.cls, preset = planId } end
+  local race, cls = planId:match("^(%a+):(%u+)$")
+  local def = race and d.races[race]
+  if def and contains(def.classes, cls) then return { race = race, cls = cls } end
   return nil
 end
-Plan.Override = override
 
--- One item for one plan: nil if hidden, else a new table with the merged fields.
+function Plan.Id(sel)
+  return sel.preset or (sel.race .. ":" .. sel.cls)
+end
+
+-- Does the selection pass the step's `only` filter? (Site: allowed().)
+local function allowed(item, sel)
+  local o = item.only
+  if not o then return true end
+  if o.race and not contains(o.race, sel.race) then return false end
+  if o.cls and not contains(o.cls, sel.cls) then return false end
+  return true
+end
+
+-- The override layers that apply, in order: race, class, preset. (Site: override().)
+local function layers(item, sel)
+  local out = {}
+  local ov = item.ov
+  if not ov then return out end
+  if ov.race and ov.race[sel.race] ~= nil then out[#out + 1] = ov.race[sel.race] end
+  if ov.cls and ov.cls[sel.cls] ~= nil then out[#out + 1] = ov.cls[sel.cls] end
+  if sel.preset and ov.preset and ov.preset[sel.preset] ~= nil then out[#out + 1] = ov.preset[sel.preset] end
+  return out
+end
+Plan.Layers = layers
+
+-- One item for one plan: nil if hidden, else a new table with the merged fields. (Site: resolve().)
 function Plan.Resolve(item, planId)
-  local o = override(item, planId)
-  if o == false then return nil end
+  local sel = type(planId) == "table" and planId or Plan.Parse(planId)
+  if not sel or not allowed(item, sel) then return nil end
   local out = { id = item.id, lvl = item.lvl, t = item.t, n = item.n, tags = item.tags or {} }
-  if o then
+  for _, o in ipairs(layers(item, sel)) do
+    if o == false then return nil end
     for k, v in pairs(o) do out[k] = v end
   end
   out.tags = out.tags or {}
   return out
 end
 
--- Plan ids in the site's order, and the label of one.
-function Plan.Order() return data().order end
+-- Race ids in the site's order, the classes one race can be (class order), and the presets.
+function Plan.Races() return data().raceOrder end
+function Plan.Classes(race)
+  local def = data().races[race]
+  return def and def.classes or {}
+end
+function Plan.RaceLabel(race)
+  local def = data().races[race]
+  return def and (def.label:gsub("%s*%b()", "")) or tostring(race)
+end
+function Plan.ClassLabel(cls)
+  local def = data().classes[cls]
+  return def and def.label or tostring(cls)
+end
+function Plan.Presets() return data().presets end
+
+-- "Alliance Skyborne Hunter", or the preset's label.
 function Plan.Label(planId)
-  local def = data().plans[planId]
-  return def and def.label or planId
+  local sel = Plan.Parse(planId)
+  if not sel then return tostring(planId) end
+  if sel.preset then return data().presets[sel.preset].label end
+  return "Alliance " .. Plan.RaceLabel(sel.race) .. " " .. Plan.ClassLabel(sel.cls)
 end
 
 -- { { id =, title =, steps = { resolved item, ... } }, ... } for one plan; phases with
 -- no step for the plan are left out.
 function Plan.Phases(planId)
   local out = {}
+  local sel = Plan.Parse(planId)
+  if not sel then return out end
   for _, ph in ipairs(data().phases) do
     local steps = {}
     for _, item in ipairs(ph.items) do
-      local r = Plan.Resolve(item, planId)
+      local r = Plan.Resolve(item, sel)
       if r then steps[#steps + 1] = r end
     end
     if #steps > 0 then out[#out + 1] = { id = ph.id, title = ph.title, steps = steps } end
@@ -102,14 +153,79 @@ end
 -- Saved state (per character)
 -- ---------------------------------------------------------------------------
 
-function Plan.Selected()
-  return cdb().selected
+-- The character's race id from UnitRace's English name ("NightElf" / "Night Elf" -> "nightelf"); Skyborne's own
+-- English name is not known for sure, so anything naming Skyborne or the High Order counts. nil for other races.
+function Plan.RaceId(english)
+  local k = tostring(english or ""):lower():gsub("[^%a]", "")
+  if k:find("skyborne", 1, true) or k:find("highorder", 1, true) then return "skyborne" end
+  if data().races[k] then return k end
+  return nil
 end
 
-function Plan.Select(planId)
-  if not data().plans[planId] then return false end
+-- The plan for the logged-in character (its race and class), or nil: Horde, or a race / class the plan does not cover.
+function Plan.OwnPlan()
+  if UnitFactionGroup and UnitFactionGroup("player") == "Horde" then return nil end
+  local race = UnitRace and Plan.RaceId(select(2, UnitRace("player")))
+  local cls = R2F.playerClass or (UnitClass and select(2, UnitClass("player")))
+  if not (race and cls) then return nil end
+  local id = race .. ":" .. cls
+  return Plan.Parse(id) and id or nil
+end
+
+-- The preview the player picked ("Preview another combination"), or nil.
+function Plan.Preview()
+  local id = cdb().selected
+  return Plan.Parse(id) and id or nil
+end
+
+-- Set (or, with nil, clear) the preview. Returns false for an id that is not a valid plan.
+function Plan.SetPreview(planId)
+  if planId == nil then
+    cdb().selected = nil
+    return true
+  end
+  if not Plan.Parse(planId) then return false end
   cdb().selected = planId
   return true
+end
+
+Plan.DEFAULT = "skyborne:HUNTER"
+
+local function indexOf(list, v)
+  for i, x in ipairs(list) do
+    if x == v then return i end
+  end
+  return 1
+end
+
+-- The next race in the site's order, keeping the class when this race can be it (else its first class). Returns a plan id.
+-- (Buttons of the preview control; `planId` may be nil or a preset.)
+function Plan.CycleRace(planId)
+  local sel = Plan.Parse(planId) or Plan.Parse(Plan.DEFAULT)
+  local order = data().raceOrder
+  local race = order[indexOf(order, sel.race) % #order + 1]
+  local classes = Plan.Classes(race)
+  return race .. ":" .. (contains(classes, sel.cls) and sel.cls or classes[1])
+end
+
+-- The next class this race can be.
+function Plan.CycleClass(planId)
+  local sel = Plan.Parse(planId) or Plan.Parse(Plan.DEFAULT)
+  local classes = Plan.Classes(sel.race)
+  return sel.race .. ":" .. classes[indexOf(classes, sel.cls) % #classes + 1]
+end
+
+-- Switch the preset (2 Hunters) on, or off again (back to its race and class).
+function Plan.TogglePreset(planId)
+  local sel = Plan.Parse(planId) or Plan.Parse(Plan.DEFAULT)
+  if sel.preset then return sel.race .. ":" .. sel.cls end
+  local id = next(data().presets)
+  return id
+end
+
+-- The plan shown: the preview if set, else the character's own; nil when there is none (a Horde character).
+function Plan.Selected()
+  return Plan.Preview() or Plan.OwnPlan()
 end
 
 function Plan.IsDone(stepId)
@@ -220,11 +336,12 @@ end
 -- Waypoints
 -- ---------------------------------------------------------------------------
 
--- The points of a step for a plan: its own list, else the default, else {}.
+-- The points of a step for a plan: its race's own list, else the default, else {}.
 function Plan.Points(stepId, planId)
   local wp = data().waypoints[stepId]
-  if not wp then return {} end
-  return wp[planId] or wp.default or {}
+  local sel = Plan.Parse(planId)
+  if not (wp and sel) then return {} end
+  return wp[sel.race] or wp.default or {}
 end
 
 -- Zone-type maps first, then dungeons, then anything else.

@@ -14,7 +14,8 @@ Open it with `/r2f` (or the minimap button). It has six pages:
 - **Home**: the countdown to launch, the next step of your launch plan, what to train next,
   a share card for your professions, and the quick settings (a few game options, the minimap
   button). The **Theme** button opens the "Choose a look" gallery (see Looks below).
-- **Launch plan**: the launch-day checklist from the site, with tick boxes. Each step can
+- **Launch plan**: the launch-day checklist from the site for your own race and class (Alliance: Human, Dwarf, Gnome,
+  Night Elf, Skyborne), with tick boxes. "Preview another combination" shows another race and class. Each step can
   point the built-in arrow (BiZNav) at its spot; `/bizway` and Alt + right-click on the world
   map do the same for any spot. A **Quest shopping list** button swaps the steps for the
   quests whose items you can buy instead of farm, with a tick box for each.

@@ -2863,23 +2863,28 @@ ForeverPlus already tracks buffs, so nothing here duplicates it.
 - One shared look: same framed icon as the stance icon, draggable, lockable, size slider.
 
 ### 15.5 Launch Plan checklist in game (+ TomTom waypoints) -- built as v0.18.0, 2026-10-09
-(As built: `addon/tools/gen_plan_data.js` (run by `build.py`, needs node) evaluates the page's own
-`PLANS`, `PHASES`, `override()` and `resolve()` and writes `PlanData.lua`; `Plan.lua` re-implements
-the same rules (a test compares both for every plan); `UI/Plan.lua` is the tab. Tab order is Home /
-Macros / Talents / Plan / Reminders / Settings. A step's per-plan waypoint list replaces the default
-for that plan only (no base-chain lookup for waypoints). Without TomTom the button prints the /way line.)
-- The site's Launch Plan (`launch-plan.html` PHASES, per group plan: hwd / hunter / h3d /
-  trio) exported to the addon as generated Lua data (build step, like the macro data),
+(As built, v0.18.0; reworked in v0.81.0 from four group plans to race + class, 2026-10-24:
+`addon/tools/gen_plan_data.js` (run by `build.py`, needs node) evaluates the page's own `RACES`,
+`CLASSES`, `PRESETS`, `PHASES`, `allowed()`, `override()` and `resolve()` and writes `PlanData.lua`;
+`Plan.lua` re-implements the same rules (a test compares both for all 28 combinations plus the preset);
+`UI/Plan.lua` is the tab. A plan id is `race:CLASS` (`skyborne:HUNTER`) or the preset `hunter`. The plan
+is the logged-in character's own race and class (`UnitRace` token, `UnitClass`); Horde characters get a
+short message. "Preview another combination" (Race / Class / 2 Hunters / My character buttons, saved in
+`R2FCharDB.plan.selected`) shows another one; weapon lines are only drawn for your own class, because the
+scores are yours. A step resolves: `only`, then `ov.race`, `ov.cls`, `ov.preset`; `false` hides for good.
+Tab order is Home / Macros / Talents / Plan / Reminders / Settings. A step's waypoint list for the race
+replaces the default for that race only. Without TomTom the button prints the /way line.)
+- The site's Launch Plan (`launch-plan.html` PHASES, per race and class) exported to the addon as generated Lua data (build step, like the macro data),
   so it works offline in game.
-- New tab **Plan**: pick your group plan, steps grouped by phase, tick boxes saved per
+- New tab **Plan**: your race and class's plan, steps grouped by phase, tick boxes saved per
   character, a "next step" line on Home.
-- **Which steps:** only the launch-day phases (night, p1, p2, p3 = 45 steps). The pre-launch
+- **Which steps:** only the launch-day phases (night, p1, p2, p3; the count differs per race and class). The pre-launch
   list ("before": names, UI, addons, keybinds...) and the test-in-beta list are left out
   (owner, 2026-10-09: they're done before launch day).
-- **Plan picker:** the same group plans as the site, 2 Hunters · Warrior · Druid (`hwd`),
-  2 Hunters (`hunter`), 3 Hunters · Druid (`h3d`), Paladin · Hunter · Shaman (`trio`), with the
-  site's rules: an item's per-plan override replaces its text, `false` hides it, `base`
-  inheritance as in launch-plan.html.
+- **Race and class:** the Alliance combinations of the site (Human, Dwarf, Gnome, Night Elf, Skyborne) with
+  the site's rules (see above). Group plans (hwd, h3d, trio) and Compare are gone; every class is damage.
+  Skyborne's English `UnitRace` name is not confirmed (TESTING 5.70): `Plan.RaceId` accepts any name that
+  contains "skyborne" or "highorder".
 - **Waypoint data (researched 2026-10-09): `launch-plan-waypoints.json`** in the repo root,
   keyed by step id: 36 of the 45 steps, 58 points. Each point: `zone` (English name; the
   addon resolves it to a uiMapID at runtime by walking `C_Map.GetMapChildrenInfo` under the
@@ -2887,7 +2892,7 @@ for that plan only (no base-chain lookup for waypoints). Without TomTom the butt
   `exact` (Forever source, 4), `classic` (Classic position of a place that still exists,
   may have moved, 33), `approx` (area only, 2), `check` (no position known, 19: new zones
   and docks: Zephras, Stormwind Harbor, Riverglades, Mount Hyjal, the new dungeons).
-  Per-plan lists replace the default (e.g. the Dwarf trio's pet quest is in Kharanos).
+  Per-race lists replace the default (e.g. the Dwarf hunter's pet quest is in Kharanos).
   The build step copies it into the addon's generated Lua data with the plan steps.
 - UI per point: `check` points show the label only (no Waypoint button) plus "position not
   known yet"; `classic`/`approx` show a small "may have moved" note.

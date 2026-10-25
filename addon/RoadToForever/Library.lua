@@ -278,12 +278,12 @@ function Library.Init()
   if type(cdb.bags.lock) ~= "boolean" then cdb.bags.lock = false end
   if type(cdb.bags.bags) ~= "table" then cdb.bags.bags = {} end
   if type(cdb.bags.combined) ~= "table" then cdb.bags.combined = nil end
-  -- Launch Plan tab (Plan.lua): the chosen group plan and the ticked step ids.
+  -- Launch Plan tab (Plan.lua): the previewed race / class (nil = your own) and the ticked step ids.
   -- Per character: ticks are about THIS character's progress.
   if type(cdb.plan) ~= "table" then cdb.plan = {} end
   if type(cdb.plan.done) ~= "table" then cdb.plan.done = {} end
   if type(cdb.plan.bought) ~= "table" then cdb.plan.bought = {} end   -- ticked quests of the shopping list
-  if not (R2F.PlanData and R2F.PlanData.plans[cdb.plan.selected]) then cdb.plan.selected = "hwd" end
+  if type(cdb.plan.selected) ~= "string" then cdb.plan.selected = nil end   -- a previewed combination; nil = the character's own
   -- Mr.BiZ tab (BiZ.lua): class / spec shown, source filters, the wishlist.
   -- Per character: the wishlist is this character's gear goals.
   if type(cdb.biz) ~= "table" then cdb.biz = {} end

@@ -8,6 +8,17 @@ local _, R2F = ...
 R2F.QuestWeaponData = {
   source = "Wowhead",
   maxLevel = 32,
+  use = {
+    DRUID = { "dagger", "fist", "1h mace", "2h mace", "polearm", "staff" },
+    HUNTER = { "1h axe", "2h axe", "1h sword", "2h sword", "dagger", "fist", "polearm", "staff", "bow", "gun", "crossbow", "thrown" },
+    MAGE = { "dagger", "1h sword", "staff", "wand" },
+    PALADIN = { "1h axe", "2h axe", "1h mace", "2h mace", "1h sword", "2h sword", "polearm", "shield" },
+    PRIEST = { "dagger", "1h mace", "staff", "wand" },
+    ROGUE = { "dagger", "fist", "1h axe", "1h mace", "1h sword", "bow", "gun", "crossbow", "thrown" },
+    SHAMAN = { "1h axe", "2h axe", "1h mace", "2h mace", "dagger", "fist", "staff", "shield" },
+    WARLOCK = { "dagger", "1h sword", "staff", "wand" },
+    WARRIOR = { "1h axe", "2h axe", "1h mace", "2h mace", "1h sword", "2h sword", "dagger", "fist", "polearm", "staff", "bow", "gun", "crossbow", "thrown", "shield" },
+  },
   items = {
     { 5249, "Burning Sliver", "wand", 30, "Crushridge Warmongers", "Alterac Mountains", 1, 2 },
     { 3763, "Lunar Buckler", "shield", 30, "Crushridge Warmongers", "Alterac Mountains", 1, 2 },

@@ -45,9 +45,11 @@ function Home.SlotLine()
   return L.HOME_SLOTS_LINE:format(char, maxChar, acc, maxAcc)
 end
 
--- The next unticked step of the chosen launch plan, "Next: [12] Skycutter to Dalaran".
+-- The next unticked step of your launch plan, "Next: [12] Skycutter to Dalaran".
 function Home.PlanLine()
-  local s = R2F.Plan.Next(R2F.Plan.Selected())
+  local planId = R2F.Plan.Selected()
+  if not planId then return L.HOME_PLAN_NONE end
+  local s = R2F.Plan.Next(planId)
   if not s then return L.HOME_PLAN_DONE end
   return L.HOME_PLAN_NEXT:format(s.lvl and s.lvl ~= "" and ("[" .. s.lvl .. "] " .. s.t) or s.t)
 end

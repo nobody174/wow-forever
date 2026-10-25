@@ -1183,7 +1183,7 @@ def test_quest_weapons():
         { 107, 'Staff', 'staff', 6, 'Quest F', 'Zephras Isle', 0, 3 },
         { 108, 'Thanes Gun', 'gun', 9, 'Old Incursion', 'The Hall of Thanes', 0, 3 },
       } }
-      ZSTEP = { t = 'Zephras Isle together, share every quest', lvl = '1\u201312' }
+      ZSTEP = { t = 'Zephras Isle, share every quest', lvl = '1\u201312' }
     """)
     ids = lambda cls, side: sorted(c["id"] for c in lua.eval("QW.Candidates(ZSTEP, '%s', %d)" % (cls, side)).values())
     check(ids("HUNTER", 1) == [101, 106, 107], "quest weapons: Alliance Hunter at Zephras: its own faction, level and weapon types: %s" % ids("HUNTER", 1))
@@ -1204,25 +1204,27 @@ def test_quest_weapons():
       TEST.gsItems['item:101'] = { stats = { ITEM_MOD_AGILITY_SHORT = 10, ITEM_MOD_INTELLECT_SHORT = 10 }, loc = 'INVTYPE_RANGEDRIGHT', cls = 2, sub = 2 }
       TEST.gsItems['item:106'] = { stats = { ITEM_MOD_AGILITY_SHORT = 4, ITEM_MOD_INTELLECT_SHORT = 4 }, loc = 'INVTYPE_WEAPON', cls = 2, sub = 15 }
       TEST.gsItems['item:107'] = { stats = { ITEM_MOD_AGILITY_SHORT = 8, ITEM_MOD_INTELLECT_SHORT = 8 }, loc = 'INVTYPE_2HWEAPON', cls = 2, sub = 10 }
-      R2F.Plan.Select('hwd')
+      R2F.Plan.SetPreview('skyborne:HUNTER')
       ZID = nil
-      for _, st in ipairs(R2F.Plan.Steps('hwd')) do if st.t:find('Zephras Isle together', 1, true) then ZID = st.id end end
+      for _, st in ipairs(R2F.Plan.Steps('skyborne:HUNTER')) do if st.t:find('Zephras Isle, share every', 1, true) then ZID = st.id end end
     """)
-    lua.execute("LINES = R2F.QuestWeapons.StepLines('hwd')[ZID] or {}")
+    lua.execute("LINES = R2F.QuestWeapons.StepLines('skyborne:HUNTER')[ZID] or {}")
     by_slot = {lua.eval("LINES[%d].slot" % i): lua.eval("LINES[%d].id" % i) for i in range(1, lua.eval("#LINES") + 1)}
     check(by_slot == {"ranged": 101, "mainhand": 107}, "quest weapons: one line per slot, the better main hand wins: %s" % by_slot)
     check("(quest: Quest A)" in lua.eval("LINES[1].text") or "(quest: Quest F)" in lua.eval("LINES[1].text"), "quest weapons: the line names the quest: %r" % lua.eval("LINES[1].text"))
     lua.execute("TEST.gsItems['item:900'] = { stats = { ITEM_MOD_AGILITY_SHORT = 50, ITEM_MOD_INTELLECT_SHORT = 50 }, loc = 'INVTYPE_2HWEAPON', cls = 2, sub = 10 } TEST.worn[16] = 'item:900' TEST.worn[17] = 'item:900'")
-    lua.execute("LINES = R2F.QuestWeapons.StepLines('hwd')[ZID] or {}")
+    lua.execute("LINES = R2F.QuestWeapons.StepLines('skyborne:HUNTER')[ZID] or {}")
     check(lua.eval("#LINES") == 1 and lua.eval("LINES[1].slot") == "ranged", "quest weapons: nothing that beats the worn main hand shows, the ranged one still does")
     lua.execute("TEST.worn[16] = nil TEST.worn[17] = nil TEST.gsItems['item:101'].stats = nil TEST.requested = {}")
-    check(lua.eval("#(R2F.QuestWeapons.StepLines('hwd')[ZID] or {})") == 1 and lua.eval("#TEST.requested") >= 1,
+    check(lua.eval("#(R2F.QuestWeapons.StepLines('skyborne:HUNTER')[ZID] or {})") == 1 and lua.eval("#TEST.requested") >= 1,
           "quest weapons: an item whose stats are not loaded yet shows no line and is asked for")
     lua.execute("TEST.gsItems['item:101'].stats = { ITEM_MOD_AGILITY_SHORT = 10, ITEM_MOD_INTELLECT_SHORT = 10 } R2F.playerClass = 'MAGE'")
-    lua.execute("LINES = R2F.QuestWeapons.StepLines('hwd')[ZID] or {}")
+    lua.execute("LINES = R2F.QuestWeapons.StepLines('skyborne:MAGE')[ZID] or {}")
     check(lua.eval("#LINES") == 1 and lua.eval("LINES[1].slot") == "mainhand", "quest weapons: a Mage gets no bow line (class weapon use)")
+    check(lua.eval("next(R2F.QuestWeapons.StepLines('skyborne:HUNTER'))") is None,
+          "quest weapons: a previewed class other than your own gets no weapon lines (the scores are yours)")
     # On the Plan tab
-    lua.execute("R2F.playerClass = 'HUNTER' R2F.MainWindow.Show('plan') R2F.PlanTab.Refresh()")
+    lua.execute("R2F.playerClass = 'HUNTER' R2F.Plan.SetPreview(nil) R2F.MainWindow.Show('plan') R2F.PlanTab.Refresh()")
     check(font_text(lua, "^Weapon: .*Ally Bow.* %(quest: Quest A%)") is not None, "quest weapons: the Plan tab shows 'Weapon: <item> (quest: <quest>)'")
     # Hover: the item tooltip, the score gain over what is worn, and where it comes from.
     find_frames(lua, "f.w ~= nil and f.w.id == 101 and f.__shown", "WTIP")
@@ -1946,63 +1948,104 @@ def test_plan(templates=True):
                         print("   first difference:", repr(a[:120]), "vs", repr(b[:120]))
                         break
             union |= {s["id"] for s in steps}
-        check(len(union) == 45, "15.5 45 launch-day steps over all plans (got %d)" % len(union))
+        check(len(exp["plans"]) == 29 and [len(exp["raceClasses"][r]) for r in ("human", "dwarf", "gnome", "nightelf", "skyborne")] == [7, 6, 5, 5, 5],
+              "15.5 28 valid race and class combinations plus the 2 Hunters preset")
         check(not any(i.startswith("b-") or i.startswith("t-") for i in union) and "h-loot" not in union,
               "15.5 the pre-launch and beta lists are not in the data")
         check(exp["phases"] == ["night", "p1", "p2", "p3"], "15.5 only the launch-day phases")
         # Spot checks of the rules, independent of the comparison above.
         ids = lambda plan: [s.split(PLAN_SEP)[1] for s in lua_table_to_list(lua.eval("DUMP(%r)" % plan))]
-        check("n-dalaran" not in ids("trio") and "n-dalaran" in ids("hwd"), "15.5 a step hidden for one plan (false) stays for the others")
-        check("tr-coldridge" in ids("trio") and "tr-coldridge" not in ids("hunter") and "tr-coldridge" not in ids("hwd")
-              and "tr-coldridge" not in ids("h3d"), "15.5 hidden on `hunter` also hides on its base-inheriting plans (hwd, h3d)")
-        check("wd-bear" in ids("hwd") and "wd-bear" in ids("h3d") and "wd-bear" not in ids("hunter"),
-              "15.5 an empty override (hwd = {}) keeps the step visible, shadowing the base's false")
-        check(lua.eval("R2F.Plan.Resolve({ id = 'x', t = 'a', ov = { hunter = { t = 'b' } } }, 'h3d').t") == "b",
-              "15.5 base override applies through the chain (h3d -> hunter)")
-        check(lua.eval("R2F.Plan.Resolve({ id = 'x', t = 'a', ov = { hunter = { t = 'b' }, h3d = { t = 'c' } } }, 'h3d').t") == "c",
-              "15.5 the plan's own override beats the base's")
-        check(lua.eval("R2F.Plan.Resolve({ id = 'x', t = 'a', ov = { hunter = false, h3d = { n = 'z' } } }, 'h3d').t") == "a",
-              "15.5 own override shadows the base's `false`")
+        check("n-dalaran" in ids("skyborne:HUNTER") and "n-dalaran" not in ids("dwarf:HUNTER") and "n-zephras" not in ids("gnome:MAGE"),
+              "15.5 Skyborne-only steps (only.race) are hidden for the other races")
+        check("tr-coldridge" in ids("dwarf:PALADIN") and "tr-coldridge" in ids("gnome:MAGE") and "tr-coldridge" not in ids("skyborne:HUNTER")
+              and "tr-coldridge" not in ids("hunter"), "15.5 Coldridge Valley is for Dwarves and Gnomes only")
+        check("h-pet" in ids("skyborne:HUNTER") and "h-pet" in ids("dwarf:HUNTER") and "h-pet" not in ids("skyborne:MAGE")
+              and "wd-bear" in ids("skyborne:DRUID") and "wd-bear" not in ids("skyborne:HUNTER"), "15.5 class steps (only.cls) show to that class only")
+        check("n-if" in ids("human:MAGE") and "n-if" not in ids("nightelf:DRUID") and "p1-hot" not in ids("nightelf:HUNTER"),
+              "15.5 race = false hides a step (Night Elves skip the Ironforge road for now)")
+        check(ids("hunter") == ids("skyborne:HUNTER"), "15.5 the 2 Hunters preset is Skyborne Hunter")
+        check(len(set(ids("skyborne:WARRIOR")) | set(ids("dwarf:PALADIN"))) > len(ids("skyborne:WARRIOR")), "15.5 different combinations get different steps")
+        R = lambda item, plan: lua.eval("(R2F.Plan.Resolve(%s, %r) or {}).t" % (item, plan))
+        item = "{ id = 'x', t = 'a', ov = { race = { dwarf = { t = 'b' } }, cls = { HUNTER = { t = 'c' } } } }"
+        check(R(item, "dwarf:PALADIN") == "b" and R(item, "dwarf:HUNTER") == "c" and R(item, "skyborne:HUNTER") == "c" and R(item, "gnome:MAGE") == "a",
+              "15.5 layers: race first, then class (the class wins)")
+        item = "{ id = 'x', t = 'a', ov = { race = { dwarf = false }, cls = { PALADIN = { n = 'z' } } } }"
+        check(R(item, "dwarf:PRIEST") is None and R(item, "dwarf:PALADIN") is None and R(item, "skyborne:MAGE") == "a" and R(item, "gnome:MAGE") == "a",
+              "15.5 `false` hides the step for good: a later class table does not show it again")
+        item = "{ id = 'x', t = 'a', only = { cls = { 'HUNTER' } }, ov = { preset = { hunter = { t = 'p' } } } }"
+        check(R(item, "skyborne:MAGE") is None and R(item, "skyborne:HUNTER") == "a" and R(item, "hunter") == "p",
+              "15.5 only filters first; the preset layer applies to the preset only")
+        check(lua.eval("R2F.Plan.Resolve({ id = 'x', t = 'a' }, 'bogus')") is None and lua.eval("R2F.Plan.Parse('human:SHAMAN')") is None
+              and lua.eval("R2F.Plan.Parse('hwd')") is None and lua.eval("R2F.Plan.Parse('nightelf:DRUID').race") == "nightelf",
+              "15.5 invalid plan ids (a class the race cannot be, the old group plans) parse to nothing")
 
-        # --- Waypoint lists: plan list replaces the default ---------------------------------------
-        check(lua.eval("#R2F.Plan.Points('tr-coldridge', 'trio')") == 1 and lua.eval("#R2F.Plan.Points('tr-coldridge', 'hwd')") == 0,
-              "15.5 a step's per-plan points (trio) do not leak into other plans")
-        check(lua.eval("R2F.Plan.Points('h-pet', 'hwd')[1].zone") == "Zephras Isle" and lua.eval("R2F.Plan.Points('h-pet', 'hwd')[1].x") == 45.2
-              and lua.eval("R2F.Plan.Points('h-pet', 'trio')[1].zone") == "Dun Morogh",
-              "15.5 per-plan list replaces the default for that plan only")
-        check(lua.eval("#R2F.Plan.Points('nope', 'hwd')") == 0, "15.5 steps without points give an empty list")
+        # --- Waypoint lists: a race list replaces the default ---------------------------------------
+        check(lua.eval("#R2F.Plan.Points('tr-coldridge', 'dwarf:PALADIN')") == 1 and lua.eval("#R2F.Plan.Points('tr-coldridge', 'gnome:MAGE')") == 1,
+              "15.5 Coldridge's point is the default list (Dwarf and Gnome)")
+        check(lua.eval("R2F.Plan.Points('h-pet', 'skyborne:HUNTER')[1].zone") == "Zephras Isle" and lua.eval("R2F.Plan.Points('h-pet', 'skyborne:HUNTER')[1].x") == 45.2
+              and lua.eval("R2F.Plan.Points('h-pet', 'dwarf:HUNTER')[1].zone") == "Dun Morogh" and lua.eval("#R2F.Plan.Points('h-pet', 'human:HUNTER')") == 0
+              and lua.eval("R2F.Plan.Points('h-pet', 'hunter')[1].zone") == "Zephras Isle",
+              "15.5 per-race list replaces the default for that race only (a Human Hunter gets no Zephras points; the preset is Skyborne)")
+        check(lua.eval("#R2F.Plan.Points('nope', 'skyborne:HUNTER')") == 0 and lua.eval("#R2F.Plan.Points('n-camp', 'bogus')") == 0,
+              "15.5 steps without points, or a bad plan, give an empty list")
         wp = json.load(open(os.path.join(ROOT, "launch-plan-waypoints.json"), encoding="utf-8"))["steps"]
         count = sum(len(pts) for st in wp.values() for pts in st.values())
         got = lua.eval("""(function() local n = 0 for id, w in pairs(R2F.PlanData.waypoints) do
           for _, pts in pairs(w) do n = n + #pts end end return n end)()""")
         check(got == count, "15.5 every waypoint point from the JSON is in the addon data (%d)" % count)
 
-        # --- Ticks and saved state (per character) -------------------------------------------------
+        # --- The character's own plan, the preview, ticks and saved state (per character) ------------------
         lua, T = plan_runtime()
-        check(lua.eval("R2F.Plan.Selected()") == "hwd" and lua.eval("R2FCharDB.plan ~= nil and R2FDB.plan == nil"),
-              "15.5 default plan hwd, stored per character")
-        done, total = lua.eval("R2F.Plan.Progress('hwd')")
-        check(done == 0 and total == len(exp["plans"]["hwd"]), "15.5 progress 0 of %d for hwd" % total)
-        first = lua.eval("R2F.Plan.Next('hwd').id")
+        OWN = "skyborne:WARRIOR"
+        check(lua.eval("R2F.Plan.Selected()") == OWN and lua.eval("R2FCharDB.plan ~= nil and R2FDB.plan == nil"),
+              "15.5 the plan is the character's own race and class (UnitRace / UnitClass), stored per character")
+        check(lua.eval("R2F.Plan.RaceId('Skyborne')") == "skyborne" and lua.eval("R2F.Plan.RaceId('HighOrder')") == "skyborne"
+              and lua.eval("R2F.Plan.RaceId('NightElf')") == "nightelf" and lua.eval("R2F.Plan.RaceId('Night Elf')") == "nightelf"
+              and lua.eval("R2F.Plan.RaceId('Orc')") is None, "15.5 race names from UnitRace map to race ids")
+        lua.execute("TEST.raceToken = 'NightElf' R2F.playerClass = 'DRUID'")
+        check(lua.eval("R2F.Plan.OwnPlan()") == "nightelf:DRUID", "15.5 a Night Elf Druid gets nightelf:DRUID")
+        lua.execute("TEST.raceToken = 'Gnome' R2F.playerClass = 'HUNTER'")
+        check(lua.eval("R2F.Plan.OwnPlan()") is None, "15.5 a combination that does not exist (Gnome Hunter) has no plan")
+        lua.execute("TEST.raceToken = 'Human' R2F.playerClass = 'PALADIN' UnitFactionGroup = function() return 'Horde' end")
+        check(lua.eval("R2F.Plan.OwnPlan()") is None and lua.eval("R2F.Plan.Selected()") is None, "15.5 Horde characters have no plan")
+        lua.execute("UnitFactionGroup = function() return 'Alliance' end")
+        check(lua.eval("R2F.Plan.OwnPlan()") == "human:PALADIN", "15.5 Alliance again: human:PALADIN")
+        lua.execute("TEST.raceToken = 'Skyborne' R2F.playerClass = 'WARRIOR'")
+        done, total = lua.eval("R2F.Plan.Progress('%s')" % OWN)
+        check(done == 0 and total == len(exp["plans"][OWN]), "15.5 progress 0 of %d" % total)
+        first = lua.eval("R2F.Plan.Next('%s').id" % OWN)
         lua.execute("R2F.Plan.SetDone(%r, true)" % first)
         check(lua.eval("R2FCharDB.plan.done[%r]" % first) is True and lua.eval("R2F.Plan.IsDone(%r)" % first) is True, "15.5 a tick is saved")
-        check(lua.eval("R2F.Plan.Next('hwd').id") != first, "15.5 the next step moves on after a tick")
-        check(lua.eval("(R2F.Plan.Progress('hwd'))") == 1, "15.5 progress counts the tick")
+        check(lua.eval("R2F.Plan.Next('%s').id" % OWN) != first, "15.5 the next step moves on after a tick")
+        check(lua.eval("(R2F.Plan.Progress('%s'))" % OWN) == 1, "15.5 progress counts the tick")
         lua.execute("R2F.Plan.SetDone('n-camp', true)")
-        check(lua.eval("(R2F.Plan.Progress('trio'))") == 1 and lua.eval("(R2F.Plan.Progress('hwd'))") == 2,
-              "15.5 a tick is shared by every plan that has the step (n-camp is in hwd and trio)")
+        check(lua.eval("(R2F.Plan.Progress('dwarf:PALADIN'))") == 1 and lua.eval("(R2F.Plan.Progress('%s'))" % OWN) == 2,
+              "15.5 a tick is shared by every race and class that has the step (n-camp; n-zephras is Skyborne only)")
         lua.execute("R2F.Plan.SetDone('n-camp', false)")
         lua.execute("R2F.Plan.SetDone(%r, false)" % first)
         check(lua.eval("R2FCharDB.plan.done[%r]" % first) is None, "15.5 unticking removes it")
-        check(lua.eval("R2F.Plan.Select('trio')") is True and lua.eval("R2FCharDB.plan.selected") == "trio", "15.5 the chosen plan is saved")
-        check(lua.eval("R2F.Plan.Select('nope')") is False and lua.eval("R2F.Plan.Selected()") == "trio", "15.5 an unknown plan is refused")
-        lua.execute("for _, s in ipairs(R2F.Plan.Steps('trio')) do R2F.Plan.SetDone(s.id, true) end")
-        check(lua.eval("R2F.Plan.Next('trio')") is None, "15.5 all done: no next step")
-        # Relog: ticks and the plan come back; a bad saved plan is repaired.
-        lua, T = plan_runtime(preset="{ plan = { selected = 'h3d', done = { ['n-zephras'] = true } } }")
-        check(lua.eval("R2F.Plan.Selected()") == "h3d" and lua.eval("R2F.Plan.IsDone('n-zephras')") is True, "15.5 relog: plan and ticks persisted")
-        lua, T = plan_runtime(preset="{ plan = { selected = 'bogus' } }")
-        check(lua.eval("R2F.Plan.Selected()") == "hwd" and lua.eval("type(R2FCharDB.plan.done)") == "table", "15.5 a bad saved plan falls back to hwd")
+        check(lua.eval("R2F.Plan.SetPreview('dwarf:PALADIN')") is True and lua.eval("R2FCharDB.plan.selected") == "dwarf:PALADIN"
+              and lua.eval("R2F.Plan.Selected()") == "dwarf:PALADIN", "15.5 a previewed combination is saved and shown")
+        check(lua.eval("R2F.Plan.SetPreview('nope')") is False and lua.eval("R2F.Plan.SetPreview('human:SHAMAN')") is False
+              and lua.eval("R2F.Plan.Selected()") == "dwarf:PALADIN", "15.5 an unknown or impossible combination is refused")
+        check(lua.eval("R2F.Plan.Label('dwarf:PALADIN')") == "Alliance Dwarf Paladin" and lua.eval("R2F.Plan.Label('skyborne:HUNTER')") == "Alliance Skyborne Hunter"
+              and lua.eval("R2F.Plan.Label('hunter')") == "2 Hunters", "15.5 labels: Alliance <race> <class>")
+        lua.execute("for _, s in ipairs(R2F.Plan.Steps('dwarf:PALADIN')) do R2F.Plan.SetDone(s.id, true) end")
+        check(lua.eval("R2F.Plan.Next('dwarf:PALADIN')") is None, "15.5 all done: no next step")
+        check(lua.eval("R2F.Plan.SetPreview(nil)") is True and lua.eval("R2F.Plan.Selected()") == OWN and lua.eval("R2FCharDB.plan.selected") is None,
+              "15.5 clearing the preview goes back to the character's own plan")
+        check(lua.eval("R2F.Plan.CycleRace('skyborne:HUNTER')") == "human:HUNTER" and lua.eval("R2F.Plan.CycleRace('human:PRIEST')") == "dwarf:PRIEST"
+              and lua.eval("R2F.Plan.CycleRace('gnome:MAGE')") == "nightelf:PRIEST" and lua.eval("R2F.Plan.CycleRace(nil)") == "human:HUNTER",
+              "15.5 the race button: next race, the class kept when it fits, else the race's first")
+        check(lua.eval("R2F.Plan.CycleClass('skyborne:MAGE')") == "skyborne:ROGUE" and lua.eval("R2F.Plan.CycleClass('skyborne:WARRIOR')") == "skyborne:MAGE"
+              and lua.eval("R2F.Plan.TogglePreset('skyborne:HUNTER')") == "hunter" and lua.eval("R2F.Plan.TogglePreset('hunter')") == "skyborne:HUNTER",
+              "15.5 the class button cycles the race's classes; the preset button toggles 2 Hunters")
+        # Relog: ticks and the preview come back; an old group-plan id is ignored.
+        lua, T = plan_runtime(preset="{ plan = { selected = 'gnome:MAGE', done = { ['n-camp'] = true } } }")
+        check(lua.eval("R2F.Plan.Selected()") == "gnome:MAGE" and lua.eval("R2F.Plan.IsDone('n-camp')") is True, "15.5 relog: preview and ticks persisted")
+        lua, T = plan_runtime(preset="{ plan = { selected = 'hwd' } }")
+        check(lua.eval("R2F.Plan.Selected()") == "skyborne:WARRIOR" and lua.eval("type(R2FCharDB.plan.done)") == "table",
+              "15.5 an old saved group plan (hwd) is ignored: back to the character's own plan")
 
         # --- Map resolution -------------------------------------------------------------------------------
         lua, T = plan_runtime()
@@ -2224,26 +2267,35 @@ def test_plan(templates=True):
     title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever: Plan", "%s: Plan title: %r" % (tag, title))
     check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 6, "%s: six tabs, Plan fourth" % tag)
-    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text ~= '' and f.stepId == nil", "PICKS")
-    labels = [lua.eval("PICKS[%d].r2fLabel.__text" % i) for i in range(1, lua.eval("#PICKS") + 1)]
-    wanted = [lua.eval("R2F.Plan.Label(%r)" % p) for p in ("hwd", "hunter", "h3d", "trio")]
-    check(all(w in labels for w in wanted), "%s: the picker has all four group plans" % tag)
-    n_hwd = lua.eval("#R2F.Plan.Steps('hwd')")
-    check(font_text(lua, "^0 of %d launch%%-day steps done$" % n_hwd) is not None, "%s: progress line" % tag)
+    OWN = "skyborne:WARRIOR"
+    check(font_text(lua, "^Alliance Skyborne Warrior$") is not None, "%s: the tab says who the plan is for (the character)" % tag)
+    find_frames(lua, "f.__kind == 'Button' and f.__text ~= nil and f.__text:find('^Race: ') ~= nil", "RACEB")
+    find_frames(lua, "f.__kind == 'Button' and f.__text ~= nil and f.__text:find('^Class: ') ~= nil", "CLSB")
+    check(lua.eval("#RACEB") == 1 and lua.eval("RACEB[1].__text") == "Race: Skyborne" and lua.eval("#CLSB") == 1 and lua.eval("CLSB[1].__text") == "Class: Warrior",
+          "%s: the preview control shows the race and the class" % tag)
+    n_own = lua.eval("#R2F.Plan.Steps('%s')" % OWN)
+    check(font_text(lua, "^0 of %d launch%%-day steps done$" % n_own) is not None, "%s: progress line" % tag)
     find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "STEPS")
-    check(lua.eval("#STEPS") == n_hwd, "%s: one tick box per step of the plan (%s)" % (tag, lua.eval("#STEPS")))
+    check(lua.eval("#STEPS") == n_own, "%s: one tick box per step of the plan (%s)" % (tag, lua.eval("#STEPS")))
     lua.execute("STEPS[1]:Click()")
     first = lua.eval("STEPS[1].stepId")
-    check(lua.eval("R2F.Plan.IsDone(%r)" % first) is True and font_text(lua, "^1 of %d launch" % n_hwd) is not None,
+    check(lua.eval("R2F.Plan.IsDone(%r)" % first) is True and font_text(lua, "^1 of %d launch" % n_own) is not None,
           "%s: ticking a box saves it and updates the progress line" % tag)
-    # Switch plan: the list changes and ticks are kept per step id.
-    wanted_trio = lua.eval("#R2F.Plan.Steps('trio')")
-    find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.Plan.Label('trio')", "TRIOBTN")
-    lua.execute("TRIOBTN[1]:Click()")
+    # Preview another combination: the Race button picks the next race, the list changes and ticks are kept per step id.
+    lua.execute("RACEB[1]:Click()")
     find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "STEPS")
-    check(lua.eval("R2F.Plan.Selected()") == "trio" and lua.eval("#STEPS") == wanted_trio,
-          "%s: picking Paladin · Hunter · Shaman shows its %d steps" % (tag, wanted_trio))
-    # Waypoint lines: the trio's Coldridge step has a classic point; the Zephras step a check point.
+    n_human = lua.eval("#R2F.Plan.Steps('human:WARRIOR')")
+    check(lua.eval("R2F.Plan.Selected()") == "human:WARRIOR" and lua.eval("#STEPS") == n_human and font_text(lua, "^Preview: Alliance Human Warrior$") is not None,
+          "%s: the Race button previews Human Warrior (%d steps)" % (tag, n_human))
+    lua.execute("R2F.Plan.SetPreview('dwarf:PALADIN') R2F.PlanTab.Refresh()")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "STEPS")
+    wanted_dp = lua.eval("#R2F.Plan.Steps('dwarf:PALADIN')")
+    check(lua.eval("#STEPS") == wanted_dp, "%s: Dwarf Paladin shows its %d steps" % (tag, wanted_dp))
+    find_frames(lua, "f.__kind == 'Button' and f.__text == 'My character' and f:IsVisible()", "MINEB")
+    lua.execute("MINEB[1]:Click()")
+    check(lua.eval("R2F.Plan.Selected()") == OWN and lua.eval("R2FCharDB.plan.selected") is None, "%s: My character clears the preview" % tag)
+    lua.execute("R2F.Plan.SetPreview('dwarf:PALADIN') R2F.PlanTab.Refresh()")
+    # Waypoint lines: the Dwarf's Coldridge step has a classic point; the Zephras step a check point.
     find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible()", "WPB")
     check(lua.eval("#WPB") >= 1 and lua.eval("WPB[1].__text") == "Show /way", "%s: a client without an arrow says Show /way" % tag)
     lua.execute("for _, b in ipairs(WPB) do if b.point.label:find('Anvilmar') then ANVIL = b end end")
@@ -2252,16 +2304,16 @@ def test_plan(templates=True):
     check("/way Dun Morogh 28.8 67.6 Anvilmar, Coldridge Valley" in chat_all(lua), "%s: clicking prints the /way line: %r" % (tag, chat_all(lua)))
     check(font_text(lua, "may have moved") is not None, "%s: a classic point shows the 'may have moved' note" % tag)
     # Every real position is known now; give the first step one spot with no position to see how the tab shows it.
-    lua.execute("""local s = R2F.Plan.Steps('hwd')[1]
-      R2F.PlanData.waypoints[s.id] = R2F.PlanData.waypoints[s.id] or { default = {} }
-      table.insert(R2F.PlanData.waypoints[s.id].default, { zone = 'Nowhere', label = 'Unknown spot', conf = 'check' })
-      R2F.Plan.Select('hwd') R2F.PlanTab.Refresh()""")
+    lua.execute("""local s = R2F.Plan.Steps('skyborne:WARRIOR')[1]
+      local wp = R2F.PlanData.waypoints[s.id]
+      table.insert(wp.skyborne or wp.default, { zone = 'Nowhere', label = 'Unknown spot', conf = 'check' })
+      R2F.Plan.SetPreview(nil) R2F.PlanTab.Refresh()""")
     check(font_text(lua, "position not known yet") is not None, "%s: a check point shows its label with 'position not known yet'" % tag)
     find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible() and f.point.conf == 'check'", "CHK")
     check(lua.eval("#CHK") == 0, "%s: check points have no button" % tag)
     # With the arrow available: the button says Waypoint and points the arrow.
     lua.execute(NAV_WORLD_LUA)
-    lua.execute("R2F.Plan.Select('trio') R2F.PlanTab.Refresh()")
+    lua.execute("R2F.Plan.SetPreview('dwarf:PALADIN') R2F.PlanTab.Refresh()")
     find_frames(lua, "f.__kind == 'Button' and f.point ~= nil and f:IsVisible()", "WPB")
     check(lua.eval("WPB[1].__text") == "Waypoint", "%s: with the arrow the button says Waypoint" % tag)
     lua.execute("for _, b in ipairs(WPB) do if b.point.label:find('Anvilmar') then ANVIL = b end end ANVIL:Click()")
@@ -2274,6 +2326,11 @@ def test_plan(templates=True):
     check(lua.eval("R2F.Nav.Target() ~= nil"), "%s: waypoints and ticks work in combat" % tag)
     T.combat = False
     T.fire("PLAYER_REGEN_ENABLED")
+    lua.execute("R2F.Plan.SetPreview(nil) UnitFactionGroup = function() return 'Horde' end R2F.PlanTab.Refresh()")
+    find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "STEPS")
+    check(lua.eval("R2F.Plan.Selected()") is None and lua.eval("#STEPS") == 0 and font_text(lua, "Alliance characters only") is not None,
+          "%s: a Horde character gets a short message instead of an empty tab" % tag)
+    lua.execute("UnitFactionGroup = function() return 'Alliance' end R2F.PlanTab.Refresh()")
 
     # --- Quest shopping list (the site's Buyable quests) -----------------------------------------------------------
     lua, T = plan_runtime(templates=templates)
@@ -2316,13 +2373,16 @@ def test_plan(templates=True):
     lua.execute("R2F.MainWindow.Show('home')")
     find_frames(lua, "f.__kind == 'Button' and f.tab ~= nil and f.sub ~= nil", "HOME")
     check(lua.eval("#HOME") == 1 and lua.eval("HOME[1].tab") == "plan", "%s: Home has the launch plan entry" % tag)
-    nxt = lua.eval("R2F.Plan.Next('hwd')")
+    nxt = lua.eval("R2F.Plan.Next('skyborne:WARRIOR')")
     check(lua.eval("HOME[1].sub.__text") == "Next: [%s] %s" % (nxt.lvl, nxt.t), "%s: Home next-step line: %r" % (tag, lua.eval("HOME[1].sub.__text")))
-    lua.execute("R2F.Plan.SetDone(R2F.Plan.Next('hwd').id, true) R2F.Home.Refresh()")
-    nxt2 = lua.eval("R2F.Plan.Next('hwd')")
+    lua.execute("R2F.Plan.SetDone(R2F.Plan.Next('skyborne:WARRIOR').id, true) R2F.Home.Refresh()")
+    nxt2 = lua.eval("R2F.Plan.Next('skyborne:WARRIOR')")
     check(lua.eval("HOME[1].sub.__text") == "Next: [%s] %s" % (nxt2.lvl, nxt2.t) and nxt2.id != nxt.id, "%s: the next-step line follows the ticks" % tag)
-    lua.execute("for _, s in ipairs(R2F.Plan.Steps('hwd')) do R2F.Plan.SetDone(s.id, true) end R2F.Home.Refresh()")
+    lua.execute("for _, s in ipairs(R2F.Plan.Steps('skyborne:WARRIOR')) do R2F.Plan.SetDone(s.id, true) end R2F.Home.Refresh()")
     check(lua.eval("HOME[1].sub.__text") == "All launch-day steps done", "%s: Home says all done" % tag)
+    lua.execute("UnitFactionGroup = function() return 'Horde' end R2F.Home.Refresh()")
+    check(lua.eval("HOME[1].sub.__text") == "Launch plan: Alliance characters only", "%s: Home for a Horde character: %r" % (tag, lua.eval("HOME[1].sub.__text")))
+    lua.execute("UnitFactionGroup = function() return 'Alliance' end")
     lua.execute("HOME[1]:Click()")
     check(lua.eval("R2F.MainWindow.CurrentTab()") == "plan", "%s: clicking the Home entry opens the Plan tab" % tag)
 
@@ -9396,16 +9456,16 @@ def test_route_weapons():
           and lua.eval("R2F.BiZ.RouteKey({ type = 'quest', label = 'Quest: X (level 30)' })") is None,
           "route: dungeon -> instance, vendor -> zone, quest -> nothing")
 
-    check(lua.eval("R2F.BiZ.RouteWeapons('warrior/fury', 'hwd')['p1-bfdq']") is None
-          and lua.eval("R2F.BiZ.RouteWeapons('warrior/fury', 'hwd')['p3-stv'][1].row.name") in ("Ironspine's Fist", "Bloody Brass Knuckles"),
+    check(lua.eval("R2F.BiZ.RouteWeapons('warrior/fury', 'skyborne:WARRIOR')['p1-bfdq']") is None
+          and lua.eval("R2F.BiZ.RouteWeapons('warrior/fury', 'skyborne:WARRIOR')['p3-stv'][1].row.name") in ("Ironspine's Fist", "Bloody Brass Knuckles"),
           "route: a dungeon drop shows at its run, not at a step that only collects quests (data of 2026-10-17)")
-    best = lua.eval("""(function() local n = 0 for _, l in pairs(R2F.BiZ.RouteWeapons('rogue/combat', 'hwd')) do
+    best = lua.eval("""(function() local n = 0 for _, l in pairs(R2F.BiZ.RouteWeapons('rogue/combat', 'skyborne:ROGUE')) do
       for _, m in ipairs(l) do if m.best then n = n + 1 end end end return n end)()""")
     check(best == 2, "route: one 'best on route' per weapon slot that has a match (Combat: main + off hand = %d)" % best)
-    check(lua.eval("next(R2F.BiZ.RouteWeapons('nope/spec', 'hwd'))") is None, "route: unknown spec = nothing")
+    check(lua.eval("next(R2F.BiZ.RouteWeapons('nope/spec', 'skyborne:WARRIOR'))") is None, "route: unknown spec = nothing")
     # The Plan tab line, for a Fury Warrior (the stub player is a Warrior): shown when it beats what is worn, not otherwise.
-    lua.execute("R2F.BiZ.SetSpec('warrior/fury') R2F.Plan.Select('hwd')")
-    fid = lua.eval("""(function() for _, l in pairs(R2F.BiZ.RouteWeapons('warrior/fury', 'hwd')) do
+    lua.execute("R2F.BiZ.SetSpec('warrior/fury')")
+    fid = lua.eval("""(function() for _, l in pairs(R2F.BiZ.RouteWeapons('warrior/fury', 'skyborne:WARRIOR')) do
       for _, m in ipairs(l) do if m.row.name == "Ironspine's Fist" then return m.row.id end end end end)()""")
     install_item_stubs(lua)
     lua.execute("TEST.gsItems['item:%d'] = { stats = { ITEM_MOD_STRENGTH_SHORT = 20 }, loc = 'INVTYPE_WEAPON', cls = 2, sub = 13 }" % fid)

@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.81.0 (2026-10-24)
+
+- **The Plan tab follows your race and class.** It reads them from the character you are logged in on (Alliance Human, Dwarf, Gnome, Night Elf or Skyborne, and your class) and shows that plan, for example "Alliance Skyborne Hunter". The four group plans are gone: every class levels as damage, and dungeon steps just say they need a group. Class steps (Hunter pet, Druid Bear Form, Warrior stance, Paladin, Shaman, Mage food, Rogue poisons) now show only to that class.
+- **Preview another combination:** four small buttons under the title (Race, Class, 2 Hunters, My character) show any other plan. Weapon lines are only drawn for your own class, because their scores compare with your gear.
+- **Horde characters** get a short message instead of an empty tab; Home says the plan is Alliance only.
+- The class weapon table now comes with the weapon data (one copy, shared with the site). Waypoints are per race instead of per group plan.
+
 ## 0.80.1 (2026-10-21)
 
 - **The swing timer is switched on by the setups and the general settings.** Setup Hunter and Setup Druid now turn on the game's "Enable Swing Timer" (Options > Advanced Options), and Undo puts it back. "My general settings" saves and applies it too. The addon does not know the setting's internal name, so it searches the game's list of settings for names containing "swing" and only touches ones that are plain on/off. `/r2f general swing` lists what it finds (send me that if the timer does not turn on).

@@ -51,33 +51,35 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
   stats[], statTip, pull[abilities], pullLoop, pullTip}], foot}`. Used by Druid Level 30 Feral (bear tank
   stat order + pack pull) at Level 30 and Level 60; a mode can add `extra: [{label, abilities, loop, tip}]` rows. Hand-edit directly.
 
-- `launch-plan.html` — hand-written launch plan with three group plans plus Compare:
-  2 Hunters · Warrior · Druid (`hwd`), 3 Hunters · Druid (`h3d`) — both Skyborne,
-  Zephras Isle start — and Paladin · Hunter · Shaman (`trio`, Dwarves starting in
-  Coldridge Valley, since Alliance Skyborne can't be Paladin or Shaman). Plans are
-  defined in the `PLANS` object (label, chips, color class, and `base` = the key
-  whose overrides it inherits; all three inherit the shared `hunter` profile, which
-  is a data key only, not a selectable plan). Checklists
-  (before-launch / launch-night / 12→20 / 20→30 / 30→60 / test-in-beta) and the
-  group-play cards are rendered by JS from the `PHASES` and `DUO` objects at the
-  bottom of the file — edit steps there, not in the HTML. An item is shared by every
-  plan unless it has a key for that plan (or its base): object = override fields,
-  `false` = hidden. `DUO` cards list their `plans` ("all" = every plan). Compare shows
-  any two plans side by side (two selects; rows whose resolved text matches render
-  full-width "Same for both"), and the "Key differences" table is rendered from the
-  `DIFFS` array. Legacy path cards are static HTML with `data-plans`. Mode comes from
-  `?plan=hwd|h3d|trio|compare` (+ `&a=&b=` for compare), then localStorage
-  `wf-launch-plan-mode` / `wf-launch-plan-cmp`. Checkboxes persist per browser in
-  localStorage (key `wf-launch-plan-v1`, keyed by item id — keep ids stable; shared
-  steps share one checkbox across every plan). A floating "Buyable quests" button (top-right, just under the sticky top bar) (and a
-  TOC link, or `#buyable` in the URL) opens a right-hand sidebar listing quests whose
-  objectives are tradeable AH/vendor items, switchable between "Along our route"
-  (grouped p1/p2/p3/off) and "By zone". Its data is the `QUESTS` array in the second
-  `<script>` block (quest level, items, route phase, status forever/classic/verify);
-  its checkboxes use their own localStorage key `wf-launch-plan-buy-v1` (ids `bq-*`).
-  Steps past level 30 are tagged `unverified` until beta/launch
-  confirms them. Launch time uses the same `2026-11-04T23:00:00Z` target as index.html.
-  Hand-edit directly.
+- `launch-plan.html` — hand-written launch plan for the 28 Alliance race and class combinations (Human, Dwarf, Gnome,
+  Night Elf, Skyborne), picked with two dropdowns (race, then class; the class list is rebuilt on every race change and
+  falls back to the race's first class). A side button, "2 Hunters" (preset `hunter` = Skyborne Hunter plus the duo
+  tactics card), sits next to them. Every class is treated as damage: no tank or healer text, dungeon steps say "needs
+  a group". Data lives in the first `<script>` block: `CLASSES` / `CLASS_ORDER`, `RACES` / `RACE_ORDER` (label, start,
+  valid classes, `draft` = start steps not written yet), `PRESETS`, `PHASES`, `TIPS`, `WAYPOINTS`. A step resolves in
+  this order: its own fields, `race.<race>`, `cls.<CLASS>`, `preset.<id>`; an object replaces the fields it names,
+  `false` hides the step for good; a key may list several names ("dwarf gnome"). `only: { race: [...], cls: [...] }`
+  shows a step to those only (class steps carry a coloured class tag). Nothing is thrown away when a plan goes: the old
+  group-plan text now lives in class steps (`only.cls`) and race overrides. Checklists (before-launch / launch-night /
+  12→20 / 20→30 / 30→60 / test-in-beta) and the Tips cards are rendered by JS. The addon's `gen_plan_data.js` evaluates
+  `CLASSES`, `RACES`, `PRESETS`, `PHASES` and `planId` / `parsePlan` / `allPlans` / `allowed` / `override` / `resolve`, so
+  keep those as top-level two-space-indented `var`s and `function`s. Selection comes from `?race=gnome&class=mage` or
+  `?plan=hunter`, then localStorage `wf-launch-plan-sel` (a plan id, `race:CLASS` or the preset), then Skyborne Hunter.
+  Checkboxes persist per browser in localStorage (key `wf-launch-plan-v1`, keyed by item id — keep ids stable; steps
+  shared by several races or classes share one checkbox, so progress survives switching). **Weapons:** each step with a
+  level and a zone in its title gets the best quest-reward weapons for the class, strongest dps first (top two melee and
+  top two ranged; Priest, Mage and Warlock show "check stats" unranked; "No quest weapon data past level 32" on later
+  steps; dual wield is not modelled). Data: `launch-plan-weapons.json`, written by `bis/build_quest_weapons.py` (the same
+  rows as the addon's `QuestWeaponData.lua` plus dps, Alliance and both-faction only, and the class weapon table
+  `CLASS_USE`, the one copy of it). The page fetches it after the first paint. A start-zone step must name its zone in
+  its title (for example "Coldridge Valley (Dun Morogh)") or it gets no weapon line. Subzone names inside Elwynn, Dun
+  Morogh and Teldrassil are Classic knowledge: tag them `unv`. Legacy path cards are static HTML with `data-race`. A
+  floating "Buyable quests" button (top-right, just under the sticky top bar) (and a TOC link, or `#buyable` in the URL)
+  opens a right-hand sidebar listing quests whose objectives are tradeable AH/vendor items, switchable between "Along our
+  route" (grouped p1/p2/p3/off) and "By zone". Its data is the `QUESTS` array in the second `<script>` block (quest level,
+  items, route phase, status forever/classic/verify); its checkboxes use their own localStorage key
+  `wf-launch-plan-buy-v1` (ids `bq-*`). Steps past level 30 are tagged `unverified` until beta/launch confirms them. Launch
+  time uses the same `2026-11-04T23:00:00Z` target as index.html. Hand-edit directly (except the weapons JSON).
 - `talentcalc.js` + `talentcalc.css` — shared calculator engine used by `talents.html`
   (full mode: all three trees) and `builds.html` (compact mode, one per build card:
   tree tabs, "Reset to build", "Copy link", "Open in Talent Calc"). API:

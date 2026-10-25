@@ -13,6 +13,24 @@ user-facing release notes.
   row reads "Classic TBC +2", so Forever is not confirmed; its card stays on 12488 until the file page confirms the flavor.
 - The first attempt in the scheduled run was refused by the fetch permission (not answered in time), which is why this check was repeated.
 
+## 2026-10-25 (launch plan: Human and Night Elf starts)
+- Human: Northshire Valley, then Elwynn Forest from Goldshire, then the Stormwind tram to Ironforge. Night Elf: Shadowglen, Dolanaar, the Rut'theran boat to Auberdine, then Darkshore from level 11 (they skip the Ironforge steps). Wowhead Forever confirmed only the zone level ranges (Elwynn 1-10, Teldrassil 1-11, Darkshore 11-19); the rest is Classic knowledge tagged unverified, with capture-in-game waypoints. The "start not written yet" note no longer shows for any race.
+
+## 2026-10-24 (launch plan: race and class, phase 1)
+- `launch-plan.html`: the group plans (2 Hunters · Warrior · Druid, 3 Hunters · Druid, Paladin · Hunter · Shaman), Compare mode, the
+  key-differences table and the compare selects are gone. Pick a race, then a class (28 Alliance combinations, class list per race);
+  "2 Hunters" stays as a side option (Skyborne Hunter plus the duo tactics card). Every class is damage: no tank or healer text.
+  The old group text moved into class steps (Hunter pet and ammo, Druid Bear Form and Cat Form, Warrior stance, Paladin and Shaman
+  steps, Mage food, Rogue poisons) and Dwarf and Gnome overrides (Coldridge Valley, Kharanos, Loch Modan, Ironforge). Night Elves skip
+  the Ironforge road until the owner picks their route; Human and Night Elf show "start not written yet". URL `?race=gnome&class=mage`
+  or `?plan=hunter`, localStorage `wf-launch-plan-sel` (the old mode and compare keys are unused; `wf-launch-plan-v1` unchanged).
+  "Group play" became "Tips" with race cards.
+- Weapons on the site: each step with a level and a zone in its title lists the best quest-reward weapons for the class by dps
+  (casters: check stats; nothing past level 32). `bis/build_quest_weapons.py` now also writes `launch-plan-weapons.json` and holds the
+  one class weapon table (`CLASS_USE`), which the addon takes from `QuestWeaponData.lua`.
+- Addon 0.81.0: the Plan tab reads the character's race and class (`UnitRace`, `UnitClass`) with a Preview control; Horde gets a message;
+  `PlanData.lua` is generated from the new page model; waypoints are per race (`launch-plan-waypoints.json`).
+
 ## 2026-10-21 (addon versions checked)
 - addons.html: Road to Forever card fallback moved to 0.77.1 (newest `r2f-v*` tag, Oct 20, 2026; link, version, zip name). It matches
   `RoadToForever.toc` (`## Version: 0.77.1`). CurseForge cards (AtlasLoot Continued, Forever Bestiary, Leatrix Maps, Questie, ThreatMaster)

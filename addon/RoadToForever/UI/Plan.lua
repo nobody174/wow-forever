@@ -1,6 +1,7 @@
 -- UI/Plan.lua: the Plan tab of the main window.
 --
---   Group plan picker (the site's four plans) -> progress line -> a scrolling list of
+--   Who the plan is for ("Alliance Skyborne Hunter": the logged-in character, read by Plan.lua) with a small
+--   "Preview another combination" control -> progress line -> a scrolling list of
 --   the launch-day steps grouped by phase. Each step: a tick box (saved per character),
 --   the level, the title with its tags, the note, and one line per waypoint:
 --     exact            [Waypoint]  label
@@ -24,7 +25,6 @@ R2F.PlanTab = Tab
 
 local page, scroll, content
 local ui = {}
-local picks = {}      -- plan id -> radio button
 local headers = {}    -- pooled phase heading font strings
 local rows = {}       -- pooled step rows
 local view = "steps"  -- "steps" (the launch-day list) or "buy" (the quest shopping list)
@@ -133,6 +133,13 @@ end
 local function layout()
   local planId = Plan.Selected()
   local arrow = R2F.Nav.Supported()
+  if not planId then
+    hideRowsFrom(1)
+    for k = 1, #headers do headers[k]:Hide() end
+    content:SetHeight(1)
+    ui.contentHeight = 0
+    return
+  end
   -- Weapons you can get at a step that beat what you wear (quest rewards, Mr.BiZ dungeon / vendor picks).
   local route = R2F.QuestWeapons.StepLines(planId)
   local y, nHead, nRow = 0, 0, 0
@@ -391,7 +398,16 @@ end
 local function refresh()
   if not visible() then return end
   local planId = Plan.Selected()
-  for id, b in pairs(picks) do b:SetChecked(id == planId) end
+  local preview = Plan.Preview()
+  local sel = Plan.Parse(preview or planId) or Plan.Parse(Plan.DEFAULT)
+  if planId then
+    ui.who:SetText(preview and L.PLAN_PREVIEWING:format(Plan.Label(planId)) or Plan.Label(planId))
+  else
+    ui.who:SetText(L.PLAN_HORDE)
+  end
+  ui.raceBtn:SetText(L.PLAN_RACE_BTN:format(Plan.RaceLabel(sel.race)))
+  ui.classBtn:SetText(L.PLAN_CLASS_BTN:format(Plan.ClassLabel(sel.cls)))
+  if preview then ui.mineBtn:Enable() else ui.mineBtn:Disable() end
   ui.buyBtn:SetText(view == "buy" and L.PLAN_BUY_BACK or L.PLAN_BUY_BTN)
   -- As wide as its label: a look's font can be wider than the game's.
   local bfs = ui.buyBtn.GetFontString and ui.buyBtn:GetFontString()
@@ -420,21 +436,34 @@ end
 -- Called once by MainWindow with the Plan page frame.
 function Tab.Build(f)
   page = f
-  local pick = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
-  pick:SetPoint("TOPLEFT", 28, -52)
-  pick:SetText(L.PLAN_PICK)
-  for i, id in ipairs(Plan.Order()) do
-    local b = UI.CheckButton(f, Plan.Label(id), true)
-    local col, rowN = (i - 1) % 2, math.floor((i - 1) / 2)
-    b:SetPoint("TOPLEFT", 36 + col * 240, -74 - rowN * 22)
+  ui.who = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
+  ui.who:SetPoint("TOPLEFT", 28, -50)
+  ui.who:SetWidth(430)
+  ui.who:SetJustifyH("LEFT")
+  local hint = f:CreateFontString(nil, "ARTWORK", "R2FDimSmall")
+  hint:SetPoint("TOPLEFT", 28, -72)
+  hint:SetText(L.PLAN_PREVIEW)
+  -- Preview buttons: each click picks the next race / class (a class that does not fit the race falls back to its
+  -- first), so no dropdown is needed. Saved per character (R2FCharDB.plan.selected); "My character" clears it.
+  local function previewButton(x, w, onClick)
+    local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    R2F.UI.ThemeButton(b)
+    b:SetSize(w, 20)
+    b:SetPoint("TOPLEFT", x, -88)
     b:SetScript("OnClick", function()
-      Plan.Select(id)
+      onClick()
       scroll:SetVerticalScroll(0)
       Tab.Refresh()
       if R2F.Home and R2F.Home.Refresh then R2F.Home.Refresh() end
     end)
-    picks[id] = b
+    return b
   end
+  ui.raceBtn = previewButton(28, 130, function() Plan.SetPreview(Plan.CycleRace(Plan.Selected())) end)
+  ui.classBtn = previewButton(164, 110, function() Plan.SetPreview(Plan.CycleClass(Plan.Selected())) end)
+  ui.presetBtn = previewButton(280, 80, function() Plan.SetPreview(Plan.TogglePreset(Plan.Selected())) end)
+  ui.presetBtn:SetText(L.PLAN_PRESET_BTN)
+  ui.mineBtn = previewButton(366, 100, function() Plan.SetPreview(nil) end)
+  ui.mineBtn:SetText(L.PLAN_MINE_BTN)
   ui.progress = f:CreateFontString(nil, "ARTWORK", "R2FBody")
   ui.progress:SetPoint("TOPLEFT", 28, -124)
   ui.buyBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")

@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-10-24",
+      "title": "Launch plan: pick your race and class",
+      "text": "The launch plan now has a race and a class picker for every Alliance combination, shows the best quest weapons for each step, and no longer assumes a group with a tank and healer. The Skyborne Hunter duo is still one click away.",
+      "link": "launch-plan.html"
+    },
+    {
       "date": "2026-10-21",
       "title": "Road to Forever addon 0.80.1: swing timer in the setups",
       "text": "Setup Hunter, Setup Druid and your saved general settings now also turn the swing timer on.",
@@ -225,6 +231,10 @@
     }
   ],
   "next": [
+    {
+      "title": "Launch plan: auto-ticking steps",
+      "text": "A switch in the addon that ticks quest steps off as you turn the quests in."
+    },
     {
       "title": "Launch-day refresh",
       "text": "Level 60 BiS enchants, EU auction house prices and a fresh look at builds once the live game is up."

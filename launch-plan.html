@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Launch Plan — WoW Forever</title>
-<meta name="description" content="Our launch-week leveling plan for WoW Forever: group setups, checklists and buyable quests.">
+<meta name="description" content="Launch-week leveling plan for WoW Forever: pick your Alliance race and class, follow the checklist and see the best quest weapons for each step.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Road to Forever">
 <meta property="og:title" content="Launch Plan — Road to Forever">
-<meta property="og:description" content="Our launch-week leveling plan for WoW Forever: group setups, checklists and buyable quests.">
+<meta property="og:description" content="Launch-week leveling plan for WoW Forever: pick your Alliance race and class, follow the checklist and see the best quest weapons for each step.">
 <meta property="og:url" content="https://nobody174.github.io/wow-forever/launch-plan.html">
 <meta property="og:image" content="https://nobody174.github.io/wow-forever/assets/og.jpg">
 <meta property="og:image:width" content="1200">
@@ -64,69 +64,41 @@ a{color:var(--gold)}
 }
 @media (prefers-reduced-motion:reduce){.topbar nav a,.bar span{transition:none}}
 .wrap{max-width:820px;margin:0 auto;padding:36px 20px 80px}
-body.mode-compare .wrap{max-width:1120px}
 h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6px;letter-spacing:.01em}
 .lede{color:var(--muted);margin:0 0 16px;max-width:66ch}
 .meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
 .chip{font:600 12px/1 var(--sans);letter-spacing:.03em;text-transform:uppercase;padding:7px 10px;border-radius:999px;border:1px solid var(--edge);background:var(--panel);color:var(--text)}
-.chip.frost{border-color:var(--frost);color:var(--frost)}
-.chip.hunt{border-color:var(--hunt);color:var(--hunt)}
-.chip.pal{border-color:var(--pal);color:var(--pal)}
-.chip.war{border-color:var(--war);color:var(--war)}
-.chip.dru{border-color:var(--dru);color:var(--dru)}
 .chip.gold{border-color:var(--gold);color:var(--gold)}
 .draft{background:rgba(232,163,61,.08);border:1px solid rgba(232,163,61,.45);border-radius:6px;padding:12px 14px;color:var(--text);font-size:14px;margin:0 0 22px}
 .draft strong{color:var(--warn)}
 
-/* Plan switcher: one button per plan + Compare */
-.switch-wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:0 0 22px}
-.switch-label{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-.mode-switch{display:inline-flex;flex-wrap:wrap;background:#0A0F20;border:1px solid var(--edge);border-radius:8px;padding:3px;gap:3px}
-.mode-switch button{font:600 14px/1 var(--sans);color:var(--muted);background:transparent;border:1px solid transparent;border-radius:6px;padding:10px 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
-.mode-switch button:hover{color:var(--text)}
-.mode-switch button .dot{width:9px;height:9px;border-radius:50%;background:currentColor}
-.mode-switch button[data-mode="mage"] .dot{background:var(--frost)}
-.mode-switch button[data-mode="hunter"] .dot{background:var(--hunt)}
-.mode-switch button[data-mode="trio"] .dot{background:linear-gradient(90deg,var(--pal) 33%,var(--hunt) 33% 66%,var(--sham) 66%)}
-.mode-switch button[data-mode="compare"] .dot{background:linear-gradient(90deg,var(--frost) 50%,var(--hunt) 50%)}
-.mode-switch button[aria-pressed="true"]{background:var(--panel);color:var(--text);border-color:var(--edge);box-shadow:0 1px 3px rgba(0,0,0,.4)}
-.mode-switch button[data-mode="mage"][aria-pressed="true"]{border-color:var(--frost)}
-.mode-switch button[data-mode="hunter"][aria-pressed="true"]{border-color:var(--hunt)}
-.mode-switch button[data-mode="trio"][aria-pressed="true"]{border-color:var(--pal)}
-.mode-switch button[data-mode="compare"][aria-pressed="true"]{border-color:var(--gold)}
-.diff-toggle{display:none;align-items:center;gap:8px;font-size:14px;color:var(--muted);cursor:pointer}
-.diff-toggle input{width:16px;height:16px;accent-color:var(--gold)}
-body.mode-compare .diff-toggle{display:inline-flex}
-.cmp-pick{display:none;align-items:center;gap:8px;font-size:14px;color:var(--muted);flex-wrap:wrap}
-body.mode-compare .cmp-pick{display:inline-flex}
-.cmp-pick select{font:600 14px var(--sans);color:var(--text);background:var(--panel);border:1px solid var(--edge);border-radius:6px;padding:8px 10px;cursor:pointer}
-.cmp-pick select:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
-body.mode-compare.diff-only .cmp-row.same{display:none}
+/* Pickers: race, class and the 2 Hunters side option */
+.picker-wrap{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 18px;margin:0 0 22px}
+.pick{display:flex;flex-direction:column;gap:6px}
+.pick label,.switch-label{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.pick select{font:600 15px var(--sans);color:var(--text);background:var(--panel);border:1px solid var(--edge);border-radius:6px;padding:10px 12px;min-width:200px;cursor:pointer}
+.pick select:focus-visible,.preset:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.preset{font:600 14px/1 var(--sans);color:var(--muted);background:transparent;border:1px solid var(--edge);border-radius:6px;padding:12px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.preset::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--hunt)}
+.preset:hover{color:var(--text)}
+.preset[aria-pressed="true"]{background:var(--panel);color:var(--text);border-color:var(--hunt)}
+.weapon-note{color:var(--muted);font-size:13px;margin:-8px 0 18px;max-width:70ch}
 
 .toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;margin:0 0 10px}
 .toc a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--edge)}
 .toc a:hover{color:var(--gold);border-color:var(--gold)}
 h2{font:400 22px/1.2 var(--serif);color:var(--accent);margin:40px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--edge);scroll-margin-top:110px}
 .section-note{color:var(--muted);font-size:14px;margin:6px 0 14px}
-.only-compare{display:none}
-body.mode-compare .only-compare{display:block}
 
 .progress{display:flex;align-items:center;gap:10px;margin:8px 0 14px;font-size:13px;color:var(--muted)}
 .bar{flex:1;height:6px;border-radius:3px;background:#0A0F20;border:1px solid var(--edge);overflow:hidden}
-.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--frost),var(--gold));transition:width .2s ease}
-body.mode-hunter .bar span{background:linear-gradient(90deg,var(--hunt),var(--gold))}
-body.mode-trio .bar span{background:linear-gradient(90deg,var(--pal),var(--hunt),var(--sham))}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cc,var(--frost)),var(--gold));transition:width .2s ease}
 ul.check{list-style:none;margin:0;padding:0}
 ul.check li{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--edge);border-radius:5px;margin-bottom:8px}
-ul.check li.cls-mage{border-left-color:var(--frost)}
-ul.check li.cls-hunter{border-left-color:var(--hunt)}
-ul.check li.cls-trio{border-left-color:var(--pal)}
 ul.check li.done{border-left-color:var(--ok);opacity:.72}
 ul.check label{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;cursor:pointer}
 ul.check input{flex:none;width:18px;height:18px;margin:3px 0 0;accent-color:var(--gold);cursor:pointer}
-.lvl{flex:none;min-width:58px;font:600 13px/1.6 var(--sans);color:var(--frost)}
-body.mode-hunter .lvl{color:var(--hunt)}
-body.mode-trio .lvl{color:var(--pal)}
+.lvl{flex:none;min-width:58px;font:600 13px/1.6 var(--sans);color:var(--cc,var(--frost))}
 .body{flex:1;min-width:0}
 .t{font-weight:600}
 ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--muted)}
@@ -135,47 +107,17 @@ ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--mut
 .tag.unv{color:var(--warn);border:1px solid rgba(232,163,61,.55)}
 .tag.dng{color:var(--frost);border:1px solid rgba(105,204,240,.55)}
 .tag.opt{color:var(--muted);border:1px solid var(--edge)}
-.tag.cls-mage{color:var(--frost);border:1px solid rgba(105,204,240,.55)}
-.tag.cls-hunter{color:var(--hunt);border:1px solid rgba(171,212,115,.6)}
-.tag.cls-trio{color:var(--pal);border:1px solid rgba(245,140,186,.6)}
-
-/* Compare view */
-.cmp{display:grid;gap:8px}
-.cmp-head{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:sticky;top:var(--topbar-h,64px);z-index:5;background:var(--bg);padding:6px 0}
-.cmp-head div{font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-radius:5px;background:var(--panel);border:1px solid var(--edge)}
-.cmp-head .h-mage{color:var(--frost);border-bottom:2px solid var(--frost)}
-.cmp-head .h-hunter{color:var(--hunt);border-bottom:2px solid var(--hunt)}
-.cmp-head .h-trio{color:var(--pal);border-bottom:2px solid var(--pal)}
-.cmp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.cmp-cell{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--edge);border-radius:5px;padding:10px 14px}
-.cmp-cell.both{grid-column:1 / -1;border-left:3px solid var(--edge)}
-.cmp-cell.mage{border-left:3px solid var(--frost)}
-.cmp-cell.hunter{border-left:3px solid var(--hunt)}
-.cmp-cell.hunter .lvl{color:var(--hunt)}
-.cmp-cell.trio{border-left:3px solid var(--pal)}
-.cmp-cell.trio .lvl{color:var(--pal)}
-.cmp-cell.mage .lvl{color:var(--frost)}
-.cmp-cell.both .lvl{color:var(--muted)}
-.cmp-cell.empty{background:transparent;border-style:dashed;color:var(--muted);font-size:14px;align-items:center;justify-content:center}
-.who{display:none;font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.cmp-cell.both .same-label{display:inline-block;font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-left:8px;vertical-align:2px}
-@media (max-width:640px){
-  .cmp-head{display:none}
-  .cmp-row{grid-template-columns:1fr}
-  .cmp-cell.empty{display:none}
-  .who{display:block}
-  .cmp-cell.mage .who{color:var(--frost)}
-  .cmp-cell.hunter .who{color:var(--hunt)}
-  .cmp-cell.trio .who{color:var(--pal)}
-}
+.tag.aud{color:var(--tc,var(--muted));border:1px solid var(--tc,var(--edge))}
+.gear{display:block;font-size:13px;margin-top:4px;color:var(--text)}
+.gear b{color:var(--gold);font-weight:600}
+.gear a{color:var(--text);text-decoration:none;border-bottom:1px dotted var(--edge)}
+.gear a:hover{color:var(--gold);border-color:var(--gold)}
+.gear.muted{color:var(--muted)}
 
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .cards.two{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .card{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--accent);border-radius:5px;padding:14px 16px}
-.card.cls-mage{border-left-color:var(--frost)}
-.card.cls-hunter{border-left-color:var(--hunt)}
-.card.cls-trio{border-left-color:var(--pal)}
-.card[hidden]{display:none}
+.card[hidden],.draft[hidden]{display:none}
 .card h4{margin:0 0 6px;font:400 17px/1.2 var(--serif);color:var(--gold)}
 .card h4 .tag{font-family:var(--sans)}
 .card p,.card ul{margin:0;color:var(--text);font-size:14px}
@@ -185,7 +127,6 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 4px}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--edge);vertical-align:top}
 th{font:600 12px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 td:first-child{font-weight:600}
-th.c-mage{color:var(--frost)} th.c-hunter{color:var(--hunt)} th.c-trio{color:var(--pal)}
 .table-wrap{overflow-x:auto}
 .toolbar{display:flex;justify-content:flex-end;gap:8px;margin-top:44px}
 button.reset{font:500 13px var(--sans);background:transparent;border:1px solid var(--edge);color:var(--muted);padding:6px 12px;border-radius:4px;cursor:pointer}
@@ -197,8 +138,7 @@ button.reset:hover{border-color:var(--warn);color:var(--warn)}
 @media (max-width:560px){
   ul.check label{flex-wrap:wrap}
   .lvl{min-width:0}
-  .mode-switch{display:flex;width:100%}
-  .mode-switch button{flex:1 1 30%;padding:9px 6px;font-size:13px;gap:6px}
+  .pick,.pick select{width:100%}
 }
 
 /* Buyable-quests sidebar */
@@ -241,23 +181,6 @@ body.buy-open .buy-drawer{transform:none}
 .buy-legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted);margin-top:10px}
 .buy-legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;background:var(--c)}
 @media (max-width:560px){.buy-fab{right:12px;top:calc(var(--topbar-h,64px) + 10px);padding:10px 13px}}
-/* Per-plan accent colors (hwd = 2 Hunters + Warrior + Druid, h3d = 3 Hunters + Druid) */
-.mode-switch button[data-mode="hwd"] .dot{background:linear-gradient(90deg,var(--hunt) 50%,var(--war) 50% 75%,var(--dru) 75%)}
-.mode-switch button[data-mode="h3d"] .dot{background:linear-gradient(90deg,var(--hunt) 66%,var(--dru) 66%)}
-.mode-switch button[data-mode="hwd"][aria-pressed="true"]{border-color:var(--war)}
-.mode-switch button[data-mode="h3d"][aria-pressed="true"]{border-color:var(--dru)}
-body.mode-hwd .bar span{background:linear-gradient(90deg,var(--hunt),var(--war),var(--dru))}
-body.mode-h3d .bar span{background:linear-gradient(90deg,var(--hunt),var(--dru))}
-body.mode-hwd .lvl{color:var(--war)} body.mode-h3d .lvl{color:var(--dru)}
-ul.check li.cls-hwd{border-left-color:var(--war)} ul.check li.cls-h3d{border-left-color:var(--dru)}
-.tag.cls-hwd{color:var(--war);border:1px solid rgba(199,156,110,.6)}
-.tag.cls-h3d{color:var(--dru);border:1px solid rgba(255,125,10,.6)}
-.cmp-head .h-hwd{color:var(--war);border-bottom:2px solid var(--war)}
-.cmp-head .h-h3d{color:var(--dru);border-bottom:2px solid var(--dru)}
-.cmp-cell.hwd{border-left:3px solid var(--war)} .cmp-cell.hwd .lvl,.cmp-cell.hwd .who{color:var(--war)}
-.cmp-cell.h3d{border-left:3px solid var(--dru)} .cmp-cell.h3d .lvl,.cmp-cell.h3d .who{color:var(--dru)}
-.card.cls-hwd{border-left-color:var(--war)} .card.cls-h3d{border-left-color:var(--dru)}
-th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
 .wps{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .wp{font:500 12.5px/1.3 var(--sans,inherit);color:var(--muted);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:3px 8px;cursor:pointer;text-align:left}
 .wp code{color:var(--text);font-size:12px}
@@ -267,7 +190,7 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
 .wp.cap em{color:var(--warn);font-style:normal;margin-left:4px}
 </style>
 </head>
-<body class="mode-hwd">
+<body>
 <div class="topbar">
   <a class="site-title" href="index.html">Road to Forever</a>
   <nav aria-label="Site">
@@ -282,32 +205,26 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
 </div>
 <div class="wrap">
   <h1>Launch Plan</h1>
-  <p class="lede">How we get ahead of the launch crowd: questing together off the busy human route, and clearing every new dungeon once for its first-clear quest XP. Pick a group: two Hunters with a Warrior tank and Druid healer, just the two Hunters, three Hunters with a Druid, or a Paladin, Hunter and Shaman. Or compare any two side by side.</p>
+  <p class="lede">How we get ahead of the launch crowd: questing off the busy routes, and clearing every new dungeon once for its first-clear quest XP. Pick your race, then your class (every class levels as damage), or use the 2 Hunters option for the Skyborne Hunter duo.</p>
   <div class="meta">
     <span class="chip gold">Alliance</span>
     <span class="chip" id="race-chip">Skyborne (High Order)</span>
-    <span class="chip war" id="class-chip">2× Hunter + Warrior + Druid</span>
-    <span class="chip" id="extra-chip">Warrior tanks, Druid heals</span>
+    <span class="chip" id="class-chip">Hunter</span>
+    <span class="chip" id="extra-chip">Start: Zephras Isle</span>
     <span class="chip" id="launch-chip">Launch: Nov 4, 3:00 PM PST</span>
   </div>
 
-  <div class="switch-wrap">
-    <span class="switch-label" id="switch-label">Plan</span>
-    <div class="mode-switch" role="group" aria-labelledby="switch-label">
-      <button type="button" data-mode="hwd" aria-pressed="true"><span class="dot" aria-hidden="true"></span>2 Hunters · Warrior · Druid</button>
-      <button type="button" data-mode="hunter" aria-pressed="false"><span class="dot" aria-hidden="true"></span>2 Hunters</button>
-      <button type="button" data-mode="h3d" aria-pressed="false"><span class="dot" aria-hidden="true"></span>3 Hunters · Druid</button>
-      <button type="button" data-mode="trio" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Paladin · Hunter · Shaman</button>
-      <button type="button" data-mode="compare" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Compare</button>
-    </div>
-    <span class="cmp-pick"><select id="cmp-a" aria-label="First plan"></select> vs <select id="cmp-b" aria-label="Second plan"></select></span>
-    <label class="diff-toggle"><input type="checkbox" id="diff-only"> Show only differences</label>
+  <div class="picker-wrap">
+    <div class="pick"><label for="pick-race">Race</label><select id="pick-race"></select></div>
+    <div class="pick"><label for="pick-class">Class</label><select id="pick-class"></select></div>
+    <div class="pick"><span class="switch-label" id="preset-label">Side option</span><button type="button" class="preset" id="preset-btn" aria-pressed="false" aria-labelledby="preset-label preset-btn"></button></div>
   </div>
+  <p class="weapon-note">Weapon lines list the best quest rewards your class can use for each step, strongest damage first (casters: check the stats). The site cannot see your gear. Quest rewards are known up to level 32; dungeon and vendor weapons are on <a href="bis.html">Mr.BiZ</a>. Dual wield is not counted.</p>
 
-  <div class="draft"><strong>Draft.</strong> Levels 1–30 are checked against what the beta shows so far; anything marked <span class="tag unv">unverified</span> is based on published level ranges or Classic knowledge and will change as we test. Checkboxes save in this browser only — each of us ticks our own. Steps the plans share use the same checkbox, so switching plans keeps that progress.</div>
+  <div class="draft" id="race-note" hidden><strong>Start not written yet.</strong> The first steps for this race (its start zone and the road to Ironforge or Darkshore) are still to come. The shared steps from Hall of Thanes onward apply as they are.</div>
+  <div class="draft"><strong>Draft.</strong> Levels 1–30 are checked against what the beta shows so far; anything marked <span class="tag unv">unverified</span> is based on published level ranges or Classic knowledge and will change as we test. Checkboxes save in this browser only. Steps shared by every race and class use the same checkbox, so switching keeps that progress.</div>
 
   <nav class="toc" aria-label="On this page">
-    <a href="#differences" class="only-compare" style="display:none" id="toc-diff">Key differences</a>
     <a href="#rules">The rules</a>
     <a href="#before">Before launch</a>
     <a href="#night">Launch night</a>
@@ -315,22 +232,11 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     <a href="#p2">20 → 30</a>
     <a href="#p3">30 → 60</a>
     <a href="#dungeons">Dungeons</a>
-    <a href="#duo">Group play</a>
+    <a href="#tips">Tips</a>
     <a href="#legacy">Legacy points</a>
     <a href="#buyable" data-open-buy>Buyable quests</a>
     <a href="#beta">Test in beta</a>
   </nav>
-
-  <div class="only-compare">
-    <h2 id="differences">Key differences at a glance</h2>
-    <p class="section-note">From Ironforge on, the zones and dungeons are the same for every plan. What changes is the start, money, travel and how the group plays.</p>
-    <div class="table-wrap">
-      <table>
-        <thead id="diff-head"></thead>
-        <tbody id="diff-body"></tbody>
-      </table>
-    </div>
-  </div>
 
   <h2 id="rules">The rules that shape the route</h2>
   <div class="cards two">
@@ -357,11 +263,11 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
   <div class="phase" data-phase="p2"></div>
 
   <h2 id="p3">Phase 3 — 30 → 60 <span class="tag unv">unverified</span></h2>
-  <p class="section-note">Beta caps at 30, so this is built from published level ranges only. The zones are the same for every plan.</p>
+  <p class="section-note">Beta caps at 30, so this is built from published level ranges only. The zones are the same for every race and class.</p>
   <div class="phase" data-phase="p3"></div>
 
   <h2 id="dungeons">New dungeons at a glance</h2>
-  <p class="section-note">One clear each, with every quest collected first. The tenth clear pays almost nothing. The Warrior + Druid and Paladin + Shaman groups bring their own tank and healer; with three Hunters the Druid covers one role and we find the other.</p>
+  <p class="section-note">One clear each, with every quest collected first. The tenth clear pays almost nothing. Dungeons need a group.</p>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Dungeon</th><th>Levels</th><th>Where</th><th>Our plan</th></tr></thead>
@@ -379,8 +285,8 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     </table>
   </div>
 
-  <h2 id="duo">Group play</h2>
-  <div class="cards" id="duo-cards"></div>
+  <h2 id="tips">Tips</h2>
+  <div class="cards" id="tips-cards"></div>
 
   <h2 id="legacy">Legacy points</h2>
   <p class="section-note">Account-wide perks. Easy to misread: nobody starts with 16 points.</p>
@@ -419,20 +325,20 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
   </div>
   <p class="section-note">Positions follow Wowhead's Legacy data (beta build); try them in our <a href="talents.html#legacy">Legacy Calculator</a>. Ranks in brackets.</p>
   <div class="cards two">
-    <div class="card cls-hunter legacy-path" data-plans="hwd h3d"><h4>Skyborne group path <span class="tag cls-hunter">everyone</span></h4><ul>
+    <div class="card legacy-path" data-race="skyborne"><h4>Skyborne path</h4><ul>
       <li>Points 1–5: <strong>Thrill of Adventure 5/5</strong>. It also saves food and water we'd otherwise buy.</li>
       <li>Then stay in Adventure: Field Guide first (Frequent Flier's connector), then High Alert or Field Medicine.</li>
       <li>Point 11: <strong>Frequent Flier</strong> (50% cheaper flights, 20% faster). The last 5 go to Resourcefulness column 1: Gourmand 3/3 plus The Quick and the Dead 2/2.</li>
     </ul></div>
-    <div class="card cls-trio legacy-path" data-plans="trio"><h4>Paladin · Hunter · Shaman path <span class="tag cls-trio">trio</span></h4><ul>
-      <li>Same order for all three. Points 1–5: <strong>Thrill of Adventure 5/5</strong>. Its mana return matters most for the Paladin and Shaman.</li>
+    <div class="card legacy-path" data-race="human dwarf gnome nightelf"><h4>Path for Humans, Dwarves, Gnomes and Night Elves</h4><ul>
+      <li>Points 1–5: <strong>Thrill of Adventure 5/5</strong>. Its mana return matters most for Paladins, Shamans and the casters.</li>
       <li>Then stay in Adventure: Field Guide first (Frequent Flier's connector), then High Alert or Field Medicine.</li>
-      <li>Point 11: <strong>Frequent Flier</strong>. Nobody in this group teleports, so cheaper, faster flights help everyone.</li>
+      <li>Point 11: <strong>Frequent Flier</strong>. Nobody teleports, so cheaper, faster flights help everyone.</li>
     </ul></div>
   </div>
 
   <h2 id="beta">Test in beta</h2>
-  <p class="section-note">Beta runs until Oct 21 (cap 20, later 30) — exactly the 12–30 stretch. Split the list between us.</p>
+  <p class="section-note">Beta ran until Oct 21 (cap 20, later 30) — exactly the 12–30 stretch. These are the open questions for your race and class.</p>
   <div class="phase" data-phase="beta"></div>
 
   <div class="toolbar"><button class="reset" type="button" id="reset">Reset my checkboxes</button></div>
@@ -473,111 +379,174 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
   "use strict";
 
   // ---------------------------------------------------------------------------
-  // Plans. `base` = inherit that key's per-item overrides unless the item has
-  // its own key for this plan. `css` picks the accent color class.
+  // The selection. A character is a race and a class; every class levels as damage,
+  // so there are no tank or healer plans. The one preset, `hunter` ("2 Hunters"),
+  // is Skyborne + Hunter plus the duo tactics cards. The addon (gen_plan_data.js)
+  // evaluates this block, so RACES, CLASSES, PRESETS, PHASES and the functions
+  // below must stay top-level `var`s / functions with two-space indent.
+  // Alliance only. Class order follows CLAUDE.md.
   // ---------------------------------------------------------------------------
-  var PLANS = {
-    hwd:     { label: "2 Hunters · Warrior · Druid", short: "2× Hunter + Warrior + Druid", tag: "example setup", css: "hwd", base: "hunter",
-               race: "Skyborne (High Order)", extra: "Warrior tanks, Druid heals" },
-    hunter:  { label: "2 Hunters", short: "2× Hunter", tag: "example setup", css: "hunter", base: null,
-               race: "Skyborne (High Order)", extra: "Two hunters leveling together; others can join as they come online" },
-    h3d:     { label: "3 Hunters · Druid", short: "3× Hunter + Druid", tag: "example setup", css: "h3d", base: "hunter",
-               race: "Skyborne (High Order)", extra: "Druid tanks or heals" },
-    trio:    { label: "Paladin · Hunter · Shaman", short: "Paladin + Hunter + Shaman", tag: "example setup", css: "trio", base: "hunter",
-               race: "Dwarf", extra: "Own tank + healer" }
+  var CLASS_ORDER = ["PRIEST", "WARLOCK", "MAGE", "ROGUE", "DRUID", "SHAMAN", "HUNTER", "PALADIN", "WARRIOR"];
+  var CLASSES = {
+    PRIEST:  { label: "Priest",  color: "#F0EBE0" },
+    WARLOCK: { label: "Warlock", color: "#9482C9" },
+    MAGE:    { label: "Mage",    color: "#69CCF0" },
+    ROGUE:   { label: "Rogue",   color: "#FFF569" },
+    DRUID:   { label: "Druid",   color: "#FF7D0A" },
+    SHAMAN:  { label: "Shaman",  color: "#4C8BFF" },
+    HUNTER:  { label: "Hunter",  color: "#ABD473" },
+    PALADIN: { label: "Paladin", color: "#F58CBA" },
+    WARRIOR: { label: "Warrior", color: "#C79C6E" }
   };
-  var PLAN_IDS = ["hwd", "hunter", "h3d", "trio"];
+  // `draft` = this race's start steps are not written yet (the shared steps still apply); none at the moment.
+  var RACE_ORDER = ["human", "dwarf", "gnome", "nightelf", "skyborne"];
+  var RACES = {
+    human:    { label: "Human", start: "Elwynn Forest (Northshire Valley)",
+                classes: ["PRIEST", "WARLOCK", "MAGE", "ROGUE", "HUNTER", "PALADIN", "WARRIOR"] },
+    dwarf:    { label: "Dwarf", start: "Dun Morogh (Coldridge Valley)",
+                classes: ["PRIEST", "ROGUE", "SHAMAN", "HUNTER", "PALADIN", "WARRIOR"] },
+    gnome:    { label: "Gnome", start: "Dun Morogh (Coldridge Valley)",
+                classes: ["PRIEST", "WARLOCK", "MAGE", "ROGUE", "WARRIOR"] },
+    nightelf: { label: "Night Elf", start: "Teldrassil (Shadowglen)",
+                classes: ["PRIEST", "ROGUE", "DRUID", "HUNTER", "WARRIOR"] },
+    skyborne: { label: "Skyborne (High Order)", start: "Zephras Isle",
+                classes: ["MAGE", "ROGUE", "DRUID", "HUNTER", "WARRIOR"] }
+  };
+  var PRESETS = {
+    hunter: { label: "2 Hunters", race: "skyborne", cls: "HUNTER", extra: "Two Hunters leveling together; others can join as they come online" }
+  };
+
+  // A plan id is "race:CLASS" ("skyborne:HUNTER") or a preset id ("hunter").
+  function planId(sel) { return sel.preset || sel.race + ":" + sel.cls; }
+  function parsePlan(id) {
+    id = String(id || "");
+    if (Object.prototype.hasOwnProperty.call(PRESETS, id)) return { race: PRESETS[id].race, cls: PRESETS[id].cls, preset: id };
+    var p = id.split(":");
+    var r = Object.prototype.hasOwnProperty.call(RACES, p[0]) ? RACES[p[0]] : null;
+    if (r && r.classes.indexOf(p[1]) !== -1) return { race: p[0], cls: p[1], preset: null };
+    return null;
+  }
+  function allPlans() {
+    var out = [];
+    RACE_ORDER.forEach(function (r) { RACES[r].classes.forEach(function (c) { out.push(r + ":" + c); }); });
+    return out.concat(Object.keys(PRESETS));
+  }
 
   // ---------------------------------------------------------------------------
-  // Plan data. An item's own fields apply to every plan unless it has a key for
-  // that plan, or for a plan up its `base` chain (e.g. h3d → hunter). The
-  // `hunter` key is a shared base profile for every group with hunters, not a
-  // selectable plan. Object = override fields, `false` = hidden for that plan.
-  // Item ids double as checkbox storage keys, so keep ids stable.
+  // Plan data. A step resolves in this order: its own fields, then `race.<race>`,
+  // then `cls.<CLASS>`, then `preset.<id>`. An object replaces the fields it names,
+  // `false` hides the step for good (no later layer shows it again). A key may name several
+  // races or classes separated by spaces ("dwarf gnome"). `only: { race: [...], cls: [...] }`
+  // shows the step to those only. Item ids double as checkbox storage keys, so keep
+  // them stable (progress carries over when you switch race or class).
   // Tags: [kind, text] where kind is dng | unv | opt.
+  // Subzone names inside Elwynn, Dun Morogh and Teldrassil are Classic knowledge: tagged unverified.
   // ---------------------------------------------------------------------------
   var PHASES = {
     before: [
       { id: "b-names", lvl: "Oct 27", t: "Reserve names (Oct 27 – Nov 3)",
-        n: "Every character in the group. Up to 3 characters per account in that window.",
-        trio: { n: "All three characters. Paladin and Shaman must be <strong>Dwarves</strong> (Alliance Skyborne can't be either), so the Hunter goes Dwarf too and we all start together in Coldridge Valley." } },
+        n: "Every character you plan to play. Up to 3 characters per account in that window. Only some race and class pairs exist: the lists above show the valid ones." },
       { id: "b-ui", lvl: "Beta", t: "Lock in UI, keybinds and macros",
         n: 'Save the bar layout and copy the macros from the <a href="macros.html">Macros</a> page so we play from minute one.' },
       { id: "b-addons", lvl: "Beta", t: "Test every addon on the beta client",
         n: 'Quest helpers especially. Nothing gets installed for the first time on launch night. See <a href="addons.html">Addons</a>.' },
       { id: "b-legacy", lvl: "Plan", t: "Legacy points: we start at 0",
-        n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan for everyone: Thrill of Adventure first (health and mana back on kills), then stay in Adventure toward Frequent Flier — nobody in the group teleports. Reagent Economy almost certainly excludes ammo, a weapon consumable. See <a href="#legacy">Legacy points</a>.',
+        n: 'Points come from Legacy challenges (the first at level 25). 16 is the most one character can spend at launch, not a starting pool. Plan: Thrill of Adventure first (health and mana back on kills), then stay in Adventure toward Frequent Flier, because there are no teleports. Reagent Economy almost certainly excludes ammo, a weapon consumable. See <a href="#legacy">Legacy points</a>.',
         tags: [["unv", "confirm ammo excluded"]] },
       { id: "b-voice", lvl: "Plan", t: "Discord voice ready",
         n: "Push-to-talk. Calling pulls and quest splits out loud saves more time than any route trick." },
-      { id: "b-druid", lvl: "Plan", t: "Settle roles and specs",
-        hwd: { n: "Warrior tanks (Protection talents, sword and board), Druid heals (Restoration), the two Hunters do the damage. Both support roles can still quest well: Warrior in Defensive Stance, Druid in cat or bear form between heals." },
-        h3d: { n: "The Druid flexes: heals while questing (a tank pet holds mobs), bear-tanks in dungeons. Pick Feral or Restoration talents based on which role you'll need most, and find a healer or tank for the 5th spot." },
-        trio: { n: "Paladin tanks (Protection), Shaman heals, Hunter is the damage. Protection quests fine with Holy Strike and Seal of Fury; the Paladin can respec Retribution later if the group finds another tank. See <a href=\"builds.html?class=Paladin\">Builds</a>." } },
-      { id: "b-group", lvl: "Plan", t: "Line up a Hall of Thanes group",
-        hwd: { n: "Group size isn't announced yet. We have tank, healer and two DPS, so a 5-man needs just one more DPS — any class. Line them up in advance (guild or Discord)." },
-        h3d: { n: "Group size isn't announced yet. With four, a 5-man needs one more: a healer if the Druid tanks, or a tank if the Druid heals. Line them up in advance (guild or Discord)." },
-        trio: { n: "Group size isn't announced yet. If it's 5, we only need 2 DPS — the easiest spots to fill. Line them up in advance anyway (guild or Discord)." } },
+      { id: "b-spec", lvl: "Plan", t: "Pick your leveling spec",
+        n: 'Every class levels as damage. Take the leveling build for your class from <a href="builds.html">Builds</a> and the first talent point at level 9.' },
+      { id: "b-group", lvl: "Plan", t: "Line up a group for the dungeons",
+        n: "Dungeon steps need a group. Group size isn't announced yet, so line people up in advance (guild or Discord)." },
       { id: "h-loot", lvl: "Plan", t: "Agree on loot rules",
-        hwd: { n: "The two Hunters want the same bows, guns, agility and mail — take turns. Strength and shields go to the Warrior, intellect and healing to the Druid." },
-        hunter: { n: "All the Hunters want the same bows, guns, agility and mail. Rotate who gets the next upgrade, or roll only between us — decide before the first dungeon." },
-        h3d: { n: "The three Hunters share bows, guns, agility and mail — rotate. The Druid takes leather with intellect (healing) or agility/strength (bear), depending on the role." },
-        trio: { n: "Almost no clashes: agility and ranged weapons to the Hunter, intellect and healing to the Shaman, strength and shields to the Paladin. Only leather/mail with mixed stats needs a quick call." } },
-      { id: "h-petroles", lvl: "Plan", t: "Plan pet roles",
-        hwd: { n: "The Warrior tanks, so both Hunters run damage pets (cats). Pets on Defensive in dungeons so they don't pull threat off the Warrior." },
-        hunter: { n: "One tank pet (bear or boar type), the rest damage pets (cats). The tank pet holds elites while we shoot. Check what's tameable on Zephras and in Darkshore." },
-        trio: { t: "Pick the Hunter's pet", n: "The Paladin tanks, so the Hunter runs a damage pet (cat) that can off-tank an add when needed." } }
+        only: { cls: ["HUNTER"] }, preset: { hunter: { n: "All the Hunters want the same bows, guns, agility and mail. Rotate who gets the next upgrade, or roll only between us — decide before the first dungeon." } },
+        n: "Hunters want bows, guns, agility and mail. If you play with other Hunters, rotate the next upgrade or roll only between you." },
+      { id: "h-petroles", lvl: "Plan", t: "Pick your pet", only: { cls: ["HUNTER"] },
+        n: "A cat for damage is the usual leveling pick; a tankier type (bear or boar) holds elites better. Check what's tameable in your start zone and in Darkshore.",
+        tags: [["unv", "Classic knowledge"]],
+        preset: { hunter: { t: "Plan pet roles", n: "One tank pet (bear or boar type), the rest damage pets (cats). The tank pet holds elites while we shoot. Check what's tameable on Zephras and in Darkshore." } } }
     ],
     night: [
-      { id: "n-zephras", lvl: "1–12", t: "Zephras Isle together, share every quest",
-        n: "Both factions share the island, so it's busy. Instant ranged tags make crowded camps easier. Finish the main chain and leave; you don't have to wait for 12.",
-        trio: false },
-      { id: "tr-coldridge", lvl: "1–6", t: "Coldridge Valley together, share every quest", hunter: false,
-        trio: { n: "Expect it packed: Dwarf Shaman is Forever's most hyped new combo. Group up from the first minute so kill credit is shared. Paladin gets Holy Strike at 6." } },
-      { id: "tr-dunmorogh", lvl: "6–12", t: "Dun Morogh from Kharanos", hunter: false,
-        trio: { n: "Paladin trains Seal of Fury at 10 (tank seal, makes Judgement a taunt). Shaman does the Earth totem quest (~4) and Fire totem quest (~10).", tags: [["unv", "check totem quests"]] } },
-      { id: "h-pet", lvl: "10", t: "Hunter pet quest — tame your first pet",
-        n: "On Zephras Isle (confirmed in beta). The hunter trainer gives <em>Taming the Beast</em> at 10: the first of <strong>three taming quests</strong>, each with a Taming Rod for one specific beast, then back to the trainer to learn Tame Beast and pick our own pet. Do the three together so we tame side by side.", tags: [["unv", "which 3 beasts"]],
-        trio: { n: "In Classic, Dwarf hunters get it from the hunter trainer in Kharanos. Check it works the same in Forever." } },
-      { id: "wd-bear", lvl: "10", t: "Druid: Bear Form", hunter: false, hwd: {},
-        h3d: { n: "Your dungeon tank form. In Classic it's a class quest at 10; check the Skyborne version on Zephras." },
-        n: "Off-tank form for when a pull goes wrong. In Classic it's a class quest at 10; check the Skyborne version on Zephras.",
+      { id: "n-zephras", lvl: "1–12", t: "Zephras Isle, share every quest", only: { race: ["skyborne"] },
+        n: "Both factions share the island, so it's busy. Instant ranged tags make crowded camps easier. Finish the main chain and leave; you don't have to wait for 12." },
+      { id: "tr-coldridge", lvl: "1–6", t: "Coldridge Valley (Dun Morogh), share every quest", only: { race: ["dwarf", "gnome"] },
+        n: "Expect it packed: Dwarf Shaman is Forever's most hyped new combo. Group up with anyone fighting you for mobs so kill credit is shared.",
+        cls: { PALADIN: { n: "Expect it packed: Dwarf Shaman is Forever's most hyped new combo. Group up with anyone fighting you for mobs so kill credit is shared. Holy Strike comes at 6." } } },
+      { id: "tr-dunmorogh", lvl: "6–12", t: "Dun Morogh from Kharanos", only: { race: ["dwarf", "gnome"] },
+        n: "Kharanos is the hub: quest out of it and visit your class trainer.", tags: [["unv", "Classic subzones"]],
+        cls: {
+          PALADIN: { n: "Train the new seal at 10 (Classic: Seal of Fury, a tank seal that makes Judgement a taunt; check which seal suits damage).", tags: [["unv", "check seal"]] },
+          SHAMAN: { n: "Do the Earth totem quest (~4) and the Fire totem quest (~10).", tags: [["unv", "check totem quests"]] }
+        } },
+      { id: "hu-northshire", lvl: "1–6", t: "Northshire Valley (Elwynn Forest), share every quest", only: { race: ["human"] },
+        n: "The Human start, just north of Goldshire. Expect it packed on night one; group up with anyone fighting you for mobs so kill credit is shared. Finish the valley and move on to Goldshire.",
+        tags: [["unv", "Classic subzones"]] },
+      { id: "hu-elwynn", lvl: "6–10", t: "Elwynn Forest from Goldshire", only: { race: ["human"] },
+        n: "Goldshire is the hub: inn, class trainers and the quests for the rest of Elwynn (Wowhead lists it as level 1–10). Skip Westfall on day one, then head for Stormwind.",
+        tags: [["unv", "Classic subzones"]] },
+      { id: "ne-shadowglen", lvl: "1–6", t: "Shadowglen (Teldrassil), share every quest", only: { race: ["nightelf"] },
+        n: "The Night Elf start, outside Darnassus. Finish the glen and move on to Dolanaar.",
+        tags: [["unv", "Classic subzones"]] },
+      { id: "ne-teldrassil", lvl: "6–11", t: "Teldrassil from Dolanaar", only: { race: ["nightelf"] },
+        n: "Dolanaar is the hub: inn, class trainers and the rest of Teldrassil (Wowhead lists it as level 1–11). Leave for Darkshore around 11.",
+        tags: [["unv", "Classic subzones"]] },
+      { id: "ne-boat", lvl: "11", t: "Boat from Rut'theran Village (Teldrassil) to Auberdine", only: { race: ["nightelf"] },
+        n: "The dock is at the bottom of Teldrassil. Set your hearth in Auberdine.",
+        tags: [["unv", "Classic boat"]] },
+      { id: "h-pet", lvl: "10", t: "Hunter pet quest — tame your first pet", only: { cls: ["HUNTER"] },
+        n: "The hunter trainer gives <em>Taming the Beast</em> at 10: the first of three taming quests, each with a Taming Rod for one specific beast, then back to the trainer to learn Tame Beast and pick your pet.",
+        tags: [["unv", "Classic knowledge"]],
+        race: {
+          skyborne: { n: "On Zephras Isle (confirmed in beta). The hunter trainer gives <em>Taming the Beast</em> at 10: the first of <strong>three taming quests</strong>, each with a Taming Rod for one specific beast, then back to the trainer to learn Tame Beast and pick our own pet. Do the three together so we tame side by side.", tags: [["unv", "which 3 beasts"]] },
+          dwarf: { n: "In Classic, Dwarf hunters get it from the hunter trainer in Kharanos. Check it works the same in Forever." }
+        } },
+      { id: "wd-bear", lvl: "10", t: "Druid: Bear Form", only: { cls: ["DRUID"] },
+        n: "A tougher form for hard pulls. In Classic it's a class quest at 10.", tags: [["unv", "check quest"]],
+        race: { skyborne: { n: "A tougher form for hard pulls. In Classic it's a class quest at 10; check the Skyborne version on Zephras." } } },
+      { id: "wd-def", lvl: "10", t: "Warrior: Defensive Stance quest", only: { cls: ["WARRIOR"] },
+        n: "In Classic Defensive Stance comes from a class quest at 10. You still fight in Battle Stance; Defensive is the way out of a bad pull.",
         tags: [["unv", "check quest"]] },
-      { id: "wd-def", lvl: "10", t: "Warrior: Defensive Stance + Taunt", hunter: false, hwd: {},
-        n: "In Classic Defensive Stance comes from a class quest at 10. The Warrior tanks from here on.",
-        tags: [["unv", "check quest"]] },
+      { id: "ma-food", lvl: "4–6", t: "Mage: train Conjure Food and Conjure Water", only: { cls: ["MAGE"] },
+        n: "Free food and water for the whole levelling run (and spare for anyone you group with). Re-train the new rank at every trainer visit.",
+        tags: [["unv", "Classic levels"]] },
       { id: "n-camp", lvl: "~5", t: "The Great Outdoors → train Cooking → Basic Campfire",
         n: "Cooking unlocks your own campfire (1-hour camp buffs), XP food and pet food. At least one of us takes it." },
       { id: "n-skin", lvl: "Early", t: "Train Skinning",
-        n: "Our main gold source — hunters kill a lot of beasts. Whoever didn't loot the mob skins it." },
-      { id: "h-ammo", lvl: "12", t: "Stock ammo and pet food before the skycutter",
+        n: "Good gold early: kill beasts as you quest. Whoever didn't loot the mob skins it." },
+      { id: "h-ammo", lvl: "12", t: "Stock ammo and pet food", only: { cls: ["HUNTER"] },
         n: "Buy enough for Hall of Thanes and the Darkshore trip. Ammo and food are the biggest gold drain.",
-        trio: { t: "Stock ammo and pet food in Ironforge", n: "Enough for Hall of Thanes and the Darkshore trip. The Hunter's ammo is the group's biggest cost, so the others chip in." } },
-      { id: "n-dalaran", lvl: "12", t: "Skycutter to Dalaran → Skyborne portal to Stormwind",
-        n: "Turn in <em>The Magical City of Dalaran</em> in the Sky Enclave, pick up <em>Welcome to Azeroth</em>, take the portal.",
-        trio: false },
+        race: {
+          skyborne: { t: "Stock ammo and pet food before the skycutter" },
+          dwarf: { t: "Stock ammo and pet food in Ironforge", n: "Enough for Hall of Thanes and the Darkshore trip. Ammo is the biggest gold drain." }
+        } },
+      { id: "n-dalaran", lvl: "12", t: "Skycutter to Dalaran → Skyborne portal to Stormwind", only: { race: ["skyborne"] },
+        n: "Turn in <em>The Magical City of Dalaran</em> in the Sky Enclave, pick up <em>Welcome to Azeroth</em>, take the portal." },
       { id: "n-if", lvl: "12", t: "Tram to Ironforge, collect all Hall of Thanes quests",
         n: "Grab both flight paths on the way.",
-        trio: { t: "Into Ironforge, collect all Hall of Thanes quests", n: "It's right next door. Train, grab the flight path, and take the tram to Stormwind later for the boat." } },
+        // Night Elves go to Darkshore by boat instead (owner, 2026-10-25); Dwarves and Gnomes are next door.
+        race: { nightelf: false, human: { lvl: "10–12" },
+                "dwarf gnome": { t: "Into Ironforge, collect all Hall of Thanes quests", n: "It's right next door. Train, grab the flight path, and take the tram to Stormwind later for the boat." } } },
       { id: "n-day", lvl: "Thu–Fri", t: "Keep playing through the day",
         n: "Launch is a weekday. Most players are at work or school; that's our biggest head start." }
     ],
     p1: [
       { id: "p1-filler", lvl: "12–14", t: "Short filler in Dun Morogh / Loch Modan", tags: [["opt", "only if needed"]],
         n: "Just enough to be ready for Hall of Thanes. Expect crowds there too (Dwarf Shaman hype).",
-        trio: { t: "Short filler in Loch Modan", n: "Dun Morogh is done, so a little Thelsamar until everyone is 13–14." } },
-      { id: "tr-rf", lvl: "16", t: "Paladin: train Righteous Fury", hunter: false,
-        trio: { n: "Trained at 16 in Forever. On for every dungeon pull; off while questing if the Shaman is short on mana." } },
+        race: { nightelf: false,
+                "dwarf gnome": { t: "Short filler in Loch Modan", n: "Dun Morogh is done, so a little Thelsamar until everyone is 13–14." } } },
+      { id: "tr-rf", lvl: "16", t: "Paladin: trainer visit at 16", only: { cls: ["PALADIN"] },
+        n: "Righteous Fury is a threat spell for tanks, so skip it while leveling as damage. Check the trainer for the new seal or damage spell.",
+        tags: [["unv", "check trainer list"]] },
       { id: "p1-hot", lvl: "13–15", t: "Hall of Thanes — one clear", tags: [["dng", "13–18"]],
-        hwd: { n: "Under Ironforge. Every quest in the log before entering. Warrior tanks, Druid heals; pets on Defensive so they don't rip threat." },
-        h3d: { n: "Under Ironforge. Every quest in the log before entering. Druid bear-tanks with a 5th player healing — or Druid heals and the tank pet holds trash (bosses are riskier)." },
-        trio: { n: "Under Ironforge. Every quest in the log before entering. We bring our own tank and healer: Paladin tanks with Seal of Fury, Shaman heals, Hunter and pet do damage." } },
+        n: "Under Ironforge. Every quest in the log before entering. Needs a group.",
+        race: { nightelf: false },
+        cls: { HUNTER: { n: "Under Ironforge. Every quest in the log before entering. Needs a group. Keep the pet on Defensive so it doesn't pull extra." } } },
       { id: "p1-boat", lvl: "14", t: "Tram to Stormwind → boat to Auberdine, set hearth",
-        n: "New Stormwind Harbor → Auberdine route." },
+        n: "New Stormwind Harbor → Auberdine route.", race: { nightelf: false } },
       { id: "p1-darkshore", lvl: "14–19", t: "Darkshore — quest against the flow",
-        n: "Night Elves arrive at the same time and fan out from Auberdine. Far ends first (north toward Cliffspring, south toward the Grove of the Ancients), Auberdine last. Instant ranged tags win contested camps; the many beasts mean plenty of skinning.",
-        hwd: { n: "Far ends first (north toward Cliffspring, south toward the Grove of the Ancients), Auberdine last. With a real tank and healer we can pull bigger packs and take the elite quests smaller groups skip." },
-        trio: { n: "Far ends first (north toward Cliffspring, south toward the Grove of the Ancients), Auberdine last. With a tank and a healer we can pull bigger packs and take the elite quests the duos skip." } },
+        race: { nightelf: { lvl: "11–19", n: "Your first big hub is Auberdine, and the Stormwind boat lands there too, so the crowd arrives with you. Far ends first (north toward Cliffspring, south toward the Grove of the Ancients), Auberdine last. Instant ranged tags win contested camps; the many beasts mean plenty of skinning." } },
+        n: "Night Elves arrive at the same time and fan out from Auberdine. Far ends first (north toward Cliffspring, south toward the Grove of the Ancients), Auberdine last. Instant ranged tags win contested camps; the many beasts mean plenty of skinning." },
       { id: "p1-bfdq", lvl: "14–19", t: "Collect Blackfathom Deeps quests if offered",
         n: "Hold them for the BFD clear in phase 2." },
       { id: "p1-ashen", lvl: "19–20", t: "Ashenvale (Astranaar)",
@@ -585,15 +554,21 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     ],
     p2: [
       { id: "p2-ashen", lvl: "20–22", t: "Finish Ashenvale" },
-      { id: "h-cheetah", lvl: "20", t: "Train Aspect of the Cheetah",
-        n: "Confirmed level 20 in Forever. Makes the long runs between hubs much faster — our replacement for teleports.",
-        hwd: { n: "Confirmed level 20 in Forever. The Druid gets Cat Form at 20 (a bit faster only with talents) and Travel Form at 30; the Warrior walks until the mount, so the Hunters wait at the next hub." },
-        h3d: { n: "Confirmed level 20 in Forever. The Druid gets Travel Form at 30; until then the Hunters wait at the next hub." },
-        trio: { t: "Travel speed at 20: Cheetah + Ghost Wolf", n: "Hunter trains Aspect of the Cheetah and the Shaman gets Ghost Wolf — both confirmed at 20 in Forever. The Paladin runs on foot until the level-40 mount, so the other two wait at the next hub." } },
-      { id: "tr-cons", lvl: "20", t: "Paladin: train Consecration", hunter: false,
-        trio: { n: "A class spell at 20 in Forever (was a talent). Our first AoE threat tool — Excavation Site and dense camps get much easier." } },
-      { id: "tr-water", lvl: "20", t: "Shaman: Water totem quest", hunter: false,
-        trio: { n: "Healing Stream Totem between pulls cuts the Shaman's drinking. Quest location in Forever still unknown.", tags: [["unv", "unverified"]] } },
+      { id: "h-cheetah", lvl: "20", t: "Train Aspect of the Cheetah", only: { cls: ["HUNTER"] },
+        n: "Confirmed level 20 in Forever. Makes the long runs between hubs much faster — our replacement for teleports." },
+      { id: "wd-travel", lvl: "20–30", t: "Druid: Cat Form at 20, Travel Form at 30", only: { cls: ["DRUID"] },
+        n: "Cat Form is only a bit faster, and only with talents. Travel Form at 30 is the real replacement for teleports.",
+        tags: [["unv", "Classic levels"]] },
+      { id: "tr-cons", lvl: "20", t: "Paladin: train Consecration", only: { cls: ["PALADIN"] },
+        n: "A class spell at 20 in Forever (was a talent). AoE damage: Excavation Site and dense camps get much faster." },
+      { id: "tr-water", lvl: "20", t: "Shaman: Water totem quest", only: { cls: ["SHAMAN"] },
+        n: "Healing Stream Totem heals you between pulls, so less eating and drinking. Quest location in Forever still unknown.",
+        tags: [["unv", "unverified"]] },
+      { id: "tr-ghost", lvl: "20", t: "Shaman: Ghost Wolf", only: { cls: ["SHAMAN"] },
+        n: "Confirmed level 20 in Forever. The speed boost between hubs, instead of a teleport." },
+      { id: "ro-poison", lvl: "20", t: "Rogue: Poisons quest", only: { cls: ["ROGUE"] },
+        n: "In Classic the Rogue poison class quest is at 20 (trainer in a major city). Instant and Deadly poison add steady damage.",
+        tags: [["unv", "check quest"]] },
       { id: "p2-dm", lvl: "20–21", t: "Deadmines detour", tags: [["opt", "optional"]],
         n: "No teleport, so the trip from Ashenvale to Stormwind and back costs real time. Only worth it combined with a training trip — otherwise skip it." },
       { id: "p2-bfd", lvl: "22–24", t: "Blackfathom Deeps — one clear", tags: [["unv", "check range"]],
@@ -636,25 +611,24 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
       { id: "p3-60", lvl: "60", t: "Level 60 before the raids open on Dec 9" }
     ],
     beta: [
-      { id: "t-exit", lvl: "Zephras", t: "What level we actually leave Zephras at, and which quests to skip", trio: false },
-      { id: "tr-t-crowd", lvl: "Coldridge", t: "How crowded the Dwarf start is at launch-like load", hunter: false, trio: {} },
-      { id: "tr-t-totems", lvl: "Shaman", t: "Where the Dwarf Shaman totem quests are (Earth ~4, Fire ~10, Water ~20)", hunter: false, trio: {} },
-      { id: "tr-t-fury", lvl: "Paladin", t: "Seal of Fury taunt in practice: does it hold packs at 13–18 without Consecration?", hunter: false, trio: {} },
-      { id: "wd-t-forms", lvl: "Druid", t: "Skyborne Druid: where the Bear Form quest is and whether the Skyborne forms change anything", hunter: false, hwd: {}, h3d: {} },
-      { id: "wd-t-def", lvl: "Warrior", t: "Skyborne Warrior: where the Defensive Stance quest is, and does Taunt come with it?", hunter: false, hwd: {} },
-      { id: "wd-t-pets", lvl: "Dungeons", t: "Can a tank pet hold Hall of Thanes trash with a Druid healing?", hunter: false, h3d: {} },
-      { id: "h-t-pet", lvl: "Zephras", t: "Which 3 beasts the Skyborne taming quests send us to, and where on Zephras",
-        trio: { lvl: "Dun Morogh", t: "How the Dwarf hunter pet quest works at 10 in Forever" } },
-      { id: "h-t-tame", lvl: "Pets", t: "Which pets are tameable on Zephras and in Darkshore",
-        trio: { t: "Which pets are tameable in Dun Morogh and Darkshore" } },
+      { id: "t-exit", lvl: "Zephras", t: "What level we actually leave Zephras at, and which quests to skip", only: { race: ["skyborne"] } },
+      { id: "tr-t-crowd", lvl: "Coldridge", t: "How crowded the Dwarf and Gnome start is at launch-like load", only: { race: ["dwarf", "gnome"] } },
+      { id: "tr-t-totems", lvl: "Shaman", t: "Where the Dwarf Shaman totem quests are (Earth ~4, Fire ~10, Water ~20)", only: { cls: ["SHAMAN"] } },
+      { id: "tr-t-fury", lvl: "Paladin", t: "Which seal is best for damage at 13–18, and what Holy Strike adds", only: { cls: ["PALADIN"] } },
+      { id: "wd-t-forms", lvl: "Druid", t: "Skyborne Druid: where the Bear Form quest is and whether the Skyborne forms change anything", only: { cls: ["DRUID"] } },
+      { id: "wd-t-def", lvl: "Warrior", t: "Skyborne Warrior: where the Defensive Stance quest is", only: { cls: ["WARRIOR"] } },
+      { id: "h-t-pet", lvl: "Zephras", t: "Which 3 beasts the Skyborne taming quests send us to, and where on Zephras", only: { cls: ["HUNTER"] },
+        race: { dwarf: { lvl: "Dun Morogh", t: "How the Dwarf hunter pet quest works at 10 in Forever" } } },
+      { id: "h-t-tame", lvl: "Pets", t: "Which pets are tameable on Zephras and in Darkshore", only: { cls: ["HUNTER"] },
+        race: { dwarf: { t: "Which pets are tameable in Dun Morogh and Darkshore" } } },
       { id: "t-hot", lvl: "Ironforge", t: "Where the Hall of Thanes quests start + any level or prerequisite requirements" },
       { id: "t-size", lvl: "Dungeons", t: "Group size for the new dungeons" },
       { id: "t-boat", lvl: "Travel", t: "Stormwind → Auberdine boat: how often it sails" },
       { id: "t-gray", lvl: "Darkshore", t: "When Darkshore quests go gray (~19–20?)" },
       { id: "t-bfd", lvl: "BFD", t: "Blackfathom Deeps' level range in Forever" },
       { id: "t-defias", lvl: "Westfall", t: "Is the Defias chain + Deadmines still green at 20–21?" },
-      { id: "h-t-reagent", lvl: "Legacy", t: "Confirm Reagent Economy doesn't refund ammo purchases" },
-      { id: "h-t-ammo", lvl: "Gold", t: "How much ammo and pet food cost per session" },
+      { id: "h-t-reagent", lvl: "Legacy", t: "Confirm Reagent Economy doesn't refund ammo purchases", only: { cls: ["HUNTER"] } },
+      { id: "h-t-ammo", lvl: "Gold", t: "How much ammo and pet food cost per session", only: { cls: ["HUNTER"] } },
       { id: "t-spelunker", lvl: "Legacy", t: "Which dungeons count for Novice Spelunker (a free point if they're on our route)" },
       { id: "t-respec", lvl: "Legacy", t: "Can spent Legacy points be reset, and does it cost anything?" },
       { id: "t-skin", lvl: "Camping", t: "Does Skinning get a campsite object at skill 20?" },
@@ -662,102 +636,90 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     ]
   };
 
-  // Key differences table (compare view): one value per plan.
-  var ZEPHRAS_ROUTE = "Zephras → Dalaran → Ironforge → Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon";
-  var DIFFS = [
-    { topic: "Race & start", hunter: "Skyborne, Zephras Isle", hwd: "Skyborne, Zephras Isle", h3d: "Skyborne, Zephras Isle",
-      trio: "Dwarf, Coldridge Valley (Alliance Skyborne can't be Paladin or Shaman)" },
-    { topic: "Route", hunter: ZEPHRAS_ROUTE, hwd: ZEPHRAS_ROUTE, h3d: ZEPHRAS_ROUTE,
-      trio: "Coldridge → Dun Morogh → Ironforge, then the same: Darkshore → Ashenvale → Wetlands → Hillsbrad → Dalaran dungeon" },
-    { topic: "Roles", hunter: "2 Hunters DPS; pets tank (one tank pet, one damage pet)", hwd: "Warrior tank, Druid healer, 2 Hunters DPS", h3d: "Druid tanks or heals, 3 Hunters DPS",
-      trio: "Paladin tank, Shaman healer, Hunter DPS" },
-    { topic: "Money", hunter: "Expensive: ammo, pet food, own food and water, later a quiver", hwd: "Two sets of ammo and pet food, plus Warrior repairs", h3d: "Three sets of ammo and pet food",
-      trio: "Middle. One hunter's ammo, plus food and water for three" },
-    { topic: "Travel", hunter: "Hearthstone and flight paths; Cheetah at 20", hwd: "Hearthstone and flight paths; Cheetah at 20, Druid Travel Form at 30, Warrior walks until 40",
-      h3d: "Hearthstone and flight paths; Cheetah at 20, Druid Travel Form at 30",
-      trio: "Hearthstone and flight paths; Cheetah and Ghost Wolf at 20, the Paladin walks until 40" },
-    { topic: "Killing", hunter: "Single target, pets tank, kiting; elite quests doable as a duo", hwd: "Real tank and healer: big pulls and elite quests; Hunters pick off adds",
-      h3d: "Tank pet + Druid heals: elites and group quests are easy",
-      trio: "Real tank and healer: bigger pulls, elite quests, Consecration AoE from 20" },
-    { topic: "Level 10", hunter: "Pet quest in the middle of Zephras", hwd: "Pet quests, Druid Bear Form, Warrior Defensive Stance", h3d: "Pet quests, Druid Bear Form",
-      trio: "Pet quest (Kharanos), Seal of Fury, Shaman Fire totem quest" },
-    { topic: "Dungeons", hunter: "No AoE. Need a real tank <em>and</em> healer", hwd: "Own tank and healer; one DPS to find", h3d: "Druid covers tank or healer; find the other",
-      trio: "Own tank and healer; only DPS to find" },
-    { topic: "Loot", hunter: "Both want the same bows, guns, agility and mail. Agree on rules first", hwd: "Hunters share ranged/agility; Warrior and Druid barely clash", h3d: "Three Hunters share everything ranged/agility — rotate",
-      trio: "Almost no clashes: agility to the Hunter, intellect to the Shaman, strength to the Paladin" }
-  ];
+  function has(o, k) { return !!o && Object.prototype.hasOwnProperty.call(o, k); }
+  // Does the selection pass the step's `only` filter?
+  function allowed(item, sel) {
+    var o = item.only;
+    if (!o) return true;
+    if (o.race && o.race.indexOf(sel.race) === -1) return false;
+    if (o.cls && o.cls.indexOf(sel.cls) === -1) return false;
+    return true;
+  }
+  // The override layers that apply to the selection, in order: race, class, preset.
+  // A key may name several races or classes ("dwarf gnome").
+  function override(item, sel) {
+    var out = [];
+    function pick(map, key) {
+      if (!map || !key) return;
+      Object.keys(map).forEach(function (k) { if (k.split(" ").indexOf(key) !== -1) out.push(map[k]); });
+    }
+    pick(item.race, sel.race);
+    pick(item.cls, sel.cls);
+    pick(item.preset, sel.preset);
+    return out;
+  }
+  // Resolve an item for one selection: null if hidden, otherwise the merged fields.
+  function resolve(item, sel) {
+    if (!allowed(item, sel)) return null;
+    var out = { id: item.id, lvl: item.lvl, t: item.t, n: item.n, tags: item.tags || [] };
+    var layers = override(item, sel);
+    for (var i = 0; i < layers.length; i++) {
+      if (layers[i] === false) return null;
+      Object.keys(layers[i]).forEach(function (k) { out[k] = layers[i][k]; });
+    }
+    out.tags = out.tags || [];
+    return out;
+  }
+  // Who a restricted step is for: a class (coloured) or a list of races. Null for steps everyone gets.
+  function audience(item) {
+    var o = item.only;
+    if (!o) return null;
+    if (o.cls) return { text: o.cls.map(function (c) { return CLASSES[c].label; }).join(" / "), color: o.cls.length === 1 ? CLASSES[o.cls[0]].color : null };
+    if (o.race && o.race.length < RACE_ORDER.length) return { text: o.race.map(function (r) { return RACES[r].label.replace(/ \(.*\)$/, ""); }).join(" / "), color: null };
+    return null;
+  }
 
-  // Group-play cards: `plans` lists the plans a card belongs to ("all" = every plan).
-  var DUO = [
-    { plans: ["hwd"], h: "2 Hunters · Warrior · Druid tactics", ul: [
-      "Warrior charges in and builds threat (Sunder, Demoralizing Shout); Hunters wait a couple of seconds before opening.",
-      "Pets on Defensive in dungeons so they don't steal aggro; outdoors a pet can off-tank adds.",
-      "Druid heals from range and keeps Mark of the Wild and Thorns on the Warrior.",
-      "One Hunter's Mark on the kill target; the other Hunter traps or slows runners.",
-      "This is a real dungeon core — elite quests and first clears go fast."] },
-    { plans: ["hunter"], h: "Hunter duo tactics", ul: [
+  // Tips cards. `race` / `preset` limit a card to those selections; no key = every selection.
+  var TIPS = [
+    { preset: ["hunter"], h: "Hunter duo tactics", ul: [
       "One tank pet, one damage pet; let the pets hold aggro.",
       "Tag instantly with Arcane Shot / Serpent Sting in contested camps.",
       "Two pets can off-tank elites — elite quests become doable as a duo.",
       "Kite when a pull goes bad instead of eating a death.",
       "Keep pets fed and happy; an unhappy pet deals less damage."] },
-    { plans: ["h3d"], h: "3 Hunters · Druid tactics", ul: [
-      "Questing: tank pet holds the mob, Druid heals, three Hunters burn it down.",
-      "Dungeons: Druid bear-tanks with a 5th player healing, or heals while the tank pet holds trash.",
-      "Druid's Entangling Roots and the Hunters' traps keep adds off the healer.",
-      "Focus fire on one Hunter's Mark; split up on kill quests so we don't strip one camp.",
-      "Keep pets fed and happy; an unhappy pet deals less damage."] },
-    { plans: ["trio"], h: "Paladin · Hunter · Shaman tactics", ul: [
-      "Paladin tanks with Seal of Fury; Judgement taunts a loose mob from 10 yards.",
-      "Hunter marks the kill target; the pet picks up anything the Paladin misses.",
-      "Shaman heals and drops totems for the Paladin (Stoneskin / Strength of Earth), Healing Stream between pulls from 20.",
-      "Interrupts: Earth Shock from the Shaman; Concussive Shot or Wing Clip stops runners.",
-      "Pull bigger than any duo can — this group's questing pace is limited by mana, not health."] },
-    { plans: ["hwd", "hunter", "h3d"], h: "Skyborne racials", ul: [
+    { race: ["skyborne"], h: "Skyborne racials", ul: [
       "<strong>Read Ley Line</strong>: +100% health and mana regen — cuts how much food and water we buy.",
       "<strong>Walk on Air</strong>: glide off cliffs for shortcuts.",
       "<strong>Wind Blessed</strong>: +1% haste, which also speeds up Auto Shot and melee swings.",
       "Skyborne Druids get their own shapeshift forms."] },
-    { plans: ["trio"], h: "Why Dwarves", ul: [
-      "On the Alliance side only Dwarves can be both Paladin and Shaman, so the whole group starts together.",
-      "<strong>Stoneform</strong> (Classic): removes poison, disease and bleed and adds armor — a free panic button for the tank.",
+    { race: ["dwarf"], h: "Dwarf racials", ul: [
+      "<strong>Stoneform</strong> (Classic): removes poison, disease and bleed and adds armor — a free panic button.",
       "<strong>Gun Specialization</strong> (Classic): extra crit with guns for the Hunter.",
       "Racials are the Classic versions; check what Forever changed in beta."] },
-    { plans: ["hwd", "hunter", "h3d"], h: "Crowded camps", ul: [
-      "Our strength: instant ranged tags beat almost every other class to the mob.",
-      "Invite anyone fighting us for the same mobs — kill credit is shared in a group.",
+    { race: ["skyborne", "human", "nightelf"], h: "Crowded camps", ul: [
+      "Instant spells and ranged shots tag the mob before most melee can reach it.",
+      "Invite anyone fighting you for the same mobs — kill credit is shared in a group.",
       "Little AoE, so avoid dense packs; pick off singles at the edges.",
       "Always carry a backup quest nearby so a packed camp never means waiting."] },
-    { plans: ["trio"], h: "Crowded camps", ul: [
+    { race: ["dwarf", "gnome"], h: "Crowded camps", ul: [
       "Coldridge and Dun Morogh will be the busiest Alliance start (Dwarf Shaman hype). Group-invite rivals — kill credit is shared.",
-      "Hunter's Arcane Shot tags first; Judgement and shocks are instant backups.",
-      "From 20, Consecration lets us take the dense camps other groups avoid.",
+      "Open with an instant ranged hit or spell to tag the mob first.",
       "Always carry a backup quest nearby so a packed camp never means waiting."] },
-    { plans: ["hwd", "hunter", "h3d"], h: "Professions & gold", ul: [
-      "Skinning is our main income — skin everything.",
+    { h: "Professions & gold", ul: [
+      "Skinning is good early income — skin everything you kill.",
       "Cooking covers campfire buffs, XP food and pet food.",
-      "Buy ammo in bulk at every major stop; never run dry mid-zone.",
+      "Hunters: buy ammo in bulk at every major stop; never run dry mid-zone.",
       "Spend in order: training → ammo/food → bags → mount fund."] },
-    { plans: ["trio"], h: "Professions & gold", ul: [
-      "Skinning is our main income; whoever didn't loot skins.",
-      "Cooking covers campfire buffs, XP food and pet food.",
-      "Ammo is the group's biggest cost — share it.",
-      "Spend in order: training → ammo/food → bags → mount fund."] },
-    { plans: ["all"], h: "XP extras", ul: [
+    { h: "XP extras", ul: [
       "Start every session at a campfire (sit ~1 min, 1-hour buffs).",
       "Keep a food buff up; food is being tested with a kill-XP bonus.",
       "Log out in inns or cities for rested XP.",
-      "Don't let quests go gray — drop escorts and low-drop-rate quests."] },
-    { plans: ["hwd"], h: "The fifth player", p: "Tank and healer are covered, so any <strong>DPS</strong> fills the last dungeon spot. A mage adds AoE and free food and water; a rogue or warlock adds crowd control." },
-    { plans: ["hunter"], h: "Dungeons and the other two", p: "Two Hunters can quest anything outdoors, but dungeons need a real <strong>tank and healer</strong>. When our Warrior and Druid are on, that's the 2 Hunters · Warrior · Druid plan; otherwise find a tank and a healer and we bring the DPS." },
-    { plans: ["h3d"], h: "The fifth player", p: "Whichever role the Druid isn't doing: a <strong>healer</strong> (priest or shaman) if the Druid bear-tanks, or a <strong>tank</strong> (warrior or paladin) if the Druid heals." },
-    { plans: ["trio"], h: "The last two spots", p: "Tank and healer are covered, so if dungeons are 5-man we only need <strong>2 DPS</strong> — the easiest players to find. A mage adds AoE and free food and water; a warlock adds healthstones and curses." }
+      "Don't let quests go gray — drop escorts and low-drop-rate quests."] }
   ];
 
   var KEY = "wf-launch-plan-v1";
-  var MODE_KEY = "wf-launch-plan-mode";
-  var CMP_KEY = "wf-launch-plan-cmp";
-  var MODES = PLAN_IDS.concat("compare");
+  var SEL_KEY = "wf-launch-plan-sel";
+  var DEFAULT_PLAN = "skyborne:HUNTER";
 
   function load(key, fallback) {
     try { var v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); } catch (e) { return fallback; }
@@ -767,22 +729,24 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
   }
 
   var state = load(KEY, {}) || {};
-  var cmp = load(CMP_KEY, null);
-  if (!cmp || PLAN_IDS.indexOf(cmp.a) === -1 || PLAN_IDS.indexOf(cmp.b) === -1) cmp = { a: "hwd", b: "trio" };
-  var mode = "hwd";
+  var cur = parsePlan(load(SEL_KEY, DEFAULT_PLAN)) || parsePlan(DEFAULT_PLAN);
 
-  // The override object for a plan: its own key first, then up its base chain.
   // Waypoints per step (2026-10-08), for TomTom (/way) and the addon's Plan tab (ADDON_PLAN 15.5).
-  // Key: step id, or "id|plan" to override for one group plan. wp = [zone, x, y, label, source];
+  // Key: step id, or "id|race" to override for one race. wp = [zone, x, y, label, source];
   // cap = a Forever-only place no public source has coordinates for yet: capture it in game.
   // Sources: pfQuest = Classic NPC spawn data (github.com/shagu/pfQuest), Questie = its meeting-stone
   // list (stones sit at dungeon entrances), WCT = Warcraft Tavern's Hall of Thanes guide.
   var WAYPOINTS = {
     "n-zephras": { cap: ["Valanaar, the main town on Zephras Isle"] },
+    "hu-northshire": { cap: ["Northshire Abbey, Northshire Valley (Elwynn Forest)"] },
+    "hu-elwynn": { wp: [["Elwynn Forest", 42.0, 65.0, "Goldshire, Lion's Pride Inn", "Classic"]] },
+    "ne-shadowglen": { cap: ["Shadowglen, the Night Elf start (Teldrassil)"] },
+    "ne-teldrassil": { cap: ["Dolanaar inn (Teldrassil)"] },
+    "ne-boat": { cap: ["Rut'theran Village dock, boat to Auberdine (Teldrassil)"] },
     "tr-coldridge": { wp: [["Dun Morogh", 29.9, 71.2, "Anvilmar, Coldridge Valley (Sten Stoutarm)", "pfQuest"]] },
     "tr-dunmorogh": { wp: [["Dun Morogh", 47.4, 52.5, "Kharanos inn (Innkeeper Belm)", "pfQuest"]] },
-    "h-pet": { cap: ["The Zephras Isle hunter trainer (Taming the Beast)", "The three taming beasts"] },
-    "h-pet|trio": { wp: [["Dun Morogh", 45.8, 53.0, "Grif Wildheart, hunter trainer, Kharanos", "pfQuest"]] },
+    "h-pet|skyborne": { cap: ["The Zephras Isle hunter trainer (Taming the Beast)", "The three taming beasts"] },
+    "h-pet|dwarf": { wp: [["Dun Morogh", 45.8, 53.0, "Grif Wildheart, hunter trainer, Kharanos", "pfQuest"]] },
     "n-dalaran": { cap: ["Valanaar Skydocks (airship to Dalaran)", "Sky Enclave in Dalaran (turn-in + Stormwind portal)"] },
     "n-if": { wp: [["Ironforge", 55.5, 47.7, "Gryth Thurden, flight master", "pfQuest"],
                    ["Dun Morogh", 64.8, 58.5, "Earthseer Farsen (Hall of Thanes quests)", "WCT"]] },
@@ -809,9 +773,9 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     "p3-blackmaw": { cap: ["Blackmaw Hold, behind the Furbolg Gates (north Azshara)"] },
     "p3-shaper": { cap: ["Shaper's Terrace entrance (Un'Goro Crater)"] }
   };
-  function waypoints(id, plan) { return WAYPOINTS[id + "|" + plan] || WAYPOINTS[id] || null; }
-  function wpHTML(id, plan) {
-    var w = waypoints(id, plan); if (!w) return "";
+  function waypoints(id, sel) { return WAYPOINTS[id + "|" + sel.race] || WAYPOINTS[id] || null; }
+  function wpHTML(id, sel) {
+    var w = waypoints(id, sel); if (!w) return "";
     var html = (w.wp || []).map(function (p) {
       var cmd = "/way " + p[0] + " " + p[1] + " " + p[2] + " " + p[3];
       return '<button type="button" class="wp" data-way="' + cmd.replace(/"/g, "&quot;") + '" title="Copy for TomTom (source: ' + p[4] + ')">\u{1F4CD} ' + p[3] + " <code>" + p[0] + " " + p[1] + ", " + p[2] + "</code></button>";
@@ -822,91 +786,98 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     return html ? '<span class="wps">' + html + "</span>" : "";
   }
 
-  function override(item, plan) {
-    for (var p = plan; p; p = PLANS[p] ? PLANS[p].base : null) {
-      if (Object.prototype.hasOwnProperty.call(item, p)) return item[p];
-    }
-    return undefined;
-  }
-  // Resolve an item for one plan: null if hidden, otherwise the merged fields.
-  function resolve(item, plan) {
-    var o = override(item, plan);
-    if (o === false) return null;
-    var out = { id: item.id, lvl: item.lvl, t: item.t, n: item.n, tags: item.tags || [], only: false };
-    if (o) Object.keys(o).forEach(function (k) { out[k] = o[k]; });
-    out.tags = out.tags || [];
-    out.only = PLAN_IDS.some(function (p) { return p !== plan && override(item, p) === false; });
-    return out;
-  }
-  function sameText(a, b) {
-    return a.lvl === b.lvl && a.t === b.t && (a.n || "") === (b.n || "") && JSON.stringify(a.tags) === JSON.stringify(b.tags);
-  }
+  // ---------------------------------------------------------------------------
+  // Weapons. launch-plan-weapons.json is generated by bis/build_quest_weapons.py from the same
+  // rows the addon uses (quest rewards up to level 32) plus the class table. A step gets the
+  // best weapons your class can use from quests in the zone named in its TITLE, where the
+  // reward's required level is reached by the end of the step. Dual wield is not modelled.
+  // The site can't see your gear, so this is "best candidates", not "better than what you wear".
+  // ---------------------------------------------------------------------------
+  var WEAPONS = null;
+  var CASTERS = ["PRIEST", "MAGE", "WARLOCK"];
+  var RANGED = ["bow", "gun", "crossbow", "thrown", "wand"];
 
-  function tagsHTML(r, plan) {
-    var html = r.tags.map(function (t) { return '<span class="tag ' + t[0] + '">' + t[1] + "</span>"; }).join("");
-    if (plan && r.only) html += '<span class="tag cls-' + PLANS[plan].css + '">' + PLANS[plan].tag + "</span>";
+  function levelRange(text) {
+    var nums = String(text || "").match(/\d+/g);
+    if (!nums) return null;
+    return [parseInt(nums[0], 10), parseInt(nums[nums.length - 1], 10)];
+  }
+  function zoneInTitle(zone, title) {
+    var z = String(zone).toLowerCase().replace(/^the /, "");
+    return z !== "" && String(title).toLowerCase().indexOf(z) !== -1;
+  }
+  function weaponRows(r, cls) {
+    var range = levelRange(r.lvl);
+    if (!WEAPONS || !range || /collect/i.test(r.t)) return [];
+    var use = WEAPONS.use[cls] || [];
+    return WEAPONS.items.filter(function (w) {
+      return w[3] <= range[1] && use.indexOf(w[2]) !== -1 && w[2] !== "shield" && zoneInTitle(w[5], r.t);
+    });
+  }
+  function itemLink(w) {
+    return '<a href="https://www.wowhead.com/forever/item=' + w[0] + '" target="_blank" rel="noopener">' + w[1] + "</a>";
+  }
+  function weaponText(w, withDps) {
+    return itemLink(w) + " (" + w[2] + (withDps && w[7] ? ", " + w[7].toFixed(1) + " dps" : "") + " — " + w[4] + ")";
+  }
+  function weaponHTML(r, sel) {
+    if (!WEAPONS) return "";
+    var range = levelRange(r.lvl);
+    if (!range || /collect/i.test(r.t)) return "";
+    var rows = weaponRows(r, sel.cls);
+    if (!rows.length) {
+      return range[0] > 30 ? '<span class="gear muted">No quest weapon data past level 32.</span>' : "";
+    }
+    if (CASTERS.indexOf(sel.cls) !== -1) {
+      // Wand dps and staff stats are not comparable: list them, ranked by nothing.
+      var names = rows.slice(0, 4).map(function (w) { return weaponText(w, false); }).join("; ");
+      return '<span class="gear"><b>Weapons</b> · check stats: ' + names + "</span>";
+    }
+    function top(list) {
+      return list.sort(function (a, b) { return (b[7] || 0) - (a[7] || 0) || (a[1] < b[1] ? -1 : 1); }).slice(0, 2);
+    }
+    var ranged = top(rows.filter(function (w) { return RANGED.indexOf(w[2]) !== -1; }));
+    var melee = top(rows.filter(function (w) { return RANGED.indexOf(w[2]) === -1; }));
+    var html = "";
+    if (melee.length) html += '<span class="gear"><b>Weapons</b> · ' + melee.map(function (w) { return weaponText(w, true); }).join("; ") + "</span>";
+    if (ranged.length) html += '<span class="gear"><b>Ranged</b> · ' + ranged.map(function (w) { return weaponText(w, true); }).join("; ") + "</span>";
     return html;
   }
-  function textHTML(r, plan) {
-    return '<span class="t">' + r.t + tagsHTML(r, plan) + "</span>" + (r.n ? '<span class="n">' + r.n + "</span>" : "") + (plan ? wpHTML(r.id, plan) : "");
+
+  function tagsHTML(r, aud) {
+    var html = r.tags.map(function (t) { return '<span class="tag ' + t[0] + '">' + t[1] + "</span>"; }).join("");
+    if (aud) html += '<span class="tag aud"' + (aud.color ? ' style="--tc:' + aud.color + '"' : "") + ">" + aud.text + "</span>";
+    return html;
+  }
+  function textHTML(r, sel, aud) {
+    return '<span class="t">' + r.t + tagsHTML(r, aud) + "</span>" + (r.n ? '<span class="n">' + r.n + "</span>" : "") + wpHTML(r.id, sel) + weaponHTML(r, sel);
   }
 
-  function renderChecklist(el, items, plan) {
-    var rows = items.map(function (item) { return resolve(item, plan); }).filter(Boolean);
+  function renderChecklist(el, items, sel) {
     var html = '<div class="progress"><div class="bar"><span></span></div><span class="count"></span></div><ul class="check">';
-    rows.forEach(function (r) {
+    items.forEach(function (item) {
+      var r = resolve(item, sel);
+      if (!r) return;
+      var aud = audience(item);
       var done = !!state[r.id];
-      var clsName = (r.only ? "cls-" + PLANS[plan].css : "") + (done ? " done" : "");
-      html += '<li class="' + clsName.trim() + '"><label><input type="checkbox" data-id="' + r.id + '"' + (done ? " checked" : "") + '>' +
-        '<span class="lvl">' + r.lvl + '</span><span class="body">' + textHTML(r, plan) + "</span></label></li>";
+      html += '<li class="' + (done ? "done" : "") + '"' + (aud && aud.color ? ' style="border-left-color:' + aud.color + '"' : "") +
+        '><label><input type="checkbox" data-id="' + r.id + '"' + (done ? " checked" : "") + ">" +
+        '<span class="lvl">' + r.lvl + '</span><span class="body">' + textHTML(r, sel, aud) + "</span></label></li>";
     });
     el.innerHTML = html + "</ul>";
     updateProgress(el);
   }
 
-  function cellHTML(r, plan) {
-    if (!r) return '<div class="cmp-cell empty">Not needed</div>';
-    return '<div class="cmp-cell ' + PLANS[plan].css + '"><span class="lvl">' + r.lvl + '</span><span class="body"><span class="who">' + PLANS[plan].label + "</span>" + textHTML(r, null) + "</span></div>";
+  function tipVisible(c, sel) {
+    if (c.preset) return !!sel.preset && c.preset.indexOf(sel.preset) !== -1;
+    if (c.race) return c.race.indexOf(sel.race) !== -1;
+    return true;
   }
-
-  function renderCompare(el, items) {
-    var a = cmp.a, b = cmp.b;
-    var html = '<div class="cmp-head" aria-hidden="true"><div class="h-' + PLANS[a].css + '">' + PLANS[a].label + '</div><div class="h-' + PLANS[b].css + '">' + PLANS[b].label + '</div></div><div class="cmp">';
-    items.forEach(function (item) {
-      var ra = resolve(item, a), rb = resolve(item, b);
-      if (!ra && !rb) return;
-      if (ra && rb && sameText(ra, rb)) {
-        html += '<div class="cmp-row same"><div class="cmp-cell both"><span class="lvl">' + ra.lvl + '</span><span class="body"><span class="t">' + ra.t +
-          tagsHTML(ra, null) + '<span class="same-label">Same for both</span></span>' + (ra.n ? '<span class="n">' + ra.n + "</span>" : "") + "</span></div></div>";
-      } else {
-        html += '<div class="cmp-row diff">' + cellHTML(ra, a) + cellHTML(rb, b) + "</div>";
-      }
-    });
-    el.innerHTML = html + "</div>";
-  }
-
-  function renderDiffs() {
-    var a = cmp.a, b = cmp.b;
-    document.getElementById("diff-head").innerHTML = '<tr><th>Topic</th><th class="c-' + PLANS[a].css + '">' + PLANS[a].label +
-      '</th><th class="c-' + PLANS[b].css + '">' + PLANS[b].label + "</th></tr>";
-    document.getElementById("diff-body").innerHTML = DIFFS.map(function (d) {
-      return d[a] === d[b] ? "<tr><td>" + d.topic + '</td><td colspan="2">' + d[a] + "</td></tr>"
-        : "<tr><td>" + d.topic + "</td><td>" + d[a] + "</td><td>" + d[b] + "</td></tr>";
-    }).join("");
-  }
-
-  function renderDuo() {
-    var el = document.getElementById("duo-cards");
-    var shown = mode === "compare" ? [cmp.a, cmp.b] : [mode];
-    var cards = DUO.filter(function (c) {
-      return c.plans[0] === "all" || shown.some(function (p) { return c.plans.indexOf(p) !== -1; });
-    });
-    el.innerHTML = cards.map(function (c) {
-      var all = c.plans[0] === "all";
-      var hits = all ? [] : shown.filter(function (p) { return c.plans.indexOf(p) !== -1; });
-      var badge = mode === "compare" && hits.length === 1 ? ' <span class="tag cls-' + PLANS[hits[0]].css + '">' + PLANS[hits[0]].label + "</span>" : "";
-      var body = c.ul ? "<ul>" + c.ul.map(function (li) { return "<li>" + li + "</li>"; }).join("") + "</ul>" : "<p>" + c.p + "</p>";
-      return '<div class="card' + (all ? "" : " cls-" + PLANS[c.plans[0]].css) + '"><h4>' + c.h + badge + "</h4>" + body + "</div>";
+  function renderTips(sel) {
+    var cards = TIPS.filter(function (c) { return tipVisible(c, sel); });
+    document.getElementById("tips-cards").innerHTML = cards.map(function (c) {
+      var body = "<ul>" + c.ul.map(function (li) { return "<li>" + li + "</li>"; }).join("") + "</ul>";
+      return '<div class="card"><h4>' + c.h + "</h4>" + body + "</div>";
     }).join("");
   }
 
@@ -919,72 +890,66 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     p.querySelector(".count").textContent = done + " / " + all.length;
   }
 
-  var chip = document.getElementById("class-chip");
-  function render() {
-    MODES.forEach(function (m) { document.body.classList.remove("mode-" + m); });
-    document.body.classList.add("mode-" + mode);
-    document.querySelectorAll(".mode-switch button").forEach(function (b) {
-      b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
-    });
-    var isCmp = mode === "compare";
-    document.getElementById("toc-diff").style.display = isCmp ? "" : "none";
-    var chipCss = { hwd: "war", hunter: "hunt", h3d: "dru", trio: "pal" };
-    chip.className = "chip " + (isCmp ? "gold" : chipCss[PLANS[mode].css]);
-    chip.textContent = isCmp ? PLANS[cmp.a].short + " vs " + PLANS[cmp.b].short : PLANS[mode].short;
-    var races = isCmp ? [PLANS[cmp.a].race, PLANS[cmp.b].race] : [PLANS[mode].race];
-    document.getElementById("race-chip").textContent = races[0] === races[races.length - 1] ? races[0] : races.join(" / ");
-    var extra = document.getElementById("extra-chip");
-    extra.hidden = isCmp;
-    if (!isCmp) extra.textContent = PLANS[mode].extra;
-    document.getElementById("cmp-a").value = cmp.a;
-    document.getElementById("cmp-b").value = cmp.b;
-    document.querySelectorAll(".phase").forEach(function (el) {
-      var items = PHASES[el.dataset.phase];
-      if (isCmp) renderCompare(el, items); else renderChecklist(el, items, mode);
-    });
-    if (isCmp) renderDiffs();
-    renderDuo();
-    var shown = isCmp ? [cmp.a, cmp.b] : [mode];
-    document.querySelectorAll(".legacy-path").forEach(function (card) {
-      var plans = card.dataset.plans.split(" ");
-      card.hidden = !shown.some(function (p) { return plans.indexOf(p) !== -1; });
-    });
-    document.getElementById("reset").style.display = isCmp ? "none" : "";
+  var raceSel = document.getElementById("pick-race");
+  var classSel = document.getElementById("pick-class");
+  var presetBtn = document.getElementById("preset-btn");
+
+  raceSel.innerHTML = RACE_ORDER.map(function (r) { return '<option value="' + r + '">' + RACES[r].label + "</option>"; }).join("");
+  presetBtn.textContent = PRESETS.hunter.label;
+
+  function fillClasses() {
+    classSel.innerHTML = RACES[cur.race].classes.map(function (c) {
+      return '<option value="' + c + '">' + CLASSES[c].label + "</option>";
+    }).join("");
   }
 
-  function setMode(m, push) {
-    mode = MODES.indexOf(m) === -1 ? "hwd" : m;
-    save(MODE_KEY, mode);
+  function render() {
+    var sel = cur, race = RACES[sel.race];
+    document.documentElement.style.setProperty("--cc", CLASSES[sel.cls].color);
+    raceSel.value = sel.race;
+    fillClasses();
+    classSel.value = sel.cls;
+    presetBtn.setAttribute("aria-pressed", String(!!sel.preset));
+    document.getElementById("race-chip").textContent = race.label;
+    var chip = document.getElementById("class-chip");
+    chip.textContent = sel.preset ? "2× " + CLASSES[sel.cls].label : CLASSES[sel.cls].label;
+    chip.style.borderColor = chip.style.color = CLASSES[sel.cls].color;
+    document.getElementById("extra-chip").textContent = sel.preset ? PRESETS[sel.preset].extra : "Start: " + race.start;
+    document.getElementById("race-note").hidden = !race.draft;
+    document.querySelectorAll(".phase").forEach(function (el) { renderChecklist(el, PHASES[el.dataset.phase], sel); });
+    renderTips(sel);
+    var hidePlans = function (card) {
+      var races = (card.dataset.race || "").split(" ").filter(Boolean);
+      return races.length && races.indexOf(sel.race) === -1;
+    };
+    document.querySelectorAll(".legacy-path").forEach(function (card) { card.hidden = hidePlans(card); });
+  }
+
+  function setPlan(sel, push) {
+    cur = sel;
+    save(SEL_KEY, planId(sel));
     if (push) {
       try {
         var url = new URL(location.href);
-        url.searchParams.set("plan", mode);
-        if (mode === "compare") { url.searchParams.set("a", cmp.a); url.searchParams.set("b", cmp.b); }
-        else { url.searchParams.delete("a"); url.searchParams.delete("b"); }
+        ["plan", "race", "class"].forEach(function (k) { url.searchParams.delete(k); });
+        if (sel.preset) url.searchParams.set("plan", sel.preset);
+        else { url.searchParams.set("race", sel.race); url.searchParams.set("class", sel.cls.toLowerCase()); }
         history.replaceState(null, "", url);
-      } catch (e) { /* URL API unavailable: mode still applies */ }
+      } catch (e) { /* URL API unavailable: the choice still applies */ }
     }
     render();
   }
 
-  document.querySelector(".mode-switch").addEventListener("click", function (e) {
-    var b = e.target.closest("button[data-mode]");
-    if (b) setMode(b.dataset.mode, true);
+  raceSel.addEventListener("change", function () {
+    var race = raceSel.value;
+    var classes = RACES[race].classes;
+    setPlan({ race: race, cls: classes.indexOf(cur.cls) !== -1 ? cur.cls : classes[0], preset: null }, true);
   });
-
-  // Compare picker: which two plans sit side by side.
-  ["cmp-a", "cmp-b"].forEach(function (id) {
-    var sel = document.getElementById(id);
-    sel.innerHTML = PLAN_IDS.map(function (p) { return '<option value="' + p + '">' + PLANS[p].label + "</option>"; }).join("");
-    sel.addEventListener("change", function () {
-      cmp[id === "cmp-a" ? "a" : "b"] = sel.value;
-      save(CMP_KEY, cmp);
-      setMode("compare", true);
-    });
+  classSel.addEventListener("change", function () {
+    setPlan({ race: cur.race, cls: classSel.value, preset: null }, true);
   });
-
-  document.getElementById("diff-only").addEventListener("change", function (e) {
-    document.body.classList.toggle("diff-only", e.target.checked);
+  presetBtn.addEventListener("click", function () {
+    setPlan(cur.preset ? { race: cur.race, cls: cur.cls, preset: null } : parsePlan("hunter"), true);
   });
 
   // One delegated listener for every checklist checkbox.
@@ -1003,13 +968,12 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
   }, true);
 
   document.getElementById("reset").addEventListener("click", function () {
-    if (!confirm("Clear all your checkboxes on this page (every plan)?")) return;
+    if (!confirm("Clear all your checkboxes on this page (every race and class)?")) return;
     state = {};
     save(KEY, state);
     render();
   });
 
-  // Keep the sticky compare header just below the sticky top bar.
   function syncTopbar() {
     var h = document.querySelector(".topbar").offsetHeight;
     document.documentElement.style.setProperty("--topbar-h", h + "px");
@@ -1027,16 +991,25 @@ th.c-hwd{color:var(--war)} th.c-h3d{color:var(--dru)}
     document.getElementById("launch-chip").textContent = "Launch: " + local;
   } catch (e) { /* keep the static fallback text */ }
 
-  // Initial mode: ?plan= (and ?a= / ?b= for compare) in the URL wins (shareable
-  // links), then the last choice, then the first plan.
-  var initial = null;
+  // Initial selection: ?plan=hunter or ?race=gnome&class=mage in the URL wins (shareable links),
+  // then the last choice, then Skyborne Hunter. A class that is not valid for the race falls back to its first.
   try {
     var params = new URL(location.href).searchParams;
-    initial = params.get("plan");
-    if (PLAN_IDS.indexOf(params.get("a")) !== -1) cmp.a = params.get("a");
-    if (PLAN_IDS.indexOf(params.get("b")) !== -1) cmp.b = params.get("b");
+    var fromUrl = parsePlan(params.get("plan"));
+    var urlRace = (params.get("race") || "").toLowerCase();
+    if (fromUrl) cur = fromUrl;
+    else if (has(RACES, urlRace)) {
+      var classes = RACES[urlRace].classes, want = (params.get("class") || "").toUpperCase();
+      cur = { race: urlRace, cls: classes.indexOf(want) !== -1 ? want : classes[0], preset: null };
+    }
   } catch (e) { /* ignore */ }
-  setMode(MODES.indexOf(initial) !== -1 ? initial : load(MODE_KEY, "hwd"), false);
+  setPlan(cur, false);
+
+  // The weapon list loads after the first paint; draw again once it is here.
+  try {
+    fetch("launch-plan-weapons.json").then(function (r) { return r.json(); }).then(function (d) { WEAPONS = d; render(); })
+      .catch(function () { /* no weapon lines without the file (e.g. opened from disk) */ });
+  } catch (e) { /* fetch unavailable */ }
 })();
 </script>
 <script>

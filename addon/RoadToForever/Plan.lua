@@ -86,7 +86,8 @@ Plan.Layers = layers
 function Plan.Resolve(item, planId)
   local sel = type(planId) == "table" and planId or Plan.Parse(planId)
   if not sel or not allowed(item, sel) then return nil end
-  local out = { id = item.id, lvl = item.lvl, t = item.t, n = item.n, tags = item.tags or {}, quests = item.quests, reach = item.reach }
+  local out = { id = item.id, lvl = item.lvl, t = item.t, n = item.n, tags = item.tags or {},
+                quests = item.quests, reach = item.reach }
   for _, o in ipairs(layers(item, sel)) do
     if o == false then return nil end
     for k, v in pairs(o) do out[k] = v end

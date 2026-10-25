@@ -18,6 +18,13 @@ user-facing release notes.
   row reads "Classic TBC +2", so Forever is not confirmed; its card stays on 12488 until the file page confirms the flavor.
 - The first attempt in the scheduled run was refused by the fetch permission (not answered in time), which is why this check was repeated.
 
+## 2026-10-25 (pre-launch checks)
+- luacheck run against the addon (it had 7 warnings from the new code: two missing read-globals, three long lines): fixed, 0 warnings.
+- Launch plan: zone-leveling steps and the Legacy and level 60 steps now carry a `reach` level, so "Follow the plan" ticks them when you
+  reach the end of their range (Darkshore at 19, Wetlands at 26, and so on). Warlock Voidwalker and Succubus quest steps added (Classic
+  knowledge, unverified). Checked the page at phone width.
+- New `docs/launch-day.md`: one page for launch day.
+
 ## 2026-10-25 (launch plan: Zephras giver coordinates)
 - Waypoints for every Zephras route step (giver NPC coordinates from Wowhead Forever NPC pages, one page at a time with 6 s pauses; 43 of 43
   quests, no block). Site and addon both show them; subzones are not on the NPC pages.

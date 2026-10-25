@@ -54,7 +54,7 @@ read_globals = {
   -- reads them through _G (falling back to C_CVar), so only C_CVar is named here.
   "C_CVar",
   -- Mr.BiZ: item quality / icon / links, faction for faction-only quest rewards
-  "GetItemIcon", "GetItemInfoInstant", "ITEM_QUALITY_COLORS", "UnitFactionGroup", "GameFontDisableSmall",
+  "GetItemIcon", "GetItemInfoInstant", "ITEM_QUALITY_COLORS", "UnitFactionGroup", "UnitRace", "IsQuestFlaggedCompleted", "GameFontDisableSmall",
   -- GearScore: worn items (read), the item tooltip post-call hook (modern clients)
   "GetInventoryItemLink", "TooltipDataProcessor",
   -- Recorder: the loot, vendor and quest windows (read only)

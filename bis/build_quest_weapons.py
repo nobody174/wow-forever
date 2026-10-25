@@ -57,7 +57,11 @@ def main():
         "  use = {",
     ]
     for cls in sorted(CLASS_USE):
-        out.append("    %s = { %s }," % (cls, ", ".join(lua_str(k) for k in CLASS_USE[cls])))
+        kinds = [lua_str(k) for k in CLASS_USE[cls]]
+        half = (len(kinds) + 1) // 2
+        # Two lines per class, so no line is over luacheck's 130 characters.
+        out.append("    %s = { %s," % (cls, ", ".join(kinds[:half])))
+        out.append("      %s }," % ", ".join(kinds[half:]))
     out += ["  },", "  items = {"]
     for r in rows:
         side = r.get("side") if r.get("side") in (1, 2) else 0

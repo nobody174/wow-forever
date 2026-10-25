@@ -2047,6 +2047,61 @@ def test_plan(templates=True):
         check(lua.eval("R2F.Plan.Selected()") == "skyborne:WARRIOR" and lua.eval("type(R2FCharDB.plan.done)") == "table",
               "15.5 an old saved group plan (hwd) is ignored: back to the character's own plan")
 
+        # --- Follow the plan -----------------------------------------------------------------------------
+        lua, T = plan_runtime()
+        lua.execute("""
+          for _, ph in ipairs(R2F.PlanData.phases) do for _, it in ipairs(ph.items) do
+            if it.id == 'n-zephras' then it.quests = { 11, 12 } end
+            if it.id == 'n-camp' then it.reach = 5 end
+          end end
+          QD = {}
+          C_QuestLog = { IsQuestFlaggedCompleted = function(id) return QD[id] == true end }
+          TEST.level = 3
+        """)
+        check(lua.eval("R2FCharDB.plan.follow") is False and lua.eval("R2F.Plan.FollowOn()") is False, "Follow the plan: off by default")
+        lua.execute("QD[11] = true QD[12] = true R2F.Plan.OnQuestTurnedIn(12)")
+        check(lua.eval("R2F.Plan.IsDone('n-zephras')") is False, "Follow the plan: switched off, nothing ticks itself")
+        lua.execute("R2F.Plan.SetFollow(true)")
+        check(lua.eval("R2F.Plan.IsDone('n-zephras')") is True and lua.eval("R2F.Plan.IsDone('n-camp')") is False,
+              "Follow the plan: switching on catches up on quests already turned in (n-zephras), a level not reached yet stays")
+        lua.execute("R2F.Plan.SetDone('n-zephras', false) QD[11] = nil QD[12] = nil")
+        lua.execute("R2F.Plan.OnQuestTurnedIn(11)")
+        check(lua.eval("R2F.Plan.IsDone('n-zephras')") is False, "Follow the plan: all the step's quests are needed (one of two is not enough)")
+        lua.execute("QD[11] = true QD[12] = true R2F.Plan.OnQuestTurnedIn(12)")
+        check(lua.eval("R2F.Plan.IsDone('n-zephras')") is False, "Follow the plan: a step you unticked by hand is left alone")
+        lua.execute("R2F.Plan.SetDone('n-zephras', true) R2F.Plan.SetDone('n-zephras', false) R2F.Plan.SetDone('n-zephras', true)")
+        lua.execute("R2F.Plan.OnLevelUp(4)")
+        check(lua.eval("R2F.Plan.IsDone('n-camp')") is False, "Follow the plan: level 4 is below the step's level 5")
+        lua.execute("R2F.Plan.OnLevelUp(5)")
+        check(lua.eval("R2F.Plan.IsDone('n-camp')") is True, "Follow the plan: reaching the level ticks the step")
+        lua.execute("R2F.Plan.SetDone('n-skin', true) QD = {} R2F.Plan.AutoTick(1)")
+        check(lua.eval("R2F.Plan.IsDone('n-skin')") is True and lua.eval("R2F.Plan.IsDone('n-camp')") is True,
+              "Follow the plan: it never unticks anything")
+        lua.execute("R2F.Plan.SetFollow(false) R2F.Plan.SetDone('n-camp', false) R2F.Plan.SetDone('n-camp', true) R2F.Plan.SetDone('n-camp', false) TEST.level = 9 R2F.Plan.OnLevelUp(9)")
+        check(lua.eval("R2F.Plan.IsDone('n-camp')") is False, "Follow the plan: off again, nothing ticks")
+        lua.execute("R2F.Plan.SetFollow(true) R2F.Plan.SetDone('n-camp', true) R2F.Plan.SetDone('n-camp', false)")
+        lua.execute("UnitFactionGroup = function() return 'Horde' end")
+        check(lua.eval("R2F.Plan.AutoTick(60)") == 0, "Follow the plan: a Horde character has no plan to tick")
+
+        # --- Follow the plan on the real Skyborne Hunter data -----------------------------------------------
+        lua, T = plan_runtime()
+        lua.execute("""
+          TEST.classToken = 'HUNTER' R2F.playerClass = 'HUNTER'
+          QD = { [92460] = true, [92461] = true, [92482] = true, [94946] = true, [94007] = true, [94013] = true, [94978] = true, [94979] = true }
+          C_QuestLog = { IsQuestFlaggedCompleted = function(id) return QD[id] == true end }
+          R2F.Plan.SetFollow(true)
+        """)
+        check(lua.eval("R2F.Plan.Selected()") == "skyborne:HUNTER", "Follow the plan: the test character is a Skyborne Hunter")
+        check(lua.eval("R2F.Plan.IsDone('zs-start')") is True and lua.eval("R2F.Plan.IsDone('zs-class')") is True and lua.eval("R2F.Plan.IsDone('n-dalaran')") is True,
+              "Follow the plan: Coming of Age + Harmony in Balance, The Way of the Hunter and The Magical City of Dalaran tick their steps")
+        check(lua.eval("R2F.Plan.IsDone('h-pet')") is False, "Follow the plan: the pet step needs Training the Beast too")
+        lua.execute("QD[94050] = true R2F.Plan.OnQuestTurnedIn(94050)")
+        check(lua.eval("R2F.Plan.IsDone('h-pet')") is True and lua.eval("R2F.Plan.IsDone('zs-rorian')") is False and lua.eval("R2F.Plan.IsDone('n-zephras')") is False,
+              "Follow the plan: a step with no quest list (n-zephras) and a chain not done yet stay manual")
+        ids_q = lua.eval("""(function() local n = 0 for _, s in ipairs(R2F.Plan.Steps('skyborne:HUNTER')) do
+          if s.quests and #s.quests > 0 then n = n + 1 end end return n end)()""")
+        check(ids_q >= 14, "Follow the plan: the Skyborne Hunter route has quest ids on %d steps" % ids_q)
+
         # --- Map resolution -------------------------------------------------------------------------------
         lua, T = plan_runtime()
         check(lua.eval("R2F.Plan.ResolveMap('Dun Morogh', 1426)") == 1426, "15.5 map hint used when its name matches")

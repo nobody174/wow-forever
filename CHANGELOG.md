@@ -13,6 +13,14 @@ user-facing release notes.
   row reads "Classic TBC +2", so Forever is not confirmed; its card stays on 12488 until the file page confirms the flavor.
 - The first attempt in the scheduled run was refused by the fetch permission (not answered in time), which is why this check was repeated.
 
+## 2026-10-25 (launch plan: Zephras quest ids, Follow the plan)
+- Skyborne route: 14 new steps with Wowhead Forever quest ids (Valanaar start, class quests, Rorian's chain, Shen'dar Village, the cult chain,
+  Windfield farm, scholar chain, Valennia's chain, finale), plus quest ids on the pet, camping and Dalaran steps. Data came from Wowhead quest
+  pages via the owner's browser: ids, levels, givers and series order; Wowhead has no explicit prerequisites, and coordinates exist for only a
+  few NPCs. Step order and text are ours; everything is tagged unverified until a walk at launch.
+- Addon 0.82.0: "Follow the plan" switch (steps carry `quests` and optional `reach`; `Plan.AutoTick` on QUEST_TURNED_IN, PLAYER_LEVEL_UP and login;
+  `R2FCharDB.plan.follow` / `noauto`).
+
 ## 2026-10-25 (launch plan: Human and Night Elf starts)
 - Human: Northshire Valley, then Elwynn Forest from Goldshire, then the Stormwind tram to Ironforge. Night Elf: Shadowglen, Dolanaar, the Rut'theran boat to Auberdine, then Darkshore from level 11 (they skip the Ironforge steps). Wowhead Forever confirmed only the zone level ranges (Elwynn 1-10, Teldrassil 1-11, Darkshore 11-19); the rest is Classic knowledge tagged unverified, with capture-in-game waypoints. The "start not written yet" note no longer shows for any race.
 

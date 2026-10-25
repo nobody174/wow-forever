@@ -25,5 +25,7 @@ For every look (Home > Theme > "Open the gallery"): compare with its picture in 
 
 - **5.70 Plan tab follows race and class (0.81.0):** open the Plan tab on your Skyborne Hunter: the top line must say "Alliance Skyborne Hunter" and the steps include the Zephras steps and the Hunter ones (pet, ammo). If it says the plan is for Alliance characters only, or shows the wrong race, type `/dump UnitRace("player")` and send me both lines it prints (I need Skyborne's English name). Then click Race, Class and 2 Hunters under the title: the list changes, the top line says "Preview: ...", My character brings yours back. Weapon lines show only for your own class.
 
+- **5.71 Follow the plan (0.82.0):** on the new Skyborne Hunter open the Plan tab and tick "Follow the plan". Play the start: when you hand in Coming of Age and Harmony in Balance the step "Valanaar: Coming of Age" must tick by itself (the list redraws). Check a later chain the same way, and tell me any step that ticks too early, never ticks, or whose quests or order are wrong (that feeds the route correction, 5.65). Untick a step by hand: it must stay unticked. Switch the box off: nothing ticks any more.
+
 ## Cannot be tested yet (needs higher level / talents / release)
 4.13 group picks (needs an owner publish) · 13.9 Druid Starsurge / Sunfire / Starfall / Lacerate macros · 13.11 Dire Bear Form at 40 · 14.1 Hunter Strider Kick · 14.2 Paladin Twist of Light seal swap · 14.4 Shaman Elemental Mastery

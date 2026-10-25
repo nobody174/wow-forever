@@ -99,6 +99,7 @@ handlers.CHARACTER_POINTS_CHANGED = function()
   if R2F.GearScore and R2F.GearScore.Soon then R2F.GearScore.Soon() end
   R2F.Talents.OnPointsChanged()
   R2F.MainWindow.RequestRefresh()
+  R2F.Plan.AutoTick()   -- Follow the plan: catch up on what was done while the addon was off
 end
 -- WoW Forever stores talents as a trait config: applying talents in
 -- Blizzard's window fires TRAIT_CONFIG_UPDATED (WeakAuras Forever listens to
@@ -116,7 +117,12 @@ handlers.CONFIG_COMMIT_FAILED = function(configID)
   R2F.Talents.OnCommitFailed(configID)
   R2F.MainWindow.RequestRefresh()
 end
-handlers.PLAYER_LEVEL_UP = function() R2F.MainWindow.RequestRefresh() end
+handlers.PLAYER_LEVEL_UP = function(level)
+  R2F.MainWindow.RequestRefresh()
+  R2F.Plan.OnLevelUp(level)   -- Follow the plan
+end
+-- Follow the plan: a quest handed in may finish a step.
+handlers.QUEST_TURNED_IN = function(id) R2F.Plan.OnQuestTurnedIn(id) end
 -- Mr.BiZ: an item the tab asked the client for has loaded (quality, icon).
 handlers.GET_ITEM_INFO_RECEIVED = function() R2F.BiZTab.OnItemInfo() R2F.PlanTab.OnItemInfo() end
 -- Professions: the game only lists recipes while a profession window

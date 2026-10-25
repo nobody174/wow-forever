@@ -12,6 +12,13 @@
   "steps": {
     "n-zephras": { "skyborne": [
       { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.8, "y": 23.1, "label": "Zephras Isle starting area (Thendal Village)", "conf": "exact", "src": "owner /r2f here 2026-10-16" } ] },
+    "zs-start": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 42.8, "y": 23.4, "label": "Ailee Farheart (Coming of Age)", "conf": "exact", "src": "Wowhead Forever NPC page" } ] },
+    "zs-windstones": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 43.3, "y": 24.0, "label": "Dalia the Collector (Harvesting Windstones)", "conf": "exact", "src": "owner route log run 1" },
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 43.6, "y": 24.0, "label": "Myriaal Mistwake (Falling With Style)", "conf": "exact", "src": "Wowhead Forever NPC page" } ] },
+    "zs-cult": { "default": [
+      { "zone": "Zephras Isle", "mapHint": 2521, "x": 46.8, "y": 56.2, "label": "Missionary Jasaan (Among the Faithful)", "conf": "exact", "src": "Wowhead Forever NPC page" } ] },
     "hu-northshire": { "default": [
       { "zone": "Elwynn Forest", "label": "Northshire Abbey, Northshire Valley", "conf": "check", "src": "Wowhead lists Elwynn Forest as level 1-10; subzones are Classic knowledge" } ] },
     "hu-elwynn": { "default": [

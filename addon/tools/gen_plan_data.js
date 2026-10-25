@@ -83,12 +83,15 @@ function fieldsLua(o, keys) {
   for (const k of keys) {
     if (!(k in o)) continue;
     if (k === "tags") parts.push("tags = " + tagsLua(o.tags));
+    else if (k === "quests") parts.push("quests = { " + o.quests.map(q => lnum(Number(q))).join(", ") + " }");
+    else if (k === "reach") parts.push("reach = " + lnum(Number(o.reach)));
     else parts.push(k + " = " + lstr(plain(o[k])));
   }
   return parts.join(", ");
 }
 
-const FIELDS = ["lvl", "t", "n", "tags"];
+// quests = quest ids that must all be turned in, reach = a level that counts as done (both: "Follow the plan").
+const FIELDS = ["lvl", "t", "n", "tags", "quests", "reach"];
 
 function layerLua(o) { return o === false ? "false" : "{ " + fieldsLua(o, FIELDS) + " }"; }
 

@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.82.0 (2026-10-25)
+
+- **Follow the plan** (new switch on the Plan tab, off by default): a step ticks itself when all its quests are turned in, or when your level reaches its level. It catches up when you switch it on and when you log in. Your own ticks always stay, and a step you untick by hand is left alone. Steps without quests stay manual.
+- **The Zephras Isle route has quest ids** for every Skyborne class: 14 new steps in the order we suggest (Coming of Age to the finale), plus the Hunter taming series, The Great Outdoors and the Dalaran quest on their existing steps. Each class gets its own class quest step. All of it comes from Wowhead's quest data and is marked unverified until we walk it at launch (TESTING 5.65).
+- **Human and Night Elf starts** are in the plan: Northshire Valley and Elwynn Forest, and Shadowglen, Dolanaar and the boat to Auberdine.
+
 ## 0.81.0 (2026-10-24)
 
 - **The Plan tab follows your race and class.** It reads them from the character you are logged in on (Alliance Human, Dwarf, Gnome, Night Elf or Skyborne, and your class) and shows that plan, for example "Alliance Skyborne Hunter". The four group plans are gone: every class levels as damage, and dungeon steps just say they need a group. Class steps (Hunter pet, Druid Bear Form, Warrior stance, Paladin, Shaman, Mage food, Rogue poisons) now show only to that class.

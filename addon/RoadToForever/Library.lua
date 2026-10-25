@@ -282,6 +282,8 @@ function Library.Init()
   -- Per character: ticks are about THIS character's progress.
   if type(cdb.plan) ~= "table" then cdb.plan = {} end
   if type(cdb.plan.done) ~= "table" then cdb.plan.done = {} end
+  if type(cdb.plan.noauto) ~= "table" then cdb.plan.noauto = {} end   -- steps unticked by hand (Follow the plan skips them)
+  if type(cdb.plan.follow) ~= "boolean" then cdb.plan.follow = false end   -- "Follow the plan" switch
   if type(cdb.plan.bought) ~= "table" then cdb.plan.bought = {} end   -- ticked quests of the shopping list
   if type(cdb.plan.selected) ~= "string" then cdb.plan.selected = nil end   -- a previewed combination; nil = the character's own
   -- Mr.BiZ tab (BiZ.lua): class / spec shown, source filters, the wishlist.

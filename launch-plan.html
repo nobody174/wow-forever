@@ -470,6 +470,55 @@ body.buy-open .buy-drawer{transform:none}
     night: [
       { id: "n-zephras", lvl: "1–12", t: "Zephras Isle, share every quest", only: { race: ["skyborne"] },
         n: "Both factions share the island, so it's busy. Instant ranged tags make crowded camps easier. Finish the main chain and leave; you don't have to wait for 12." },
+      // Zephras route (Skyborne, all classes). Seeded 2026-10-25 from Wowhead Forever quest pages: ids, levels, givers and
+      // series order are Wowhead's; the order of the steps is ours. `quests` = every one must be turned in for the
+      // step to tick itself ("Follow the plan" in the addon). Walk it at launch and correct (TESTING 5.65).
+      { id: "zs-start", lvl: "1", t: "Valanaar: Coming of Age → Harmony in Balance", only: { race: ["skyborne"] },
+        n: "Ailee Farheart gives <em>Coming of Age</em> (turn in to Rorian the Dayseeker), then <em>Harmony in Balance</em>. Rorian also hands out the class quests and the first side quests.",
+        quests: [92460, 92461], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-class", lvl: "2", t: "Your class quest from Rorian", only: { race: ["skyborne"] },
+        n: "One class quest at level 2; check Rorian's list for yours.",
+        quests: [], tags: [["unv", "seeded, walk to confirm"]],
+        cls: {
+          HUNTER: { t: "Hunter: The Way of the Hunter", n: "Rorian sends you to Tai'ree Farsight. The three taming quests come later, at level 10.", quests: [92482] },
+          MAGE: { t: "Mage: A Student of the Arcane", n: "Rorian sends you to Dorii Brightwhisper.", quests: [92481] },
+          WARRIOR: { t: "Warrior: The Warrior's Path", n: "Rorian sends you to Blademaster Ren.", quests: [92532] },
+          ROGUE: { t: "Rogue: At Home in the Shadows", n: "Rorian sends you to Akeri Duskblade. (Class not read on the quest page; matched from the trainer.)", quests: [92483] },
+          DRUID: { t: "Druid: A Student of Nature", n: "Rorian sends you to Xyton Silverwind. (Class not read on the quest page; matched from the trainer.)", quests: [92485] }
+        } },
+      { id: "zs-infest", lvl: "2–3", t: "Elatrell Featherlight: Infestation Investigation → The Cirrusfly Queen", only: { race: ["skyborne"] },
+        n: "Infestation Investigation is shareable. The Cirrusfly Queen needs level 2.",
+        quests: [92462, 92463], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-windstones", lvl: "2–4", t: "Valanaar side quests: windstones, anchors and leylines", only: { race: ["skyborne"] },
+        n: "<em>Harvesting Windstones</em> (Dalia the Collector) can't be picked up before level 2. Also <em>Falling With Style</em> (Myriaal Mistwake), <em>The Anchors of Zephras</em> (Halaan Hawk-Eye) and <em>Reading the Leylines</em> (Falorne Fallwind).",
+        quests: [93552, 92474, 94414, 92597], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-rorian", lvl: "3–5", t: "Rorian's chain: Elemental Unrest to The Next Step", only: { race: ["skyborne"] },
+        n: "<em>Elemental Unrest</em>, <em>Agitators</em>, <em>Return to Rorian</em>, then <em>Aetheen of the Gales</em> (needs level 4), <em>Foul Matriarch</em> and <em>The Next Step</em>, which sends you to Constable Aonda in Shen'dar Village.",
+        quests: [92464, 92465, 92469, 92471, 92470, 92472], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-shendar", lvl: "6–7", t: "Shen'dar Village: first quests", only: { race: ["skyborne"] },
+        n: "Constable Aonda: <em>Welcome to Shen'dar Village</em> then <em>The Criminal Element</em>. Teeri Wellwind: <em>Hippogryph Harassment</em> and <em>Pilfered Windstones</em>. All need level 4.",
+        quests: [93461, 92517, 92516, 93319], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-cult", lvl: "8", t: "The cult chain: Infiltrating the Cult to Havoc in the Highlands", only: { race: ["skyborne"] },
+        n: "Constable Aonda starts <em>Infiltrating the Cult</em> (needs level 5): <em>Falaath Village</em>, <em>Among the Faithful</em> (Missionary Jasaan), then <em>Havoc in the Highlands</em>.",
+        quests: [93036, 92529, 92528, 92550], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-watch", lvl: "8", t: "Aonda's side quests: The Western Watch, Stolen Supplies, Bugged", only: { race: ["skyborne"] },
+        n: "<em>The Western Watch</em> then <em>A Last Request</em>, <em>Stolen Supplies</em> (Danarii Bellowveil) and <em>Bugged</em> (Valennia Stormfist, needs level 6).",
+        quests: [93926, 93927, 92551, 93949], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-farm", lvl: "9", t: "Windfield farm: Blood Tithe and the Aamelia Windfield quests", only: { race: ["skyborne"] },
+        n: "<em>Blood Tithe</em> and <em>Make Yourself Useful</em>, then <em>Flutterfly Dust</em>, <em>Ornery Ornery Galestriders</em>, <em>The Hills Have Eyes</em>, <em>Standing Our Ground</em> and <em>Deliver the News</em>, and <em>What Is My Purpose?</em>.",
+        quests: [92679, 92682, 92683, 92684, 92685, 92693, 92703, 92698], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-valanaar", lvl: "9", t: "To Valanaar: report to Valennia Stormfist", only: { race: ["skyborne"] },
+        n: "<em>To Valanaar</em> (needs level 6), <em>The Supreme Magister</em> and <em>Deliver the Signet</em>.",
+        quests: [92701, 92699, 93948], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-scholar", lvl: "10–11", t: "The scholar chain: Fillion's Mission to In Service of Zephras", only: { race: ["skyborne"] },
+        n: "<em>The Missing Scholar</em> (three versions), <em>Fillion's Mission</em>, <em>Catching Wind</em>, <em>Avenged Tenfold</em> and <em>In Service of Zephras</em> (Elaadrin Evengale).",
+        quests: [99260, 92840, 92834, 92860], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-plot", lvl: "11–12", t: "Valennia's chain: The High Elder's Request to The Inner Sanctum", only: { race: ["skyborne"] },
+        n: "<em>The High Elder's Request</em>, <em>The Turncoat</em>, <em>Al'Aketh Assassins</em>, <em>Unfortunate News</em>, <em>The Cult's True Plans</em>, <em>Desperate Times</em>, <em>Prepare for Battle</em>, <em>Making Our Move</em> and <em>The Inner Sanctum</em>.",
+        quests: [92881, 92643, 98512, 92644, 94568, 92640, 93065, 92947, 93958], tags: [["unv", "seeded, walk to confirm"]] },
+      { id: "zs-finale", lvl: "12–13", t: "The finale: Confront Lorthuna to What Comes Next", only: { race: ["skyborne"] },
+        n: "<em>Confront Lorthuna</em>, <em>The Fate of Zephras</em> and <em>What Comes Next</em> (needs level 7). The next quest, <em>The Magical City of Dalaran</em>, is the skycutter step below.",
+        quests: [93835, 94369, 93089], tags: [["unv", "seeded, walk to confirm"]] },
       { id: "tr-coldridge", lvl: "1–6", t: "Coldridge Valley (Dun Morogh), share every quest", only: { race: ["dwarf", "gnome"] },
         n: "Expect it packed: Dwarf Shaman is Forever's most hyped new combo. Group up with anyone fighting you for mobs so kill credit is shared.",
         cls: { PALADIN: { n: "Expect it packed: Dwarf Shaman is Forever's most hyped new combo. Group up with anyone fighting you for mobs so kill credit is shared. Holy Strike comes at 6." } } },
@@ -498,7 +547,8 @@ body.buy-open .buy-drawer{transform:none}
         n: "The hunter trainer gives <em>Taming the Beast</em> at 10: the first of three taming quests, each with a Taming Rod for one specific beast, then back to the trainer to learn Tame Beast and pick your pet.",
         tags: [["unv", "Classic knowledge"]],
         race: {
-          skyborne: { n: "On Zephras Isle (confirmed in beta). The hunter trainer gives <em>Taming the Beast</em> at 10: the first of <strong>three taming quests</strong>, each with a Taming Rod for one specific beast, then back to the trainer to learn Tame Beast and pick our own pet. Do the three together so we tame side by side.", tags: [["unv", "which 3 beasts"]] },
+          skyborne: { n: "On Zephras Isle (confirmed in beta). The hunter trainer gives <em>Taming the Beast</em> at 10, a series of taming quests (Wowhead lists four, from Elayaa Easewind and Quel'ana Quickgale) each with a Taming Rod for one specific beast, then <em>Training the Beast</em> back at the trainer to learn Tame Beast and pick our own pet. Do them together so we tame side by side.",
+                      quests: [94007, 94013, 94978, 94979, 94050], tags: [["unv", "seeded, order unconfirmed"]] },
           dwarf: { n: "In Classic, Dwarf hunters get it from the hunter trainer in Kharanos. Check it works the same in Forever." }
         } },
       { id: "wd-bear", lvl: "10", t: "Druid: Bear Form", only: { cls: ["DRUID"] },
@@ -511,7 +561,9 @@ body.buy-open .buy-drawer{transform:none}
         n: "Free food and water for the whole levelling run (and spare for anyone you group with). Re-train the new rank at every trainer visit.",
         tags: [["unv", "Classic levels"]] },
       { id: "n-camp", lvl: "~5", t: "The Great Outdoors → train Cooking → Basic Campfire",
-        n: "Cooking unlocks your own campfire (1-hour camp buffs), XP food and pet food. At least one of us takes it." },
+        n: "Cooking unlocks your own campfire (1-hour camp buffs), XP food and pet food. At least one of us takes it.",
+        race: { skyborne: { quests: [96638, 96101, 96646], tags: [["unv", "seeded, walk to confirm"]],
+                            n: "Cooking unlocks your own campfire (1-hour camp buffs), XP food and pet food. <em>The Adventurer</em> (Aetheen of the Gales), <em>The Great Outdoors</em> and <em>Camping 101: Cooking</em> (Raan Wildwind; they need level 4). At least one of us takes it." } } },
       { id: "n-skin", lvl: "Early", t: "Train Skinning",
         n: "Good gold early: kill beasts as you quest. Whoever didn't loot the mob skins it." },
       { id: "h-ammo", lvl: "12", t: "Stock ammo and pet food", only: { cls: ["HUNTER"] },
@@ -520,7 +572,7 @@ body.buy-open .buy-drawer{transform:none}
           skyborne: { t: "Stock ammo and pet food before the skycutter" },
           dwarf: { t: "Stock ammo and pet food in Ironforge", n: "Enough for Hall of Thanes and the Darkshore trip. Ammo is the biggest gold drain." }
         } },
-      { id: "n-dalaran", lvl: "12", t: "Skycutter to Dalaran → Skyborne portal to Stormwind", only: { race: ["skyborne"] },
+      { id: "n-dalaran", lvl: "12", t: "Skycutter to Dalaran → Skyborne portal to Stormwind", only: { race: ["skyborne"] }, quests: [94946],
         n: "Turn in <em>The Magical City of Dalaran</em> in the Sky Enclave, pick up <em>Welcome to Azeroth</em>, take the portal." },
       { id: "n-if", lvl: "12", t: "Tram to Ironforge, collect all Hall of Thanes quests",
         n: "Grab both flight paths on the way.",
@@ -661,7 +713,7 @@ body.buy-open .buy-drawer{transform:none}
   // Resolve an item for one selection: null if hidden, otherwise the merged fields.
   function resolve(item, sel) {
     if (!allowed(item, sel)) return null;
-    var out = { id: item.id, lvl: item.lvl, t: item.t, n: item.n, tags: item.tags || [] };
+    var out = { id: item.id, lvl: item.lvl, t: item.t, n: item.n, tags: item.tags || [], quests: item.quests, reach: item.reach };
     var layers = override(item, sel);
     for (var i = 0; i < layers.length; i++) {
       if (layers[i] === false) return null;
@@ -738,6 +790,10 @@ body.buy-open .buy-drawer{transform:none}
   // list (stones sit at dungeon entrances), WCT = Warcraft Tavern's Hall of Thanes guide.
   var WAYPOINTS = {
     "n-zephras": { cap: ["Valanaar, the main town on Zephras Isle"] },
+    "zs-start": { wp: [["Zephras Isle", 42.8, 23.4, "Ailee Farheart (Coming of Age)", "Wowhead"]] },
+    "zs-windstones": { wp: [["Zephras Isle", 43.3, 24.0, "Dalia the Collector (Harvesting Windstones)", "owner"],
+                            ["Zephras Isle", 43.6, 24.0, "Myriaal Mistwake (Falling With Style)", "Wowhead"]] },
+    "zs-cult": { wp: [["Zephras Isle", 46.8, 56.2, "Missionary Jasaan (Among the Faithful)", "Wowhead"]] },
     "hu-northshire": { cap: ["Northshire Abbey, Northshire Valley (Elwynn Forest)"] },
     "hu-elwynn": { wp: [["Elwynn Forest", 42.0, 65.0, "Goldshire, Lion's Pride Inn", "Classic"]] },
     "ne-shadowglen": { cap: ["Shadowglen, the Night Elf start (Teldrassil)"] },

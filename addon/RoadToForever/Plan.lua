@@ -86,7 +86,7 @@ Plan.Layers = layers
 function Plan.Resolve(item, planId)
   local sel = type(planId) == "table" and planId or Plan.Parse(planId)
   if not sel or not allowed(item, sel) then return nil end
-  local out = { id = item.id, lvl = item.lvl, t = item.t, n = item.n, tags = item.tags or {} }
+  local out = { id = item.id, lvl = item.lvl, t = item.t, n = item.n, tags = item.tags or {}, quests = item.quests, reach = item.reach }
   for _, o in ipairs(layers(item, sel)) do
     if o == false then return nil end
     for k, v in pairs(o) do out[k] = v end
@@ -275,6 +275,71 @@ function Plan.QuestProgress()
   return done, total
 end
 
+-- ---------------------------------------------------------------------------
+-- Follow the plan (Plan tab switch, off by default; R2FCharDB.plan.follow): a step ticks itself when all its
+-- `quests` are turned in, or when your level reaches its `reach`. Only steps with quests or a reach do this; the
+-- others stay manual. It only ever ticks: a manual tick is never undone, and a step you untick by hand is left alone
+-- afterwards (R2FCharDB.plan.noauto) until you tick it again yourself.
+-- Read-only on the game's side: quest flags, UnitLevel and the QUEST_TURNED_IN / PLAYER_LEVEL_UP events.
+-- ---------------------------------------------------------------------------
+local turned = {}   -- quest ids turned in this session (the quest flag can lag behind QUEST_TURNED_IN)
+
+local function questDone(id)
+  if turned[id] then return true end
+  local flagged
+  if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then flagged = C_QuestLog.IsQuestFlaggedCompleted(id)
+  elseif IsQuestFlaggedCompleted then flagged = IsQuestFlaggedCompleted(id) end
+  return flagged == true
+end
+
+function Plan.FollowOn() return cdb().follow == true end
+
+-- Is the step finished by the game's own state (quests turned in, or the level reached)?
+function Plan.StepReached(step, level)
+  if step.quests and #step.quests > 0 then
+    local all = true
+    for _, id in ipairs(step.quests) do
+      if not questDone(id) then all = false break end
+    end
+    if all then return true end
+  end
+  return step.reach ~= nil and (level or 0) >= step.reach
+end
+
+-- Tick every step of the character's own plan that the game says is done. Returns how many it ticked.
+function Plan.AutoTick(level)
+  if not Plan.FollowOn() then return 0 end
+  local planId = Plan.OwnPlan()
+  if not planId then return 0 end
+  level = level or (UnitLevel and UnitLevel("player")) or 0
+  local n = 0
+  for _, s in ipairs(Plan.Steps(planId)) do
+    if not Plan.IsDone(s.id) and not cdb().noauto[s.id] and Plan.StepReached(s, level) then
+      Plan.SetDone(s.id, true)
+      n = n + 1
+    end
+  end
+  if n > 0 then
+    if R2F.PlanTab and R2F.PlanTab.Refresh then R2F.PlanTab.Refresh() end
+    if R2F.Home and R2F.Home.Refresh then R2F.Home.Refresh() end
+  end
+  return n
+end
+
+function Plan.SetFollow(on)
+  cdb().follow = on and true or false
+  if on then Plan.AutoTick() end
+end
+
+function Plan.OnQuestTurnedIn(id)
+  if type(id) == "number" then turned[id] = true end
+  Plan.AutoTick()
+end
+
+function Plan.OnLevelUp(level)
+  Plan.AutoTick(tonumber(level))
+end
+
 -- The step whose Waypoint button last pointed the arrow (so ticking it moves the arrow on).
 local arrowStep
 
@@ -283,6 +348,7 @@ function Plan.SetDone(stepId, done)
   local cur = done and Plan.Next(Plan.Selected())
   local onIt = done and ((cur and cur.id == stepId) or arrowStep == stepId)
   cdb().done[stepId] = done and true or nil
+  cdb().noauto[stepId] = (not done) and true or nil   -- unticked by hand: Follow the plan leaves it alone
   if onIt and R2F.Gameplay and R2F.Gameplay.IsOn("navfollow") and R2F.Nav and R2F.Nav.Supported() then
     Plan.AdvanceArrow()
   end

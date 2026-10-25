@@ -2901,6 +2901,11 @@ replaces the default for that race only. Without TomTom the button prints the /w
   `TomTom:AddWaypoint(mapID, x/100, y/100, {title = ...})`; without TomTom: print the
   `/way` line. Same mechanism later for the library-book route.
 - Ticks are separate from the site's (browser) ticks; syncing them is out of scope.
+- **Follow the plan (v0.82.0):** a switch on the Plan tab (`R2FCharDB.plan.follow`, default off). A step with `quests` (ids, all
+  turned in) or `reach` (a level) ticks itself via `Plan.AutoTick` on `QUEST_TURNED_IN`, `PLAYER_LEVEL_UP`, login and when the switch
+  is turned on; quest state is read with `C_QuestLog.IsQuestFlaggedCompleted` plus the session's turn-ins. It only ever ticks, through
+  `Plan.SetDone` (which moves the arrow on); a step unticked by hand is remembered (`plan.noauto`) and skipped. Only the character's
+  own plan is ticked. The Skyborne route's quest ids are seeded from Wowhead Forever (unverified until walked at launch).
 
 ## 16. Rank-aware macros (owner test 2026-10-09) -- built as v0.19.0, 2026-10-09
 (As built: `Ranks.lua`; `Macros.lua` writes and compares through `wantBody()`; `/cast`,

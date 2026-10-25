@@ -5,6 +5,11 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-25 (addon versions checked)
+- CurseForge check: Leatrix Maps moved from 1.60.23-forever to 1.60.25-forever (file 9275553, Oct 21, 2026). AtlasLoot Continued moved from 12488 to 12599 (Oct 22, 2026); its file page lists Forever and game version 1.60.1, so the card now uses it.
+- Forever Bestiary 0.6.0, Questie v12.1.0+v1.0.6 and ThreatMaster 0.4.0 are still the newest Forever files, so their cards are unchanged.
+- Road to Forever card unchanged at 0.80.1 (newest `r2f-v*` tag). `RoadToForever.toc` already says 0.82.0 with no matching tag yet.
+
 ## 2026-10-22 (addon versions checked)
 - addons.html: Road to Forever card fallback moved to 0.80.1 (newest `r2f-v*` tag, Oct 22, 2026; link, version, zip name). It matches
   `RoadToForever.toc` (`## Version: 0.80.1`).

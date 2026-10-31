@@ -5,6 +5,10 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-10-31 (addon versions checked)
+- CurseForge was not checked in this run: the fetch permission for the CurseForge pages (AtlasLoot Continued, Forever Bestiary, Leatrix Maps, Questie, ThreatMaster) was refused twice (not answered in time), so no card changed and the "Versions checked on CurseForge" date stays at Oct 25, 2026.
+- Road to Forever card unchanged at 0.82.0: newest `r2f-v*` tag (`r2f-v0.82.0`) matches `RoadToForever.toc`.
+
 ## 2026-10-28 (addon versions checked)
 - CurseForge was not checked in this run: the fetch permission for the five CurseForge pages was refused twice (not answered in time), so no card changed and the "Versions checked on CurseForge" date stays at Oct 25, 2026.
 - Road to Forever card unchanged at 0.82.0: newest `r2f-v*` tag (`r2f-v0.82.0`) matches `RoadToForever.toc`.

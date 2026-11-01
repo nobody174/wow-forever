@@ -222,6 +222,17 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
 .foot{margin-top:18px;color:var(--muted);font-size:13.5px}
 .foot p{margin:0 0 6px}
 .foot code{font:500 12.5px/1 var(--mono);color:var(--text)}
+.weights{padding:12px 18px;border-bottom:1px solid var(--edge);font-size:13px;color:var(--muted)}
+.weights[hidden],.setacts[hidden]{display:none}
+.weights .wlab{display:block;margin-bottom:6px}
+.wchip{display:inline-block;margin:0 6px 6px 0;padding:4px 9px;border:1px solid var(--edge);border-radius:999px;background:var(--panel2);color:var(--text);white-space:nowrap}
+.wchip b{color:var(--gold);font-weight:600}
+
+.setacts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 18px;border-bottom:1px solid var(--edge);font-size:13px;color:var(--muted)}
+.set .legend{margin:0;padding:10px 18px;border-bottom:1px solid var(--edge)}
+.nextbest{display:block;color:var(--muted);font-size:12.5px}
+@media (max-width:560px){.weights{padding:10px 12px}.wchip{padding:2px 7px;margin:0 4px 4px 0;font-size:12px}.setacts,.set .legend{padding-left:12px;padding-right:12px}}
+.row.open .nextbest{display:none}
 .legend{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:14px;font-size:13px;color:var(--muted)}
 .legend span.badge{justify-self:auto}
 .legend .tag{font:600 11px/1 var(--sans);border-radius:4px;padding:2px 6px}
@@ -281,6 +292,15 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   <div class="cols">
     <section class="set" aria-labelledby="set-title">
       <div class="set-head"><h2 id="set-title">Complete set</h2><span class="sum" id="sum"></span></div>
+      <div class="weights" id="weights" hidden></div>
+      <div class="legend" aria-label="What the badges mean">
+        <span><span class="badge b-seen">Seen</span> seen in Forever</span>
+        <span><span class="badge b-client">Client</span> from the Forever game files</span>
+        <span><span class="badge b-classic">Classic</span> source assumed from Classic</span>
+        <span><span class="badge b-clue">Clue</span> a lead, not confirmed</span>
+        <span><span class="badge b-unknown">Unknown</span> source not known yet</span>
+      </div>
+      <div class="setacts" id="setacts" hidden><button type="button" class="btn" id="set-copy">Copy these picks for the addon</button><span id="set-note">Every pick shown below, as a wishlist string (/biz, Wishlist, Import).</span></div>
       <div id="rows"><p style="padding:18px">Loading…</p></div>
     </section>
 
@@ -306,13 +326,6 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   </div>
 
   <div class="foot" id="foot"></div>
-  <div class="legend" aria-label="What the badges mean">
-    <span><span class="badge b-seen">Seen</span> seen in Forever</span>
-    <span><span class="badge b-client">Client</span> from the Forever game files</span>
-    <span><span class="badge b-classic">Classic</span> source assumed from Classic</span>
-    <span><span class="badge b-clue">Clue</span> a lead, not confirmed</span>
-    <span><span class="badge b-unknown">Unknown</span> source not known yet</span>
-  </div>
   <div class="legend" aria-label="What the ranks mean">
     <span><span class="tag bizz">The Bizz</span> the best, and 20%+ ahead of the next pick: go get it</span>
     <span><b style="color:var(--gold)">Bizzest</b> the best</span>
@@ -553,14 +566,22 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
       '<p><button type="button" class="btn gold" data-level="30">Back to level 30</button></p></div>';
     $("foot").innerHTML = '<p>Want something in the level 60 lists? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';
   }
+  // The spec's stat weights as chips ("1.2 hit"), in the order ForeverDB lists them (most important first).
+  function weightChips(text) {
+    return String(text || "").split(", ").map(function (part) {
+      var i = part.lastIndexOf(" "), num = part.slice(i + 1);
+      return i > 0 && !isNaN(parseFloat(num)) ? '<span class="wchip"><b>' + esc(num) + "</b> " + esc(part.slice(0, i)) + "</span>" : "";
+    }).join("");
+  }
+  var lastPicks = [];   // "id:class/spec:slot" for every pick on screen, for "Copy these picks for the addon"
   function render() {
     var sid = currentSpecId(), sp = DATA.specs[sid];
     location.replace("#" + sid);
-    var shown = 0, hidden = 0, empty = 0, bizz = 0, standins = 0;
+    var shown = 0, hidden = 0, empty = 0, bizz = 0, standins = 0, picks = [];
     var labels = {}; DATA.slots.forEach(function (s) { labels[s.key] = s.label; });
     $("set-title").textContent = sp.name + " " + DATA.classes.filter(function (c) { return c.key === sp.class; })[0].name;
     $("set-title").style.color = CLASS_COLOR[sp.class] || "";
-    if (level === "60") { renderSoon(sp); return; }
+    if (level === "60") { $("weights").hidden = true; $("setacts").hidden = true; renderSoon(sp); return; }
     $("rows").innerHTML = sp.slots.map(function (s) {
       var key = sid + "|" + s.slot, label = labels[s.slot];
       if (!s.best) {
@@ -573,7 +594,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
       if (passes(b)) pick = 0;
       else nxt.some(function (n, i) { if (passes(n)) { pick = i + 1; return true; } return false; });
       var ok = pick >= 0, p = pick > 0 ? nxt[pick - 1] : b;
-      if (ok) shown++; else hidden++;
+      if (ok) { shown++; picks.push(p.id + ":" + sid + ":" + s.slot); } else hidden++;
       if (pick > 0) standins++;
       if (pick === 0 && top) bizz++;
       wantQuality(b.id); nxt.forEach(function (n) { wantQuality(n.id); });
@@ -584,7 +605,8 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
         : (TYPE_ICON[b.type] || "") + "<span>" + esc(TYPE_LABEL[b.type]) + " pick, and nothing in ranks 2–3 passes your filters</span>";
       var scoreHtml = !ok ? "" : pick === 0 ? '<span title="Score with this spec\'s stat weights">' + esc(b.score) + "</span>"
         : '<span class="behind" title="How far behind the best it scores">' + (p.delta === 0 ? "=" : esc(p.delta) + "%") + "</span>";
-      var main = '<div class="row-main" data-toggle="' + esc(key) + '"><span class="slot">' + esc(label) + '</span><span class="item"><span class="nm">' + nameHtml + '</span><span class="src">' + srcHtml + "</span>" + encLine(sp, s.slot) + "</span>" +
+      var nextHtml = ok && pick === 0 && nxt[0] ? '<span class="nextbest">Next: ' + esc(nxt[0].name) + (typeof nxt[0].delta === "number" && nxt[0].delta !== 0 ? " (" + esc(nxt[0].delta) + "%)" : "") + "</span>" : "";
+      var main = '<div class="row-main" data-toggle="' + esc(key) + '"><span class="slot">' + esc(label) + '</span><span class="item"><span class="nm">' + nameHtml + '</span><span class="src">' + srcHtml + "</span>" + nextHtml + encLine(sp, s.slot) + "</span>" +
         '<span class="score">' + scoreHtml + "</span>" +
         (ok ? confBadge(p.conf) : "<span></span>") +
         '<button type="button" class="icon-btn chev" aria-expanded="' + isOpen + '" aria-label="' + (isOpen ? "Hide" : "Show") + " the next best " + esc(label.toLowerCase()) + ' picks" data-toggle="' + esc(key) + '">' + ICON.chev + "</button>" +
@@ -617,6 +639,10 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     $("foot").innerHTML = "<p><b>Stat weights</b> (" + esc(sp.name) + "): <code>" + esc(sp.weights) + "</code></p>" +
       '<p>Picks and weights from <a href="' + esc(sp.url) + '" target="_blank" rel="noopener">ForeverDB</a> (beta build ' + esc(sp.build) + ", taken " + esc(DATA.updated) +
       '). Tooltips and item pages from <a href="https://www.wowhead.com/forever" target="_blank" rel="noopener">Wowhead</a>. Wrong item? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';
+    $("weights").innerHTML = '<span class="wlab"><b>Stat weights</b> for ' + esc(sp.name) + ": a bigger number counts more. From ForeverDB, beta build " + esc(sp.build) + ".</span>" + weightChips(sp.weights);
+    $("weights").hidden = false;
+    $("setacts").hidden = !picks.length;
+    lastPicks = picks;
     paintQuality();
     refreshTooltips();
   }
@@ -730,6 +756,14 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     $("wish-io").hidden = false; $("wish-text").value = s; $("wish-text").select();
     $("wish-apply").hidden = true;
     var done = function () { $("wish-msg").textContent = "Copied. In game: /biz, Wishlist, Import, then paste."; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s).then(done, function () { $("wish-msg").textContent = "Press Ctrl+C to copy the text above."; });
+    else $("wish-msg").textContent = "Press Ctrl+C to copy the text above.";
+  });
+  $("set-copy").addEventListener("click", function () {
+    var s = "R2FW1:" + lastPicks.join(",");
+    $("wish-io").hidden = false; $("wish-text").value = s; $("wish-text").select();
+    $("wish-apply").hidden = true;
+    var done = function () { $("wish-msg").textContent = "Copied " + lastPicks.length + " picks. In game: /biz, Wishlist, Import, then paste."; };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s).then(done, function () { $("wish-msg").textContent = "Press Ctrl+C to copy the text above."; });
     else $("wish-msg").textContent = "Press Ctrl+C to copy the text above.";
   });

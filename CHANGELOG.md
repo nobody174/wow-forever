@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-01 (Mr.BiZ)
+- Mr.BiZ: the spec's stat weights are now a row of chips above the list (they were a line of text at the very bottom), the badge legend (Seen / Client / Classic / Clue / Unknown) moved up under them, each row shows its next best pick and how far behind it is without opening the row, and "Copy these picks for the addon" copies every pick on screen as an `R2FW1:` wishlist string (the same format as the starred list; nothing is added to your wishlist). All hidden at level 60.
+
 ## 2026-11-01 (launch plan steps in their own file)
 - The launch plan's steps moved out of `launch-plan.html` into `launch-plan-steps.json` (schema: `launch-plan-steps.schema.json`); the page fetches it after the first paint and says so in each section if it cannot. `gen_plan_data.js` reads the file and a new `--validate` mode (run by `build.py`, the addon tests and CI) fails on duplicate ids, unknown races / classes / presets, a missing level or title, unknown fields, or a phase with no section on the page. `tools/plan_snapshot.js` snapshots every step of every phase for every plan, to prove an edit to the data changed only what was meant. Checked for this move: `PlanData.lua` byte-identical, snapshot identical (29 plans, 1670 resolved steps), and the rendered checklist HTML identical for all 29 plans in the browser.
 

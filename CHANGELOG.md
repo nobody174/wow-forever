@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-01 (launch plan steps in their own file)
+- The launch plan's steps moved out of `launch-plan.html` into `launch-plan-steps.json` (schema: `launch-plan-steps.schema.json`); the page fetches it after the first paint and says so in each section if it cannot. `gen_plan_data.js` reads the file and a new `--validate` mode (run by `build.py`, the addon tests and CI) fails on duplicate ids, unknown races / classes / presets, a missing level or title, unknown fields, or a phase with no section on the page. `tools/plan_snapshot.js` snapshots every step of every phase for every plan, to prove an edit to the data changed only what was meant. Checked for this move: `PlanData.lua` byte-identical, snapshot identical (29 plans, 1670 resolved steps), and the rendered checklist HTML identical for all 29 plans in the browser.
+
 ## 2026-11-01 (duo progress)
 - Progress string `R2FP1:` (plan, level, ticked launch-day step ids; no character name; 2 KB cap; `R2FP2` and up refused with "update the addon"): addon `Progress.lua` + the Plan tab's "Copy my progress" / "Compare with partner", and the site's `progresscodec.js` + a "Duo progress" panel on the launch plan (copy mine, paste partner's with an optional name, level gap, steps only one of you has, "Use theirs as my ticks"). Tests cross-check the Lua and JS sides byte for byte (`test_progress`). In-game UI is TESTING 5.72.
 

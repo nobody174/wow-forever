@@ -8593,6 +8593,7 @@ def main():
     test_own_spec()
     test_arrow_follows_plan()
     test_progress()
+    test_plan_steps_file()
     test_route_weapons()
     test_quest_weapons()
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
@@ -8747,6 +8748,64 @@ def test_own_spec():
     lua.execute("R2F.playerClass = 'HUNTER'")
     lua.execute(trees(4, 0, 0))
     check(lua.eval("R2F.BiZ.OwnSpec()") == "hunter/beast-mastery", "own spec: 'Beast Mastery' maps to hunter/beast-mastery")
+
+
+def test_plan_steps_file():
+    """launch-plan-steps.json: valid, and the validator refuses what it should (duplicate ids, unknown races / classes, missing lvl)."""
+    import copy
+    import tempfile
+    node_gen = os.path.join(ROOT, "addon", "tools", "gen_plan_data.js")
+    steps_path = os.path.join(ROOT, "launch-plan-steps.json")
+    r = subprocess.run(["node", node_gen, "--validate"], capture_output=True, text=True)
+    check(r.returncode == 0, "plan steps: the file validates (%s)" % r.stderr.strip()[:300])
+    good = json.load(open(steps_path, encoding="utf-8"))
+    schema = json.load(open(os.path.join(ROOT, "launch-plan-steps.schema.json"), encoding="utf-8"))
+    check(schema.get("type") == "object" and "step" in schema.get("definitions", {}), "plan steps: the schema file is there")
+
+    def lvl_missing(d):
+        del d["p1"][0]["lvl"]
+
+    def dup(d):
+        d["p1"][1]["id"] = d["p1"][0]["id"]
+
+    def dup_across(d):
+        d["p2"][0]["id"] = d["night"][0]["id"]
+
+    def only_race(d):
+        d["p1"][0]["only"] = {"race": ["orc"]}
+
+    def only_class(d):
+        d["p1"][0]["only"] = {"cls": ["PRIESTT"]}
+
+    def layer_class(d):
+        d["p1"][0]["cls"] = {"PRIESTT": {"t": "x"}}
+
+    def layer_race(d):
+        d["p1"][0]["race"] = {"human orc": False}
+
+    def typo(d):
+        d["p1"][0]["titel"] = "x"
+
+    def tag(d):
+        d["p1"][0]["tags"] = [["wat", "x"]]
+
+    cases = (("missing lvl", lvl_missing, "missing lvl"), ("duplicate id", dup, "duplicate id"),
+             ("duplicate id across phases", dup_across, "duplicate id"), ("unknown only race", only_race, "unknown 'orc'"),
+             ("unknown only class", only_class, "unknown 'PRIESTT'"), ("unknown class in an override", layer_class, "unknown 'PRIESTT'"),
+             ("unknown race in an override", layer_race, "unknown 'orc'"), ("unknown field", typo, "unknown field"),
+             ("bad tag kind", tag, "tags[0]"))
+    with tempfile.TemporaryDirectory() as tmp:
+        for label, mutate, expect in cases:
+            bad = copy.deepcopy(good)
+            mutate(bad)
+            path = os.path.join(tmp, "steps.json")
+            json.dump(bad, open(path, "w", encoding="utf-8"))
+            r = subprocess.run(["node", node_gen, "--validate"], capture_output=True, text=True,
+                               env=dict(os.environ, R2F_STEPS_FILE=path))
+            check(r.returncode == 1 and expect in r.stderr, "plan steps: refuses %s (%s)" % (label, r.stderr.strip()[:120]))
+    # The page must not carry its own copy of the steps any more.
+    page = open(os.path.join(ROOT, "launch-plan.html"), encoding="utf-8").read()
+    check("var PHASES = {" not in page and "launch-plan-steps.json" in page, "plan steps: the page loads the steps from the file")
 
 
 def test_progress():

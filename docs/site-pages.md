@@ -56,13 +56,15 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
   falls back to the race's first class). A side button, "2 Hunters" (preset `hunter` = Skyborne Hunter plus the duo
   tactics card), sits next to them. Every class is treated as damage: no tank or healer text, dungeon steps say "needs
   a group". Data lives in the first `<script>` block: `CLASSES` / `CLASS_ORDER`, `RACES` / `RACE_ORDER` (label, start,
-  valid classes, `draft` = start steps not written yet), `PRESETS`, `PHASES`, `TIPS`, `WAYPOINTS`. A step resolves in
+  valid classes, `draft` = start steps not written yet), `PRESETS`, `TIPS`, `WAYPOINTS`; the steps (`PHASES`) are in
+  `launch-plan-steps.json`, which the page fetches after the first paint (rules: `launch-plan-steps.schema.json`; the
+  steps appear once it has loaded, a failed load says so in each section). A step resolves in
   this order: its own fields, `race.<race>`, `cls.<CLASS>`, `preset.<id>`; an object replaces the fields it names,
   `false` hides the step for good; a key may list several names ("dwarf gnome"). `only: { race: [...], cls: [...] }`
   shows a step to those only (class steps carry a coloured class tag). Nothing is thrown away when a plan goes: the old
   group-plan text now lives in class steps (`only.cls`) and race overrides. Checklists (before-launch / launch-night /
   12→20 / 20→30 / 30→60 / test-in-beta) and the Tips cards are rendered by JS. The addon's `gen_plan_data.js` evaluates
-  `CLASSES`, `RACES`, `PRESETS`, `PHASES` and `planId` / `parsePlan` / `allPlans` / `allowed` / `override` / `resolve`, so
+  `CLASSES`, `RACES`, `PRESETS` and `planId` / `parsePlan` / `allPlans` / `allowed` / `override` / `resolve`, so
   keep those as top-level two-space-indented `var`s and `function`s. Selection comes from `?race=gnome&class=mage` or
   `?plan=hunter`, then localStorage `wf-launch-plan-sel` (a plan id, `race:CLASS` or the preset), then Skyborne Hunter.
   Checkboxes persist per browser in localStorage (key `wf-launch-plan-v1`, keyed by item id — keep ids stable; steps

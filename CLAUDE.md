@@ -14,7 +14,7 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
 
 | Doc | Read when you touch |
 |---|---|
-| `docs/pipeline.md` | `data.py`, `build.py`, anything generated, `bis/`, addon art |
+| `docs/pipeline.md` | `data.py`, `build.py`, anything generated, `launch-plan-steps.json`, `bis/`, addon art |
 | `docs/macro-rules.md` | macros, `data.py` structure and helpers |
 | `docs/site-pages.md` | index, news, builds, launch plan, talents, saved builds, Legacy calc |
 | `docs/professions-bis.md` | `professions.html` (enchants, prices, Crafters) and `bis.html` |

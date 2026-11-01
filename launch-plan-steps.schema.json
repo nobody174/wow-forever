@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "launch-plan-steps.schema.json",
+  "title": "Road to Forever launch plan steps",
+  "description": "launch-plan-steps.json: phase id -> list of steps. Phase ids are the data-phase attributes of the page's <div class=\"phase\">. A step resolves in this order: its own fields, then race.<race>, then cls.<CLASS>, then preset.<id>; an object replaces the fields it names, false hides the step for good (no later layer shows it again). A key may name several races or classes separated by spaces (\"dwarf gnome\"). Rules a schema cannot say (ids unique across every phase, race / class / preset names exist, every phase has a section on the page) are checked by `node addon/tools/gen_plan_data.js --validate`, which build.py and CI run.",
+  "type": "object",
+  "additionalProperties": { "type": "array", "items": { "$ref": "#/definitions/step" } },
+  "definitions": {
+    "tag": {
+      "description": "[kind, text]: dng = dungeon, unv = unverified, opt = optional",
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": [ { "enum": ["dng", "unv", "opt"] }, { "type": "string", "minLength": 1 } ]
+    },
+    "layer": {
+      "description": "Fields a race / class / preset layer may replace.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lvl": { "type": "string", "minLength": 1 },
+        "t": { "type": "string", "minLength": 1 },
+        "n": { "type": "string" },
+        "tags": { "type": "array", "items": { "$ref": "#/definitions/tag" } },
+        "quests": { "type": "array", "items": { "type": "integer", "minimum": 1 } },
+        "reach": { "type": "integer", "minimum": 1, "maximum": 60 }
+      }
+    },
+    "layers": {
+      "description": "Key = one or more race / class / preset names separated by spaces; value = a layer, or false to hide the step.",
+      "type": "object",
+      "additionalProperties": { "oneOf": [ { "const": false }, { "$ref": "#/definitions/layer" } ] }
+    },
+    "step": {
+      "type": "object",
+      "required": ["id", "lvl", "t"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "description": "Also the checkbox storage key and the addon's tick key: keep it stable.", "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "lvl": { "description": "Level or range as shown (\"20\", \"1–12\", \"~5\") or a label (\"Plan\", \"Early\"). Only numeric ones can be \"now\" on the page.", "type": "string", "minLength": 1 },
+        "t": { "description": "Title (may contain HTML links).", "type": "string", "minLength": 1 },
+        "n": { "description": "Note (may contain HTML).", "type": "string" },
+        "tags": { "type": "array", "items": { "$ref": "#/definitions/tag" } },
+        "quests": { "description": "Quest ids the addon's Follow the plan reads.", "type": "array", "items": { "type": "integer", "minimum": 1 } },
+        "reach": { "description": "Level by which the step should be done.", "type": "integer", "minimum": 1, "maximum": 60 },
+        "only": {
+          "description": "Show the step to these races / classes only.",
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "properties": {
+            "race": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+            "cls": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+          }
+        },
+        "race": { "$ref": "#/definitions/layers" },
+        "cls": { "$ref": "#/definitions/layers" },
+        "preset": { "$ref": "#/definitions/layers" }
+      }
+    }
+  }
+}

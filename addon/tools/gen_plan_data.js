@@ -1,11 +1,13 @@
 // Generates addon/RoadToForever/PlanData.lua (ADDON_PLAN 15.5) from the site's own
-// launch-plan.html (RACES, CLASSES, PRESETS, PHASES, and the allowed()/override()/resolve() functions) and
+// launch-plan.html (RACES, CLASSES, PRESETS and the allowed()/override()/resolve() functions), the steps in
+// launch-plan-steps.json (PHASES) and
 // launch-plan-waypoints.json. build.py runs it; run_tests.py checks the checked-in file is
 // up to date and compares the addon's plan filtering against the site's resolve().
 //
 // Usage:
 //   node addon/tools/gen_plan_data.js            write addon/RoadToForever/PlanData.lua
 //   node addon/tools/gen_plan_data.js --check    exit 1 if the file differs from a fresh generation
+//   node addon/tools/gen_plan_data.js --validate  check launch-plan-steps.json (exit 1 and list every problem)
 //   node addon/tools/gen_plan_data.js --stats   print JSON: plan step counts for data-version.json (build.py)
 //   node addon/tools/gen_plan_data.js --expected print JSON: per plan id ("skyborne:HUNTER", "hunter", ...), the ids
 //                                                + texts the SITE shows (its resolve()), for the tests
@@ -16,6 +18,7 @@ const path = require("path");
 const root = path.resolve(__dirname, "..", "..");
 const OUT = path.join(root, "addon", "RoadToForever", "PlanData.lua");
 const html = fs.readFileSync(path.join(root, "launch-plan.html"), "utf8");
+const stepsText = fs.readFileSync(process.env.R2F_STEPS_FILE || path.join(root, "launch-plan-steps.json"), "utf8")  // R2F_STEPS_FILE: tests only;
 const wpJson = JSON.parse(fs.readFileSync(path.join(root, "launch-plan-waypoints.json"), "utf8"));
 
 // Only the launch-day phases (owner, 2026-10-09): not "before" (done before launch) or "beta".
@@ -36,12 +39,90 @@ const siteCode = [
   grab(/^  function planId\(sel\) .*$/m, "planId()"),
   grab(/^  function parsePlan\(id\) \{[\s\S]*?^  \}$/m, "parsePlan()"),
   grab(/^  function allPlans\(\) \{[\s\S]*?^  \}$/m, "allPlans()"),
-  grab(/^  var PHASES = \{[\s\S]*?^  \};$/m, "PHASES"),
+  "var PHASES = JSON.parse(" + JSON.stringify(stepsText) + ");",
   grab(/^  function allowed\(item, sel\) \{[\s\S]*?^  \}$/m, "allowed()"),
   grab(/^  function override\(item, sel\) \{[\s\S]*?^  \}$/m, "override()"),
   grab(/^  function resolve\(item, sel\) \{[\s\S]*?^  \}$/m, "resolve()"),
 ].join("\n");
 const site = new Function(siteCode + "\nreturn { CLASS_ORDER, CLASSES, RACE_ORDER, RACES, PRESETS, PHASES, allPlans, parsePlan, planId, resolve, override };")();
+
+// ---------------------------------------------------------------------------------------------------------------
+// Validation of launch-plan-steps.json (rules in launch-plan-steps.schema.json, plus what a schema cannot say:
+// ids unique across every phase, race / class / preset names exist, every phase has a section on the page).
+// `node addon/tools/gen_plan_data.js --validate` (build.py and CI run it) prints every problem and exits 1.
+// ---------------------------------------------------------------------------------------------------------------
+function validateSteps(steps) {
+  const errs = [];
+  const races = Object.keys(site.RACES), classes = Object.keys(site.CLASSES), presets = Object.keys(site.PRESETS);
+  const ITEM_KEYS = ["id", "lvl", "t", "n", "tags", "only", "race", "cls", "preset", "quests", "reach"];
+  const LAYER_KEYS = ["lvl", "t", "n", "tags", "quests", "reach"];
+  const TAG_KINDS = ["dng", "unv", "opt"];
+  const isObj = v => v !== null && typeof v === "object" && !Array.isArray(v);
+  const nonEmpty = v => typeof v === "string" && v.trim() !== "";
+
+  if (!isObj(steps)) return ["the steps file must be an object of phase -> list of steps"];
+  const pagePhases = [...html.matchAll(/data-phase="([a-z0-9]+)"/g)].map(m => m[1]);
+  for (const ph of pagePhases) if (!Array.isArray(steps[ph])) errs.push("phase '" + ph + "' has a section on the page but no list in the steps file");
+  for (const ph of Object.keys(steps)) if (pagePhases.indexOf(ph) === -1) errs.push("phase '" + ph + "' has no <div class=\"phase\" data-phase> on the page");
+
+  const seen = {};
+  function tagsOk(tags, where) {
+    if (!Array.isArray(tags)) return errs.push(where + ": tags must be a list");
+    tags.forEach((t, i) => {
+      if (!Array.isArray(t) || t.length !== 2 || TAG_KINDS.indexOf(t[0]) === -1 || !nonEmpty(t[1]))
+        errs.push(where + ": tags[" + i + "] must be [" + TAG_KINDS.join(" | ") + ", text]");
+    });
+  }
+  function fieldsOk(o, allowed, where) {
+    for (const k of Object.keys(o)) if (allowed.indexOf(k) === -1) errs.push(where + ": unknown field '" + k + "'");
+    if ("lvl" in o && !nonEmpty(o.lvl)) errs.push(where + ": lvl must be a non-empty string");
+    if ("t" in o && !nonEmpty(o.t)) errs.push(where + ": t must be a non-empty string");
+    if ("n" in o && typeof o.n !== "string") errs.push(where + ": n must be a string");
+    if ("tags" in o) tagsOk(o.tags, where);
+    if ("quests" in o && !(Array.isArray(o.quests) && o.quests.every(q => Number.isInteger(q) && q > 0))) errs.push(where + ": quests must be a list of quest ids");
+    if ("reach" in o && !(Number.isInteger(o.reach) && o.reach >= 1 && o.reach <= 60)) errs.push(where + ": reach must be a level from 1 to 60");
+  }
+  function namesOk(map, known, kind, where) {
+    if (!isObj(map)) return errs.push(where + ": '" + kind + "' must be an object");
+    for (const key of Object.keys(map)) {
+      const names = key.split(" ");
+      for (const n of names) if (known.indexOf(n) === -1) errs.push(where + ": '" + kind + "' names unknown '" + n + "'");
+      const v = map[key];
+      if (v === false) continue;
+      if (!isObj(v)) errs.push(where + ": " + kind + "." + key + " must be false or an object");
+      else fieldsOk(v, LAYER_KEYS, where + " " + kind + "." + key);
+    }
+  }
+  for (const ph of Object.keys(steps)) {
+    if (!Array.isArray(steps[ph])) { errs.push("phase '" + ph + "' must be a list"); continue; }
+    steps[ph].forEach((item, i) => {
+      const where = ph + "[" + i + "]" + (isObj(item) && typeof item.id === "string" ? " (" + item.id + ")" : "");
+      if (!isObj(item)) return errs.push(where + ": a step must be an object");
+      if (!nonEmpty(item.id) || !/^[a-z0-9][a-z0-9-]*$/.test(item.id)) errs.push(where + ": id must be lowercase letters, digits and dashes");
+      else if (seen[item.id]) errs.push(where + ": duplicate id (also in " + seen[item.id] + ")");
+      else seen[item.id] = ph + "[" + i + "]";
+      if (!("lvl" in item)) errs.push(where + ": missing lvl");
+      if (!("t" in item)) errs.push(where + ": missing t (the title)");
+      fieldsOk(item, ITEM_KEYS, where);
+      if ("only" in item) {
+        if (!isObj(item.only)) errs.push(where + ": only must be an object");
+        else {
+          for (const k of Object.keys(item.only)) {
+            if (k !== "race" && k !== "cls") { errs.push(where + ": only.'" + k + "' is not race or cls"); continue; }
+            const list = item.only[k], known = k === "race" ? races : classes;
+            if (!Array.isArray(list) || list.length === 0) errs.push(where + ": only." + k + " must be a non-empty list");
+            else for (const n of list) if (known.indexOf(n) === -1) errs.push(where + ": only." + k + " names unknown '" + n + "'");
+          }
+          if (Object.keys(item.only).length === 0) errs.push(where + ": only is empty");
+        }
+      }
+      if ("race" in item) namesOk(item.race, races, "race", where);
+      if ("cls" in item) namesOk(item.cls, classes, "cls", where);
+      if ("preset" in item) namesOk(item.preset, presets, "preset", where);
+    });
+  }
+  return errs;
+}
 
 // The site's "Buyable quests" list (second script block): QUESTS and its own PHASES array.
 const buy = new Function([
@@ -261,7 +342,16 @@ function stats() {
 }
 
 const arg = process.argv[2];
-if (arg === "--stats") {
+if (arg !== "--stats" && arg !== "--expected") {
+  const problems = validateSteps(site.PHASES);
+  if (problems.length) {
+    console.error("launch-plan-steps.json has " + problems.length + " problem(s):\n  " + problems.join("\n  "));
+    process.exit(1);
+  }
+}
+if (arg === "--validate") {
+  console.log("launch-plan-steps.json is valid");
+} else if (arg === "--stats") {
   process.stdout.write(JSON.stringify(stats()));
 } else if (arg === "--expected") {
   process.stdout.write(JSON.stringify(expected()));

@@ -15,7 +15,7 @@ The order matters: settings first, then the addon, then the walk. Everything her
 2. `/r2f route start hunter-1`, play the start slowly: talk to everyone, take and hand in quests in the order you like.
 3. Open the Plan tab: it should say "Alliance Skyborne Hunter" (if not, `/dump UnitRace("player")`, TESTING 5.70). Tick **Follow the plan**
    and watch the steps tick as quests are handed in (TESTING 5.71).
-4. Afterwards `python addon/tools/route_report.py`, then correct order, givers, coordinates and gates in `launch-plan.html` PHASES
+4. Afterwards `python addon/tools/route_report.py`, then correct order, givers, coordinates and gates in `launch-plan-steps.json`
    and `launch-plan-waypoints.json`, and drop the `unv` tags that held up (TESTING 5.65).
 
 ## First days

@@ -8593,6 +8593,7 @@ def main():
     test_own_spec()
     test_arrow_follows_plan()
     test_progress()
+    test_site_waypoint_commands()
     test_plan_steps_file()
     test_route_weapons()
     test_quest_weapons()
@@ -8806,6 +8807,18 @@ def test_plan_steps_file():
     # The page must not carry its own copy of the steps any more.
     page = open(os.path.join(ROOT, "launch-plan.html"), encoding="utf-8").read()
     check("var PHASES = {" not in page and "launch-plan-steps.json" in page, "plan steps: the page loads the steps from the file")
+
+
+def test_site_waypoint_commands():
+    """The launch plan's location buttons copy "/bizway <zone> <x> <y> <label>": every inline waypoint must make a line the
+    addon's Nav.WayCommand pattern reads (zone words, two coordinates in range, a label)."""
+    r = subprocess.run(["node", os.path.join(HERE, "check_site_waypoints.js")], capture_output=True, text=True)
+    check(r.returncode == 0, "site waypoints: the checker ran (%s)" % r.stderr.strip()[:200])
+    res = json.loads(r.stdout)
+    check("error" not in res, "site waypoints: the page's WAYPOINTS block was found")
+    check(res.get("count", 0) > 20, "site waypoints: found %s location buttons" % res.get("count"))
+    for problem in res.get("problems", []):
+        check(False, "site waypoints: %s does not make a /bizway line" % problem)
 
 
 def test_progress():

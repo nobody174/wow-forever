@@ -711,7 +711,7 @@ body.buy-open .buy-drawer{transform:none}
     var w = waypoints(id, sel); if (!w) return "";
     var html = (w.wp || []).map(function (p) {
       var cmd = "/way " + p[0] + " " + p[1] + " " + p[2] + " " + p[3];
-      return '<button type="button" class="wp" data-way="' + cmd.replace(/"/g, "&quot;") + '" title="Copy for TomTom (source: ' + p[4] + ')">\u{1F4CD} ' + p[3] + " <code>" + p[0] + " " + p[1] + ", " + p[2] + "</code></button>";
+      return '<button type="button" class="wp" data-way="' + cmd.replace(/"/g, "&quot;") + '" title="Copy the /bizway command for the addon (Shift: the /way line for TomTom). Source: ' + p[4] + '">\u{1F4CD} ' + p[3] + " <code>" + p[0] + " " + p[1] + ", " + p[2] + "</code></button>";
     }).join("");
     html += (w.cap || []).map(function (c) {
       return '<span class="wp cap" title="No public coordinates yet: stand there in game and note them">\u{1F4CD} ' + c + " <em>capture in game</em></span>";
@@ -1164,6 +1164,31 @@ body.buy-open .buy-drawer{transform:none}
   document.addEventListener("click", function (e) {
     if (e.target.closest("ul.check label a")) e.stopPropagation();
   }, true);
+
+  // The location buttons next to a step ("📍 Valanaar 31.2, 65.4"): click copies the addon's /bizway command, Shift-click the
+  // /way line for TomTom. Both take "Zone x y label", so the zone and coordinates are the same.
+  function copyText(text, done) {
+    function fallback() {
+      var t = document.createElement("textarea");
+      t.value = text; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+      document.body.appendChild(t); t.select();
+      try { if (document.execCommand("copy")) done(); } catch (err) { /* nothing to do: the user can select the text */ }
+      document.body.removeChild(t);
+    }
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (err) { fallback(); }
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button.wp[data-way]") : null;
+    if (!b) return;
+    e.preventDefault();
+    var cmd = b.getAttribute("data-way");
+    if (!e.shiftKey && cmd.indexOf("/way ") === 0) cmd = "/bizway " + cmd.slice(5);
+    copyText(cmd, function () {
+      b.classList.add("copied");
+      b.setAttribute("title", "Copied: " + cmd);
+      setTimeout(function () { b.classList.remove("copied"); }, 1500);
+    });
+  });
 
   document.getElementById("reset").addEventListener("click", function () {
     if (!confirm("Clear all your checkboxes on this page (every race and class)?")) return;

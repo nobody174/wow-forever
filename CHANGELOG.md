@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-01 (launch plan location buttons)
+- The 📍 location buttons next to a launch plan step did nothing when clicked (no handler had ever been written). Now a click copies the addon's `/bizway <zone> <x> <y> <label>` line and the button turns green; Shift-click copies the `/way` line for TomTom. A test checks that every site waypoint makes a well-formed line. In game: TESTING 5.73.
+
 ## 2026-11-01 (Hunter hub)
 - `hunter.html`: one page that links to everything for the Hunter (launch plan per race and the 2 Hunters plan, builds and the calculator, Mr.BiZ per spec, professions, macros, the pet database, the addon). Nothing is copied into it. Linked from the Home page's Tools list, not from the top bar. Added to `tools/sync_topbar.py`.
 

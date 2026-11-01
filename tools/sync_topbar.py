@@ -16,7 +16,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAGES = ["addons", "bis", "builds", "index", "launch-plan", "library-books", "news", "professions", "talents",
+PAGES = ["addons", "bis", "builds", "hunter", "index", "launch-plan", "library-books", "news", "professions", "talents",
          "template", "macros"]  # macros.html is generated from template.html; kept in step here so a stale build shows up
 BEGIN, END = "/* topbar:begin */", "/* topbar:end */"
 

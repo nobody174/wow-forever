@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hunter hub — WoW Forever</title>
+<meta name="description" content="Hunter hub for WoW Forever: launch plan, talent builds, best in slot gear, macros and pets in one place.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Road to Forever">
+<meta property="og:title" content="Hunter hub — Road to Forever">
+<meta property="og:description" content="Hunter hub for WoW Forever: launch plan, talent builds, best in slot gear, macros and pets in one place.">
+<meta property="og:url" content="https://nobody174.github.io/wow-forever/hunter.html">
+<meta property="og:image" content="https://nobody174.github.io/wow-forever/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B1124">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Road to Forever">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1428; --panel:#161E38; --edge:#3A4468; --gold:#FFD100;
+  --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100; --ok:#6FCF7F; --warn:#E8A33D;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --serif:"Marcellus","Palatino Linotype",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+a{color:var(--gold)}
+/* topbar:begin */
+.topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
+.topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
+.topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
+@media (max-width:1180px){
+  .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .topbar .site-title{justify-self:center}
+}
+.topbar nav a{
+  font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;
+  color:var(--gold);text-decoration:none;padding:10px 16px;border-radius:6px;
+  background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);
+  border:1px solid var(--edge);border-top-color:#4A5688;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.35);
+  transition:transform .08s ease, box-shadow .08s ease, border-color .08s ease;
+}
+.topbar nav a:hover{
+  border-color:var(--gold);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 0 10px rgba(255,209,0,.35), 0 2px 4px rgba(0,0,0,.35);
+  transform:translateY(-1px);
+}
+.topbar nav a:active{transform:translateY(0);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
+.topbar nav a[aria-current="page"]{
+  color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);
+  border-color:#FFE566;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(255,209,0,.5);
+}
+/* Phones: one row, the links scroll sideways under an edge fade (footer.js scrolls the current page into view). */
+@media (max-width:700px){
+  .topbar{display:flex;align-items:center;justify-items:initial;text-align:left;gap:10px;padding:8px 12px}
+  .topbar .site-title{flex:none;font-size:16px}
+  .topbar nav{flex:1 1 auto;min-width:0;flex-wrap:nowrap;justify-content:flex-start;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+  .topbar nav::-webkit-scrollbar{display:none}
+  .topbar nav::after{content:"";flex:none;width:22px}
+  .topbar nav a{flex:none;white-space:nowrap;padding:8px 12px}
+}
+/* topbar:end */
+@media (prefers-reduced-motion:reduce){.topbar nav a{transition:none}}
+
+.wrap{max-width:900px;margin:0 auto;padding:40px 16px 70px}
+h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 10px;letter-spacing:.01em;text-align:center}
+p.lede{color:var(--muted);max-width:62ch;margin:0 auto 24px;text-align:center}
+h2{font:400 24px/1.2 var(--serif);color:var(--gold);margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--edge)}
+.hub{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--edge);border-top:3px solid #ABD473;border-radius:8px;padding:16px 18px;min-width:0}
+.card h3{margin:0 0 6px;font:600 17px/1.3 var(--sans);color:var(--text)}
+.card p{margin:0 0 10px;color:var(--muted);font-size:14.5px}
+.card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.card li a{display:block;padding:9px 12px;border:1px solid var(--edge);border-radius:6px;text-decoration:none;color:var(--text);font-size:14.5px;background:#10152C}
+.card li a:hover{border-color:var(--gold);color:var(--gold)}
+.card li a:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.card li small{display:block;color:var(--muted);font-size:12.5px}
+.ext::after{content:" \2197";color:var(--muted)}
+.note{margin-top:26px;color:var(--muted);font-size:13.5px;text-align:center}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="site-title" href="index.html">Road to Forever</a>
+  <nav aria-label="Site">
+    <a href="launch-plan.html">Launch Plan</a>
+    <a href="builds.html">Builds</a>
+    <a href="talents.html">Talent / Legacy Calc</a>
+    <a href="bis.html">Mr.BiZ</a>
+    <a href="professions.html">Professions</a>
+    <a href="macros.html">Macros</a>
+    <a href="addons.html">Addons</a>
+  </nav>
+</div>
+<main class="wrap">
+  <h1>Hunter hub</h1>
+  <div id="provenance"></div>
+  <p class="lede">Everything for the Hunter in one place: your plan, talents, gear, macros and pets. Two Hunters leveling together? Start with the 2 Hunters plan.</p>
+
+  <div class="hub">
+    <section class="card" aria-labelledby="h-plan">
+      <h3 id="h-plan">Level with a plan</h3>
+      <p>Quest steps, coordinates and the best quest weapons, for your race.</p>
+      <ul>
+        <li><a href="launch-plan.html?plan=hunter">2 Hunters (Skyborne duo)<small>Adds the duo tactics: pets, tagging, kiting</small></a></li>
+        <li><a href="launch-plan.html?race=human&amp;class=hunter">Human Hunter</a></li>
+        <li><a href="launch-plan.html?race=dwarf&amp;class=hunter">Dwarf Hunter</a></li>
+        <li><a href="launch-plan.html?race=nightelf&amp;class=hunter">Night Elf Hunter</a></li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-talents">
+      <h3 id="h-talents">Talents</h3>
+      <p>Leveling builds for level 30 and 60, and the calculator.</p>
+      <ul>
+        <li><a href="builds.html">Hunter builds<small>Pick Hunter at the top of the page</small></a></li>
+        <li><a href="talents.html#hunter">Talent calculator</a></li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-gear">
+      <h3 id="h-gear">Gear (Mr.BiZ)</h3>
+      <p>Best in slot with the next best picks, per spec.</p>
+      <ul>
+        <li><a href="bis.html#hunter/beast-mastery">Beast Mastery</a></li>
+        <li><a href="bis.html#hunter/marksmanship">Marksmanship</a></li>
+        <li><a href="bis.html#hunter/survival">Survival</a></li>
+        <li><a href="professions.html#bis/hunter">Professions and enchants</a></li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-macros">
+      <h3 id="h-macros">Macros</h3>
+      <p>Pet control, aspects, feed pet, Feign Death and more, ready to copy or install with the addon.</p>
+      <ul>
+        <li><a href="macros.html">Macros<small>Open the Hunter tab</small></a></li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-pets">
+      <h3 id="h-pets">Pets</h3>
+      <p>Which beast to tame and where. We do not have our own pet list yet.</p>
+      <ul>
+        <li><a class="ext" href="https://beastmaster.io/forever" target="_blank" rel="noopener">Hunter Pet Database</a></li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-addon">
+      <h3 id="h-addon">In the addon</h3>
+      <p>Reminders for ammo and your pet (Tweaks), Setup Hunter for your bars and layout, and the plan arrow that points at each step.</p>
+      <ul>
+        <li><a href="addons.html">Get the Road to Forever addon</a></li>
+      </ul>
+    </section>
+  </div>
+
+  <p class="note">Hunter pages are linked from here, nothing is copied: each one stays the single place for its data.</p>
+</main>
+<script src="footer.js" defer></script>
+<script src="provenance.js" defer></script>
+</body>
+</html>

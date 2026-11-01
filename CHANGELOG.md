@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-01 (Hunter hub)
+- `hunter.html`: one page that links to everything for the Hunter (launch plan per race and the 2 Hunters plan, builds and the calculator, Mr.BiZ per spec, professions, macros, the pet database, the addon). Nothing is copied into it. Linked from the Home page's Tools list, not from the top bar. Added to `tools/sync_topbar.py`.
+
 ## 2026-11-01 (Mr.BiZ)
 - Mr.BiZ: the spec's stat weights are now a row of chips above the list (they were a line of text at the very bottom), the badge legend (Seen / Client / Classic / Clue / Unknown) moved up under them, each row shows its next best pick and how far behind it is without opening the row, and "Copy these picks for the addon" copies every pick on screen as an `R2FW1:` wishlist string (the same format as the starred list; nothing is added to your wishlist). All hidden at level 60.
 

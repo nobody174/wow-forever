@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-01",
+      "title": "Hunter hub and a better Mr.BiZ",
+      "text": "A new Hunter page links your plan, talents, gear, macros and pets in one place. Mr.BiZ now shows the stat weights and the badge legend above the list, the next best pick on every row, and can copy a whole spec's picks for the addon.",
+      "link": "hunter.html"
+    },
+    {
+      "date": "2026-11-01",
       "title": "Duo progress: see who is ahead",
       "text": "The launch plan can now make a short progress string with your level and ticked steps, and compare it with your partner's. The addon makes and reads the same string.",
       "link": "launch-plan.html"

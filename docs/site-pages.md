@@ -156,3 +156,6 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
 
 ## Duo progress (launch plan)
 `progresscodec.js` (loaded before the page script, `?v=` on change) writes and reads the `R2FP1:` progress string; the addon's `Progress.lua` is the same format (see its header). The panel under the weapon note makes my string from `state` (launch-day phases only: night, p1, p2, p3), reads a partner's, compares over the current selection's resolved steps, and can replace my launch-day ticks with theirs. Partner string and name are kept in `wf-launch-plan-duo`. Change the format in both files and `test_progress` in `addon/tests/run_tests.py`.
+
+## Hunter hub (`hunter.html`)
+A page of cards that only link to the pages that hold the data (launch plan `?plan=hunter` / `?race=&class=hunter`, `builds.html`, `talents.html#hunter`, `bis.html#hunter/<spec>`, `professions.html#bis/hunter`, `macros.html`, the external pet database, `addons.html`). No Hunter facts are repeated on it, so nothing can drift. It is in `tools/sync_topbar.py`'s page list; it has no top bar entry (class pages do not belong in the shared nav), the Home page's Tools list links to it.

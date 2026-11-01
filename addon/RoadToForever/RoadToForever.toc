@@ -54,6 +54,7 @@ Version.lua
 Bags.lua
 PlanData.lua
 Plan.lua
+Progress.lua
 Nav.lua
 BiZData.lua
 BiZ.lua

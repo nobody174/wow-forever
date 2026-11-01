@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## Unreleased
+
+- **Duo progress:** two buttons on the Plan tab under the preview row. "Copy my progress" shows a string (your plan, level and ticked steps; no character name) to send to your partner. "Compare with partner" takes theirs and shows both levels, the level gap, how many steps you share and the steps only one of you has done. The Launch plan page on the site makes and reads the same string (`R2FP1:`). Read-only: nothing is written to the game or to your ticks. The plan list moved down one row to make room.
+
 ## 0.82.0 (2026-10-25)
 
 - **Follow the plan** (new switch on the Plan tab, off by default): a step ticks itself when all its quests are turned in, or when your level reaches its level. It catches up when you switch it on and when you log in. Your own ticks always stay, and a step you untick by hand is left alone. Steps without quests stay manual.

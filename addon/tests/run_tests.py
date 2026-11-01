@@ -2422,6 +2422,24 @@ def test_plan(templates=True):
     find_frames(lua, "f.__kind == 'CheckButton' and f.questId ~= nil and f:IsVisible()", "QROWS")
     find_frames(lua, "f.__kind == 'CheckButton' and f.stepId ~= nil and f:IsVisible()", "SROWS")
     check(lua.eval("#QROWS") == 0 and lua.eval("#SROWS") > 0, "%s: Back to the steps: the launch-day list returns" % tag)
+    # --- Progress string: copy my progress / compare with a partner -----------------------------------------------------
+    find_frames(lua, "f.__kind == 'Button' and f.__text == 'Copy my progress'", "PCOPY")
+    find_frames(lua, "f.__kind == 'Button' and f.__text == 'Compare with partner'", "PCMP")
+    check(lua.eval("#PCOPY") == 1 and lua.eval("#PCMP") == 1, "%s: the Plan tab has the progress buttons" % tag)
+    lua.execute("R2F.Plan.SetDone(R2F.Plan.Steps(R2F.Plan.Selected())[1].id, true) PCOPY[1]:Click()")
+    find_frames(lua, "f.__kind == 'EditBox' and type(f.__text) == 'string' and f.__text:find('^R2FP1:') and f:IsVisible()", "PEDIT")
+    check(lua.eval("#PEDIT") >= 1 and lua.eval("R2FProgress:IsShown()") is True, "%s: Copy my progress shows the string" % tag)
+    mine = lua.eval("PEDIT[1].__text")
+    lua.execute("R2FProgress:Hide() PCMP[1]:Click()")
+    find_frames(lua, "f.__kind == 'EditBox' and f:IsVisible() and f.__scripts.OnTextChanged ~= nil", "PIN")
+    check(lua.eval("#PIN") >= 1, "%s: Compare with partner opens a paste box" % tag)
+    lua.execute("PIN[1]:SetText([[%s]]) PIN[1].__scripts.OnTextChanged(PIN[1])" % mine)
+    check(font_text(lua, "^Your level") is not None and font_text(lua, "Both done: 1") is not None,
+          "%s: pasting a progress string shows the comparison" % tag)
+    lua.execute("PIN[1]:SetText('junk') PIN[1].__scripts.OnTextChanged(PIN[1])")
+    check(font_text(lua, "not a Road to Forever progress string") is not None, "%s: a bad string shows the error" % tag)
+    lua.execute("R2FProgress:Hide()")
+
 
     # --- Home: next step ------------------------------------------------------------------------------------------------
     lua, T = plan_runtime(templates=templates)
@@ -8574,6 +8592,7 @@ def main():
     test_item_api_modern()
     test_own_spec()
     test_arrow_follows_plan()
+    test_progress()
     test_route_weapons()
     test_quest_weapons()
     print("%d checks passed, %d failed" % (PASSES, len(FAILS)))
@@ -8728,6 +8747,81 @@ def test_own_spec():
     lua.execute("R2F.playerClass = 'HUNTER'")
     lua.execute(trees(4, 0, 0))
     check(lua.eval("R2F.BiZ.OwnSpec()") == "hunter/beast-mastery", "own spec: 'Beast Mastery' maps to hunter/beast-mastery")
+
+
+def test_progress():
+    """The R2FP1 progress string: addon and site codec agree, bad input is refused, nothing is written."""
+    lua, T = plan_runtime(True, False)
+    codec = os.path.join(ROOT, "progresscodec.js").replace("\\", "/")
+
+    def node(js, *args):
+        r = subprocess.run(["node", "-e", "const P=require(%r);%s" % (codec, js)] + list(args), capture_output=True, text=True)
+        check(r.returncode == 0, "progress: node ran (%s)" % r.stderr.strip()[:200])
+        return json.loads(r.stdout) if r.stdout.strip() else None
+
+    lua.execute("""
+      R2F.Plan.SetPreview('skyborne:HUNTER')
+      STEPS = R2F.Plan.Steps('skyborne:HUNTER')
+      for i = 1, #STEPS, 2 do R2F.Plan.SetDone(STEPS[i].id, true) end
+      MINE = R2F.Progress.MyDone()
+      S = R2F.Progress.Encode('skyborne:HUNTER', 23, MINE)
+      N = 0 for _ in pairs(MINE) do N = N + 1 end
+    """)
+    s = lua.eval("S")
+    check(lua.eval("N") > 5, "progress: some steps are ticked for the test")
+    check(s.startswith("R2FP1:") and len(s) <= 2048, "progress: string has the prefix and fits 2 KB")
+    check(lua.eval("R2F.Progress.Parse(S).level") == 23, "progress: level round trip")
+    sort_ids = "(function(t) local o = {} for id in pairs(t) do o[#o + 1] = id end table.sort(o) return table.concat(o, ',') end)"
+    got = lua.eval(sort_ids + "(R2F.Progress.Parse(S).done)")
+    want = lua.eval(sort_ids + "(MINE)")
+    check(got == want, "progress: addon string parses back to the same tick set")
+    # site codec reads the addon's string and writes it back byte for byte
+    dec = node("console.log(JSON.stringify(P.decode(process.argv[1])))", s)
+    check(dec and dec["plan"] == "skyborne:HUNTER" and dec["level"] == 23, "progress: site codec reads plan and level")
+    check(dec and ",".join(sorted(dec["ids"])) == want, "progress: site codec reads the same tick set")
+    again = node("const d=P.decode(process.argv[1]);console.log(JSON.stringify(P.encode(d.plan,d.level,d.ids)))", s)
+    check(again == s, "progress: addon -> site -> encode gives the identical string")
+    # ... and the addon reads what the site wrote; unknown and malformed ids do not fail it
+    extra = node("const d=P.decode(process.argv[1]);console.log(JSON.stringify(P.encode(d.plan,d.level,d.ids.concat(['zz-unknown-step','bad id']))))", s)
+    lua.execute("EXTRA = [[%s]]" % extra)
+    check(lua.eval("R2F.Progress.Parse(EXTRA) ~= nil"), "progress: unknown and malformed ids do not make the string fail")
+    check(lua.eval("R2F.Progress.Parse(EXTRA).done['zz-unknown-step'] == true"), "progress: a well-formed unknown id is kept in the parse (ignored when comparing)")
+    check(lua.eval("R2F.Progress.Parse(EXTRA).done['bad id'] == nil"), "progress: a malformed id is dropped")
+
+    def b64(raw):
+        return base64.b64encode(raw).decode()
+    # refusals
+    cases = (("newer version", "R2FP2:" + b64(b"v=1\nx")), ("not base64", "R2FP1:!!!"), ("no prefix", "hello"),
+             ("empty", ""), ("wrong header", "R2FP1:" + b64(b"v=2\nskyborne:HUNTER\x1e1\x1e")),
+             ("level 61", "R2FP1:" + b64(b"v=1\nskyborne:HUNTER\x1e61\x1e")),
+             ("unknown plan", "R2FP1:" + b64(b"v=1\nnope:MAGE\x1e5\x1e")), ("too long", "R2FP1:" + "A" * 2100))
+    for label, bad in cases:
+        lua.execute("BAD = [[%s]]" % bad)
+        check(lua.eval("R2F.Progress.Parse(BAD) == nil"), "progress: refuses %s" % label)
+    check(lua.eval("select(2, R2F.Progress.Parse('R2FP2:AAAA'))") == lua.eval("R2F.L.PROGRESS_NEWER"), "progress: R2FP2 says update the addon")
+    # every step ticked still fits the cap
+    lua.execute("ALL = {} for _, ph in ipairs(R2F.PlanData.phases) do for _, it in ipairs(ph.items) do ALL[it.id] = true end end")
+    check(lua.eval("R2F.Progress.Encode('skyborne:HUNTER', 60, ALL) ~= nil"), "progress: all steps ticked fit 2 KB")
+    # no character name anywhere in the string
+    lua.execute("UnitName = function() return 'Secretname' end")
+    exported = lua.eval("R2F.Progress.Export()")
+    check(exported and "Secretname" not in base64.b64decode(exported[6:]).decode("utf-8"), "progress: the export holds no character name")
+    # comparing: partner has the even steps plus the first; reading writes nothing
+    lua.execute("""
+      THEIRS = { plan = 'skyborne:HUNTER', level = 20, done = {} }
+      for i = 2, #STEPS, 2 do THEIRS.done[STEPS[i].id] = true end
+      THEIRS.done[STEPS[1].id] = true
+      BEFORE_N = 0 for _ in pairs(R2FCharDB.plan.done) do BEFORE_N = BEFORE_N + 1 end
+      CMP = R2F.Progress.Compare(THEIRS, 23)
+      AFTER_N = 0 for _ in pairs(R2FCharDB.plan.done) do AFTER_N = AFTER_N + 1 end
+    """)
+    check(lua.eval("CMP.levelGap") == 3, "progress: level gap is my level minus theirs")
+    check(lua.eval("CMP.both") == 1, "progress: one step in common")
+    check(lua.eval("#CMP.onlyMine + CMP.both") == lua.eval("CMP.mine"), "progress: only-mine plus both is my count")
+    check(lua.eval("#CMP.onlyTheirs + CMP.both") == lua.eval("CMP.theirs"), "progress: only-theirs plus both is their count")
+    check(lua.eval("BEFORE_N == AFTER_N"), "progress: comparing does not change my ticks")
+    check(lua.eval("R2F.Progress.Compare({ plan = 'skyborne:HUNTER', level = 0, done = {} }, 23).levelGap") is None,
+          "progress: unknown partner level gives no gap")
 
 
 def test_arrow_follows_plan():

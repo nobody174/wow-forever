@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-01 (duo progress)
+- Progress string `R2FP1:` (plan, level, ticked launch-day step ids; no character name; 2 KB cap; `R2FP2` and up refused with "update the addon"): addon `Progress.lua` + the Plan tab's "Copy my progress" / "Compare with partner", and the site's `progresscodec.js` + a "Duo progress" panel on the launch plan (copy mine, paste partner's with an optional name, level gap, steps only one of you has, "Use theirs as my ticks"). Tests cross-check the Lua and JS sides byte for byte (`test_progress`). In-game UI is TESTING 5.72.
+
 ## 2026-11-01 (mobile top bar)
 - Phones (700px and narrower): the top bar is one row of 48px (54px on Home) with the links scrolling sideways under an edge fade; the current page's link is scrolled into view (`footer.js`). The floating "Buyable quests" pill is hidden there (the section nav link opens the same drawer). Desktop CSS unchanged.
 - The top bar CSS now lives once in `tools/sync_topbar.py` between `/* topbar:begin */` markers on all 11 pages; `--check` fails on CSS or nav link drift, run by the new `.github/workflows/site-checks.yml`. Home's sound button rules moved out of the shared block.

@@ -151,3 +151,6 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
   click +1, right-click −1, Shift = max, hover tooltip; touch: tap opens a bottom
   sheet with −/+/Close. Test locally by routing the Wowhead URL to a fixture in the
   same `WH.setPageData(...)` format (the cloud session can't reach Wowhead).
+
+## Duo progress (launch plan)
+`progresscodec.js` (loaded before the page script, `?v=` on change) writes and reads the `R2FP1:` progress string; the addon's `Progress.lua` is the same format (see its header). The panel under the weapon note makes my string from `state` (launch-day phases only: night, p1, p2, p3), reads a partner's, compares over the current selection's resolved steps, and can replace my launch-day ticks with theirs. Partner string and name are kept in `wf-launch-plan-duo`. Change the format in both files and `test_progress` in `addon/tests/run_tests.py`.

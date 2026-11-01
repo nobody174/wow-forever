@@ -279,6 +279,86 @@ local function showCopy(name)
 end
 Tab.ShowCopy = showCopy
 
+-- Progress string for a duo partner (Progress.lua): "Copy my progress" shows the string to copy; "Compare with partner"
+-- takes the partner's string and shows both levels, the level gap and the steps only one of you has done.
+-- Read-only: nothing in the game or in our saved ticks is written.
+local progWin, progEdit, progOut, progMode
+
+local function stepNames(label, list)
+  if #list == 0 then return label .. " " .. L.PROGRESS_NONE end
+  local names = {}
+  for i = 1, math.min(#list, 4) do names[i] = list[i].t or list[i].id end
+  return label .. " " .. table.concat(names, "; ") .. (#list > 4 and (" +" .. (#list - 4)) or "")
+end
+
+local function progressText(text)
+  local theirs, err = R2F.Progress.Parse(text)
+  if not theirs then return err, true end
+  local mine = UnitLevel and UnitLevel("player") or 0
+  local c = R2F.Progress.Compare(theirs, mine)
+  local unknown = L.PROGRESS_UNKNOWN
+  return table.concat({
+    L.PROGRESS_LEVELS:format(mine > 0 and mine or unknown, theirs.level > 0 and theirs.level or unknown,
+      c.levelGap and L.PROGRESS_GAP:format(c.levelGap) or ""),
+    L.PROGRESS_COUNTS:format(c.both, #c.onlyMine, #c.onlyTheirs),
+    stepNames(L.PROGRESS_ONLY_YOU, c.onlyMine),
+    stepNames(L.PROGRESS_ONLY_THEM, c.onlyTheirs),
+  }, "\n")
+end
+
+local function showProgress(mode)
+  if not progWin then
+    local f = UI.DialogFrame("R2FProgress", UIParent)
+    f:SetSize(370, 230)
+    f:SetPoint("CENTER", UIParent, "CENTER", 0, 120)
+    f:SetFrameStrata("DIALOG")
+    f:SetToplevel(true)
+    f:EnableMouse(true)
+    f:Hide()
+    if UISpecialFrames then table.insert(UISpecialFrames, "R2FProgress") end
+    f.title = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
+    f.title:SetPoint("TOP", 0, -14)
+    local box
+    box, progEdit = UI.MultiLineEdit(f, "R2FProgressScroll", 330, 56)
+    box:SetPoint("TOPLEFT", 18, -36)
+    progEdit:SetScript("OnEscapePressed", function() f:Hide() end)
+    progEdit:SetScript("OnEditFocusLost", function() if progMode == "copy" then f:Hide() end end)
+    progEdit:SetScript("OnTextChanged", function(self)
+      if progMode ~= "paste" then return end
+      local text = self:GetText() or ""
+      if text:match("^%s*$") then progOut:SetText("") return end
+      local msg, isError = progressText(text)
+      if isError then progOut:SetTextColor(1, 0.1, 0.1) else R2F.Theme.PaintText(progOut, "body") end
+      progOut:SetText(msg)
+    end)
+    progOut = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
+    progOut:SetPoint("TOPLEFT", 20, -104)
+    progOut:SetWidth(330)
+    progOut:SetJustifyH("LEFT")
+    f.hint = f:CreateFontString(nil, "ARTWORK", "R2FDimSmall")
+    f.hint:SetPoint("BOTTOMLEFT", 20, 12)
+    f.hint:SetWidth(330)
+    f.hint:SetJustifyH("LEFT")
+    progWin = f
+  end
+  progMode = mode
+  progWin:Show()
+  progOut:SetText("")
+  if mode == "copy" then
+    progWin.title:SetText(L.PROGRESS_TITLE_COPY)
+    progWin.hint:SetText(L.PROGRESS_COPY_HINT)
+    local text, err = R2F.Progress.Export()
+    progEdit:SetText(text or err or "")
+    progEdit:HighlightText()
+  else
+    progWin.title:SetText(L.PROGRESS_TITLE_PASTE)
+    progWin.hint:SetText(L.PROGRESS_PASTE_HINT)
+    progEdit:SetText("")
+  end
+  progEdit:SetFocus()
+end
+Tab.ShowProgress = showProgress
+
 local function itemButton(r, j)
   local b = r.itemBtns[j]
   if b then return b end
@@ -490,10 +570,23 @@ function Tab.Build(f)
     Tab.Refresh()
   end)
 
+  -- Progress string row: share my progress with a duo partner / compare with theirs (Progress.lua).
+  local function progressButton(x, w, text, mode)
+    local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    R2F.UI.ThemeButton(b)
+    b:SetSize(w, 20)
+    b:SetPoint("TOPLEFT", x, -148)
+    b:SetText(text)
+    b:SetScript("OnClick", function() showProgress(mode) end)
+    return b
+  end
+  ui.copyBtn = progressButton(28, 150, L.PROGRESS_COPY_BTN, "copy")
+  ui.cmpBtn = progressButton(184, 170, L.PROGRESS_PASTE_BTN, "paste")
+
   scroll = UI.TryTemplate("ScrollFrame", "R2FPlanScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FPlanScrollPlain", f)
-  scroll:SetPoint("TOPLEFT", 22, -146)
-  scroll:SetSize(CONTENT_W + 8, 316)
+  scroll:SetPoint("TOPLEFT", 22, -172)
+  scroll:SetSize(CONTENT_W + 8, 290)
   content = CreateFrame("Frame", nil, scroll)
   content:SetSize(CONTENT_W, 10)
   scroll:SetScrollChild(content)

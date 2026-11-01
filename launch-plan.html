@@ -183,6 +183,30 @@ ul.check li.is-next{border-left-color:var(--frost)}
 body.has-nowbar{padding-bottom:64px}
 @media (max-width:560px){.now-bar{padding-left:10px;padding-right:10px}.now-bar button{max-width:16ch}}
 
+/* Duo progress (progresscodec.js) */
+.duo{background:var(--panel);border:1px solid var(--edge);border-radius:8px;margin:0 0 22px}
+.duo summary{cursor:pointer;padding:12px 14px;font:600 14px var(--sans);color:var(--gold)}
+.duo summary:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.duo-body{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.duo-help{margin:0;color:var(--muted);font-size:13px}
+.duo-row{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+.duo-btn{font:600 13px/1 var(--sans);color:var(--text);background:transparent;border:1px solid var(--edge);border-radius:6px;padding:10px 14px;cursor:pointer}
+.duo-btn:hover{border-color:var(--gold)}
+.duo-btn:focus-visible,.duo-out:focus-visible,.duo-name:focus-visible,.duo-in:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.duo-out,.duo-name,.duo-in{font:13px var(--sans);color:var(--text);background:#0A0F20;border:1px solid var(--edge);border-radius:6px;padding:8px 10px}
+.duo-out{flex:1 1 220px;min-width:0}
+.duo-name{width:200px;max-width:100%}
+.duo-in{width:100%;box-sizing:border-box;resize:vertical;font-family:ui-monospace,Consolas,monospace;font-size:12px}
+.duo-msg{margin:0;min-height:1.2em;font-size:13px;color:var(--muted)}
+.duo-msg.err{color:var(--warn)}
+.duo-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.duo-col{border:1px solid var(--edge);border-radius:6px;padding:10px 12px;font-size:13px;min-width:0}
+.duo-col h4{margin:0 0 6px;font:600 14px var(--sans);color:var(--gold);overflow-wrap:anywhere}
+.duo-col ul{margin:6px 0 0;padding-left:18px}
+.duo-col li{margin:2px 0;overflow-wrap:anywhere}
+.duo-sum{grid-column:1/-1;color:var(--text);font-size:13px}
+.duo [hidden]{display:none}
+@media (max-width:560px){.duo-cols{grid-template-columns:1fr}}
 /* Buyable-quests sidebar */
 .buy-fab{position:fixed;right:18px;top:calc(var(--topbar-h,64px) + 14px);z-index:30;display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--sans);color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);border:1px solid #FFE566;border-radius:999px;padding:12px 16px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5)}
 .buy-fab:hover{filter:brightness(1.06)}
@@ -266,6 +290,28 @@ body.buy-open .buy-drawer{transform:none}
     <div class="pick"><span class="switch-label" id="ver-label">Steps</span><button type="button" class="preset ver" id="ver-btn" aria-pressed="false" aria-labelledby="ver-label ver-btn">Verified only</button></div>
   </div>
   <p class="weapon-note">Weapon lines list the best quest rewards your class can use for each step, strongest damage first (casters: check the stats). The site cannot see your gear. Quest rewards are known up to level 32; dungeon and vendor weapons are on <a href="bis.html">Mr.BiZ</a>. Dual wield is not counted.</p>
+  <details class="duo" id="duo">
+    <summary>Duo progress: share with your partner</summary>
+    <div class="duo-body">
+      <p class="duo-help">The in-game addon (Launch plan tab) and this page make the same progress string: your plan, your level and the steps you ticked. No character name is in it. Send yours to your partner and paste theirs here to see who is ahead.</p>
+      <div class="duo-row">
+        <button type="button" class="duo-btn" id="duo-copy">Copy my progress</button>
+        <input class="duo-out" id="duo-mine" type="text" readonly aria-label="My progress string" placeholder="Your string appears here">
+      </div>
+      <div class="duo-row">
+        <label class="pick-label" for="duo-name">Partner's name (shown here only)</label>
+        <input class="duo-name" id="duo-name" type="text" maxlength="24" autocomplete="off" placeholder="Partner">
+      </div>
+      <label class="pick-label" for="duo-in">Partner's progress string</label>
+      <textarea class="duo-in" id="duo-in" rows="2" spellcheck="false" placeholder="R2FP1:..."></textarea>
+      <p class="duo-msg" id="duo-msg" role="status" aria-live="polite"></p>
+      <div class="duo-cols" id="duo-cols" hidden></div>
+      <div class="duo-row" id="duo-actions" hidden>
+        <button type="button" class="duo-btn" id="duo-load">Use theirs as my ticks</button>
+        <button type="button" class="duo-btn" id="duo-clear">Clear</button>
+      </div>
+    </div>
+  </details>
 
   <div class="draft" id="race-note" hidden><strong>Start not written yet.</strong> The first steps for this race (its start zone and the road to Ironforge or Darkshore) are still to come. The shared steps from Hall of Thanes onward apply as they are.</div>
   <div class="draft"><strong>Draft.</strong> Levels 1–30 are checked against what the beta shows so far; anything marked <span class="tag unv">unverified</span> is based on published level ranges or Classic knowledge and will change as we test. Checkboxes save in this browser only. Steps shared by every race and class use the same checkbox, so switching keeps that progress.</div>
@@ -421,6 +467,7 @@ body.buy-open .buy-drawer{transform:none}
   </div>
   <div class="buy-body" id="buy-body"></div>
 </aside>
+<script src="progresscodec.js?v=1"></script>
 <script>
 (function () {
   "use strict";
@@ -1059,10 +1106,131 @@ body.buy-open .buy-drawer{transform:none}
       history.replaceState(null, "", url);
     } catch (e) { /* URL API unavailable: the level still applies */ }
     var first = markLevel();
+    duoRender();
     if (scroll && first) first.scrollIntoView({ block: "center", behavior: "smooth" });
   }
   levelIn.value = level === null ? "" : level;
   levelIn.addEventListener("input", function () { setLevel(levelIn.value, true); });
+
+  // Duo progress: my ticks as a string for a partner, and theirs compared with mine (progresscodec.js; the addon's
+  // Progress.lua writes and reads the same format). Only the launch-day phases are in it, like the addon's plan data.
+  var DUO_PHASES = ["night", "p1", "p2", "p3"];
+  var DUO_KEY = "wf-launch-plan-duo";
+  var duoIn = document.getElementById("duo-in"), duoName = document.getElementById("duo-name");
+  var duoMsg = document.getElementById("duo-msg"), duoCols = document.getElementById("duo-cols");
+  var duoActions = document.getElementById("duo-actions"), duoMine = document.getElementById("duo-mine");
+
+  function duoKnownIds() {
+    var seen = {}, ids = [];
+    DUO_PHASES.forEach(function (ph) {
+      PHASES[ph].forEach(function (item) { if (!seen[item.id]) { seen[item.id] = true; ids.push(item.id); } });
+    });
+    return ids;
+  }
+  function duoMyString() {
+    var ids = duoKnownIds().filter(function (id) { return state[id]; });
+    return window.R2FProgress.encode(planId(cur), level === null ? 0 : level, ids);
+  }
+  function plainText(html) {
+    var d = document.createElement("div");
+    d.innerHTML = html;
+    return d.textContent;
+  }
+  function duoColumn(title, lines, extra) {
+    var col = document.createElement("div");
+    col.className = "duo-col";
+    var h = document.createElement("h4");
+    h.textContent = title;
+    col.appendChild(h);
+    lines.forEach(function (t) { var p = document.createElement("div"); p.textContent = t; col.appendChild(p); });
+    if (extra) col.appendChild(extra);
+    return col;
+  }
+  function duoList(label, steps) {
+    var wrap = document.createDocumentFragment();
+    var p = document.createElement("div");
+    p.textContent = label + (steps.length ? "" : " none");
+    wrap.appendChild(p);
+    if (steps.length) {
+      var ul = document.createElement("ul");
+      steps.slice(0, 8).forEach(function (r) { var li = document.createElement("li"); li.textContent = plainText(r.t); ul.appendChild(li); });
+      if (steps.length > 8) { var more = document.createElement("li"); more.textContent = "+" + (steps.length - 8) + " more"; ul.appendChild(more); }
+      wrap.appendChild(ul);
+    }
+    return wrap;
+  }
+
+  var duoParsed = null;
+  function duoRender() {
+    duoMine.value = duoMyString() || "";
+    duoCols.hidden = duoActions.hidden = true;
+    duoCols.textContent = "";
+    duoParsed = null;
+    var text = duoIn.value;
+    duoMsg.className = "duo-msg";
+    if (!text.trim()) { duoMsg.textContent = ""; return; }
+    var d = window.R2FProgress.decode(text);
+    if (d.error) { duoMsg.textContent = d.error; duoMsg.className = "duo-msg err"; return; }
+    duoParsed = d;
+    var theirs = {};
+    d.ids.forEach(function (id) { theirs[id] = true; });
+    var both = 0, onlyMine = [], onlyTheirs = [], mineN = 0, theirN = 0;
+    DUO_PHASES.forEach(function (ph) {
+      PHASES[ph].forEach(function (item) {
+        var r = resolve(item, cur);
+        if (!r) return;
+        var a = !!state[r.id], b = !!theirs[r.id];
+        if (a) mineN++;
+        if (b) theirN++;
+        if (a && b) both++; else if (a) onlyMine.push(r); else if (b) onlyTheirs.push(r);
+      });
+    });
+    var name = duoName.value.trim() || "Partner";
+    var me = level === null ? 0 : level;
+    var gap = me > 0 && d.level > 0 ? me - d.level : null;
+    duoMsg.textContent = d.plan !== planId(cur) ? "Their plan is " + d.plan + ", yours is " + planId(cur) + ": steps are compared on your plan." : "";
+    var sum = document.createElement("div");
+    sum.className = "duo-sum";
+    sum.textContent = (gap === null ? "Level gap unknown (set your level above, and your partner's string needs theirs). " :
+      gap === 0 ? "Same level. " : gap > 0 ? "You are " + gap + " level" + (gap === 1 ? "" : "s") + " ahead. " : name + " is " + (-gap) + " level" + (gap === -1 ? "" : "s") + " ahead. ") +
+      "Both done: " + both + ".";
+    duoCols.appendChild(sum);
+    duoCols.appendChild(duoColumn("You", ["Level " + (me || "?"), mineN + " steps done"], duoList("Only you:", onlyMine)));
+    duoCols.appendChild(duoColumn(name, ["Level " + (d.level || "?"), theirN + " steps done"], duoList("Only " + name + ":", onlyTheirs)));
+    duoCols.hidden = duoActions.hidden = false;
+  }
+
+  duoIn.addEventListener("input", function () { save(DUO_KEY, { s: duoIn.value, n: duoName.value }); duoRender(); });
+  duoName.addEventListener("input", function () { save(DUO_KEY, { s: duoIn.value, n: duoName.value }); duoRender(); });
+  document.getElementById("duo-copy").addEventListener("click", function () {
+    var s = duoMyString();
+    duoMine.value = s || "";
+    duoMine.select();
+    duoMsg.className = "duo-msg";
+    try {
+      navigator.clipboard.writeText(s).then(function () { duoMsg.textContent = "Copied. Send it to your partner."; },
+        function () { duoMsg.textContent = "Select the string and copy it (Ctrl+C)."; });
+    } catch (e) { duoMsg.textContent = "Select the string and copy it (Ctrl+C)."; }
+  });
+  document.getElementById("duo-clear").addEventListener("click", function () {
+    duoIn.value = "";
+    save(DUO_KEY, { s: "", n: duoName.value });
+    duoRender();
+  });
+  // Replace my ticks in the launch-day phases with theirs (steps in other phases are left alone).
+  document.getElementById("duo-load").addEventListener("click", function () {
+    if (!duoParsed) return;
+    if (!confirm("Replace your ticks in the launch-day steps with your partner's? Your other ticks stay.")) return;
+    var theirs = {};
+    duoParsed.ids.forEach(function (id) { theirs[id] = true; });
+    duoKnownIds().forEach(function (id) { if (theirs[id]) state[id] = true; else delete state[id]; });
+    save(KEY, state);
+    render();
+  });
+  (function () {
+    var saved = load(DUO_KEY, null);
+    if (saved && typeof saved.s === "string") { duoIn.value = saved.s; duoName.value = typeof saved.n === "string" ? saved.n : ""; }
+  })();
 
   function renderChecklist(el, items, sel) {
     var html = '<div class="progress"><div class="bar"><span></span></div><span class="count"></span></div><ul class="check">';
@@ -1198,6 +1366,7 @@ body.buy-open .buy-drawer{transform:none}
     };
     document.querySelectorAll(".legacy-path").forEach(function (card) { card.hidden = hidePlans(card); });
     markLevel();
+    duoRender();
   }
 
   function setPlan(sel, push) {
@@ -1235,6 +1404,7 @@ body.buy-open .buy-drawer{transform:none}
     save(KEY, state);
     updateProgress(box.closest(".phase"));
     markLevel();
+    duoRender();
   });
 
   // Let links inside a checklist row work without toggling the checkbox.

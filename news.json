@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-01",
+      "title": "Duo progress: see who is ahead",
+      "text": "The launch plan can now make a short progress string with your level and ticked steps, and compare it with your partner's. The addon makes and reads the same string.",
+      "link": "launch-plan.html"
+    },
+    {
+      "date": "2026-11-01",
       "title": "Verified-only launch plan and data stamps",
       "text": "The launch plan has a Verified only button that hides the steps we have not confirmed yet. Mr.BiZ, Builds, Macros and the launch plan now show which game client the data is for and when the site was last updated.",
       "link": "launch-plan.html"

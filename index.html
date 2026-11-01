@@ -36,14 +36,16 @@
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
 body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.topbar .sound-btns{justify-self:end;display:flex;align-items:center;gap:6px}
+@media (max-width:1180px){.topbar .sound-btns{justify-self:center}}
+@media (max-width:700px){.topbar .sound-btns{flex:none;gap:4px}.topbar #mute-label{display:none}}
+/* topbar:begin */
 .topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
 .topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
 .topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
-.topbar .sound-btns{justify-self:end;display:flex;align-items:center;gap:6px}
 @media (max-width:1180px){
   .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
   .topbar .site-title{justify-self:center}
-  .topbar .sound-btns{justify-self:center}
 }
 .topbar nav a{
   font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;
@@ -63,6 +65,17 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
   color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);
   border-color:#FFE566;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(255,209,0,.5);
 }
+/* Phones: one row, the links scroll sideways under an edge fade (footer.js scrolls the current page into view). */
+@media (max-width:700px){
+  .topbar{display:flex;align-items:center;justify-items:initial;text-align:left;gap:10px;padding:8px 12px}
+  .topbar .site-title{flex:none;font-size:16px}
+  .topbar nav{flex:1 1 auto;min-width:0;flex-wrap:nowrap;justify-content:flex-start;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+  .topbar nav::-webkit-scrollbar{display:none}
+  .topbar nav::after{content:"";flex:none;width:22px}
+  .topbar nav a{flex:none;white-space:nowrap;padding:8px 12px}
+}
+/* topbar:end */
 @media (prefers-reduced-motion:reduce){.topbar nav a{transition:none}}
 .mute-btn{
   flex:none;

@@ -28,8 +28,9 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
    `MacroData.lua`, `PlanData.lua`, `BiZData.lua`, `TalentData.lua`. Edit the source, run `python build.py`
    (it also runs `bis/build_bis.py`). Addon tests fail if generated files are stale.
 2. Macros: edit `data.py` only. Every macro <= 255 characters, no ranks, `/targetmarker` never `/tm`.
-3. The top bar CSS must stay identical on every page (hand-written pages each carry a copy; `macros.html` gets
-   it from `template.html`). Edit one, edit all.
+3. The top bar CSS must stay identical on every page (hand-written pages each carry a copy between `/* topbar:begin */`
+   and `/* topbar:end */`; `macros.html` gets it from `template.html`). Edit the CSS in `tools/sync_topbar.py`, run it, then
+   `python build.py`; CI (`site-checks.yml`) fails on drift. Page-specific topbar rules stay outside the markers.
 4. Addon: never write into game-owned tables, hooks only, no writes in combat (WoW library: taint note).
 5. No secrets or personal data in the repo or commits: no tokens, real name, email, local paths. Git identity
    is the GitHub noreply address. `addon/tests/check_release_tree.py` guards the release zip.

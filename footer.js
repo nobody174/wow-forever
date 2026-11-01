@@ -26,6 +26,9 @@
     f.style.marginBottom = h ? h + "px" : "";
   }
   clearTrays();
+  // Phones: the top bar links scroll sideways; bring the current page's link into view.
+  var here = document.querySelector('.topbar nav [aria-current="page"]'), strip = here && here.parentNode;
+  if (strip && strip.scrollWidth > strip.clientWidth) strip.scrollLeft = Math.max(0, here.offsetLeft - (strip.clientWidth - here.offsetWidth) / 2);
   window.addEventListener("resize", clearTrays);
   document.addEventListener("click", function () { setTimeout(clearTrays, 350); });
   fetch("news.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {

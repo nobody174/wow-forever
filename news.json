@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-01",
+      "title": "Launch night mode and copyable waypoints",
+      "text": "The launch plan has a Launch night mode with just the first steps and big tick boxes. The location buttons now copy a /bizway line you can paste in game, and the arrow points there.",
+      "link": "launch-plan.html?mode=night"
+    },
+    {
+      "date": "2026-11-01",
       "title": "Hunter hub and a better Mr.BiZ",
       "text": "A new Hunter page links your plan, talents, gear, macros and pets in one place. Mr.BiZ now shows the stat weights and the badge legend above the list, the next best pick on every row, and can copy a whole spec's picks for the addon.",
       "link": "hunter.html"

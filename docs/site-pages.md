@@ -159,3 +159,6 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
 
 ## Hunter hub (`hunter.html`)
 A page of cards that only link to the pages that hold the data (launch plan `?plan=hunter` / `?race=&class=hunter`, `builds.html`, `talents.html#hunter`, `bis.html#hunter/<spec>`, `professions.html#bis/hunter`, `macros.html`, the external pet database, `addons.html`). No Hunter facts are repeated on it, so nothing can drift. It is in `tools/sync_topbar.py`'s page list; it has no top bar entry (class pages do not belong in the shared nav), the Home page's Tools list links to it.
+
+## Launch night mode (launch plan)
+`body.night` (button `#night-btn`, `?mode=night`, `wf-launch-plan-night`) hides every direct child of `.wrap` that has no `data-night` attribute (and is not `#night`, whose heading text the addon generator reads, so it must stay `<h2 id="night">`). To keep another element in the mode, give it `data-night`.

@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-01 (launch night mode)
+- Launch plan: a "Launch night mode" button (or `?mode=night`, remembered in the browser) shows only the launch-night steps with big tick boxes: the race / class pickers, level box and Now/Next bar stay, everything else (rules, other phases, tips, Legacy points, notes, weapon lines, the shopping-list pill) is hidden. Press it again for the full page. Not offline: there is no service worker (a stale cached plan on launch day would be worse than none).
+
 ## 2026-11-01 (launch plan location buttons)
 - The 📍 location buttons next to a launch plan step did nothing when clicked (no handler had ever been written). Now a click copies the addon's `/bizway <zone> <x> <y> <label>` line and the button turns green; Shift-click copies the `/way` line for TomTom. A test checks that every site waypoint makes a well-formed line. In game: TESTING 5.73.
 

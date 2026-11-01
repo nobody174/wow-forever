@@ -104,6 +104,14 @@ h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6
 .preset::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--hunt)}
 .preset:hover{color:var(--text)}
 .preset.ver::before{background:var(--ok)}
+.preset.nm::before{background:var(--gold)}
+/* Launch night mode: only the launch-night steps, big tick boxes, nothing else on the page */
+body.night .wrap > :not([data-night]):not(#night){display:none}
+body.night .buy-fab{display:none}
+body.night ul.check label{padding:16px;gap:14px}
+body.night ul.check input{width:30px;height:30px;margin:0}
+body.night ul.check li .t{font-size:18px}
+body.night ul.check li .n,body.night ul.check li .gear{display:none}
 .preset[aria-pressed="true"]{background:var(--panel);color:var(--text);border-color:var(--hunt)}
 .weapon-note{color:var(--muted);font-size:13px;margin:-8px 0 18px;max-width:70ch}
 
@@ -271,10 +279,10 @@ body.buy-open .buy-drawer{transform:none}
   </nav>
 </div>
 <div class="wrap">
-  <h1>Launch Plan</h1>
+  <h1 data-night>Launch Plan</h1>
   <div id="provenance" data-plan></div>
   <p class="lede">How we get ahead of the launch crowd: questing off the busy routes, and clearing every new dungeon once for its first-clear quest XP. Pick your race, then your class (every class levels as damage), or use the 2 Hunters option for the Skyborne Hunter duo.</p>
-  <div class="meta">
+  <div class="meta" data-night>
     <span class="chip gold">Alliance</span>
     <span class="chip" id="race-chip">Skyborne (High Order)</span>
     <span class="chip" id="class-chip">Hunter</span>
@@ -282,12 +290,13 @@ body.buy-open .buy-drawer{transform:none}
     <span class="chip" id="launch-chip">Launch: Nov 4, 3:00 PM PST</span>
   </div>
 
-  <div class="picker-wrap">
+  <div class="picker-wrap" data-night>
     <div class="pick"><span class="pick-label" id="lbl-race">Race</span><div class="dd" id="pick-race"></div></div>
     <div class="pick"><span class="pick-label" id="lbl-class">Class</span><div class="dd" id="pick-class"></div></div>
     <div class="pick"><label class="pick-label" for="pick-level">My level</label><input class="lvl-in" id="pick-level" type="number" min="1" max="60" step="1" inputmode="numeric" placeholder="1–60"></div>
     <div class="pick"><span class="switch-label" id="preset-label">Side option</span><button type="button" class="preset" id="preset-btn" aria-pressed="false" aria-labelledby="preset-label preset-btn"></button></div>
     <div class="pick"><span class="switch-label" id="ver-label">Steps</span><button type="button" class="preset ver" id="ver-btn" aria-pressed="false" aria-labelledby="ver-label ver-btn">Verified only</button></div>
+    <div class="pick"><span class="switch-label" id="night-label">View</span><button type="button" class="preset nm" id="night-btn" aria-pressed="false" aria-labelledby="night-label night-btn">Launch night mode</button></div>
   </div>
   <p class="weapon-note">Weapon lines list the best quest rewards your class can use for each step, strongest damage first (casters: check the stats). The site cannot see your gear. Quest rewards are known up to level 32; dungeon and vendor weapons are on <a href="bis.html">Mr.BiZ</a>. Dual wield is not counted.</p>
   <details class="duo" id="duo">
@@ -343,8 +352,8 @@ body.buy-open .buy-drawer{transform:none}
   <div class="phase" data-phase="before"></div>
 
   <h2 id="night">Launch night</h2>
-  <p class="section-note">Servers open at <strong id="launch-local">00:00 Thursday Nov 5 (Norway)</strong>. The first long session decides whether we're ahead of the wave or inside it.</p>
-  <div class="phase" data-phase="night"></div>
+  <p class="section-note" data-night>Servers open at <strong id="launch-local">00:00 Thursday Nov 5 (Norway)</strong>. The first long session decides whether we're ahead of the wave or inside it.</p>
+  <div class="phase" data-phase="night" data-night></div>
 
   <h2 id="p1">Phase 1 — 12 → 20</h2>
   <p class="section-note">Hall of Thanes early, then Kalimdor while the human wave floods Westfall.</p>
@@ -433,8 +442,8 @@ body.buy-open .buy-drawer{transform:none}
   <p class="section-note">Beta ran until Oct 21 (cap 20, later 30) — exactly the 12–30 stretch. These are the open questions for your race and class.</p>
   <div class="phase" data-phase="beta"></div>
 
-  <div class="now-bar" id="now-bar" role="region" aria-label="Your level: now and next steps" aria-live="polite" hidden></div>
-  <div class="toolbar"><button class="reset" type="button" id="reset">Reset my checkboxes</button></div>
+  <div class="now-bar" id="now-bar" data-night role="region" aria-label="Your level: now and next steps" aria-live="polite" hidden></div>
+  <div class="toolbar" data-night><button class="reset" type="button" id="reset">Reset my checkboxes</button></div>
 
   <h2>Sources</h2>
   <ul class="sources">
@@ -800,6 +809,20 @@ body.buy-open .buy-drawer{transform:none}
   var verifiedOnly = load(VERIFIED_KEY, false) === true;
   function isUnverified(r) { return r.tags.some(function (t) { return t[0] === "unv"; }); }
 
+  // Launch night mode: the page shows only the launch-night steps with big tick boxes (CSS: body.night). ?mode=night opens it.
+  var NIGHT_KEY = "wf-launch-plan-night";
+  var nightOn = load(NIGHT_KEY, false) === true;
+  function applyNight() {
+    document.body.classList.toggle("night", nightOn);
+    var b = document.getElementById("night-btn");
+    if (b) b.setAttribute("aria-pressed", String(nightOn));
+    try {
+      var url = new URL(location.href);
+      if (nightOn) url.searchParams.set("mode", "night"); else url.searchParams.delete("mode");
+      history.replaceState(null, "", url);
+    } catch (e) { /* URL API unavailable: the mode still applies */ }
+  }
+
   var LEVEL_KEY = "wf-launch-plan-level";
   var level = clampLevel(load(LEVEL_KEY, null));
   var nowBar = document.getElementById("now-bar");
@@ -1137,6 +1160,12 @@ body.buy-open .buy-drawer{transform:none}
     render();
   }
 
+  document.getElementById("night-btn").addEventListener("click", function () {
+    nightOn = !nightOn;
+    save(NIGHT_KEY, nightOn);
+    applyNight();
+    window.scrollTo(0, 0);
+  });
   var verBtn = document.getElementById("ver-btn");
   verBtn.addEventListener("click", function () {
     verifiedOnly = !verifiedOnly;
@@ -1220,6 +1249,7 @@ body.buy-open .buy-drawer{transform:none}
     var params = new URL(location.href).searchParams;
     var fromUrl = parsePlan(params.get("plan"));
     var urlRace = (params.get("race") || "").toLowerCase();
+    if (params.get("mode") === "night") { nightOn = true; save(NIGHT_KEY, true); }
     var urlLevel = clampLevel(params.get("level"));
     if (urlLevel !== null) { level = urlLevel; levelIn.value = level; save(LEVEL_KEY, level); }
     if (fromUrl) cur = fromUrl;
@@ -1229,6 +1259,7 @@ body.buy-open .buy-drawer{transform:none}
     }
   } catch (e) { /* ignore */ }
   setPlan(cur, false);
+  applyNight();
 
   // The steps load after the first paint (the pickers and tips above work without them); draw again once they are here.
   fetch("launch-plan-steps.json", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })

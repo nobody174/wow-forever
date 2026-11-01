@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-01",
+      "title": "Verified-only launch plan and data stamps",
+      "text": "The launch plan has a Verified only button that hides the steps we have not confirmed yet. Mr.BiZ, Builds, Macros and the launch plan now show which game client the data is for and when the site was last updated.",
+      "link": "launch-plan.html"
+    },
+    {
+      "date": "2026-11-01",
       "title": "Launch plan: tell it your level",
       "text": "Type your level on the launch plan and it highlights the steps for that level and shows what comes next in a bar at the bottom. The level is saved in the link, so you can send it to your duo.",
       "link": "launch-plan.html"

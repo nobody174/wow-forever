@@ -245,6 +245,26 @@ else:
     print("warning: node not found, addon/RoadToForever/PlanData.lua was not regenerated")
 
 # =============================================================================
+# data-version.json: what provenance.js shows on the launch plan, Mr.BiZ, Builds and Macros pages.
+# CLIENT_VERSION is the one place the game client version is written down; change it when the release
+# client number is known. The step counts come from the plan itself (gen_plan_data.js --stats).
+# =============================================================================
+import datetime
+import json
+
+CLIENT_VERSION = "1.60.x"
+DATA_STATE = "beta data"
+
+_version = {"client": CLIENT_VERSION, "state": DATA_STATE, "updated": datetime.date.today().isoformat()}
+if _node:
+    _version["plan"] = json.loads(subprocess.run([_node, "addon/tools/gen_plan_data.js", "--stats"],
+                                                 check=True, capture_output=True, text=True).stdout)
+with open("data-version.json", "w", encoding="utf-8", newline="\n") as f:
+    json.dump(_version, f, indent=2)
+    f.write("\n")
+print("data-version.json written")
+
+# =============================================================================
 # Mr.BiZ (bis.html + the addon's BiS tab): bis/raw/*.json -> bis-data.json and
 # addon/RoadToForever/BiZData.lua. See bis/README.md.
 # =============================================================================

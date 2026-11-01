@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-01 (provenance strip)
+- Provenance strip (client, update date, beta data, plan step counts) on the launch plan, Mr.BiZ, Builds and Macros, from a new `data-version.json` that `build.py` writes (`provenance.js`, `gen_plan_data.js --stats`). Launch plan: "Verified only" button hides every step tagged unverified (saved in the browser).
+
 ## 2026-11-01 (launch plan)
 - Level box on the launch plan ("My level", 1-60, `?level=N`, remembered in the browser): steps whose level range contains it are marked, the next two are marked too, and a bottom bar lists up to 3 now and 2 next steps (click one to jump). Steps without a numeric level are never "now". No change to `PlanData.lua`.
 

@@ -6,6 +6,7 @@
 // Usage:
 //   node addon/tools/gen_plan_data.js            write addon/RoadToForever/PlanData.lua
 //   node addon/tools/gen_plan_data.js --check    exit 1 if the file differs from a fresh generation
+//   node addon/tools/gen_plan_data.js --stats   print JSON: plan step counts for data-version.json (build.py)
 //   node addon/tools/gen_plan_data.js --expected print JSON: per plan id ("skyborne:HUNTER", "hunter", ...), the ids
 //                                                + texts the SITE shows (its resolve()), for the tests
 
@@ -241,8 +242,28 @@ function expected() {
            quests: buy.QUESTS.map(q => ({ id: q.id, name: plain(q.name), items: q.items.map(it => plain(it[0]) + ":" + it[1]), phase: q.phase })) };
 }
 
+// Step counts for the provenance strip: distinct step ids any race/class/preset shows, and how many of those
+// carry the "unv" (unverified) tag in at least one plan. The page's "Verified only" toggle hides exactly these.
+function stats() {
+  const all = new Set(), unv = new Set();
+  for (const id of site.allPlans()) {
+    const sel = site.parsePlan(id);
+    for (const ph of Object.keys(site.PHASES)) {
+      for (const item of site.PHASES[ph]) {
+        const r = site.resolve(item, sel);
+        if (!r) continue;
+        all.add(r.id);
+        if ((r.tags || []).some(t => t[0] === "unv")) unv.add(r.id);
+      }
+    }
+  }
+  return { steps: all.size, unverified: unv.size };
+}
+
 const arg = process.argv[2];
-if (arg === "--expected") {
+if (arg === "--stats") {
+  process.stdout.write(JSON.stringify(stats()));
+} else if (arg === "--expected") {
   process.stdout.write(JSON.stringify(expected()));
 } else if (arg === "--check") {
   const fresh = generate();

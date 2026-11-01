@@ -27,3 +27,11 @@ Images, link previews, installable-app meta. Moved out of CLAUDE.md 2026-10-16.
   come from `addon/art/logo.svg`; the apple-touch icon stays the gold R. New pages need the same four meta lines.
 - `assets/drafts/` — gitignored scratch folder for image-generation drafts/
   intermediates (hero and icon art both land here). Not part of the deployed site.
+
+## Provenance strip
+`provenance.js` fills `<div id="provenance"></div>` on the launch plan (with `data-plan`), Mr.BiZ, Builds and Macros (`template.html`)
+with "Client, updated date, beta data" from `data-version.json`. `build.py` writes that file: `CLIENT_VERSION` / `DATA_STATE` are the
+two constants to edit when the release client number is known; the date is the build day; the plan step counts come from
+`node addon/tools/gen_plan_data.js --stats` (distinct step ids across every race/class/preset, and how many carry the `unv` tag in at
+least one). The launch plan's "Verified only" button hides exactly the steps tagged `unv` for the current selection (saved in
+`wf-launch-plan-verified`). A new page gets the strip by adding the div and `<script src="provenance.js" defer></script>`.

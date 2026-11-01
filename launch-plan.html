@@ -91,6 +91,7 @@ h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6
 .preset{font:600 14px/1 var(--sans);color:var(--muted);background:transparent;border:1px solid var(--edge);border-radius:6px;padding:12px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
 .preset::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--hunt)}
 .preset:hover{color:var(--text)}
+.preset.ver::before{background:var(--ok)}
 .preset[aria-pressed="true"]{background:var(--panel);color:var(--text);border-color:var(--hunt)}
 .weapon-note{color:var(--muted);font-size:13px;margin:-8px 0 18px;max-width:70ch}
 
@@ -234,6 +235,7 @@ body.buy-open .buy-drawer{transform:none}
 </div>
 <div class="wrap">
   <h1>Launch Plan</h1>
+  <div id="provenance" data-plan></div>
   <p class="lede">How we get ahead of the launch crowd: questing off the busy routes, and clearing every new dungeon once for its first-clear quest XP. Pick your race, then your class (every class levels as damage), or use the 2 Hunters option for the Skyborne Hunter duo.</p>
   <div class="meta">
     <span class="chip gold">Alliance</span>
@@ -248,6 +250,7 @@ body.buy-open .buy-drawer{transform:none}
     <div class="pick"><span class="pick-label" id="lbl-class">Class</span><div class="dd" id="pick-class"></div></div>
     <div class="pick"><label class="pick-label" for="pick-level">My level</label><input class="lvl-in" id="pick-level" type="number" min="1" max="60" step="1" inputmode="numeric" placeholder="1–60"></div>
     <div class="pick"><span class="switch-label" id="preset-label">Side option</span><button type="button" class="preset" id="preset-btn" aria-pressed="false" aria-labelledby="preset-label preset-btn"></button></div>
+    <div class="pick"><span class="switch-label" id="ver-label">Steps</span><button type="button" class="preset ver" id="ver-btn" aria-pressed="false" aria-labelledby="ver-label ver-btn">Verified only</button></div>
   </div>
   <p class="weapon-note">Weapon lines list the best quest rewards your class can use for each step, strongest damage first (casters: check the stats). The site cannot see your gear. Quest rewards are known up to level 32; dungeon and vendor weapons are on <a href="bis.html">Mr.BiZ</a>. Dual wield is not counted.</p>
 
@@ -981,6 +984,11 @@ body.buy-open .buy-drawer{transform:none}
   }
   function clampLevel(v) { var n = parseInt(v, 10); return n >= 1 && n <= 60 ? n : null; }
 
+  // "Verified only" hides every step tagged unverified (the build counts the same steps for the provenance strip).
+  var VERIFIED_KEY = "wf-launch-plan-verified";
+  var verifiedOnly = load(VERIFIED_KEY, false) === true;
+  function isUnverified(r) { return r.tags.some(function (t) { return t[0] === "unv"; }); }
+
   var LEVEL_KEY = "wf-launch-plan-level";
   var level = clampLevel(load(LEVEL_KEY, null));
   var nowBar = document.getElementById("now-bar");
@@ -1047,7 +1055,7 @@ body.buy-open .buy-drawer{transform:none}
     var html = '<div class="progress"><div class="bar"><span></span></div><span class="count"></span></div><ul class="check">';
     items.forEach(function (item) {
       var r = resolve(item, sel);
-      if (!r) return;
+      if (!r || (verifiedOnly && isUnverified(r))) return;
       var aud = audience(item);
       var done = !!state[r.id];
       var rng = stepRange(r.lvl);
@@ -1160,6 +1168,7 @@ body.buy-open .buy-drawer{transform:none}
     raceDD.set(RACE_ORDER.map(function (r) { return { value: r, label: RACES[r].label, icon: raceIcon(r) }; }), sel.race);
     classDD.set(race.classes.map(function (c) { return { value: c, label: CLASSES[c].label, icon: classIcon(c), color: CLASSES[c].color }; }), sel.cls);
     presetBtn.setAttribute("aria-pressed", String(!!sel.preset));
+    verBtn.setAttribute("aria-pressed", String(verifiedOnly));
     document.getElementById("race-chip").innerHTML = '<img class="chip-ico" src="' + raceIcon(sel.race) + '" alt="" width="16" height="16"> ' + race.label;
     var chip = document.getElementById("class-chip");
     chip.textContent = sel.preset ? "2× " + CLASSES[sel.cls].label : CLASSES[sel.cls].label;
@@ -1192,6 +1201,13 @@ body.buy-open .buy-drawer{transform:none}
     }
     render();
   }
+
+  var verBtn = document.getElementById("ver-btn");
+  verBtn.addEventListener("click", function () {
+    verifiedOnly = !verifiedOnly;
+    save(VERIFIED_KEY, verifiedOnly);
+    render();
+  });
 
   presetBtn.addEventListener("click", function () {
     setPlan(cur.preset ? { race: cur.race, cls: cur.cls, preset: null } : parsePlan("hunter"), true);
@@ -1424,5 +1440,6 @@ body.buy-open .buy-drawer{transform:none}
 <script>var whTooltips = { colorLinks: false, iconizeLinks: false, renameLinks: false };</script>
 <script src="https://wow.zamimg.com/js/tooltips.js" defer></script>
 <script src="footer.js" defer></script>
+<script src="provenance.js" defer></script>
 </body>
 </html>

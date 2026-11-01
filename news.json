@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-11-01",
+      "title": "Launch plan: tell it your level",
+      "text": "Type your level on the launch plan and it highlights the steps for that level and shows what comes next in a bar at the bottom. The level is saved in the link, so you can send it to your duo.",
+      "link": "launch-plan.html"
+    },
+    {
       "date": "2026-10-25",
       "title": "Launch plan: Zephras route with quest ids, and Follow the plan",
       "text": "The Skyborne start now lists the quest chains in a suggested order, and Humans and Night Elves have their own starts. The addon gets a Follow the plan switch that ticks steps off as you turn quests in.",

@@ -5,6 +5,11 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-02 (Home: start here)
+- Home got a "New here? Start with these" strip under the countdown: 1 Pick your plan, 2 Set your build, 3 Add the addon, plus a link to the launch night list. In a browser that has used the launch plan it also shows "Continue your plan: <race> <class>, level N" (read from the plan page's own saved choice; a damaged saved value is ignored and never breaks Home).
+- Two layout faults found while doing it and fixed: from 761px to about 1750px wide (every laptop) the side panels met the title and countdown in the middle, so the title block now sits in the room left of the panels; on phones the title and countdown were about 1000px down, below both link lists, now they come first.
+- The rehearsal got a Home section (`--only home`): the steps and their links, the continue link with good and broken saved values, no overlap with the side panels at 800 to 1920px, nothing runs off the right edge, and the phone order. Removing the fix makes 8 of those checks fail.
+
 ## 2026-11-02 (accessibility pass)
 - The rehearsal got an accessibility audit (`--only a11y`, part of the normal run): link / button names, image alt, form labels, text contrast, tap size (WCAG 2.2: 24px), landmarks, headings. First run found, all fixed: tap targets under 24px (launch plan jump links, library checkboxes 20 to 24px, "+ Shopping list" buttons, Addons "Details", footer links, the top bar title, the Home secret-sound dot 18 to 24px); no `main` landmark on Home, Launch plan, Professions, Talents and Addons (added `role="main"` on the existing wrapper); heading order (launch plan card titles h4 to h3, Hunter hub cards h3 to h2, a hidden "Talent trees" h2 on Talents); low contrast text (Mr.BiZ "via" source tag and Horde-only tag, library zone names, Shaman class chip on Professions, and rare-item blue on the launch plan and Mr.BiZ, which Wowhead's own stylesheet forced to a darker blue with `!important`, now overridden). Screenshots before and after for every changed page show only a few pixels of spacing changed. Top bar CSS: the site title is at least 24px tall (`tools/sync_topbar.py`).
 

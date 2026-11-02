@@ -273,11 +273,36 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
   text-decoration:none;
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* Start here: the three steps for someone who has never seen the site. */
+.start{margin:30px auto 0;max-width:700px;text-align:left}
+.start-title{margin:0 0 10px;font:600 13px/1.2 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);text-align:center;text-shadow:0 1px 10px rgba(0,0,0,.8)}
+.start ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.start li a{display:block;height:100%;padding:12px 14px;border-radius:8px;background:rgba(14,20,40,.78);border:1px solid var(--edge);color:var(--text);text-decoration:none;backdrop-filter:blur(2px);transition:border-color .12s,background .12s}
+.start li a:hover{border-color:var(--gold);background:rgba(14,20,40,.9)}
+.start li a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.start b{display:block;font:600 15px/1.3 var(--sans);color:var(--gold);margin-bottom:3px}
+.start span{display:block;font-size:13.5px;line-height:1.4;color:var(--muted)}
+.start-more{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin:12px 0 0;font-size:14px;text-shadow:0 1px 8px rgba(0,0,0,.85)}
+.start-more a{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:6px;background:rgba(14,20,40,.78);border:1px solid var(--edge);color:var(--gold);text-decoration:none}
+.start-more a[hidden]{display:none}
+.start-more a:hover{border-color:var(--gold)}
+.start-more a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+/* Laptop widths: the side panels are up to 480px wide and the title block was centred, so they met in the middle. From 761px
+   the block is no wider than the room left of the panels (720px at most) and is moved right only as far as it must be;
+   from about 1750px up nothing moves. */
+@media (min-width:761px){
+  .hero-content{
+    width:min(720px, calc(100vw - 76px - min(480px, 46vw)));
+    position:relative;
+    left:max(0px, calc(36px + min(480px, 46vw) - (100vw - min(720px, calc(100vw - 76px - min(480px, 46vw)))) / 2));
+  }
+}
 @media (max-width:480px){
   .countdown{gap:8px}
   .countdown .tile{padding:10px 12px;min-width:64px}
 }
 @media (max-width:760px){
+  .hero-content{order:-1;margin:6px 0 26px}
   .side-links{position:static;width:100%;max-width:420px;margin:0 auto 28px;padding:0 4px;max-height:none;overflow:visible}
   .link-cols{flex-direction:column}
   .plaque-row{flex-direction:column}
@@ -372,6 +397,15 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
     <div id="countdown" class="countdown" aria-live="polite"></div>
     <p class="local-time" id="local-time"></p><br>
     <a class="status-link" href="https://wowforeverstatus.com/" target="_blank" rel="noopener">Server status ↗</a>
+    <section class="start" aria-labelledby="start-h">
+      <h2 class="start-title" id="start-h">New here? Start with these</h2>
+      <ol>
+        <li><a href="launch-plan.html"><b>1 · Pick your plan</b><span>Your race and class, quest by quest, with the best gear along the way.</span></a></li>
+        <li><a href="builds.html"><b>2 · Set your build</b><span>Talents for level 30 and 60, then best in slot in Mr.BiZ.</span></a></li>
+        <li><a href="addons.html"><b>3 · Add the addon</b><span>The arrow, macros and reminders, inside the game.</span></a></li>
+      </ol>
+      <p class="start-more"><a id="start-continue" href="launch-plan.html" hidden></a><a href="launch-plan.html?mode=night">Launching tonight? Open the short night list</a></p>
+    </section>
   </div>
 </div>
 
@@ -414,6 +448,25 @@ function tick(){
     `<div class="tile"><span class="num">${String(n).padStart(2,"0")}</span><span class="label">${label}</span></div>`
   ).join("");
 }
+
+// "Continue your plan": only when this browser has opened the launch plan before (the plan page restores the choice itself).
+(function () {
+  try {
+    var raw = localStorage.getItem("wf-launch-plan-sel");
+    var id = raw === null ? null : JSON.parse(raw);
+    if (typeof id !== "string" || !id) return;
+    var races = { human: "Human", dwarf: "Dwarf", gnome: "Gnome", nightelf: "Night Elf", skyborne: "Skyborne" };
+    var parts = id.split(":"), label = null;
+    if (id === "hunter") label = "2 Hunters";
+    else if (races[parts[0]] && parts[1]) label = races[parts[0]] + " " + parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase();
+    if (!label) return;
+    var lv = 0;
+    try { lv = Number(JSON.parse(localStorage.getItem("wf-launch-plan-level") || "null")); } catch (e) { /* a bad level only drops the level */ }
+    var a = document.getElementById("start-continue");
+    a.textContent = "Continue your plan: " + label + (lv > 0 && lv <= 60 ? ", level " + Math.floor(lv) : "") + " →";
+    a.hidden = false;
+  } catch (e) { /* storage blocked or an old value: the three steps still show */ }
+})();
 
 renderLocalTime();
 tick();

@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-11-02",
+      "title": "A clearer start page",
+      "text": "The Home page now has three steps for new visitors and remembers your launch plan so you can jump back in. On laptops the title no longer sits under the side lists, and on phones the countdown comes first. Links, tap sizes and text contrast got a check across the whole site.",
+      "link": "index.html"
+    },
+    {
       "date": "2026-11-01",
       "title": "Launch night mode and copyable waypoints",
       "text": "The launch plan has a Launch night mode with just the first steps and big tick boxes. The location buttons now copy a /bizway line you can paste in game, and the arrow points there.",

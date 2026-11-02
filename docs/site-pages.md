@@ -162,3 +162,6 @@ A page of cards that only link to the pages that hold the data (launch plan `?pl
 
 ## Launch night mode (launch plan)
 `body.night` (button `#night-btn`, `?mode=night`, `wf-launch-plan-night`) hides every direct child of `.wrap` that has no `data-night` attribute (and is not `#night`, whose heading text the addon generator reads, so it must stay `<h2 id="night">`). To keep another element in the mode, give it `data-night`.
+
+## Home start-here strip (2026-11-02)
+`index.html` has a `.start` section in `.hero-content`: three step cards (launch plan, builds, addons) and a "Launching tonight?" link to `launch-plan.html?mode=night`. `#start-continue` is filled by a small script that reads `wf-launch-plan-sel` (the plan id the launch plan saves: `skyborne:HUNTER`, or the preset `hunter`) and `wf-launch-plan-level`; it stays hidden when the value is missing or not a known plan, and a bad level only drops the level. Layout: from 761px `.hero-content` gets a width and offset worked out from the side panels' width (see the CSS comment) so it never sits under them; at 760px and below it comes first (`order:-1`). `node tools/rehearse.js --only home` checks all of it.

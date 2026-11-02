@@ -3,7 +3,7 @@
 //
 //   node tools/rehearse.js              everything (about 3 minutes)
 //   node tools/rehearse.js --quick      pages, countdown and 4 plans only
-//   node tools/rehearse.js --only plans (pages | countdown | plans | night | bis | a11y)
+//   node tools/rehearse.js --only plans (pages | countdown | plans | night | bis | home | a11y)
 //   CHROME=/path/to/chrome node tools/rehearse.js     when Chrome is not found in the usual places
 //
 // How: a tiny local server serves this folder and, for HTML pages only, injects a script before the page's own scripts. The
@@ -17,6 +17,7 @@
 //   plans      all 29 launch-plan plans: each phase draws exactly the step ids tools/plan_snapshot.js resolves, no load error
 //   night      launch night mode (?mode=night): only the night phase shows, with its steps
 //   bis        Mr.BiZ: every one of the 27 specs draws rows and the new panels
+//   home       Home: the start-here steps, the saved-plan link (also with broken storage), no overlap from 800px to 1920px
 //   a11y       accessibility audit of every page on desktop and phone (names, labels, alt, contrast, tap size, landmarks);
 //              add --report to list every finding instead of failing on them
 // Exit code 1 when anything failed. External resources (YouTube, Wowhead ...) are ignored: only this site's own files count.
@@ -59,6 +60,16 @@ const PROBES = {
     var live = document.querySelector("#countdown .live-msg");
     var ribbon = !!document.querySelector(".beta-ribbon");
     return { tiles: tiles, live: live ? live.textContent.trim() : "", ribbon: ribbon, local: document.getElementById("local-time").textContent };
+  }`,
+  home: `function () {
+    var hc = document.querySelector(".hero-content").getBoundingClientRect(), sl = document.querySelector(".side-links").getBoundingClientRect();
+    var st = document.querySelector(".start"), steps = Array.prototype.map.call(document.querySelectorAll(".start ol a"), function (a) { return a.getAttribute("href"); });
+    var cont = document.getElementById("start-continue");
+    var overlap = !(hc.right <= sl.left || hc.left >= sl.right || hc.bottom <= sl.top || hc.top >= sl.bottom);
+    var cr = document.querySelector(".start").getBoundingClientRect();
+    return { w: innerWidth, steps: steps, startVisible: !!st && st.getBoundingClientRect().height > 0,
+      contHidden: cont.hidden, contBox: cont.getBoundingClientRect().width, contText: cont.textContent, overlap: overlap, heroTop: hc.top, sideTop: sl.top, heroLeft: hc.left, heroRight: hc.right,
+      sideRight: sl.right, startRight: cr.right, vw: innerWidth, hScroll: document.documentElement.scrollWidth > innerWidth + 1 };
   }`,
   launchplan: `function () {
     var out = {};
@@ -180,6 +191,7 @@ function shimFor(url) {
   var f=window.fetch;
   if(f)window.fetch=function(u){var s=String(u&&u.url||u);var own=s.indexOf("http")!==0||s.indexOf(location.origin)===0;
     return f.apply(this,arguments).then(function(r){if(own&&!r.ok)add("fetch "+r.status+": "+s);return r;},function(e){if(own)add("fetch failed: "+s);throw e;});};
+  ${url.searchParams.get("__ls") ? `try{var seed=${url.searchParams.get("__ls")};Object.keys(seed).forEach(function(k){localStorage.setItem(k,seed[k]);});}catch(e){}` : ""}
   ${url.searchParams.get("__probe") === "a11y" ? `document.addEventListener("DOMContentLoaded",function(){var st=document.createElement("style");st.textContent="*,*::before,*::after{transition:none!important;animation:none!important}";document.head.appendChild(st);});` : ""}
   ${now ? `var RD=Date,off=${Date.parse(now)}-RD.now();
   window.Date=class extends RD{constructor(...a){if(a.length===0)super(RD.now()+off);else super(...a);}static now(){return RD.now()+off;}};` : ""}
@@ -230,7 +242,7 @@ function runPageOnce(base, relUrl, opts) {
   opts = opts || {};
   return new Promise((resolve) => {
     const prof = fs.mkdtempSync(path.join(os.tmpdir(), "r2f-rehearse-"));
-    const size = opts.mobile ? "390,844" : "1280,900";
+    const size = opts.width ? opts.width + ",900" : opts.mobile ? "390,844" : "1280,900";
     const chrome = spawn(CHROME, ["--headless=new", "--disable-gpu", "--no-sandbox", "--no-first-run", "--disable-extensions",
       "--user-data-dir=" + prof, "--window-size=" + size, "--virtual-time-budget=7000", "--dump-dom", base + relUrl],
       { stdio: ["ignore", "pipe", "pipe"] });
@@ -366,6 +378,42 @@ async function main() {
       const nightSteps = ((snap.plans[id] || snap.plans["skyborne:HUNTER"]).night || []).length;
       check(p.visible === nightSteps || (id === "hunter" && p.visible > 0), "night " + id + ": only the night steps are visible (" + p.visible + " of " + nightSteps + ")");
     }
+  }
+
+  if (want("home")) {
+    section("Home: start here, continue link, no overlap");
+    const q = (ls) => "index.html?__probe=home" + (ls ? "&__ls=" + encodeURIComponent(JSON.stringify(ls)) : "");
+    const fresh = await runPage(base, q(), { width: 1280 });
+    noErrors(fresh, "home (fresh browser)");
+    let p = fresh.probe || {};
+    check(p.startVisible && p.steps.join() === "launch-plan.html,builds.html,addons.html", "home: the three steps show and point at the plan, builds and addons (" + (p.steps || []).join() + ")");
+    check(p.contHidden === true && p.contBox === 0, "home: no continue link (and no empty box) in a fresh browser");
+    const saved = await runPage(base, q({ "wf-launch-plan-sel": JSON.stringify("nightelf:DRUID"), "wf-launch-plan-level": "14" }), { width: 1280 });
+    noErrors(saved, "home (saved plan)");
+    p = saved.probe || {};
+    check(p.contHidden === false && p.contText === "Continue your plan: Night Elf Druid, level 14 →", "home: continue link names the saved plan and level (got '" + p.contText + "')");
+    const duo = await runPage(base, q({ "wf-launch-plan-sel": JSON.stringify("hunter") }), { width: 1280 });
+    p = duo.probe || {};
+    check(p.contHidden === false && p.contText === "Continue your plan: 2 Hunters →", "home: the 2 Hunters preset reads right (got '" + p.contText + "')");
+    for (const junk of [{ "wf-launch-plan-sel": "{bad" }, { "wf-launch-plan-sel": JSON.stringify("elf:WIZARD") }, { "wf-launch-plan-sel": "null" }, { "wf-launch-plan-sel": JSON.stringify("human:MAGE"), "wf-launch-plan-level": "abc" }]) {
+      const r = await runPage(base, q(junk), { width: 1280 });
+      noErrors(r, "home (storage " + JSON.stringify(junk) + ")");
+      p = r.probe || {};
+      const okJunk = junk["wf-launch-plan-level"] ? p.contText === "Continue your plan: Human Mage →" : p.contHidden === true;
+      check(okJunk, "home: odd saved values never break the page or show a wrong plan (" + JSON.stringify(junk) + " -> '" + p.contText + "')");
+    }
+    for (const w of [800, 1024, 1180, 1280, 1366, 1440, 1536, 1920]) {
+      const r = await runPage(base, q(), { width: w });
+      noErrors(r, "home at " + w + "px");
+      p = r.probe || {};
+      check(p.overlap === false, "home at " + w + "px: the title block does not touch the side panels");
+      check(p.startRight <= p.vw + 1 && p.heroRight <= p.vw + 1, "home at " + w + "px: nothing runs off the right edge");
+      check(p.hScroll === false, "home at " + w + "px: no sideways scrolling");
+    }
+    const ph = await runPage(base, q(), { width: 504 });
+    p = ph.probe || {};
+    check(p.heroTop < p.sideTop, "home on a phone: the title and countdown come before the link lists");
+    check(p.hScroll === false, "home on a phone: no sideways scrolling");
   }
 
   if (want("a11y")) {

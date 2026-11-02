@@ -5,6 +5,10 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-02 (link checker and launch-day rehearsal)
+- `tools/check_links.py` (runs in `site-checks.yml`): every internal link, file reference, `#anchor`, hash route (Mr.BiZ spec, professions class, talents class / legacy) and launch plan URL value (`?plan=`, `?race=&class=`, `?level=`, `?mode=`) must resolve; duplicate ids and manifest icons are checked too. `--external` asks outside URLs once (warnings only). Checked by planting a dead page, class, spec and profession link: all four failed.
+- `tools/rehearse.js` + manual `Rehearsal` workflow: headless Chrome with a faked clock opens every page (no script errors, matching top bars), the Home countdown at T-2d, T-1h, T-1s and after launch, all 29 launch plans (each phase must draw exactly the step ids `plan_snapshot.js` resolves), launch night mode and all 27 Mr.BiZ specs. 403 checks pass. Checked by planting a wrong launch time and a script error: both failed. Not part of the push checks, so a slow browser never blocks a deploy.
+
 ## 2026-11-01 (launch night mode)
 - Launch plan: a "Launch night mode" button (or `?mode=night`, remembered in the browser) shows only the launch-night steps with big tick boxes: the race / class pickers, level box and Now/Next bar stay, everything else (rules, other phases, tips, Legacy points, notes, weapon lines, the shopping-list pill) is hidden. Press it again for the full page. Not offline: there is no service worker (a stale cached plan on launch day would be worse than none).
 

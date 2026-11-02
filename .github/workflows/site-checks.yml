@@ -1,5 +1,6 @@
 # Site-only checks: the shared top bar CSS must be identical on every page (CLAUDE.md hard rule 3).
 # Fix a failure with: python tools/sync_topbar.py (and python build.py so macros.html follows template.html).
+# Links: python tools/check_links.py names the broken link and the page it is on.
 name: Site checks
 
 on:
@@ -8,11 +9,19 @@ on:
     paths:
       - "*.html"
       - "tools/sync_topbar.py"
+      - "tools/check_links.py"
+      - "*.json"
+      - "*.js"
+      - "manifest.webmanifest"
       - ".github/workflows/site-checks.yml"
   pull_request:
     paths:
       - "*.html"
       - "tools/sync_topbar.py"
+      - "tools/check_links.py"
+      - "*.json"
+      - "*.js"
+      - "manifest.webmanifest"
       - ".github/workflows/site-checks.yml"
 
 permissions:
@@ -28,3 +37,5 @@ jobs:
           python-version: "3.12"
       - name: Top bar identical on every page
         run: python tools/sync_topbar.py --check
+      - name: Internal links, anchors and plan URLs resolve
+        run: python tools/check_links.py

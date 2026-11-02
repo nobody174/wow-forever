@@ -1,0 +1,20 @@
+# Launch-day rehearsal: real Chrome, faked clock (tools/rehearse.js). Run it by hand from the Actions tab before a big change or
+# on launch day; it is not part of the push checks, so a slow browser can never block a deploy.
+name: Rehearsal
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rehearse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+      - name: Pages, countdown, all plans, night mode, Mr.BiZ
+        run: node tools/rehearse.js

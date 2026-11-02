@@ -22,7 +22,7 @@ BEGIN, END = "/* topbar:begin */", "/* topbar:end */"
 
 CSS = BEGIN + r"""
 .topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
-.topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
+.topbar .site-title{display:flex;align-items:center;min-height:24px;font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
 .topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
 @media (max-width:1180px){
   .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}

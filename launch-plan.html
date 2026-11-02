@@ -39,7 +39,7 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 a{color:var(--gold)}
 /* topbar:begin */
 .topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
-.topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
+.topbar .site-title{display:flex;align-items:center;min-height:24px;font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
 .topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
 @media (max-width:1180px){
   .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
@@ -116,7 +116,7 @@ body.night ul.check li .n,body.night ul.check li .gear{display:none}
 .weapon-note{color:var(--muted);font-size:13px;margin:-8px 0 18px;max-width:70ch}
 
 .toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;margin:0 0 10px}
-.toc a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--edge)}
+.toc a{display:inline-flex;align-items:center;min-height:24px;color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--edge)}
 .toc a:hover{color:var(--gold);border-color:var(--gold)}
 h2{font:400 22px/1.2 var(--serif);color:var(--accent);margin:40px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--edge);scroll-margin-top:110px}
 .section-note{color:var(--muted);font-size:14px;margin:6px 0 14px}
@@ -142,7 +142,7 @@ ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--mut
 .gear{display:block;font-size:13px;margin-top:4px;color:var(--text)}
 .gear b{color:var(--gold);font-weight:600}
 .gear a.q2{color:#1eff00}
-.gear a.q3{color:#4da3ff}
+.gear a.q3{color:#4da3ff!important} /* Wowhead's stylesheet forces its darker rare blue (3.4:1 on this panel) */
 .gear a.q4{color:#c06cff}
 .gear a{color:var(--text);text-decoration:none;border-bottom:1px dotted var(--edge)}
 .gear a:hover{color:var(--gold);border-color:var(--gold)}
@@ -152,8 +152,8 @@ ul.check li.done .t{text-decoration:line-through;text-decoration-color:var(--mut
 .cards.two{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .card{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--accent);border-radius:5px;padding:14px 16px}
 .card[hidden],.draft[hidden]{display:none}
-.card h4{margin:0 0 6px;font:400 17px/1.2 var(--serif);color:var(--gold)}
-.card h4 .tag{font-family:var(--sans)}
+.card h3{margin:0 0 6px;font:400 17px/1.2 var(--serif);color:var(--gold)}
+.card h3 .tag{font-family:var(--sans)}
 .card p,.card ul{margin:0;color:var(--text);font-size:14px}
 .card ul{padding-left:18px}
 .card li{margin-bottom:4px}
@@ -278,7 +278,7 @@ body.buy-open .buy-drawer{transform:none}
     <a href="addons.html">Addons</a>
   </nav>
 </div>
-<div class="wrap">
+<div class="wrap" role="main">
   <h1 data-night>Launch Plan</h1>
   <div id="provenance" data-plan></div>
   <p class="lede">How we get ahead of the launch crowd: questing off the busy routes, and clearing every new dungeon once for its first-clear quest XP. Pick your race, then your class (every class levels as damage), or use the 2 Hunters option for the Skyborne Hunter duo.</p>
@@ -341,10 +341,10 @@ body.buy-open .buy-drawer{transform:none}
 
   <h2 id="rules">The rules that shape the route</h2>
   <div class="cards two">
-    <div class="card"><h4>Quests carry XP</h4><p>Same XP curve as Classic, but dungeon mob kills pay less. Quests are the engine.</p></div>
-    <div class="card"><h4>First clear, then leave</h4><p>The first clear of each dungeon pays raised quest XP. Collect every quest for it first, clear once, move on.</p></div>
-    <div class="card"><h4>Dodge the wave</h4><p>Crowds move through zones in a wave. Skip Westfall on day one, go where fewer people start, and revisit busy zones after the wave has passed.</p></div>
-    <div class="card"><h4>No scaling, no flying</h4><p>Zones are as dangerous as their level. New boats shorten travel: Stormwind → Auberdine and Menethil → Southshore.</p></div>
+    <div class="card"><h3>Quests carry XP</h3><p>Same XP curve as Classic, but dungeon mob kills pay less. Quests are the engine.</p></div>
+    <div class="card"><h3>First clear, then leave</h3><p>The first clear of each dungeon pays raised quest XP. Collect every quest for it first, clear once, move on.</p></div>
+    <div class="card"><h3>Dodge the wave</h3><p>Crowds move through zones in a wave. Skip Westfall on day one, go where fewer people start, and revisit busy zones after the wave has passed.</p></div>
+    <div class="card"><h3>No scaling, no flying</h3><p>Zones are as dangerous as their level. New boats shorten travel: Stormwind → Auberdine and Menethil → Southshore.</p></div>
   </div>
 
   <h2 id="before">Before launch</h2>
@@ -392,24 +392,24 @@ body.buy-open .buy-drawer{transform:none}
   <h2 id="legacy">Legacy points</h2>
   <p class="section-note">Account-wide perks. Easy to misread: nobody starts with 16 points.</p>
   <div class="cards two">
-    <div class="card"><h4>How it works</h4><ul>
+    <div class="card"><h3>How it works</h3><ul>
       <li>Every account starts at <strong>0</strong>. Each completed Legacy challenge gives <strong>1 point</strong>.</li>
       <li>Points are shared by every character on the Battle.net account, so each of us earns our own.</li>
       <li>Each character spends the points separately and can pick different perks.</li>
       <li><strong>16 is a cap</strong>: the most one character can spend at launch.</li>
     </ul></div>
-    <div class="card"><h4>Fastest points for us</h4><ul>
+    <div class="card"><h3>Fastest points for us</h3><ul>
       <li>First time a class reaches <strong>25, 45 and 60</strong>: 3 points, earned just by leveling.</li>
       <li><strong>Spelunker</strong> challenges: clear a set of dungeons in each level bracket (exact lists unconfirmed).</li>
       <li>Crafting professions at 150 / 225 / 300. Skinning and Cooking <strong>don't</strong> count.</li>
       <li>Realistic total at our first 60: <strong>about 5–6 points</strong>. 16 needs alts, crafting or PvP.</li>
     </ul></div>
-    <div class="card"><h4>Column gates</h4><ul>
+    <div class="card"><h3>Column gates</h3><ul>
       <li><strong>Column 1</strong>: open from the first point.</li>
       <li><strong>Column 2</strong>: needs 5 points spent in <em>that</em> tree.</li>
       <li><strong>Column 3</strong>: needs 10 points in that tree, plus a rank in the perk it's connected to. Its perk is point 11 at the earliest.</li>
     </ul></div>
-    <div class="card"><h4>Well Rested &amp; Talented, simply</h4><ul>
+    <div class="card"><h3>Well Rested &amp; Talented, simply</h3><ul>
       <li><strong>Well Rested</strong> (col 1, 5 ranks): rested XP builds 4% faster and the rested pool holds 4% more, per rank. Rested XP only doubles kill XP, not quest XP. Best on alts left logged out for days.</li>
       <li><strong>Talented</strong> (col 2, 5 ranks, needs a rank in Well Rested): first talent point one level earlier per rank, level 9 → level 5 at 5/5. The total stays 51. Only helps a new character, so it's an alt perk.</li>
     </ul></div>
@@ -426,12 +426,12 @@ body.buy-open .buy-drawer{transform:none}
   </div>
   <p class="section-note">Positions follow Wowhead's Legacy data (beta build); try them in our <a href="talents.html#legacy">Legacy Calculator</a>. Ranks in brackets.</p>
   <div class="cards two">
-    <div class="card legacy-path" data-race="skyborne"><h4>Skyborne path</h4><ul>
+    <div class="card legacy-path" data-race="skyborne"><h3>Skyborne path</h3><ul>
       <li>Points 1–5: <strong>Thrill of Adventure 5/5</strong>. It also saves food and water we'd otherwise buy.</li>
       <li>Then stay in Adventure: Field Guide first (Frequent Flier's connector), then High Alert or Field Medicine.</li>
       <li>Point 11: <strong>Frequent Flier</strong> (50% cheaper flights, 20% faster). The last 5 go to Resourcefulness column 1: Gourmand 3/3 plus The Quick and the Dead 2/2.</li>
     </ul></div>
-    <div class="card legacy-path" data-race="human dwarf gnome nightelf"><h4>Path for Humans, Dwarves, Gnomes and Night Elves</h4><ul>
+    <div class="card legacy-path" data-race="human dwarf gnome nightelf"><h3>Path for Humans, Dwarves, Gnomes and Night Elves</h3><ul>
       <li>Points 1–5: <strong>Thrill of Adventure 5/5</strong>. Its mana return matters most for Paladins, Shamans and the casters.</li>
       <li>Then stay in Adventure: Field Guide first (Frequent Flier's connector), then High Alert or Field Medicine.</li>
       <li>Point 11: <strong>Frequent Flier</strong>. Nobody teleports, so cheaper, faster flights help everyone.</li>
@@ -1033,7 +1033,7 @@ body.buy-open .buy-drawer{transform:none}
     var cards = TIPS.filter(function (c) { return tipVisible(c, sel); });
     document.getElementById("tips-cards").innerHTML = cards.map(function (c) {
       var body = "<ul>" + c.ul.map(function (li) { return "<li>" + li + "</li>"; }).join("") + "</ul>";
-      return '<div class="card"><h4>' + c.h + "</h4>" + body + "</div>";
+      return '<div class="card"><h3>' + c.h + "</h3>" + body + "</div>";
     }).join("");
   }
 

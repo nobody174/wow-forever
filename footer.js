@@ -6,7 +6,7 @@
   var DISCORD = "https://discord.gg/Yh2sTMZksq";
   var css = ".site-foot{border-top:1px solid var(--edge);background:var(--panel);padding:18px 16px 22px;text-align:center;font:14px/1.5 var(--sans);color:var(--muted)}" +
     ".site-foot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;margin-bottom:6px}" +
-    ".site-foot a{color:var(--gold);text-decoration:none}.site-foot a:hover{text-decoration:underline}" +
+    ".site-foot nav a{display:inline-block;padding:3px 0;min-height:24px}.site-foot a{color:var(--gold);text-decoration:none}.site-foot a:hover{text-decoration:underline}" +
     ".site-foot .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#E5382B;margin-left:6px;vertical-align:2px;box-shadow:0 0 6px rgba(229,56,43,.7)}" +
     ".site-foot small{font-size:12px}";
   var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);

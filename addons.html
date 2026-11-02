@@ -37,7 +37,7 @@ html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sa
 body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 /* topbar:begin */
 .topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
-.topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
+.topbar .site-title{display:flex;align-items:center;min-height:24px;font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
 .topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
 @media (max-width:1180px){
   .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
@@ -118,7 +118,7 @@ h2:first-of-type{margin-top:0}
 .dl-card .addon-btn{padding:8px 14px;font-size:13px}
 .dl-card .ver{margin-top:6px}
 .more{margin-top:4px}
-.more summary{display:inline-block;cursor:pointer;color:var(--muted);font-size:12.5px;list-style:none;user-select:none;padding:2px 0}
+.more summary{display:inline-flex;align-items:center;min-height:24px;cursor:pointer;color:var(--muted);font-size:12.5px;list-style:none;user-select:none;padding:2px 0}
 .more summary::-webkit-details-marker{display:none}
 .more summary::before{content:"\25B8";display:inline-block;margin-right:5px;transition:transform .12s ease}
 .more[open] summary::before{transform:rotate(90deg)}
@@ -188,7 +188,7 @@ h2:first-of-type{margin-top:0}
     <a href="addons.html" aria-current="page">Addons</a>
   </nav>
 </div>
-<div class="wrap">
+<div class="wrap" role="main">
   <h1>Addons</h1>
   <p class="lede">These addons are tested and working for WoW Forever. Download, extract, and copy each addon folder to <code>World of Warcraft\_classic_beta_\Interface\AddOns</code>.</p>
   <p class="checked" id="versions-checked">Versions checked on CurseForge: <b>Oct 25, 2026</b></p>

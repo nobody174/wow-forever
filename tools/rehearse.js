@@ -3,7 +3,7 @@
 //
 //   node tools/rehearse.js              everything (about 3 minutes)
 //   node tools/rehearse.js --quick      pages, countdown and 4 plans only
-//   node tools/rehearse.js --only plans (pages | countdown | plans | night | bis)
+//   node tools/rehearse.js --only plans (pages | countdown | plans | night | bis | a11y)
 //   CHROME=/path/to/chrome node tools/rehearse.js     when Chrome is not found in the usual places
 //
 // How: a tiny local server serves this folder and, for HTML pages only, injects a script before the page's own scripts. The
@@ -17,6 +17,8 @@
 //   plans      all 29 launch-plan plans: each phase draws exactly the step ids tools/plan_snapshot.js resolves, no load error
 //   night      launch night mode (?mode=night): only the night phase shows, with its steps
 //   bis        Mr.BiZ: every one of the 27 specs draws rows and the new panels
+//   a11y       accessibility audit of every page on desktop and phone (names, labels, alt, contrast, tap size, landmarks);
+//              add --report to list every finding instead of failing on them
 // Exit code 1 when anything failed. External resources (YouTube, Wowhead ...) are ignored: only this site's own files count.
 
 const fs = require("fs");
@@ -72,6 +74,83 @@ const PROBES = {
       level: !!lvl, prov: prov ? prov.textContent.trim() : "", chip: (document.getElementById("launch-chip") || {}).textContent || "",
       nowbar: !!document.getElementById("now-bar") };
   }`,
+  a11y: `function () {
+    var out = { vw: innerWidth, noName: [], noAlt: [], noLabel: [], contrast: [], small: [], misc: [] };
+    function vis(e) { var r = e.getBoundingClientRect(); var cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== "hidden" && cs.display !== "none"; }
+    function sel(e) { var s = e.tagName.toLowerCase(); if (e.id) s += "#" + e.id; else if (e.className && typeof e.className === "string") s += "." + e.className.trim().split(/\\s+/).slice(0, 2).join("."); return s; }
+    function text(e) { return (e.getAttribute("aria-label") || e.getAttribute("title") || e.textContent || "").trim().replace(/\\s+/g, " "); }
+    // accessible name of a control: aria-label / aria-labelledby / text / title / alt of an inner image
+    function name(e) {
+      var n = e.getAttribute("aria-label"); if (n && n.trim()) return n;
+      var by = e.getAttribute("aria-labelledby"); if (by) { var t = by.split(" ").map(function (i) { var x = document.getElementById(i); return x ? x.textContent : ""; }).join(" ").trim(); if (t) return t; }
+      var t2 = (e.textContent || "").trim(); if (t2) return t2;
+      var img = e.querySelector("img[alt]"); if (img && img.alt.trim()) return img.alt;
+      var svg = e.querySelector("svg title"); if (svg && svg.textContent.trim()) return svg.textContent;
+      return (e.getAttribute("title") || "").trim();
+    }
+    document.querySelectorAll("a[href], button, [role=button], summary").forEach(function (e) {
+      if (!vis(e)) return;
+      if (!name(e)) out.noName.push(sel(e) + " " + (e.getAttribute("href") || ""));
+    });
+    document.querySelectorAll("img").forEach(function (e) { if (!e.hasAttribute("alt")) out.noAlt.push(sel(e) + " " + (e.getAttribute("src") || "").slice(0, 50)); });
+    document.querySelectorAll("input:not([type=hidden]), select, textarea").forEach(function (e) {
+      if (!vis(e) && e.type !== "checkbox" && e.type !== "radio") return;
+      var lab = e.getAttribute("aria-label") || e.getAttribute("aria-labelledby") || e.getAttribute("title") || (e.id && document.querySelector('label[for="' + e.id + '"]')) || e.closest("label") || e.getAttribute("placeholder");
+      if (!lab) out.noLabel.push(sel(e));
+    });
+    // contrast of text on a flat background (gradients / images are skipped: unknown)
+    function rgba(c) { var m = c.match(/rgba?\\(([^)]+)\\)/); if (!m) return null; var p = m[1].split(/[ ,\\/]+/).filter(Boolean).map(Number); return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 }; }
+    function lum(c) { function f(v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); } return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b); }
+    function bgOf(e) {
+      var layers = [], er = e.getBoundingClientRect();
+      for (var n = e; n && n.nodeType === 1; n = n.parentElement) {
+        var nr = n.getBoundingClientRect();
+        if (n !== e && (er.left < nr.left - 1 || er.right > nr.right + 1 || er.top < nr.top - 1 || er.bottom > nr.bottom + 1)) continue; // hangs outside this box
+        var cs = getComputedStyle(n);
+        if (cs.backgroundImage !== "none") return null;
+        var c = rgba(cs.backgroundColor);
+        if (c && c.a > 0) { layers.push(c); if (c.a >= 1) break; }
+      }
+      var base = { r: 11, g: 15, b: 30, a: 1 };
+      var bg = layers.length && layers[layers.length - 1].a >= 1 ? layers.pop() : (rgba(getComputedStyle(document.body).backgroundColor) || base);
+      if (bg.a < 1) bg = { r: 11, g: 15, b: 30, a: 1 };
+      while (layers.length) { var t = layers.pop(); bg = { r: t.r * t.a + bg.r * (1 - t.a), g: t.g * t.a + bg.g * (1 - t.a), b: t.b * t.a + bg.b * (1 - t.a), a: 1 }; }
+      return bg;
+    }
+    var seen = {};
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+      var tx = node.nodeValue.trim(); if (tx.length < 2) continue;
+      var el = node.parentElement; if (!el || /^(SCRIPT|STYLE|NOSCRIPT)$/.test(el.tagName) || !vis(el)) continue;
+      if (el.closest("[disabled], [aria-disabled=true]")) continue; // inactive controls are exempt (WCAG 1.4.3)
+      var cs = getComputedStyle(el), fg = rgba(cs.color), bg = bgOf(el);
+      if (!fg || !bg) continue;
+      var op = 1; for (var q = el; q && q.nodeType === 1; q = q.parentElement) op *= parseFloat(getComputedStyle(q).opacity);
+      if (op < 0.99) { fg = { r: fg.r * fg.a * op + bg.r * (1 - fg.a * op), g: fg.g * fg.a * op + bg.g * (1 - fg.a * op), b: fg.b * fg.a * op + bg.b * (1 - fg.a * op), a: 1 }; }
+      else if (fg.a < 1) fg = { r: fg.r * fg.a + bg.r * (1 - fg.a), g: fg.g * fg.a + bg.g * (1 - fg.a), b: fg.b * fg.a + bg.b * (1 - fg.a), a: 1 };
+      var L1 = lum(fg), L2 = lum(bg), ratio = (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+      var size = parseFloat(cs.fontSize), bold = parseInt(cs.fontWeight, 10) >= 700;
+      var need = size >= 24 || (size >= 18.66 && bold) ? 3 : 4.5;
+      if (ratio < need) { var key = sel(el) + "|" + cs.color + "|" + cs.backgroundColor; if (!seen[key]) { seen[key] = 1; out.contrast.push(ratio.toFixed(2) + " (<" + need + ") " + sel(el) + " '" + tx.slice(0, 28) + "' " + cs.color); } }
+    }
+    // controls smaller than 24 x 24 CSS px (WCAG 2.2 AA 2.5.8; links inside a sentence are exempt)
+    document.querySelectorAll("button, [role=button], summary, input:not([type=hidden]), select, nav a, .topbar a, .site-foot nav a, a.btn, a.pill, a.chip").forEach(function (e) {
+      if (!vis(e) || e.disabled || e.getAttribute("aria-disabled") === "true") return;
+      var box = e;
+      // a checkbox / radio inside a label is tapped through the whole label
+      if ((e.type === "checkbox" || e.type === "radio") && e.closest("label")) box = e.closest("label");
+      var r = box.getBoundingClientRect();
+      if (r.width < 24 || r.height < 24) out.small.push(Math.round(r.width) + "x" + Math.round(r.height) + " " + sel(e) + " '" + text(box).slice(0, 20) + "'");
+    });
+    if (!document.documentElement.lang) out.misc.push("no <html lang>");
+    if (!document.querySelector("main, [role=main]")) out.misc.push("no <main> landmark");
+    var h1s = document.querySelectorAll("h1").length; if (h1s !== 1) out.misc.push(h1s + " <h1> elements");
+    var prev = 0; document.querySelectorAll("h1,h2,h3,h4,h5,h6").forEach(function (h) { var l = +h.tagName[1]; if (prev && l > prev + 1 && vis(h)) out.misc.push("heading jumps h" + prev + " to h" + l + " '" + text(h).slice(0, 24) + "'"); prev = l; });
+    if (!document.querySelector("meta[name=viewport]")) out.misc.push("no viewport meta");
+    document.querySelectorAll("a[target=_blank]").forEach(function (a) { if (!/noopener/.test(a.rel)) out.misc.push("target=_blank without noopener: " + (a.getAttribute("href") || "").slice(0, 50)); });
+    return out;
+  }`,
   bis: `function () {
     var rows = document.querySelectorAll("#rows .row");
     var empty = document.querySelectorAll("#rows .row.empty").length;
@@ -85,7 +164,8 @@ const PROBES = {
 
 function shimFor(url) {
   const now = url.searchParams.get("__now");
-  const probe = PROBES[url.searchParams.get("__probe")];
+  // __js=<function source> runs an ad-hoc probe (for looking at one thing in a page; local server only)
+  const probe = url.searchParams.get("__js") || PROBES[url.searchParams.get("__probe")];
   return `<script>(function(){
   var errs=[];
   function add(m){errs.push(String(m).slice(0,300));try{document.documentElement.setAttribute("data-r2f-errors",JSON.stringify(errs));}catch(e){}}
@@ -100,6 +180,7 @@ function shimFor(url) {
   var f=window.fetch;
   if(f)window.fetch=function(u){var s=String(u&&u.url||u);var own=s.indexOf("http")!==0||s.indexOf(location.origin)===0;
     return f.apply(this,arguments).then(function(r){if(own&&!r.ok)add("fetch "+r.status+": "+s);return r;},function(e){if(own)add("fetch failed: "+s);throw e;});};
+  ${url.searchParams.get("__probe") === "a11y" ? `document.addEventListener("DOMContentLoaded",function(){var st=document.createElement("style");st.textContent="*,*::before,*::after{transition:none!important;animation:none!important}";document.head.appendChild(st);});` : ""}
   ${now ? `var RD=Date,off=${Date.parse(now)}-RD.now();
   window.Date=class extends RD{constructor(...a){if(a.length===0)super(RD.now()+off);else super(...a);}static now(){return RD.now()+off;}};` : ""}
   ${probe ? `setTimeout(function(){try{document.documentElement.setAttribute("data-r2f-probe",JSON.stringify((${probe})()));}catch(e){add("probe: "+e.message);}},4000);` : ""}
@@ -189,6 +270,15 @@ async function main() {
   const srv = await serve();
   const base = "http://127.0.0.1:" + srv.address().port + "/";
   console.log("Chrome: " + CHROME + " | " + CONCURRENCY + " at a time | server " + base);
+  if (args.includes("--eval")) {
+    // node tools/rehearse.js --eval "bis.html#hunter/survival" "function(){ return document.title; }" [--mobile]
+    const i = args.indexOf("--eval"), target = args[i + 1], js = args[i + 2];
+    const [pg, hash] = target.split("#");
+    const r = await runPage(base, pg + (pg.includes("?") ? "&" : "?") + "__js=" + encodeURIComponent(js) + (hash ? "#" + hash : ""), { mobile: args.includes("--mobile") });
+    console.log(JSON.stringify(r.probe, null, 1));
+    if (r.errors.length) console.log("errors: " + r.errors.join(" | "));
+    srv.close(); return;
+  }
   const snap = JSON.parse(execFileSync("node", [path.join(ROOT, "tools", "plan_snapshot.js"), "--steps", path.join(ROOT, "launch-plan-steps.json")],
     { maxBuffer: 64 * 1024 * 1024 }).toString());
   const plans = Object.keys(snap.plans);
@@ -276,6 +366,24 @@ async function main() {
       const nightSteps = ((snap.plans[id] || snap.plans["skyborne:HUNTER"]).night || []).length;
       check(p.visible === nightSteps || (id === "hunter" && p.visible > 0), "night " + id + ": only the night steps are visible (" + p.visible + " of " + nightSteps + ")");
     }
+  }
+
+  if (want("a11y")) {
+    section("accessibility audit (desktop and 390px phone)");
+    const pages = fs.readdirSync(ROOT).filter((f) => f.endsWith(".html") && f !== "template.html").sort();
+    const jobs = [];
+    pages.forEach((pg) => [false, true].forEach((mobile) => jobs.push({ pg, mobile })));
+    const rs = await pool(jobs.map((j) => () => runPage(base, j.pg + "?__probe=a11y", { mobile: j.mobile })));
+    jobs.forEach((j, i) => {
+      const r = rs[i], p = r.probe || {}, label = j.pg + (j.mobile ? " (phone)" : "");
+      noErrors(r, label);
+      if (j.mobile) check(p.vw <= 520, label + ": the phone viewport is narrow (" + p.vw + "px; Chrome's smallest headless window)");
+      for (const k of ["noName", "noAlt", "noLabel", "misc", "contrast", "small"]) {
+        const list = p[k] || [];
+        if (args.includes("--report")) list.forEach((x) => console.log("      " + label + " " + k + ": " + x));
+        else check(list.length === 0, label + ": " + k + " | " + list.slice(0, 4).join(" ; ") + (list.length > 4 ? " ... +" + (list.length - 4) : ""));
+      }
+    });
   }
 
   if (want("bis")) {

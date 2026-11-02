@@ -39,7 +39,7 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 a{color:var(--gold)}
 /* topbar:begin */
 .topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
-.topbar .site-title{font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
+.topbar .site-title{display:flex;align-items:center;min-height:24px;font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
 .topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
 @media (max-width:1180px){
   .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
@@ -82,7 +82,7 @@ p.lede{color:var(--muted);max-width:62ch;margin:0 auto 24px;text-align:center}
 h2{font:400 24px/1.2 var(--serif);color:var(--gold);margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--edge)}
 .hub{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .card{background:var(--panel);border:1px solid var(--edge);border-top:3px solid #ABD473;border-radius:8px;padding:16px 18px;min-width:0}
-.card h3{margin:0 0 6px;font:600 17px/1.3 var(--sans);color:var(--text)}
+.card h2{margin:0 0 6px;padding:0;border:0;font:600 17px/1.3 var(--sans);color:var(--text)}
 .card p{margin:0 0 10px;color:var(--muted);font-size:14.5px}
 .card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
 .card li a{display:block;padding:9px 12px;border:1px solid var(--edge);border-radius:6px;text-decoration:none;color:var(--text);font-size:14.5px;background:#10152C}
@@ -113,7 +113,7 @@ h2{font:400 24px/1.2 var(--serif);color:var(--gold);margin:30px 0 12px;padding-b
 
   <div class="hub">
     <section class="card" aria-labelledby="h-plan">
-      <h3 id="h-plan">Level with a plan</h3>
+      <h2 id="h-plan">Level with a plan</h2>
       <p>Quest steps, coordinates and the best quest weapons, for your race.</p>
       <ul>
         <li><a href="launch-plan.html?plan=hunter">2 Hunters (Skyborne duo)<small>Adds the duo tactics: pets, tagging, kiting</small></a></li>
@@ -124,7 +124,7 @@ h2{font:400 24px/1.2 var(--serif);color:var(--gold);margin:30px 0 12px;padding-b
     </section>
 
     <section class="card" aria-labelledby="h-talents">
-      <h3 id="h-talents">Talents</h3>
+      <h2 id="h-talents">Talents</h2>
       <p>Leveling builds for level 30 and 60, and the calculator.</p>
       <ul>
         <li><a href="builds.html">Hunter builds<small>Pick Hunter at the top of the page</small></a></li>
@@ -133,7 +133,7 @@ h2{font:400 24px/1.2 var(--serif);color:var(--gold);margin:30px 0 12px;padding-b
     </section>
 
     <section class="card" aria-labelledby="h-gear">
-      <h3 id="h-gear">Gear (Mr.BiZ)</h3>
+      <h2 id="h-gear">Gear (Mr.BiZ)</h2>
       <p>Best in slot with the next best picks, per spec.</p>
       <ul>
         <li><a href="bis.html#hunter/beast-mastery">Beast Mastery</a></li>
@@ -144,7 +144,7 @@ h2{font:400 24px/1.2 var(--serif);color:var(--gold);margin:30px 0 12px;padding-b
     </section>
 
     <section class="card" aria-labelledby="h-macros">
-      <h3 id="h-macros">Macros</h3>
+      <h2 id="h-macros">Macros</h2>
       <p>Pet control, aspects, feed pet, Feign Death and more, ready to copy or install with the addon.</p>
       <ul>
         <li><a href="macros.html">Macros<small>Open the Hunter tab</small></a></li>
@@ -152,7 +152,7 @@ h2{font:400 24px/1.2 var(--serif);color:var(--gold);margin:30px 0 12px;padding-b
     </section>
 
     <section class="card" aria-labelledby="h-pets">
-      <h3 id="h-pets">Pets</h3>
+      <h2 id="h-pets">Pets</h2>
       <p>Which beast to tame and where. We do not have our own pet list yet.</p>
       <ul>
         <li><a class="ext" href="https://beastmaster.io/forever" target="_blank" rel="noopener">Hunter Pet Database</a></li>
@@ -160,7 +160,7 @@ h2{font:400 24px/1.2 var(--serif);color:var(--gold);margin:30px 0 12px;padding-b
     </section>
 
     <section class="card" aria-labelledby="h-addon">
-      <h3 id="h-addon">In the addon</h3>
+      <h2 id="h-addon">In the addon</h2>
       <p>Reminders for ammo and your pet (Tweaks), Setup Hunter for your bars and layout, and the plan arrow that points at each step.</p>
       <ul>
         <li><a href="addons.html">Get the Road to Forever addon</a></li>

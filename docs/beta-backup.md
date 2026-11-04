@@ -20,11 +20,14 @@ and once more on the last beta day.
 ## Put it into the release client
 1. Install the release client and log in once with each character, then **log out and close the game completely** (the game
    rewrites these files when it closes).
-2. Copy the files from the backup into the release client's `WTF` folder at the same places. Your account folder id is the same.
-   Do NOT copy over a file you did not mean to: `Config.wtf` also holds the release client's own graphics choices.
+2. Run `python addon/tools/restore_wtf.py` (it only shows the plan), then `python addon/tools/restore_wtf.py --apply` with the game
+   closed. It copies bindings, Edit Mode layouts, macros and account settings into the release client (`D:\World of Warcraft\_forever_`),
+   keeps what it replaces in `wow-beta-backupefore-restore-<time>`, refuses while Wow.exe runs, and never touches `Config.wtf`,
+   SavedVariables or the character folders. **The account folder is NOT the same id** (beta `575003#3`, release `IZAK04`): a copy by
+   hand into the beta's id lands nowhere. (Found 2026-11-05: the release client had rewritten these files empty at its first start.)
 3. Start the game. Check Edit Mode (layouts), Options > Key Bindings, `/macro`, and the addon's Home page.
 Anything that does not come back: the game's own caches are rebuilt from the server, only these files are yours.
 
 ## The Setup button
 `/r2f setup hunter` (or the minimap menu's "Setup Hunter") needs the Edit Mode layout called "Hunter" to exist in the client where
-you press it, so restore the layouts first.
+you press it, so restore the layouts first (the menu entry is hidden until the layout is there). Then pick the "Hunter" layout in Edit Mode once per character.

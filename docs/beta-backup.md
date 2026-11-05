@@ -28,6 +28,12 @@ and once more on the last beta day.
 3. Start the game. Check Edit Mode (layouts), Options > Key Bindings, `/macro`, and the addon's Home page.
 Anything that does not come back: the game's own caches are rebuilt from the server, only these files are yours.
 
+## What does not come back by file (found 2026-11-05)
+Key bindings are saved on the server and came back (the restore tool plus a one-off `SetBinding` helper worked in the game), but
+**Edit Mode layouts do not**: the release client replaces `edit-mode-cache-account.txt` with the server's copy at login (the account
+has no layouts there), so a restored file is gone again after the first start. A layout can only be recreated in Edit Mode (or imported
+from an export string, which needs the game that made it). Use `/r2f setup show` so Setup Hunter works without the layout.
+
 ## The Setup button
 `/r2f setup hunter` (or the minimap menu's "Setup Hunter") needs the Edit Mode layout called "Hunter" to exist in the client where
 you press it, so restore the layouts first (the menu entry is hidden until the layout is there). Then pick the "Hunter" layout in Edit Mode once per character.

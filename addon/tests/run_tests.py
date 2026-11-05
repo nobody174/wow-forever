@@ -9348,6 +9348,17 @@ def test_setup():
           "setup: a Hunter without the Edit Mode layout 'Hunter' is not offered the setup (it is for the owner's characters)")
     lua.execute("TEST.chat = {} R2F.Setup.Run('hunter')")
     check("no Edit Mode layout called" in chat_all(lua), "setup: the command says the layout is missing, before asking anything")
+    # /r2f setup show: the layout cannot be copied from the beta by file (the game keeps layouts on the server), so the owner can
+    # switch the setup on without it; it stays off for everyone else and can be switched off again.
+    menu_has = "(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()"
+    lua.execute("TEST.chat = {} R2F.Setup.ToggleShow()")
+    check(lua.eval("R2FDB.setupShow") is True and "now offered without the Edit Mode layout" in chat_all(lua), "setup show: switched on and said so")
+    check(lua.eval(menu_has) is True, "setup show: the menu offers 'Setup Hunter' although the layout is missing")
+    lua.execute("TEST.chat = {} R2F.Setup.Run('hunter')")
+    check("no Edit Mode layout called" not in chat_all(lua), "setup show: the command goes on to the confirmation without the layout")
+    lua.execute("TEST.chat = {} R2F.Setup.ToggleShow()")
+    check(lua.eval("R2FDB.setupShow") is None and lua.eval(menu_has) is False and "only to characters that have" in chat_all(lua),
+          "setup show: switched off again, the menu entry goes away")
     lua.execute("LAYOUTS[3].layoutName = 'Hunter'")
     check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is True,
           "setup: the minimap menu offers 'Setup Hunter' to a Hunter")

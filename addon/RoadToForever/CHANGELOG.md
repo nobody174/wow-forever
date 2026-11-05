@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **`/r2f setup show`** offers Setup Hunter / Setup Druid in the minimap menu and the help lines even without the Edit Mode layout (the setup then skips its layout step); run it again to turn that off. Why: the Forever release client keeps Edit Mode layouts on the server, so the beta's "Hunter" layout cannot be restored by copying files (the game replaces the restored file with the server's empty copy at login, found 2026-11-05).
 - **Duo progress:** two buttons on the Plan tab under the preview row. "Copy my progress" shows a string (your plan, level and ticked steps; no character name) to send to your partner. "Compare with partner" takes theirs and shows both levels, the level gap, how many steps you share and the steps only one of you has done. The Launch plan page on the site makes and reads the same string (`R2FP1:`). Read-only: nothing is written to the game or to your ticks. The plan list moved down one row to make room.
 
 ## 0.82.0 (2026-10-25)

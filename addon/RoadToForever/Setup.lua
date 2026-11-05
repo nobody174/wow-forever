@@ -445,8 +445,17 @@ function Setup.Run(key)
 end
 
 -- A setup is for characters that have its Edit Mode layout saved ("Hunter", "Warrior/Druid"): everyone else never sees it.
+-- `/r2f setup show` (R2FDB.setupShow) offers it without the layout: the game keeps Edit Mode layouts on the server, so a
+-- layout from another client (the beta) cannot be copied over by file; the setup then skips its layout step.
 function Setup.Available(def)
-  return def ~= nil and def.layout ~= nil and (Setup.FindLayout(def.layout)) ~= nil
+  if def == nil then return false end
+  if _G.R2FDB and _G.R2FDB.setupShow then return true end
+  return def.layout ~= nil and (Setup.FindLayout(def.layout)) ~= nil
+end
+
+function Setup.ToggleShow()
+  _G.R2FDB.setupShow = not _G.R2FDB.setupShow or nil
+  R2F.Print(_G.R2FDB.setupShow and L.SETUP_SHOW_ON or L.SETUP_SHOW_OFF)
 end
 
 -- Is there a setup this character can use? (The menu entry and the help lines depend on it.)

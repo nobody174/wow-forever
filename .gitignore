@@ -2,3 +2,6 @@ __pycache__/
 assets/drafts/
 .claude/
 bis/own/cache/
+
+# Editor workspace files
+*.code-workspace

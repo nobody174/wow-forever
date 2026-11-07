@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-07",
+      "title": "Talent builds updated for the November changes",
+      "text": "The game changed its talent trees on 3-4 November, so many of our recommended builds no longer fit. The builds page and the addon now use the current trees: builds that only had renames kept their picks, the rest follow the most popular current build of that spec. Check your class and tell us what looks wrong.",
+      "link": "builds.html"
+    },
+    {
+      "date": "2026-11-07",
       "title": "Addon 0.83.0: aspect reminder and a Training tab",
       "text": "Hunters get a reminder when no aspect is up and a warning to swap back to Hawk when Cheetah is up in a fight. A new Training tab lists every spell your trainer teaches next, up to level 60, like the spellbook. The Entering Combat banner now waits until the fight is real when you send in a pet.",
       "link": "addons.html"

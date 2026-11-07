@@ -5,10 +5,14 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-07 (addon 0.84.0: talent trees refreshed, 23 of 49 builds rebuilt; talent board art; Training list shipped)
+- `TalentData.lua` regenerated from Wowhead (live data of 2026-11-07, after the 3-4 Nov hotfixes). The drift check was red and 25 recommended builds were invalid. Repair method (ledger D12): decode with the old trees, follow talents by icon and name across trees, clamp ranks, validate on the new trees. 6 builds repaired exactly (Mage Frost 30, both Fury 30s, Shaman Enhancement 60, Hunter BM 60 and their like); 23 whose foundation is gone were replaced by talentsforever.com's popular build of the same lead tree (`popular.js`, codes verified valid on our trees), cut to 21 points for level 30. `builds.html` codes and fallback talent rows updated; rotations unchanged and still written for the old picks: re-read them against the new builds.
+
 ## 2026-11-07 (addon 0.83.0: Hunter aspect reminder, Training tab, combat banner with a pet)
 - Hunter aspect reminder (`Aspect.lua`, Tweaks > Class icons, on by default): a red Hawk icon when no aspect is up (quiet when mounted, dead, feigning death, or before the first aspect is learned), a gold "Swap to Hawk" icon while Cheetah or Pack is up in combat. Same read-only look as the pet and stance icons; `/r2f aspect`, `/r2f aspect lock`. Aura names matched in English.
 - Training tab (`UI/Training.lua`, Character group, between Builds and Gear): the class trainer's list as spellbook slots, split Train now / Next level / each later level up to 60, trainer tooltip on hover. `Training.Read` now also saves each spell's icon and tooltip lines (older saves show a question mark until the trainer is visited again); `Training.Upcoming` feeds the page. Theme tables for the extra tab (`NAV_ICON` reuses the talents art, `DecoBook` order, `DecoToy` colour).
 - Combat banner with a pet out: "Entering Combat" waits until the fight is real (target or pet target in combat, something targets you, health drops), or 4 s at most; a flag that ends first shows nothing. Without a pet nothing changed.
+- After 0.83.0 (unreleased): talent board in the game's own art (node frames by state, arrows, tree paintings, next-row note, next-point glow, hover chain), Training tab shipped list (`TrainingData.lua`, `gen_training_data.py`).
 - Tests: aspect, banner with pet, Training tab; tab count 6 to 7 in the window tests; `AddDoubleLine` in the tooltip stub. Open tests 5.74 to 5.76.
 
 ## 2026-11-02 (Home: start here)

@@ -39,10 +39,40 @@ TalentPanel.PAGE = { w = 650, h = 630 }
 local CLASS_CIRCLES = "Interface\\TargetingFrame\\UI-Classes-Circles"
 local PICK_SIZE, PICK_STEP = 26, 31
 
+-- The game's own talent art (atlases), when this client has it: node frames, arrows, a painting behind each tree.
+-- Without it every piece falls back to the plain look (ring, flat bars).
+local function atlasOK(name)
+  local ok, info = pcall(function() return C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(name) end)
+  return ok and info ~= nil
+end
+local function setAtlas(tex, name, w, h)
+  if not atlasOK(name) then return false end
+  local ok = pcall(tex.SetAtlas, tex, name, false)
+  if ok and w then tex:SetSize(w, h) end
+  return ok
+end
+local gameNodes            -- decided when the board is built
+-- The painting behind each tree, by class and tree number (the game's Interface\TalentFrame\<name>-TopLeft ... pieces).
+local ART = {
+  WARRIOR = { "WarriorArms", "WarriorFury", "WarriorProtection" },
+  PALADIN = { "PaladinHoly", "PaladinProtection", "PaladinCombat" },
+  HUNTER = { "HunterBeastMastery", "HunterMarksmanship", "HunterSurvival" },
+  ROGUE = { "RogueAssassination", "RogueCombat", "RogueSubtlety" },
+  PRIEST = { "PriestDiscipline", "PriestHoly", "PriestShadow" },
+  SHAMAN = { "ShamanElementalCombat", "ShamanEnhancement", "ShamanRestoration" },
+  MAGE = { "MageArcane", "MageFire", "MageFrost" },
+  WARLOCK = { "WarlockCurses", "WarlockSummoning", "WarlockDestruction" },
+  DRUID = { "DruidBalance", "DruidFeralCombat", "DruidRestoration" },
+}
+local ART_PIECES = { { "TopLeft", 0.8, 0.667, "TOPLEFT" }, { "TopRight", 0.2, 0.667, "TOPRIGHT" },
+                     { "BottomLeft", 0.8, 0.333, "BOTTOMLEFT" }, { "BottomRight", 0.2, 0.333, "BOTTOMRIGHT" } }
+local chainLight           -- defined with the arrows below; the cells' hover calls it
+
 local page
 local ui = {}
 local cells = {}           -- cells[tree][row][col]
-local heads = {}           -- heads[tree] = { name, counts }
+local heads = {}           -- heads[tree] = { name, counts, note }
+local art = {}             -- art[tree] = { pieces..., shade }
 local picks = {}           -- picks[i] = class circle button
 local links = {}           -- prerequisite arrows: { bar, head } pairs, reused on every draw
 local linkFrame            -- above the cells, so the arrows are not hidden by their rings
@@ -140,6 +170,39 @@ local function buildCell(parent, x, y)
   b.slot:SetPoint("CENTER", 0, 0)
   b.icon = b:CreateTexture(nil, "BORDER")
   b.icon:SetAllPoints()
+  if gameNodes then
+    -- The game's node: a soft shadow, the icon inside a rounded frame whose colour is the state, a glow for the next point.
+    b.slot:SetTexture(nil)
+    setAtlas(b.slot, "talents-node-square-shadow", CELL * 1.9, CELL * 1.9)
+    b.slot:SetAlpha(0.9)
+    b.icon:ClearAllPoints()
+    b.icon:SetPoint("TOPLEFT", 3, -3)
+    b.icon:SetPoint("BOTTOMRIGHT", -3, 3)
+    b.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+    b.frame = b:CreateTexture(nil, "OVERLAY", nil, 1)
+    setAtlas(b.frame, "talents-node-square-gray", CELL, CELL)
+    b.frame:SetPoint("CENTER")
+    b.link = b:CreateTexture(nil, "OVERLAY", nil, 2)
+    setAtlas(b.link, "talents-node-square-yellow", CELL, CELL)
+    b.link:SetPoint("CENTER")
+    b.link:SetBlendMode("ADD")
+    b.link:SetAlpha(0.6)
+    b.link:Hide()
+    b.nextGlow = b:CreateTexture(nil, "OVERLAY", nil, 0)
+    setAtlas(b.nextGlow, "talents-node-square-greenglow", CELL * 2.1, CELL * 2.1)
+    b.nextGlow:SetPoint("CENTER")
+    b.nextGlow:SetBlendMode("ADD")
+    b.nextGlow:Hide()
+    local okp, ag = pcall(function() return b.nextGlow:CreateAnimationGroup() end)
+    if okp and ag then
+      ag:SetLooping("BOUNCE")
+      local a = ag:CreateAnimation("Alpha")
+      a:SetFromAlpha(1)
+      a:SetToAlpha(0.3)
+      a:SetDuration(0.7)
+      b.nextPulse = ag
+    end
+  end
   b.badge = b:CreateTexture(nil, "OVERLAY")
   b.badge:SetTexture("Interface\\TalentFrame\\TalentFrame-RankBorder")
   b.badge:SetSize(22, 22)
@@ -147,8 +210,8 @@ local function buildCell(parent, x, y)
   b.rank = b:CreateFontString(nil, "OVERLAY", "R2FHeadingSmall")
   b.rank:SetPoint("CENTER", b.badge, "CENTER", 0, 0)
   b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
-  b:SetScript("OnEnter", cellTooltip)
-  b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  b:SetScript("OnEnter", function(self) cellTooltip(self) if chainLight then chainLight(self, true) end end)
+  b:SetScript("OnLeave", function(self) GameTooltip:Hide() if chainLight then chainLight(self, false) end end)
   b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
   b:SetScript("OnClick", function(self, button) TalentPanel.CellClick(self, button) end)
   return b
@@ -165,7 +228,16 @@ local function paintCell(b, e)
   b.entry = e
   b.icon:SetTexture("Interface\\Icons\\" .. (e.icon or "INV_Misc_QuestionMark"))
   local look = LOOK[e.state] or LOOK.locked
-  b.slot:SetVertexColor(look.slot[1], look.slot[2], look.slot[3])
+  if b.frame then
+    local kind = (e.state == "full" or e.state == "partial") and "yellow" or (e.state == "open" and "green" or "locked")
+    setAtlas(b.frame, "talents-node-square-" .. kind, CELL, CELL)
+  else
+    b.slot:SetVertexColor(look.slot[1], look.slot[2], look.slot[3])
+  end
+  if b.nextGlow then
+    if b.nextPulse then b.nextPulse:Stop() end
+    b.nextGlow:Hide()
+  end
   b.icon:SetDesaturated(look.desat or false)
   if look.dim then b.icon:SetVertexColor(0.55, 0.55, 0.55) else b.icon:SetVertexColor(1, 1, 1) end
   if e.rank > 0 then setBadge(b, tostring(e.rank), look.badge or WHITE) else setBadge(b, nil) end
@@ -173,6 +245,7 @@ local function paintCell(b, e)
 end
 
 local function buildTrees(f)
+  gameNodes = atlasOK("talents-node-square-yellow")
   linkFrame = CreateFrame("Frame", nil, f)
   linkFrame:SetAllPoints(f)
   linkFrame:SetFrameLevel(f:GetFrameLevel() + 10)
@@ -184,7 +257,29 @@ local function buildTrees(f)
     name:SetJustifyH("LEFT")
     local counts = f:CreateFontString(nil, "ARTWORK", "R2FBodySmall")
     counts:SetPoint("LEFT", name, "RIGHT", 6, 0)
-    heads[t] = { name = name, counts = counts }
+    local note = f:CreateFontString(nil, "ARTWORK", "R2FDimSmall")
+    note:SetPoint("TOPRIGHT", f, "TOPLEFT", x0 + TREE_W - 12, TREE_TOP - 2)
+    note:SetJustifyH("RIGHT")
+    heads[t] = { name = name, counts = counts, note = note }
+    -- The painting behind the tree (the game's four pieces), with a dark wash so the talents read over it.
+    art[t] = {}
+    local aw, ah = TREE_W - 12, 30 + ROWS * STEP_Y
+    for _, pc in ipairs(ART_PIECES) do
+      local tex = f:CreateTexture(nil, "BACKGROUND", nil, 1)
+      tex:SetSize(aw * pc[2], ah * pc[3])
+      local px = x0 + 6 + (pc[4]:find("RIGHT") and aw or 0)
+      local py = TREE_TOP - 16 - (pc[4]:find("BOTTOM") and ah or 0)
+      tex:SetPoint(pc[4], f, "TOPLEFT", px, py)
+      tex:SetAlpha(0.55)
+      tex:Hide()
+      art[t][#art[t] + 1] = tex
+    end
+    local shade = f:CreateTexture(nil, "BACKGROUND", nil, 2)
+    shade:SetColorTexture(0, 0, 0, 0.35)
+    shade:SetPoint("TOPLEFT", f, "TOPLEFT", x0 + 6, TREE_TOP - 16)
+    shade:SetSize(aw, ah)
+    shade:Hide()
+    art[t].shade = shade
     cells[t] = {}
     -- Grid centred in the column: 4 cells, 42 px apart.
     local gx = x0 + math.floor((TREE_W - (CELL + (COLS - 1) * STEP_X)) / 2)
@@ -482,9 +577,10 @@ local function showStatus(text, r, g, b)
 end
 
 -- Prerequisite arrows: from the talent that is needed to the one that needs it. Grey until the prerequisite has
--- enough ranks, gold once it has. (Every Classic link is vertical or horizontal, none diagonal.)
+-- enough ranks, gold once it has, the game's "locked" look while the prerequisite itself cannot be taken yet.
+-- (Every Classic link is vertical or horizontal, none diagonal.)
 local ARROW = "Interface\\ChatFrame\\ChatFrameExpandArrow"   -- points right; turned for the other directions
-local HEAD, BAR = 12, 3
+local HEAD = 12
 local function linkPair(n)
   local l = links[n]
   if not l then
@@ -496,8 +592,39 @@ local function linkPair(n)
   return l
 end
 
+-- Colour one arrow: gold when met or while a talent at either end is under the mouse (hot).
+local function paintLink(l, hot)
+  local lit = l.met or hot
+  if l.game then
+    local kind = lit and "yellow" or (l.locked and "locked" or "gray")
+    setAtlas(l.bar, "talents-arrow-line-" .. kind)
+    setAtlas(l.head, "talents-arrow-head-" .. kind, 14, 12)
+    l.bar:SetVertexColor(1, 1, 1, 1)
+    l.head:SetVertexColor(1, 1, 1, 1)
+    l.head:SetDesaturated(false)
+    return
+  end
+  local c = lit and 1 or 0.45
+  local r, g, b = c, lit and 0.82 or c, lit and 0 or c
+  l.bar:SetColorTexture(r, g, b, 1)
+  l.head:SetDesaturated(true)
+  l.head:SetVertexColor(r, g, b)
+end
+
+-- Hover a talent: what it needs and what it unlocks light up, arrows and nodes, so the chain reads at a glance.
+chainLight = function(cell, on)
+  for _, l in ipairs(links) do
+    if l.from and (l.dep == cell or l.from == cell) then
+      paintLink(l, on)
+      local other = l.dep == cell and l.from or l.dep
+      if other.link then other.link:SetShown(on) end
+    end
+  end
+end
+
 local function drawLinks(trees)
   local n = 0
+  local BAR = gameNodes and 6 or 3
   for t = 1, TREES do
     local tree = trees and trees[t]
     for k = 1, tree and #tree.talents or 0 do
@@ -509,9 +636,9 @@ local function drawLinks(trees)
         if dep and from and dep:IsShown() and from:IsShown() then
           n = n + 1
           local l = linkPair(n)
-          local met = Calc.Rank(state.calc, t, q[1]) >= q[2]
-          local c = met and 1 or 0.45
-          local r, g, b = c, met and 0.82 or c, met and 0 or c
+          l.from, l.dep, l.game = from, dep, gameNodes and true or false
+          l.met = Calc.Rank(state.calc, t, q[1]) >= q[2]
+          l.locked = Calc.Rank(state.calc, t, q[1]) == 0 and not Calc.CanAdd(state.calc, t, q[1])
           local dx, dy = x.c - pre.c, pre.r - x.r   -- dy < 0: the dependent talent is lower on the board
           local hx, hy, angle   -- head centre (page coordinates, y up is positive) and its turn
           if dx == 0 then
@@ -531,12 +658,11 @@ local function drawLinks(trees)
             l.bar:SetPoint("TOPLEFT", linkFrame, "TOPLEFT", left, hy + BAR / 2)
             l.bar:SetSize(math.abs(right - left), BAR)
           end
-          l.bar:SetColorTexture(r, g, b, 1)
           l.head:ClearAllPoints()
           l.head:SetPoint("CENTER", linkFrame, "TOPLEFT", hx, hy)
-          l.head:SetRotation(angle)
-          l.head:SetDesaturated(true)
-          l.head:SetVertexColor(r, g, b)
+          -- The game's arrowhead points down; ours (the chat arrow) points right.
+          l.head:SetRotation(l.game and angle + math.pi / 2 or angle)
+          paintLink(l, false)
           l.bar:Show()
           l.head:Show()
         end
@@ -546,6 +672,60 @@ local function drawLinks(trees)
   for i = n + 1, #links do
     links[i].bar:Hide()
     links[i].head:Hide()
+    links[i].from, links[i].dep = nil, nil
+  end
+end
+
+-- Points still needed to open the next locked row of a tree ("next row in 3"), or "all rows open".
+local function rowNote(t, tree)
+  local pts, maxRow = {}, 0
+  for k, x in ipairs(tree.talents) do
+    pts[x.r] = (pts[x.r] or 0) + Calc.Rank(state.calc, t, k)
+    if x.r > maxRow then maxRow = x.r end
+  end
+  local above = 0
+  for r = 1, maxRow do
+    above = above + (pts[r - 1] or 0)
+    if above < r * 5 then return L.TALENT_ROW_NEXT:format(r * 5 - above) end
+  end
+  return L.TALENT_ROWS_OPEN
+end
+
+-- The painting behind each tree: shown when the game has the pieces, hidden otherwise.
+local function drawArt()
+  local token = Calc.Token(state.class)
+  for t = 1, TREES do
+    local name = ART[token] and ART[token][t]
+    local ok = name ~= nil and gameNodes
+    if ok then
+      for i, pc in ipairs(ART_PIECES) do
+        local good, res = pcall(art[t][i].SetTexture, art[t][i], "Interface\\TalentFrame\\" .. name .. "-" .. pc[1])
+        if not good or res == false then ok = false end
+      end
+    end
+    for _, tex in ipairs(art[t]) do tex:SetShown(ok) end
+    art[t].shade:SetShown(ok)
+  end
+end
+
+-- The pulse on the next point of the build: your own class's next point you have not taken, else the next one the
+-- board is stepping to.
+local function markNext(plan)
+  if not (gameNodes and state.full) then return end
+  local order = Calc.Order(state.full)
+  local p
+  if plan and state.class == ownClass() then
+    local name, i = Calc.NextPoint(state.full, plan.trees)
+    p = name and order[i]
+  else
+    p = order[Calc.Total(state.calc) + 1]
+  end
+  if not p then return end
+  local x = Calc.Trees(state.class)[p[1]].talents[p[2]]
+  local cell = cells[p[1]][x.r + 1] and cells[p[1]][x.r + 1][x.c + 1]
+  if cell and cell.nextGlow then
+    cell.nextGlow:Show()
+    if cell.nextPulse then cell.nextPulse:Play() end
   end
 end
 
@@ -563,6 +743,7 @@ local function drawTrees()
     if tree then
       heads[t].name:SetText(tree.name)
       heads[t].counts:SetText(tostring(Calc.TreePoints(state.calc, t)))
+      heads[t].note:SetText(rowNote(t, tree))
       for k = 1, #tree.talents do
         local e = entryFor(t, k)
         -- A talent outside the 4 x 7 grid can't be drawn (no Classic tree has one).
@@ -572,8 +753,10 @@ local function drawTrees()
     else
       heads[t].name:SetText("")
       heads[t].counts:SetText("")
+      heads[t].note:SetText("")
     end
   end
+  drawArt()
   drawLinks(trees)
 end
 
@@ -712,6 +895,7 @@ function TalentPanel.Refresh()
   ui.stepPrev:SetEnabled(total > 0)
   ui.stepNext:SetEnabled(total < ft)
   ui.nextHint:SetText(own and ft > 0 and not (res and res.error) and nextPointText(plan) or "")
+  markNext(plan)
 end
 
 -- Learn this build (your own class only). The preview is re-run here rather than taking the one on

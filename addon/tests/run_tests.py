@@ -8587,6 +8587,8 @@ def main():
     test_gearscore()
     test_training()
     test_training_tab()
+    test_training_shipped()
+    test_talent_game_art()
     test_hunter_aspect()
     test_combat_banner_pet()
     test_class_timers()
@@ -8966,6 +8968,7 @@ def test_training_forever_shape():
     T = lua.eval("TEST")
     T.fire("ADDON_LOADED", "RoadToForever")
     T.fire("PLAYER_LOGIN")
+    lua.execute("R2F.TrainingData = nil")   # these tests are about what the trainer window showed
     T.fire("TRAINER_SHOW")
     check(lua.eval("#R2FCharDB.training.spells") == 7, "train (Forever API): all seven services are saved")
     check(lua.eval("R2FCharDB.training.spells[1].lvl") == 14 and lua.eval("R2FCharDB.training.spells[1].r") == "Rank 2"
@@ -9620,6 +9623,7 @@ def test_training():
     T = lua.eval("TEST")
     T.fire("ADDON_LOADED", "RoadToForever")
     T.fire("PLAYER_LOGIN")
+    lua.execute("R2F.TrainingData = nil")   # these tests are about what the trainer window showed
     a, b = lua.eval("R2F.Training.Lines()")
     check(a.startswith("Open your class trainer once") and b is None, "train: before a trainer visit Home says to open it: %r" % a)
     lua.execute("TEST.profTrainer = true")
@@ -9739,6 +9743,7 @@ def test_training_tab():
     T = lua.eval("TEST")
     T.fire("ADDON_LOADED", "RoadToForever")
     T.fire("PLAYER_LOGIN")
+    lua.execute("R2F.TrainingData = nil")   # these tests are about what the trainer window showed
     lua.execute("""R2FCharDB.training.spells = {
       { n = 'Arcane Shot', r = 'Rank 3', lvl = 20, cost = 1200, s = 'available', ic = 'Interface\Icons\Ability_ImpalingBolt',
         tip = { { l = 'Arcane Shot' }, { l = 'Rank 3', r = '36 mana' }, { l = 'An instant shot that causes arcane damage to the target.' } } },
@@ -9762,6 +9767,64 @@ def test_training_tab():
     check(lua.eval("GameTooltip:IsShown()") is True, "train tab: hovering a spell shows its tooltip")
     lua.execute("R2FCharDB.training.spells = {} R2F.TrainingTab.Refresh()")
     check(lua.eval("#R2F.Training.Upcoming(20) == 0") is True, "train tab: nothing saved -> empty list")
+
+
+def test_talent_game_art():
+    """Talent board with the game's own art (atlases present): node frames by state, arrows, row note, next-point glow."""
+    lua = new_runtime(True)
+    lua.execute("TEST.reset() TEST.classToken = 'WARRIOR' TEST.level = 30")
+    lua.execute("C_Texture = { GetAtlasInfo = function(n) return { width = 32, height = 32 } end }")
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    lua.execute("R2F.MainWindow.Show('talents') R2F.TalentPanel.SelectClass('priest')")
+    cell = "R2F.TalentPanel.Cell(1, 1, 2)"
+    check(lua.eval(cell + ".frame ~= nil and " + cell + ".nextGlow ~= nil"), "talent art: cells use the game's node frame")
+    find_frames(lua, "f.__kind == 'FontString' and f.__text == 'all rows open'", "RO")
+    find_frames(lua, "f.__kind == 'FontString' and f.__text == 'next row in 5'", "RN")
+    check(lua.eval("#RN") == 3 and lua.eval("#RO") == 0, "talent art: every empty tree says 'next row in 5'")
+    lua.execute(cell + ":Fire('OnEnter')")
+    check(lua.eval("GameTooltip:IsShown()") is True, "talent art: hover still gives the tooltip and lights the chain without error")
+    lua.execute(cell + ":Fire('OnLeave')")
+
+
+def test_training_shipped():
+    """The shipped trainer list (TrainingData.lua) fills the Training tab before any trainer visit."""
+    lua = new_runtime(True)
+    lua.execute("TEST.reset() TEST.classToken = 'HUNTER' TEST.level = 20")
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    lua.execute("""R2F.playerClass = 'HUNTER'
+      R2F.TrainingData = { HUNTER = {
+        { 3044, 6, 1, 100, 'Arcane Shot' }, { 14281, 20, 2, 1200, 'Arcane Shot' }, { 20909, 42, 3, 1263, 'Counterattack' },
+        { 5118, 20, 0, 2315, 'Aspect of the Cheetah' }, { 99999, 58, 0, 9000, 'Far Spell' } } }
+      KNOWN = { [3044] = true }
+      IsPlayerSpell = function(id) return KNOWN[id] == true end""")
+    now, nxt, nl, later, known = lua.eval("R2F.Training.Upcoming(20)")
+    names = lua.eval("(function() local t = {} for _, e in ipairs(({R2F.Training.Upcoming(20)})[1]) do t[#t + 1] = e.n .. e.r end table.sort(t) return table.concat(t, ',') end)()")
+    check(names == "Arcane ShotRank 2,Aspect of the Cheetah", "shipped: train now = the unlearned spells up to your level: %s" % names)
+    check(lua.eval("({R2F.Training.Upcoming(20)})[3]") == 42 and lua.eval("#({R2F.Training.Upcoming(20)})[4]") == 1,
+          "shipped: next level 42, later 58")
+    check(lua.eval("R2F.Training.All()[2].estimate") is True and lua.eval("R2F.Training.All()[2].cost") == 1200,
+          "shipped: the price is an estimate before a trainer visit")
+    # A higher rank known: the lower rank leaves the list even when the book no longer holds it.
+    lua.execute("KNOWN = { [14281] = true }")
+    check(lua.eval("R2F.Training.All()[1].s") == "used", "shipped: a lower rank of a known higher rank counts as learned")
+    # A trainer visit puts the real price in.
+    lua.execute("R2FCharDB.training.spells = { { n = 'Arcane Shot', r = 'Rank 2', lvl = 20, cost = 999, s = 'available', ic = 'x' } }")
+    check(lua.eval("R2F.Training.All()[2].cost") == 999 and lua.eval("R2F.Training.All()[2].estimate") is False,
+          "shipped: the trainer's real price replaces the estimate")
+    # The tab shows it, hover goes to the game's own spell tooltip.
+    lua.execute("R2F.MainWindow.Show('training')")
+    find_frames(lua, "f.entry ~= nil and f:IsShown()", "TS2")
+    check(lua.eval("#TS2") == 3, "shipped: the tab lists %s spells" % lua.eval("#TS2"))
+    lua.execute("""SPELLTIP = nil GameTooltip.SetSpellByID = function(self, id) SPELLTIP = id end
+      TS2[1]:GetScript('OnEnter')(TS2[1])""")
+    check(lua.eval("SPELLTIP") is not None, "shipped: hover asks the game for the spell's own tooltip")
+    # No shipped list for another class: only what the trainer showed.
+    lua.execute("R2F.playerClass = 'MAGE'")
+    check(lua.eval("#R2F.Training.All()") == 1, "shipped: a class with no list falls back to the trainer's data")
 
 
 def install_item_stubs(lua):

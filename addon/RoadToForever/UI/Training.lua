@@ -16,7 +16,7 @@ local Tab = {}
 R2F.TrainingTab = Tab
 
 local COL_W, ROW_H = 252, 46
-local VIEW_W, VIEW_H = 506, 450
+local VIEW_W, VIEW_H = 506, 404
 local ICON_FALLBACK = "Interface\\Icons\\INV_Misc_QuestionMark"
 
 local page, scroll, content, note, empty
@@ -26,7 +26,13 @@ local function showTip(self)
   local e = self.entry
   if not e then return end
   GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-  if type(e.tip) == "table" and #e.tip > 0 then
+  local usedGame = false
+  if e.id and GameTooltip.SetSpellByID then usedGame = pcall(GameTooltip.SetSpellByID, GameTooltip, e.id) end
+  if usedGame then
+    if (e.cost or 0) > 0 then
+      GameTooltip:AddLine(L.TRAIN_TIP_COST .. " " .. (e.estimate and "~" or "") .. R2F.Gameplay.Money(e.cost), 1, 1, 1)
+    end
+  elseif type(e.tip) == "table" and #e.tip > 0 then
     for k, line in ipairs(e.tip) do
       local long = #line.l > 40
       local r, g, b = 1, 1, 1
@@ -102,13 +108,13 @@ local function layout(blocks, level)
       b:ClearAllPoints()
       b:SetPoint("TOPLEFT", content, "TOPLEFT", col * COL_W, y)
       b.entry = e
-      b.icon:SetTexture(e.ic or ICON_FALLBACK)
+      b.icon:SetTexture(e.ic or (e.id and R2F.Training.Icon(e.id)) or ICON_FALLBACK)
       local trainable = (e.lvl or 0) <= level
       b.name:SetText(e.r ~= "" and (e.n .. " |cff9d9d9d(" .. e.r .. ")|r") or e.n)
       b.name:SetFontObject(trainable and "R2FHeading" or "R2FDim")
       local parts = {}
       if not trainable then parts[#parts + 1] = L.TRAIN_PAGE_LEVEL:format(e.lvl or 0) end
-      if (e.cost or 0) > 0 then parts[#parts + 1] = R2F.Gameplay.Money(e.cost) end
+      if (e.cost or 0) > 0 then parts[#parts + 1] = (e.estimate and "~" or "") .. R2F.Gameplay.Money(e.cost) end
       b.sub:SetText(table.concat(parts, "   "))
       b.icon:SetDesaturated(not trainable)
       b:Show()
@@ -137,7 +143,9 @@ function Tab.Refresh()
   content:SetHeight(math.max(height, VIEW_H))
   empty:SetShown(#blocks == 0)
   local d = R2F.Library.cdb.training
-  if known and d.when and d.when > 0 then
+  if R2F.TrainingData and R2F.TrainingData[R2F.playerClass] and not (d.when and d.when > 0) then
+    note:SetText(L.TRAIN_PAGE_EST)
+  elseif known and d.when and d.when > 0 then
     note:SetText(L.TRAIN_PAGE_NOTE:format(date and date("%Y-%m-%d", d.when) or ""))
   else
     note:SetText("")
@@ -157,7 +165,7 @@ function Tab.Build(f)
   note:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 6)
   scroll = UI.TryTemplate("ScrollFrame", "R2FTrainingScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FTrainingScrollPlain", f)
-  scroll:SetPoint("TOPLEFT", 6, -4)
+  scroll:SetPoint("TOPLEFT", 6, -50)
   scroll:SetSize(VIEW_W, VIEW_H)
   content = CreateFrame("Frame", nil, scroll)
   content:SetSize(VIEW_W - 6, VIEW_H)
@@ -165,7 +173,7 @@ function Tab.Build(f)
   scroll:EnableMouseWheel(true)
   scroll:SetScript("OnMouseWheel", onWheel)
   empty = f:CreateFontString(nil, "ARTWORK", "R2FBody")
-  empty:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -30)
+  empty:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -60)
   empty:SetWidth(VIEW_W - 40)
   empty:SetJustifyH("LEFT")
   empty:SetText(L.TRAIN_PAGE_EMPTY)

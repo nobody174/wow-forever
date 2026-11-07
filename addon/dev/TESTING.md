@@ -37,5 +37,9 @@ For every look (Home > Theme > "Open the gallery"): compare with its picture in 
 
 - **5.76 Training tab (next release):** new "Training" entry under Character. Visit your class trainer once with Unavailable shown (the list is read from there): the tab must show Train now, Next level and every later level up to 60 as spellbook slots with icon, rank, cost; hover must give the trainer's tooltip (description, cost). Entries saved before this version show a question mark icon and a short tooltip until you visit the trainer again. Check all six themes still lay out the extra sidebar entry.
 
+- **5.77 Talent board art (next release):** open Builds & talents: the tiles should wear the game's round node frames (green = can take now), arrows gold when the prerequisite is full, a painting behind each tree, "next row in N" top right of each tree, and a pulsing green glow on the next point of your build. Hover a talent: its prerequisite and followers light up. Tell me if a tree painting is missing or wrong (the file names are guessed from the Classic names).
+
+- **5.78 Training list before the trainer (next release):** open the Training tab on a character that has not visited the trainer: Train now, Next level and the later levels should already fill, with the spells' icons, the game's own spell tooltip on hover, and prices with a ~. Visit the trainer: the ~ goes away on what it lists. Learn something: it leaves the list. Tell me about spells that are missing, wrong, or that Forever's trainer does not sell.
+
 ## Cannot be tested yet (needs higher level / talents / release)
 4.13 group picks (needs an owner publish) · 13.9 Druid Starsurge / Sunfire / Starfall / Lacerate macros · 13.11 Dire Bear Form at 40 · 14.1 Hunter Strider Kick · 14.2 Paladin Twist of Light seal swap · 14.4 Shaman Elemental Mastery

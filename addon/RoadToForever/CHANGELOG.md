@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.84.0 (2026-11-07)
+
+- **Recommended builds follow the new talent trees** (Wowhead's data after the 3-4 Nov hotfixes): 23 of the 49 builds no longer fit and were rebuilt. Where a talent only changed name or moved tree, the build keeps its points; where its foundation is gone (Mage Arcane and Fire, most Rogue, Druid, Paladin, Hunter and Shaman builds) it now uses the most popular current build of that spec on talentsforever.com, cut to the same number of points for the level 30 ones. Level 60 Mage Frost has 46 points and Druid Restoration and Warrior Fury 50, because no complete popular build existed yet.
+- **Training tab fills before you visit the trainer:** every spell your class trainer sells up to level 60 ships with the addon (from Wowhead Forever's ability lists); names, icons and tooltips come from the game by spell id. Prices marked ~ are estimates until you visit your trainer, which replaces them with the real price. Known spells (and lower ranks of known higher ranks) drop out of the lists.
+- **Talent board in the game's own art:** node frames coloured by state (gold taken, green can take, grey-locked), the game's arrows (gold once the prerequisite is full), a painting behind each tree, a "next row in N" note per tree, a pulsing glow on the next point of the build, and hovering a talent lights what it needs and unlocks. A client without that art keeps the old look.
+
 ## 0.83.0 (2026-11-07)
 
 - **Hunter aspect reminder** (Tweaks > Class icons, on by default): a red Hawk icon when no aspect is up, a gold "Swap to Hawk" icon while Aspect of the Cheetah or Pack is up in combat. Quiet when mounted, dead, feigning death, or before you learn an aspect. `/r2f aspect` and `/r2f aspect lock`.

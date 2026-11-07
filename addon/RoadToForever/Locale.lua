@@ -46,6 +46,8 @@ R2F.L = {
   TAB_HOME = "Home",
   TAB_MACROS = "Macros",
   TAB_TALENTS = "Builds & talents",
+  TALENT_ROW_NEXT = "next row in %d",
+  TALENT_ROWS_OPEN = "all rows open",
   TITLE_TRAINING = "Road to Forever: Training",
   TAB_TRAINING = "Training",
   TRAIN_PAGE_NOW = "Train now",
@@ -56,6 +58,7 @@ R2F.L = {
   TRAIN_PAGE_NOTE = "Read from your class trainer on %s. Visit it again to refresh the list.",
   TRAIN_TIP_LEVEL = "Requires level %d",
   TRAIN_TIP_COST = "Cost:",
+  TRAIN_PAGE_EST = "Prices marked ~ are estimates until you visit your class trainer.",
   CHAT_PREFIX = "|cffffd100Road to Forever:|r ",
 
   -- Macro Book

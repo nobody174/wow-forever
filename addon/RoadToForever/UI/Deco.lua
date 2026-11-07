@@ -166,7 +166,8 @@ end
 
 local function exportThreeSlice() Deco.threeSlice = threeSlice end
 exportThreeSlice()
-local NAV_ICON = { home = "home", plan = "plan", talents = "talents", bis = "gear", training = "talents", macros = "macros", gameplay = "tweaks" }
+local NAV_ICON = { home = "home", plan = "plan", talents = "talents", bis = "gear", training = "talents", macros = "macros",
+  gameplay = "tweaks" }
 Deco.NAV_ICON = NAV_ICON
 -- The group heading images (word baked in) and how wide the word is, so the fading line can start after it.
 local HEAD_IMG = { JOURNEY = { "azeroth_head_journey", 76 }, CHARACTER = { "azeroth_head_character", 100 },

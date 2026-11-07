@@ -63,7 +63,7 @@ read_globals = {
   "GetLootSlotLink", "GetLootSourceInfo", "GetMerchantNumItems", "GetMerchantItemLink", "GetMerchantItemInfo",
   "GetNumQuestRewards", "GetQuestID", "GetTitleText",
   -- What to train next: the class trainer window (read only)
-  "GetNumTrainerServices", "GetTrainerServiceInfo", "GetTrainerServiceLevelReq", "GetTrainerServiceCost",
+  "GetNumTrainerServices", "GetTrainerServiceInfo", "GetTrainerServiceLevelReq", "GetTrainerServiceIcon", "UnitAffectingCombat", "UnitCanAttack", "UnitIsUnit", "UnitHealth", "date", "GetTrainerServiceCost",
   "IsTradeskillTrainer",
   -- API namespaces
   "C_Container", "C_GossipInfo", "C_Map", "C_PlayerInfo", "C_QuestLog", "C_SpellBook", "C_TradeSkillUI",

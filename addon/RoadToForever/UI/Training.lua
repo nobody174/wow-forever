@@ -15,8 +15,9 @@ local UI = R2F.UI
 local Tab = {}
 R2F.TrainingTab = Tab
 
-local COL_W, ROW_H = 252, 46
-local VIEW_W, VIEW_H = 506, 404
+local COL_W, ROW_H = 304, 46
+local VIEW_W, VIEW_H = 622, 540
+Tab.PAGE = { w = 640, h = 590 }   -- the whole content area, like Home and the Talents tab
 local ICON_FALLBACK = "Interface\\Icons\\INV_Misc_QuestionMark"
 
 local page, scroll, content, note, empty
@@ -165,7 +166,7 @@ function Tab.Build(f)
   note:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 6)
   scroll = UI.TryTemplate("ScrollFrame", "R2FTrainingScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FTrainingScrollPlain", f)
-  scroll:SetPoint("TOPLEFT", 6, -50)
+  scroll:SetPoint("TOPLEFT", 6, -8)
   scroll:SetSize(VIEW_W, VIEW_H)
   content = CreateFrame("Frame", nil, scroll)
   content:SetSize(VIEW_W - 6, VIEW_H)
@@ -173,7 +174,7 @@ function Tab.Build(f)
   scroll:EnableMouseWheel(true)
   scroll:SetScript("OnMouseWheel", onWheel)
   empty = f:CreateFontString(nil, "ARTWORK", "R2FBody")
-  empty:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -60)
+  empty:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -20)
   empty:SetWidth(VIEW_W - 40)
   empty:SetJustifyH("LEFT")
   empty:SetText(L.TRAIN_PAGE_EMPTY)

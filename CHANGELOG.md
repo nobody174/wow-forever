@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-08 (addon 0.84.1)
+- Training tab given the large page (`TrainingTab.PAGE`, like Home and Talents): 640 x 590, two 304 px columns, scroll view 622 x 540. Confirmed in game (talent board art and the Training list read well; the "couldn't read your talents" line was the names not loaded yet).
+
 ## 2026-11-07 (addon 0.84.0: talent trees refreshed, 23 of 49 builds rebuilt; talent board art; Training list shipped)
 - `TalentData.lua` regenerated from Wowhead (live data of 2026-11-07, after the 3-4 Nov hotfixes). The drift check was red and 25 recommended builds were invalid. Repair method (ledger D12): decode with the old trees, follow talents by icon and name across trees, clamp ranks, validate on the new trees. 6 builds repaired exactly (Mage Frost 30, both Fury 30s, Shaman Enhancement 60, Hunter BM 60 and their like); 23 whose foundation is gone were replaced by talentsforever.com's popular build of the same lead tree (`popular.js`, codes verified valid on our trees), cut to 21 points for level 30. `builds.html` codes and fallback talent rows updated; rotations unchanged and still written for the old picks: re-read them against the new builds.
 

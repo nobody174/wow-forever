@@ -629,7 +629,7 @@ local function build()
   for _, key in ipairs(MainWindow.TABS) do
     local p = CreateFrame("Frame", nil, f)
     local custom = (key == "bis" and R2F.BiZTab.PAGE) or (key == "home" and R2F.Home.PAGE)
-      or (key == "talents" and R2F.TalentPanel.PAGE)
+      or (key == "talents" and R2F.TalentPanel.PAGE) or (key == "training" and R2F.TrainingTab.PAGE)
     pageCustom[key] = custom
     if custom then
       -- Mr.BiZ and Home use the whole content area.

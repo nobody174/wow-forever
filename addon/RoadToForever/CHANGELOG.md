@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.84.1 (2026-11-08)
+
+- **Training tab uses the whole window:** wider rows and a taller list, so more levels show without scrolling.
+
 ## 0.84.0 (2026-11-07)
 
 - **Recommended builds follow the new talent trees** (Wowhead's data after the 3-4 Nov hotfixes): 23 of the 49 builds no longer fit and were rebuilt. Where a talent only changed name or moved tree, the build keeps its points; where its foundation is gone (Mage Arcane and Fire, most Rogue, Druid, Paladin, Hunter and Shaman builds) it now uses the most popular current build of that spec on talentsforever.com, cut to the same number of points for the level 30 ones. Level 60 Mage Frost has 46 points and Druid Restoration and Warrior Fury 50, because no complete popular build existed yet.

@@ -30,7 +30,7 @@ Left, in order (phase 2 and the Human and Night Elf starts are in, see 1 and 3).
 5. Confirm Skyborne's English `UnitRace` name in game (TESTING 5.70) so `Plan.RaceId` is exact.
 
 ## 1. Bugs
-1. **Re-check the 23 rebuilt builds and their rotation notes (2026-11-07):** the codes now come from talentsforever.com's popular builds, the `rotation` text in `builds.html` was written for the old picks. Level 60 Mage Frost has 46 points, Druid Restoration and Warrior Fury 50 (no complete popular build yet). Tell me which ones you want picked by hand.
+1. **Re-check the 23 rebuilt builds and their rotation notes (2026-11-07):** the codes now come from RankedBoost's recommended builds (0.84.2), the `rotation` text in `builds.html` was written for the old picks. Check the rotations against the new builds and tell me which picks you want changed by hand.
 None else open (talent-tree drift fixed 2026-11-07; before each release run `python addon/tools/gen_talent_data.py --drift`).
 
 ## 2. Addon

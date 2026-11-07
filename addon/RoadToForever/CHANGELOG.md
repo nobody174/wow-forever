@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.84.2 (2026-11-08)
+
+- **Rebuilt talent builds now come from RankedBoost's recommended builds** (game build 1.60.1.70790, updated 4 Nov) instead of the most-used builds: 23 builds (Mage, Rogue, Druid, Shaman, Hunter, Paladin level 30 and level 60, Warrior Fury 60) with the full 51 points at level 60 and the first 21 points of the matching build at level 30. Level 60 Mage Frost, Druid Restoration and Warrior Fury are complete again. RankedBoost lists a few ranks above the live maximum (Rogue Lethality 5 and Seal Fate 5): they were capped for Assassination 30, and level 60 Combat Rogue kept its earlier build because RankedBoost's version does not hold together once Lethality is capped.
+
 ## 0.84.1 (2026-11-08)
 
 - **Training tab uses the whole window:** wider rows and a taller list, so more levels show without scrolling.

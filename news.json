@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-11-08",
+      "title": "Talent builds now follow recommended builds",
+      "text": "The builds we had to rebuild after the November talent changes now come from RankedBoost's recommended builds for the current game version, with all 51 points at level 60. Tell us if a class looks off.",
+      "link": "builds.html"
+    },
+    {
       "date": "2026-11-07",
       "title": "Talent builds updated for the November changes",
       "text": "The game changed its talent trees on 3-4 November, so many of our recommended builds no longer fit. The builds page and the addon now use the current trees: builds that only had renames kept their picks, the rest follow the most popular current build of that spec. Check your class and tell us what looks wrong.",

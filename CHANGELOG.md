@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-08 (addon 0.84.2: builds from RankedBoost)
+- The 23 builds replaced in 0.84.0 (from talentsforever.com's most-used builds) are now taken from RankedBoost's recommended builds: each class page embeds a JSON `builds` list with `alloc` {Wowhead talent id: rank} for game build 1.60.1.70790 (fetchable with a plain `curl -A "Mozilla/5.0"`). The ids are Wowhead's talent ids, so the conversion to our codes is exact; every result was checked valid on the regenerated trees. Mapping per spec in the session notes: leveling build where RankedBoost has one (Combat Rogue, BM Hunter, Feral Druid, Enhancement Shaman, Retribution Paladin), otherwise its DPS / tank / healing build of that spec. Level 30 = first 21 points in the calculator's deepest-first order. 23 of the 24 mapped; Rogue Combat 60 kept its 0.84.0 build (RankedBoost's lists Lethality above the live max of 2 and its dependants become illegal); Assassination 30 capped Lethality and Seal Fate. Rotations in `builds.html` still describe the old picks.
+
 ## 2026-11-08 (addon 0.84.1)
 - Training tab given the large page (`TrainingTab.PAGE`, like Home and Talents): 640 x 590, two 304 px columns, scroll view 622 x 540. Confirmed in game (talent board art and the Training list read well; the "couldn't read your talents" line was the names not loaded yet).
 

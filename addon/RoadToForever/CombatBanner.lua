@@ -59,6 +59,58 @@ local function flash(entering)
   end
 end
 
+-- With a pet out the game flags you the moment the pet is sent in, before anything has hit anything. "Entering Combat" waits
+-- until the fight is real: your target or your pet's target is in combat, something targets you, or your health drops.
+-- A fight that never gets that far announces itself after WAIT_MAX seconds (you are in combat anyway); one that ends first
+-- shows nothing (no "Entering", so no "Leaving" either).
+local POLL, WAIT_MAX = 0.25, 4
+local waiting, announced, waitToken = false, false, 0
+
+local function safe(fn, ...)
+  if not fn then return nil end
+  local ok, a = pcall(fn, ...)
+  if ok then return a end
+  return nil
+end
+
+local function engaged(startHealth)
+  if safe(UnitAffectingCombat, "target") and safe(UnitCanAttack, "player", "target") then return true end
+  if safe(UnitAffectingCombat, "pettarget") then return true end
+  if safe(UnitExists, "targettarget") and safe(UnitIsUnit, "targettarget", "player") then return true end
+  local hp = safe(UnitHealth, "player")
+  if type(hp) == "number" and type(startHealth) == "number" and hp < startHealth then return true end
+  return false
+end
+
+local function startWatch()
+  waiting, announced = true, false
+  waitToken = waitToken + 1
+  local mine, waited = waitToken, 0
+  local startHealth = safe(UnitHealth, "player")
+  local function poll()
+    if waitToken ~= mine or not waiting then return end
+    if engaged(startHealth) or waited >= WAIT_MAX then
+      waiting, announced = false, true
+      flash(true)
+      return
+    end
+    waited = waited + POLL
+    if C_Timer and C_Timer.After then C_Timer.After(POLL, poll) end
+  end
+  poll()
+end
+
+local function combatStarted()
+  if safe(UnitExists, "pet") then startWatch() else announced = true; flash(true) end
+end
+
+local function combatEnded()
+  waitToken = waitToken + 1
+  waiting = false
+  if announced then flash(false) end
+  announced = false
+end
+
 -- PLAYER_LOGIN (Core.lua).
 function Banner.Init()
   if frame then return end
@@ -75,7 +127,7 @@ function Banner.Init()
   frame:Place()
   local ev = CreateFrame("Frame")
   ev:SetScript("OnEvent", function(_, event)
-    if event == "PLAYER_REGEN_DISABLED" then flash(true) else flash(false) end
+    if event == "PLAYER_REGEN_DISABLED" then combatStarted() else combatEnded() end
   end)
   for _, e in ipairs({ "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED" }) do pcall(ev.RegisterEvent, ev, e) end
   refresh()

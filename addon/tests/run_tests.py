@@ -1558,8 +1558,8 @@ def test_reminders():
     # --- Tabs and class filter ------------------------------------------------------
     lua, T = reminder_runtime("WARRIOR")
     MW = lua.eval("R2F.MainWindow")
-    keys = [lua.eval("R2F.MainWindow.TABS[%d]" % i) for i in range(1, 7)]
-    check(keys == ["home", "macros", "talents", "plan", "bis", "gameplay"], "15.4/15.5/19 tab order: %s" % keys)
+    keys = [lua.eval("R2F.MainWindow.TABS[%d]" % i) for i in range(1, 8)]
+    check(keys == ["home", "macros", "talents", "plan", "bis", "gameplay", "training"], "15.4/15.5/19 tab order: %s" % keys)
     lua.execute('SlashCmdList.R2F("reminders")')
     lua.execute('R2F.GameplayTab.ShowPage("icons")')
     check(MW.CurrentTab() == "gameplay", "15.4 /r2f reminders (the old name) opens the Gameplay tab")
@@ -2321,7 +2321,7 @@ def test_plan(templates=True):
     lua.execute("R2F.MainWindow.Show('plan')")
     title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever: Plan", "%s: Plan title: %r" % (tag, title))
-    check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 6, "%s: six tabs, Plan fourth" % tag)
+    check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 7, "%s: seven tabs, Plan fourth" % tag)
     OWN = "skyborne:WARRIOR"
     check(font_text(lua, "^Alliance Skyborne Warrior$") is not None, "%s: the tab says who the plan is for (the character)" % tag)
     find_frames(lua, "f.__kind == 'Button' and f.__text ~= nil and f.__text:find('^Race: ') ~= nil", "RACEB")
@@ -4641,14 +4641,14 @@ def test_step6_ui(templates, fx):
 
     # ---- Main window tabs ----------------------------------------------------
     n = find_frames(lua, "f.r2fKey ~= nil", "MTABS")
-    check(n == 6, "six sidebar entries")
+    check(n == 7, "seven sidebar entries")
     lua.execute("NAV = {} for _, f in ipairs(MTABS) do NAV[f.r2fKey] = f end "
-                "MTABS = {NAV.home, NAV.macros, NAV.talents, NAV.plan, NAV.bis, NAV.gameplay}")
-    labels = [lua.eval("MTABS[%d].r2fText.__text" % i) for i in range(1, 7)]
-    check(labels == ["Home", "Macros", "Builds & talents", "Launch plan", "Gear (Mr.BiZ)", "Tweaks"],
+                "MTABS = {NAV.home, NAV.macros, NAV.talents, NAV.plan, NAV.bis, NAV.gameplay, NAV.training}")
+    labels = [lua.eval("MTABS[%d].r2fText.__text" % i) for i in range(1, 8)]
+    check(labels == ["Home", "Macros", "Builds & talents", "Launch plan", "Gear (Mr.BiZ)", "Tweaks", "Training"],
           "sidebar labels %s" % labels)
-    order = [lua.eval("R2F.MainWindow.NAV[%d].tabs[%d]" % (g, t)) for g, t in ((1, 1), (2, 1), (3, 1), (3, 2), (4, 1), (4, 2))]
-    check(order == ["home", "plan", "talents", "bis", "macros", "gameplay"], "sidebar order %s" % order)
+    order = [lua.eval("R2F.MainWindow.NAV[%d].tabs[%d]" % (g, t)) for g, t in ((1, 1), (2, 1), (3, 1), (3, 2), (3, 3), (4, 1), (4, 2))]
+    check(order == ["home", "plan", "talents", "training", "bis", "macros", "gameplay"], "sidebar order %s" % order)
     heads = [lua.eval("R2F.MainWindow.NAV[%d].heading" % g) for g in (2, 3, 4)]
     check(heads == ["NAV_JOURNEY", "NAV_CHARACTER", "NAV_UI"], "sidebar groups: journey, character, UI: %s" % heads)
     # The launch countdown on Home.
@@ -4763,7 +4763,7 @@ def test_step6_ui(templates, fx):
           and lua.eval("%s.gems[1].gem:IsShown()" % D) is True and lua.eval("%s.frameInner[1]:IsShown()" % D) is True,
           "azeroth: panel, banner, corner gems and the inner frame line are drawn")
     check(lua.eval("R2FMain.r2fBgTex:IsShown()") is False, "azeroth: the flat panel colour is replaced by the gradient panel")
-    check(all(lua.eval("%s.nav.%s.grad:IsShown()" % (D, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay")),
+    check(all(lua.eval("%s.nav.%s.grad:IsShown()" % (D, k)) is True for k in ("home", "plan", "talents", "training", "bis", "macros", "gameplay")),
           "azeroth: every navigation button has its stone gradient")
     check(lua.eval("R2FMain.r2fTitle.__point[2] == %s.bannerEdge" % D) is True, "azeroth: the title sits on the banner")
     # Then the image look: the exported slices (media/azeroth) replace the rectangles.
@@ -4783,7 +4783,7 @@ def test_step6_ui(templates, fx):
           and "btn_normal" in lua.eval("%s.nav.%s.bar.parts[2].__tex" % (IM, other)) and "gem_off" in lua.eval("%s.nav.%s.gem.__tex" % (IM, other)),
           "azeroth with images: the selected sidebar button (%s) and its gem are lit, the others are not" % cur)
     check(len(lua_table_to_list(lua.eval("R2FMain.r2fDeco.img.sliders"))) == 2, "azeroth with images: both top-bar sliders are re-skinned")
-    check(all(lua.eval("%s.nav.%s.icon:IsShown()" % (IM, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay")),
+    check(all(lua.eval("%s.nav.%s.icon:IsShown()" % (IM, k)) is True for k in ("home", "plan", "talents", "training", "bis", "macros", "gameplay")),
           "azeroth with images: every sidebar button has its icon")
     check(all(lua.eval("%s.heads[%d].word:IsShown()" % (IM, k)) is True for k in (1, 2, 3)),
           "azeroth with images: the three group headings are the letter-spaced images")
@@ -4808,7 +4808,7 @@ def test_step6_ui(templates, fx):
           "ember: panel, heat strip, eight frame pieces and four rivets are drawn")
     check(lua.eval("R2FMain.r2fDeco.img.banner:IsShown()") is False and lua.eval("%s.panel:IsShown()" % D) is False,
           "ember: none of the Azeroth pieces show")
-    check(all(lua.eval("%s.nav.%s.slot:IsShown()" % (EMI, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay")),
+    check(all(lua.eval("%s.nav.%s.slot:IsShown()" % (EMI, k)) is True for k in ("home", "plan", "talents", "training", "bis", "macros", "gameplay")),
           "ember: every sidebar button is an icon tile")
     check(lua.eval("NAV.plan.r2fText.__text") == "PLAN" and lua.eval("NAV.bis.r2fText.__text") == "GEAR",
           "ember: the tiles carry the short upper-case labels")
@@ -4851,7 +4851,7 @@ def test_step6_ui(templates, fx):
     check(lua.eval("R2FMain.r2fSide:IsShown()") is False, "obsidian: no sidebar background")
     check(lua.eval("NAV.plan.r2fText.__text") == "Launch plan" and lua.eval("NAV.talents.r2fText.__text") == "Builds",
           "obsidian: tab names")
-    check(all(lua.eval("%s.nav.%s.icon:IsShown()" % (OBI, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay")),
+    check(all(lua.eval("%s.nav.%s.icon:IsShown()" % (OBI, k)) is True for k in ("home", "plan", "talents", "training", "bis", "macros", "gameplay")),
           "obsidian: every tab has its icon")
     check(len(lua_table_to_list(lua.eval("R2F.MainWindow.NavSeparators()"))) == 2, "obsidian: two separators between the tab groups")
     check(lua.eval("R2FMain.r2fDeco.img.banner:IsShown()") is False and lua.eval("%s.panel:IsShown()" % EMI) is False,
@@ -4879,7 +4879,7 @@ def test_step6_ui(templates, fx):
           and all(lua.eval("%s.frame.parts[%d]:IsShown()" % (FRI, k)) is True for k in range(1, 9))
           and all(lua.eval("%s.glass.parts[%d]:IsShown()" % (FRI, k)) is True for k in range(1, 10)),
           "frost: starfield, shade, both glows, the rounded frame and the glass panel are drawn")
-    check(all(lua.eval("%s.nav.%s.orb:IsShown()" % (FRI, k)) is True for k in ("home", "plan", "talents", "bis", "macros", "gameplay"))
+    check(all(lua.eval("%s.nav.%s.orb:IsShown()" % (FRI, k)) is True for k in ("home", "plan", "talents", "training", "bis", "macros", "gameplay"))
           and lua.eval("%s.link:IsShown()" % FRI) is True, "frost: every sidebar button is an orb on the chain")
     check(lua.eval("NAV.plan.r2fText.__text") == "Launch plan" and lua.eval("R2FMain.r2fSide:IsShown()") is False,
           "frost: the names stay, the sidebar background is gone")
@@ -4916,7 +4916,7 @@ def test_step6_ui(templates, fx):
           and lua.eval("%s.spine:IsShown()" % SCI) is True and lua.eval("%s.contents:IsShown()" % SCI) is True,
           "scribe: cover, both pages, spine and the Contents heading are drawn")
     check(all(lua.eval("%s.nav.%s.leader:IsShown()" % (SCI, k)) is True and lua.eval("%s.nav.%s.num:IsShown()" % (SCI, k)) is True
-              for k in ("home", "plan", "talents", "bis", "macros", "gameplay")), "scribe: every contents line has a leader and a page number")
+              for k in ("home", "plan", "talents", "training", "bis", "macros", "gameplay")), "scribe: every contents line has a leader and a page number")
     check(lua.eval("%s.nav.home.marker:IsShown()" % SCI) is not lua.eval("%s.nav.plan.marker:IsShown()" % SCI),
           "scribe: only the open page has the bookmark")
     check(lua.eval("R2FMain.r2fClose:IsShown()") is True, "scribe: our own close button")
@@ -8586,6 +8586,9 @@ def main():
     test_remove_from_library(False, fx)
     test_gearscore()
     test_training()
+    test_training_tab()
+    test_hunter_aspect()
+    test_combat_banner_pet()
     test_class_timers()
     test_timers_in_combat()
     test_training_forever_shape()
@@ -9661,6 +9664,104 @@ def test_training():
           "train: Home shows Train now and Next")
     check(lua.eval("(function() for _, p in ipairs(R2F.GameplayTab.PAGES) do if p.key == 'alerts' then for _, k in ipairs(p.features) do if k == 'training' then return true end end end end end)()") is True,
           "train: the reminder switch is on Tweaks > Alerts")
+
+
+def test_hunter_aspect():
+    """Aspect reminder (Hunters only): shows when no aspect is up, and when Cheetah / Pack is up in combat."""
+    lua, T = reminder_runtime("HUNTER")
+    lua.execute("R2F.MainWindow.Show('gameplay') R2F.GameplayTab.ShowPage('icons')")
+    check(lua.eval("R2FAspectFrame ~= nil") and lua.eval("R2FAspectScale ~= nil"), "aspect: the Hunter has the icon and its size slider")
+    lua.execute("""TEST.auras = {} TEST.fight = false TEST.mounted = false TEST.selfDead = false TEST.known = true
+      C_UnitAuras = { GetUnitAuras = function() local t = {} for _, n in ipairs(TEST.auras) do t[#t + 1] = { name = n } end return t end }
+      UnitIsDeadOrGhost = function() return TEST.selfDead end
+      IsMounted = function() return TEST.mounted end
+      UnitAffectingCombat = function() return TEST.fight end
+      IsPlayerSpell = function() return TEST.known end
+      C_Spell = { GetSpellInfo = function() return { spellID = 13165 } end }""")
+    check(lua.eval("R2F.Aspect.Problem()") == "none", "aspect: no aspect up -> reminder")
+    lua.execute("TEST.auras = { 'Aspect of the Hawk' }")
+    check(lua.eval("R2F.Aspect.Problem()") is None, "aspect: Hawk up -> quiet")
+    lua.execute("TEST.auras = { 'Aspect of the Cheetah' }")
+    check(lua.eval("R2F.Aspect.Problem()") is None, "aspect: Cheetah out of combat is fine")
+    lua.execute("TEST.fight = true")
+    check(lua.eval("R2F.Aspect.Problem()") == "cheetah", "aspect: Cheetah in combat -> swap to Hawk")
+    lua.execute("TEST.auras = { 'Aspect of the Pack' }")
+    check(lua.eval("R2F.Aspect.Problem()") == "cheetah", "aspect: Pack in combat -> swap too")
+    lua.execute("TEST.auras = { 'Aspect of the Hawk' }")
+    check(lua.eval("R2F.Aspect.Problem()") is None, "aspect: Hawk in combat is right")
+    lua.execute("TEST.auras = {} TEST.mounted = true")
+    check(lua.eval("R2F.Aspect.Problem()") is None, "aspect: mounted -> quiet")
+    lua.execute("TEST.mounted = false TEST.known = false")
+    check(lua.eval("R2F.Aspect.Problem()") is None, "aspect: no aspect learned yet -> quiet")
+    lua.execute("TEST.known = true TEST.auras = { 'Feign Death' }")
+    check(lua.eval("R2F.Aspect.Problem()") is None, "aspect: feigning death -> quiet")
+    lua.execute("TEST.auras = {} C_UnitAuras.GetUnitAuras = function() return nil end")
+    check(lua.eval("R2F.Aspect.Problem()") is None, "aspect: unreadable auras -> say nothing")
+    lua2, _ = reminder_runtime("MAGE")
+    check(lua2.eval("R2FAspectFrame == nil"), "aspect: no frame for other classes")
+
+
+def test_combat_banner_pet():
+    """Combat banner with a pet out waits until the fight is real (target in combat, something targets you, health drops)."""
+    lua, T = reminder_runtime("HUNTER", preset="{ banner = { shown = true, lock = true } }")
+    banner = "R2F.CombatBanner.Frame()"
+    lua.execute("""TEST.petOut = true TEST.targetFight = false
+      UnitExists = function(u) if u == "pet" then return TEST.petOut end return false end
+      UnitAffectingCombat = function(u) return u == "target" and TEST.targetFight end
+      UnitCanAttack = function() return true end""")
+    T.fire("PLAYER_REGEN_DISABLED")
+    check(lua.eval("%s:IsShown()" % banner) is False, "banner+pet: sending the pet in shows nothing yet")
+    lua.execute("TEST.targetFight = true")
+    T.runTimersOnce()
+    check(lua.eval("%s:IsShown()" % banner) is True and lua.eval("%s.text.__text" % banner) == "Entering Combat",
+          "banner+pet: Entering Combat once the target is really in combat")
+    T.fire("PLAYER_REGEN_ENABLED")
+    check(lua.eval("%s.text.__text" % banner) == "Leaving Combat", "banner+pet: Leaving Combat as usual")
+    T.runTimers()
+    # A flag that ends before anything happened shows neither line.
+    lua.execute("TEST.targetFight = false")
+    T.fire("PLAYER_REGEN_DISABLED")
+    T.fire("PLAYER_REGEN_ENABLED")
+    T.runTimers()
+    check(lua.eval("%s:IsShown()" % banner) is False, "banner+pet: a flag that ended unannounced shows nothing")
+    # Never engaged by our checks: it still announces after the wait.
+    T.fire("PLAYER_REGEN_DISABLED")
+    T.runTimers()
+    T.runTimers()
+    check(lua.eval("%s.text.__text" % banner) == "Entering Combat", "banner+pet: announces after the wait if nothing else confirmed it")
+
+
+def test_training_tab():
+    """Training tab: every saved trainer spell up to 60 as spellbook slots, split Train now / Next level / Later."""
+    lua = new_runtime(True)
+    lua.execute("TEST.reset()")
+    lua.execute("""TEST.level = 20""")
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    lua.execute("""R2FCharDB.training.spells = {
+      { n = 'Arcane Shot', r = 'Rank 3', lvl = 20, cost = 1200, s = 'available', ic = 'Interface\Icons\Ability_ImpalingBolt',
+        tip = { { l = 'Arcane Shot' }, { l = 'Rank 3', r = '36 mana' }, { l = 'An instant shot that causes arcane damage to the target.' } } },
+      { n = 'Multi-Shot', r = 'Rank 2', lvl = 22, cost = 2200, s = 'unavailable' },
+      { n = 'Aspect of the Cheetah', r = '', lvl = 22, cost = 2000, s = 'unavailable' },
+      { n = 'Raptor Strike', r = 'Rank 4', lvl = 30, cost = 3000, s = 'unavailable' },
+      { n = 'Rapid Fire', r = '', lvl = 26, cost = 100, s = 'used' },
+      { n = 'Far Spell', r = '', lvl = 58, cost = 9000, s = 'unavailable' } }
+      R2FCharDB.training.when = 1 R2FCharDB.training.level = 20""")
+    now, nxt, nl, later, known = lua.eval("R2F.Training.Upcoming(20)")
+    check(lua.eval("#({R2F.Training.Upcoming(20)})[1]") == 1 and lua.eval("({R2F.Training.Upcoming(20)})[3]") == 22
+          and lua.eval("#({R2F.Training.Upcoming(20)})[2]") == 2, "train tab: now = 1, next level 22 has 2 spells")
+    check(lua.eval("#({R2F.Training.Upcoming(20)})[4]") == 2 and lua.eval("({R2F.Training.Upcoming(20)})[4][1].lvl") == 30
+          and lua.eval("({R2F.Training.Upcoming(20)})[4][2].lvl") == 58, "train tab: later levels grouped, learned spells left out")
+    lua.execute("R2F.MainWindow.Show('training')")
+    check(lua.eval("R2F.MainWindow.CurrentTab()") == "training" and lua.eval("R2F.MainWindow.Title()") == "Road to Forever: Training",
+          "train tab: opens with its own title")
+    find_frames(lua, "f.entry ~= nil and f:IsShown()", "TSL")
+    check(lua.eval("#TSL") == 5, "train tab: one slot per spell (%s)" % lua.eval("#TSL"))
+    lua.execute("TSL[1]:GetScript('OnEnter')(TSL[1])")
+    check(lua.eval("GameTooltip:IsShown()") is True, "train tab: hovering a spell shows its tooltip")
+    lua.execute("R2FCharDB.training.spells = {} R2F.TrainingTab.Refresh()")
+    check(lua.eval("#R2F.Training.Upcoming(20) == 0") is True, "train tab: nothing saved -> empty list")
 
 
 def install_item_stubs(lua):

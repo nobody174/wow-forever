@@ -31,5 +31,11 @@ For every look (Home > Theme > "Open the gallery"): compare with its picture in 
 
 - **5.73 /bizway from the site (site change, no addon release needed):** on the site's Launch plan, click a 📍 button next to a step (it turns green). In game, paste the line into the chat box and press Enter: the arrow must point at that spot and say the label. Try one with a two-word zone ("Zephras Isle") and one where you stand in another zone. A line that fails shows the usage text in chat; tell me which step it was.
 
+- **5.74 Hunter aspect reminder (next release):** on the Hunter (Tweaks > Class icons has "Aspect reminder"): with no aspect up a red Hawk icon "No aspect" must show (not while mounted, dead or feigning death); put Hawk on and it goes. Cast Aspect of the Cheetah (or Pack) and pull something: the icon must turn gold "Swap to Hawk" while in combat and be gone out of combat. If it never shows or stays when it should not, send `/r2f debug auras` output.
+
+- **5.75 Combat banner with a pet (next release):** with the banner on (Tweaks > Class icons) send the pet at a mob from range: "Entering Combat" must wait until the mob is really fighting (the pet or you hit it, or it targets you), not appear the moment the pet is sent. If you get out of the flag before anything happens, no banner at all. "Leaving Combat" is unchanged.
+
+- **5.76 Training tab (next release):** new "Training" entry under Character. Visit your class trainer once with Unavailable shown (the list is read from there): the tab must show Train now, Next level and every later level up to 60 as spellbook slots with icon, rank, cost; hover must give the trainer's tooltip (description, cost). Entries saved before this version show a question mark icon and a short tooltip until you visit the trainer again. Check all six themes still lay out the extra sidebar entry.
+
 ## Cannot be tested yet (needs higher level / talents / release)
 4.13 group picks (needs an owner publish) · 13.9 Druid Starsurge / Sunfire / Starfall / Lacerate macros · 13.11 Dire Bear Form at 40 · 14.1 Hunter Strider Kick · 14.2 Paladin Twist of Light seal swap · 14.4 Shaman Elemental Mastery

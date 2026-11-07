@@ -30,14 +30,14 @@ local UI = R2F.UI
 local MainWindow = {}
 R2F.MainWindow = MainWindow
 
-MainWindow.TABS = { "home", "macros", "talents", "plan", "bis", "gameplay" }
-local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, bis = 5, gameplay = 6 }  -- membership check
+MainWindow.TABS = { "home", "macros", "talents", "plan", "bis", "gameplay", "training" }
+local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, bis = 5, gameplay = 6, training = 7 }  -- membership check
 -- Tabs that were folded into another one (the Settings tab became part of Home).
 local ALIAS = { settings = "home" }
 local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", plan = "TITLE_PLAN",
-                 bis = "TITLE_BIS", gameplay = "TITLE_GAMEPLAY" }
+                 bis = "TITLE_BIS", gameplay = "TITLE_GAMEPLAY", training = "TITLE_TRAINING" }
 local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", plan = "TAB_PLAN",
-                 bis = "TAB_BIS", gameplay = "TAB_GAMEPLAY" }
+                 bis = "TAB_BIS", gameplay = "TAB_GAMEPLAY", training = "TAB_TRAINING" }
 local LOGO = "Interface\\AddOns\\RoadToForever\\media\\logo128"
 
 local frame
@@ -61,6 +61,8 @@ local function refreshPage(key)
     R2F.BiZTab.Refresh()
   elseif key == "gameplay" then
     R2F.GameplayTab.Refresh()
+  elseif key == "training" then
+    R2F.TrainingTab.Refresh()
   end
 end
 
@@ -88,7 +90,7 @@ local curW = WIN_W          -- the window's width now: a theme can ask for a wid
 MainWindow.NAV = {
   { tabs = { "home" } },
   { heading = "NAV_JOURNEY", tabs = { "plan" } },
-  { heading = "NAV_CHARACTER", tabs = { "talents", "bis" } },
+  { heading = "NAV_CHARACTER", tabs = { "talents", "training", "bis" } },
   { heading = "NAV_UI", tabs = { "macros", "gameplay" } },
 }
 
@@ -294,8 +296,8 @@ end
 -- The sidebar as a list of wide buttons (the usual look), as a 2 x 3 grid of 64 px tiles (Ember & Iron, "grid") or as a row
 -- of tabs under the top bar (Obsidian Night, "top"): the same buttons, moved. In the tab layout the window is 44 px taller
 -- and the pages move up and sideways into the space the sidebar left.
-local GRID_ORDER = { "home", "plan", "talents", "bis", "macros", "gameplay" }
-local TOP_W = { home = 84, plan = 112, talents = 96, bis = 84, macros = 92, gameplay = 92 }
+local GRID_ORDER = { "home", "plan", "talents", "training", "bis", "macros", "gameplay" }
+local TOP_W = { home = 84, plan = 112, talents = 96, training = 88, bis = 84, macros = 92, gameplay = 92 }
 local TOP_SEPARATORS_AFTER = { plan = true, bis = true }
 local navSeps = {}
 local tocY = {}
@@ -646,6 +648,7 @@ local function build()
   R2F.PlanTab.Build(pages.plan)
   R2F.BiZTab.Build(pages.bis)
   R2F.GameplayTab.Build(pages.gameplay)
+  R2F.TrainingTab.Build(pages.training)
 
   f:SetScript("OnShow", function()
     UI.PlaySound("IG_SPELLBOOK_OPEN")

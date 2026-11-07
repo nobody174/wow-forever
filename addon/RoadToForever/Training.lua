@@ -23,6 +23,32 @@ R2F.Training = Training
 
 local function db() return R2F.Library.cdb.training end
 
+-- The trainer's own tooltip for service `i`, as text lines { {l = left, r = right}, ... }, so the Training tab can show it
+-- later without the trainer open. A hidden tooltip of ours reads it; nil when the client cannot do that.
+local scan
+local function scanTip(i)
+  if not (CreateFrame and UIParent) then return nil end
+  local ok, out = pcall(function()
+    scan = scan or CreateFrame("GameTooltip", "R2FTrainScanTip", nil, "GameTooltipTemplate")
+    if not (scan and scan.SetTrainerService and scan.NumLines) then return nil end
+    scan:SetOwner(UIParent, "ANCHOR_NONE")
+    scan:SetTrainerService(i)
+    local lines = {}
+    for k = 1, math.min(scan:NumLines() or 0, 12) do
+      local l, r = _G["R2FTrainScanTipTextLeft" .. k], _G["R2FTrainScanTipTextRight" .. k]
+      local lt, rt = l and l:GetText(), r and r:GetText()
+      if type(lt) == "string" and (not _G.issecretvalue or not _G.issecretvalue(lt)) then
+        if type(rt) ~= "string" or rt == "" or (_G.issecretvalue and _G.issecretvalue(rt)) then rt = nil end
+        lines[#lines + 1] = { l = lt, r = rt }
+      end
+    end
+    scan:Hide()
+    return lines
+  end)
+  if ok and type(out) == "table" and #out > 0 then return out end
+  return nil
+end
+
 -- Reads the open trainer window. Returns the number of spells saved, or nil when it isn't a class
 -- trainer (or the API is missing).
 function Training.Read()
@@ -35,12 +61,13 @@ function Training.Read()
     -- Forever (modern engine, Blizzard's own trainer window): name, serviceType, texture, reqLevel, subText.
     -- serviceType is "available" | "unavailable" | "used"; subText is the rank ("Rank 2"). Classic returns
     -- name, rank, category ("header" for a heading) and has a separate GetTrainerServiceLevelReq.
-    local rank, state, lvl
+    local rank, state, lvl, icon
     if a2 == "available" or a2 == "unavailable" or a2 == "used" then
-      rank, state, lvl = a5, a2, tonumber(a4)
+      rank, state, lvl, icon = a5, a2, tonumber(a4), a3
     else
       rank, state = a2, a3
       lvl = GetTrainerServiceLevelReq and GetTrainerServiceLevelReq(i)
+      icon = GetTrainerServiceIcon and GetTrainerServiceIcon(i)
     end
     if name and state ~= "header" then
       list[#list + 1] = {
@@ -48,6 +75,8 @@ function Training.Read()
         lvl = lvl or 0,
         cost = GetTrainerServiceCost and GetTrainerServiceCost(i) or 0,
         s = state,
+        ic = (type(icon) == "string" or type(icon) == "number") and icon or nil,
+        tip = scanTip(i),
       }
     end
   end
@@ -116,6 +145,33 @@ function Training.Status(level)
   return now, later, nextLevel, #db().spells > 0
 end
 
+-- The Training tab: `now` (trainable at `level`), `nextList` of `nextLevel`, and `later` = { {lvl = 30, list = {...}}, ... }
+-- for every further level up to the cap, in level order. The same entries Status() hides are hidden here.
+Training.CAP = 60
+function Training.Upcoming(level)
+  level = level or UnitLevel("player")
+  local now, later, nextLevel, known = Training.Status(level)
+  local ranked = {}
+  for _, e in ipairs(db().spells) do
+    if e.r ~= "" then ranked[e.n .. "\0" .. e.lvl] = true end
+  end
+  local byLevel, order = {}, {}
+  for _, e in ipairs(db().spells) do
+    if e.s ~= "used" and e.lvl > level and e.lvl ~= nextLevel and e.lvl <= Training.CAP
+        and not (e.r == "" and ranked[e.n .. "\0" .. e.lvl]) then
+      if not byLevel[e.lvl] then byLevel[e.lvl] = {} order[#order + 1] = e.lvl end
+      table.insert(byLevel[e.lvl], e)
+    end
+  end
+  table.sort(order)
+  local out = {}
+  for _, lv in ipairs(order) do
+    table.sort(byLevel[lv], sortSpells)
+    out[#out + 1] = { lvl = lv, list = byLevel[lv] }
+  end
+  return now, later, nextLevel, out, known
+end
+
 local function names(list, max)
   local out = {}
   for i, e in ipairs(list) do
@@ -166,6 +222,7 @@ ev:SetScript("OnEvent", function(_, event, a1)
   if event == "TRAINER_SHOW" or event == "TRAINER_UPDATE" then
     Training.Read()
     if R2F.Home and R2F.Home.Refresh then R2F.Home.Refresh() end
+    if R2F.TrainingTab and R2F.TrainingTab.Refresh then R2F.TrainingTab.Refresh() end
   elseif (event == "LEARNED_SPELL_IN_SKILL_LINE" or event == "LEARNED_SPELL_IN_TAB") and a1 then
     local name = GetSpellInfo and GetSpellInfo(a1)
     local rank = _G.GetSpellSubtext and _G.GetSpellSubtext(a1) or nil

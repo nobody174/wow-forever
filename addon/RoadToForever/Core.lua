@@ -34,6 +34,7 @@ handlers.PLAYER_LOGIN = function()
   R2F.Ammo.Init()
   R2F.Repair.Init()
   R2F.Pet.Init()
+  R2F.Aspect.Init()
   R2F.Timers.Init()
   R2F.Recorder.Init()
   R2F.RouteLog.Init()
@@ -207,6 +208,8 @@ local COMMANDS = {
   ["repair lock"] = function() R2F.Repair.ToggleLock() end,
   pet = function() R2F.Pet.ToggleShown() end,
   ["pet lock"] = function() R2F.Pet.ToggleLock() end,
+  aspect = function() R2F.Aspect.ToggleShown() end,
+  ["aspect lock"] = function() R2F.Aspect.ToggleLock() end,
   rested = function() R2F.Rested.ToggleShown() end,
   update = function() R2F.Version.Report() end,
   minimap = function() R2F.Minimap.ToggleHidden() end,

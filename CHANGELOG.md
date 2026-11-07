@@ -5,6 +5,12 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-07 (addon 0.83.0: Hunter aspect reminder, Training tab, combat banner with a pet)
+- Hunter aspect reminder (`Aspect.lua`, Tweaks > Class icons, on by default): a red Hawk icon when no aspect is up (quiet when mounted, dead, feigning death, or before the first aspect is learned), a gold "Swap to Hawk" icon while Cheetah or Pack is up in combat. Same read-only look as the pet and stance icons; `/r2f aspect`, `/r2f aspect lock`. Aura names matched in English.
+- Training tab (`UI/Training.lua`, Character group, between Builds and Gear): the class trainer's list as spellbook slots, split Train now / Next level / each later level up to 60, trainer tooltip on hover. `Training.Read` now also saves each spell's icon and tooltip lines (older saves show a question mark until the trainer is visited again); `Training.Upcoming` feeds the page. Theme tables for the extra tab (`NAV_ICON` reuses the talents art, `DecoBook` order, `DecoToy` colour).
+- Combat banner with a pet out: "Entering Combat" waits until the fight is real (target or pet target in combat, something targets you, health drops), or 4 s at most; a flag that ends first shows nothing. Without a pet nothing changed.
+- Tests: aspect, banner with pet, Training tab; tab count 6 to 7 in the window tests; `AddDoubleLine` in the tooltip stub. Open tests 5.74 to 5.76.
+
 ## 2026-11-02 (Home: start here)
 - Home got a "New here? Start with these" strip under the countdown: 1 Pick your plan, 2 Set your build, 3 Add the addon, plus a link to the launch night list. In a browser that has used the launch plan it also shows "Continue your plan: <race> <class>, level N" (read from the plan page's own saved choice; a damaged saved value is ignored and never breaks Home).
 - Two layout faults found while doing it and fixed: from 761px to about 1750px wide (every laptop) the side panels met the title and countdown in the middle, so the title block now sits in the room left of the panels; on phones the title and countdown were about 1000px down, below both link lists, now they come first.

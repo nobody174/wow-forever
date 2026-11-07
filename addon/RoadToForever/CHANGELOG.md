@@ -1,6 +1,10 @@
 # Road to Forever changelog
 
-## Unreleased
+## 0.83.0 (2026-11-07)
+
+- **Hunter aspect reminder** (Tweaks > Class icons, on by default): a red Hawk icon when no aspect is up, a gold "Swap to Hawk" icon while Aspect of the Cheetah or Pack is up in combat. Quiet when mounted, dead, feigning death, or before you learn an aspect. `/r2f aspect` and `/r2f aspect lock`.
+- **Training tab** (Character group): every spell your class trainer teaches next, up to level 60, as spellbook slots with icon, rank and cost: Train now, Next level, then each later level. Hover for the trainer's tooltip. It fills from your class trainer visits (tick Unavailable there to include later spells); older saved entries show a question mark until you visit the trainer again.
+- **Combat banner with a pet:** "Entering Combat" no longer shows the moment the pet is sent in; it waits until the fight is real (up to 4 seconds). A flag that ends before anything happens shows nothing.
 
 - **`/r2f setup show`** offers Setup Hunter / Setup Druid in the minimap menu and the help lines even without the Edit Mode layout (the setup then skips its layout step); run it again to turn that off. Why: the Forever release client keeps Edit Mode layouts on the server, so the beta's "Hunter" layout cannot be restored by copying files (the game replaces the restored file with the server's empty copy at login, found 2026-11-05).
 - **Duo progress:** two buttons on the Plan tab under the preview row. "Copy my progress" shows a string (your plan, level and ticked steps; no character name) to send to your partner. "Compare with partner" takes theirs and shows both levels, the level gap, how many steps you share and the steps only one of you has done. The Launch plan page on the site makes and reads the same string (`R2FP1:`). Read-only: nothing is written to the game or to your ticks. The plan list moved down one row to make room.

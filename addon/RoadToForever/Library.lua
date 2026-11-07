@@ -194,6 +194,14 @@ function Library.Init()
   if type(pt.scale) ~= "number" or pt.scale < 0.5 or pt.scale > 3 then pt.scale = 1 end
   if type(pt.x) ~= "number" then pt.x = 238 end
   if type(pt.y) ~= "number" then pt.y = 522 end
+  -- Aspect reminder (Aspect.lua).
+  if type(db.aspect) ~= "table" then db.aspect = {} end
+  local ap = db.aspect
+  if type(ap.shown) ~= "boolean" then ap.shown = true end
+  if type(ap.lock) ~= "boolean" then ap.lock = false end
+  if type(ap.scale) ~= "number" or ap.scale < 0.5 or ap.scale > 3 then ap.scale = 1 end
+  if type(ap.x) ~= "number" then ap.x = 238 end
+  if type(ap.y) ~= "number" then ap.y = 472 end
   if db.newerVersion ~= nil and type(db.newerVersion) ~= "string" then db.newerVersion = nil end   -- Version.lua
   -- Rested XP reminder (Rested.lua).
   if type(db.rested) ~= "table" then db.rested = {} end

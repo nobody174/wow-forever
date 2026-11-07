@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-11-07",
+      "title": "Addon 0.83.0: aspect reminder and a Training tab",
+      "text": "Hunters get a reminder when no aspect is up and a warning to swap back to Hawk when Cheetah is up in a fight. A new Training tab lists every spell your trainer teaches next, up to level 60, like the spellbook. The Entering Combat banner now waits until the fight is real when you send in a pet.",
+      "link": "addons.html"
+    },
+    {
       "date": "2026-11-02",
       "title": "A clearer start page",
       "text": "The Home page now has three steps for new visitors and remembers your launch plan so you can jump back in. On laptops the title no longer sits under the side lists, and on phones the countdown comes first. Links, tap sizes and text contrast got a check across the whole site.",

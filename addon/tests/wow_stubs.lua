@@ -867,6 +867,7 @@ GameTooltip = newObject("GameTooltip", "GameTooltip")
 GameTooltip.lines = {}
 function GameTooltip:SetOwner() self.lines = {} end
 function GameTooltip:AddLine(t) table.insert(self.lines, t) end
+function GameTooltip:AddDoubleLine(l, r) table.insert(self.lines, l .. " " .. tostring(r)) end
 function GameTooltip:NumLines() return #self.lines end
 -- Step 9: the game's own talent tooltip. Records what it was asked for and
 -- adds the talent's name, like the real one's first line.

@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-09 (addons page: Road to Forever 0.84.3 fallback)
+- Addons page fallback for Road to Forever set to tag r2f-v0.84.3 (the newest tag; the card's script still reads GitHub live). CurseForge cards not re-checked: the check was blocked by a permission gate on curseforge.com in this run; their version and date lines are unchanged.
+
 ## 2026-11-09 (addon 0.85.0: Mr.BiZ for every level 10-60)
 - ForeverDB serves any level (`?lvl=N`, server-rendered), so the BiS data is now per level: `bis/tools/foreverdb_levels.py` (27 specs x 51 levels, 1 request/s, cache in `bis/own/cache/levels/`),
   `foreverdb_segments.py` (runs of levels with the same pick -> `bis/raw/levels/`, plus ForeverDB's own enchant text per level), `foreverdb_sources.py` (1,305 next picks' sources from the item pages),

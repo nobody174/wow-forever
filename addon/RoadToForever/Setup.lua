@@ -111,10 +111,6 @@ Setup.LIST = {
 -- Raid frame options of the game's Options > Interface > Raid Frames (plain CVars): class colours, power bars, pets.
 local RAID_CVARS = { "raidFramesDisplayClassColor", "raidFramesDisplayPowerBars", "raidOptionDisplayPets" }
 
-local function db()
-  return R2F.Library.db
-end
-
 -- The undo data and the "done" flag belong to ONE character (R2FCharDB): the setup is about this character's bars and buttons.
 local function cdb()
   return R2F.Library.cdb

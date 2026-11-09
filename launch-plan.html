@@ -74,6 +74,26 @@ a{color:var(--gold)}
   .topbar nav a{flex:none;white-space:nowrap;padding:8px 12px}
 }
 /* topbar:end */
+/* Green Hills of Stranglethorn page tracker: fixed frame on wide screens, normal block above the page otherwise */
+.gh{margin:16px auto 0;max-width:820px;padding:0 20px}
+.gh details{background:var(--panel);border:1px solid var(--edge);border-top-color:#4A5688;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.gh summary{cursor:pointer;padding:10px 12px;font:400 16px/1.2 var(--serif);color:var(--gold);list-style:none;display:flex;justify-content:space-between;gap:8px}
+.gh summary::-webkit-details-marker{display:none}
+.gh-count{font:600 12px/1.6 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums}
+.gh-body{padding:0 12px 12px;display:flex;flex-direction:column;gap:8px}
+.gh-sub{margin:0;font-size:12.5px;color:var(--muted)}
+.gh-ch{display:flex;flex-direction:column;gap:4px}
+.gh-ch b{font:600 11.5px/1 var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.gh-pg{display:flex;flex-wrap:wrap;gap:5px}
+.gh-pg label{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--edge);border-radius:5px;padding:4px 8px;font-size:13.5px;cursor:pointer;font-variant-numeric:tabular-nums}
+.gh-pg label.have{background:rgba(111,207,127,.14);border-color:rgba(111,207,127,.5);color:var(--ok)}
+.gh-pg input{accent-color:var(--ok);margin:0;cursor:pointer}
+.gh-note{font-size:12px;color:var(--warn)}
+.gh-reset{align-self:flex-start;border:1px solid var(--edge);background:transparent;color:var(--muted);font:600 12px/1 var(--sans);padding:6px 10px;border-radius:5px;cursor:pointer}
+.gh-reset:hover{border-color:var(--gold);color:var(--text)}
+@media (min-width:1260px){
+  .gh{position:fixed;right:16px;top:84px;width:216px;max-width:none;margin:0;padding:0;z-index:5;max-height:calc(100vh - 100px);overflow:auto}
+}
 @media (prefers-reduced-motion:reduce){.topbar nav a,.bar span{transition:none}}
 .wrap{max-width:820px;margin:0 auto;padding:36px 20px 80px}
 h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 6px;letter-spacing:.01em}
@@ -277,6 +297,17 @@ body.buy-open .buy-drawer{transform:none}
     <a href="macros.html">Macros</a>
     <a href="addons.html">Addons</a>
   </nav>
+</div>
+<div class="gh" id="gh">
+  <details id="gh-d" open>
+    <summary><span>Green Hills pages</span><span class="gh-count" id="gh-count"></span></summary>
+    <div class="gh-body">
+      <p class="gh-sub">Turn-in for The Green Hills of Stranglethorn (STV). Tick the pages you have; they stay in this browser.</p>
+      <div id="gh-list"></div>
+      <div class="gh-note">Page 26 is often the rarest / most expensive.</div>
+      <button type="button" class="gh-reset" id="gh-reset">Clear ticks</button>
+    </div>
+  </details>
 </div>
 <div class="wrap" role="main">
   <h1 data-night>Launch Plan</h1>
@@ -1439,6 +1470,34 @@ body.buy-open .buy-drawer{transform:none}
 </script>
 <script>var whTooltips = { colorLinks: false, iconizeLinks: false, renameLinks: false };</script>
 <script src="https://wow.zamimg.com/js/tooltips.js" defer></script>
+<script>
+(function () {
+  var CH = [["Chapter I", [1, 4, 6, 8]], ["Chapter II", [10, 11, 14, 16]], ["Chapter III", [18, 20, 21, 24]], ["Chapter IV", [25, 26, 27]]];
+  var KEY = "wf-green-hills-pages-v1", have = {};
+  try { have = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { have = {}; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(have)); } catch (e) { /* storage blocked */ } }
+  var list = document.getElementById("gh-list"), count = document.getElementById("gh-count");
+  var total = 0; CH.forEach(function (c) { total += c[1].length; });
+  function render() {
+    var n = 0;
+    list.innerHTML = CH.map(function (c) {
+      return '<div class="gh-ch"><b>' + c[0] + '</b><div class="gh-pg">' + c[1].map(function (p) {
+        var on = !!have[p]; if (on) n++;
+        return '<label class="' + (on ? "have" : "") + '"><input type="checkbox" data-p="' + p + '"' + (on ? " checked" : "") + '> ' + p + "</label>";
+      }).join("") + "</div></div>";
+    }).join("");
+    count.textContent = n + " / " + total;
+  }
+  list.addEventListener("change", function (e) {
+    var p = e.target.getAttribute("data-p"); if (!p) return;
+    if (e.target.checked) have[p] = 1; else delete have[p];
+    save(); render();
+  });
+  document.getElementById("gh-reset").addEventListener("click", function () { have = {}; save(); render(); });
+  if (window.matchMedia && !window.matchMedia("(min-width:1260px)").matches) document.getElementById("gh-d").removeAttribute("open");
+  render();
+})();
+</script>
 <script src="footer.js" defer></script>
 <script src="provenance.js" defer></script>
 </body>

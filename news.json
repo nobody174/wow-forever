@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-09",
+      "title": "Green Hills page tracker on the Launch Plan",
+      "text": "A small frame on the right of the Launch Plan lists the pages you need for The Green Hills of Stranglethorn (chapters I to IV). Tick the ones you already have and see what is still missing. On narrow screens it sits at the top and folds away.",
+      "link": "launch-plan.html"
+    },
+    {
+      "date": "2026-11-09",
       "title": "Mr.BiZ for every level, 10 to 60",
       "text": "Best in slot now follows your level: pick 39 and you see what is best for a level 39, not for 60. Fresh from ForeverDB for the live game build, with the right enchant for each level from 40 up. The addon's Gear tab does the same, using your own level (step it with - and +). Material prices on the Professions page were refreshed too.",
       "link": "bis.html"

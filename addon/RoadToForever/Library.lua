@@ -262,13 +262,20 @@ function Library.Init()
   -- windowPos (the window's saved spot) is written by UI.Window when moved.
   -- Any tab of the main window (MainWindow.TABS), so a window last left on
   -- Plan / Gameplay / Settings reopens there.
-  local TABS = { home = true, macros = true, talents = true, plan = true, bis = true, gameplay = true }
+  local TABS = { home = true, macros = true, talents = true, plan = true, bis = true, gameplay = true, training = true,
+                 setup = true }
   if not TABS[s.lastTab] then s.lastTab = "home" end   -- includes the retired "settings"
+  -- The Setup undo data used to live here, account wide (another character could undo it). It cannot be attributed to a
+  -- character now, so it is dropped; the per-character copy is R2FCharDB.setupUndo.
+  db.setupUndo = nil
   _G.R2FDB = db
 
   local cdb = _G.R2FCharDB
   if type(cdb) ~= "table" then cdb = {} end
   if type(cdb.created) ~= "table" then cdb.created = {} end
+  -- Setup <class> (Setup.lua): what it changed on THIS character (for Undo) and whether it has run here.
+  if type(cdb.setupUndo) ~= "table" then cdb.setupUndo = nil end
+  if type(cdb.setupDone) ~= "boolean" then cdb.setupDone = nil end
   if type(cdb.changed) ~= "table" then cdb.changed = {} end
   -- Talents tab: the last link previewed on this character,
   -- put back in the link box. Per character because a link is per class.

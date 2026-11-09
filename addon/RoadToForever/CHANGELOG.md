@@ -1,5 +1,15 @@
 # Road to Forever changelog
 
+## 0.86.0 (2026-11-09)
+
+- **Shorter minimap menu:** Open Road to Forever, Setup <class> (only a class that has a setup, with its Edit Mode layout, and only until the setup has run on that
+  character; undoing it brings the entry back), the Damage meter and ThreatMaster ticks where they exist, and Reload UI. Macros, Talents, Lock button position,
+  Hide minimap button, Undo last setup and the two general-settings entries left the menu (Lock and Hide are on Home).
+- **New Setup tab** (sidebar group Character, after Gear): "This character" has Setup <class> (re-runnable), Undo last setup and a done / not run line;
+  "All characters" has Save and Apply my general settings with a note on what is and is not included. The buttons grey out in combat.
+- **Bug fix, Setup undo data was account wide:** another character could "Undo last setup" with the first character's data. It is now in the per-character
+  save (`R2FCharDB.setupUndo`, plus `setupDone`); an old account-wide record is dropped silently, since it cannot be attributed to a character.
+
 ## 0.85.5 (2026-11-09)
 
 - **Hunter aspect reminder:** the label ("No aspect", "Swap Hawk") is shorter and centred under the icon instead of running far out to its left.

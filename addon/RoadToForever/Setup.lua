@@ -115,6 +115,11 @@ local function db()
   return R2F.Library.db
 end
 
+-- The undo data and the "done" flag belong to ONE character (R2FCharDB): the setup is about this character's bars and buttons.
+local function cdb()
+  return R2F.Library.cdb
+end
+
 local function say(msg) R2F.Print(msg) end
 
 -- ---------------------------------------------------------------------------
@@ -379,7 +384,7 @@ function Setup.Execute(def)
     end
     say(L.SETUP_DONE_CLEAR:format(n))
   end
-  db().setupUndo = undo
+  cdb().setupUndo = undo
   -- 3. the macros, one button at a time after the layout has had a moment to apply
   local results = { placed = 0, ours = 0, occupied = {}, missing = {}, failed = {} }
   local ctx = {}
@@ -405,6 +410,8 @@ function Setup.Execute(def)
 end
 
 function Setup.Finish(def, r)
+  cdb().setupDone = true
+  if R2F.SetupTab and R2F.SetupTab.Refresh then R2F.SetupTab.Refresh() end
   say(L.SETUP_DONE_MACROS:format(r.placed, r.ours))
   if #r.occupied > 0 then say(L.SETUP_OCCUPIED:format(table.concat(r.occupied, "; "))) end
   if #r.missing > 0 then say(L.SETUP_MISSING:format(table.concat(r.missing, "; "))) end
@@ -479,11 +486,16 @@ end
 -- ---------------------------------------------------------------------------
 
 function Setup.CanUndo()
-  return db() and type(db().setupUndo) == "table"
+  return cdb() ~= nil and type(cdb().setupUndo) == "table"
+end
+
+-- Has this character run its setup (and not undone it since)? The minimap entry hides once this is true.
+function Setup.IsDone()
+  return cdb() ~= nil and cdb().setupDone == true
 end
 
 function Setup.Undo()
-  local u = db().setupUndo
+  local u = cdb().setupUndo
   if type(u) ~= "table" then return say(L.SETUP_NOTHING_TO_UNDO) end
   if R2F.InCombat() then return say(L.SETUP_COMBAT) end
   if u.toggles then
@@ -521,6 +533,8 @@ function Setup.Undo()
       _G.ClearCursor()
     end
   end
-  db().setupUndo = nil
+  cdb().setupUndo = nil
+  cdb().setupDone = nil   -- undone: the minimap entry comes back
   say(L.SETUP_UNDONE:format(cleared))
+  if R2F.SetupTab and R2F.SetupTab.Refresh then R2F.SetupTab.Refresh() end
 end

@@ -8,7 +8,7 @@ local Deco = R2F.Deco
 
 local GN = Deco.IMGROOT .. "gnomish\\gnomish_"
 local TAB_COLOUR = { home = "cyan", plan = "yellow", talents = "coral", bis = "green", training = "cyan", macros = "purple",
-  gameplay = "orange" }
+  gameplay = "orange", setup = "green" }
 local TAB_TOP = 6
 local TAB_H = 32
 

@@ -2,7 +2,7 @@
 ## Title: |cffffd100Road to Forever|r
 ## Notes: Import macros and talent builds from the Road to Forever site, export your professions to it, and see best in slot gear (Mr.BiZ).
 ## Author: nobody174
-## Version: 0.85.5
+## Version: 0.86.0
 ## X-Website: https://nobody174.github.io/wow-forever/
 ## X-License: All Rights Reserved
 ## IconTexture: Interface\AddOns\RoadToForever\media\logo64
@@ -72,6 +72,7 @@ UI\BiZ.lua
 UI\Reminders.lua
 UI\Gameplay.lua
 UI\Training.lua
+UI\SetupTab.lua
 UI\Settings.lua
 UI\MacroBook.lua
 UI\Home.lua

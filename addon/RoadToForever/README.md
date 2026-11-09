@@ -9,7 +9,7 @@ Made by nobody174. All Rights Reserved (see `LICENSE`).
 
 ## What it does
 
-Open it with `/r2f` (or the minimap button). It has seven pages:
+Open it with `/r2f` (or the minimap button). It has these pages:
 
 - **Home**: the countdown to launch, the next step of your launch plan, what to train next,
   a share card for your professions, and the quick settings (a few game options, the minimap
@@ -117,18 +117,20 @@ screen). It sends nothing else about you.
 Most of the addon creates its own frames and reads game data. It writes to the game only in
 these ways, each one something a player would do by hand:
 
+- **Setup**: Setup Hunter / Setup Druid for this character (and Undo last setup), and Save / Apply my general settings
+  for all characters (see below).
 - **Macros** you drag out of the book are created as real game macros.
 - **Quick settings** on Home and some Tweaks change game settings (camera zoom, guild names,
   PvP titles, the 24-hour clock, weather) the same way the game's own options do.
 - It can move the bag windows (Tweaks > Bags) and filter the red error text in the middle of
   the screen (Tweaks > Chat & screen).
-- **Setup Hunter / Setup Druid** (minimap menu or `/r2f setup <class>`, only when you press it and confirm) is
+- **Setup Hunter / Setup Druid** (the Setup tab, the minimap menu until it has run, or `/r2f setup <class>`, only when you press it and confirm) is
   the one feature that changes a lot at once: it can switch action bars on, turn on auto loot, put our macros,
   your spells and the Hearthstone on empty action buttons, **set key bindings for that character** (it turns on
   Character Specific Key Bindings first), set raid frame options and switch to an Edit Mode layout you named
   for it. A button that already holds something is left alone, it never runs in combat, and **Undo last setup**
-  in the minimap menu puts the buttons back. It lists every step before it asks.
-- **General settings** (minimap menu: Save my general settings / Apply my general settings) store and re-apply
+  on the Setup tab puts the buttons back (kept per character). It lists every step before it asks.
+- **General settings** (Setup tab: Save my general settings / Apply my general settings) store and re-apply
   your own chat window and game options between characters, the same way you would set them by hand.
 
 Anything that writes waits until you are out of combat. Learning talents is the one action

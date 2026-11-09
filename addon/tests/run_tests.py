@@ -2333,7 +2333,7 @@ def test_plan(templates=True):
     lua.execute("R2F.MainWindow.Show('plan')")
     title = lua.eval("R2F.MainWindow.Title()")
     check(title == "Road to Forever: Plan", "%s: Plan title: %r" % (tag, title))
-    check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 7, "%s: seven tabs, Plan fourth" % tag)
+    check(lua.eval("R2F.MainWindow.TABS[4]") == "plan" and lua.eval("#R2F.MainWindow.TABS") == 8, "%s: eight tabs, Plan fourth" % tag)
     OWN = "skyborne:WARRIOR"
     check(font_text(lua, "^Alliance Skyborne Warrior$") is not None, "%s: the tab says who the plan is for (the character)" % tag)
     find_frames(lua, "f.__kind == 'Button' and f.__text ~= nil and f.__text:find('^Race: ') ~= nil", "RACEB")
@@ -4557,44 +4557,40 @@ def test_step6_ui(templates, fx):
 
     # ---- Right-click menu (MenuUtil on the template run, own menu on fallbacks)
     lua.execute("R2FMinimapButton:Click('RightButton')")
-    expected = [("title", "Road to Forever"), ("button", L.MENU_OPEN), ("button", L.MENU_MACROS),
-                ("button", L.MENU_TALENTS), ("divider", None), ("check", L.MENU_LOCK), ("button", L.MENU_HIDE),
-                ("divider", None), ("button", L.MENU_GENERAL_SAVE), ("divider", None), ("button", L.MENU_RELOAD)]
+    expected = [("title", "Road to Forever"), ("button", L.MENU_OPEN), ("divider", None), ("button", L.MENU_RELOAD)]
     if templates:
         menu = lua.eval("TEST.menu")
         got = [(menu[i].kind, menu[i].text) for i in range(1, len(menu) + 1)]
-        check(got == expected, "MenuUtil menu = 12.2's items in order: %s" % got)
+        check(got == expected, "MenuUtil menu = Open, Reload (no setup here, no meters): %s" % got)
         click = lambda i: lua.execute("TEST.menu[%d].func()" % i)
-        checked = lambda: lua.eval("TEST.menu[6].isChecked()")
     else:
         check(lua.eval("R2FMenu ~= nil and R2FMenu:IsShown()") is True, "no MenuUtil -> own menu frame opens")
         rows = lua.eval("R2FMenu.rows")
         got = [(rows[i].item.kind, rows[i].item.text) for i in range(1, len(expected) + 1)]
-        check(got == expected, "own menu rows = 12.2's items in order: %s" % got)
-        check(lua.eval("R2FMenu.rows[1].__enabled") is False and lua.eval("R2FMenu.rows[5].__enabled") is False,
+        check(got == expected, "own menu rows = Open, Reload: %s" % got)
+        check(lua.eval("R2FMenu.rows[1].__enabled") is False and lua.eval("R2FMenu.rows[3].__enabled") is False,
               "own menu: title and divider are not clickable")
-        check(lua.eval("R2FMenu.rows[6].check.__tex") == "Interface\\Buttons\\UI-CheckBox-Up", "own menu: lock unchecked")
         check("R2FMenu" in lua_table_to_list(lua.eval("UISpecialFrames")), "own menu closes with Esc")
 
         def click(i):
             lua.execute("R2F.UI.ContextMenu(R2F.Minimap.MenuItems()) R2FMenu.rows[%d]:Click()" % i)
-        checked = lambda: lua.eval("R2F.Minimap.MenuItems()[6].isChecked()")
-    click(3)
-    check(MW.IsShown() is True and MW.CurrentTab() == "macros", "%s: menu > Macros opens the Macros tab" % tag)
-    click(4)
-    check(MW.CurrentTab() == "talents", "menu > Talents opens the Talents tab")
     click(2)
-    check(MW.CurrentTab() == "talents", "menu > Open Road to Forever keeps the last tab")
+    check(MW.IsShown() is True, "%s: menu > Open Road to Forever opens the main window" % tag)
+    # The entries that left the menu (macros, talents, lock, hide, undo, general settings) are not offered any more.
+    check(lua.eval("(function() local n = 0 for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.kind ~= 'divider' then n = n + 1 end end return n end)()") == 3,
+          "menu: only title, Open and Reload for a character with no setup and no meters")
+    for key in ("MENU_GENERAL_SAVE", "MENU_GENERAL_APPLY", "MENU_SETUP_UNDO"):
+        check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.%s then return true end end return false end)()" % key) is False,
+              "menu: no %s entry" % key)
     lua.execute("R2F.Settings.Show()")
-    click(6)
-    check(lua.eval("R2FDB.minimap.lock") is True and checked() is True, "menu > Lock button position locks (check item)")
     lua.execute("""
       for _, f in ipairs(TEST.allFrames) do
         if f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_MINIMAP_LOCK then LOCKBOX = f end
         if f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.SETTINGS_MINIMAP_SHOW then SHOWBOX = f end
       end""")
-    check(lua.eval("LOCKBOX:GetChecked()") is True, "the open Settings panel follows the menu's lock")
-    click(6)
+    # Lock and Hide are on Home (Settings block); the functions stay for it and for /r2f minimap.
+    lua.execute("R2F.Minimap.ToggleLock()")
+    check(lua.eval("R2FDB.minimap.lock") is True and lua.eval("LOCKBOX:GetChecked()") is True, "ToggleLock locks and the Settings panel follows")
     # Damage meter toggle (0.63.1): only when the client has the damageMeterEnabled setting; it flips that CVar.
     check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_DAMAGEMETER then return true end end return false end)()") is False,
           "menu: no damage meter entry when the client has no such setting")
@@ -4619,13 +4615,14 @@ def test_step6_ui(templates, fx):
     check(lua.eval("#TMCALLS") == 1 and lua.eval("TMCALLS[1]") == "" and lua.eval("TMI.isChecked()") is False,
           "menu: ticking it runs /tm (no argument) and the tick follows")
     lua.execute("SlashCmdList.THREATMASTER = nil ThreatMasterDB = nil")
+    lua.execute("R2F.Minimap.ToggleLock()")
     check(lua.eval("R2FDB.minimap.lock") is False, "Lock again unlocks")
     T.chat = lua.table()
-    click(7)
+    lua.execute("R2F.Minimap.SetHidden(true)")
     check(lua.eval("R2FDB.minimap.hide") is True and lua.eval("R2FMinimapButton:IsShown()") is False,
-          "menu > Hide minimap button hides it")
+          "SetHidden(true) hides the minimap button")
     T.reloaded = 0
-    click(11)
+    click(4)
     check(T.reloaded == 1 and lua.eval("TEST.reloaded") == 1, "menu > Reload UI calls ReloadUI")
     check(any("minimap button hidden. Type /r2f minimap to show it again." in c for c in chat_lines(lua)),
           "hiding prints how to get it back (12.2)")
@@ -4685,7 +4682,7 @@ def test_step6_ui(templates, fx):
 
     # ---- Main window tabs ----------------------------------------------------
     n = find_frames(lua, "f.r2fKey ~= nil", "MTABS")
-    check(n == 7, "seven sidebar entries")
+    check(n == 8, "eight sidebar entries")
     lua.execute("NAV = {} for _, f in ipairs(MTABS) do NAV[f.r2fKey] = f end "
                 "MTABS = {NAV.home, NAV.macros, NAV.talents, NAV.plan, NAV.bis, NAV.gameplay, NAV.training}")
     labels = [lua.eval("MTABS[%d].r2fText.__text" % i) for i in range(1, 8)]
@@ -5253,7 +5250,7 @@ def test_minimap_libdbicon(fx):
     lua.execute("LDB.objects.RoadToForever.OnClick(UIParent, 'LeftButton')")
     check(lua.eval("R2F.MainWindow.IsShown()") is True, "LDB OnClick left = open the main window")
     lua.execute("LDB.objects.RoadToForever.OnClick(UIParent, 'RightButton')")
-    check(lua.eval("TEST.menu ~= nil and #TEST.menu == 11"), "LDB OnClick right = the menu")
+    check(lua.eval("TEST.menu ~= nil and #TEST.menu == 4"), "LDB OnClick right = the menu")
     lua.execute("GameTooltip:SetOwner() LDB.objects.RoadToForever.OnTooltipShow(GameTooltip)")
     check(lua_table_to_list(lua.eval("GameTooltip.lines"))[0] == "Road to Forever", "LDB tooltip filled by FillTooltip")
 
@@ -9237,8 +9234,8 @@ def test_general():
           "general: message types and channels kept")
     check(lua_table_to_list(lua.eval("R2FDB.general.chat.classNames")) == ["GUILD", "SAY"], "general: class-coloured names kept")
     check(lua.eval("R2FDB.general.bars[6]") is True and lua.eval("R2FDB.general.bars[1]") is False, "general: action bars kept")
-    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_GENERAL_APPLY then return true end end return false end)()") is True,
-          "general: the menu offers Apply once something is saved")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_GENERAL_APPLY then return true end end return false end)()") is False,
+          "general: the menu never offers Apply (it is on the Setup tab)")
     # Another character: other values, the Whispers window does not exist yet.
     lua.execute("""CVARS.autoLootDefault = '0' CVARS.nameplateShowClassColor = '0' TOG = { false, false, false, false, false, false, false }
       WIN = { { 'General', 14, 0, 0, 0, 0.4, true, false, 1 }, { 'Combat Log', 14, 0, 0, 0, 0.4, true, true, 2 } } CALLS = {}
@@ -9413,6 +9410,78 @@ def test_setup():
     lua.execute("LAYOUTS[3].layoutName = 'Hunter'")
     check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is True,
           "setup: the minimap menu offers 'Setup Hunter' to a Hunter")
+
+    # ---- Per character (0.86.0): the undo data and the "done" flag live in R2FCharDB, never in the account's R2FDB ----------------
+    lua.execute("R2FDB.setupUndo = { toggles = { true } } R2F.Library.Init()")
+    check(lua.eval("R2FDB.setupUndo") is None, "setup: an old account-wide undo record is dropped silently (it cannot be attributed)")
+    check(lua.eval("R2F.Setup.IsDone()") is False and lua.eval("R2F.Setup.CanUndo()") is False,
+          "setup: a fresh character has not run the setup and has nothing to undo")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is True,
+          "setup: the menu offers 'Setup Hunter' before it has run")
+    lua.execute("TEST.chat = {} R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()")
+    check(lua.eval("R2FCharDB.setupDone") is True and lua.eval("type(R2FCharDB.setupUndo)") == "table",
+          "setup: a run stores its undo data and the done flag per character")
+    check(lua.eval("R2FDB.setupUndo") is None, "setup: nothing about the undo is written to the account's R2FDB")
+    check(lua.eval("R2F.Setup.IsDone()") is True and lua.eval("R2F.Setup.CanUndo()") is True, "setup: IsDone and CanUndo follow")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is False,
+          "setup: the menu entry is gone once the setup has run")
+    # Another character on the same account: its own CharDB, so no done flag and nothing to undo.
+    lua.execute("SAVEDCHAR = R2FCharDB R2FCharDB = nil R2F.Library.Init()")
+    check(lua.eval("R2F.Setup.IsDone()") is False and lua.eval("R2F.Setup.CanUndo()") is False,
+          "setup: a second character on the account cannot undo the first one's setup")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is True,
+          "setup: the menu offers it again on the second character")
+    lua.execute("TEST.chat = {} R2F.Setup.Undo()")
+    check("nothing to undo" in chat_all(lua), "setup: Undo on the second character finds nothing")
+    lua.execute("R2FCharDB = SAVEDCHAR R2F.Library.Init()")
+    check(lua.eval("R2F.Setup.IsDone()") is True, "setup: back on the first character the flag is still set")
+    lua.execute("TEST.chat = {} R2F.Setup.Undo()")
+    check(lua.eval("R2F.Setup.IsDone()") is False and lua.eval("R2F.Setup.CanUndo()") is False,
+          "setup: Undo clears the undo data and the done flag")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is True,
+          "setup: after Undo the menu entry comes back")
+    # No setup for other classes: no entry, whatever the flag says.
+    lua.execute("R2F.playerClass = 'MAGE'")
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == 'Setup Hunter' then return true end end return false end)()") is False,
+          "setup: no menu entry for a class without a setup")
+    # Dividers: never a leading, trailing or doubled one, with and without the optional entries.
+    def divider_ok():
+        kinds = lua_table_to_list(lua.eval("(function() local t = {} for i, it in ipairs(R2F.Minimap.MenuItems()) do t[i] = it.kind end return t end)()"))
+        return kinds[0] == "title" and kinds[-1] != "divider" and all(not (a == b == "divider") for a, b in zip(kinds, kinds[1:]))
+    check(divider_ok(), "menu: no leading, trailing or doubled divider for a Mage with no meters")
+    lua.execute("""TEST.dm = '0' OLDGET2, OLDSET2 = GetCVar, SetCVar
+      GetCVar = function(n) if n == 'damageMeterEnabled' then return TEST.dm end return OLDGET2 and OLDGET2(n) end""")
+    check(divider_ok(), "menu: dividers stay clean with the damage meter present")
+    lua.execute("GetCVar, SetCVar = OLDGET2, OLDSET2 R2F.playerClass = 'HUNTER'")
+
+    # ---- The Setup tab ----------------------------------------------------------------------------------------------------------
+    LL = lambda k: lua.eval("R2F.L." + k)
+    lua.execute("R2F.SetupTab.Build(CreateFrame('Frame', nil, UIParent)) UI_ = R2F.SetupTab.Controls()")
+    lua.execute("R2F.SetupTab.Refresh()")
+    check(lua.eval("UI_.setupBtn.__text") == "Setup Hunter" and lua.eval("UI_.setupBtn.__enabled") is not False,
+          "setup tab: the Setup Hunter button is there and enabled")
+    check(lua.eval("UI_.undoBtn.__enabled") is False, "setup tab: Undo is greyed out with nothing to undo")
+    check(lua.eval("UI_.status.__text") == LL("SETUP_TAB_NOT_RUN"), "setup tab: status says not run yet")
+    check(lua.eval("UI_.applyBtn.__enabled") is False and lua.eval("UI_.saveBtn.__enabled") is not False,
+          "setup tab: Save is enabled, Apply is greyed out until something is saved")
+    lua.execute("TEST.chat = {} R2F.Setup.Execute(R2F.Setup.LIST.hunter) RUNTIMERS()")
+    check(lua.eval("UI_.undoBtn.__enabled") is not False and lua.eval("UI_.status.__text") == LL("SETUP_TAB_DONE"),
+          "setup tab: after a run Undo is enabled and the status says done")
+    lua.execute("R2F.General.Save()")
+    check(lua.eval("UI_.applyBtn.__enabled") is not False and lua.eval("UI_.generalStatus.__text") == LL("SETUP_TAB_GENERAL_SAVED"),
+          "setup tab: after Save, Apply is enabled")
+    lua.execute("R2F.inCombat = true R2F.SetupTab.Refresh()")
+    check(all(lua.eval("UI_.%s.__enabled" % b) is False for b in ("setupBtn", "undoBtn", "saveBtn", "applyBtn")),
+          "setup tab: every button is greyed out in combat")
+    check(lua.eval("UI_.combat:IsShown()") is True, "setup tab: the combat line shows")
+    lua.execute("R2F.inCombat = false R2F.SetupTab.Refresh()")
+    lua.execute("TEST.chat = {} UI_.undoBtn:Click()")
+    check(lua.eval("R2F.Setup.IsDone()") is False and lua.eval("UI_.undoBtn.__enabled") is False,
+          "setup tab: the Undo button undoes and greys itself out")
+    lua.execute("R2F.playerClass = 'MAGE' R2F.SetupTab.Refresh()")
+    check(lua.eval("UI_.setupBtn:IsShown()") is False and lua.eval("UI_.status.__text") == LL("SETUP_TAB_NONE"),
+          "setup tab: no Setup button for a class without a setup")
+    lua.execute("R2F.playerClass = 'HUNTER'")
 
 
 def test_route_log():

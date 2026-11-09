@@ -151,49 +151,46 @@ function Minimap_.ToggleThreatMaster()
   if Minimap_.ThreatMasterAvailable() then pcall(_G.SlashCmdList.THREATMASTER, "") end
 end
 
+-- The setup entry shows only for a class that has a setup, a character with its Edit Mode layout, and one that has not run it
+-- yet (Setup.IsDone; undoing the setup brings it back). The Setup tab always offers it again.
+function Minimap_.SetupDef()
+  local setup = R2F.Setup and R2F.Setup.ForClass()
+  if setup and R2F.Setup.Available(setup) and not R2F.Setup.IsDone() then return setup end
+  return nil
+end
+
 -- The menu as data, so both menu backends draw the same thing (and the
 -- tests can check it): kind = title / button / check / divider.
+-- Everything else (macros, talents, lock, hide, undo, general settings) lives in the main window: Home and the Setup tab.
+-- Sections are built first and joined with one divider each, so an absent section never leaves a doubled or leading divider.
 function Minimap_.MenuItems()
-  local items = {
+  local top = {
     { kind = "title", text = L.ADDON_NAME },
     { kind = "button", text = L.MENU_OPEN, func = function() R2F.MainWindow.Show() end },
-    { kind = "button", text = L.MENU_MACROS, func = function() R2F.MainWindow.Show("macros") end },
-    { kind = "button", text = L.MENU_TALENTS, func = function() R2F.MainWindow.Show("talents") end },
-    { kind = "divider" },
-    { kind = "check", text = L.MENU_LOCK, isChecked = function() return db().lock == true end,
-      func = Minimap_.ToggleLock },
-    { kind = "button", text = L.MENU_HIDE, func = function() Minimap_.SetHidden(true) end },
-    { kind = "divider" },
   }
+  local setup = Minimap_.SetupDef()
+  if setup then
+    top[#top + 1] = { kind = "button", text = L.MENU_SETUP:format(setup.class:sub(1, 1) .. setup.class:sub(2):lower()),
+                      func = function() R2F.Setup.Run(setup.key) end }
+  end
+  local meters = {}
   if Minimap_.DamageMeterAvailable() then
-    items[#items + 1] = { kind = "check", text = L.MENU_DAMAGEMETER, isChecked = Minimap_.DamageMeterOn,
-                          func = Minimap_.ToggleDamageMeter }
+    meters[#meters + 1] = { kind = "check", text = L.MENU_DAMAGEMETER, isChecked = Minimap_.DamageMeterOn,
+                            func = Minimap_.ToggleDamageMeter }
   end
   if Minimap_.ThreatMasterAvailable() then
-    items[#items + 1] = { kind = "check", text = L.MENU_THREATMASTER, isChecked = Minimap_.ThreatMasterOn,
-                          func = Minimap_.ToggleThreatMaster }
-  end
-  -- One-click setup of a fresh character (Setup.lua): only for a class that has one, and a character with its Edit Mode layout.
-  local setup = R2F.Setup and R2F.Setup.ForClass()
-  if setup and R2F.Setup.Available(setup) then
-    items[#items + 1] = { kind = "divider" }
-    items[#items + 1] = { kind = "button", text = L.MENU_SETUP:format(setup.class:sub(1, 1) .. setup.class:sub(2):lower()),
-                          func = function() R2F.Setup.Run(setup.key) end }
-    if R2F.Setup.CanUndo() then
-      items[#items + 1] = { kind = "button", text = L.MENU_SETUP_UNDO, func = function() R2F.Setup.Undo() end }
-    end
-    items[#items + 1] = { kind = "divider" }
-  end
-  -- Your general settings (General.lua): saved once, applied on any character.
-  if R2F.General then
-    items[#items + 1] = { kind = "button", text = L.MENU_GENERAL_SAVE, func = function() R2F.General.Save() end }
-    if R2F.General.Has() then
-      items[#items + 1] = { kind = "button", text = L.MENU_GENERAL_APPLY, func = function() R2F.General.Apply() end }
-    end
-    items[#items + 1] = { kind = "divider" }
+    meters[#meters + 1] = { kind = "check", text = L.MENU_THREATMASTER, isChecked = Minimap_.ThreatMasterOn,
+                            func = Minimap_.ToggleThreatMaster }
   end
   -- /reload without typing it (ReloadUI is not a protected function).
-  items[#items + 1] = { kind = "button", text = L.MENU_RELOAD, func = function() ReloadUI() end }
+  local bottom = { { kind = "button", text = L.MENU_RELOAD, func = function() ReloadUI() end } }
+  local items = {}
+  for _, section in ipairs({ top, meters, bottom }) do
+    if #section > 0 then
+      if #items > 0 then items[#items + 1] = { kind = "divider" } end
+      for _, it in ipairs(section) do items[#items + 1] = it end
+    end
+  end
   return items
 end
 

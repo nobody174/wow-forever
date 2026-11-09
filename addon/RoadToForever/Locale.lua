@@ -49,7 +49,25 @@ R2F.L = {
   TALENT_ROW_NEXT = "next row in %d",
   TALENT_ROWS_OPEN = "all rows open",
   TITLE_TRAINING = "Road to Forever: Training",
+  TITLE_SETUP = "Road to Forever: Setup",
   TAB_TRAINING = "Training",
+  TAB_SETUP = "Setup",
+  SETUP_TAB_THIS = "This character",
+  SETUP_TAB_ALL = "All characters",
+  SETUP_TAB_NOTE = "Action Bars 2 to 6 and auto loot on, your saved Edit Mode layout of that name made active, our macros placed on the "
+    .. "buttons listed for the class (a button that already holds something is never overwritten), and the keys on those buttons "
+    .. "checked against your key bindings (read only; the Druid setup sets its own bindings). Nothing runs in combat.",
+  SETUP_TAB_NONE = "There is no setup for this class.",
+  SETUP_TAB_NO_LAYOUT = "This character has no Edit Mode layout of that name, so the setup is not offered here.",
+  SETUP_TAB_DONE = "Setup done on this character.",
+  SETUP_TAB_NOT_RUN = "Setup not run yet on this character.",
+  SETUP_TAB_IN_COMBAT = "Buttons are greyed out while you are in combat.",
+  SETUP_TAB_GENERAL_NOTE = "Saves this character's camera, auto loot, names and nameplates, raid frames, combat text, which Action Bars "
+    .. "are on and your chat windows (with their message types and channels), and applies them to any other character. "
+    .. "Not included: graphics, sound, Edit Mode layouts, key bindings and what sits on the buttons (the account already shares "
+    .. "the first three; the buttons are per class, see Setup above).",
+  SETUP_TAB_GENERAL_SAVED = "Saved settings found on your account.",
+  SETUP_TAB_GENERAL_NONE = "Nothing saved yet: set one character up the way you like it, then press Save.",
   TRAIN_PAGE_NOW = "Train now",
   TRAIN_PAGE_NEXT = "Next level: %d",
   TRAIN_PAGE_LATER = "Later, up to level 60",
@@ -868,9 +886,6 @@ R2F.L = {
   MM_RIGHT = "Right-click for options.",
   MM_DRAG = "Drag to move.",
   MENU_OPEN = "Open Road to Forever",
-  MENU_MACROS = "Macros",
-  MENU_TALENTS = "Talents",
-  MENU_LOCK = "Lock button position",
   MENU_DAMAGEMETER = "Damage meter (Blizzard)",
   MENU_THREATMASTER = "ThreatMaster (/tm)",
   MENU_SETUP = "Setup %s",
@@ -934,7 +949,6 @@ R2F.L = {
   GENERAL_CHAT_FAILED = "general settings: could not make the chat window: %s.",
   GENERAL_FINISHED = "general settings applied. Type /reload so everything shows.",
   MENU_RELOAD = "Reload UI",
-  MENU_HIDE = "Hide minimap button",
   MM_HIDDEN = "minimap button hidden. Type /r2f minimap to show it again.",
   MM_SHOWN = "minimap button shown.",
 

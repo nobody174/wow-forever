@@ -170,6 +170,7 @@ function General.Save()
   local saved = { time = _G.time and _G.time() or 0, cvars = cvars, bars = readToggles(), chat = readChat() }
   db().general = saved
   say(L.GENERAL_SAVED:format(nCvars, #saved.chat.windows, #saved.chat.classNames))
+  if R2F.SetupTab and R2F.SetupTab.Refresh then R2F.SetupTab.Refresh() end
   return saved
 end
 
@@ -181,6 +182,7 @@ end
 function General.Clear()
   db().general = nil
   say(L.GENERAL_CLEARED)
+  if R2F.SetupTab and R2F.SetupTab.Refresh then R2F.SetupTab.Refresh() end
 end
 
 -- ---------------------------------------------------------------------------

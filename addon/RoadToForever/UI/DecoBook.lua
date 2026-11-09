@@ -9,7 +9,7 @@ local L = R2F.L
 local Deco = R2F.Deco
 
 local SC = Deco.IMGROOT .. "scribe\\scribe_"
-local ORDER = { home = 1, plan = 2, talents = 3, training = 4, bis = 5, macros = 6, gameplay = 7 }
+local ORDER = { home = 1, plan = 2, talents = 3, training = 4, bis = 5, setup = 6, macros = 7, gameplay = 8 }
 local GOLD = { 0.55, 0.4, 0.1 }
 local HOVER = { 0.36, 0.2, 0.12 }
 

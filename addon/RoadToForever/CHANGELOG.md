@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.85.1 (2026-11-09)
+
+- **Mr.BiZ:** the Classic / Client tag no longer overlaps the rank text; it now sits on the rank line.
+- **Tweaks > Class icons:** the right column starts further right, so long labels in the left column no longer run into it.
+
 ## 0.85.0 (2026-11-09)
 
 - **Mr.BiZ now shows the best in slot for your level, not only level 30.** Every class and spec has picks for every level from 10 to 60, refreshed from ForeverDB's live data (game build 1.60.1.70862). The Gear tab follows your own level; step another level with - and + next to the Wishlist button, and click the number to come back to yours. Empty slots say when the first pick comes.

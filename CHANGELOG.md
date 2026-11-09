@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-09 (addon 0.85.1: two overlap fixes)
+- Mr.BiZ option rows: the confidence tag is part of the rank line (was a separate right-aligned label that collided). Tweaks > Class icons: right column moved 180 px right (`UI/Gameplay.lua`).
+
 ## 2026-11-09 (addons page: Road to Forever 0.84.3 fallback)
 - Addons page fallback for Road to Forever set to tag r2f-v0.84.3 (the newest tag; the card's script still reads GitHub live). CurseForge cards not re-checked: the check was blocked by a permission gate on curseforge.com in this run; their version and date lines are unchanged.
 

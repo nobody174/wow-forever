@@ -319,14 +319,13 @@ local function layoutSide()
     local rn = gap and L.BIZ_THE_BIZZ or BiZ.RankName(rank)
     local d = rank == 1 and tostring(b.score)
       or (it.delta == 0 and L.BIZ_SAME) or (it.delta and (it.delta .. "%")) or ""
-    line("R2FBodySmall", 40, y + 19, 280,
-      "|cffffd100" .. rn .. "|r" .. (d ~= "" and ("  |cffe39a79" .. d .. "|r") or ""))
-    local src = it.label or L.BIZ_TYPE_UNKNOWN
-    local fs = line("R2FDimSmall", 40, y + 33, 280, passes and src or ("|cff707070" .. src .. "|r"))
-    fs:SetWordWrap(false)
     local conf = it.conf or "unknown"
-    local cf = line("R2FBodySmall", 250, y + 19, 70, (CONF_COLOR[conf] or "") .. L["BIZ_CONF_" .. conf:upper()] .. "|r")
-    cf:SetJustifyH("RIGHT")
+    line("R2FBodySmall", 40, y + 19, 330,
+      "|cffffd100" .. rn .. "|r" .. (d ~= "" and ("  |cffe39a79" .. d .. "|r") or "")
+      .. "  " .. (CONF_COLOR[conf] or "") .. L["BIZ_CONF_" .. conf:upper()] .. "|r")
+    local src = it.label or L.BIZ_TYPE_UNKNOWN
+    local fs = line("R2FDimSmall", 40, y + 33, 330, passes and src or ("|cff707070" .. src .. "|r"))
+    fs:SetWordWrap(false)
     placeWish(40, y + 50, it.id, specId, sl.slot, L.BIZ_WISH_LABEL)
     y = y + 84
   end

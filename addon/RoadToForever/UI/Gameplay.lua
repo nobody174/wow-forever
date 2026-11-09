@@ -395,7 +395,7 @@ function Tab.Build(f)
       local general = function(def) return def.general == true end
       local endLeft = R2F.RemindersTab.BuildInto(c, LEFT + 2, -42, ICON_W, general, 1)
       local classOnly = function(def) return not general(def) end
-      local endRight = R2F.RemindersTab.BuildInto(c, LEFT + ICON_W + 50, -42, ICON_W, classOnly, 2)
+      local endRight = R2F.RemindersTab.BuildInto(c, LEFT + ICON_W + 230, -42, ICON_W, classOnly, 2)
       bottom = math.min(endLeft or -100, endRight or -100)
       -- Folding a class group in or out changes a column's height.
       R2F.RemindersTab.OnReflow = function()

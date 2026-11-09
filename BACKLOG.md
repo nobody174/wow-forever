@@ -3,11 +3,11 @@
 Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md](CHANGELOG.md); someday ideas in
 [ROADMAP.md](ROADMAP.md); what needs in-game testing in [addon/dev/TESTING.md](addon/dev/TESTING.md).
 
-## 0. Launch-day reminders (2026-11-04)
-The one page to follow on the day: [docs/launch-day.md](docs/launch-day.md).
+## 0. Launch-day reminders (launch was 2026-11-04; still open ones only)
+The one page to follow: [docs/launch-day.md](docs/launch-day.md).
 1. **Back up the beta settings once the release client is installed** (and again right before the beta ends 2026-10-21): `python addon/tools/backup_wtf.py`, then restore into the release client per `docs/beta-backup.md`. Backup goes to `D:\Claude AI Projects\wow-beta-backup\<date>`, outside the repo.
 2. Run "Setup Hunter" once on the fresh character before anything else is placed (it now empties every action button first).
-3. Launch-day data refresh (BiS / items) before the countdown ends.
+3. The launch-day data refresh did not happen: see section 5 (overdue since 2026-11-04).
 
 4. **Ground markers (`/wm`)**: do not work solo; test in a group, then add macros/coordinates for the Hunter trainer and the general goods vendor in the Skyborne starting zone.
 
@@ -61,6 +61,16 @@ None else open (talent-tree drift fixed 2026-11-07; before each release run `pyt
 1. **Professions BiS**: re-scrape ForeverChanges' level-60 lists, re-check `ALT` / `LADDER` and sources, update the "checked" dates.
 2. **AH market**: when AHledger lists EU markets, switch `DEFAULT_MARKET` in professions.html and save fresh site prices.
 3. **Builds and launch plan**: re-check builds and the `unverified` steps past level 30; compare our level-60 builds with the first real guides. Also re-check ALL cheat sheets (`GUIDES` in builds.html, plus the Druid Feral inline ones: Level 60 ones use Classic numbers, Hit caps and Defense; four Druid icons and four text-chip abilities unchecked) once real guides exist. Original note: the Druid "Bear tank cheat sheet" (stat order, Enrage/armor note, green suffixes) (both Level 30 and 60 versions) once real guides exist; the 60 one uses Classic numbers (Hit cap, Defense) and four unchecked icons (Growl, Challenging Roar, Frenzied Regeneration, Barkskin).
+
+## 5b. Review findings still open (docs/reviews/2026-11, 2026-11-09)
+1. **Run the GitHub "Rehearsal" workflow once** (never run) and put a `--only pages,bis,a11y` subset on a weekly schedule.
+2. **In-game test week**: close the open TESTING items (16 at the review), then the theme x tab matrix; no new features until then.
+3. **Macros marked "Test in beta"** (about 40): decide each in the live game; Shaman Elemental Mastery x2 and Paladin Blessing of Salvation / Light / Sanctuary are not in the current data and probably cannot work.
+4. **Mr.BiZ and Professions refresh** (section 5): Mr.BiZ is still the level 30 list from 2026-10-17, prices.json from 2026-10-07.
+5. **Trainer list**: decide whether to include quest-given spells (Bear Form, Berserker Stance, Felhunter) as "quest" rows without a price.
+6. **Maintenance**: one `R2F.Util` for `safe` / `isSecret` / throttle (duplicated 3-5 times); split `addon/tests/run_tests.py`; a SavedVariables migration test with a frozen old `R2FDB`; `addon/ARCHITECTURE.md` (150 lines) and `docs/maintainers.md`.
+7. **TomTom stand-in** (`Nav.lua`): other addons may call methods it lacks; decide whether to add safe no-ops.
+8. **Builds**: a second source for the three most played specs; remember the last class on builds.html; class buttons 9 in one row.
 
 ## 6. Owner to do
 1. Create the GitHub token and sign in once at the owner login (Group picks); publish real 60 builds for the group.

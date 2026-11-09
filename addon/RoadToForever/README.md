@@ -9,7 +9,7 @@ Made by nobody174. All Rights Reserved (see `LICENSE`).
 
 ## What it does
 
-Open it with `/r2f` (or the minimap button). It has six pages:
+Open it with `/r2f` (or the minimap button). It has seven pages:
 
 - **Home**: the countdown to launch, the next step of your launch plan, what to train next,
   a share card for your professions, and the quick settings (a few game options, the minimap
@@ -24,6 +24,10 @@ Open it with `/r2f` (or the minimap button). It has six pages:
   save the build, share it with teammates who also have the addon, start from our
   recommended Tank / DPS / Healer builds, and, only on your own class after a trainer reset,
   learn it one point at a time. A confirmation comes first, and it never learns in combat.
+- **Training**: every spell your class trainer teaches, up to level 60, as spellbook slots with icon, rank and
+  cost: what to train now, at the next level, and later. It is filled from a list that ships with the addon, so it
+  works before your first trainer visit (prices marked ~ are estimates until you visit the trainer). Hover for the
+  game's own spell tooltip.
 - **Gear (Mr.BiZ)**: best in slot gear for every class and spec, with where it drops, how
   sure the source is, and a per-character wishlist.
 - **Macros**: a spellbook-style book of every macro on the site, built into the addon. Drag
@@ -34,7 +38,7 @@ Open it with `/r2f` (or the minimap button). It has six pages:
   Chat & screen, Bags, Alerts, Waypoint arrow, Class icons, Action bars), all **off until you tick them**:
   auto-repair, sell grey items, quest auto-accept and turn-in, fast looting, free bag slots,
   movable bags, a copy-chat box, an "ability ready" alert, and on-screen icons and reminders
-  (Warrior stance, Hunter ammo, pet, gear repair, rested XP, missing tracking, missing group
+  (Warrior stance, Hunter ammo, pet, Hunter aspect, gear repair, rested XP, missing tracking, missing group
   buffs, Walk on Air, Seal and Slice and Dice timers, food, a combat banner), and on the
   action bars a red veil when a spell is out of range or you lack the mana, rage or energy,
   and big cooldown numbers.
@@ -67,7 +71,7 @@ resolve to a rank you haven't learned, so the addon writes in the highest rank y
 
 Unzip into the `Interface/AddOns/` folder of your WoW Forever installation so you get
 `Interface/AddOns/RoadToForever/RoadToForever.toc`, then restart the game (or `/reload`).
-The addon is for WoW Forever only. It loads no other addons and contacts no servers:
+The addon is for WoW Forever only (the game folder is `_forever_`; Alliance characters for the launch plan, English client). It loads no other addons and contacts no servers:
 everything moves between the site and the game by copy and paste.
 
 **One thing it sends:** by default it tells your guild and group, through the game's
@@ -98,7 +102,7 @@ screen). It sends nothing else about you.
 | `/r2f copybuild` | your talents as a link for the site |
 | `/r2f profs` | your professions for the site |
 | `/r2f copychat [window]` | a box with chat text you can select and copy |
-| `/r2f stance`, `/r2f ammo`, `/r2f repair`, `/r2f pet`, `/r2f rested` | show or hide that icon (add `lock` to lock it, except rested) |
+| `/r2f stance`, `/r2f ammo`, `/r2f repair`, `/r2f pet`, `/r2f aspect`, `/r2f rested` | show or hide that icon (add `lock` to lock it, except rested) |
 | `/r2f reminders` | the reminders settings |
 | `/r2f record`, `/r2f record on` / `off` | what the recorder has seen; switch it |
 | `/r2f route start`, `/r2f route note <text>`, `/r2f route stop` | the route log |
@@ -117,6 +121,14 @@ these ways, each one something a player would do by hand:
   PvP titles, the 24-hour clock, weather) the same way the game's own options do.
 - It can move the bag windows (Tweaks > Bags) and filter the red error text in the middle of
   the screen (Tweaks > Chat & screen).
+- **Setup Hunter / Setup Druid** (minimap menu or `/r2f setup <class>`, only when you press it and confirm) is
+  the one feature that changes a lot at once: it can switch action bars on, turn on auto loot, put our macros,
+  your spells and the Hearthstone on empty action buttons, **set key bindings for that character** (it turns on
+  Character Specific Key Bindings first), set raid frame options and switch to an Edit Mode layout you named
+  for it. A button that already holds something is left alone, it never runs in combat, and **Undo last setup**
+  in the minimap menu puts the buttons back. It lists every step before it asks.
+- **General settings** (minimap menu: Save my general settings / Apply my general settings) store and re-apply
+  your own chat window and game options between characters, the same way you would set them by hand.
 
 Anything that writes waits until you are out of combat. Learning talents is the one action
 that can't be undone, so it always asks first.

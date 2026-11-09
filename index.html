@@ -346,9 +346,6 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
   h.style.backgroundPosition = H[i][1];
 })();
 </script>
-  <!-- BETA-RIBBON:START — remove this block once the countdown hits zero / WoW Forever launches -->
-  <div class="beta-ribbon" aria-label="Beta"><span>Beta</span></div>
-  <!-- BETA-RIBBON:END -->
   <div class="side-links">
     <div class="plaque-row">
       <a class="plaque plaque-solo" href="https://foreverchanges.pro/cozy-sleeping-bag" target="_blank" rel="noopener">
@@ -404,7 +401,7 @@ body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
         <li><a href="builds.html"><b>2 · Set your build</b><span>Talents for level 30 and 60, then best in slot in Mr.BiZ.</span></a></li>
         <li><a href="addons.html"><b>3 · Add the addon</b><span>The arrow, macros and reminders, inside the game.</span></a></li>
       </ol>
-      <p class="start-more"><a id="start-continue" href="launch-plan.html" hidden></a><a href="launch-plan.html?mode=night">Launching tonight? Open the short night list</a></p>
+      <p class="start-more"><a id="start-continue" href="launch-plan.html" hidden></a><a id="night-link" href="launch-plan.html?mode=night">Launching tonight? Open the short night list</a></p>
     </section>
   </div>
 </div>
@@ -431,6 +428,11 @@ function tick(){
   const diff = TARGET - now;
   if(diff <= 0){
     countdownEl.innerHTML = `<div class="live-msg">WoW Forever is live!</div>`;
+    // After launch the date line and the launch-night link no longer apply.
+    localTimeEl.textContent = "";
+    localTimeEl.style.display = "none";
+    var night = document.getElementById("night-link");
+    if (night) night.hidden = true;
     return;
   }
   const s = Math.floor(diff / 1000);

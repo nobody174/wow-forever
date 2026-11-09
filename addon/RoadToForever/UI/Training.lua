@@ -29,6 +29,8 @@ local function showTip(self)
   GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
   local usedGame = false
   if e.id and GameTooltip.SetSpellByID then usedGame = pcall(GameTooltip.SetSpellByID, GameTooltip, e.id) end
+  -- An id the client does not know leaves the tooltip empty: fall back to the saved text or the name.
+  if usedGame and GameTooltip.NumLines and GameTooltip:NumLines() == 0 then usedGame = false end
   if usedGame then
     if (e.cost or 0) > 0 then
       GameTooltip:AddLine(L.TRAIN_TIP_COST .. " " .. (e.estimate and "~" or "") .. R2F.Gameplay.Money(e.cost), 1, 1, 1)

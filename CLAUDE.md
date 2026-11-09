@@ -3,7 +3,7 @@
 Static site (GitHub Pages, `main` / root, https://nobody174.github.io/wow-forever/) plus the in-game addon
 `addon/RoadToForever/` for WoW Forever (Classic+, Interface 16001, vanilla spell names, level cap 60).
 Pages: `index` (countdown), `launch-plan`, `builds`, `talents` (+ Legacy), `bis` (Mr.BiZ), `professions`,
-`macros` (generated), `addons`, `news`, `library-books`.
+`macros` (generated), `addons`, `news`, `library-books`, `hunter`.
 
 General WoW knowledge (taint rules, macro patterns, data sources, addon checklist, roles) lives in the
 **WoW dev support folder**: `../wow-dev-support-folder/` next to this repo (GitHub: `nobody174/wow-dev-support-folder`,
@@ -20,7 +20,9 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
 | `docs/professions-bis.md` | `professions.html` (enchants, prices, Crafters) and `bis.html` |
 | `docs/addons-page.md` | `addons.html` and the daily version check |
 | `docs/assets-and-meta.md` | images, link previews, manifest |
-| `ADDON_PLAN.md`, `addon/HARDENING.md` | any addon work (read before touching it) |
+| `addon/ARCHITECTURE.md` | any addon work (one page: layers, rules, how to add things); then `ADDON_PLAN.md` (history, by section) and `addon/HARDENING.md` |
+| `docs/maintainers.md` | releasing, data refreshes (what needs a browser), known traps |
+| `docs/reviews/` | the 2026-11 project review and its findings |
 | `BACKLOG.md` / `ROADMAP.md` / `CHANGELOG.md` | todo / someday / shipped |
 
 ## Hard rules
@@ -52,5 +54,5 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
 - Class order everywhere: Priest, Warlock, Mage, Rogue, Druid, Shaman, Hunter, Paladin, Warrior.
 - Nav order follows the player's path: launch plan, character (builds, talents, gear, professions), UI
   (macros, addons). New pages go in their group and need the shared `<head>` block (meta, icons, manifest).
-- Countdown target `2026-11-04T23:00:00Z` (index and launch-plan agree).
+- Launch was `2026-11-04T23:00:00Z` (index and launch-plan agree); the home page switches to its live state by itself.
 - Sandbox cannot reach Wowhead, CurseForge or AHledger: use a browser or WebFetch and commit the result.

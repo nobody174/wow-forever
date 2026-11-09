@@ -5,6 +5,18 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-09 (addon 0.84.3: post-launch pass after the project review)
+- Review of the whole project by six roles (`docs/reviews/2026-11/`), then the fixes that do not need the game or a data refresh:
+  index loses the Beta ribbon block and hides the launch date line and the launch-night link once the countdown ends; `DATA_STATE` in `build.py`
+  is "live client" (a page can override with `data-state`, bis.html says "level 30 list, level 60 refresh pending"), and `data-version.json` keeps its
+  `updated` date when nothing else changed; beta wording rewritten on builds, bis, professions, launch-plan, addons and talentcalc.js (`?v=` bumped on the
+  four talent files together); addons.html install path `_forever_`; Mage macro "Remove Lesser Curse"; `check_macro_spells.py` (run by `build.py`, warnings);
+  `builds_from_rankedboost.py` (the 0.84.2 conversion made repeatable, reproduces it exactly); `check_links.py --external` no longer reports bot walls,
+  bare hosts and JavaScript fragments; Setup re-checks combat while it waits for the cursor; `Training.Status` takes the list `Upcoming` already built;
+  Training tooltip falls back when `SetSpellByID` leaves it empty; loadout ids from a counter; addon README lists Setup, General settings, Training and Aspect;
+  TESTING.md labels, BACKLOG 0 and a new 5b with the review's open items, `addon/ARCHITECTURE.md`, `docs/maintainers.md`.
+- Not done (needs the game or the browser pipeline): Mr.BiZ and professions refresh, the "Test in beta" macro verification, the Rehearsal run in Actions, the test week.
+
 ## 2026-11-08 (addon 0.84.2: builds from RankedBoost)
 - The 23 builds replaced in 0.84.0 (from talentsforever.com's most-used builds) are now taken from RankedBoost's recommended builds: each class page embeds a JSON `builds` list with `alloc` {Wowhead talent id: rank} for game build 1.60.1.70790 (fetchable with a plain `curl -A "Mozilla/5.0"`). The ids are Wowhead's talent ids, so the conversion to our codes is exact; every result was checked valid on the regenerated trees. Mapping per spec in the session notes: leveling build where RankedBoost has one (Combat Rogue, BM Hunter, Feral Druid, Enhancement Shaman, Retribution Paladin), otherwise its DPS / tank / healing build of that spec. Level 30 = first 21 points in the calculator's deepest-first order. 23 of the 24 mapped; Rogue Combat 60 kept its 0.84.0 build (RankedBoost's lists Lethality above the live max of 2 and its dependants become illegal); Assassination 30 capped Lethality and Seal Fate. Rotations in `builds.html` still describe the old picks.
 

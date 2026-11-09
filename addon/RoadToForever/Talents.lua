@@ -864,7 +864,9 @@ function Talents.SaveLoadout(name, text, by)
   local mine, shared = 0, 0
   for _, l in ipairs(list) do if l.by then shared = shared + 1 else mine = mine + 1 end end
   if (by and shared >= MAX_SHARED) or (not by and mine >= MAX_LOADOUTS) then return nil, "full" end
-  local l = { id = tostring(time()) .. "-" .. tostring(#list + 1), name = name, class = link.class, body = body,
+  local db = R2F.Library.db
+  db.loadoutSeq = (db.loadoutSeq or #list) + 1      -- a counter, so an id is never reused after a delete
+  local l = { id = tostring(time()) .. "-" .. tostring(db.loadoutSeq), name = name, class = link.class, body = body,
               by = by, ts = time() }
   list[#list + 1] = l
   return l

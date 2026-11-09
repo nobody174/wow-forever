@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-11-09",
+      "title": "The site now speaks live, and a Mage macro is fixed",
+      "text": "The beta ribbon and the launch-night notes are gone, the Addons page points at the right game folder (_forever_), and the pages no longer say the data is a beta preview. The Mage \"Remove Curse\" macro now uses Remove Lesser Curse, the Mage spell. Mr.BiZ is still the level 30 list; the level 60 refresh is next.",
+      "link": "index.html"
+    },
+    {
       "date": "2026-11-08",
       "title": "Talent builds now follow recommended builds",
       "text": "The builds we had to rebuild after the November talent changes now come from RankedBoost's recommended builds for the current game version, with all 51 points at level 60. Tell us if a class looks off.",

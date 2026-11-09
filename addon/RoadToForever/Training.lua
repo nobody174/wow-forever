@@ -197,9 +197,9 @@ end
 
 -- now: trainable at `level` (not used); next: the spells of the next level above it that has any;
 -- nextLevel; known: whether anything has been read at all.
-function Training.Status(level)
+function Training.Status(level, list)
   level = level or UnitLevel("player")
-  local spells = Training.All()
+  local spells = list or Training.All()      -- Upcoming passes the list it already built
   local now, later, nextLevel = {}, {}, nil
   -- A line without a rank next to one with a rank (same spell, same level) is an older copy: hide it.
   local ranked = {}
@@ -232,7 +232,7 @@ Training.CAP = 60
 function Training.Upcoming(level)
   level = level or UnitLevel("player")
   local spells = Training.All()
-  local now, later, nextLevel, known = Training.Status(level)
+  local now, later, nextLevel, known = Training.Status(level, spells)
   local ranked = {}
   for _, e in ipairs(spells) do
     if e.r ~= "" then ranked[e.n .. "\0" .. e.lvl] = true end

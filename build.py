@@ -253,12 +253,20 @@ import datetime
 import json
 
 CLIENT_VERSION = "1.60.x"
-DATA_STATE = "beta data"
+DATA_STATE = "live client"   # a page can override the label with data-state="..." on its #provenance div
 
 _version = {"client": CLIENT_VERSION, "state": DATA_STATE, "updated": datetime.date.today().isoformat()}
 if _node:
     _version["plan"] = json.loads(subprocess.run([_node, "addon/tools/gen_plan_data.js", "--stats"],
                                                  check=True, capture_output=True, text=True).stdout)
+# "updated" moves only when something else in the file changed, so a build on a new day leaves git clean.
+try:
+    with open("data-version.json", encoding="utf-8") as f:
+        _old = json.load(f)
+    if {k: v for k, v in _old.items() if k != "updated"} == {k: v for k, v in _version.items() if k != "updated"}:
+        _version["updated"] = _old.get("updated", _version["updated"])
+except (OSError, ValueError):
+    pass
 with open("data-version.json", "w", encoding="utf-8", newline="\n") as f:
     json.dump(_version, f, indent=2)
     f.write("\n")
@@ -273,4 +281,5 @@ subprocess.run([sys.executable, "bis/build_bis.py"], check=True)
 with open(MACRO_DATA_PATH, "w", encoding="utf-8", newline="\n") as f:
     f.write(macro_data_lua())
 print("MacroData.lua written")
+subprocess.run([sys.executable, "addon/tools/check_macro_spells.py"], check=False)   # warnings only
 subprocess.run([sys.executable, "bis/build_quest_weapons.py"], check=True)

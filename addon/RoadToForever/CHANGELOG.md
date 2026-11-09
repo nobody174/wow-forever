@@ -1,5 +1,12 @@
 # Road to Forever changelog
 
+## 0.84.3 (2026-11-09)
+
+- **Mage "Remove Curse" macro fixed:** the Mage spell is Remove Lesser Curse, so the old macro did nothing. Update the macro from the Macros tab.
+- **Setup stops if a fight starts while it places a button**, and a spell with an unknown id in the Training tab now shows its name and cost instead of an empty tooltip.
+- **Saved loadouts can no longer end up with the same id** after a delete, and the "verify in beta" note on the shopping list now says "verify in game".
+- **README** now lists everything the addon changes (Setup and General settings), the Training tab and the aspect reminder.
+
 ## 0.84.2 (2026-11-08)
 
 - **Rebuilt talent builds now come from RankedBoost's recommended builds** (game build 1.60.1.70790, updated 4 Nov) instead of the most-used builds: 23 builds (Mage, Rogue, Druid, Shaman, Hunter, Paladin level 30 and level 60, Warrior Fury 60) with the full 51 points at level 60 and the first 21 points of the matching build at level 30. Level 60 Mage Frost, Druid Restoration and Warrior Fury are complete again. RankedBoost lists a few ranks above the live maximum (Rogue Lethality 5 and Seal Fate 5): they were capped for Assassination 30, and level 60 Combat Rogue kept its earlier build because RankedBoost's version does not hold together once Lethality is capped.

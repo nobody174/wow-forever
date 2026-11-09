@@ -269,6 +269,8 @@ local function placeOne(row, undo, ctx, done)
   local tries = 0
   local function step()
     tries = tries + 1
+    -- A fight can start while we wait for the cursor: never drop onto a bar in combat.
+    if R2F.InCombat() then _G.ClearCursor() return done("failed") end
     if _G.GetCursorInfo() == what.kind then
       _G.PlaceAction(slot)
       _G.ClearCursor()

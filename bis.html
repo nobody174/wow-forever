@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mr.BiZ — best in slot for WoW Forever</title>
-<meta name="description" content="Mr.BiZ: best-in-slot gear for every WoW Forever class and spec at the level 30 beta cap, with the next best picks per slot, filters by source and a wishlist per character.">
+<meta name="description" content="Mr.BiZ: best-in-slot gear for every WoW Forever class and spec at level 30, with the next best picks per slot, filters by source and a wishlist per character.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Road to Forever">
 <meta property="og:title" content="Mr.BiZ — best in slot for WoW Forever">
@@ -271,8 +271,8 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
 </div>
 <main class="wrap">
   <h1>Mr.BiZ</h1>
-  <div id="provenance"></div>
-  <p class="lede">Best in slot for your class and spec at the <b>level 30</b> beta cap. Click a slot for the next best picks, hover an item for its tooltip, click its name to open it on Wowhead. Star items to build a wishlist per character.</p>
+  <div id="provenance" data-state="level 30 list, level 60 refresh pending"></div>
+  <p class="lede">Best in slot for your class and spec at <b>level 30</b> (the level 60 lists are coming). Click a slot for the next best picks, hover an item for its tooltip, click its name to open it on Wowhead. Star items to build a wishlist per character.</p>
 
   <div class="pick" id="pick">
     <div class="field"><span class="flab" id="l-cls">Class</span><div class="dd" id="cls" data-label="l-cls"></div></div>
@@ -362,7 +362,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   function rankName(i) { return RANK_NAME[i] || "Almost biz"; }
   function isTheBizz(s) { var n = s.next && s.next[0]; return !!(n && typeof n.delta === "number" && n.delta <= -THE_BIZZ_GAP); }
   // The levels the page knows. 60 is pickable but only shows what's coming.
-  var LEVELS = [{ value: "30", label: "30", note: "beta cap" }, { value: "60", label: "60", note: "in the works" }];
+  var LEVELS = [{ value: "30", label: "30", note: "list from the beta" }, { value: "60", label: "60", note: "in the works" }];
   function zam(icon) { return '<img class="ic" src="https://wow.zamimg.com/images/wow/icons/medium/' + icon + '.jpg" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">'; }
   function svg(body, cls) { return '<svg class="svgi' + (cls ? " " + cls : "") + '" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + body + "</svg>"; }
   var TYPE_ICON = {
@@ -561,7 +561,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   function renderSoon(sp) {
     $("sum").textContent = "Level 60 · in the works";
     $("rows").innerHTML = '<div class="soon"><h3>Level 60 Mr.BiZ is in the works</h3>' +
-      "<p>The beta stops at level 30, so nobody can rank level 60 gear yet. When WoW Forever launches on November 4 and the level 60 lists come out, they land here for every class and spec, " + esc(sp.name) + " included.</p>" +
+      "<p>The level 60 lists are not published yet, so nobody can rank level 60 gear. When they come out, they land here for every class and spec, " + esc(sp.name) + " included.</p>" +
       "<ul><li>Pre-raid best in slot (dungeons, quests, crafted, reputation)</li><li>Raid tiers as each raid opens</li><li>The same filters, biz ranks and wishlist as level 30</li></ul>" +
       '<p><button type="button" class="btn gold" data-level="30">Back to level 30</button></p></div>';
     $("foot").innerHTML = '<p>Want something in the level 60 lists? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';

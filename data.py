@@ -436,7 +436,7 @@ CLASSES = [
                   "First press casts Ice Block, second press cancels it early.", short="IceBlock"),
             ]),
             G(CLEAN, [
-                M("Remove Curse (friend or foe)", util("Remove Curse"), short="RemCurse@"),
+                M("Remove Lesser Curse (friend or foe)", util("Remove Lesser Curse"), short="RemCurse@"),
             ]),
             G(FOCUS, [
                 M("Counterspell focus", "#showtooltip Counterspell\n/stopcasting\n/cast [@focus, harm, exists][harm] Counterspell",

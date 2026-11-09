@@ -594,10 +594,10 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 #### Cleanse / dispel
 
-**Remove Curse (friend or foe)** (`RemCurse@`)
+**Remove Lesser Curse (friend or foe)** (`RemCurse@`)
 ```
-#showtooltip Remove Curse
-/cast [@mouseover, exists][exists][@player] Remove Curse
+#showtooltip Remove Lesser Curse
+/cast [@mouseover, exists][exists][@player] Remove Lesser Curse
 ```
 
 #### Buffs

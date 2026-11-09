@@ -9,7 +9,7 @@ The order matters: settings first, then the addon, then the walk. Everything her
 3. **Tag the addon** when every check is green: `python build.py`, `python addon/tests/run_tests.py`, luacheck (see below), then
    `git tag r2f-vX.Y.Z` and push the tag (one or two tags at a time). Install the zip from the release.
 4. **Data refresh**: BiS and items (`python build.py` re-reads `bis/`), AH prices (`prices.json`), then push.
-5. **Rehearse**: `python tools/check_links.py` and `node tools/rehearse.js` (or run "Rehearsal" in the GitHub Actions tab) both pass. After the countdown ends, remove the `BETA-RIBBON` block in `index.html` (the rehearsal reminds you), push, and run the rehearsal once more.
+5. **Rehearse**: `python tools/check_links.py` and `node tools/rehearse.js` (or run "Rehearsal" in the GitHub Actions tab) both pass. The Beta ribbon block was removed from `index.html` after launch (done 2026-11-09), and the home page hides the launch date and the launch-night link by itself once the countdown ends.
 
 ## On the first Skyborne Hunter
 1. Run **Setup Hunter** before anything else is placed (needs the Edit Mode layout "Hunter" restored first).

@@ -1,4 +1,4 @@
-/* Shared data-provenance strip: "Client 1.60.x · updated <date> · beta data" (plus plan step counts on the launch plan).
+/* Shared data-provenance strip: "Client 1.60.x · updated <date> · live client" (plus plan step counts on the launch plan).
    Content comes from data-version.json, which build.py writes; nothing here is typed by hand.
    Put <div id="provenance"></div> (add data-plan on the launch plan) where the strip should go and load this file with `defer`. */
 (function () {
@@ -20,7 +20,8 @@
       var ok = v.plan.steps - v.plan.unverified;
       strip.appendChild(part("<b>" + ok + "</b> verified / <b>" + v.plan.unverified + "</b> unverified (across all races and classes)"));
     }
-    if (v.state) strip.appendChild(part('<span class="beta">' + v.state + "</span>"));
+    var state = host.getAttribute("data-state") || v.state;
+    if (state) strip.appendChild(part('<span class="beta">' + state + "</span>"));
     host.appendChild(strip);
   }).catch(function () { /* the pages work without the strip */ });
 })();

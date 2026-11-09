@@ -192,13 +192,21 @@ def main():
 
     if external:
         import urllib.request
+        # Sites that refuse scripts (403/429) and URL pieces cut out of JavaScript string concatenation are not dead links.
+        BOT_WALLS = ("curseforge.com", "mobalytics.gg", "kingboost.net", "ahledger.com", "fonts.googleapis.com", "fonts.gstatic.com")
         for url, pages in sorted(ext_urls.items()):
+            if any(c in url for c in (chr(39), '+', ' ', chr(34), chr(10))):   # a piece of JavaScript, not a URL
+                continue
+            if url.rstrip("/").count("/") == 2:   # a bare host (preconnect hint): nothing to answer
+                continue
             try:
                 req = urllib.request.Request(url, headers={"User-Agent": "road-to-forever-link-check"})
                 with urllib.request.urlopen(req, timeout=15) as r:
                     code = r.status
             except Exception as e:  # network trouble is a warning, never a failure
                 code = getattr(e, "code", None) or type(e).__name__
+            if code in (403, 429) and any(h in url for h in BOT_WALLS):
+                continue
             if code != 200:
                 warnings.append("external %s answered %s (on %s)" % (url, code, ", ".join(sorted(set(pages)))))
 

@@ -66,7 +66,7 @@ None else open (talent-tree drift fixed 2026-11-07; before each release run `pyt
 1. **Run the GitHub "Rehearsal" workflow once** (never run) and put a `--only pages,bis,a11y` subset on a weekly schedule.
 2. **In-game tests**: close the open `addon/dev/TESTING.md` items (16 at the review); the themes were confirmed good by the owner on 2026-11-09.
 3. **Macros marked "Test in beta"** (about 40): decide each in the live game; Shaman Elemental Mastery x2 and Paladin Blessing of Salvation / Light / Sanctuary are not in the current data and probably cannot work.
-4. **Mr.BiZ and Professions refresh** (section 5): Mr.BiZ is still the level 30 list from 2026-10-17, prices.json from 2026-10-07.
+4. **Mr.BiZ refresh after the next game patch**: `bis/README.md` (about 25 + 20 + 20 minutes of polite downloads: pages, item sources, item rarity). The Professions page's enchant list is still the ForeverChanges level 30 list; level 60 enchants show per slot in Mr.BiZ (ForeverDB's own text). If ForeverChanges publishes level 60 BiS pages, re-scrape them (they render by script, a browser is needed).
 5. **Trainer list**: decide whether to include quest-given spells (Bear Form, Berserker Stance, Felhunter) as "quest" rows without a price.
 6. **Maintenance**: one `R2F.Util` for `safe` / `isSecret` / throttle (duplicated 3-5 times); split `addon/tests/run_tests.py`; a SavedVariables migration test with a frozen old `R2FDB`; `addon/ARCHITECTURE.md` (150 lines) and `docs/maintainers.md`.
 7. **TomTom stand-in** (`Nav.lua`): other addons may call methods it lacks; decide whether to add safe no-ops.

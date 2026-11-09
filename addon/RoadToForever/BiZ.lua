@@ -37,6 +37,83 @@ local function data() return R2F.BiZData end
 local function cdb() return R2F.Library.cdb.biz end
 
 -- ---------------------------------------------------------------------------
+-- Level. The data keeps, per spec and slot, runs of levels with the same pick (BiZData.lua); `spec.slots` below is the list for
+-- BiZ.Level(): your own level (10 to 60) unless you stepped to another one on the tab (kept per character).
+-- ---------------------------------------------------------------------------
+
+function BiZ.Levels() return data().levels.min, data().levels.max end
+
+function BiZ.LevelIsOwn()
+  local c = cdb()
+  return not (c and c.level)
+end
+
+function BiZ.Level()
+  local lo, hi = BiZ.Levels()
+  local c = cdb()
+  local lvl = (c and c.level) or (UnitLevel and UnitLevel("player")) or hi
+  if type(lvl) ~= "number" or lvl ~= lvl then lvl = hi end
+  return math.max(lo, math.min(hi, math.floor(lvl)))
+end
+
+-- nil = follow your own level again.
+function BiZ.SetLevel(lvl)
+  local c = cdb()
+  if not c then return end
+  if lvl == nil then
+    c.level = nil
+  else
+    local lo, hi = BiZ.Levels()
+    c.level = math.max(lo, math.min(hi, math.floor(lvl)))
+  end
+end
+
+local slotCache = setmetatable({}, { __mode = "k" })
+
+-- One spec's slots for a level: { { slot, best, next } | { slot, note } } in paper-doll order.
+function BiZ.SlotsAt(sp, lvl)
+  local c = slotCache[sp]
+  if c and c.lvl == lvl then return c.slots end
+  local rows, keys = data().rows, data().slots
+  local out = {}
+  for i, runs in ipairs(sp.runs) do
+    local cur, idx = runs[1], 1
+    for k, r in ipairs(runs) do
+      if r[1] <= lvl then cur, idx = r, k end
+    end
+    if cur[2] > 0 then
+      local nxt = {}
+      for _, ri in ipairs(cur[3]) do nxt[#nxt + 1] = rows[ri] end
+      out[i] = { slot = keys[i].key, best = rows[cur[2]], next = nxt, ench = cur[4] }
+    else
+      local first
+      for k = idx + 1, #runs do
+        if runs[k][2] > 0 then first = runs[k][1]; break end
+      end
+      local why = L.BIZ_EMPTY:format(lvl) .. (first and L.BIZ_EMPTY_FIRST:format(first) or "")
+      out[i] = { slot = keys[i].key, note = cur[4] or why }
+    end
+  end
+  slotCache[sp] = { lvl = lvl, slots = out }
+  return out
+end
+
+-- The stat weights of a spec at a level (they hardly ever change with the level; `wl` lists the changes).
+function BiZ.WeightsAt(sp, lvl)
+  local w = sp.weights
+  for _, x in ipairs(sp.wl or {}) do
+    if x[1] <= lvl then w = x[2] end
+  end
+  return w
+end
+
+-- `spec.slots` follows the current level, so everything that reads a spec keeps working.
+local SPEC_MT = { __index = function(t, k)
+  if k == "slots" then return BiZ.SlotsAt(t, BiZ.Level()) end
+end }
+for _, sp in pairs(data().specs) do setmetatable(sp, SPEC_MT) end
+
+-- ---------------------------------------------------------------------------
 -- Class and spec
 -- ---------------------------------------------------------------------------
 
@@ -161,7 +238,11 @@ function BiZ.EnchantState(rows, enchantId)
 end
 
 -- BiS enchants for a spec's slot (from the site's Professions page), {} when none.
+-- The Professions page's enchant list is the level 30 BiS list (ForeverChanges). Above ENCHANT_LIST_MAX the tab shows ForeverDB's
+-- own enchant for the chosen level (`slot.ench`) and the item tooltip stays silent rather than name a level 30 enchant.
+BiZ.ENCHANT_LIST_MAX = 39
 function BiZ.Enchants(specId, slot)
+  if BiZ.Level() > BiZ.ENCHANT_LIST_MAX then return {} end
   local sp = data().specs[specId]
   return sp and sp.enchants and sp.enchants[slot] or {}
 end
@@ -222,14 +303,17 @@ function BiZ.RouteWeapons(specId, planId)
   local out = {}
   if not sp then return out end
   local steps = R2F.Plan.Steps(planId)
+  local lo, hi = BiZ.Levels()
   for _, key in ipairs(BiZ.WEAPON_SLOTS) do
-    local sl
-    for _, x in ipairs(sp.slots) do if x.slot == key then sl = x end end
-    if sl and sl.best then
-      local best
-      local rows = { sl.best }
-      for _, n in ipairs(sl.next or {}) do rows[#rows + 1] = n end
-      for si, st in ipairs(steps) do
+    local best
+    for si, st in ipairs(steps) do
+      -- The picks that fit the step: Mr.BiZ's list for the level the step is played at (its first number, "12-20" = 12).
+      local lvl = math.max(lo, math.min(hi, tonumber(tostring(st.lvl or ""):match("%d+")) or lo))
+      local sl
+      for _, x in ipairs(BiZ.SlotsAt(sp, lvl)) do if x.slot == key then sl = x end end
+      if sl and sl.best then
+        local rows = { sl.best }
+        for _, n in ipairs(sl.next or {}) do rows[#rows + 1] = n end
         -- Titles only: notes often mention a place you are not going to yet ("City of Dalaran opens at 28").
         local text = st.t or ""
         for rank, row in ipairs(rows) do
@@ -244,8 +328,8 @@ function BiZ.RouteWeapons(specId, planId)
           end
         end
       end
-      if best then best.best = true end
     end
+    if best then best.best = true end
   end
   return out
 end
@@ -337,19 +421,13 @@ local index
 local function itemIndex()
   if index then return index end
   index = {}
-  for _, sp in pairs(data().specs) do
-    for _, sl in ipairs(sp.slots) do
-      if sl.best then
-        index[sl.best.id] = { name = sl.best.name, group = sl.best.group, label = sl.best.label }
-      end
+  for _, r in ipairs(data().rows) do        -- a best pick row carries its stats, a next pick row does not
+    if r.stats ~= nil then
+      index[r.id] = { name = r.name, group = r.group, label = r.label }
     end
   end
-  for _, sp in pairs(data().specs) do
-    for _, sl in ipairs(sp.slots) do
-      for _, n in ipairs(sl.next or {}) do
-        if not index[n.id] then index[n.id] = { name = n.name } end
-      end
-    end
+  for _, r in ipairs(data().rows) do
+    if not index[r.id] then index[r.id] = { name = r.name } end
   end
   return index
 end
@@ -495,14 +573,8 @@ function BiZ.PlaceOfItem(id)
   if not id then return nil end
   if not placeOfItem then
     placeOfItem = {}
-    for _, sp in pairs(R2F.BiZData.specs) do
-      for _, sl in ipairs(sp.slots) do
-        if sl.best then
-          for _, row in ipairs({ sl.best, unpack(sl.next or {}) }) do
-            if row.place and not placeOfItem[row.id] then placeOfItem[row.id] = row.place end
-          end
-        end
-      end
+    for _, row in ipairs(R2F.BiZData.rows) do
+      if row.place and not placeOfItem[row.id] then placeOfItem[row.id] = row.place end
     end
   end
   return placeOfItem[id]

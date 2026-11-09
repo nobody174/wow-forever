@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.85.0 (2026-11-09)
+
+- **Mr.BiZ now shows the best in slot for your level, not only level 30.** Every class and spec has picks for every level from 10 to 60, refreshed from ForeverDB's live data (game build 1.60.1.70862). The Gear tab follows your own level; step another level with - and + next to the Wishlist button, and click the number to come back to yours. Empty slots say when the first pick comes.
+- **Enchants by level:** at level 40 and up a slot shows ForeverDB's enchant for that level; up to 39 the Professions page list (with 2nd and 3rd best) stays. The item tooltip's Mr.BiZ enchant line is quiet above 39 instead of naming a level 30 enchant.
+- **Weapons along your route** now compare against the picks for the level of each step.
+
 ## 0.84.3 (2026-11-09)
 
 - **Mage "Remove Curse" macro fixed:** the Mage spell is Remove Lesser Curse, so the old macro did nothing. Update the macro from the Macros tab.

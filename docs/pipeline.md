@@ -35,8 +35,11 @@ Reference for what is generated, from what, and which command refreshes it. Move
 - `macros.html`, `wow-forever-macros.md` — generated output. Never hand-edit; run
   `python build.py`.
 
-- `bis/` — Mr.BiZ data. `bis/raw/<class>-<spec>.json` = ForeverDB's BiS page for that spec (level 30 PvE), one per
-  spec (27; Feral = "Feral (Bear)", ForeverDB weights it for tanking). `python bis/build_bis.py` parses each source
+- `bis/` — Mr.BiZ data. `bis/raw/levels/<class>-<spec>.json` = ForeverDB's BiS pages for that spec at every level 10-60 (PvE), as runs of
+  levels with the same pick, one file per spec (27; Feral = "Feral (Bear)", ForeverDB weights it for tanking); refresh steps in `bis/README.md`
+  (`foreverdb_levels.py`, `foreverdb_segments.py`). `bis-data.json` and `BiZData.lua` keep per spec and slot the runs `[from, best row, [next rows]]`
+  plus one shared `rows` table; `bis.html` (`slotsAt`) and `BiZ.lua` (`BiZ.SlotsAt`, `spec.slots` follows `BiZ.Level()`) resolve them for one level.
+  `python bis/build_bis.py` parses each source
   sentence (type, label, group, profession / skill, instance, drop %, faction) and writes `bis-data.json` +
   `addon/RoadToForever/BiZData.lua`; `--check` = exit 1 if stale (the addon tests run it). `build.py` runs it too.
   `bis/sources.json` = sources for rank 2-3 picks that are no spec's best pick (ForeverDB item pages, same sentence

@@ -5,6 +5,14 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-09 (addon 0.85.0: Mr.BiZ for every level 10-60)
+- ForeverDB serves any level (`?lvl=N`, server-rendered), so the BiS data is now per level: `bis/tools/foreverdb_levels.py` (27 specs x 51 levels, 1 request/s, cache in `bis/own/cache/levels/`),
+  `foreverdb_segments.py` (runs of levels with the same pick -> `bis/raw/levels/`, plus ForeverDB's own enchant text per level), `foreverdb_sources.py` (1,305 next picks' sources from the item pages),
+  `wh_quality.py` (2,451 rarities). `build_bis.py` writes `bis-data.json` / `BiZData.lua` as per spec and slot runs `[from, best row, [next rows], text?]` plus one shared `rows` table
+  (3.0 MB / 3.5 MB; gzip about 420 KB); `bis.html` (`slotsAt`, level dropdown 10-60, remembered, `?lvl=`) and `BiZ.lua` (`BiZ.SlotsAt`, `spec.slots` follows `BiZ.Level()`, stepper on the tab) resolve a run for one level.
+  The old level 30 `bis/raw/*.json` are gone. New source wording: "Found in", "Sold by X" with no zone or price. Tests: addon = site at 9 levels x 27 specs x 17 slots, level API, enchant gate (`BiZ.ENCHANT_LIST_MAX` 39).
+  `check_release_tree.py` lets "Highperch Venom" (a quest name) through in BiZData.lua. `tools/refresh_prices.py` refreshed `prices.json` from AHledger (32 materials). Professions lede points at Mr.BiZ for per-level enchants.
+
 ## 2026-11-09 (addon 0.84.3: post-launch pass after the project review)
 - Review of the whole project by six roles (`docs/reviews/2026-11/`), then the fixes that do not need the game or a data refresh:
   index loses the Beta ribbon block and hides the launch date line and the launch-night link once the countdown ends; `DATA_STATE` in `build.py`

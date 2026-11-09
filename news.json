@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-09",
+      "title": "Mr.BiZ for every level, 10 to 60",
+      "text": "Best in slot now follows your level: pick 39 and you see what is best for a level 39, not for 60. Fresh from ForeverDB for the live game build, with the right enchant for each level from 40 up. The addon's Gear tab does the same, using your own level (step it with - and +). Material prices on the Professions page were refreshed too.",
+      "link": "bis.html"
+    },
+    {
+      "date": "2026-11-09",
       "title": "The site now speaks live, and a Mage macro is fixed",
       "text": "The beta ribbon and the launch-night notes are gone, the Addons page points at the right game folder (_forever_), and the pages no longer say the data is a beta preview. The Mage \"Remove Curse\" macro now uses Remove Lesser Curse, the Mage spell. Mr.BiZ is still the level 30 list; the level 60 refresh is next.",
       "link": "index.html"

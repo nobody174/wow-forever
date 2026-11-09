@@ -244,7 +244,7 @@ local function layoutSide()
     end
   end
   ui.summary:SetText(hidden > 0 and L.BIZ_SUMMARY_HIDDEN:format(shown, hidden) or L.BIZ_SUMMARY:format(shown))
-  ui.footer:SetText(L.BIZ_FOOTER:format(R2F.BiZData.level, R2F.BiZData.source, sp.build))
+  ui.footer:SetText(L.BIZ_FOOTER:format(BiZ.Level(), R2F.BiZData.source, sp.build))
 
   local sl = slotOf(sp, selected)
   line("R2FHeadingLarge", 0, 0, 320, BiZ.SlotLabel(selected))
@@ -267,6 +267,12 @@ local function layoutSide()
   local y = 30
   local rows = BiZ.Enchants(specId, sl.slot)
   local altLines = 0
+  if #rows == 0 and sl.ench and sl.ench ~= "" then
+    local el = line("R2FBodySmall", 0, y, 320, L.BIZ_ENCHANT_LVL:format(BiZ.Level(), sl.ench))
+    el:SetTextColor(1, 0.5, 0.85)
+    el:SetWordWrap(false)
+    y = y + 20
+  end
   for i, e in ipairs(rows) do
     if i > 2 then break end
     local head = line("R2FHeadingSmall", 0, y, 320, L.BIZ_ENCHANT:format(e.name))
@@ -476,6 +482,10 @@ local function refresh()
   ui.classBtn:SetText(BiZ.ClassName(BiZ.Class()))
   ui.specBtn:SetText(sp.name)
   ui.setBtn:SetEnabled(view ~= "set")
+  local lo, hi = BiZ.Levels()
+  ui.levelBtn:SetText(L.BIZ_LEVEL:format(BiZ.Level()))
+  ui.levelDown:SetEnabled(BiZ.Level() > lo)
+  ui.levelUp:SetEnabled(BiZ.Level() < hi)
   ui.wishBtn:SetEnabled(view ~= "wish")
   ui.wishBtn:SetText(L.BIZ_VIEW_WISH:format(BiZ.WishCount()))
   for t, box in pairs(typeBoxes) do box:SetChecked(BiZ.TypeOn(t)) end
@@ -639,6 +649,20 @@ function Tab.Build(f)
   ui.wishBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -1)
   ui.setBtn = button(f, 100, L.BIZ_VIEW_SET, function() view = "set"; refresh() end)
   ui.setBtn:SetPoint("RIGHT", ui.wishBtn, "LEFT", -2, 0)
+
+  -- Level: - [Level N] + (click the number to follow your own level again).
+  ui.levelUp = button(f, 22, "+", function() BiZ.SetLevel(BiZ.Level() + 1); Tab.Refresh() end)
+  ui.levelUp:SetPoint("RIGHT", ui.setBtn, "LEFT", -10, 0)
+  ui.levelBtn = button(f, 74, "", function() BiZ.SetLevel(nil); Tab.Refresh() end)
+  ui.levelBtn:SetPoint("RIGHT", ui.levelUp, "LEFT", -2, 0)
+  ui.levelBtn:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+    GameTooltip:SetText(L.BIZ_LEVEL_TIP)
+    GameTooltip:Show()
+  end)
+  ui.levelBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  ui.levelDown = button(f, 22, "-", function() BiZ.SetLevel(BiZ.Level() - 1); Tab.Refresh() end)
+  ui.levelDown:SetPoint("RIGHT", ui.levelBtn, "LEFT", -2, 0)
 
   -- Paper doll: model in the middle, slots in two columns, weapons under it.
   buildModel(f, 50, DOLL_Y, MODEL_W, DOLL_STEP * 7 - 6)

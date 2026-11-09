@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mr.BiZ — best in slot for WoW Forever</title>
-<meta name="description" content="Mr.BiZ: best-in-slot gear for every WoW Forever class and spec at level 30, with the next best picks per slot, filters by source and a wishlist per character.">
+<meta name="description" content="Mr.BiZ: best-in-slot gear for every WoW Forever class and spec at any level from 10 to 60, with the next best picks per slot, filters by source and a wishlist per character.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Road to Forever">
 <meta property="og:title" content="Mr.BiZ — best in slot for WoW Forever">
@@ -271,8 +271,8 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
 </div>
 <main class="wrap">
   <h1>Mr.BiZ</h1>
-  <div id="provenance" data-state="level 30 list, level 60 refresh pending"></div>
-  <p class="lede">Best in slot for your class and spec at <b>level 30</b> (the level 60 lists are coming). Click a slot for the next best picks, hover an item for its tooltip, click its name to open it on Wowhead. Star items to build a wishlist per character.</p>
+  <div id="provenance"></div>
+  <p class="lede">Best in slot for your class, spec and <b>level</b> (10 to 60: pick the level you are at, not the one you are heading for). Click a slot for the next best picks, hover an item for its tooltip, click its name to open it on Wowhead. Star items to build a wishlist per character.</p>
 
   <div class="pick" id="pick">
     <div class="field"><span class="flab" id="l-cls">Class</span><div class="dd" id="cls" data-label="l-cls"></div></div>
@@ -361,8 +361,8 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   var THE_BIZZ_GAP = 20;
   function rankName(i) { return RANK_NAME[i] || "Almost biz"; }
   function isTheBizz(s) { var n = s.next && s.next[0]; return !!(n && typeof n.delta === "number" && n.delta <= -THE_BIZZ_GAP); }
-  // The levels the page knows. 60 is pickable but only shows what's coming.
-  var LEVELS = [{ value: "30", label: "30", note: "list from the beta" }, { value: "60", label: "60", note: "in the works" }];
+  // The levels the page knows: every level from DATA.levels.min to .max.
+  var LEVELS = [];   // every level the data has (DATA.levels), filled when the data loads
   function zam(icon) { return '<img class="ic" src="https://wow.zamimg.com/images/wow/icons/medium/' + icon + '.jpg" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">'; }
   function svg(body, cls) { return '<svg class="svgi' + (cls ? " " + cls : "") + '" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + body + "</svg>"; }
   var TYPE_ICON = {
@@ -398,6 +398,29 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   var store = lget("wf-bis-wish-v1", null) || { current: "Venom", chars: { Venom: { items: {} } } };
   var quality = lget("wf-bis-quality-v1", {});
   var open = {};
+  // The data keeps, per spec and slot, runs of levels with the same pick: [from, bestRow | -1, [nextRows], note?] (rows are shared in DATA.rows).
+  // slotsAt() turns them into [{ slot, best, next } | { slot, note }] for one level.
+  function slotsAt(sp, lvl) {
+    sp.cache = sp.cache || {};
+    if (sp.cache[lvl]) return sp.cache[lvl];
+    var out = sp.runs.map(function (runs, i) {
+      var cur = runs[0], idx = 0, k, first = null, key = DATA.slots[i].key;
+      for (k = 0; k < runs.length; k++) if (runs[k][0] <= lvl) { cur = runs[k]; idx = k; }
+      if (cur[1] >= 0) return { slot: key, best: DATA.rows[cur[1]], next: cur[2].map(function (r) { return DATA.rows[r]; }), ench: cur[3] || "" };
+      for (k = idx + 1; k < runs.length; k++) if (runs[k][1] >= 0) { first = runs[k][0]; break; }
+      return { slot: key, note: cur[3] || ("nothing with these stats at level " + lvl + (first ? " (the first comes at level " + first + ")" : "")) };
+    });
+    sp.cache[lvl] = out;
+    return out;
+  }
+  function weightsAt(sp, lvl) {
+    var w = sp.weights;
+    (sp.wl || []).forEach(function (x) { if (x[0] <= lvl) w = x[1]; });
+    return w;
+  }
+  function eachSlot(fn) { Object.keys(DATA.specs).forEach(function (sid) { slotsAt(DATA.specs[sid], +level).forEach(fn); }); }
+  // The Professions page's enchant list is the level 30 BiS list; above this level the rows show ForeverDB's enchant for the chosen level instead.
+  var ENCH_LIST_MAX = 39;
   var itemIndex = {};   // id -> { name, group, label, type } from any spec's best picks
 
   function save() { lset("wf-bis-v1", prefs); }
@@ -519,14 +542,14 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   }
   function fillChips() {
     var present = {};
-    Object.keys(DATA.specs).forEach(function (sid) { DATA.specs[sid].slots.forEach(function (s) { if (s.best) present[s.best.type] = 1; }); });
+    eachSlot(function (s) { if (s.best) present[s.best.type] = 1; });
     $("chips").innerHTML = DATA.types.map(function (t) {
       var none = !present[t];
       var on = !none && prefs.types[t] !== false;
       return '<button type="button" class="chip" data-type="' + t + '" aria-pressed="' + on + '"' + (none ? ' disabled title="No ' + esc(TYPE_LABEL[t].toLowerCase()) + ' items at this level yet"' : "") + ">" + (TYPE_ICON[t] || "") + esc(TYPE_LABEL[t]) + "</button>";
     }).join("");
     var profs = {};
-    Object.keys(DATA.specs).forEach(function (sid) { DATA.specs[sid].slots.forEach(function (s) { if (s.best && s.best.prof) profs[s.best.prof] = 1; }); });
+    eachSlot(function (s) { if (s.best && s.best.prof) profs[s.best.prof] = 1; });
     dd.prof.set([{ value: "any", label: "Any", icon: TYPE_ICON.crafted }].concat(Object.keys(profs).sort().map(function (p) {
       return { value: p, label: p, icon: PROF_ICON[p] ? zam(PROF_ICON[p]) : TYPE_ICON.crafted };
     })), profs[prefs.prof] ? prefs.prof : "any");
@@ -558,14 +581,6 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     if (b.horde && prefs.faction === "horde") return '<span class="tag alt" title="The Horde version">Horde: ' + esc(b.horde) + "</span>";
     return "";
   }
-  function renderSoon(sp) {
-    $("sum").textContent = "Level 60 · in the works";
-    $("rows").innerHTML = '<div class="soon"><h3>Level 60 Mr.BiZ is in the works</h3>' +
-      "<p>The level 60 lists are not published yet, so nobody can rank level 60 gear. When they come out, they land here for every class and spec, " + esc(sp.name) + " included.</p>" +
-      "<ul><li>Pre-raid best in slot (dungeons, quests, crafted, reputation)</li><li>Raid tiers as each raid opens</li><li>The same filters, biz ranks and wishlist as level 30</li></ul>" +
-      '<p><button type="button" class="btn gold" data-level="30">Back to level 30</button></p></div>';
-    $("foot").innerHTML = '<p>Want something in the level 60 lists? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';
-  }
   // The spec's stat weights as chips ("1.2 hit"), in the order ForeverDB lists them (most important first).
   function weightChips(text) {
     return String(text || "").split(", ").map(function (part) {
@@ -581,8 +596,8 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     var labels = {}; DATA.slots.forEach(function (s) { labels[s.key] = s.label; });
     $("set-title").textContent = sp.name + " " + DATA.classes.filter(function (c) { return c.key === sp.class; })[0].name;
     $("set-title").style.color = CLASS_COLOR[sp.class] || "";
-    if (level === "60") { $("weights").hidden = true; $("setacts").hidden = true; renderSoon(sp); return; }
-    $("rows").innerHTML = sp.slots.map(function (s) {
+    var lvl = +level;
+    $("rows").innerHTML = slotsAt(sp, lvl).map(function (s) {
       var key = sid + "|" + s.slot, label = labels[s.slot];
       if (!s.best) {
         empty++;
@@ -625,21 +640,22 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
         }).join("");
         more = '<div class="more"><ol>' + list + "</ol>" +
           '<p class="facts"><b>' + esc(b.name) + "</b>: " + esc(b.stats) + (b.ease ? " · " + esc(b.ease) : "") + "</p>" +
-          ((sp.enchants && sp.enchants[s.slot]) || []).map(function (e) {
+          (lvl > ENCH_LIST_MAX && s.ench ? '<p class="facts ench">Enchant at level ' + lvl + ": " + esc(s.ench) + "</p>" : "") +
+          (lvl > ENCH_LIST_MAX ? [] : ((sp.enchants && sp.enchants[s.slot]) || [])).map(function (e) {
             return '<p class="facts ench">Enchant: <a href="professions.html#bis/' + esc(sp.class) + '">' + esc(e.name) + "</a> · " + esc(e.eff) +
               " · " + esc(e.prof) + " " + esc(e.skill) + (e.kind === "2h" ? " (two-hand weapons)" : "") +
               (e.alts || []).map(function (a, i) { return '<span class="alt">#' + (i + 2) + ": " + esc(a.name) + " · " + esc(a.eff) + " · " + esc(a.prof) + " " + esc(a.skill) + "</span>"; }).join("") + "</p>";
           }).join("") +
           '<p class="facts links"><a href="https://www.wowhead.com/forever/item=' + b.id + '" target="_blank" rel="noopener">Wowhead</a><a href="https://foreverdb.net/item/' + b.id + '" target="_blank" rel="noopener">ForeverDB</a><a href="' + esc(sp.url) + '" target="_blank" rel="noopener">Full ' + esc(sp.name) + " list</a></p>" +
-          (nxt.length < 2 ? '<p class="note">No more ranked picks for this slot at level 30.</p>' : '<p class="note">Bizzer and Biz show how far behind the best they score; greyed picks are hidden by your filters. Almost biz picks (4th and lower) come when our own ranking is done.</p>') + "</div>";
+          (nxt.length < 2 ? '<p class="note">No more ranked picks for this slot at level " + lvl + ".</p>' : '<p class="note">Bizzer and Biz show how far behind the best they score; greyed picks are hidden by your filters. Almost biz picks (4th and lower) come when our own ranking is done.</p>') + "</div>";
       }
       return '<div class="row' + (ok ? "" : " hidden") + (pick > 0 ? " standin" : "") + (isOpen ? " open" : "") + '">' + main + more + "</div>";
     }).join("");
-    $("sum").textContent = shown + " shown" + (bizz ? " · " + bizz + " The Bizz" : "") + (standins ? " · " + standins + " stand-in" + (standins === 1 ? "" : "s") + " (filters)" : "") + (hidden ? " · " + hidden + " hidden by filters" : "") + (empty ? " · " + empty + " empty at level 30" : "");
-    $("foot").innerHTML = "<p><b>Stat weights</b> (" + esc(sp.name) + "): <code>" + esc(sp.weights) + "</code></p>" +
-      '<p>Picks and weights from <a href="' + esc(sp.url) + '" target="_blank" rel="noopener">ForeverDB</a> (beta build ' + esc(sp.build) + ", taken " + esc(DATA.updated) +
+    $("sum").textContent = shown + " shown" + (bizz ? " · " + bizz + " The Bizz" : "") + (standins ? " · " + standins + " stand-in" + (standins === 1 ? "" : "s") + " (filters)" : "") + (hidden ? " · " + hidden + " hidden by filters" : "") + (empty ? " · " + empty + " empty at level " + lvl : "");
+    $("foot").innerHTML = "<p><b>Stat weights</b> (" + esc(sp.name) + "): <code>" + esc(weightsAt(sp, lvl)) + "</code></p>" +
+      '<p>Picks and weights from <a href="' + esc(sp.url) + '" target="_blank" rel="noopener">ForeverDB</a> (game build ' + esc(sp.build) + ", taken " + esc(DATA.updated) +
       '). Tooltips and item pages from <a href="https://www.wowhead.com/forever" target="_blank" rel="noopener">Wowhead</a>. Wrong item? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';
-    $("weights").innerHTML = '<span class="wlab"><b>Stat weights</b> for ' + esc(sp.name) + ": a bigger number counts more. From ForeverDB, beta build " + esc(sp.build) + ".</span>" + weightChips(sp.weights);
+    $("weights").innerHTML = '<span class="wlab"><b>Stat weights</b> for ' + esc(sp.name) + ": a bigger number counts more. From ForeverDB, game build " + esc(sp.build) + ".</span>" + weightChips(weightsAt(sp, lvl));
     $("weights").hidden = false;
     $("setacts").hidden = !picks.length;
     lastPicks = picks;
@@ -652,7 +668,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   function capFirst(s) { s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
   function confTitle(c) {
     return { seen: "Players have seen this item drop or sold in Forever", client: "From the Forever game files", classic: "Where it comes from is assumed from Classic",
-      clue: "A lead from the beta, not confirmed", unknown: "Where it comes from isn't known yet" }[c] || "";
+      clue: "A lead, not confirmed", unknown: "Where it comes from isn't known yet" }[c] || "";
   }
 
   // ---- wishlist ----
@@ -705,28 +721,25 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   }
   function nameOf(id) {
     var found = null;
-    Object.keys(DATA.specs).some(function (sid) { return DATA.specs[sid].slots.some(function (s) { return (s.next || []).some(function (n) { if (String(n.id) === String(id)) { found = n.name; return true; } return false; }); }); });
+    DATA.rows.some(function (r) { if (String(r.id) === String(id)) { found = r.name; return true; } return false; });
     return found;
   }
 
   // ---- events ----
-  // Level isn't saved: 60 only shows what's coming, so every visit starts at 30.
-  var level = "30";
+  // The level is remembered (prefs.level); ?lvl=39 in the address opens that level. Until the data loads it is the top level.
+  var level = "60";
   dd.cls = Drop("cls", function (v) { prefs.cls = v; save(); fillSpec(); render(); });
   dd.spec = Drop("spec", function (v) { prefs.specOf[prefs.cls] = v; save(); render(); });
   dd.faction = Drop("faction", function (v) { prefs.faction = v; save(); render(); });
-  dd.level = Drop("level", function (v) { level = v; render(); });
+  dd.level = Drop("level", function (v) { level = v; prefs.level = +v; save(); fillChips(); render(); });
   dd.prof = Drop("prof", function (v) { prefs.prof = v; save(); render(); });
   dd.conf = Drop("conf", function (v) { prefs.conf = v; save(); render(); });
-  dd.level.set(LEVELS, level);
   $("chips").addEventListener("click", function (e) {
     var b = e.target.closest(".chip"); if (!b || b.disabled) return;
     var t = b.dataset.type; prefs.types[t] = prefs.types[t] === false; save();
     b.setAttribute("aria-pressed", String(prefs.types[t] !== false)); render();
   });
   $("rows").addEventListener("click", function (e) {
-    var lv = e.target.closest("[data-level]");
-    if (lv) { level = lv.getAttribute("data-level"); dd.level.setValue(level); render(); return; }
     var star = e.target.closest("[data-star]");
     if (star) { toggleWish(star.dataset.star, star.dataset.name, star.dataset.spec, star.dataset.slot); return; }
     if (e.target.closest("a")) return;   // item links open Wowhead
@@ -780,12 +793,15 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
 
   fetch("bis-data.json", { cache: "no-cache" }).then(function (r) { return r.json(); }).then(function (d) {
     DATA = d;
-    Object.keys(d.specs).forEach(function (sid) {
-      d.specs[sid].slots.forEach(function (s) {
-        if (s.best && (!itemIndex[s.best.id] || itemIndex[s.best.id].next)) itemIndex[s.best.id] = { name: s.best.name, group: s.best.group, label: s.best.label, type: s.best.type };
-        (s.next || []).forEach(function (n) { if (!itemIndex[n.id]) itemIndex[n.id] = { name: n.name, group: n.group, label: n.label, type: n.type, next: true }; });
-      });
+    d.rows.forEach(function (r) {
+      var best = r.stats !== undefined;   // a best pick carries its stats, a next pick does not
+      if (best && (!itemIndex[r.id] || itemIndex[r.id].next)) itemIndex[r.id] = { name: r.name, group: r.group, label: r.label, type: r.type };
+      else if (!itemIndex[r.id]) itemIndex[r.id] = { name: r.name, group: r.group, label: r.label, type: r.type, next: true };
     });
+    for (var lv = d.levels.min; lv <= d.levels.max; lv++) LEVELS.push({ value: String(lv), label: String(lv) });
+    var asked = /[?&]lvl=(\d+)/.exec(location.search);
+    level = String(Math.max(d.levels.min, Math.min(d.levels.max, +(asked ? asked[1] : prefs.level) || d.levels.max)));
+    dd.level.set(LEVELS, level);
     var h = decodeURIComponent((location.hash || "").slice(1));
     if (d.specs[h]) { prefs.cls = d.specs[h].class; prefs.specOf[prefs.cls] = h; }
     if (!prefs.cls || !d.classes.some(function (c) { return c.key === prefs.cls; })) prefs.cls = "hunter";

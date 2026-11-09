@@ -108,10 +108,14 @@ def parse_source(src):
         out["label"] = "%s %s" % (m.group(1), m.group(2)) if m.group(2) else m.group(1)
         out["group"] = m.group(1)
         return out
-    m = re.match(r"Sold by (.+?) in (.+?)(?: \(.*?\))? for (.+)$", s)
+    m = re.match(r"Sold by (.+?) in (.+?)(?: \(.*?\))?(?: for (.+))?$", s)
     if m:
-        out.update(type="vendor", label="%s, %s (%s)" % (m.group(1), m.group(2), m.group(3)),
+        out.update(type="vendor", label="%s, %s" % (m.group(1), m.group(2)) + (" (%s)" % m.group(3) if m.group(3) else ""),
                    group="Vendor: %s" % m.group(2))
+        return out
+    m = re.match(r"Sold by ([^,()]+)$", s)
+    if m:
+        out.update(type="vendor", label=m.group(1), group="Vendors")
         return out
     m = re.match(r"Quest reward: (.+?)(?: \(a choice\))?(?:, level (\d+))?$", s)
     if m:
@@ -132,6 +136,10 @@ def parse_source(src):
         rng = re.search(r"level (\d+-\d+)", s)
         out.update(type="world", label="World drop" + (" (level %s mobs)" % rng.group(1) if rng else ""),
                    group="World drops")
+        return out
+    m = re.match(r"Found in (.+)$", s)
+    if m:
+        out.update(type="world", label="Found in %s" % m.group(1), group="Containers")
         return out
     m = re.match(r"Inside (.+)$", s)
     if m:
@@ -184,14 +192,15 @@ def source_of(src, conf_word=None):
 
 def source_index():
     idx = {}
-    for path in sorted(glob.glob(os.path.join(RAW, "*.json"))):
+    for path in sorted(glob.glob(os.path.join(LEVELS_DIR, "*.json"))):
         with open(path, encoding="utf-8") as f:
-            for rs in json.load(f)["slots"]:
-                b = rs.get("best")
-                if b and int(b["id"]) not in idx:
-                    idx[int(b["id"])] = source_of(b["src"], b.get("conf"))
-                    if idx[int(b["id"])]["type"] != "unknown":
-                        idx[int(b["id"])]["via"] = SOURCE_NAME
+            for runs in json.load(f)["slots"]:
+                for rs in runs:
+                    b = rs.get("best")
+                    if b and int(b["id"]) not in idx:
+                        idx[int(b["id"])] = source_of(b["src"], b.get("conf"))
+                        if idx[int(b["id"])]["type"] != "unknown":
+                            idx[int(b["id"])]["via"] = SOURCE_NAME
     with open(SOURCES, encoding="utf-8") as f:
         for iid, it in json.load(f)["items"].items():
             src = source_of(it["src"])
@@ -201,66 +210,119 @@ def source_index():
     return idx
 
 
+LEVELS_DIR = os.path.join(RAW, "levels")
+LVL_MIN, LVL_MAX = 10, 60
+GENERIC_EMPTY = re.compile(r"^nothing with these stats at level \d+")
+
+
+def expand(raw, lvl):
+    """One spec's level file (runs of levels per slot) -> the plain per-level shape: build, weights, 17 slot entries."""
+    slots = []
+    for runs in raw["slots"]:
+        cur = None
+        for r in runs:
+            if r["from"] <= lvl:
+                cur = r
+        slots.append({k: v for k, v in cur.items() if k != "from"})
+    w = [x for x in raw["weights"] if x["from"] <= lvl][-1]["w"]
+    return {"build": raw["build"], "weights": w, "slots": slots}
+
+
+def slot_entries(path, raw, sources):
+    """The plain per-level shape -> resolved slot entries {slot, best, next} / {slot, note} (source sentences parsed)."""
+    if len(raw["slots"]) != len(SLOTS):
+        raise ValueError("%s: %d slots, expected %d" % (path, len(raw["slots"]), len(SLOTS)))
+    slots = []
+    for (slot_key, slot_label), rs in zip(SLOTS, raw["slots"]):
+        want = slot_label.split(" /")[0]
+        if not rs["slot"].startswith(want.split(" ")[0]):
+            raise ValueError("%s: slot %r where %r was expected" % (path, rs["slot"], slot_label))
+        entry = {"slot": slot_key}
+        b = rs.get("best")
+        if b:
+            src = parse_source(b["src"])
+            best = {"id": int(b["id"]), "name": b["name"], "score": b["score"], "stats": b.get("stats", ""),
+                    "conf": CONF.get(b.get("conf") or "", "unknown"), "ease": b.get("ease", "")}
+            best.update(src)
+            if best["type"] != "unknown":
+                best["via"] = SOURCE_NAME
+            if b.get("horde"):
+                best["horde"] = b["horde"]
+            entry["best"] = best
+            nxt = []
+            for n in rs.get("next") or []:
+                item = {"id": int(n["id"]), "name": n["name"]}
+                if n.get("delta") is not None:
+                    item["delta"] = n["delta"]
+                src = sources.get(item["id"])
+                if src is None:
+                    raise ValueError("%s: no source for next pick %s %r: add it to bis/sources.json"
+                                     % (path, item["id"], item["name"]))
+                item.update({k: src[k] for k in NEXT_SRC_KEYS if k in src})
+                nxt.append(item)
+            entry["next"] = nxt
+            if rs.get("ench"):
+                entry["ench"] = rs["ench"]
+        else:
+            entry["note"] = rs.get("note") or "nothing at this level"
+        slots.append(entry)
+    return slots
+
+
 def build():
     specs_out, classes_out, seen_files = {}, [], set()
     sources = source_index()
+    rows, row_index = [], {}
+
+    def intern(row):
+        key = json.dumps(row, sort_keys=True, ensure_ascii=False)
+        if key not in row_index:
+            row_index[key] = len(rows)
+            rows.append(row)
+        return row_index[key]
+
     for ckey, cname, specs in CLASSES:
         cspecs = []
         for skey, sname, role in specs:
-            path = os.path.join(RAW, "%s-%s.json" % (ckey, skey))
+            path = os.path.join(LEVELS_DIR, "%s-%s.json" % (ckey, skey))
             seen_files.add(os.path.basename(path))
             with open(path, encoding="utf-8") as f:
-                raw = json.load(f)
-            if len(raw["slots"]) != len(SLOTS):
-                raise ValueError("%s: %d slots, expected %d" % (path, len(raw["slots"]), len(SLOTS)))
-            slots = []
-            for (slot_key, slot_label), rs in zip(SLOTS, raw["slots"]):
-                want = slot_label.split(" /")[0]
-                if not rs["slot"].startswith(want.split(" ")[0]):
-                    raise ValueError("%s: slot %r where %r was expected" % (path, rs["slot"], slot_label))
-                entry = {"slot": slot_key}
-                b = rs.get("best")
-                if b:
-                    src = parse_source(b["src"])
-                    best = {"id": int(b["id"]), "name": b["name"], "score": b["score"], "stats": b.get("stats", ""),
-                            "conf": CONF.get(b.get("conf") or "", "unknown"), "ease": b.get("ease", "")}
-                    best.update(src)
-                    if best["type"] != "unknown":
-                        best["via"] = SOURCE_NAME
-                    if b.get("horde"):
-                        best["horde"] = b["horde"]
-                    entry["best"] = best
-                    nxt = []
-                    for n in rs.get("next") or []:
-                        item = {"id": int(n["id"]), "name": n["name"]}
-                        if n.get("delta") is not None:
-                            item["delta"] = n["delta"]
-                        src = sources.get(item["id"])
-                        if src is None:
-                            raise ValueError("%s: no source for next pick %s %r: add it to bis/sources.json"
-                                             % (path, item["id"], item["name"]))
-                        item.update({k: src[k] for k in NEXT_SRC_KEYS if k in src})
-                        nxt.append(item)
-                    entry["next"] = nxt
-                else:
-                    entry["note"] = rs.get("note") or "nothing at this level"
-                slots.append(entry)
+                lraw = json.load(f)
+            runs = [[] for _ in SLOTS]
+            last_key = [None] * len(SLOTS)
+            for lvl in range(LVL_MIN, LVL_MAX + 1):
+                for i, entry in enumerate(slot_entries(path, expand(lraw, lvl), sources)):
+                    if "best" in entry:
+                        b = intern(entry["best"])
+                        n = [intern(x) for x in entry["next"]]
+                        run = [lvl, b, n] + ([entry["ench"]] if entry.get("ench") else [])
+                    else:
+                        note = "" if GENERIC_EMPTY.match(entry["note"]) else entry["note"]
+                        run = [lvl, -1, []] + ([note] if note else [])
+                    key = json.dumps(run[1:], ensure_ascii=False)
+                    if key != last_key[i]:
+                        runs[i].append(run)
+                        last_key[i] = key
+            weights = lraw["weights"]
             spec_id = "%s/%s" % (ckey, skey)
-            specs_out[spec_id] = {"class": ckey, "spec": skey, "name": sname, "role": role,
-                                  "build": raw["build"], "weights": raw["weights"].rstrip("."),
-                                  "url": "https://foreverdb.net/bis/%s/%s" % (ckey, skey), "slots": slots}
+            sp = {"class": ckey, "spec": skey, "name": sname, "role": role, "build": lraw["build"],
+                  "weights": weights[-1]["w"].rstrip("."),
+                  "url": "https://foreverdb.net/bis/%s/%s" % (ckey, skey), "runs": runs}
+            if len(weights) > 1:
+                sp["wl"] = [[x["from"], x["w"].rstrip(".")] for x in weights]
+            specs_out[spec_id] = sp
             cspecs.append(spec_id)
         classes_out.append({"key": ckey, "name": cname, "specs": cspecs})
-    extra = {os.path.basename(p) for p in glob.glob(os.path.join(RAW, "*.json"))} - seen_files
+    extra = {os.path.basename(p) for p in glob.glob(os.path.join(LEVELS_DIR, "*.json"))} - seen_files
     if extra:
-        raise ValueError("raw files with no spec in CLASSES: %s" % sorted(extra))
+        raise ValueError("level files with no spec in CLASSES: %s" % sorted(extra))
     places = load_places()
-    tag_places(specs_out, places)
+    tag_places(rows, places)
     add_enchants(specs_out)
-    quality = load_quality(specs_out)
-    return {"updated": UPDATED, "level": LEVEL, "source": {"name": SOURCE_NAME, "url": SOURCE_URL},
+    quality = load_quality(rows)
+    return {"updated": UPDATED, "levels": {"min": LVL_MIN, "max": LVL_MAX}, "source": {"name": SOURCE_NAME, "url": SOURCE_URL},
             "slots": [{"key": k, "label": v} for k, v in SLOTS], "types": TYPES,
-            "classes": classes_out, "specs": specs_out, "places": places, "quality": quality}
+            "classes": classes_out, "specs": specs_out, "rows": rows, "places": places, "quality": quality}
 
 
 # ---------------------------------------------------------------------------
@@ -295,15 +357,13 @@ def place_key(row):
     return None
 
 
-def tag_places(specs, places):
+def tag_places(rows, places):
     used = set()
-    for sp in specs.values():
-        for sl in sp["slots"]:
-            for row in ([sl["best"]] if "best" in sl else []) + sl.get("next", []):
-                key = place_key(row)
-                if key in places:
-                    row["place"] = key
-                    used.add(key)
+    for row in rows:
+        key = place_key(row)
+        if key in places:
+            row["place"] = key
+            used.add(key)
     unused = sorted(set(places) - used)
     if unused:
         raise ValueError("places.json entries no BiZ row uses: %s" % unused)
@@ -317,11 +377,10 @@ def tag_places(specs, places):
 QUALITY_IN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "quality.json")
 
 
-def load_quality(specs):
+def load_quality(rows):
     with open(QUALITY_IN, encoding="utf-8") as f:
         known = {int(k): v for k, v in json.load(f)["quality"].items()}
-    ids = sorted({r["id"] for sp in specs.values() for sl in sp["slots"] if "best" in sl
-                  for r in [sl["best"]] + sl.get("next", [])})
+    ids = sorted({r["id"] for r in rows})
     missing = [i for i in ids if i not in known]
     if missing:
         print("note: no baked quality for %d items (refresh bis/quality.json): %s" % (len(missing), missing[:10]),
@@ -462,24 +521,24 @@ def wrap(prefix, parts, suffix, indent, width=120):
     return lines
 
 
-BEST_KEYS = ["id", "name", "score", "stats", "conf", "ease", "type", "label", "group", "prof", "skill", "instance",
-             "chance", "faction", "horde", "via", "place"]
-
-
-NEXT_KEYS = ["id", "name", "delta"] + NEXT_SRC_KEYS + ["place"]
+ROW_KEYS = ["id", "name", "score", "delta", "stats", "conf", "ease", "type", "label", "group", "prof", "skill", "instance",
+            "chance", "faction", "horde", "via", "place"]
 
 
 def to_lua(data):
     out = [
-        "-- BiZData.lua: Mr.BiZ best-in-slot data. GENERATED by bis/build_bis.py from bis/raw/*.json",
-        "-- (ForeverDB's level %d BiS pages, %s). Never hand-edit: change the raw files or the" % (data["level"], data["updated"]),
+        "-- BiZData.lua: Mr.BiZ best-in-slot data for every level. GENERATED by bis/build_bis.py from bis/raw/levels/*.json",
+        "-- (ForeverDB's PvE best-in-slot pages at levels %d to %d, %s). Never hand-edit: change the raw files or the" % (
+            data["levels"]["min"], data["levels"]["max"], data["updated"]),
         "-- script and run `python bis/build_bis.py` (the addon tests fail if this file is stale).",
+        "-- Per spec and slot the data keeps runs of levels with the same pick: { from level, best row (0 = none), { next rows }, note? }.",
+        "-- Rows are numbered by their place in `rows`; BiZ.lua turns a run into the pick for one level (spec.slots follows BiZ.Level()).",
         "",
         "local _, R2F = ...",
         "",
         "R2F.BiZData = {",
         "  updated = %s," % lua_str(data["updated"]),
-        "  level = %d," % data["level"],
+        "  levels = { min = %d, max = %d }," % (data["levels"]["min"], data["levels"]["max"]),
         "  source = %s," % lua_str(data["source"]["name"]),
         "  types = { %s }," % ", ".join(lua_str(t) for t in data["types"]),
         "  slots = {",
@@ -491,6 +550,10 @@ def to_lua(data):
     for c in data["classes"]:
         out.append("    { key = %s, name = %s, specs = { %s } }," % (
             lua_str(c["key"]), lua_str(c["name"]), ", ".join(lua_str(s) for s in c["specs"])))
+    out.append("  },")
+    out.append("  rows = {")
+    for r in data["rows"]:
+        out.extend(wrap("    {", ["%s = %s" % (k, lua_val(r[k])) for k in ROW_KEYS if k in r], " },", "      "))
     out.append("  },")
     out.append("  specs = {")
     for sid, sp in data["specs"].items():
@@ -508,21 +571,15 @@ def to_lua(data):
                 cur = nxt
         pieces.append(cur)
         out.append("      weights = %s," % " ..\n        ".join(lua_str(x) for x in pieces))
-        out.append("      slots = {")
-        for sl in sp["slots"]:
-            if "best" in sl:
-                b = sl["best"]
-                out.append("        { slot = %s," % lua_str(sl["slot"]))
-                out.extend(wrap("          best = {", ["%s = %s" % (k, lua_val(b[k])) for k in BEST_KEYS if k in b],
-                                " },", "            "))
-                out.append("          next = {")
-                for n in sl["next"]:
-                    out.extend(wrap("            {", ["%s = %s" % (k, lua_val(n[k])) for k in NEXT_KEYS if k in n],
-                                    " },", "              "))
-                out.append("          },")
-                out.append("        },")
-            else:
-                out.append("        { slot = %s, note = %s }," % (lua_str(sl["slot"]), lua_str(sl["note"])))
+        if sp.get("wl"):
+            out.append("      wl = { %s }," % ", ".join("{ %d, %s }" % (f, lua_str(wt)) for f, wt in sp["wl"]))
+        out.append("      runs = {")
+        for runs in sp["runs"]:
+            parts = []
+            for r in runs:
+                nxts = "{ %s }" % ", ".join(str(i + 1) for i in r[2]) if r[2] else "{}"
+                parts.append("{ %d, %d, %s%s }" % (r[0], r[1] + 1, nxts, (", " + lua_str(r[3])) if len(r) > 3 else ""))
+            out.extend(wrap("        {", parts, " },", "          "))
         out.append("      },")
         # BiS enchants per slot (professions.html, ForeverChanges' page named in enchantPage).
         out.append("      enchantPage = %s," % lua_str(sp["enchantPage"]))
@@ -581,9 +638,9 @@ def main():
         f.write(site)
     with open(LUA_OUT, "w", encoding="utf-8", newline="\n") as f:
         f.write(lua)
-    n_items = sum(1 for sp in data["specs"].values() for sl in sp["slots"] if "best" in sl)
-    print("wrote %s and %s: %d specs, %d slot picks" % (
-        os.path.relpath(SITE_OUT, ROOT), os.path.relpath(LUA_OUT, ROOT), len(data["specs"]), n_items))
+    n_runs = sum(len(r) for sp in data["specs"].values() for r in sp["runs"])
+    print("wrote %s and %s: %d specs, %d runs, %d rows" % (
+        os.path.relpath(SITE_OUT, ROOT), os.path.relpath(LUA_OUT, ROOT), len(data["specs"]), n_runs, len(data["rows"])))
 
 
 if __name__ == "__main__":

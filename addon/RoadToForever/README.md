@@ -28,8 +28,9 @@ Open it with `/r2f` (or the minimap button). It has seven pages:
   cost: what to train now, at the next level, and later. It is filled from a list that ships with the addon, so it
   works before your first trainer visit (prices marked ~ are estimates until you visit the trainer). Hover for the
   game's own spell tooltip.
-- **Gear (Mr.BiZ)**: best in slot gear for every class and spec, with where it drops, how
-  sure the source is, and a per-character wishlist.
+- **Gear (Mr.BiZ)**: best in slot gear for every class and spec **at your level** (10 to 60; the
+  - / + buttons step to another level, the number takes you back to your own), with where it drops,
+  how sure the source is, and a per-character wishlist.
 - **Macros**: a spellbook-style book of every macro on the site, built into the addon. Drag
   one to your bars to create the real game macro. New addon versions update the macros the
   addon made, but never one you edited yourself. The Options button holds which slots new

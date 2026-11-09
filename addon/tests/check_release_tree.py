@@ -51,7 +51,7 @@ elif version and first.group(1) != version:
 
 LEAKS = re.compile(r"ADDON_PLAN|TESTING\.md|BACKLOG\.md|ROADMAP\.md|\bVenom\b|Trollmann|Oathbreaker|@gmail\.com",
                    re.I)
-# "Venom" is also a real Rogue talent name in the generated game data.
+# "Venom" is also a real Rogue talent name and part of a quest name ("Highperch Venom") in the generated game data.
 LEAKS_DATA = re.compile(LEAKS.pattern.replace(r"|\bVenom\b", ""), re.I)
 for dirpath, _, names in os.walk(TREE):
     for n in names:
@@ -60,7 +60,7 @@ for dirpath, _, names in os.walk(TREE):
         rel = os.path.relpath(os.path.join(dirpath, n), TREE)
         with open(os.path.join(dirpath, n), encoding="utf-8") as fh:
             for i, line in enumerate(fh, 1):
-                if (LEAKS_DATA if n == "TalentData.lua" else LEAKS).search(line):
+                if (LEAKS_DATA if n in ("TalentData.lua", "BiZData.lua") else LEAKS).search(line):
                     fail(f"{rel}:{i}: internal note or personal detail: {line.strip()[:80]}")
 
 if problems:

@@ -1,4 +1,4 @@
-"""Read-only drift check: has ForeverDB's best-in-slot data moved since our `bis/raw/*.json` copy?
+"""Legacy read-only drift check (the level 30 raw files it compared with were replaced by bis/raw/levels/; see bis/README.md).
 
 For every spec it reads https://foreverdb.net/bis/<class>/<spec> (the server-rendered "Every slot" list; robots.txt allows
 it, /llms.txt invites assistants to read the pages), takes each slot's best pick, its score and the next two picks, and
@@ -29,8 +29,12 @@ URL_FIX = {"druid-feral": "druid/feral"}
 
 
 def spec_files():
-    for p in sorted(RAW.glob("*.json")):
-        yield p.stem, p
+    """(stem, old level 30 raw path) for every spec, from build_bis.CLASSES (the old raw files are gone; bis/raw/levels/ replaced them)."""
+    sys.path.insert(0, str(ROOT / "bis"))
+    import build_bis
+    for ckey, _cname, specs in build_bis.CLASSES:
+        for skey, _sname, _role in specs:
+            yield "%s-%s" % (ckey, skey), RAW / ("%s-%s.json" % (ckey, skey))
 
 
 def url_for(stem):

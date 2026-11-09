@@ -1,30 +1,20 @@
 # Mr.BiZ data
 
-`raw/<class>-<spec>.json` holds one spec's best-in-slot list, copied from ForeverDB's public BiS page
-(`https://foreverdb.net/bis/<class>/<spec>`, level 30 PvE, the beta cap). `build_bis.py` turns the 27 files into
-`../bis-data.json` (the site's `bis.html`) and `../addon/RoadToForever/BiZData.lua` (the addon's BiS tab).
+`raw/levels/<class>-<spec>.json` holds one spec's best-in-slot picks for **every level from 10 to 60** (PvE), as runs of levels with the same pick,
+read from ForeverDB's public pages (`https://foreverdb.net/bis/<class>/<spec>?lvl=<level>`). `build_bis.py` turns the 27 files into
+`../bis-data.json` (the site's `bis.html`) and `../addon/RoadToForever/BiZData.lua` (the addon's BiS tab). Both keep per spec and slot the runs
+`[from level, best row, [next rows], note?]` and one shared `rows` table; the site and the addon resolve a run into the pick for one level
+(`slotsAt` in bis.html, `BiZ.SlotsAt` in BiZ.lua). The site opens on the level you chose last (`?lvl=39` opens that level); the addon follows your
+own level until you step it on the tab.
 
-## Is the data behind?
+## Refresh the data
 
-`python bis/tools/foreverdb_check.py` (read-only, 27 requests) compares ForeverDB's current pages with `raw/` and prints the build, the slots that changed and an exit code (plan: ADDON_PLAN 19.3). Run it before a release.
-
-## Refresh the data (automatic, since 2026-10-17)
-
-`python bis/tools/foreverdb_fetch.py` (compares, writes nothing), then `--write`; `python bis/build_bis.py`; add sources for any "no source for next pick" it names (`sources.json`); add new item ids to `quality.json` (Wowhead tooltip API); `python addon/tests/run_tests.py`; bump `UPDATED`. The by-hand method below is the fallback.
-
-## Refresh the data (by hand)
-
-1. For each spec, read its ForeverDB page and write the "Every slot" list into `raw/<class>-<spec>.json`:
-   `{"build", "weights", "slots": [{"slot", "best": {"id", "name", "score", "stats", "src", "conf", "ease", "horde"?},
-   "next": [{"id", "name", "delta"}], "note"?}]}`, 17 slots in page order, `best: null` + `note` for an empty slot.
-   Item ids come from the `/item/<id>` links. (On 2026-10-12 this was done with WebFetch, one page at a time; the
-   cloud shell can't reach foreverdb.net.)
-2. Ranks 2-3 need a source too. If the build says "no source for next pick <id>", read
-   `https://foreverdb.net/item/<id>` and add it to `sources.json` (`{"name", "src"}`, src in the BiS-page wording, e.g.
-   `Drops from Lady Sarevess in Blackfathom Deeps, 40% (Classic data).`, `Quest reward: Frostmaw, level 37 · Horde
-   (Classic data).`, `Crafted: Tailoring (Forever client).`, or `Where it comes from isn't known yet`).
-3. `python bis/build_bis.py` (or `python build.py`). An unknown source sentence stops the build: add a rule to
-   `parse_source` (or an instance to `DUNGEONS` / `CREATURE_INSTANCE` / `RAIDS`).
-4. `python addon/tests/run_tests.py`, test `bis.html` locally, bump `UPDATED` in `build_bis.py`.
+1. `python bis/tools/foreverdb_levels.py` downloads every spec at every level into `bis/own/cache/levels/` (not in git): 27 x 51 pages, one per
+   second with a user agent that names this project (about 25 minutes; it resumes, pages already there are skipped; delete the folder for a full refresh).
+2. `python bis/tools/foreverdb_segments.py` parses the pages into `raw/levels/` (wording the parser does not know stops that spec with the slot named:
+   add a rule to `SOURCE_START` in `foreverdb_fetch.py` and to `parse_source` in `build_bis.py`, never a guess).
+3. `python bis/build_bis.py`: an unknown source sentence stops the build; "no source for next pick <id>" means add it to `sources.json`
+   (`python bis/tools/foreverdb_sources.py` reads the item pages and fills it in); new item ids get their rarity with `python bis/tools/wh_quality.py` (Wowhead tooltip API, into `quality.json`).
+4. `python addon/tests/run_tests.py`, look at `bis.html` locally, bump `UPDATED` in `build_bis.py`.
 
 Credit ForeverDB (picks, weights) and Wowhead (tooltips, item pages) wherever the data shows; both lines are on the page.

@@ -41,5 +41,9 @@ The looks (Home > Theme > "Open the gallery") were checked by the owner on 2026-
 
 - **5.78 Training list before the trainer (0.84.0):** open the Training tab on a character that has not visited the trainer: Train now, Next level and the later levels should already fill, with the spells' icons, the game's own spell tooltip on hover, and prices with a ~. Visit the trainer: the ~ goes away on what it lists. Learn something: it leaves the list. Tell me about spells that are missing, wrong, or that Forever's trainer does not sell.
 
+- **5.79 Mr.BiZ at your level (0.85.0):** open the Gear tab (/biz): next to Wishlist there is a "- Level N +" row, N = your level (10 to 60). The slots must show picks that fit that level (low level: weaker items, some slots empty with "nothing with these stats at level N (the first comes at level M)"). Step - and + (the number goes up and down, the picks change), click the number to return to your own level. Reload: the stepped level is still there; on another character it is that character's own level. Say if a slot shows an item far above your level.
+
+- **5.80 Enchant line by level (0.85.0):** on the Gear tab at level 40 or higher a slot panel shows "Enchant at level N: ..." in pink (ForeverDB's enchant for that level); at 39 or lower the old Professions-page enchant with its 2nd / 3rd best returns. The item tooltip's "Mr.BiZ enchant" line is silent above level 39.
+
 ## Cannot be tested yet (needs higher level / talents / release)
 4.13 group picks (needs an owner publish) · 13.9 Druid Starsurge / Sunfire / Starfall / Lacerate macros · 13.11 Dire Bear Form at 40 · 14.1 Hunter Strider Kick · 14.2 Paladin Twist of Light seal swap · 14.4 Shaman Elemental Mastery

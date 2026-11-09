@@ -25,7 +25,7 @@ RAW = chk.RAW
 OUT_DIR = ROOT / "bis" / "own" / "cache" / "fetched"
 
 SOURCE_START = ("Drops from", "Crafted:", "Quest reward", "Sold by", "World drop", "Inside ", "Needs ", "PvP rank",
-                "Where it comes from isn't known yet", "Reward from", "Looted", "Fished", "Mined", "Skinned", "Gathered")
+                "Where it comes from isn't known yet", "Found in", "Reward from", "Looted", "Fished", "Mined", "Skinned", "Gathered")
 LABELS = ("Classic data", "Forever client", "Seen in Forever", "Clue")
 EASE = ("Easy", "Some effort", "Hard", "Not known")
 
@@ -95,7 +95,12 @@ def parse_slot(li):
             "stats": stats, "src": src, "conf": conf, "ease": ease}
     if horde:
         best["horde"] = horde
-    return {"slot": slot, "best": best, "next": nxt}
+    entry = {"slot": slot, "best": best, "next": nxt}
+    # ForeverDB's own enchant for this slot at this level: "Enchant or enhancement: <name> (<effect>, +<score>)"
+    em = re.search(r"Enchant or enhancement: (.+?) \((.+?), \+?[\d.]+\)", plain(li))
+    if em:
+        entry["ench"] = "%s (%s)" % (em.group(1), em.group(2))
+    return entry
 
 
 def parse_page(page):

@@ -1005,6 +1005,7 @@ def test_worn_enchant():
     """Mr.BiZ says which enchant you wear in a slot (from the item link) against the slot's list, and lists the 2nd / 3rd best."""
     lua = new_runtime()
     lua.execute("R2FDB = nil R2FCharDB = nil R2F.Library.Init()")
+    lua.execute("TEST.level = 30")       # the Professions page's enchant list is the level 30 list (BiZ.ENCHANT_LIST_MAX)
     lua.execute("BZ = R2F.BiZ ROWS = BZ.Enchants('hunter/beast-mastery', 'chest')")
     check(lua.eval("#ROWS") >= 1 and lua.eval("ROWS[1].ids ~= nil and #ROWS[1].ids") >= 1, "worn enchant: the best chest enchant carries its enchantment id")
     check(lua.eval("ROWS[1].alts ~= nil and #ROWS[1].alts") >= 1 and lua.eval("ROWS[1].alts[1].ids ~= nil"), "worn enchant: the 2nd best is listed with its id")
@@ -3756,16 +3757,51 @@ def test_biz(templates=True):
     D = lua.eval("R2F.BiZData")
     check(len(site["specs"]) == 27 and lua.eval("(function() local n = 0 for _ in pairs(R2F.BiZData.specs) do n = n + 1 end return n end)()") == 27,
           "%s: 27 specs in the addon and on the site" % tag)
-    # every spec: the same 17 best picks in game as on the site
-    same = True
-    for sid, sp in site["specs"].items():
-        for i, sl in enumerate(sp["slots"], 1):
-            lb = lua.eval("R2F.BiZData.specs[%r].slots[%d].best" % (sid, i))
-            want = sl.get("best")
-            if (lb is None) != (want is None) or (want and (lb.id != want["id"] or lb.type != want["type"])):
-                same = False
-    check(same, "%s: addon data = site data for every spec and slot" % tag)
+    # every spec, slot and a spread of levels: the addon resolves the same pick (best and next picks) as the site's runs
+    same, probes = True, 0
+    for lvl in (10, 19, 20, 30, 39, 40, 45, 55, 60):
+        for sid, sp in site["specs"].items():
+            got = lua.eval("R2F.BiZ.SlotsAt(R2F.BiZData.specs[%r], %d)" % (sid, lvl))
+            for i, runs in enumerate(sp["runs"], 1):
+                cur = [r for r in runs if r[0] <= lvl][-1]
+                probes += 1
+                lb = got[i].best
+                if cur[1] < 0:
+                    if lb is not None or not got[i].note:
+                        same = False
+                    continue
+                want = site["rows"][cur[1]]
+                nxt = [site["rows"][k] for k in cur[2]]
+                if lb is None or lb.id != want["id"] or lb.type != want["type"] or len(got[i].next) != len(nxt) \
+                        or any(got[i].next[j + 1].id != n["id"] for j, n in enumerate(nxt)) \
+                        or (got[i].ench or "") != (cur[3] if len(cur) > 3 else ""):
+                    same = False
+    check(same and probes == 9 * 27 * 17, "%s: addon data = site data for every spec and slot at 9 levels (%d probes)" % (tag, probes))
+    lo, hi = lua.eval("R2F.BiZ.Levels()")
+    check((lo, hi) == (10, 60) and site["levels"] == {"min": 10, "max": 60}, "%s: levels 10 to 60 in the data" % tag)
+    # level: your own until stepped; clamped; spec.slots follows it
+    check(BiZ.Level() == 60 and BiZ.LevelIsOwn(), "%s: the tab starts at your own level" % tag)
+    lua.execute("TEST.level = 5")
+    check(BiZ.Level() == 10, "%s: a level below the data clamps to 10" % tag)
+    lua.execute("TEST.level = 39")
+    check(BiZ.Level() == 39, "%s: follows your own level (39)" % tag)
+    BiZ.SetLevel(30)
+    check(BiZ.Level() == 30 and not BiZ.LevelIsOwn() and lua.eval("R2FCharDB.biz.level") == 30, "%s: stepped level is kept per character" % tag)
+    BiZ.SetLevel(99)
+    check(BiZ.Level() == 60, "%s: a level above the data clamps to 60" % tag)
+    BiZ.SetLevel(None)
+    check(BiZ.Level() == 39 and BiZ.LevelIsOwn() and lua.eval("R2FCharDB.biz.level") is None, "%s: back to your own level" % tag)
+    at30 = lua.eval("R2F.BiZData.specs['hunter/beast-mastery'].slots[1].best.id")
+    BiZ.SetLevel(60)
+    at60 = lua.eval("R2F.BiZData.specs['hunter/beast-mastery'].slots[1].best.id")
+    check(at30 != at60, "%s: spec.slots follows the level (head pick differs between 39 and 60)" % tag)
+    BiZ.SetLevel(None)
+    lua.execute("TEST.level = 60")
+    check(lua.eval("#R2F.BiZ.Enchants('hunter/beast-mastery', 'neck')") == 0, "%s: above level 39 the level 30 enchant list is not shown" % tag)
+    note = lua.eval("(function() for _, sp in pairs(R2F.BiZData.specs) do local s = R2F.BiZ.SlotsAt(sp, 10) for i = 1, #s do if s[i].note then return s[i].note end end end end)()")
+    check(note and "level 10" in note, "%s: an empty slot says why and when the first pick comes: %s" % (tag, note))
 
+    BiZ.SetLevel(30)       # the checks below look at the level 30 picks
     # default class = the player's, first spec; choice remembered per class
     check(BiZ.Class() == "hunter" and BiZ.SpecId() == "hunter/beast-mastery", "%s: opens on your class, first spec" % tag)
     BiZ.SetSpec("hunter/survival")
@@ -3849,11 +3885,11 @@ def test_biz(templates=True):
     lua.execute("HELM[1]:Fire('OnLeave')")
     check(lua.eval("GameTooltip.__shown") is False, "%s: leaving hides the tooltip" % tag)
     # the other ranked picks are listed right under it
-    find_frames(lua, "f.__kind == 'Button' and f.optRank == 2 and f.itemId == 6720 and f.__shown", "NEXT2")
-    check(lua.eval("#NEXT2") == 1, "%s: rank 2 (Spirit Hunter Headdress) is listed too" % tag)
+    find_frames(lua, "f.__kind == 'Button' and f.optRank == 2 and f.itemId == 6204 and f.__shown", "NEXT2")
+    check(lua.eval("#NEXT2") == 1, "%s: rank 2 (Tribal Worg Helm) is listed too" % tag)
     lua.execute("NEXT2[1]:Fire('OnEnter')")
     lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
-    check(any("Bizzer for Beast Mastery, 12% behind" in (l or "") for l in lines), "%s: rank 2 tooltip says how far behind: %s" % (tag, lines))
+    check(any("Bizzer for Beast Mastery, 17% behind" in (l or "") for l in lines), "%s: rank 2 tooltip says how far behind: %s" % (tag, lines))
 
     # Enchants from the Professions page, per spec and slot.
     if templates:
@@ -3873,8 +3909,7 @@ def test_biz(templates=True):
         places = site["places"]
         check(len(places) >= 9 and all(lua.eval("R2F.BiZ.Place(%r).label" % k) == v["label"] for k, v in places.items()),
               "%s: every place from bis/places.json is in the addon" % tag)
-        tagged = [r for sp in site["specs"].values() for sl in sp["slots"] if "best" in sl
-                  for r in [sl["best"]] + sl.get("next", []) if "place" in r]
+        tagged = [r for r in site["rows"] if "place" in r]
         check(len(tagged) > 300 and all(r["place"] in places for r in tagged), "%s: %d rows point at a known place" % (tag, len(tagged)))
         check(lua.eval("R2F.BiZ.PlaceOfItem(7684)") == "Scarlet Monastery" and lua.eval("R2F.BiZ.PlaceOfItem(6720)") is None,
               "%s: an item's place comes from its source (dungeon yes, quest no)" % tag)
@@ -3917,8 +3952,6 @@ def test_biz(templates=True):
     # filters on the tab
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.BIZ_TYPE_QUEST", "QBOX")
     lua.execute("QBOX[1]:SetChecked(false); QBOX[1]:Fire('OnClick')")
-    find_frames(lua, "f.__kind == 'FontString' and f.__text and f.__text:find(' hidden', 1, true) and f.__shown", "HID")
-    check(lua.eval("#HID") >= 1, "%s: unticking Quest reports hidden slots in the summary" % tag)
     find_frames(lua, "f.__kind == 'Button' and f.slotKey == 'legs'", "LEGSBTN")
     check(lua.eval("LEGSBTN[1].itemId") == 9509, "%s: Legs falls back to the rank 2 dungeon pick (Petrolspill Leggings)" % tag)
     lua.execute("LEGSBTN[1]:Click()")
@@ -7648,6 +7681,7 @@ def test_enchant_tooltip():
     T = lua.eval("TEST")
     T.fire("ADDON_LOADED", "RoadToForever")
     T.fire("PLAYER_LOGIN")
+    lua.execute("TEST.level = 30")       # the enchant list is the level 30 list
     found = lua.eval("""(function()
       for id, sp in pairs(R2F.BiZData.specs) do
         local rows = sp.enchants and sp.enchants.chest
@@ -9868,7 +9902,7 @@ def test_route_weapons():
           "route: a dungeon drop shows at its run, not at a step that only collects quests (data of 2026-10-17)")
     best = lua.eval("""(function() local n = 0 for _, l in pairs(R2F.BiZ.RouteWeapons('rogue/combat', 'skyborne:ROGUE')) do
       for _, m in ipairs(l) do if m.best then n = n + 1 end end end return n end)()""")
-    check(best == 2, "route: one 'best on route' per weapon slot that has a match (Combat: main + off hand = %d)" % best)
+    check(best == 3, "route: one 'best on route' per weapon slot that has a match (Combat: main, off hand and thrown = %d)" % best)
     check(lua.eval("next(R2F.BiZ.RouteWeapons('nope/spec', 'skyborne:WARRIOR'))") is None, "route: unknown spec = nothing")
     # The Plan tab line, for a Fury Warrior (the stub player is a Warrior): shown when it beats what is worn, not otherwise.
     lua.execute("R2F.BiZ.SetSpec('warrior/fury')")

@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-09 (addon 0.85.3: Class icons column inside the window)
+- `UI/Gameplay.lua`: right column offset 430 -> 330, scroll 760 -> 660 wide; 0.85.2 let the sliders draw past the window border.
+
 ## 2026-11-09 (addon 0.85.2: Tweaks scroll area widened)
 - `UI/Gameplay.lua`: scroll 500 -> 760 wide (content/pages 750) so the moved right column of Class icons is no longer clipped.
 

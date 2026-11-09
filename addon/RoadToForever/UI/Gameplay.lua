@@ -273,9 +273,9 @@ function Tab.Build(f)
   scroll = UI.TryTemplate("ScrollFrame", "R2FGameplayScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FGameplayScrollPlain", f)
   scroll:SetPoint("TOPLEFT", 6, -102)
-  scroll:SetSize(760, 364)
+  scroll:SetSize(660, 364)
   content = CreateFrame("Frame", nil, scroll)
-  content:SetSize(750, 100)
+  content:SetSize(650, 100)
   scroll:SetScrollChild(content)
   scroll:EnableMouseWheel(true)
   scroll:SetScript("OnMouseWheel", onWheel)
@@ -283,7 +283,7 @@ function Tab.Build(f)
   for _, pg in ipairs(Tab.PAGES) do
     local c = CreateFrame("Frame", nil, content)
     c:SetPoint("TOPLEFT", 0, 0)
-    c:SetSize(750, 400)
+    c:SetSize(650, 400)
     pages[pg.key] = c
     local y = -10
     for _, key in ipairs(pg.features) do
@@ -395,7 +395,7 @@ function Tab.Build(f)
       local general = function(def) return def.general == true end
       local endLeft = R2F.RemindersTab.BuildInto(c, LEFT + 2, -42, ICON_W, general, 1)
       local classOnly = function(def) return not general(def) end
-      local endRight = R2F.RemindersTab.BuildInto(c, LEFT + ICON_W + 230, -42, ICON_W, classOnly, 2)
+      local endRight = R2F.RemindersTab.BuildInto(c, LEFT + ICON_W + 130, -42, ICON_W, classOnly, 2)
       bottom = math.min(endLeft or -100, endRight or -100)
       -- Folding a class group in or out changes a column's height.
       R2F.RemindersTab.OnReflow = function()

@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.85.3 (2026-11-09)
+
+- **Tweaks > Class icons:** the right column no longer sticks out past the window's right edge.
+
 ## 0.85.2 (2026-11-09)
 
 - **Tweaks > Class icons:** the right column was cut off at the window's edge; the page's scroll area is now wide enough to show both columns.

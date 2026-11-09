@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.85.2 (2026-11-09)
+
+- **Tweaks > Class icons:** the right column was cut off at the window's edge; the page's scroll area is now wide enough to show both columns.
+
 ## 0.85.1 (2026-11-09)
 
 - **Mr.BiZ:** the Classic / Client tag no longer overlaps the rank text; it now sits on the rank line.

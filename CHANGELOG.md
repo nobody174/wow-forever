@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-09 (addon 0.85.2: Tweaks scroll area widened)
+- `UI/Gameplay.lua`: scroll 500 -> 760 wide (content/pages 750) so the moved right column of Class icons is no longer clipped.
+
 ## 2026-11-09 (addon 0.85.1: two overlap fixes)
 - Mr.BiZ option rows: the confidence tag is part of the rank line (was a separate right-aligned label that collided). Tweaks > Class icons: right column moved 180 px right (`UI/Gameplay.lua`).
 

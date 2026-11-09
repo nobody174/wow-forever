@@ -273,9 +273,9 @@ function Tab.Build(f)
   scroll = UI.TryTemplate("ScrollFrame", "R2FGameplayScroll", f, "UIPanelScrollFrameTemplate",
     function(s) return s.SetScrollChild ~= nil end) or CreateFrame("ScrollFrame", "R2FGameplayScrollPlain", f)
   scroll:SetPoint("TOPLEFT", 6, -102)
-  scroll:SetSize(500, 364)
+  scroll:SetSize(760, 364)
   content = CreateFrame("Frame", nil, scroll)
-  content:SetSize(490, 100)
+  content:SetSize(750, 100)
   scroll:SetScrollChild(content)
   scroll:EnableMouseWheel(true)
   scroll:SetScript("OnMouseWheel", onWheel)
@@ -283,7 +283,7 @@ function Tab.Build(f)
   for _, pg in ipairs(Tab.PAGES) do
     local c = CreateFrame("Frame", nil, content)
     c:SetPoint("TOPLEFT", 0, 0)
-    c:SetSize(490, 400)
+    c:SetSize(750, 400)
     pages[pg.key] = c
     local y = -10
     for _, key in ipairs(pg.features) do

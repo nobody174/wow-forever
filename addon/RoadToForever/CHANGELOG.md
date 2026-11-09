@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.85.5 (2026-11-09)
+
+- **Hunter aspect reminder:** the label ("No aspect", "Swap Hawk") is shorter and centred under the icon instead of running far out to its left.
+
 ## 0.85.4 (2026-11-09)
 
 - **Combat banner error fixed:** in combat the game hands back health as a secret value, and the banner compared it ("attempt to compare local 'hp'"). Secret values are now treated as unknown and the comparison is guarded.

@@ -99,6 +99,11 @@ end
 function Aspect.Init()
   if not Aspect.Applies() or frame then return end
   frame = R2F.Reminders.NewIcon("R2FAspectFrame", db, "REM_DRAG_TIP")
+  -- The label sits centred under the icon (the shared icon puts its count bottom-right, which pushes long text far to the left).
+  frame.count:ClearAllPoints()
+  frame.count:SetPoint("TOP", frame, "BOTTOM", 0, -2)
+  frame.count:SetFontObject("GameFontNormalSmall")
+  frame.count:SetJustifyH("CENTER")
   frame:Place()
   local ev = CreateFrame("Frame")
   -- UNIT_AURA fires many times a second in combat: bursts are merged into one refresh.

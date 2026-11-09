@@ -6,8 +6,8 @@ Checked against release 0.84.2 on 2026-11-09 (labels updated; confirmed items st
 
 **Setup:** newest release zip in AddOns, `/console scriptErrors 1`. Taint check: `/console taintLog 1`, play, `/reload`, search `Logs\taint.log` for `RoadToForever`.
 
-## To test (0.79.1: every theme was rebuilt blind, so expect rough edges and tell me where)
-For every look (Home > Theme > "Open the gallery"): compare with its picture in Downloads, then open each tab (Plan, Talents, Gear, Macros, Tweaks).
+## To test
+The looks (Home > Theme > "Open the gallery") were checked by the owner on 2026-11-09: "the themes look good". Only report a look that breaks on a tab you open.
 
 - **5.32 Recorder, teammates only:** your own numbers are in (35 creatures, 15 vendors, 39 quests) and your file is in the beta backup, so nothing more from you. Teammates: `/r2f record`, then send `WTF/Account/<account>/SavedVariables/RoadToForever.lua` to the owner before the beta ends (the 21st).
 

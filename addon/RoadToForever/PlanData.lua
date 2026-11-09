@@ -33,7 +33,7 @@ R2F.PlanData = {
     hunter = { label = "2 Hunters", race = "skyborne", cls = "HUNTER", extra = "Two Hunters leveling together; others can join as they come online" },
   },
   phases = {
-    { id = "night", title = "Launch night", items = {
+    { id = "night", title = "Starting out (levels 1–12)", items = {
       { id = "n-zephras", lvl = "1–12", t = "Zephras Isle, share every quest", n = "Both factions share the island, so it's busy. Instant ranged tags make crowded camps easier. Finish the main chain and leave; you don't have to wait for 12.",
         only = { race = { "skyborne" } } },
       { id = "zs-start", lvl = "1", t = "Valanaar: Coming of Age → Harmony in Balance", n = "Ailee Farheart gives Coming of Age (turn in to Rorian the Dayseeker), then Harmony in Balance. Rorian also hands out the class quests and the first side quests.", tags = { { "unv", "seeded, walk to confirm" } }, quests = { 92460, 92461 },
@@ -101,7 +101,7 @@ R2F.PlanData = {
         only = { race = { "skyborne" } } },
       { id = "n-if", lvl = "12", t = "Tram to Ironforge, collect all Hall of Thanes quests", n = "Grab both flight paths on the way.",
         ov = { race = { nightelf = false, human = { lvl = "10–12" }, dwarf = { t = "Into Ironforge, collect all Hall of Thanes quests", n = "It's right next door. Train, grab the flight path, and take the tram to Stormwind later for the boat." }, gnome = { t = "Into Ironforge, collect all Hall of Thanes quests", n = "It's right next door. Train, grab the flight path, and take the tram to Stormwind later for the boat." } } } },
-      { id = "n-day", lvl = "Thu–Fri", t = "Keep playing through the day", n = "Launch is a weekday. Most players are at work or school; that's our biggest head start." },
+      { id = "n-day", lvl = "Weekdays", t = "Play through the weekday daytime", n = "Most players are at work or school on a weekday, so the daytime zones are quieter. That is a head start." },
     } },
     { id = "p1", title = "Phase 1 — 12 → 20", items = {
       { id = "p1-filler", lvl = "12–14", t = "Short filler in Dun Morogh / Loch Modan", n = "Just enough to be ready for Hall of Thanes. Expect crowds there too (Dwarf Shaman hype).", tags = { { "opt", "only if needed" } }, reach = 14,

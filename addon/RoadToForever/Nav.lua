@@ -567,6 +567,20 @@ Nav.TomTomShim = {
       Nav.Clear()
     end
   end,
+  -- The other calls addons commonly make on TomTom. Each answers the way TomTom does when it has nothing to show (nil / false),
+  -- so an addon that tests `if TomTom then` and calls on never raises an error inside our stand-in.
+  AddMFWaypoint = function(self, mapID, _floor, x, y, opts) return self:AddWaypoint(mapID, x, y, opts) end,
+  SetCrazyArrow = function(_, wp, _dist, title)
+    if type(wp) == "table" and wp[1] and wp[2] and wp[3] then
+      Nav.SetTarget(wp[1], wp[2] * 100, wp[3] * 100, title or wp.title, zoneName(wp[1]))
+    end
+  end,
+  ClearCrazyArrow = function() Nav.Clear() end,
+  ClearWaypoint = function(self, wp) self:RemoveWaypoint(wp) end,
+  ClearAllWaypoints = function() Nav.Clear() end,
+  WaypointExists = function() return false end,
+  GetClosestWaypoint = function() return nil end,
+  SetClosestWaypoint = function() return nil end,
 }
 
 local function tomTomInstalled()

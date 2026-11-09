@@ -1,22 +1,16 @@
 {
   "before": [
     {
-      "id": "b-names",
-      "lvl": "Oct 27",
-      "t": "Reserve names (Oct 27 – Nov 3)",
-      "n": "Every character you plan to play. Up to 3 characters per account in that window. Only some race and class pairs exist: the lists above show the valid ones."
-    },
-    {
       "id": "b-ui",
-      "lvl": "Beta",
+      "lvl": "Setup",
       "t": "Lock in UI, keybinds and macros",
       "n": "Save the bar layout and copy the macros from the <a href=\"macros.html\">Macros</a> page so we play from minute one."
     },
     {
       "id": "b-addons",
-      "lvl": "Beta",
-      "t": "Test every addon on the beta client",
-      "n": "Quest helpers especially. Nothing gets installed for the first time on launch night. See <a href=\"addons.html\">Addons</a>."
+      "lvl": "Setup",
+      "t": "Try every addon in the live game",
+      "n": "Quest helpers especially. Install and test new addons out of a fight, not in the middle of a pull. See <a href=\"addons.html\">Addons</a>."
     },
     {
       "id": "b-legacy",
@@ -767,9 +761,9 @@
     },
     {
       "id": "n-day",
-      "lvl": "Thu–Fri",
-      "t": "Keep playing through the day",
-      "n": "Launch is a weekday. Most players are at work or school; that's our biggest head start."
+      "lvl": "Weekdays",
+      "t": "Play through the weekday daytime",
+      "n": "Most players are at work or school on a weekday, so the daytime zones are quieter. That is a head start."
     }
   ],
   "p1": [
@@ -1183,7 +1177,7 @@
     {
       "id": "tr-t-crowd",
       "lvl": "Coldridge",
-      "t": "How crowded the Dwarf and Gnome start is at launch-like load",
+      "t": "How crowded the Dwarf and Gnome start is at the current player load",
       "only": {
         "race": [
           "dwarf",

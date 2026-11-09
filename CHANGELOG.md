@@ -15,6 +15,7 @@ user-facing release notes.
   bare hosts and JavaScript fragments; Setup re-checks combat while it waits for the cursor; `Training.Status` takes the list `Upcoming` already built;
   Training tooltip falls back when `SetSpellByID` leaves it empty; loadout ids from a counter; addon README lists Setup, General settings, Training and Aspect;
   TESTING.md labels, BACKLOG 0 and a new 5b with the review's open items, `addon/ARCHITECTURE.md`, `docs/maintainers.md`.
+- Second round: the TomTom stand-in gained SetCrazyArrow / ClearCrazyArrow / AddMFWaypoint / ClearWaypoint / ClearAllWaypoints / WaypointExists / GetClosestWaypoint (explicit, not a catch-all `__index`; 4 new tests); launch-plan.html and `launch-plan-steps.json` no longer speak pre-launch (sections renamed Getting ready / Starting out (levels 1-12) / Still to confirm in the live game, ids unchanged; the dated "Reserve names" step removed; the night-mode button reads "Short list (levels 1-12)"); TESTING.md notes the themes as confirmed good.
 - Not done (needs the game or the browser pipeline): Mr.BiZ and professions refresh, the "Test in beta" macro verification, the Rehearsal run in Actions, the test week.
 
 ## 2026-11-08 (addon 0.84.2: builds from RankedBoost)

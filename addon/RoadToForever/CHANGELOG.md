@@ -5,6 +5,7 @@
 - **Mage "Remove Curse" macro fixed:** the Mage spell is Remove Lesser Curse, so the old macro did nothing. Update the macro from the Macros tab.
 - **Setup stops if a fight starts while it places a button**, and a spell with an unknown id in the Training tab now shows its name and cost instead of an empty tooltip.
 - **Saved loadouts can no longer end up with the same id** after a delete, and the "verify in beta" note on the shopping list now says "verify in game".
+- **Waypoint arrow stand-in for TomTom** (only when TomTom itself is not installed) now also answers the other calls addons make on TomTom (set or clear the arrow, add a map-floor waypoint, check a waypoint), so an addon that finds it can no longer raise an error.
 - **README** now lists everything the addon changes (Setup and General settings), the Training tab and the aspect reminder.
 
 ## 0.84.2 (2026-11-08)

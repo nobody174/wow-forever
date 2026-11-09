@@ -2281,6 +2281,17 @@ def test_plan(templates=True):
         lua.execute("TomTom:RemoveWaypoint(QWP)")
         check(lua.eval("R2F.Nav.Target()") is None, "BiZNav: Questie's RemoveWaypoint (same icon again) clears the arrow")
         check(lua.eval("TomTom:AddWaypoint(9999, 0.5, 0.5, { title = 'X' })") is None, "BiZNav: a map with no world position returns nil")
+        # The other calls addons make on TomTom must exist and never raise (they answer like TomTom with nothing to show).
+        lua.execute("TomTom:SetCrazyArrow({ 1426, 0.4, 0.6, title = 'Crazy' }, 5, 'Crazy')")
+        tgt = lua.eval("R2F.Nav.Target()")
+        check(tgt is not None and abs(tgt.x - 40) < 1e-9 and tgt.label == "Crazy", "BiZNav: TomTom:SetCrazyArrow points the arrow")
+        lua.execute("TomTom:ClearCrazyArrow()")
+        check(lua.eval("R2F.Nav.Target()") is None, "BiZNav: TomTom:ClearCrazyArrow clears the arrow")
+        lua.execute("TomTom:AddMFWaypoint(1426, 0, 0.2, 0.3, { title = 'MF' })")
+        check(lua.eval("R2F.Nav.Target() ~= nil"), "BiZNav: TomTom:AddMFWaypoint is accepted")
+        lua.execute("TomTom:ClearAllWaypoints()")
+        check(lua.eval("R2F.Nav.Target()") is None and lua.eval("TomTom:WaypointExists(1426, 0.2, 0.3)") is False
+              and lua.eval("TomTom:GetClosestWaypoint()") is None, "BiZNav: ClearAllWaypoints / WaypointExists / GetClosestWaypoint answer safely")
         lua.execute("TomTom = nil C_AddOns = C_AddOns or {} OLD_LOADED = C_AddOns.IsAddOnLoaded "
                     "C_AddOns.IsAddOnLoaded = function(n) return n == 'TomTom' end")
         check(lua.eval("R2F.Nav.InstallTomTomShim()") is False and lua.eval("TomTom") is None,

@@ -337,9 +337,10 @@ async function main() {
         check(t.slice(0, 3).join() === c.tiles.slice(0, 3).join(), "index at " + c.label + ": days/hours/minutes " + c.tiles.slice(0, 3).join(":") + " (got " + t.join(":") + ")");
         check(!p.live, "index at " + c.label + ": not live yet");
       }
-      check(!!p.local && /Launches/.test(p.local), "index at " + c.label + ": shows the launch time in the visitor's time (got '" + (p.local || "") + "')");
-      // After launch the beta ribbon should be gone: tell, don't fail (it is a manual edit on the day: see BETA-RIBBON in index.html).
-      if (c.live && p.ribbon) console.log("NOTE  index after launch still carries the Beta ribbon (remove the BETA-RIBBON block on the day)");
+      // Before launch the page shows the launch time in the visitor's time; once live it clears that line (and hides the launch-night link).
+      if (c.live) check(!p.local, "index at " + c.label + ": the launch-time line is cleared once live (got '" + (p.local || "") + "')");
+      else check(!!p.local && /Launches/.test(p.local), "index at " + c.label + ": shows the launch time in the visitor's time (got '" + (p.local || "") + "')");
+      check(!p.ribbon, "index at " + c.label + ": no Beta ribbon");
     });
     const lp = await runPage(base, "launch-plan.html?__probe=launchplan&__now=" + encodeURIComponent(at(0)));
     noErrors(lp, "launch-plan after launch");

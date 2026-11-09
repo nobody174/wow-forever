@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.85.4 (2026-11-09)
+
+- **Combat banner error fixed:** in combat the game hands back health as a secret value, and the banner compared it ("attempt to compare local 'hp'"). Secret values are now treated as unknown and the comparison is guarded.
+
 ## 0.85.3 (2026-11-09)
 
 - **Tweaks > Class icons:** the right column no longer sticks out past the window's right edge.

@@ -8,6 +8,9 @@ user-facing release notes.
 ## 2026-11-09 (Launch Plan: Green Hills page tracker)
 - `launch-plan.html`: "Green Hills pages" frame (fixed on the right at >=1260px, folded block above the page otherwise). Pages I: 1,4,6,8; II: 10,11,14,16; III: 18,20,21,24; IV: 25,26,27, checkboxes saved in localStorage `wf-green-hills-pages-v1`.
 
+## 2026-11-09 (addon 0.85.4: Combat banner secret-value error)
+- `CombatBanner.lua` `engaged()`: `UnitHealth` returns a secret number in combat on this client; `safe()` now drops secret results (`issecretvalue`) and the health comparison runs in a pcall.
+
 ## 2026-11-09 (addon 0.85.3: Class icons column inside the window)
 - `UI/Gameplay.lua`: right column offset 430 -> 330, scroll 760 -> 660 wide; 0.85.2 let the sliders draw past the window border.
 

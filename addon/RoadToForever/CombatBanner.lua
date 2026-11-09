@@ -66,10 +66,15 @@ end
 local POLL, WAIT_MAX = 0.25, 4
 local waiting, announced, waitToken = false, false, 0
 
+-- In combat this client can hand back "secret" values: comparing or even testing them raises an error. Treat them as unknown.
+local function isSecret(v)
+  return type(_G.issecretvalue) == "function" and _G.issecretvalue(v) == true
+end
+
 local function safe(fn, ...)
   if not fn then return nil end
   local ok, a = pcall(fn, ...)
-  if ok then return a end
+  if ok and not isSecret(a) then return a end
   return nil
 end
 
@@ -78,7 +83,10 @@ local function engaged(startHealth)
   if safe(UnitAffectingCombat, "pettarget") then return true end
   if safe(UnitExists, "targettarget") and safe(UnitIsUnit, "targettarget", "player") then return true end
   local hp = safe(UnitHealth, "player")
-  if type(hp) == "number" and type(startHealth) == "number" and hp < startHealth then return true end
+  if type(hp) == "number" and type(startHealth) == "number" and not isSecret(startHealth) then
+    local ok, lower = pcall(function() return hp < startHealth end)
+    if ok and lower == true then return true end
+  end
   return false
 end
 

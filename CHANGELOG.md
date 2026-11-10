@@ -8,6 +8,9 @@ user-facing release notes.
 ## 2026-11-09 (Launch Plan: Green Hills page tracker)
 - `launch-plan.html`: "Green Hills pages" frame (fixed on the right at >=1260px, folded block above the page otherwise). Pages I: 1,4,6,8; II: 10,11,14,16; III: 18,20,21,24; IV: 25,26,27, checkboxes saved in localStorage `wf-green-hills-pages-v1`.
 
+## 2026-11-10 (addons page: Road to Forever fallback 0.86.1)
+- `addons.html`: Road to Forever card fallback (link, `.ver-tag`, version line, zip name) moved from 0.84.3 to 0.86.1 (tag `r2f-v0.86.1`). The CurseForge version check was blocked this run, so the "Versions checked" date was left as it was.
+
 ## 2026-11-10 (addon 0.86.1: Setup tab position)
 - `UI/SetupTab.lua` `Tab.PAGE` (640 x 590) and the `MainWindow` custom-page list: the default page overlapped the top bar in the list themes.
 

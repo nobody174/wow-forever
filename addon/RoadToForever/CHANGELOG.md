@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.86.1 (2026-11-10)
+
+- **Setup tab:** the page no longer starts over the window's top bar (it now uses the whole content area like Training and Home).
+
 ## 0.86.0 (2026-11-09)
 
 - **Shorter minimap menu:** Open Road to Forever, Setup <class> (only a class that has a setup, with its Edit Mode layout, and only until the setup has run on that

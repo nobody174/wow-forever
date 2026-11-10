@@ -8,6 +8,9 @@ user-facing release notes.
 ## 2026-11-09 (Launch Plan: Green Hills page tracker)
 - `launch-plan.html`: "Green Hills pages" frame (fixed on the right at >=1260px, folded block above the page otherwise). Pages I: 1,4,6,8; II: 10,11,14,16; III: 18,20,21,24; IV: 25,26,27, checkboxes saved in localStorage `wf-green-hills-pages-v1`.
 
+## 2026-11-10 (addon 0.86.1: Setup tab position)
+- `UI/SetupTab.lua` `Tab.PAGE` (640 x 590) and the `MainWindow` custom-page list: the default page overlapped the top bar in the list themes.
+
 ## 2026-11-09 (addon 0.86.0: slimmer minimap menu, Setup tab, per-character setup undo)
 - `Minimap.lua` `MenuItems()` builds sections (top: title, Open, Setup <class> via `Minimap_.SetupDef()`; meters; Reload) joined by single dividers.
   New `UI/SetupTab.lua` (`R2F.SetupTab`, tab `setup`, Character group, toc + `MainWindow` TABS / TAB_INDEX / TITLES / LABELS / NAV / refresh, grid / top layouts, `Deco*` icon maps).

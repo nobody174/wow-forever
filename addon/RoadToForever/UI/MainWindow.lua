@@ -636,6 +636,7 @@ local function build()
     local p = CreateFrame("Frame", nil, f)
     local custom = (key == "bis" and R2F.BiZTab.PAGE) or (key == "home" and R2F.Home.PAGE)
       or (key == "talents" and R2F.TalentPanel.PAGE) or (key == "training" and R2F.TrainingTab.PAGE)
+      or (key == "setup" and R2F.SetupTab.PAGE)
     pageCustom[key] = custom
     if custom then
       -- Mr.BiZ and Home use the whole content area.

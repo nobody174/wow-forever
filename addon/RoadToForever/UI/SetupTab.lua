@@ -11,7 +11,9 @@ local L = R2F.L
 local Tab = {}
 R2F.SetupTab = Tab
 
-local WIDTH = 500
+local WIDTH = 560
+-- The whole content area, like Home, Training and the Talents tab (the default page starts under the old 44 px title bar).
+Tab.PAGE = { w = 640, h = 590 }
 local page
 local ui = {}
 

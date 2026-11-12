@@ -110,6 +110,7 @@ p.lede{color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
 .it .nm a{display:block;font-weight:600;text-decoration:none;overflow-wrap:anywhere}
 .it .nm a:hover{text-decoration:underline}
 .it .nm small{display:block;color:var(--muted);font-size:12px}
+.it .nm small a{display:inline;font-weight:400;color:var(--muted)}
 .q0{color:#9d9d9d}.q1{color:#fff}.q2{color:#1eff00}.q3{color:#3392ff}.q4{color:#b55cff}.q5{color:#ff8000}
 .it .n{font:500 14px/1 var(--mono)}
 .it.off{opacity:.55}
@@ -160,7 +161,7 @@ p.lede{color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
   </div>
   <p class="status" id="status" aria-live="polite"></p>
   <div class="res" id="res"><div class="empty">Type at least two letters to search.</div></div>
-  <p class="credit">Item names from <a href="https://wowforever.wclbox.com" target="_blank" rel="noopener">WCLBox</a> (game client data, build 1.60.1.70888). <a href="https://ahledger.com" target="_blank" rel="noopener">Prices from AHledger</a>.</p>
+  <p class="credit">Item names from <a href="https://wowforever.wclbox.com" target="_blank" rel="noopener">新手盒子·魔兽世界无限数据库 (WCLBox)</a>, game client data; each item has a WCLBox link. <a href="https://ahledger.com" target="_blank" rel="noopener">Prices from AHledger</a>.</p>
 </div>
 
 <script>
@@ -295,7 +296,7 @@ p.lede{color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
         var meta = it ? [it.itemClass, it.level ? "level " + it.level : ""].filter(Boolean).join(" · ") : "";
         return '<div class="it' + (x.listed ? "" : " off") + '"><div class="nm">' + (icon ? '<img src="' + esc(icon) + '" alt="" loading="lazy" width="30" height="30">' : '<img alt="" width="30" height="30">') +
           '<div><a class="wh q' + q + '" href="https://www.wowhead.com/forever/item=' + x.r[0] + '" data-wowhead="item=' + x.r[0] + '&amp;domain=forever" target="_blank" rel="noopener">' + esc((it && it.name) || x.r[1]) + "</a>" +
-          (meta ? "<small>" + esc(meta) + "</small>" : "") + "</div></div>" +
+          "<small>" + (meta ? esc(meta) + " · " : "") + '<a href="https://wowforever.wclbox.com/wupin/' + x.r[0] + '" target="_blank" rel="noopener">WCLBox</a></small></div></div>' +
           (x.listed
             ? '<div class="n"><span class="lbl">Lowest</span>' + coin(it.minBuyout) + '</div><div class="n"><span class="lbl">Median</span>' + coin(it.median) + '</div><div class="n"><span class="lbl">Listed</span>' + it.quantity.toLocaleString("en") +
               '</div><div class="n"><span class="lbl">Sold/day</span>' + (it.salesPerDay != null ? (it.salesPerDay >= 10 ? Math.round(it.salesPerDay) : Math.round(it.salesPerDay * 10) / 10).toLocaleString("en") : "–") + "</div>"

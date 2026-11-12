@@ -25,9 +25,9 @@ repositories (not the marketing text), then test each source against the 133 bes
 | **AtlasLoot Continued** (installed in the beta client) | Forever dungeons with bosses, npc ids, levels, loot per boss (35 zones, 3,617 items), PvP, crafting, collections; Factions still empty | **GPL v2** (LICENSE in the addon) | v12488, updated 2026-10-15, community maintained | **Yes, credit + licence note.** Importer done (`atlasloot_import.py`); lifted coverage of the 133 picks from 106 to 118 |
 | **QuestieDB** `forever` branch (Questie, GPL v3) | quests, NPCs, objects, items for Forever, with its own validators | GPL (Questie); the QuestieDB repo shows no licence field | pushed 2026-10-17 | **Read only for now.** Its own `docs/forever-data.md` says the Forever data is the Era data with converted coordinates and "new entities are not provided", so it does not add Forever-new loot. Useful for coordinates, quest givers, vendor positions |
 | **ForeverDB** (what Mr.BiZ copies today) | best-in-slot lists with sources ("Classic data / Forever client / Seen in Forever / Clue") | robots.txt and llms.txt allow assistants; no explicit licence | updated with each build (1.60.1.70425 on 2026-10-16) | **Test oracle only** (decision 2026-10-17) |
-| **WCLBox** (wowforever.wclbox.com) | items, item sources, dungeons, quests, BiS | an open read-only JSON API (`/api/open/v1`, CORS), asks to be cited by name and URL; data from the game client | live | **Allowed and offered**, but the API only does item search and tooltips; sources are on web pages. Cite if we use it. Used live by `auction-house.html` for item names (credited on the page), not as a data pipeline input |
+| **WCLBox** (wowforever.wclbox.com) | all Forever items (21,855 at build 1.60.1.70888), English and Chinese names, tooltips, sets; item search and tooltips only, sources are on web pages | open read-only JSON API (`/api/open/v1`, CORS `*`, no login). **Terms read 2026-11-13** (their docs, "usage conventions"): credit the data source on your page as 新手盒子·魔兽世界无限数据库, best with a link to the item's own page; limit 5 requests per second per IP (burst 20, then 429); responses are cacheable for 5 minutes; for the full data page with `limit=100` inside the rate limit; icons can be hotlinked, cache them yourself for heavy traffic | live | **Yes, as an input**, with the credit above. `auction-house.html` searches it live for item names |
 | **ZugZugDB** | items, spells, zones from the client; NPC / quest / object data from player recordings; a CSV of all records | terms forbid scraping, walking the id space and bulk copying; Classic data credited under GPL v2 | live | **No scraping.** Link and credit only |
-| **Wowhead Forever** | item pages with "dropped by / sold by / reward from"; tooltip API | terms could not be read (403/404); item pages answer 403 to scripts | live | **Not as a pipeline input.** Our one-time tooltip pull (11,503 ids) is finished; do not repeat it. Credit stays on the site where its tooltips show |
+| **Wowhead Forever** | item pages with "dropped by / sold by / reward from"; tooltip API; talent and ability lists | **Read in Chrome 2026-11-13.** robots.txt: 28 AI and scraper user agents (incl. ClaudeBot, anthropic-ai, Claude-Web, GPTBot, CCBot, Scrapy) are barred from the whole site; for everyone else `/list`, `/search`, `/random` and `/account` are off limits, Crawl-delay 1. Terms = the ZAM / Fanbyte EULA (corp.fanbyte.com/legal/terms, updated 2025-05-14): a personal, limited, non-commercial licence; no copying, reproducing, distributing or derivative works of the Service; no commercial use or use for a third party's benefit; no circumventing protections. No explicit scraper clause found | live | **Display and single lookups only.** Show it the way it offers (its `tooltips.js` and item links, credit stays on the page), and look things up one at a time in a browser when the owner asks. No bulk pulls and no id walking; prefer WCLBox for item facts. Existing Wowhead-derived data (the 11,503-id tooltip pull, `quality.json`, trainer and talent lists) stays under review, see "Revision 2026-11-13" below |
 | **Forever Guide** (CurseForge, 70k downloads) | 22,000 items, 35 dungeons with chances, 800 class quests, 404 rares, 2,495 recipes, loot recorder | **All Rights Reserved** | updated daily | **No.** It combines the same sources (Forever client, QuestieDB, ForeverChanges, Wowhead, WoWSims, cmangos) and records loot; we cannot copy it |
 | **ForeverCodex / ItemQuester Forever / ForeverArtisan** | crowd-sourced recipes, quest and profession info | All Rights Reserved / unspecified | daily | **No** (ideas only) |
 | **Metaforge, WoWTBC.gg** | item sets, dungeon indexes (WoWTBC.gg page shows no drops) | no terms found | live | Not needed |
@@ -40,15 +40,30 @@ repositories (not the marketing text), then test each source against the 133 bes
 * Still unknown: **15**, all Forever-new quest rewards and reputation vendors (Theramore Expeditionary Force, Booty Bay, Blackfathom Deeps
   pieces, "where it comes from isn't known yet" entries). These are what the recorder is for.
 
-## Decision (owner's rule: credit in the README, never depend on anyone)
+## Decision (revised 2026-11-13 by the owner)
 
-1. **Primary inputs:** the game client, CMaNGOS, AtlasLoot Continued's data file. All three are open (Blizzard data / GPL v2) and **snapshotted
-   into our repo's cache**, so nothing breaks if a site stops updating; refresh = re-run a script when the addon or dump updates.
-2. **Own recordings** fill the rest, and our recorder merges the three players' files.
-3. **Websites are checks, not inputs** (ForeverDB, ForeverChanges, Wowhead, WCLBox). No scraping of sites whose terms forbid it.
-4. **Credits** go in the README and on the site's Mr.BiZ credit line: Blizzard (game data), CMaNGOS / VMaNGOS contributors (GPL v2),
-   AtlasLoot Continued authors (GPL v2), plus the sites we compare against. GPL data we redistribute keeps its licence note.
-5. **Refresh rhythm:** on release day (4 to 5 November) and after each hotfix build: DB2 pull, AtlasLoot re-import, recorder merge, validation report.
+The first version of this section said "never depend on anyone" and "websites are checks, not inputs". The owner dropped that for this project:
+**use other people's databases when their terms allow it, and credit them.**
+
+1. **Use a site as an input when its terms and robots.txt allow it.** Read them in a browser (the sandbox cannot), write what they say in the
+   table above, stay inside the rate limit and cache rules, and say where the data came from.
+2. **Credit every source** in the README and on the page where its data shows (name and link; use the wording the source asks for).
+   GPL data we redistribute keeps its licence note. AHledger's link stays wherever its prices show.
+3. **Prefer sources that offer open access:** WCLBox (item API), AHledger (prices), wago.tools (game client tables), CMaNGOS and AtlasLoot (GPL),
+   then the game client itself. Snapshotting open data into the repo is still good practice, but it is no longer a rule.
+4. **Sites that do not offer data access (Wowhead, ForeverDB, ForeverChanges, ZugZugDB)** are used the way they offer: their embeds and links,
+   and single lookups when the owner asks. Dropping our own rule does not change what their terms say; no bulk pulls, no id walking, no scraping
+   where the terms or robots.txt forbid it.
+5. **Own recordings** still fill what nobody publishes (drops, vendors, quest rewards), and our recorder merges the three players' files.
+6. **Refresh rhythm:** on release day and after each hotfix build: DB2 pull, AtlasLoot re-import, recorder merge, validation report.
+
+### Revision 2026-11-13: Wowhead-derived data already in the repo
+
+`bis/items.json` and `quality.json` (item quality, level, stats of about 11,000 older items), `TrainingData.lua` (trainer-sold spells) and the talent
+lists came partly from Wowhead's tooltip API and ability lists. The numbers are Blizzard's game data and we cross-checked them against the client,
+but Wowhead's terms are non-commercial and no-copy. Open decision: replace the Wowhead-derived fields with WCLBox (it carries each item's quality,
+levels and English tooltip under an open licence with credit). Until then: do not repeat the bulk pull (`wh_tooltip_pull.py`), and if the site ever
+carries ads or paid access, drop whatever still comes from Wowhead first.
 
 Open question for the owner: AtlasLoot's maintainers add Forever data as players report it, so its file is the best open sample of what the
 community knows; its `Factions` module for Forever is still empty. We should watch it, and our recorder's output could be offered back to it

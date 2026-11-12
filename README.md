@@ -15,7 +15,7 @@ We build on other people's open work and say so:
   community loot databases.
 * **AtlasLoot Continued** (Okrah, Lag and contributors, GNU GPL v2): the community's Forever dungeon loot lists, read from the addon's data file.
 * **ForeverDB**, **ForeverChanges**, **Wowhead Forever**, **WCLBox**, **ZugZugDB**: the Mr.BiZ best-in-slot lists started from ForeverDB's
-  and we keep checking our own numbers against these sites. Wowhead's tooltips are shown on the site. Prices come from **AHledger**
+  and we keep checking our own numbers against these sites. Wowhead's tooltips are shown on the site. Item names on the Auction House page come live from **新手盒子·魔兽世界无限数据库 (WCLBox)**. Prices come from **AHledger**
   (link shown wherever they appear).
 * Our own recordings from play (loot, vendors, quest rewards) and our own scoring are being added so that Mr.BiZ does not depend on any one site
   keeping its data current. Research and decisions: `bis/DATA_SOURCES.md` and `bis/OWN_DATABASE_PLAN.md`.

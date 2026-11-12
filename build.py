@@ -283,3 +283,4 @@ with open(MACRO_DATA_PATH, "w", encoding="utf-8", newline="\n") as f:
 print("MacroData.lua written")
 subprocess.run([sys.executable, "addon/tools/check_macro_spells.py"], check=False)   # warnings only
 subprocess.run([sys.executable, "bis/build_quest_weapons.py"], check=True)
+subprocess.run([sys.executable, "tools/build_ah_items.py"], check=True)

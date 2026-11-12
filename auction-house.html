@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Auction House — WoW Forever</title>
+<meta name="description" content="Search an item by name and see its live auction house price on WoW Forever: lowest buyout, median, how many are listed and how often it sells.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Road to Forever">
+<meta property="og:title" content="Auction House — Road to Forever">
+<meta property="og:description" content="Search an item by name and see its live auction house price on WoW Forever.">
+<meta property="og:url" content="https://nobody174.github.io/wow-forever/auction-house.html">
+<meta property="og:image" content="https://nobody174.github.io/wow-forever/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B1124">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Road to Forever">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1428; --panel:#161E38; --edge:#3A4468; --gold:#FFD100;
+  --text:#E6E2D6; --muted:#9AA0B8; --accent:#FFD100; --ok:#6FCF7F; --warn:#E8A33D;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --serif:"Marcellus","Palatino Linotype",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+a{color:var(--gold)}
+/* topbar:begin */
+.topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--edge)}
+.topbar .site-title{display:flex;align-items:center;min-height:24px;font:400 20px/1.1 var(--serif);color:var(--gold);text-decoration:none;letter-spacing:.01em;justify-self:start}
+.topbar nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;justify-self:center}
+@media (max-width:1180px){
+  .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .topbar .site-title{justify-self:center}
+}
+.topbar nav a{
+  font:600 13px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;
+  color:var(--gold);text-decoration:none;padding:10px 16px;border-radius:6px;
+  background:linear-gradient(180deg,#2A335A 0%,#161E38 55%,#10152C 100%);
+  border:1px solid var(--edge);border-top-color:#4A5688;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.35);
+  transition:transform .08s ease, box-shadow .08s ease, border-color .08s ease;
+}
+.topbar nav a:hover{
+  border-color:var(--gold);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 0 10px rgba(255,209,0,.35), 0 2px 4px rgba(0,0,0,.35);
+  transform:translateY(-1px);
+}
+.topbar nav a:active{transform:translateY(0);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
+.topbar nav a[aria-current="page"]{
+  color:#0E1428;background:linear-gradient(180deg,#FFE566 0%,var(--gold) 55%,#C79C00 100%);
+  border-color:#FFE566;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(255,209,0,.5);
+}
+/* Phones: one row, the links scroll sideways under an edge fade (footer.js scrolls the current page into view). */
+@media (max-width:700px){
+  .topbar{display:flex;align-items:center;justify-items:initial;text-align:left;gap:10px;padding:8px 12px}
+  .topbar .site-title{flex:none;font-size:16px}
+  .topbar nav{flex:1 1 auto;min-width:0;flex-wrap:nowrap;justify-content:flex-start;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+  .topbar nav::-webkit-scrollbar{display:none}
+  .topbar nav::after{content:"";flex:none;width:22px}
+  .topbar nav a{flex:none;white-space:nowrap;padding:8px 12px}
+}
+/* topbar:end */
+@media (prefers-reduced-motion:reduce){.topbar nav a{transition:none}}
+
+.wrap{max-width:1000px;margin:0 auto;padding:40px 16px 70px}
+h1{font:400 clamp(28px,5vw,44px)/1.1 var(--serif);color:var(--gold);margin:0 0 10px;letter-spacing:.01em;text-align:center}
+p.lede{color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
+:root{--t1:#FFD100;--t2:#C8CCD6;--t3:#D08A4E}
+.coin{font:500 14px/1 var(--mono);white-space:nowrap}
+.coin span{margin-right:3px}
+.coin span:last-child{margin-right:0}
+.coin .g{color:var(--t1)} .coin .s{color:var(--t2)} .coin .c{color:var(--t3)}
+.coin i{font-style:normal;font-size:.8em;opacity:.85}
+
+/* Search bar */
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 10px}
+.bar input[type=search],.bar select{font:400 16px/1.2 var(--sans);color:var(--text);background:#0A0F20;border:1px solid var(--edge);border-radius:8px;padding:12px 14px}
+.bar input[type=search]{flex:1 1 280px;min-width:0}
+.bar select{flex:0 1 auto;max-width:100%}
+.bar input:focus-visible,.bar select:focus-visible,.toggle input:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.opts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin:0 0 14px;color:var(--muted);font-size:14px}
+.toggle{display:inline-flex;align-items:center;gap:7px;cursor:pointer}
+.status{color:var(--muted);font-size:14px;margin:0 0 12px;min-height:21px}
+.status b{color:var(--text);font-weight:600}
+
+/* Results */
+.res{border:1px solid var(--edge);border-radius:10px;background:var(--panel);overflow:hidden}
+.hd,.it{display:grid;grid-template-columns:minmax(0,1fr) 108px 108px 70px 70px;gap:10px;align-items:center;padding:10px 14px}
+.hd{background:#0A0F20;color:var(--muted);font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em}
+.hd span:not(:first-child),.it .n{text-align:right}
+.it{border-top:1px solid #232C4C}
+.it:hover{background:#1A2342}
+.it .nm{display:flex;align-items:center;gap:10px;min-width:0}
+.it .nm img{width:30px;height:30px;border-radius:4px;border:1px solid #000;flex:none;background:#0A0F20}
+.it .nm div{min-width:0}
+.it .nm a{display:block;font-weight:600;text-decoration:none;overflow-wrap:anywhere}
+.it .nm a:hover{text-decoration:underline}
+.it .nm small{display:block;color:var(--muted);font-size:12px}
+.q0{color:#9d9d9d}.q1{color:#fff}.q2{color:#1eff00}.q3{color:#3392ff}.q4{color:#b55cff}.q5{color:#ff8000}
+.it .n{font:500 14px/1 var(--mono)}
+.it.off{opacity:.55}
+.it .lbl{display:none}
+.empty{padding:26px 16px;text-align:center;color:var(--muted)}
+.more{padding:12px 14px;border-top:1px solid #232C4C;color:var(--muted);font-size:14px}
+.credit{color:var(--muted);font-size:13px;text-align:center;margin:18px 0 0}
+@media (max-width:700px){
+  .hd{display:none}
+  .it{grid-template-columns:1fr 1fr;row-gap:8px}
+  .it .nm{grid-column:1 / -1}
+  .it .n{text-align:left}
+  .it .lbl{display:block;color:var(--muted);font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="site-title" href="index.html">Road to Forever</a>
+  <nav aria-label="Site">
+    <a href="launch-plan.html">Launch Plan</a>
+    <a href="builds.html">Builds</a>
+    <a href="talents.html">Talent / Legacy Calc</a>
+    <a href="bis.html">Mr.BiZ</a>
+    <a href="professions.html">Professions</a>
+    <a href="auction-house.html" aria-current="page">Auction House</a>
+    <a href="macros.html">Macros</a>
+    <a href="addons.html">Addons</a>
+  </nav>
+</div>
+<div class="wrap" role="main">
+  <h1>Auction House</h1>
+  <p class="lede">Type part of an item name to see what it costs on the auction house right now: lowest buyout, median price, how many are listed and how many sell per day.</p>
+
+  <div class="bar">
+    <input type="search" id="q" placeholder="Search an item, e.g. heavy armor kit, mithril, sword" autocomplete="off" spellcheck="false" aria-label="Item name">
+    <select id="market" aria-label="Market"></select>
+    <select id="sort" aria-label="Sort by">
+      <option value="best">Sort: best match</option>
+      <option value="low">Sort: lowest price</option>
+      <option value="high">Sort: highest price</option>
+      <option value="qty">Sort: most listed</option>
+      <option value="sold">Sort: sells most per day</option>
+    </select>
+  </div>
+  <div class="opts">
+    <label class="toggle"><input type="checkbox" id="onlyAh" checked> Only items listed on the auction house</label>
+  </div>
+  <p class="status" id="status" aria-live="polite"></p>
+  <div class="res" id="res"><div class="empty">Type at least two letters to search.</div></div>
+  <p class="credit">Names cover every armor piece and weapon, the enchanting and leatherworking materials, and the recipes our crafters know. <a href="https://ahledger.com" target="_blank" rel="noopener">Prices from AHledger</a>.</p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var AHL = "https://api.ahledger.com/v1", MARKET_KEY = "wf-prof-market", DEFAULT_MARKET = "forever.normal.alliance.eu";
+  var MAX_MATCHES = 300, BATCH = 100, TTL = 5 * 60 * 1000, SHOW = 100;
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function lget(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
+  function lset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } }
+
+  var INDEX = [];           // [id, name, quality, lowercase name]
+  var cache = {};           // market -> { id: {at, item|null} }
+  var market = lget(MARKET_KEY, DEFAULT_MARKET);
+  if (!market || market === "site") market = DEFAULT_MARKET;
+  var seq = 0, timer = null;
+
+  function coin(cp) {
+    cp = Math.round(cp);
+    var g = Math.floor(cp / 10000), s = Math.floor(cp % 10000 / 100), c = cp % 100, out = "";
+    if (g) out += '<span class="g">' + g + "<i>g</i></span>";
+    if (s || g) out += '<span class="s">' + s + "<i>s</i></span>";
+    out += '<span class="c">' + (s || g ? String(c).padStart(2, "0") : c) + "<i>c</i></span>";
+    return '<span class="coin">' + out + "</span>";
+  }
+  function ago(iso) {
+    var m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (!(m >= 0)) return "";
+    if (m < 2) return "just now";
+    if (m < 60) return m + " min ago";
+    var h = Math.round(m / 60); if (h < 48) return h + (h === 1 ? " hour ago" : " hours ago");
+    return Math.round(h / 24) + " days ago";
+  }
+  function refreshTooltips() {
+    try { if (window.$WowheadPower && window.$WowheadPower.refreshLinks) window.$WowheadPower.refreshLinks(); } catch (e) { /* tooltips are optional */ }
+  }
+  function qNum(q) { return { POOR: 0, COMMON: 1, UNCOMMON: 2, RARE: 3, EPIC: 4, LEGENDARY: 5 }[String(q || "").toUpperCase()]; }
+
+  // ---- name search: every word must appear; exact, then starts-with, then shorter names first
+  function matches(query) {
+    var q = query.trim().toLowerCase();
+    if (q.length < 2) return {};
+    if (/^\d+$/.test(q)) {
+      var id = parseInt(q, 10), hit = INDEX.filter(function (r) { return r[0] === id; });
+      hit = hit.length ? hit : [[id, "Item " + id, 1, "item " + id]];
+      return { total: 1, list: hit };
+    }
+    var words = q.split(/\s+/), out = [];
+    for (var i = 0; i < INDEX.length; i++) {
+      var r = INDEX[i], ok = true;
+      for (var w = 0; w < words.length; w++) if (r[3].indexOf(words[w]) === -1) { ok = false; break; }
+      if (ok) out.push([r, r[3] === q ? 0 : r[3].indexOf(q) === 0 ? 1 : 2]);
+    }
+    out.sort(function (a, b) { return a[1] - b[1] || a[0][3].length - b[0][3].length || a[0][0] - b[0][0]; });
+    return { total: out.length, list: out.slice(0, MAX_MATCHES).map(function (x) { return x[0]; }) };
+  }
+
+  // ---- prices: one request per 100 ids, cached 5 minutes per market
+  function fetchPrices(ids) {
+    var c = cache[market] || (cache[market] = {}), now = Date.now(), need = ids.filter(function (id) { return !c[id] || now - c[id].at > TTL; }), jobs = [], mk = market;
+    for (var i = 0; i < need.length; i += BATCH) (function (chunk) {
+      jobs.push(fetch(AHL + "/tooltip/" + encodeURIComponent(mk) + "?items=" + chunk.join(",")).then(function (r) {
+        if (!r.ok) throw new Error("AHledger " + r.status);
+        return r.json();
+      }).then(function (j) {
+        var got = {}; (j.items || []).forEach(function (it) { got[it.id] = it; });
+        chunk.forEach(function (id) { c[id] = { at: Date.now(), item: got[id] || null }; });
+      }));
+    })(need.slice(i, i + BATCH));
+    return Promise.all(jobs).then(function () { return c; });
+  }
+
+  function price(it) { return it && it.quantity ? it.minBuyout : null; }
+  function render(query, m, c, token) {
+    var onlyAh = $("onlyAh").checked, sort = $("sort").value, rows = m.list.map(function (r) {
+      var e = c[r[0]], it = e && e.item;
+      return { r: r, it: it, listed: !!(it && it.quantity) };
+    });
+    var listed = rows.filter(function (x) { return x.listed; }).length;
+    if (onlyAh) rows = rows.filter(function (x) { return x.listed; });
+    var by = { low: function (a, b) { return (price(a.it) == null) - (price(b.it) == null) || price(a.it) - price(b.it); },
+      high: function (a, b) { return (price(b.it) == null) - (price(a.it) == null) || price(b.it) - price(a.it); },
+      qty: function (a, b) { return ((b.it && b.it.quantity) || 0) - ((a.it && a.it.quantity) || 0); },
+      sold: function (a, b) { return ((b.it && b.it.salesPerDay) || 0) - ((a.it && a.it.salesPerDay) || 0); } }[sort];
+    if (by) rows.sort(by); else rows.sort(function (a, b) { return b.listed - a.listed; });   // best match keeps the name order, listed first
+    var newest = 0; rows.forEach(function (x) { if (x.it && x.it.observedAt) newest = Math.max(newest, new Date(x.it.observedAt).getTime()); });
+    var more = m.total > m.list.length ? " Showing the best " + m.list.length + " of " + m.total + " name matches; type more of the name to narrow it." : "";
+    $("status").innerHTML = "<b>" + m.total + "</b> name match" + (m.total === 1 ? "" : "es") + ", <b>" + listed + "</b> on the auction house" +
+      (newest ? ", last scanned " + esc(ago(new Date(newest).toISOString())) : "") + "." + esc(more);
+    if (!rows.length) {
+      $("res").innerHTML = '<div class="empty">' + (m.total ? "None of the matches is listed on the auction house right now." + (onlyAh ? " Untick the box above to see them anyway." : "") : "No item name matches “" + esc(query) + "”.") + "</div>";
+      return;
+    }
+    var shown = rows.slice(0, SHOW);
+    $("res").innerHTML = '<div class="hd"><span>Item</span><span>Lowest</span><span>Median</span><span>Listed</span><span>Sold/day</span></div>' +
+      shown.map(function (x) {
+        var it = x.it, q = (it && qNum(it.quality) != null) ? qNum(it.quality) : x.r[2], icon = it && /^https:\/\/render\.worldofwarcraft\.com\//.test(it.icon || "") ? it.icon : "";
+        var meta = it ? [it.itemClass, it.level ? "level " + it.level : ""].filter(Boolean).join(" · ") : "";
+        return '<div class="it' + (x.listed ? "" : " off") + '"><div class="nm">' + (icon ? '<img src="' + esc(icon) + '" alt="" loading="lazy" width="30" height="30">' : '<img alt="" width="30" height="30">') +
+          '<div><a class="wh q' + q + '" href="https://www.wowhead.com/forever/item=' + x.r[0] + '" data-wowhead="item=' + x.r[0] + '&amp;domain=forever" target="_blank" rel="noopener">' + esc((it && it.name) || x.r[1]) + "</a>" +
+          (meta ? "<small>" + esc(meta) + "</small>" : "") + "</div></div>" +
+          (x.listed
+            ? '<div class="n"><span class="lbl">Lowest</span>' + coin(it.minBuyout) + '</div><div class="n"><span class="lbl">Median</span>' + coin(it.median) + '</div><div class="n"><span class="lbl">Listed</span>' + it.quantity.toLocaleString("en") +
+              '</div><div class="n"><span class="lbl">Sold/day</span>' + (it.salesPerDay != null ? (it.salesPerDay >= 10 ? Math.round(it.salesPerDay) : Math.round(it.salesPerDay * 10) / 10).toLocaleString("en") : "–") + "</div>"
+            : '<div class="n" style="grid-column:span 4;text-align:left">Not on the auction house</div>') + "</div>";
+      }).join("") + (rows.length > SHOW ? '<div class="more">Showing the first ' + SHOW + " of " + rows.length + " results.</div>" : "");
+    refreshTooltips();
+  }
+
+  function search() {
+    var query = $("q").value, token = ++seq;
+    try { history.replaceState(null, "", query.trim() ? "#" + encodeURIComponent(query.trim()) : location.pathname + location.search); } catch (e) { /* ignore */ }
+    var m = matches(query);
+    if (!m.list) { $("status").textContent = ""; $("res").innerHTML = '<div class="empty">Type at least two letters to search.</div>'; return; }
+    if (!INDEX.length) { $("status").textContent = "Loading item names…"; return; }
+    if (!m.list.length) { render(query, m, cache[market] || {}, token); return; }
+    $("status").textContent = "Fetching prices…";
+    fetchPrices(m.list.map(function (r) { return r[0]; })).then(function (c) {
+      if (token === seq) render(query, m, c, token);
+    }).catch(function () {
+      if (token === seq) { $("status").textContent = ""; $("res").innerHTML = '<div class="empty">Could not reach AHledger. Try again in a moment.</div>'; }
+    });
+  }
+
+  function loadMarkets() {
+    var sel = $("market");
+    function fill(list) {
+      sel.innerHTML = list.map(function (m) { return '<option value="' + esc(m.id) + '"' + (m.id === market ? " selected" : "") + ">" + esc(m.label + " (" + m.region.toUpperCase() + ")") + "</option>"; }).join("");
+    }
+    fill([{ id: DEFAULT_MARKET, label: "Normal Alliance", region: "eu" }]);
+    fetch(AHL + "/markets").then(function (r) { return r.json(); }).then(function (j) {
+      var list = (j.markets || []).filter(function (m) { return m.game === "forever"; });
+      if (list.length) { if (!list.some(function (m) { return m.id === market; })) market = DEFAULT_MARKET; fill(list); }
+    }).catch(function () { /* keep the default market */ });
+  }
+
+  $("q").addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(search, 250); });
+  $("sort").addEventListener("change", search);
+  $("onlyAh").addEventListener("change", search);
+  $("market").addEventListener("change", function () { market = this.value; lset(MARKET_KEY, market); search(); });
+
+  loadMarkets();
+  fetch("ah-items.json").then(function (r) { return r.json(); }).then(function (j) {
+    INDEX = j.items.map(function (r) { return [r[0], r[1], r[2], r[1].toLowerCase()]; });
+    var h = ""; try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) { h = ""; }
+    if (h) $("q").value = h;
+    if ($("q").value) search(); else $("status").textContent = INDEX.length.toLocaleString("en") + " item names loaded.";
+  }).catch(function () { $("status").textContent = "Could not load the item names."; });
+})();
+</script>
+<script>window.whTooltips = { colorLinks: false, iconizeLinks: false, renameLinks: false, iconSize: "small" };</script>
+<script src="https://wow.zamimg.com/js/tooltips.js" defer></script>
+<script src="footer.js" defer></script>
+</body>
+</html>

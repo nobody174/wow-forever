@@ -3,7 +3,7 @@
 Static site (GitHub Pages, `main` / root, https://nobody174.github.io/wow-forever/) plus the in-game addon
 `addon/RoadToForever/` for WoW Forever (Classic+, Interface 16001, vanilla spell names, level cap 60).
 Pages: `index` (countdown), `launch-plan`, `builds`, `talents` (+ Legacy), `bis` (Mr.BiZ), `professions`,
-`macros` (generated), `addons`, `news`, `library-books`, `hunter`.
+`auction-house`, `macros` (generated), `addons`, `news`, `library-books`, `hunter`.
 
 General WoW knowledge (taint rules, macro patterns, data sources, addon checklist, roles) lives in the
 **WoW dev support folder**: `../wow-dev-support-folder/` next to this repo (GitHub: `nobody174/wow-dev-support-folder`,

@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-13",
+      "title": "New Auction House page",
+      "text": "Search any weapon or armor piece (plus the enchanting and leatherworking materials) by name and see its live auction house price: lowest buyout, median, how many are listed and how many sell per day. It uses your EU server market by default.",
+      "link": "auction-house.html"
+    },
+    {
+      "date": "2026-11-13",
       "title": "Professions: live data only",
       "text": "The old beta crafters and beta auction prices are gone. Crafters now come from characters imported on the live game, and the material prices were refreshed from the live auction house.",
       "link": "professions.html"

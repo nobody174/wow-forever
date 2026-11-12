@@ -17,7 +17,7 @@ import sys
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MARKET = "forever.normal.alliance.us"
+MARKET = "forever.normal.alliance.eu"
 FEW_LISTED = 10
 
 

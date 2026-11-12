@@ -24,7 +24,7 @@ Notes for professions.html (enchants, costs, live prices, Crafters) and bis.html
     Forever values differ from Classic (e.g. Bracer Minor/Lesser Stamina +3/+4, Chest Minor
     Stats listed as +2 all stats) — take values from Wowhead's Forever spell pages, never
     from Classic. `CRAFTERS` = `[{name, color, knows: [recipe names]}]`: who in the group
-    makes what (Venom = the owner). Edit it when someone learns a recipe; "Our crafts"
+    makes what (emptied 2026-11-12: beta recipes removed, live exports in crafters.json fill it). Edit it only for hand-typed extras; "Our crafts"
     lists only known recipes that appear in some ladder (BiS or stand-in), so junk like
     Chest Lesser Absorption never shows. BiS rows show the best tier our crafters cover.
   - Costs: one `MATS` list (`[id, name, prof, price]`, copper, `null` = no price yet);

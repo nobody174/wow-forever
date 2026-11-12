@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-11-13",
+      "title": "Professions: live data only",
+      "text": "The old beta crafters and beta auction prices are gone. Crafters now come from characters imported on the live game, and the material prices were refreshed from the live auction house.",
+      "link": "professions.html"
+    },
+    {
       "date": "2026-11-09",
       "title": "Green Hills page tracker on the Launch Plan",
       "text": "A small frame on the right of the Launch Plan lists the pages you need for The Green Hills of Stranglethorn (chapters I to IV). Tick the ones you already have and see what is still missing. On narrow screens it sits at the top and folds away.",

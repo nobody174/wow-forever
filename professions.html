@@ -442,25 +442,8 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   function lset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* blocked */ } }
 
   // ==== Crafters: who in the group makes what (edit here) ============================
-  var CRAFTERS = [
-    { name: "Venom", color: "#FFFFFF", knows: [
-      "Enchant Bracer - Minor Agility", "Enchant Bracer - Lesser Stamina", "Enchant Bracer - Minor Stamina",
-      "Enchant Chest - Stamina", "Enchant Boots - Minor Stamina", "Enchant Cloak - Lesser Protection",
-      "Enchant Shield - Minor Stamina", "Enchant Shield - Lesser Spirit",
-      "Enchant Weapon - Lesser Striking", "Enchant Weapon - Minor Striking", "Enchant 2H Weapon - Minor Impact",
-      "Heavy Armor Kit", "Forceful Heavy Armor Kit", "Mystic Heavy Armor Kit",
-      // learned 2026-10-07 (the last five aren't BiS or a stand-in, so Our crafts doesn't list them)
-      "Enchant Bracer - Lesser Strength", "Enchant Bracer - Minor Strength",
-      "Enchant 2H Weapon - Lesser Intellect", "Enchant 2H Weapon - Lesser Spirit",
-      "Enchant Bracer - Minor Spirit", "Enchant Bracer - Lesser Spirit",
-      "Enchant Shield - Lesser Protection", "Enchant Weapon - Minor Beastslayer",
-      "Enchant Gloves - Mining",
-      "Enchant 2H Weapon - Lesser Impact", "Enchant Bracer - Lesser Intellect", "Enchant Chest - Minor Stats",
-      "Enchant Chest - Intellect", "Runed Golden Rod",
-      "Enchant Cloak - Defense", "Enchant Shield - Lesser Stamina", "Enchant Chest - Greater Stamina",
-      "Enchant Boots - Lesser Agility", "Lesser Mystic Wand",
-      "Enchant Bracer - Spirit", "Enchant Boots - Lesser Stamina", "Enchant Bracer - Stamina"] }
-  ];
+  // Base list is empty on purpose: crafters come from live exports in crafters.json (beta recipes were cleared 2026-11-12).
+  var CRAFTERS = [];
 
   // ==== Materials: [id, name, profession, fallback copper (null = none), WoW item id] =====
   // prices.json overrides the fallback; live AHledger prices override both (see Prices).

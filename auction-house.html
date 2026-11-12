@@ -160,7 +160,7 @@ p.lede{color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
   </div>
   <p class="status" id="status" aria-live="polite"></p>
   <div class="res" id="res"><div class="empty">Type at least two letters to search.</div></div>
-  <p class="credit">Names cover every armor piece and weapon, the enchanting and leatherworking materials, and the recipes our crafters know. <a href="https://ahledger.com" target="_blank" rel="noopener">Prices from AHledger</a>.</p>
+  <p class="credit">Item names from <a href="https://wowforever.wclbox.com" target="_blank" rel="noopener">WCLBox</a> (game client data, build 1.60.1.70888). <a href="https://ahledger.com" target="_blank" rel="noopener">Prices from AHledger</a>.</p>
 </div>
 
 <script>
@@ -173,7 +173,7 @@ p.lede{color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
   function lget(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
   function lset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } }
 
-  var INDEX = [];           // [id, name, quality, lowercase name]
+  var INDEX = [];           // fallback only: [id, name, quality, lowercase name] from ah-items.json
   var cache = {};           // market -> { id: {at, item|null} }
   var market = lget(MARKET_KEY, DEFAULT_MARKET);
   if (!market || market === "site") market = DEFAULT_MARKET;
@@ -200,23 +200,56 @@ p.lede{color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
   }
   function qNum(q) { return { POOR: 0, COMMON: 1, UNCOMMON: 2, RARE: 3, EPIC: 4, LEGENDARY: 5 }[String(q || "").toUpperCase()]; }
 
-  // ---- name search: every word must appear; exact, then starts-with, then shorter names first
-  function matches(query) {
-    var q = query.trim().toLowerCase();
-    if (q.length < 2) return {};
+  // ---- name search: WCLBox's open item API (every Forever item, English or Chinese names, CORS open, 5 requests/second/IP).
+  // Every word must appear in the name. Falls back to our own ah-items.json (armor, weapons, materials) if WCLBox cannot be reached.
+  var WCL = "https://wowforever.wclbox.com/api/open/v1", nameCache = {};
+  function rankNames(rows, q) {
+    q = q.toLowerCase();
+    return rows.map(function (r) { var n = r[1].toLowerCase(); return [r, n === q ? 0 : n.indexOf(q) === 0 ? 1 : 2]; })
+      .sort(function (a, b) { return a[1] - b[1] || a[0][1].length - b[0][1].length || a[0][0] - b[0][0]; }).map(function (x) { return x[0]; });
+  }
+  function wcl(qs) {
+    return fetch(WCL + "/items?" + qs).then(function (r) { if (!r.ok) throw new Error("WCLBox " + r.status); return r.json(); });
+  }
+  function fromWcl(it) { return [it.id, it.nameEn || it.name, typeof it.quality === "number" ? it.quality : 1]; }
+  function searchNamesWcl(q) {
     if (/^\d+$/.test(q)) {
-      var id = parseInt(q, 10), hit = INDEX.filter(function (r) { return r[0] === id; });
-      hit = hit.length ? hit : [[id, "Item " + id, 1, "item " + id]];
-      return { total: 1, list: hit };
+      return wcl("ids=" + q).then(function (j) {
+        var l = (j.items || []).map(fromWcl);
+        return { total: 1, list: l.length ? l : [[parseInt(q, 10), "Item " + q, 1]] };
+      });
     }
-    var words = q.split(/\s+/), out = [];
-    for (var i = 0; i < INDEX.length; i++) {
-      var r = INDEX[i], ok = true;
-      for (var w = 0; w < words.length; w++) if (r[3].indexOf(words[w]) === -1) { ok = false; break; }
-      if (ok) out.push([r, r[3] === q ? 0 : r[3].indexOf(q) === 0 ? 1 : 2]);
+    var enc = encodeURIComponent(q), all = [], total = 0;
+    function page(offset) {
+      return wcl("q=" + enc + "&limit=100&offset=" + offset).then(function (j) {
+        total = j.total || 0; all = all.concat((j.items || []).map(fromWcl));
+        if (all.length < Math.min(total, MAX_MATCHES) && (j.items || []).length === 100) return new Promise(function (r) { setTimeout(r, 250); }).then(function () { return page(offset + 100); });
+      });
     }
-    out.sort(function (a, b) { return a[1] - b[1] || a[0][3].length - b[0][3].length || a[0][0] - b[0][0]; });
-    return { total: out.length, list: out.slice(0, MAX_MATCHES).map(function (x) { return x[0]; }) };
+    return page(0).then(function () { return { total: total, list: rankNames(all, q).slice(0, MAX_MATCHES) }; });
+  }
+  function searchNamesLocal(q) {
+    return loadIndex().then(function () {
+      if (/^\d+$/.test(q)) {
+        var id = parseInt(q, 10), hit = INDEX.filter(function (r) { return r[0] === id; });
+        return { total: 1, list: hit.length ? hit.map(function (r) { return [r[0], r[1], r[2]]; }) : [[id, "Item " + id, 1]] };
+      }
+      var words = q.split(/\s+/), out = [];
+      INDEX.forEach(function (r) { if (words.every(function (w) { return r[3].indexOf(w) !== -1; })) out.push([r[0], r[1], r[2]]); });
+      return { total: out.length, list: rankNames(out, q).slice(0, MAX_MATCHES) };
+    });
+  }
+  var indexLoad = null;
+  function loadIndex() {
+    return indexLoad || (indexLoad = fetch("ah-items.json").then(function (r) { return r.json(); }).then(function (j) {
+      INDEX = j.items.map(function (r) { return [r[0], r[1], r[2], r[1].toLowerCase()]; });
+    }));
+  }
+  function searchNames(query) {
+    var q = query.trim().toLowerCase();
+    if (q.length < 2) return Promise.resolve({});
+    if (nameCache[q]) return Promise.resolve(nameCache[q]);
+    return searchNamesWcl(q).catch(function () { return searchNamesLocal(q); }).then(function (m) { nameCache[q] = m; return m; });
   }
 
   // ---- prices: one request per 100 ids, cached 5 minutes per market
@@ -274,15 +307,15 @@ p.lede{color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
   function search() {
     var query = $("q").value, token = ++seq;
     try { history.replaceState(null, "", query.trim() ? "#" + encodeURIComponent(query.trim()) : location.pathname + location.search); } catch (e) { /* ignore */ }
-    var m = matches(query);
-    if (!m.list) { $("status").textContent = ""; $("res").innerHTML = '<div class="empty">Type at least two letters to search.</div>'; return; }
-    if (!INDEX.length) { $("status").textContent = "Loading item names…"; return; }
-    if (!m.list.length) { render(query, m, cache[market] || {}, token); return; }
-    $("status").textContent = "Fetching prices…";
-    fetchPrices(m.list.map(function (r) { return r[0]; })).then(function (c) {
-      if (token === seq) render(query, m, c, token);
+    if (query.trim().length < 2) { $("status").textContent = ""; $("res").innerHTML = '<div class="empty">Type at least two letters to search.</div>'; return; }
+    $("status").textContent = "Searching…";
+    searchNames(query).then(function (m) {
+      if (token !== seq) return;
+      if (!m.list || !m.list.length) { render(query, { total: 0, list: [] }, cache[market] || {}, token); return; }
+      $("status").textContent = "Fetching prices…";
+      return fetchPrices(m.list.map(function (r) { return r[0]; })).then(function (c) { if (token === seq) render(query, m, c, token); });
     }).catch(function () {
-      if (token === seq) { $("status").textContent = ""; $("res").innerHTML = '<div class="empty">Could not reach AHledger. Try again in a moment.</div>'; }
+      if (token === seq) { $("status").textContent = ""; $("res").innerHTML = '<div class="empty">Could not reach the price service. Try again in a moment.</div>'; }
     });
   }
 
@@ -304,12 +337,8 @@ p.lede{color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
   $("market").addEventListener("change", function () { market = this.value; lset(MARKET_KEY, market); search(); });
 
   loadMarkets();
-  fetch("ah-items.json").then(function (r) { return r.json(); }).then(function (j) {
-    INDEX = j.items.map(function (r) { return [r[0], r[1], r[2], r[1].toLowerCase()]; });
-    var h = ""; try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) { h = ""; }
-    if (h) $("q").value = h;
-    if ($("q").value) search(); else $("status").textContent = INDEX.length.toLocaleString("en") + " item names loaded.";
-  }).catch(function () { $("status").textContent = "Could not load the item names."; });
+  var h = ""; try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) { h = ""; }
+  if (h) { $("q").value = h; search(); }
 })();
 </script>
 <script>window.whTooltips = { colorLinks: false, iconizeLinks: false, renameLinks: false, iconSize: "small" };</script>

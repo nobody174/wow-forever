@@ -4,7 +4,7 @@
     {
       "date": "2026-11-13",
       "title": "New Auction House page",
-      "text": "Search any weapon or armor piece (plus the enchanting and leatherworking materials) by name and see its live auction house price: lowest buyout, median, how many are listed and how many sell per day. It uses your EU server market by default.",
+      "text": "Search any item by name (bags, cloth, potions, ore, weapons, armor: everything in the game) and see its live auction house price: lowest buyout, median, how many are listed and how many sell per day. It uses your EU server market by default.",
       "link": "auction-house.html"
     },
     {

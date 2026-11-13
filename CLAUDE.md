@@ -23,6 +23,7 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
 | `addon/ARCHITECTURE.md` | any addon work (one page: layers, rules, how to add things); then `ADDON_PLAN.md` (history, by section) and `addon/HARDENING.md` |
 | `docs/maintainers.md` | releasing, data refreshes (what needs a browser), known traps |
 | `docs/reviews/` | the 2026-11 project review and its findings |
+| `docs/wclbox-migration-plan.md`, `docs/claude-code-wclbox-handoff.md` | moving item data from Wowhead to WCLBox, talent audit (in progress) |
 | `BACKLOG.md` / `ROADMAP.md` / `CHANGELOG.md` | todo / someday / shipped |
 
 ## Hard rules

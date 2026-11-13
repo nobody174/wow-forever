@@ -61,7 +61,7 @@ None else open (talent-tree drift fixed 2026-11-07; before each release run `pyt
 1. **Professions BiS**: re-scrape ForeverChanges' level-60 lists, re-check `ALT` / `LADDER` and sources, update the "checked" dates.
 3. **Builds and launch plan**: re-check builds and the `unverified` steps past level 30; compare our level-60 builds with the first real guides. Also re-check ALL cheat sheets (`GUIDES` in builds.html, plus the Druid Feral inline ones: Level 60 ones use Classic numbers, Hit caps and Defense; four Druid icons and four text-chip abilities unchecked) once real guides exist. Original note: the Druid "Bear tank cheat sheet" (stat order, Enrage/armor note, green suffixes) (both Level 30 and 60 versions) once real guides exist; the 60 one uses Classic numbers (Hit cap, Defense) and four unchecked icons (Growl, Challenging Roar, Frenzied Regeneration, Barkskin).
 
-4. **Move item data from Wowhead to WCLBox**: plan and decisions in `docs/wclbox-migration-plan.md` (owner approved planning 2026-11-13; nothing built yet).
+4. **Move item data from Wowhead to WCLBox**: plan and decisions in `docs/wclbox-migration-plan.md`, step-by-step for Claude Code in `docs/claude-code-wclbox-handoff.md` (owner approved planning 2026-11-13; nothing built yet).
 
 ## 5b. Review findings still open (docs/reviews/2026-11, 2026-11-09)
 1. **Run the GitHub "Rehearsal" workflow once** (never run) and put a `--only pages,bis,a11y` subset on a weekly schedule.

@@ -1,0 +1,1372 @@
+# Mr.BiZ re-rank review (items table now from WCLBox, build 1.60.1.70888)
+
+## Counts first
+- `bis-data.json` / `BiZData.lua` rows and specs are **identical** to before the switch (12,543 rows, 27 specs): `build_bis.py` takes picks and scores from ForeverDB's lists and does not read `bis/items.json`. The items switch therefore re-ranks nothing by itself. It changes `bis/items.json` (10,421 → 11622 items, all with live stats), which `rank.py` and `items_validate.py` use; both read reference files that no longer exist (0 rows), so they are stale.
+- ForeverDB's lists were made on build ['1.60.1.70862']; WCLBox is 1.60.1.70888 (70938 exists since 2026-11-13, not pulled).
+- distinct best picks: 1384; with the two next picks: 2757
+- WCLBox status of best picks: {'new': 544, 'changed': 526, 'same': 266, 'not in WCLBox': 48}
+- `changed` = differs from the beta version (stats, level or name), so ForeverDB's score for it may be stale. `missing`/`not in WCLBox` = id absent in the live list, so the pick may be gone from the game.
+- Best picks that are not equippable gear in the table (rings, tokens, enchants by id): see per class, those lack detail.
+
+## By class (best picks only; `changed` and absent items listed, `same` omitted)
+
+### Priest
+best picks 278: {'same': 32, 'new': 114, 'changed': 121, 'not in WCLBox': 11}
+- 744 Thunderbrew's Boot Flask: **changed** | req.lvl 0; +8 Spirit
+- 1443 Jeweled Amulet of Cainwyn: **changed** | req.lvl 55; +18 Intellect / +10 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage 
+- 1449 Minor Channeling Ring: **changed** | req.lvl 0; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 1484 Witching Stave: **changed** | req.lvl 17; +6 Stamina / +5 Intellect / +8 Shadow Resistance / Equip: Increases the damage dealt by Shadow spells and effects by up 
+- 1713 Ankh of Life: **changed** | req.lvl 40; +12 Spirit
+- 1929 Silk-threaded Trousers: **changed** | req.lvl 13; +5 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 1974 Mindthrust Bracers: **changed** | req.lvl 17; +5 Intellect / +1 Stamina / Equip: Regenerates 3 mana every 5 seconds.
+- 1980 Underworld Band: **changed** | req.lvl 38; +12 Stamina / +5 Intellect / Equip: Increases the damage dealt by Shadow spells and effects by up to 14.
+- 2043 Ring of Forlorn Spirits: **changed** | req.lvl 0; +2 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 2292 Necrology Robes: **changed** | req.lvl 20; +5 Intellect / +3 Stamina / +5 Shadow Resistance / Equip: Increases the damage dealt by Shadow spells and effects by up 
+- 2549 Staff of the Shade: **changed** | req.lvl 22; +15 Stamina / Equip: Increases the damage dealt by Shadow spells and effects by up to 37.
+- 2567 Evocator's Blade: **changed** | req.lvl 20; +2 Intellect / +5 Spirit
+- 2580 Reinforced Linen Cape: **changed** | req.lvl 7; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 2582 Green Woolen Vest: **changed** | req.lvl 12; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 2584 Woolen Cape: **changed** | req.lvl 11; +1 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 2721 Holy Shroud: **changed** | req.lvl 27; +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage by up to 11.
+- 2816 Death Speaker Scepter: **changed** | req.lvl 28; Equip: Restores 12 HP every 5 seconds. / Equip: Increases the healing effect of spells by up to 68. / Equip: Increases t
+- 3449 Mystic Shawl: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4197 Berylline Pads: **changed** | req.lvl 0; +5 Stamina / +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 4307 Heavy Linen Gloves: **changed** | req.lvl 5; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 4309 Handstitched Linen Britches: **changed** | req.lvl 9; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4310 Heavy Woolen Gloves: **changed** | req.lvl 12; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4311 Heavy Woolen Cloak: **changed** | req.lvl 16; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4314 Double-Stitched Woolen Shoulders: **changed** | req.lvl 17; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4315 Reinforced Woolen Shoulders: **changed** | req.lvl 19; +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 4320 Spidersilk Boots: **changed** | req.lvl 20; +4 Intellect / +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 4744 Arcane Runed Bracers: **changed** | req.lvl 0; +1 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 9.
+- 4768 Adept's Gloves: **changed** | req.lvl 12; +5 Intellect / +5 Stamina
+- 5197 Cookie's Tenderizer: **changed** | req.lvl 16; +4 Spirit
+- 5242 Cinder Wand: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 5542 Pearl-clasped Cloak: **changed** | req.lvl 14; +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 6242 Blue Linen Robe: **changed** | req.lvl 9; +3 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 6677 Spellcrafter Wand: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 6682 Death Speaker Robes: **changed** | req.lvl 26; +4 Stamina / +11 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage 
+- 6685 Death Speaker Mantle: **changed** | req.lvl 27; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6750 Snake Hoop: **changed** | req.lvl 0; +5 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6901 Glowing Thresher Cape: **changed** | req.lvl 24; +8 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 7 and damage by up to 3.
+- 7001 Gravestone Scepter: **changed** | req.lvl 0; +3 Spirit / Equip: Increases the damage dealt by Shadow spells and effects by up to 6.
+- 7049 Truefaith Gloves: **changed** | req.lvl 25; +3 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by up to 5.
+- 7057 Green Silken Shoulders: **changed** | req.lvl 31; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 7283 Black Whelp Cloak: **changed** | req.lvl 15; Equip: Increases the damage and healing of all spells and magic effects by up to 3.
+- 7673 Talvash's Enhancing Necklace: **changed** | req.lvl 0; +1 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 7684 Bloodmage Mantle: **changed** | req.lvl 30; +9 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Restores 9 H
+- 7685 Orb of the Forgotten Seer: **changed** | req.lvl 32; Equip: Increases the damage and healing of all spells and magic effects by up to 14.
+- 7708 Necrotic Wand: **changed** | req.lvl 30; +4 Shadow Resistance / Equip: Increases the healing effect of all spells and magic effects by up to 9 and damage by up t
+- 7709 Blighted Leggings: **changed** | req.lvl 30; +14 Spirit / Equip: Increases the damage dealt by Shadow spells and effects by up to 19.
+- 7712 Mantle of Doan: **changed** | req.lvl 34; +6 Intellect / +8 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 8071 Sizzle Stick: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 9381 Earthen Rod: **changed** | req.lvl 33; +5 Nature Resistance / Equip: Increases the healing effect of all spells and magic effects by up to 9 and damage by up t
+- 9393 Beacon of Hope: **changed** | req.lvl 33; +4 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by up to 8.
+- 9407 Stoneweaver Leggings: **changed** | req.lvl 37; +12 Spirit / +9 Stamina / +8 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 20
+- 9429 Miner's Hat of the Deep: **changed** | req.lvl 39; +17 Intellect / +7 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 9431 Papal Fez: **changed** | req.lvl 38; +17 Intellect / +9 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage b
+- 9447 Electrocutioner Lagnut: **changed** | req.lvl 29; +7 Spirit / +4 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 9 and damage by up
+- 9448 Spidertank Oilrag: **changed** | req.lvl 29; Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Regenerates 3 mana every 5 
+- 9623 Civinad Robes: **changed** | req.lvl 0; +12 Spirit / +7 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 26 points, and th
+- 10020 Stormcloth Vest: **changed** | req.lvl 40; +8 Spirit / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 58 and damage by u
+- 10033 Red Mageweave Headband: **changed** | req.lvl 43; +20 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 19.
+- 10048 Colorful Kilt: **changed** | req.lvl 14; +5 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 10769 Glowing Eye of Mordresh: **changed** | req.lvl 36; +8 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage by up to 7.
+- 10770 Mordresh's Lifeless Skull: **changed** | req.lvl 36; +5 Spirit / Equip: Increases the damage dealt by Shadow spells and effects by up to 16.
+- 10919 Apothecary Gloves: **changed** | req.lvl 0; Equip: Herbalism skill +2 points. / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 11262 Orb of Lorica: **changed** | req.lvl 0; +10 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage by up to 6.
+- 11288 Greater Magic Wand: **changed** | req.lvl 13; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 11302 Uther's Strength: **changed** | req.lvl 47; Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage by up to 6. / Equip: When hit
+- 11623 Spritecaster Cape: **changed** | req.lvl 47; +5 Stamina / +6 Intellect / +6 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to
+- 11819 Second Wind: **changed** | req.lvl 54; Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by up to 5.
+- 11832 Burst of Knowledge: **changed** | req.lvl 53; Equip: Regenerates 8 mana every 5 seconds.
+- 11841 Senior Designer's Pantaloons: **changed** | req.lvl 50; +18 Spirit / +8 Stamina / +7 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 37
+- 12296 Spark of the People's Militia: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 12471 Desertwalker Cane: **changed** | req.lvl 42; +7 Intellect / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage b
+- 12543 Songstone of Ironforge: **changed** | req.lvl 0; +7 Intellect / Equip: Reduces the magic resistance of your spell target by 2. / Equip: Increases the damage and healing 
+- 13062 Thunderwood: **changed** | req.lvl 22; Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 13102 Cassandra's Grace: **changed** | req.lvl 42; +9 Spirit / +7 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 44 and damage by u
+- 13170 Skyshroud Leggings: **changed** | req.lvl 55; +11 Stamina / +12 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 30.
+- 13178 Rosewine Circle: **changed** | req.lvl 55; Equip: Increases the healing effect of all spells and magic effects by up to 24 and damage by up to 8. / Equip: Regenera
+- 13213 Smolderweb's Eye: **changed** | req.lvl 55; +5 Nature Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 13958 Wyrmthalak's Shackles: **changed** | req.lvl 0; +15 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage by up to 7.
+- 14139 Mooncloth Shoulders: **changed** | req.lvl 56; +9 Stamina / +11 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage by 
+- 14140 Mooncloth Circlet: **changed** | req.lvl 57; +13 Stamina / +15 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 51 and damage by
+- 14144 Ghostweave Pants: **changed** | req.lvl 53; +20 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 26.
+- 14154 Truefaith Vestments: **changed** | req.lvl 57; +14 Stamina / +16 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 73 and damage by
+- 15444 Staff of Orgrimmar: **changed** | req.lvl 0; +6 Agility / +6 Intellect
+- 15445 Hammer of Orgrimmar: **changed** | req.lvl 0; +3 Strength / +3 Spirit
+- 15452 Featherbead Bracers: **changed** | req.lvl 0; +3 Intellect
+- 15802 Mooncloth Boots: **changed** | req.lvl 51; +14 Intellect / +13 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 24 and damage 
+- 16058 Fordring's Seal: **changed** | req.lvl 0; +6 Intellect / +5 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage b
+- 16975 Warsong Sash: **changed** | req.lvl 0; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 17748 Vinerot Sandals: **changed** | req.lvl 46; +9 Intellect / +10 Spirit / +12 Nature Resistance / Equip: Increases the healing effect of all spells and magic effects 
+- 18083 Jumanza Grips: **changed** | req.lvl 43; +7 Intellect / +10 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage 
+- 18386 Padre's Trousers: **changed** | req.lvl 56; +20 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage by up to 12. 
+- 18405 Belt of the Archmage: **changed** | req.lvl 57; +16 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 20. / Equ
+- 18409 Mooncloth Gloves: **changed** | req.lvl 57; +16 Intellect / +9 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage 
+- 18510 Hide of the Wild: **changed** | req.lvl 57; +10 Intellect / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 42 and damage 
+- 18723 Animated Chain Necklace: **changed** | req.lvl 57; +8 Stamina / +7 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage by u
+- 18951 Evonice's Landin' Pilla: **changed** | req.lvl 0; +10 Spirit / Equip: When equipped, the damage taken when falling from a height is reduced.
+- 19047 Wisdom of the Timbermaw: **changed** | req.lvl 53; +14 Intellect / +9 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 31 and damage b
+- 19050 Mantle of the Timbermaw: **changed** | req.lvl 56; +13 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 17. / Equip: Increases 
+- 19120 Rune of the Guard Captain: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 0.7%. / Equip: Attack power increased by 14 points. When in fores
+- 19140 Cauterizing Band: **changed** | req.lvl 60; +12 Intellect / +9 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 46 and damage 
+- 19309 Tome of Shadow Force: **changed** | req.lvl 55; +7 Stamina / Equip: Increases the damage dealt by Shadow spells and effects by up to 31.
+- 19312 Lei of the Lifegiver: **changed** | req.lvl 55; +11 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage by up to 12. / 
+- 19507 Inquisitor's Shawl: **changed** | req.lvl 37; +13 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by up to 7.
+- 19523 Lorekeeper's Ring: **changed** | req.lvl 48; +6 Stamina / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19525 Lorekeeper's Ring: **changed** | req.lvl 28; +4 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19531 Caretaker's Cape: **changed** | req.lvl 48; +9 Stamina / +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by u
+- 19533 Caretaker's Cape: **changed** | req.lvl 28; +6 Stamina / +4 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 13 and damage by u
+- 19990 Blessed Prayer Beads: **changed** | req.lvl 0; +7 Shadow Resistance / Equip: Increases the healing effect of all spells and magic effects by up to 11 and damage by up 
+- 20082 Woestave: **changed** | req.lvl 0; +3 Stamina / Equip: Increases the damage dealt by Shadow spells and effects by up to 11.
+- 20098 Highlander's Cloth Girdle: **changed** | req.lvl 38; +4 Stamina / +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 14.
+- 20099 Highlander's Cloth Girdle: **changed** | req.lvl 28; +4 Stamina / +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 20428 Caretaker's Cape: **changed** | req.lvl 18; +4 Stamina / +2 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 9 and damage by up
+- 20431 Lorekeeper's Ring: **changed** | req.lvl 18; +2 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 20717 Desert Bloom Gloves: **changed** | req.lvl 0; +5 Stamina / +5 Intellect / +5 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 51 
+- 21709 Ring of the Fallen God: **changed** | req.lvl 60; +6 Intellect / +5 Stamina / Equip: Increases damage and healing from all spells and magic effects by up to 37. / Equip: 
+- 22234 Mantle of Lost Hope: **changed** | req.lvl 48; +11 Intellect / +5 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 26 points, and
+- 22254 Wand of Eternal Light: **changed** | req.lvl 52; +6 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 9 and damage by up to 3. / E
+- 22257 Bloodclot Band: **changed** | req.lvl 52; +8 Intellect / +8 Stamina / +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 15 
+- 22408 Ritssyn's Wand of Bad Mojo: **changed** | req.lvl 58; +5 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 22631 Atiesh, Greatstaff of the Guardian: **changed** | req.lvl 60; +28 Stamina / +28 Intellect / +27 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up
+- 23025 Seal of the Damned: **changed** | req.lvl 60; +17 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 21. / Equip: Increases yo
+- 226950 Virtuous Mitts: **not in WCLBox**
+- 226958 Virtuous Hands: **not in WCLBox**
+- 226959 Virtuous Slippers: **not in WCLBox**
+- 239565 Garb of Revelation: **not in WCLBox**
+- 239572 Boots of Revelation: **not in WCLBox**
+- 239574 Hands of Revelation: **not in WCLBox**
+- 239575 Crown of Revelation: **not in WCLBox**
+- 239577 Pants of Revelation: **not in WCLBox**
+- 239581 Mantle of Revelation: **not in WCLBox**
+- 239582 Girdle of Revelation: **not in WCLBox**
+- 239583 Wrists of Revelation: **not in WCLBox**
+
+### Warlock
+best picks 235: {'same': 37, 'new': 95, 'changed': 103}
+- 1449 Minor Channeling Ring: **changed** | req.lvl 0; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 1484 Witching Stave: **changed** | req.lvl 17; +6 Stamina / +5 Intellect / +8 Shadow Resistance / Equip: Increases the damage dealt by Shadow spells and effects by up 
+- 1490 Guardian Talisman: **changed** | req.lvl 0; +9 Stamina
+- 1713 Ankh of Life: **changed** | req.lvl 40; +12 Spirit
+- 1929 Silk-threaded Trousers: **changed** | req.lvl 13; +5 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 1980 Underworld Band: **changed** | req.lvl 38; +12 Stamina / +5 Intellect / Equip: Increases the damage dealt by Shadow spells and effects by up to 14.
+- 2043 Ring of Forlorn Spirits: **changed** | req.lvl 0; +2 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 2292 Necrology Robes: **changed** | req.lvl 20; +5 Intellect / +3 Stamina / +5 Shadow Resistance / Equip: Increases the damage dealt by Shadow spells and effects by up 
+- 2549 Staff of the Shade: **changed** | req.lvl 22; +15 Stamina / Equip: Increases the damage dealt by Shadow spells and effects by up to 37.
+- 2578 Barbaric Linen Vest: **changed** | req.lvl 9; +2 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 2582 Green Woolen Vest: **changed** | req.lvl 12; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 3449 Mystic Shawl: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4197 Berylline Pads: **changed** | req.lvl 0; +5 Stamina / +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 4307 Heavy Linen Gloves: **changed** | req.lvl 5; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 4309 Handstitched Linen Britches: **changed** | req.lvl 9; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4310 Heavy Woolen Gloves: **changed** | req.lvl 12; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4311 Heavy Woolen Cloak: **changed** | req.lvl 16; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4312 Soft-soled Linen Boots: **changed** | req.lvl 11; +2 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4314 Double-Stitched Woolen Shoulders: **changed** | req.lvl 17; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4315 Reinforced Woolen Shoulders: **changed** | req.lvl 19; +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 4320 Spidersilk Boots: **changed** | req.lvl 20; +4 Intellect / +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 4744 Arcane Runed Bracers: **changed** | req.lvl 0; +1 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 9.
+- 4768 Adept's Gloves: **changed** | req.lvl 12; +5 Intellect / +5 Stamina
+- 5183 Pulsating Hydra Heart: **changed** | req.lvl 17; +2 Stamina / Equip: Increases the damage dealt by fire spells and effects by up to 8.
+- 5242 Cinder Wand: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 5249 Burning Sliver: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 5542 Pearl-clasped Cloak: **changed** | req.lvl 14; +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 6632 Feyscale Cloak: **changed** | req.lvl 16; +5 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 3.
+- 6677 Spellcrafter Wand: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 6685 Death Speaker Mantle: **changed** | req.lvl 27; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6750 Snake Hoop: **changed** | req.lvl 0; +5 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 7001 Gravestone Scepter: **changed** | req.lvl 0; +3 Spirit / Equip: Increases the damage dealt by Shadow spells and effects by up to 6.
+- 7058 Crimson Silk Vest: **changed** | req.lvl 32; +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 7283 Black Whelp Cloak: **changed** | req.lvl 15; Equip: Increases the damage and healing of all spells and magic effects by up to 3.
+- 7673 Talvash's Enhancing Necklace: **changed** | req.lvl 0; +1 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 7684 Bloodmage Mantle: **changed** | req.lvl 30; +9 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Restores 9 H
+- 7685 Orb of the Forgotten Seer: **changed** | req.lvl 32; Equip: Increases the damage and healing of all spells and magic effects by up to 14.
+- 7709 Blighted Leggings: **changed** | req.lvl 30; +14 Spirit / Equip: Increases the damage dealt by Shadow spells and effects by up to 19.
+- 8071 Sizzle Stick: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 9429 Miner's Hat of the Deep: **changed** | req.lvl 39; +17 Intellect / +7 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 9448 Spidertank Oilrag: **changed** | req.lvl 29; Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Regenerates 3 mana every 5 
+- 10033 Red Mageweave Headband: **changed** | req.lvl 43; +20 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 19.
+- 10047 Simple Kilt: **changed** | req.lvl 10; +3 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 10766 Plaguerot Sprig: **changed** | req.lvl 37; +5 Shadow Resistance / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 10919 Apothecary Gloves: **changed** | req.lvl 0; Equip: Herbalism skill +2 points. / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 11288 Greater Magic Wand: **changed** | req.lvl 13; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 11623 Spritecaster Cape: **changed** | req.lvl 47; +5 Stamina / +6 Intellect / +6 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to
+- 11624 Kentic Amice: **changed** | req.lvl 47; +13 Intellect / +6 Spirit / +6 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up t
+- 11748 Pyric Caduceus: **changed** | req.lvl 48; +3 Spirit / Equip: Increases the damage dealt by fire spells and effects by up to 13.
+- 11822 Omnicast Boots: **changed** | req.lvl 54; +12 Intellect / +8 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 20.
+- 11904 Spirit of Aquementas: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 21.
+- 12260 Searing Golden Blade: **changed** | req.lvl 34; +7 Intellect / Equip: Increases damage dealt by fire spells and effects by up to 39.
+- 12296 Spark of the People's Militia: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 12543 Songstone of Ironforge: **changed** | req.lvl 0; +7 Intellect / Equip: Reduces the magic resistance of your spell target by 2. / Equip: Increases the damage and healing 
+- 13062 Thunderwood: **changed** | req.lvl 22; Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 13170 Skyshroud Leggings: **changed** | req.lvl 55; +11 Stamina / +12 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 30.
+- 13213 Smolderweb's Eye: **changed** | req.lvl 55; +5 Nature Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 14144 Ghostweave Pants: **changed** | req.lvl 53; +20 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 26.
+- 14146 Gloves of Spell Mastery: **changed** | req.lvl 57; +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Increases y
+- 14153 Robe of the Void: **changed** | req.lvl 57; +10 Stamina / +9 Intellect / Equip: Increases damage and healing from all spells and magic effects by up to 46.
+- 15106 Staff of Dar'Orahil: **changed** | req.lvl 0; +11 Intellect / +3 Stamina / Equip: Increases the damage dealt by Shadow spells and effects by up to 39. / Equip: Increa
+- 15109 Staff of Soran'ruk: **changed** | req.lvl 0; +14 Stamina / Equip: Increases the damage dealt by Shadow spells and effects by up to 34. / Equip: Increases damage deal
+- 15443 Kris of Orgrimmar: **changed** | req.lvl 0; +4 Stamina
+- 15444 Staff of Orgrimmar: **changed** | req.lvl 0; +6 Agility / +6 Intellect
+- 15455 Dustfall Robes: **changed** | req.lvl 0; +8 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 13.
+- 16975 Warsong Sash: **changed** | req.lvl 0; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 17713 Blackstone Ring: **changed** | req.lvl 49; +6 Stamina / Equip: +20 attack power. / Equip: Increases your chance of hitting your target by 1%.
+- 17755 Satyrmane Sash: **changed** | req.lvl 45; +10 Intellect / +7 Stamina / +10 Shadow Resistance / Equip: Increases the damage and healing of all spells and magic eff
+- 18301 Lethtendris's Wand: **changed** | req.lvl 53; +5 Arcane Resistance / Equip: Increases the damage and healing of all spells and magic effects by up to 9.
+- 18314 Ring of Demonic Guile: **changed** | req.lvl 54; +10 Intellect / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases your chance of hitting your target by 1%.
+- 18316 Obsidian Bauble: **changed** | req.lvl 53; +9 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 15. / Equip: Increases y
+- 18317 Tempest Talisman: **changed** | req.lvl 53; +6 Intellect / +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 7 and damage by 
+- 18405 Belt of the Archmage: **changed** | req.lvl 57; +16 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 20. / Equ
+- 18510 Hide of the Wild: **changed** | req.lvl 57; +10 Intellect / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 42 and damage 
+- 18706 Arena Master: **changed** | req.lvl 35; +7 Stamina / Equip: Damage taken while in the Arena or Mallet Arena area is reduced by 5%.
+- 18727 Crimson Felt Hat: **changed** | req.lvl 54; +10 Intellect / +10 Spirit / +8 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up 
+- 19050 Mantle of the Timbermaw: **changed** | req.lvl 56; +13 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 17. / Equip: Increases 
+- 19120 Rune of the Guard Captain: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 0.7%. / Equip: Attack power increased by 14 points. When in fores
+- 19311 Tome of Fiery Arcana: **changed** | req.lvl 55; Equip: Increases damage dealt by fire spells and effects by up to 37.
+- 19325 Don Julio's Band: **changed** | req.lvl 55; +10 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance of hitting your target 
+- 19523 Lorekeeper's Ring: **changed** | req.lvl 48; +6 Stamina / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19525 Lorekeeper's Ring: **changed** | req.lvl 28; +4 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19682 Bloodvine Vest: **changed** | req.lvl 60; +13 Intellect / Equip: Increases your chance of hitting your target by 2%. / Equip: Increases the damage and healing of 
+- 19683 Bloodvine Leggings: **changed** | req.lvl 60; +6 Intellect / Equip: Increases your chance of hitting your target by 1%. / Equip: Increases damage and healing from all
+- 19684 Bloodvine Boots: **changed** | req.lvl 60; +16 Intellect / Equip: Increases your chance of hitting your target by 1%. / Equip: Increases the damage and healing of 
+- 20097 Highlander's Cloth Girdle: **changed** | req.lvl 48; +6 Stamina / +5 Intellect / Equip: Increases your critical strike chance by 1%. / Equip: Increases the damage and healin
+- 20098 Highlander's Cloth Girdle: **changed** | req.lvl 38; +4 Stamina / +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 14.
+- 20099 Highlander's Cloth Girdle: **changed** | req.lvl 28; +4 Stamina / +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 20431 Lorekeeper's Ring: **changed** | req.lvl 18; +2 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 20530 Robes of Servitude: **changed** | req.lvl 0; +15 Stamina / +10 Intellect / Equip: Increases damage dealt by fire spells and effects by up to 23. / Equip: Increases t
+- 20534 Abyss Shard: **changed** | req.lvl 0; +10 Shadow Resistance / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 20536 Soul Harvester: **changed** | req.lvl 0; +19 Stamina / +16 Intellect / Equip: Increases the damage dealt by Shadow spells and effects by up to 73. / Equip: Incre
+- 21118 Talisman of Arathor: **changed** | req.lvl 38; +8 Stamina
+- 21119 Talisman of Arathor: **changed** | req.lvl 28; +6 Stamina
+- 21565 Rune of Perfection: **changed** | req.lvl 40; +8 Stamina / Equip: Your spell penetrations grant 3 magic resistance. Spell penetrations increase by an additional 7 whe
+- 21566 Rune of Perfection: **changed** | req.lvl 20; +4 Stamina / Equip: Your spell penetration increases by 2 magic resistance. Spell penetration increases by an additional
+- 21709 Ring of the Fallen God: **changed** | req.lvl 60; +6 Intellect / +5 Stamina / Equip: Increases damage and healing from all spells and magic effects by up to 37. / Equip: 
+- 22074 Deathmist Mask: **changed** | req.lvl 0; +24 Intellect / +24 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 16. / Equ
+- 22077 Deathmist Wraps: **changed** | req.lvl 0; +16 Stamina / +13 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 13. / Equ
+- 22266 Flarethorn: **changed** | req.lvl 52; +5 Intellect / +12 Fire Resistance / Equip: Increases the damage caused by fire spells and effects by up to 81 points.
+- 22408 Ritssyn's Wand of Bad Mojo: **changed** | req.lvl 58; +5 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 22630 Atiesh, Greatstaff of the Guardian: **changed** | req.lvl 60; +30 Stamina / +29 Intellect / Equip: Increases your critical strike chance by 2%. / Equip: Increases the damage and heal
+- 23025 Seal of the Damned: **changed** | req.lvl 60; +17 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 21. / Equip: Increases yo
+
+### Mage
+best picks 261: {'same': 43, 'new': 106, 'changed': 108, 'not in WCLBox': 4}
+- 744 Thunderbrew's Boot Flask: **changed** | req.lvl 0; +8 Spirit
+- 942 Freezing Band: **changed** | req.lvl 47; Equip: Increases the damage dealt by Frost spells and effects by up to 13. / Equip: When hit, has a 1% chance to deal 50
+- 944 Elemental Mage Staff: **changed** | req.lvl 56; +26 Intellect / +10 Fire Resistance / +10 Frost Resistance / Equip: Increases damage dealt by fire spells and effects by
+- 1449 Minor Channeling Ring: **changed** | req.lvl 0; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 1713 Ankh of Life: **changed** | req.lvl 40; +12 Spirit
+- 1929 Silk-threaded Trousers: **changed** | req.lvl 13; +5 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 1974 Mindthrust Bracers: **changed** | req.lvl 17; +5 Intellect / +1 Stamina / Equip: Regenerates 3 mana every 5 seconds.
+- 2567 Evocator's Blade: **changed** | req.lvl 20; +2 Intellect / +5 Spirit
+- 2582 Green Woolen Vest: **changed** | req.lvl 12; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 2584 Woolen Cape: **changed** | req.lvl 11; +1 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 2721 Holy Shroud: **changed** | req.lvl 27; +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage by up to 11.
+- 3449 Mystic Shawl: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4197 Berylline Pads: **changed** | req.lvl 0; +5 Stamina / +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 4307 Heavy Linen Gloves: **changed** | req.lvl 5; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 4309 Handstitched Linen Britches: **changed** | req.lvl 9; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4310 Heavy Woolen Gloves: **changed** | req.lvl 12; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4311 Heavy Woolen Cloak: **changed** | req.lvl 16; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4314 Double-Stitched Woolen Shoulders: **changed** | req.lvl 17; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4315 Reinforced Woolen Shoulders: **changed** | req.lvl 19; +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 4320 Spidersilk Boots: **changed** | req.lvl 20; +4 Intellect / +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 5183 Pulsating Hydra Heart: **changed** | req.lvl 17; +2 Stamina / Equip: Increases the damage dealt by fire spells and effects by up to 8.
+- 5212 Blazing Wand: **changed** | req.lvl 12; Equip: Increases the damage dealt by fire spells and effects by up to 1.
+- 5213 Scorching Wand: **changed** | req.lvl 30; Equip: Increases damage dealt by fire spells and effects by up to 6.
+- 5242 Cinder Wand: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 5542 Pearl-clasped Cloak: **changed** | req.lvl 14; +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 6392 Belt of Arugal: **changed** | req.lvl 23; +3 Intellect / +5 Spirit / +2 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to
+- 6677 Spellcrafter Wand: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 6685 Death Speaker Mantle: **changed** | req.lvl 27; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6750 Snake Hoop: **changed** | req.lvl 0; +5 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6901 Glowing Thresher Cape: **changed** | req.lvl 24; +8 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 7 and damage by up to 3.
+- 6903 Gaze Dreamer Pants: **changed** | req.lvl 23; +9 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 7057 Green Silken Shoulders: **changed** | req.lvl 31; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 7673 Talvash's Enhancing Necklace: **changed** | req.lvl 0; +1 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 7684 Bloodmage Mantle: **changed** | req.lvl 30; +9 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Restores 9 H
+- 7685 Orb of the Forgotten Seer: **changed** | req.lvl 32; Equip: Increases the damage and healing of all spells and magic effects by up to 14.
+- 7728 Beguiler Robes: **changed** | req.lvl 29; +8 Spirit / +12 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 9.
+- 7757 Windweaver Staff: **changed** | req.lvl 32; +17 Stamina / Equip: Reduces your spell target's magic resistance by 3. / Equip: Increases the damage dealt by arcane sp
+- 8071 Sizzle Stick: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 9429 Miner's Hat of the Deep: **changed** | req.lvl 39; +17 Intellect / +7 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 9431 Papal Fez: **changed** | req.lvl 38; +17 Intellect / +9 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage b
+- 9448 Spidertank Oilrag: **changed** | req.lvl 29; Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Regenerates 3 mana every 5 
+- 9454 Acidic Walkers: **changed** | req.lvl 27; +8 Intellect / +4 Spirit / +5 Nature Resistance / Equip: Increases the damage and healing of all spells and magic effect
+- 9492 Electromagnetic Gigaflux Reactivator: **changed** | req.lvl 31; +9 Spirit / +8 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 10033 Red Mageweave Headband: **changed** | req.lvl 43; +20 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 19.
+- 10572 Freezing Shard: **changed** | req.lvl 34; Equip: Increases the damage dealt by Frost spells and effects by up to 10.
+- 10574 Corpseshroud: **changed** | req.lvl 35; +19 Intellect / +5 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 10654 Jutebraid Gloves: **changed** | req.lvl 0; +5 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 10769 Glowing Eye of Mordresh: **changed** | req.lvl 36; +8 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage by up to 7.
+- 10771 Deathmage Sash: **changed** | req.lvl 36; +15 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 10919 Apothecary Gloves: **changed** | req.lvl 0; Equip: Herbalism skill +2 points. / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 11288 Greater Magic Wand: **changed** | req.lvl 13; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 11623 Spritecaster Cape: **changed** | req.lvl 47; +5 Stamina / +6 Intellect / +6 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to
+- 11624 Kentic Amice: **changed** | req.lvl 47; +13 Intellect / +6 Spirit / +6 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up t
+- 11748 Pyric Caduceus: **changed** | req.lvl 48; +3 Spirit / Equip: Increases the damage dealt by fire spells and effects by up to 13.
+- 11782 Boreal Mantle: **changed** | req.lvl 52; +8 Intellect / +5 Stamina / Equip: Increases the damage dealt by Frost spells and effects by up to 27.
+- 11822 Omnicast Boots: **changed** | req.lvl 54; +12 Intellect / +8 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 20.
+- 11832 Burst of Knowledge: **changed** | req.lvl 53; Equip: Regenerates 8 mana every 5 seconds.
+- 11841 Senior Designer's Pantaloons: **changed** | req.lvl 50; +18 Spirit / +8 Stamina / +7 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 37
+- 11904 Spirit of Aquementas: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 21.
+- 12038 Lagrave's Seal: **changed** | req.lvl 0; +7 Spirit / +7 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 12260 Searing Golden Blade: **changed** | req.lvl 34; +7 Intellect / Equip: Increases damage dealt by fire spells and effects by up to 39.
+- 12296 Spark of the People's Militia: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 12543 Songstone of Ironforge: **changed** | req.lvl 0; +7 Intellect / Equip: Reduces the magic resistance of your spell target by 2. / Equip: Increases the damage and healing 
+- 12984 Skycaller: **changed** | req.lvl 16; Equip: Increases the damage dealt by arcane spells and effects by up to 6.
+- 13062 Thunderwood: **changed** | req.lvl 22; Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 13063 Starfaller: **changed** | req.lvl 29; +4 Intellect / Equip: Increases the damage dealt by arcane spells and effects by up to 6.
+- 13170 Skyshroud Leggings: **changed** | req.lvl 55; +11 Stamina / +12 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 30.
+- 13213 Smolderweb's Eye: **changed** | req.lvl 55; +5 Nature Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 14144 Ghostweave Pants: **changed** | req.lvl 53; +20 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 26.
+- 14146 Gloves of Spell Mastery: **changed** | req.lvl 57; +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Increases y
+- 14152 Robe of the Archmage: **changed** | req.lvl 57; +12 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 40. / Equip: Increases 
+- 14626 Necropile Robe: **changed** | req.lvl 56; +22 Stamina / +12 Spirit / +12 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up
+- 15421 Shroud of the Exile: **changed** | req.lvl 0; +10 Intellect / +7 Spirit / +7 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up t
+- 15444 Staff of Orgrimmar: **changed** | req.lvl 0; +6 Agility / +6 Intellect
+- 15452 Featherbead Bracers: **changed** | req.lvl 0; +3 Intellect
+- 16975 Warsong Sash: **changed** | req.lvl 0; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 17755 Satyrmane Sash: **changed** | req.lvl 45; +10 Intellect / +7 Stamina / +10 Shadow Resistance / Equip: Increases the damage and healing of all spells and magic eff
+- 18301 Lethtendris's Wand: **changed** | req.lvl 53; +5 Arcane Resistance / Equip: Increases the damage and healing of all spells and magic effects by up to 9.
+- 18314 Ring of Demonic Guile: **changed** | req.lvl 54; +10 Intellect / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases your chance of hitting your target by 1%.
+- 18316 Obsidian Bauble: **changed** | req.lvl 53; +9 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 15. / Equip: Increases y
+- 18405 Belt of the Archmage: **changed** | req.lvl 57; +16 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 20. / Equ
+- 18510 Hide of the Wild: **changed** | req.lvl 57; +10 Intellect / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 42 and damage 
+- 18727 Crimson Felt Hat: **changed** | req.lvl 54; +10 Intellect / +10 Spirit / +8 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up 
+- 19050 Mantle of the Timbermaw: **changed** | req.lvl 56; +13 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 17. / Equip: Increases 
+- 19120 Rune of the Guard Captain: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 0.7%. / Equip: Attack power increased by 14 points. When in fores
+- 19310 Tome of the Ice Lord: **changed** | req.lvl 55; +8 Intellect / Equip: Increases the damage dealt by Frost spells and effects by up to 31.
+- 19311 Tome of Fiery Arcana: **changed** | req.lvl 55; Equip: Increases damage dealt by fire spells and effects by up to 37.
+- 19315 Therazane's Touch: **changed** | req.lvl 55; Equip: Increases the damage and healing of all spells and magic effects by up to 29.
+- 19325 Don Julio's Band: **changed** | req.lvl 55; +10 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance of hitting your target 
+- 19523 Lorekeeper's Ring: **changed** | req.lvl 48; +6 Stamina / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19524 Lorekeeper's Ring: **changed** | req.lvl 38; +5 Stamina / Equip: Regenerates 3 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19525 Lorekeeper's Ring: **changed** | req.lvl 28; +4 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19683 Bloodvine Leggings: **changed** | req.lvl 60; +6 Intellect / Equip: Increases your chance of hitting your target by 1%. / Equip: Increases damage and healing from all
+- 19684 Bloodvine Boots: **changed** | req.lvl 60; +16 Intellect / Equip: Increases your chance of hitting your target by 1%. / Equip: Increases the damage and healing of 
+- 20036 Fire Ruby: **changed** | req.lvl 0; Equip: Increases damage dealt by fire spells and effects by up to 14.
+- 20037 Arcane Crystal Pendant: **changed** | req.lvl 0; +6 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 16.
+- 20097 Highlander's Cloth Girdle: **changed** | req.lvl 48; +6 Stamina / +5 Intellect / Equip: Increases your critical strike chance by 1%. / Equip: Increases the damage and healin
+- 20098 Highlander's Cloth Girdle: **changed** | req.lvl 38; +4 Stamina / +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 14.
+- 20099 Highlander's Cloth Girdle: **changed** | req.lvl 28; +4 Stamina / +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 20431 Lorekeeper's Ring: **changed** | req.lvl 18; +2 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 21709 Ring of the Fallen God: **changed** | req.lvl 60; +6 Intellect / +5 Stamina / Equip: Increases damage and healing from all spells and magic effects by up to 37. / Equip: 
+- 22064 Sorcerer's Boots: **changed** | req.lvl 0; +10 Spirit / +16 Intellect / +14 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up
+- 22065 Sorcerer's Crown: **changed** | req.lvl 0; +25 Intellect / +14 Spirit / +16 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up
+- 22266 Flarethorn: **changed** | req.lvl 52; +5 Intellect / +12 Fire Resistance / Equip: Increases the damage caused by fire spells and effects by up to 81 points.
+- 22383 Sageblade: **changed** | req.lvl 59; +14 Stamina / +6 Intellect / Equip: Increases your chance of hitting your target by 1%.
+- 22589 Atiesh, Greatstaff of the Guardian: **changed** | req.lvl 60; +31 Stamina / +32 Intellect / +24 Spirit / Equip: Increases your chance of hitting your target by 2%. / Equip: Increases
+- 23025 Seal of the Damned: **changed** | req.lvl 60; +17 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 21. / Equip: Increases yo
+- 23237 Ring of the Eternal Flame: **changed** | req.lvl 60; +10 Intellect / Equip: Increases damage dealt by fire spells and effects by up to 34. / Equip: Increases your critical s
+- 221344 Personal Spellbook: **not in WCLBox**
+- 226930 Sorcerer's Gauntlets: **not in WCLBox**
+- 226931 Sorcerer's Sandals: **not in WCLBox**
+- 231608 Marshal's Silk Gauntlets: **not in WCLBox**
+
+### Rogue
+best picks 251: {'new': 75, 'changed': 103, 'not in WCLBox': 3, 'same': 70}
+- 776 Vendetta: **changed** | req.lvl 26; +7 Agility
+- 867 Gloves of Holy Might: **changed** | req.lvl 37; Equip: Increases your critical strike chance by 1%. / Equip: +10 attack power.
+- 1292 Butcher's Cleaver: **changed** | req.lvl 20; +5 Strength / +2 Agility
+- 1355 Buckskin Cape: **changed** | req.lvl 12; +3 Agility
+- 1929 Silk-threaded Trousers: **changed** | req.lvl 13; +5 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 1935 Assassin's Blade: **changed** | req.lvl 19; +4 Agility / +3 Strength
+- 1936 Goblin Screwdriver: **changed** | req.lvl 13; +4 Agility
+- 1951 Blackwater Cutlass: **changed** | req.lvl 14; +4 Agility
+- 2041 Tunic of Westfall: **changed** | req.lvl 0; +5 Stamina / +11 Agility
+- 2098 Double-barreled Shotgun: **changed** | req.lvl 22; +3 Strength / +3 Agility
+- 2100 Precisely Calibrated Boomstick: **changed** | req.lvl 43; +7 Agility / Equip: Increases your critical strike chance by 0.5%.
+- 2164 Gut Ripper: **changed** | req.lvl 40; 
+- 2262 Mark of Kern: **changed** | req.lvl 31; +4 Stamina / Equip: +20 attack power.
+- 2264 Mantle of Thieves: **changed** | req.lvl 25; +10 Agility / +3 Spirit / +4 Stamina
+- 2316 Dark Leather Cloak: **changed** | req.lvl 17; +3 Agility / +2 Strength
+- 2941 Prison Shank: **changed** | req.lvl 23; +6 Agility / +2 Stamina
+- 3413 Doomspike: **changed** | req.lvl 22; +3 Strength / +3 Stamina
+- 4314 Double-Stitched Woolen Shoulders: **changed** | req.lvl 17; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4447 Cloak of Night: **changed** | req.lvl 23; +6 Agility
+- 5191 Cruel Barb: **changed** | req.lvl 19; Equip: +12 attack power.
+- 5192 Thief's Blade: **changed** | req.lvl 17; +4 Agility / Equip: Increase the chance of success with your search and disruption skills by 1%
+- 5257 Dark Hooded Cape: **changed** | req.lvl 34; +10 Agility / +4 Strength
+- 5309 Privateer Musket: **changed** | req.lvl 0; +2 Agility
+- 5404 Serpent's Shoulders: **changed** | req.lvl 18; +7 Spirit / +5 Agility
+- 6314 Wolfmaster Cape: **changed** | req.lvl 22; +3 Stamina / Equip: Attack power against beasts increased by 9. / Equip: +10 attack power.
+- 6331 Howling Blade: **changed** | req.lvl 33; +4 Agility
+- 6448 Tail Spike: **changed** | req.lvl 16; +3 Agility / +3 Strength
+- 6449 Glowing Lizardscale Cloak: **changed** | req.lvl 18; +6 Agility / +2 Nature Resistance
+- 6504 Wingblade: **changed** | req.lvl 0; +5 Agility / +2 Stamina
+- 6692 Pronged Reaver: **changed** | req.lvl 30; +5 Spirit / +5 Strength
+- 6802 Sword of Omen: **changed** | req.lvl 0; +9 Strength / +4 Stamina / +3 Agility
+- 6829 Sword of Serenity: **changed** | req.lvl 0; +9 Stamina / +4 Spirit
+- 7281 Light Leather Bracers: **changed** | req.lvl 9; +1 Agility / +1 Strength
+- 7348 Fletcher's Gloves: **changed** | req.lvl 20; Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance to parry attacks by-1%.
+- 7683 Bloody Brass Knuckles: **changed** | req.lvl 29; Equip: +12 attack power.
+- 7686 Ironspine's Eye: **changed** | req.lvl 30; +9 Agility / +4 Strength
+- 7687 Ironspine's Fist: **changed** | req.lvl 30; +7 Strength
+- 7755 Flintrock Shoulders: **changed** | req.lvl 33; +5 Strength / +10 Agility / +10 Stamina
+- 7756 Dog Training Gloves: **changed** | req.lvl 31; Equip: +24 attack power. / Equip: Attack power against beasts increased by 21.
+- 7761 Steelclaw Reaver: **changed** | req.lvl 33; +3 Agility / +8 Stamina
+- 8708 Hammer of Expertise: **changed** | req.lvl 40; 
+- 9378 Shovelphlange's Mining Axe: **changed** | req.lvl 35; +7 Strength / Equip: +11 Attack Power.
+- 9384 Stonevault Shiv: **changed** | req.lvl 31; +7 Agility / +3 Stamina
+- 9424 Ginn-su Sword: **changed** | req.lvl 36; +8 Agility / +4 Strength
+- 9456 Glass Shooter: **changed** | req.lvl 30; Equip: +12 attack power.
+- 9479 Embrace of the Lycan: **changed** | req.lvl 44; +16 Stamina / +5 Spirit / +8 Strength / Equip: +32 attack power.
+- 9509 Petrolspill Leggings: **changed** | req.lvl 25; +14 Agility / +6 Stamina / Equip: Fire damage received increased by 10%.
+- 9533 Masons Fraternity Ring: **changed** | req.lvl 0; +14 Agility / +5 Stamina
+- 9624 Triprunner Dungarees: **changed** | req.lvl 0; +6 Stamina / +18 Agility / +3 Strength
+- 10008 White Bandit Mask: **changed** | req.lvl 38; +11 Agility / +11 Strength
+- 10400 Blackened Defias Leggings: **changed** | req.lvl 14; +6 Strength / +6 Agility
+- 10402 Blackened Defias Boots: **changed** | req.lvl 15; +4 Stamina / +6 Agility
+- 10403 Blackened Defias Belt: **changed** | req.lvl 17; Equip: +18 attack power.
+- 10410 Leggings of the Fang: **changed** | req.lvl 17; +5 Strength / +4 Stamina / +9 Agility
+- 10413 Gloves of the Fang: **changed** | req.lvl 14; +6 Agility / +4 Strength
+- 10571 Ebony Boneclub: **changed** | req.lvl 32; +6 Strength / +6 Shadow Resistance
+- 10583 Quillward Harness: **changed** | req.lvl 34; +19 Agility / +8 Strength
+- 10823 Vanquisher's Sword: **changed** | req.lvl 0; Equip: +22 attack power.
+- 11304 Fine Longbow: **changed** | req.lvl 14; Equip: + 4 attack power.
+- 11626 Blackveil Cape: **changed** | req.lvl 48; +6 Strength / +14 Agility / +4 Spirit
+- 12082 Wyrmhide Spaulders: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 1.5%. / Equip: +12 attack power.
+- 12470 Sandstalker Ankleguards: **changed** | req.lvl 42; +17 Agility / +3 Spirit / +6 Strength
+- 12548 Magni's Will: **changed** | req.lvl 0; +7 Strength / +8 Stamina / Equip: Increases your critical strike chance by 1%.
+- 12783 Heartseeker: **changed** | req.lvl 58; +4 Agility / Equip: Increases your critical strike chance by 1%.
+- 13136 Lil Timmy's Peashooter: **changed** | req.lvl 16; +4 Agility
+- 13213 Smolderweb's Eye: **changed** | req.lvl 55; +5 Nature Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 14151 Chanting Blade: **changed** | req.lvl 13; +2 Agility / +3 Stamina
+- 15062 Devilsaur Leggings: **changed** | req.lvl 55; +12 Stamina / Equip: +46 attack power. / Equip: Increases your critical strike chance by 1%.
+- 15063 Devilsaur Gauntlets: **changed** | req.lvl 53; +9 Stamina / Equip: +28 attack power. / Equip: Increases your critical strike chance by 1%.
+- 15065 Warbear Woolies: **changed** | req.lvl 52; +28 Strength / +12 Stamina / +18 Agility
+- 15411 Mark of Fordring: **changed** | req.lvl 0; Equip: Increases your critical strike chance by 1%. / Equip: +26 attack power.
+- 15443 Kris of Orgrimmar: **changed** | req.lvl 0; +4 Stamina
+- 15445 Hammer of Orgrimmar: **changed** | req.lvl 0; +3 Strength / +3 Spirit
+- 15806 Mirah's Song: **changed** | req.lvl 0; +9 Agility / +9 Strength / Equip: Restores 8 HP every 5 seconds.
+- 16711 Shadowcraft Boots: **changed** | req.lvl 54; +21 Agility / +9 Stamina / Equip: Increases your chances of hitting your target by 0.3%.
+- 16886 Outlaw Sabre: **changed** | req.lvl 0; Equip: +16 attack power.
+- 17705 Thrash Blade: **changed** | req.lvl 0; 
+- 17713 Blackstone Ring: **changed** | req.lvl 49; +6 Stamina / Equip: +20 attack power. / Equip: Increases your chance of hitting your target by 1%.
+- 17719 Inventor's Focal Sword: **changed** | req.lvl 48; Equip: Increases your critical strike chance by 1%.
+- 17728 Albino Crocscale Boots: **changed** | req.lvl 48; +20 Agility / +5 Stamina / +6 Nature Resistance
+- 17742 Fungus Shroud Armor: **changed** | req.lvl 46; +25 Agility / +10 Stamina
+- 18323 Satyr's Bow: **changed** | req.lvl 53; Equip: Increases your chance of hitting your target by 1%. / Equip: + 4 attack power.
+- 18404 Onyxia Tooth Pendant: **changed** | req.lvl 0; +7 Agility / +8 Stamina / +10 Fire Resistance / Equip: Increases your chance of hitting your target by 1%. / Equip: Incr
+- 18706 Arena Master: **changed** | req.lvl 35; +7 Stamina / Equip: Damage taken while in the Arena or Mallet Arena area is reduced by 5%.
+- 18737 Bone Slicing Hatchet: **changed** | req.lvl 57; +13 Agility / +5 Stamina / Equip: Attack power against undead increased by 9.
+- 19044 Might of the Timbermaw: **changed** | req.lvl 53; +21 Strength / +9 Stamina / +14 Agility
+- 19052 Dawn Treaders: **changed** | req.lvl 53; +18 Stamina / +9 Strength / +14 Agility
+- 19120 Rune of the Guard Captain: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 0.7%. / Equip: Attack power increased by 14 points. When in fores
+- 19325 Don Julio's Band: **changed** | req.lvl 55; +10 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance of hitting your target 
+- 19686 Primal Batskin Gloves: **changed** | req.lvl 60; +10 Agility / +9 Stamina / Equip: Increases your chance of hitting your target by 2%.
+- 19687 Primal Batskin Bracers: **changed** | req.lvl 60; +14 Agility / +7 Stamina / Equip: Increases your chance of hitting your target by 1%.
+- 19984 Ebon Mask: **changed** | req.lvl 0; +14 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: +36 attack power.
+- 20070 Sageclaw: **changed** | req.lvl 55; +8 Stamina / Equip: Increases your critical strike chance by 1%.
+- 20115 Highlander's Leather Girdle: **changed** | req.lvl 48; +6 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: +20 attack power.
+- 20116 Highlander's Leather Girdle: **changed** | req.lvl 38; +4 Stamina / Equip: +30 attack power.
+- 21118 Talisman of Arathor: **changed** | req.lvl 38; +8 Stamina
+- 21119 Talisman of Arathor: **changed** | req.lvl 28; +6 Stamina
+- 21565 Rune of Perfection: **changed** | req.lvl 40; +8 Stamina / Equip: Your spell penetrations grant 3 magic resistance. Spell penetrations increase by an additional 7 whe
+- 21566 Rune of Perfection: **changed** | req.lvl 20; +4 Stamina / Equip: Your spell penetration increases by 2 magic resistance. Spell penetration increases by an additional
+- 22005 Darkmantle Cap: **changed** | req.lvl 0; +26 Agility / +18 Stamina / +13 Strength / Equip: Increases your critical strike chance by 1%.
+- 22255 Magma Forged Band: **changed** | req.lvl 52; +12 Agility / +7 Strength / +7 Stamina
+- 22384 Persuader: **changed** | req.lvl 58; Equip: Increases your chance of hitting your target by 1%. / Equip: Increases your critical strike chance by 1%.
+- 22749 Sentinel's Leather Pants: **changed** | req.lvl 60; +28 Agility / +27 Stamina / Equip: Increases your critical strike chance by 1%.
+- 226831 Darkmantle Footpads: **not in WCLBox**
+- 235480 Grand Marshal's Bonecracker: **not in WCLBox**
+- 235481 Grand Marshal's Hacker: **not in WCLBox**
+
+### Druid
+best picks 458: {'new': 190, 'changed': 195, 'same': 63, 'not in WCLBox': 10}
+- 744 Thunderbrew's Boot Flask: **changed** | req.lvl 0; +8 Spirit
+- 888 Naga Battle Gloves: **changed** | req.lvl 22; +4 Stamina / +4 Strength / Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by
+- 1076 Defias Renegade Ring: **changed** | req.lvl 21; +6 Stamina / +4 Agility
+- 1443 Jeweled Amulet of Cainwyn: **changed** | req.lvl 55; +18 Intellect / +10 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage 
+- 1449 Minor Channeling Ring: **changed** | req.lvl 0; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 1490 Guardian Talisman: **changed** | req.lvl 0; +9 Stamina
+- 1713 Ankh of Life: **changed** | req.lvl 40; +12 Spirit
+- 1929 Silk-threaded Trousers: **changed** | req.lvl 13; +5 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 1974 Mindthrust Bracers: **changed** | req.lvl 17; +5 Intellect / +1 Stamina / Equip: Regenerates 3 mana every 5 seconds.
+- 1976 Slaghammer: **changed** | req.lvl 24; +10 Stamina / +11 Strength
+- 1978 Wolfclaw Gloves: **changed** | req.lvl 22; +6 Agility / +5 Strength / +6 Stamina
+- 2246 Myrmidon's Signet: **changed** | req.lvl 53; +17 Stamina / +11 Strength / +7 Agility
+- 2264 Mantle of Thieves: **changed** | req.lvl 25; +10 Agility / +3 Spirit / +4 Stamina
+- 2284 Rat Cloth Cloak: **changed** | req.lvl 12; +3 Stamina
+- 2312 Fine Leather Gloves: **changed** | req.lvl 10; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 2549 Staff of the Shade: **changed** | req.lvl 22; +15 Stamina / Equip: Increases the damage dealt by Shadow spells and effects by up to 37.
+- 2567 Evocator's Blade: **changed** | req.lvl 20; +2 Intellect / +5 Spirit
+- 2580 Reinforced Linen Cape: **changed** | req.lvl 7; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 2582 Green Woolen Vest: **changed** | req.lvl 12; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 2584 Woolen Cape: **changed** | req.lvl 11; +1 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 2721 Holy Shroud: **changed** | req.lvl 27; +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage by up to 11.
+- 2816 Death Speaker Scepter: **changed** | req.lvl 28; Equip: Restores 12 HP every 5 seconds. / Equip: Increases the healing effect of spells by up to 68. / Equip: Increases t
+- 3230 Black Wolf Bracers: **changed** | req.lvl 22; +7 Stamina / Equip: + 4 attack power.
+- 3449 Mystic Shawl: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4130 Smotts' Compass: **changed** | req.lvl 0; Equip: Increases your chance to dodge attacks by 1%.
+- 4197 Berylline Pads: **changed** | req.lvl 0; +5 Stamina / +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 4242 Embossed Leather Pants: **changed** | req.lvl 10; +2 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 3.
+- 4246 Fine Leather Belt: **changed** | req.lvl 11; +2 Agility / +2 Stamina
+- 4251 Hillman's Shoulders: **changed** | req.lvl 21; +5 Stamina / +3 Spirit
+- 4310 Heavy Woolen Gloves: **changed** | req.lvl 12; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4311 Heavy Woolen Cloak: **changed** | req.lvl 16; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4314 Double-Stitched Woolen Shoulders: **changed** | req.lvl 17; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4315 Reinforced Woolen Shoulders: **changed** | req.lvl 19; +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 4320 Spidersilk Boots: **changed** | req.lvl 20; +4 Intellect / +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 5187 Rhahk'Zor's Hammer: **changed** | req.lvl 16; +8 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 5197 Cookie's Tenderizer: **changed** | req.lvl 16; +4 Spirit
+- 5254 Rugged Spaulders: **changed** | req.lvl 17; +2 Fire Resistance / +2 Nature Resistance / +2 Frost Resistance / +2 Shadow Resistance / +2 Arcane Resistance
+- 5404 Serpent's Shoulders: **changed** | req.lvl 18; +7 Spirit / +5 Agility
+- 5444 Miner's Cape: **changed** | req.lvl 17; +5 Stamina / Equip: Mining skill +2 points. / Equip: + 4 attack power.
+- 5542 Pearl-clasped Cloak: **changed** | req.lvl 14; +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 5970 Serpent Gloves: **changed** | req.lvl 18; +6 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 6179 Privateer's Cape: **changed** | req.lvl 16; +3 Stamina / +3 Agility
+- 6242 Blue Linen Robe: **changed** | req.lvl 9; +3 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 6319 Girdle of the Blindwatcher: **changed** | req.lvl 21; +5 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 7. / Equip: Increases your
+- 6340 Fenrus' Hide: **changed** | req.lvl 22; +4 Agility / +6 Stamina
+- 6414 Seal of Sylvanas: **changed** | req.lvl 0; +8 Stamina / Equip: +6 attack power.
+- 6468 Deviate Scale Belt: **changed** | req.lvl 18; +6 Stamina / +5 Agility / +3 Strength
+- 6505 Crescent Staff: **changed** | req.lvl 0; +7 Intellect / +7 Agility / +7 Stamina
+- 6685 Death Speaker Mantle: **changed** | req.lvl 27; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6750 Snake Hoop: **changed** | req.lvl 0; +5 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6901 Glowing Thresher Cape: **changed** | req.lvl 24; +8 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 7 and damage by up to 3.
+- 6911 Moss Cinch: **changed** | req.lvl 25; +5 Stamina / Equip: Increases the damage dealt by all spells and magic effects by up to 12.
+- 7049 Truefaith Gloves: **changed** | req.lvl 25; +3 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by up to 5.
+- 7057 Green Silken Shoulders: **changed** | req.lvl 31; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 7058 Crimson Silk Vest: **changed** | req.lvl 32; +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 7348 Fletcher's Gloves: **changed** | req.lvl 20; Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance to parry attacks by-1%.
+- 7559 Runic Cane: **changed** | req.lvl 14; +3 Stamina
+- 7673 Talvash's Enhancing Necklace: **changed** | req.lvl 0; +1 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 7684 Bloodmage Mantle: **changed** | req.lvl 30; +9 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Restores 9 H
+- 7690 Ebon Vise: **changed** | req.lvl 30; +4 Strength / +6 Agility / +8 Stamina
+- 7712 Mantle of Doan: **changed** | req.lvl 34; +6 Intellect / +8 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 7727 Watchman Pauldrons: **changed** | req.lvl 27; +3 Strength / +11 Stamina / +4 Spirit
+- 7728 Beguiler Robes: **changed** | req.lvl 29; +8 Spirit / +12 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 9.
+- 7731 Ghostshard Talisman: **changed** | req.lvl 30; +9 Stamina / Equip: Attack power against undead increased by 12. / Equip: +14 attack power.
+- 7755 Flintrock Shoulders: **changed** | req.lvl 33; +5 Strength / +10 Agility / +10 Stamina
+- 7757 Windweaver Staff: **changed** | req.lvl 32; +17 Stamina / Equip: Reduces your spell target's magic resistance by 3. / Equip: Increases the damage dealt by arcane sp
+- 7760 Warchief Kilt: **changed** | req.lvl 34; +6 Intellect / +14 Spirit / +5 Strength / Equip: Increases the healing effect of all spells and magic effects by up to 2
+- 8202 Big Voodoo Pants: **changed** | req.lvl 42; +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 15.
+- 8349 Feathered Breastplate: **changed** | req.lvl 45; +24 Spirit / +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 19.
+- 9393 Beacon of Hope: **changed** | req.lvl 33; +4 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by up to 8.
+- 9398 Worn Running Boots: **changed** | req.lvl 37; +13 Agility / +10 Stamina
+- 9416 Grimlok's Charge: **changed** | req.lvl 42; +15 Agility / +10 Strength / +15 Stamina
+- 9420 Adventurer's Pith Helmet: **changed** | req.lvl 32; +7 Spirit / +9 Agility / +14 Stamina
+- 9429 Miner's Hat of the Deep: **changed** | req.lvl 39; +17 Intellect / +7 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 9431 Papal Fez: **changed** | req.lvl 38; +17 Intellect / +9 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage b
+- 9447 Electrocutioner Lagnut: **changed** | req.lvl 29; +7 Spirit / +4 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 9 and damage by up
+- 9448 Spidertank Oilrag: **changed** | req.lvl 29; Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Regenerates 3 mana every 5 
+- 9474 Jinxed Hoodoo Kilt: **changed** | req.lvl 44; +19 Spirit / +10 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 24 and damage 
+- 9479 Embrace of the Lycan: **changed** | req.lvl 44; +16 Stamina / +5 Spirit / +8 Strength / Equip: +32 attack power.
+- 9533 Masons Fraternity Ring: **changed** | req.lvl 0; +14 Agility / +5 Stamina
+- 9538 Talvash's Gold Ring: **changed** | req.lvl 0; +10 Stamina / Equip: Defense skills increased by 3 points.
+- 9623 Civinad Robes: **changed** | req.lvl 0; +12 Spirit / +7 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 26 points, and th
+- 10020 Stormcloth Vest: **changed** | req.lvl 40; +8 Spirit / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 58 and damage by u
+- 10033 Red Mageweave Headband: **changed** | req.lvl 43; +20 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 19.
+- 10048 Colorful Kilt: **changed** | req.lvl 14; +5 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 10402 Blackened Defias Boots: **changed** | req.lvl 15; +4 Stamina / +6 Agility
+- 10410 Leggings of the Fang: **changed** | req.lvl 17; +5 Strength / +4 Stamina / +9 Agility
+- 10413 Gloves of the Fang: **changed** | req.lvl 14; +6 Agility / +4 Strength
+- 10583 Quillward Harness: **changed** | req.lvl 34; +19 Agility / +8 Strength
+- 10659 Shard of the Splithooves: **changed** | req.lvl 0; Equip: Regenerates 6 mana every 5 seconds. / Equip: Restores 6 HP every 5 seconds. / Equip: Attack power against demons 
+- 10769 Glowing Eye of Mordresh: **changed** | req.lvl 36; +8 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage by up to 7.
+- 10919 Apothecary Gloves: **changed** | req.lvl 0; Equip: Herbalism skill +2 points. / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 11302 Uther's Strength: **changed** | req.lvl 47; Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage by up to 6. / Equip: When hit
+- 11623 Spritecaster Cape: **changed** | req.lvl 47; +5 Stamina / +6 Intellect / +6 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to
+- 11624 Kentic Amice: **changed** | req.lvl 47; +13 Intellect / +6 Spirit / +6 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up t
+- 11755 Verek's Collar: **changed** | req.lvl 51; +6 Strength / +7 Stamina / Equip: Increases your chance to dodge attacks by 1%. / Equip: Defense skills increased by 3 p
+- 11819 Second Wind: **changed** | req.lvl 54; Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by up to 5.
+- 11821 Warstrife Leggings: **changed** | req.lvl 53; +8 Strength / +22 Stamina / +7 Agility / Equip: Increases your chance to dodge attacks by 1%. / Equip: Defense skill inc
+- 11832 Burst of Knowledge: **changed** | req.lvl 53; Equip: Regenerates 8 mana every 5 seconds.
+- 11841 Senior Designer's Pantaloons: **changed** | req.lvl 50; +18 Spirit / +8 Stamina / +7 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 37
+- 11925 Ghostshroud: **changed** | req.lvl 52; +19 Agility / +18 Stamina / +10 Strength / +5 Shadow Resistance
+- 12471 Desertwalker Cane: **changed** | req.lvl 42; +7 Intellect / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage b
+- 12543 Songstone of Ironforge: **changed** | req.lvl 0; +7 Intellect / Equip: Reduces the magic resistance of your spell target by 2. / Equip: Increases the damage and healing 
+- 12544 Thrall's Resolve: **changed** | req.lvl 0; +7 Stamina / +6 Strength
+- 12985 Ring of Defense: **changed** | req.lvl 17; Equip: Defense increased by 4 points.
+- 13102 Cassandra's Grace: **changed** | req.lvl 42; +9 Spirit / +7 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 44 and damage by u
+- 13170 Skyshroud Leggings: **changed** | req.lvl 55; +11 Stamina / +12 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 30.
+- 13178 Rosewine Circle: **changed** | req.lvl 55; Equip: Increases the healing effect of all spells and magic effects by up to 24 and damage by up to 8. / Equip: Regenera
+- 13213 Smolderweb's Eye: **changed** | req.lvl 55; +5 Nature Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 13954 Verdant Footpads: **changed** | req.lvl 57; Equip: Increases the healing effect of all spells and magic effects by up to 38 points and the damage effect by up to 12
+- 13958 Wyrmthalak's Shackles: **changed** | req.lvl 0; +15 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage by up to 7.
+- 13966 Mark of Tyranny: **changed** | req.lvl 0; Equip: Increases your chance to dodge attacks by 1%.
+- 14139 Mooncloth Shoulders: **changed** | req.lvl 56; +9 Stamina / +11 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage by 
+- 14144 Ghostweave Pants: **changed** | req.lvl 53; +20 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 26.
+- 14151 Chanting Blade: **changed** | req.lvl 13; +2 Agility / +3 Stamina
+- 15058 Stormshroud Shoulders: **changed** | req.lvl 54; +12 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance to dodge attacks by 1%.
+- 15064 Warbear Harness: **changed** | req.lvl 50; +27 Stamina / +11 Strength / +18 Agility
+- 15065 Warbear Woolies: **changed** | req.lvl 52; +28 Strength / +12 Stamina / +18 Agility
+- 15066 Ironfeather Breastplate: **changed** | req.lvl 53; +28 Spirit / +12 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 21.
+- 15067 Ironfeather Shoulders: **changed** | req.lvl 49; +20 Intellect / +8 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 15.
+- 15421 Shroud of the Exile: **changed** | req.lvl 0; +10 Intellect / +7 Spirit / +7 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up t
+- 15444 Staff of Orgrimmar: **changed** | req.lvl 0; +6 Agility / +6 Intellect
+- 15445 Hammer of Orgrimmar: **changed** | req.lvl 0; +3 Strength / +3 Spirit
+- 15450 Dredgemire Leggings: **changed** | req.lvl 0; +3 Stamina / +3 Spirit
+- 15452 Featherbead Bracers: **changed** | req.lvl 0; +3 Intellect
+- 15453 Savannah Bracers: **changed** | req.lvl 0; +3 Stamina
+- 15802 Mooncloth Boots: **changed** | req.lvl 51; +14 Intellect / +13 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 24 and damage 
+- 16058 Fordring's Seal: **changed** | req.lvl 0; +6 Intellect / +5 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage b
+- 16975 Warsong Sash: **changed** | req.lvl 0; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 17713 Blackstone Ring: **changed** | req.lvl 49; +6 Stamina / Equip: +20 attack power. / Equip: Increases your chance of hitting your target by 1%.
+- 17721 Gloves of the Greatfather: **changed** | req.lvl 33; Equip: Increases the healing effect of all spells and magic effects by up to 26 and damage by up to 24. / Equip: Increas
+- 17740 Soothsayer's Headdress: **changed** | req.lvl 47; +15 Intellect / +8 Spirit / +7 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up t
+- 17742 Fungus Shroud Armor: **changed** | req.lvl 46; +25 Agility / +10 Stamina
+- 17751 Brusslehide Leggings: **changed** | req.lvl 46; +12 Stamina / +7 Intellect / +10 Nature Resistance / Equip: Increases the damage and healing of all spells and magic eff
+- 17755 Satyrmane Sash: **changed** | req.lvl 45; +10 Intellect / +7 Stamina / +10 Shadow Resistance / Equip: Increases the damage and healing of all spells and magic eff
+- 17904 Stormpike Insignia Rank 6: **changed** | req.lvl 0; +10 Frost Resistance / Equip: Restores 30 HP every 5 seconds. / Equip: Increases your chance to dodge attacks by 2%.
+- 18083 Jumanza Grips: **changed** | req.lvl 43; +7 Intellect / +10 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage 
+- 18314 Ring of Demonic Guile: **changed** | req.lvl 54; +10 Intellect / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases your chance of hitting your target by 1%.
+- 18317 Tempest Talisman: **changed** | req.lvl 53; +6 Intellect / +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 7 and damage by 
+- 18322 Waterspout Boots: **changed** | req.lvl 53; +8 Intellect / +9 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 22.
+- 18386 Padre's Trousers: **changed** | req.lvl 56; +20 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage by up to 12. 
+- 18405 Belt of the Archmage: **changed** | req.lvl 57; +16 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 20. / Equ
+- 18409 Mooncloth Gloves: **changed** | req.lvl 57; +16 Intellect / +9 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage 
+- 18440 Sergeant's Cape: **changed** | req.lvl 30; +9 Stamina
+- 18441 Sergeant's Cape: **changed** | req.lvl 45; +14 Stamina
+- 18510 Hide of the Wild: **changed** | req.lvl 57; +10 Intellect / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 42 and damage 
+- 18525 Bracers of Prosperity: **changed** | req.lvl 58; +10 Intellect / +8 Stamina / +5 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22
+- 18531 Unyielding Maul: **changed** | req.lvl 57; +15 Stamina / Equip: Defense increased by 11 points.
+- 18706 Arena Master: **changed** | req.lvl 35; +7 Stamina / Equip: Damage taken while in the Arena or Mallet Arena area is reduced by 5%.
+- 18723 Animated Chain Necklace: **changed** | req.lvl 57; +8 Stamina / +7 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage by u
+- 18727 Crimson Felt Hat: **changed** | req.lvl 54; +10 Intellect / +10 Spirit / +8 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up 
+- 19024 Arena Grand Master: **changed** | req.lvl 50; Equip: Increases your chance to dodge attacks by 1%. / Equip: Damage taken while in the Arena or Mallet Arena area is re
+- 19047 Wisdom of the Timbermaw: **changed** | req.lvl 53; +14 Intellect / +9 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 31 and damage b
+- 19052 Dawn Treaders: **changed** | req.lvl 53; +18 Stamina / +9 Strength / +14 Agility
+- 19058 Golden Mantle of the Dawn: **changed** | req.lvl 56; +20 Stamina / +13 Strength / +11 Agility
+- 19120 Rune of the Guard Captain: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 0.7%. / Equip: Attack power increased by 14 points. When in fores
+- 19140 Cauterizing Band: **changed** | req.lvl 60; +12 Intellect / +9 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 46 and damage 
+- 19162 Corehound Belt: **changed** | req.lvl 60; +16 Intellect / +12 Fire Resistance / Equip: Increases the healing effect of all spells and magic effects by up to 62 an
+- 19312 Lei of the Lifegiver: **changed** | req.lvl 55; +11 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage by up to 12. / 
+- 19315 Therazane's Touch: **changed** | req.lvl 55; Equip: Increases the damage and healing of all spells and magic effects by up to 29.
+- 19325 Don Julio's Band: **changed** | req.lvl 55; +10 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance of hitting your target 
+- 19507 Inquisitor's Shawl: **changed** | req.lvl 37; +13 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by up to 7.
+- 19523 Lorekeeper's Ring: **changed** | req.lvl 48; +6 Stamina / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19524 Lorekeeper's Ring: **changed** | req.lvl 38; +5 Stamina / Equip: Regenerates 3 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19525 Lorekeeper's Ring: **changed** | req.lvl 28; +4 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19531 Caretaker's Cape: **changed** | req.lvl 48; +9 Stamina / +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by u
+- 19533 Caretaker's Cape: **changed** | req.lvl 28; +6 Stamina / +4 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 13 and damage by u
+- 19682 Bloodvine Vest: **changed** | req.lvl 60; +13 Intellect / Equip: Increases your chance of hitting your target by 2%. / Equip: Increases the damage and healing of 
+- 19684 Bloodvine Boots: **changed** | req.lvl 60; +16 Intellect / Equip: Increases your chance of hitting your target by 1%. / Equip: Increases the damage and healing of 
+- 19840 Zandalar Haruspex's Bracers: **changed** | req.lvl 0; +11 Intellect / +11 Spirit / +9 Stamina / Equip: Increases the healing effect of spells by up to 24.
+- 20059 Highlander's Leather Shoulders: **changed** | req.lvl 60; +17 Stamina / +18 Agility / Equip: +30 attack power.
+- 20070 Sageclaw: **changed** | req.lvl 55; +8 Stamina / Equip: Increases your critical strike chance by 1%.
+- 20097 Highlander's Cloth Girdle: **changed** | req.lvl 48; +6 Stamina / +5 Intellect / Equip: Increases your critical strike chance by 1%. / Equip: Increases the damage and healin
+- 20098 Highlander's Cloth Girdle: **changed** | req.lvl 38; +4 Stamina / +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 14.
+- 20099 Highlander's Cloth Girdle: **changed** | req.lvl 28; +4 Stamina / +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 20112 Highlander's Leather Boots: **changed** | req.lvl 48; +13 Stamina / +11 Agility / Equip: +12 attack power. / Equip: Increases movement speed slightly.
+- 20113 Highlander's Leather Boots: **changed** | req.lvl 38; +10 Stamina / +8 Agility / Equip: +6 attack power. / Equip: Increases movement speed slightly.
+- 20114 Highlander's Leather Boots: **changed** | req.lvl 28; +8 Stamina / +7 Agility / Equip: Increases movement speed slightly.
+- 20115 Highlander's Leather Girdle: **changed** | req.lvl 48; +6 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: +20 attack power.
+- 20117 Highlander's Leather Girdle: **changed** | req.lvl 28; +4 Stamina / Equip: +24 attack power.
+- 20428 Caretaker's Cape: **changed** | req.lvl 18; +4 Stamina / +2 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 9 and damage by up
+- 20431 Lorekeeper's Ring: **changed** | req.lvl 18; +2 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 21117 Talisman of Arathor: **changed** | req.lvl 48; +10 Stamina
+- 21118 Talisman of Arathor: **changed** | req.lvl 38; +8 Stamina
+- 21119 Talisman of Arathor: **changed** | req.lvl 28; +6 Stamina
+- 21565 Rune of Perfection: **changed** | req.lvl 40; +8 Stamina / Equip: Your spell penetrations grant 3 magic resistance. Spell penetrations increase by an additional 7 whe
+- 21566 Rune of Perfection: **changed** | req.lvl 20; +4 Stamina / Equip: Your spell penetration increases by 2 magic resistance. Spell penetration increases by an additional
+- 21709 Ring of the Fallen God: **changed** | req.lvl 60; +6 Intellect / +5 Stamina / Equip: Increases damage and healing from all spells and magic effects by up to 37. / Equip: 
+- 22234 Mantle of Lost Hope: **changed** | req.lvl 48; +11 Intellect / +5 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 26 points, and
+- 22255 Magma Forged Band: **changed** | req.lvl 52; +12 Agility / +7 Strength / +7 Stamina
+- 22257 Bloodclot Band: **changed** | req.lvl 52; +8 Intellect / +8 Stamina / +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 15 
+- 22272 Forest's Embrace: **changed** | req.lvl 0; +9 Intellect / +8 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 44 and damage by
+- 22384 Persuader: **changed** | req.lvl 58; Equip: Increases your chance of hitting your target by 1%. / Equip: Increases your critical strike chance by 1%.
+- 22632 Atiesh, Greatstaff of the Guardian: **changed** | req.lvl 60; +28 Stamina / +28 Intellect / +27 Spirit / Equip: Increases the healing effect of spells by up to 300. / Equip: Causes a
+- 23025 Seal of the Damned: **changed** | req.lvl 60; +17 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 21. / Equip: Increases yo
+- 226774 Feralheart Galoshes: **not in WCLBox**
+- 226786 Feralheart Headdress: **not in WCLBox**
+- 226801 Feralheart Faceguard: **not in WCLBox**
+- 226802 Feralheart Grips: **not in WCLBox**
+- 226803 Feralheart Treads: **not in WCLBox**
+- 226804 Feralheart Armor: **not in WCLBox**
+- 227198 Knight-Lieutenant's Dragonhide Gauntlets: **not in WCLBox**
+- 231694 Marshal's Dragonhide Grips: **not in WCLBox**
+- 231700 Marshal's Dragonhide Gloves: **not in WCLBox**
+- 234570 Grand Marshal's Polearm: **not in WCLBox**
+
+### Shaman
+best picks 405: {'new': 159, 'changed': 176, 'same': 64, 'not in WCLBox': 6}
+- 867 Gloves of Holy Might: **changed** | req.lvl 37; Equip: Increases your critical strike chance by 1%. / Equip: +10 attack power.
+- 873 Staff of Jordan: **changed** | req.lvl 35; +20 Intellect / +10 Spirit / Equip: Increases your chance of hitting your target by 1.5%.
+- 888 Naga Battle Gloves: **changed** | req.lvl 22; +4 Stamina / +4 Strength / Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by
+- 1156 Lavishly Jeweled Ring: **changed** | req.lvl 17; +2 Agility / +6 Intellect
+- 1264 Headbasher: **changed** | req.lvl 0; +9 Strength / +5 Stamina / +10 Intellect
+- 1355 Buckskin Cape: **changed** | req.lvl 12; +3 Agility
+- 1443 Jeweled Amulet of Cainwyn: **changed** | req.lvl 55; +18 Intellect / +10 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage 
+- 1449 Minor Channeling Ring: **changed** | req.lvl 0; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 1713 Ankh of Life: **changed** | req.lvl 40; +12 Spirit
+- 1929 Silk-threaded Trousers: **changed** | req.lvl 13; +5 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 1974 Mindthrust Bracers: **changed** | req.lvl 17; +5 Intellect / +1 Stamina / Equip: Regenerates 3 mana every 5 seconds.
+- 1976 Slaghammer: **changed** | req.lvl 24; +10 Stamina / +11 Strength
+- 1981 Icemail Jerkin: **changed** | req.lvl 39; +24 Agility / +15 Stamina / +5 Frost Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 2246 Myrmidon's Signet: **changed** | req.lvl 53; +17 Stamina / +11 Strength / +7 Agility
+- 2262 Mark of Kern: **changed** | req.lvl 31; +4 Stamina / Equip: +20 attack power.
+- 2312 Fine Leather Gloves: **changed** | req.lvl 10; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 2316 Dark Leather Cloak: **changed** | req.lvl 17; +3 Agility / +2 Strength
+- 2580 Reinforced Linen Cape: **changed** | req.lvl 7; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 2582 Green Woolen Vest: **changed** | req.lvl 12; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 2584 Woolen Cape: **changed** | req.lvl 11; +1 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 2721 Holy Shroud: **changed** | req.lvl 27; +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage by up to 11.
+- 2816 Death Speaker Scepter: **changed** | req.lvl 28; Equip: Restores 12 HP every 5 seconds. / Equip: Increases the healing effect of spells by up to 68. / Equip: Increases t
+- 2915 Taran Icebreaker: **changed** | req.lvl 47; +14 Stamina / Equip: Crossbow skill increased by 1.
+- 3160 Ironplate Buckler: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 3191 Arced War Axe: **changed** | req.lvl 21; +9 Strength / +9 Stamina
+- 3449 Mystic Shawl: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4197 Berylline Pads: **changed** | req.lvl 0; +5 Stamina / +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 4242 Embossed Leather Pants: **changed** | req.lvl 10; +2 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 3.
+- 4310 Heavy Woolen Gloves: **changed** | req.lvl 12; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 4311 Heavy Woolen Cloak: **changed** | req.lvl 16; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4314 Double-Stitched Woolen Shoulders: **changed** | req.lvl 17; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4315 Reinforced Woolen Shoulders: **changed** | req.lvl 19; +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 4320 Spidersilk Boots: **changed** | req.lvl 20; +4 Intellect / +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 4768 Adept's Gloves: **changed** | req.lvl 12; +5 Intellect / +5 Stamina
+- 5187 Rhahk'Zor's Hammer: **changed** | req.lvl 16; +8 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 5257 Dark Hooded Cape: **changed** | req.lvl 34; +10 Agility / +4 Strength
+- 5404 Serpent's Shoulders: **changed** | req.lvl 18; +7 Spirit / +5 Agility
+- 5542 Pearl-clasped Cloak: **changed** | req.lvl 14; +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 5739 Barbaric Harness: **changed** | req.lvl 33; +8 Agility / +8 Stamina / +7 Strength
+- 5970 Serpent Gloves: **changed** | req.lvl 18; +6 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 6314 Wolfmaster Cape: **changed** | req.lvl 22; +3 Stamina / Equip: Attack power against beasts increased by 9. / Equip: +10 attack power.
+- 6319 Girdle of the Blindwatcher: **changed** | req.lvl 21; +5 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 7. / Equip: Increases your
+- 6682 Death Speaker Robes: **changed** | req.lvl 26; +4 Stamina / +11 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage 
+- 6685 Death Speaker Mantle: **changed** | req.lvl 27; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6690 Ferine Leggings: **changed** | req.lvl 29; +12 Intellect / Equip: +26 attack power.
+- 6694 Heart of Agamaggan: **changed** | req.lvl 30; +7 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by up to 5.
+- 6750 Snake Hoop: **changed** | req.lvl 0; +5 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6902 Bands of Serra'kis: **changed** | req.lvl 22; +6 Strength / +3 Stamina
+- 6905 Reef Axe: **changed** | req.lvl 22; +8 Strength / Equip: Increases the healing effect of all spells and magic effects by up to 24 and damage by up to 8.
+- 6911 Moss Cinch: **changed** | req.lvl 25; +5 Stamina / Equip: Increases the damage dealt by all spells and magic effects by up to 12.
+- 7000 Heartwood Girdle: **changed** | req.lvl 0; +5 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 7049 Truefaith Gloves: **changed** | req.lvl 25; +3 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by up to 5.
+- 7057 Green Silken Shoulders: **changed** | req.lvl 31; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 7058 Crimson Silk Vest: **changed** | req.lvl 32; +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 7230 Smite's Mighty Hammer: **changed** | req.lvl 18; +11 Strength / +4 Agility
+- 7281 Light Leather Bracers: **changed** | req.lvl 9; +1 Agility / +1 Strength
+- 7348 Fletcher's Gloves: **changed** | req.lvl 20; Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance to parry attacks by-1%.
+- 7673 Talvash's Enhancing Necklace: **changed** | req.lvl 0; +1 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 7684 Bloodmage Mantle: **changed** | req.lvl 30; +9 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Restores 9 H
+- 7685 Orb of the Forgotten Seer: **changed** | req.lvl 32; Equip: Increases the damage and healing of all spells and magic effects by up to 14.
+- 7713 Illusionary Rod: **changed** | req.lvl 34; +6 Intellect / +7 Spirit / +10 Stamina / Equip: Increases your critical strike chance by 1%.
+- 7719 Raging Berserker's Helm: **changed** | req.lvl 37; +8 Stamina / +13 Strength / Equip: Increases your critical strike chance by 1%.
+- 7753 Bloodspiller: **changed** | req.lvl 27; 
+- 7755 Flintrock Shoulders: **changed** | req.lvl 33; +5 Strength / +10 Agility / +10 Stamina
+- 7760 Warchief Kilt: **changed** | req.lvl 34; +6 Intellect / +14 Spirit / +5 Strength / Equip: Increases the healing effect of all spells and magic effects by up to 2
+- 8202 Big Voodoo Pants: **changed** | req.lvl 42; +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 15.
+- 8349 Feathered Breastplate: **changed** | req.lvl 45; +24 Spirit / +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 19.
+- 9393 Beacon of Hope: **changed** | req.lvl 33; +4 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by up to 8.
+- 9411 Rockshard Pauldrons: **changed** | req.lvl 41; +3 Strength / +13 Intellect / +6 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up 
+- 9413 The Rockpounder: **changed** | req.lvl 44; +5 Strength / Equip: Increases your critical strike chance by 2%.
+- 9429 Miner's Hat of the Deep: **changed** | req.lvl 39; +17 Intellect / +7 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 9448 Spidertank Oilrag: **changed** | req.lvl 29; Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Regenerates 3 mana every 5 
+- 9449 Manual Crowd Pummeler: **changed** | req.lvl 29; +16 Strength / +5 Agility
+- 9459 Thermaplugg's Left Arm: **changed** | req.lvl 31; +17 Strength / +5 Stamina / +4 Intellect
+- 9474 Jinxed Hoodoo Kilt: **changed** | req.lvl 44; +19 Spirit / +10 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 24 and damage 
+- 9623 Civinad Robes: **changed** | req.lvl 0; +12 Spirit / +7 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 26 points, and th
+- 10008 White Bandit Mask: **changed** | req.lvl 38; +11 Agility / +11 Strength
+- 10020 Stormcloth Vest: **changed** | req.lvl 40; +8 Spirit / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 58 and damage by u
+- 10033 Red Mageweave Headband: **changed** | req.lvl 43; +20 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 19.
+- 10330 Scarlet Leggings: **changed** | req.lvl 39; +21 Strength / +10 Stamina
+- 10400 Blackened Defias Leggings: **changed** | req.lvl 14; +6 Strength / +6 Agility
+- 10403 Blackened Defias Belt: **changed** | req.lvl 17; Equip: +18 attack power.
+- 10410 Leggings of the Fang: **changed** | req.lvl 17; +5 Strength / +4 Stamina / +9 Agility
+- 10413 Gloves of the Fang: **changed** | req.lvl 14; +6 Agility / +4 Strength
+- 10553 Foreman Vest: **changed** | req.lvl 8; +3 Strength
+- 10583 Quillward Harness: **changed** | req.lvl 34; +19 Agility / +8 Strength
+- 10659 Shard of the Splithooves: **changed** | req.lvl 0; Equip: Regenerates 6 mana every 5 seconds. / Equip: Restores 6 HP every 5 seconds. / Equip: Attack power against demons 
+- 10769 Glowing Eye of Mordresh: **changed** | req.lvl 36; +8 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage by up to 7.
+- 10919 Apothecary Gloves: **changed** | req.lvl 0; Equip: Herbalism skill +2 points. / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 11262 Orb of Lorica: **changed** | req.lvl 0; +10 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage by up to 6.
+- 11302 Uther's Strength: **changed** | req.lvl 47; Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage by up to 6. / Equip: When hit
+- 11623 Spritecaster Cape: **changed** | req.lvl 47; +5 Stamina / +6 Intellect / +6 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to
+- 11624 Kentic Amice: **changed** | req.lvl 47; +13 Intellect / +6 Spirit / +6 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up t
+- 11626 Blackveil Cape: **changed** | req.lvl 48; +6 Strength / +14 Agility / +4 Spirit
+- 11726 Savage Gladiator Chain: **changed** | req.lvl 52; +18 Stamina / +14 Agility / +16 Strength / Equip: Increases your critical strike chance by 1.5%. / Equip: Increases your
+- 11731 Savage Gladiator Greaves: **changed** | req.lvl 52; +15 Agility / +9 Strength / +13 Stamina
+- 11735 Ragefury Eyepatch: **changed** | req.lvl 52; +10 Stamina / +6 Strength / Equip: Increases your critical strike chance by 2%.
+- 11832 Burst of Knowledge: **changed** | req.lvl 53; Equip: Regenerates 8 mana every 5 seconds.
+- 11841 Senior Designer's Pantaloons: **changed** | req.lvl 50; +18 Spirit / +8 Stamina / +7 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 37
+- 11921 Impervious Giant: **changed** | req.lvl 52; +18 Stamina / Equip: Increases your chance of hitting your target by 1%. / Equip: Increases your critical strike chance 
+- 12260 Searing Golden Blade: **changed** | req.lvl 34; +7 Intellect / Equip: Increases damage dealt by fire spells and effects by up to 39.
+- 12471 Desertwalker Cane: **changed** | req.lvl 42; +7 Intellect / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage b
+- 12543 Songstone of Ironforge: **changed** | req.lvl 0; +7 Intellect / Equip: Reduces the magic resistance of your spell target by 2. / Equip: Increases the damage and healing 
+- 12548 Magni's Will: **changed** | req.lvl 0; +7 Strength / +8 Stamina / Equip: Increases your critical strike chance by 1%.
+- 12626 Funeral Cuffs: **changed** | req.lvl 54; +14 Intellect / +7 Shadow Resistance / Equip: Increases the healing effect of all spells and magic effects by up to 18 a
+- 12632 Storm Gauntlets: **changed** | req.lvl 54; +7 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 18. / Equip: Increases you
+- 13102 Cassandra's Grace: **changed** | req.lvl 42; +9 Spirit / +7 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 44 and damage by u
+- 13178 Rosewine Circle: **changed** | req.lvl 55; Equip: Increases the healing effect of all spells and magic effects by up to 24 and damage by up to 8. / Equip: Regenera
+- 13213 Smolderweb's Eye: **changed** | req.lvl 55; +5 Nature Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 13954 Verdant Footpads: **changed** | req.lvl 57; Equip: Increases the healing effect of all spells and magic effects by up to 38 points and the damage effect by up to 12
+- 14144 Ghostweave Pants: **changed** | req.lvl 53; +20 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 26.
+- 14149 Subterranean Cape: **changed** | req.lvl 13; +3 Strength / Equip: Restores 5 HP every 5 seconds.
+- 14616 Bloodmail Boots: **changed** | req.lvl 56; +10 Stamina / +10 Intellect / +9 Strength / +8 Agility / Equip: Increases your chance of hitting your target by 1%.
+- 15057 Stormshroud Pants: **changed** | req.lvl 50; Equip: Increases your critical strike chance by 2%. / Equip: Increases your chance to dodge attacks by 1%.
+- 15063 Devilsaur Gauntlets: **changed** | req.lvl 53; +9 Stamina / Equip: +28 attack power. / Equip: Increases your critical strike chance by 1%.
+- 15065 Warbear Woolies: **changed** | req.lvl 52; +28 Strength / +12 Stamina / +18 Agility
+- 15066 Ironfeather Breastplate: **changed** | req.lvl 53; +28 Spirit / +12 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 21.
+- 15067 Ironfeather Shoulders: **changed** | req.lvl 49; +20 Intellect / +8 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 15.
+- 15411 Mark of Fordring: **changed** | req.lvl 0; Equip: Increases your critical strike chance by 1%. / Equip: +26 attack power.
+- 15444 Staff of Orgrimmar: **changed** | req.lvl 0; +6 Agility / +6 Intellect
+- 15452 Featherbead Bracers: **changed** | req.lvl 0; +3 Intellect
+- 16058 Fordring's Seal: **changed** | req.lvl 0; +6 Intellect / +5 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage b
+- 16975 Warsong Sash: **changed** | req.lvl 0; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 17007 Stonerender Gauntlets: **changed** | req.lvl 46; +20 Strength / +11 Stamina / +7 Intellect / Equip: Increases the damage and healing of all spells and magic effects by u
+- 17694 Band of the Fist: **changed** | req.lvl 0; +4 Agility / +4 Strength
+- 17713 Blackstone Ring: **changed** | req.lvl 49; +6 Stamina / Equip: +20 attack power. / Equip: Increases your chance of hitting your target by 1%.
+- 17718 Gizlock's Hypertech Buckler: **changed** | req.lvl 48; +10 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 13 and damage by up to 5. /
+- 17721 Gloves of the Greatfather: **changed** | req.lvl 33; Equip: Increases the healing effect of all spells and magic effects by up to 26 and damage by up to 24. / Equip: Increas
+- 17740 Soothsayer's Headdress: **changed** | req.lvl 47; +15 Intellect / +8 Spirit / +7 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up t
+- 17741 Nature's Embrace: **changed** | req.lvl 46; Equip: Regenerates 8 mana every 5 seconds. / Equip: Increases damage dealt by Holy spells and effects by up to 29. / Equ
+- 17751 Brusslehide Leggings: **changed** | req.lvl 46; +12 Stamina / +7 Intellect / +10 Nature Resistance / Equip: Increases the damage and healing of all spells and magic eff
+- 17755 Satyrmane Sash: **changed** | req.lvl 45; +10 Intellect / +7 Stamina / +10 Shadow Resistance / Equip: Increases the damage and healing of all spells and magic eff
+- 18083 Jumanza Grips: **changed** | req.lvl 43; +7 Intellect / +10 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage 
+- 18289 Barbed Thorn Necklace: **changed** | req.lvl 51; +7 Stamina / +6 Intellect / Equip: Increases the damage dealt by nature spells and effects by up to 21.
+- 18314 Ring of Demonic Guile: **changed** | req.lvl 54; +10 Intellect / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases your chance of hitting your target by 1%.
+- 18316 Obsidian Bauble: **changed** | req.lvl 53; +9 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 15. / Equip: Increases y
+- 18324 Waveslicer: **changed** | req.lvl 53; +23 Strength / Equip: Increases your critical strike chance by 1%.
+- 18386 Padre's Trousers: **changed** | req.lvl 56; +20 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage by up to 12. 
+- 18404 Onyxia Tooth Pendant: **changed** | req.lvl 0; +7 Agility / +8 Stamina / +10 Fire Resistance / Equip: Increases your chance of hitting your target by 1%. / Equip: Incr
+- 18405 Belt of the Archmage: **changed** | req.lvl 57; +16 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 20. / Equ
+- 18409 Mooncloth Gloves: **changed** | req.lvl 57; +16 Intellect / +9 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage 
+- 18510 Hide of the Wild: **changed** | req.lvl 57; +10 Intellect / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 42 and damage 
+- 18525 Bracers of Prosperity: **changed** | req.lvl 58; +10 Intellect / +8 Stamina / +5 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22
+- 18723 Animated Chain Necklace: **changed** | req.lvl 57; +8 Stamina / +7 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage by u
+- 18727 Crimson Felt Hat: **changed** | req.lvl 54; +10 Intellect / +10 Spirit / +8 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up 
+- 19044 Might of the Timbermaw: **changed** | req.lvl 53; +21 Strength / +9 Stamina / +14 Agility
+- 19047 Wisdom of the Timbermaw: **changed** | req.lvl 53; +14 Intellect / +9 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 31 and damage b
+- 19049 Timbermaw Brawlers: **changed** | req.lvl 56; +21 Strength / +9 Stamina / +14 Agility
+- 19120 Rune of the Guard Captain: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 0.7%. / Equip: Attack power increased by 14 points. When in fores
+- 19140 Cauterizing Band: **changed** | req.lvl 60; +12 Intellect / +9 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 46 and damage 
+- 19157 Chromatic Gauntlets: **changed** | req.lvl 60; +5 Fire Resistance / +5 Nature Resistance / +5 Frost Resistance / +5 Shadow Resistance / Equip: +44 attack power. / Equi
+- 19162 Corehound Belt: **changed** | req.lvl 60; +16 Intellect / +12 Fire Resistance / Equip: Increases the healing effect of all spells and magic effects by up to 62 an
+- 19312 Lei of the Lifegiver: **changed** | req.lvl 55; +11 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage by up to 12. / 
+- 19315 Therazane's Touch: **changed** | req.lvl 55; Equip: Increases the damage and healing of all spells and magic effects by up to 29.
+- 19323 The Unstoppable Force: **changed** | req.lvl 55; +18 Strength / +17 Stamina / Equip: Increases your critical strike chance by 2%.
+- 19325 Don Julio's Band: **changed** | req.lvl 55; +10 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance of hitting your target 
+- 19507 Inquisitor's Shawl: **changed** | req.lvl 37; +13 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by up to 7.
+- 19523 Lorekeeper's Ring: **changed** | req.lvl 48; +6 Stamina / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19524 Lorekeeper's Ring: **changed** | req.lvl 38; +5 Stamina / Equip: Regenerates 3 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19525 Lorekeeper's Ring: **changed** | req.lvl 28; +4 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19531 Caretaker's Cape: **changed** | req.lvl 48; +9 Stamina / +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by u
+- 19682 Bloodvine Vest: **changed** | req.lvl 60; +13 Intellect / Equip: Increases your chance of hitting your target by 2%. / Equip: Increases the damage and healing of 
+- 19684 Bloodvine Boots: **changed** | req.lvl 60; +16 Intellect / Equip: Increases your chance of hitting your target by 1%. / Equip: Increases the damage and healing of 
+- 20097 Highlander's Cloth Girdle: **changed** | req.lvl 48; +6 Stamina / +5 Intellect / Equip: Increases your critical strike chance by 1%. / Equip: Increases the damage and healin
+- 20098 Highlander's Cloth Girdle: **changed** | req.lvl 38; +4 Stamina / +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 14.
+- 20099 Highlander's Cloth Girdle: **changed** | req.lvl 28; +4 Stamina / +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 11.
+- 20295 Blue Dragonscale Leggings: **changed** | req.lvl 55; +20 Intellect / +12 Arcane Resistance / Equip: Increases the damage and healing of all spells and magic effects by up to
+- 20296 Green Dragonscale Gauntlets: **changed** | req.lvl 51; +5 Stamina / +18 Nature Resistance / Equip: Increases the healing effect of all spells and magic effects by up to 40 and
+- 20428 Caretaker's Cape: **changed** | req.lvl 18; +4 Stamina / +2 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 9 and damage by up
+- 20431 Lorekeeper's Ring: **changed** | req.lvl 18; +2 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 21709 Ring of the Fallen God: **changed** | req.lvl 60; +6 Intellect / +5 Stamina / Equip: Increases damage and healing from all spells and magic effects by up to 37. / Equip: 
+- 22234 Mantle of Lost Hope: **changed** | req.lvl 48; +11 Intellect / +5 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 26 points, and
+- 22240 Greaves of Withering Despair: **changed** | req.lvl 48; +10 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 11. / Equ
+- 22257 Bloodclot Band: **changed** | req.lvl 52; +8 Intellect / +8 Stamina / +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 15 
+- 22266 Flarethorn: **changed** | req.lvl 52; +5 Intellect / +12 Fire Resistance / Equip: Increases the damage caused by fire spells and effects by up to 81 points.
+- 23025 Seal of the Damned: **changed** | req.lvl 60; +17 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 21. / Equip: Increases yo
+- 227007 Slippers of The Five Thunders: **not in WCLBox**
+- 227013 Crown of The Five Thunders: **not in WCLBox**
+- 227021 Face of The Five Thunders: **not in WCLBox**
+- 227022 Fists of The Five Thunders: **not in WCLBox**
+- 231656 General's Mail Greaves: **not in WCLBox**
+- 235473 Grand Marshal's Barricade: **not in WCLBox**
+
+### Hunter
+best picks 250: {'new': 87, 'changed': 96, 'same': 63, 'not in WCLBox': 4}
+- 776 Vendetta: **changed** | req.lvl 26; +7 Agility
+- 867 Gloves of Holy Might: **changed** | req.lvl 37; Equip: Increases your critical strike chance by 1%. / Equip: +10 attack power.
+- 873 Staff of Jordan: **changed** | req.lvl 35; +20 Intellect / +10 Spirit / Equip: Increases your chance of hitting your target by 1.5%.
+- 1076 Defias Renegade Ring: **changed** | req.lvl 21; +6 Stamina / +4 Agility
+- 1156 Lavishly Jeweled Ring: **changed** | req.lvl 17; +2 Agility / +6 Intellect
+- 1355 Buckskin Cape: **changed** | req.lvl 12; +3 Agility
+- 1491 Ring of Precision: **changed** | req.lvl 22; +6 Agility / +3 Spirit
+- 1929 Silk-threaded Trousers: **changed** | req.lvl 13; +5 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 1934 Stonemason Trousers: **changed** | req.lvl 15; +7 Agility / +7 Spirit
+- 1978 Wolfclaw Gloves: **changed** | req.lvl 22; +6 Agility / +5 Strength / +6 Stamina
+- 1981 Icemail Jerkin: **changed** | req.lvl 39; +24 Agility / +15 Stamina / +5 Frost Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 2041 Tunic of Westfall: **changed** | req.lvl 0; +5 Stamina / +11 Agility
+- 2100 Precisely Calibrated Boomstick: **changed** | req.lvl 43; +7 Agility / Equip: Increases your critical strike chance by 0.5%.
+- 2245 Helm of Narv: **changed** | req.lvl 54; +18 Agility / +32 Stamina / Equip: +22 attack power.
+- 2264 Mantle of Thieves: **changed** | req.lvl 25; +10 Agility / +3 Spirit / +4 Stamina
+- 2824 Hurricane: **changed** | req.lvl 48; Equip: All long-range automatic attacks summon an ice arrow to impact the current target, causing 6 to 10 ice damage.
+- 2825 Bow of Searing Arrows: **changed** | req.lvl 37; 
+- 2904 Daryl's Hunting Rifle: **changed** | req.lvl 0; +1 Strength
+- 2941 Prison Shank: **changed** | req.lvl 23; +6 Agility / +2 Stamina
+- 3562 Belt of Vindication: **changed** | req.lvl 0; +3 Stamina / +7 Agility
+- 4246 Fine Leather Belt: **changed** | req.lvl 11; +2 Agility / +2 Stamina
+- 4259 Green Leather Bracers: **changed** | req.lvl 31; +6 Agility / +5 Intellect
+- 4447 Cloak of Night: **changed** | req.lvl 23; +6 Agility
+- 4454 Talon of Vultros: **changed** | req.lvl 23; +6 Agility / +3 Spirit
+- 5200 Impaling Harpoon: **changed** | req.lvl 17; +9 Agility / +5 Intellect
+- 5257 Dark Hooded Cape: **changed** | req.lvl 34; +10 Agility / +4 Strength
+- 5404 Serpent's Shoulders: **changed** | req.lvl 18; +7 Spirit / +5 Agility
+- 6094 Piercing Axe: **changed** | req.lvl 0; +6 Agility
+- 6449 Glowing Lizardscale Cloak: **changed** | req.lvl 18; +6 Agility / +2 Nature Resistance
+- 6468 Deviate Scale Belt: **changed** | req.lvl 18; +6 Stamina / +5 Agility / +3 Strength
+- 6469 Venomstrike: **changed** | req.lvl 19; 
+- 6504 Wingblade: **changed** | req.lvl 0; +5 Agility / +2 Stamina
+- 6505 Crescent Staff: **changed** | req.lvl 0; +7 Intellect / +7 Agility / +7 Stamina
+- 7281 Light Leather Bracers: **changed** | req.lvl 9; +1 Agility / +1 Strength
+- 7348 Fletcher's Gloves: **changed** | req.lvl 20; Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance to parry attacks by-1%.
+- 7686 Ironspine's Eye: **changed** | req.lvl 30; +9 Agility / +4 Strength
+- 7755 Flintrock Shoulders: **changed** | req.lvl 33; +5 Strength / +10 Agility / +10 Stamina
+- 8176 Nightscape Headband: **changed** | req.lvl 36; +12 Agility / +11 Stamina
+- 8347 Dragonscale Gauntlets: **changed** | req.lvl 40; +6 Agility / +7 Stamina / Equip: Increases your critical strike chance by 1%.
+- 9398 Worn Running Boots: **changed** | req.lvl 37; +13 Agility / +10 Stamina
+- 9426 Monolithic Bow: **changed** | req.lvl 36; +6 Strength / +3 Agility
+- 9456 Glass Shooter: **changed** | req.lvl 30; Equip: +12 attack power.
+- 9480 Eyegouger: **changed** | req.lvl 43; +23 Agility / +10 Strength
+- 9487 Hi-Tech Supergun: **changed** | req.lvl 24; Equip: Defense skills increased by 3 points.
+- 9509 Petrolspill Leggings: **changed** | req.lvl 25; +14 Agility / +6 Stamina / Equip: Fire damage received increased by 10%.
+- 9512 Blackmetal Cape: **changed** | req.lvl 41; +12 Agility / +5 Stamina
+- 9533 Masons Fraternity Ring: **changed** | req.lvl 0; +14 Agility / +5 Stamina
+- 9624 Triprunner Dungarees: **changed** | req.lvl 0; +6 Stamina / +18 Agility / +3 Strength
+- 10400 Blackened Defias Leggings: **changed** | req.lvl 14; +6 Strength / +6 Agility
+- 10402 Blackened Defias Boots: **changed** | req.lvl 15; +4 Stamina / +6 Agility
+- 10403 Blackened Defias Belt: **changed** | req.lvl 17; Equip: +18 attack power.
+- 10410 Leggings of the Fang: **changed** | req.lvl 17; +5 Strength / +4 Stamina / +9 Agility
+- 10411 Footpads of the Fang: **changed** | req.lvl 17; +6 Stamina / +6 Agility
+- 10413 Gloves of the Fang: **changed** | req.lvl 14; +6 Agility / +4 Strength
+- 10567 Quillshooter: **changed** | req.lvl 33; 
+- 10583 Quillward Harness: **changed** | req.lvl 34; +19 Agility / +8 Strength
+- 11303 Fine Shortbow: **changed** | req.lvl 11; +1 Agility
+- 11726 Savage Gladiator Chain: **changed** | req.lvl 52; +18 Stamina / +14 Agility / +16 Strength / Equip: Increases your critical strike chance by 1.5%. / Equip: Increases your
+- 11931 Dreadforge Retaliator: **changed** | req.lvl 54; +8 Stamina / Equip: Increases your chance to parry attacks by 1%. / Equip: Increases your critical strike chance by 1%. 
+- 12082 Wyrmhide Spaulders: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 1.5%. / Equip: +12 attack power.
+- 12470 Sandstalker Ankleguards: **changed** | req.lvl 42; +17 Agility / +3 Spirit / +6 Strength
+- 12548 Magni's Will: **changed** | req.lvl 0; +7 Strength / +8 Stamina / Equip: Increases your critical strike chance by 1%.
+- 12651 Blackcrow: **changed** | req.lvl 54; +3 Agility / Equip: Increases your chance of hitting your target by 0.9%.
+- 13020 Skystriker Bow: **changed** | req.lvl 34; +5 Agility / +5 Intellect
+- 13037 Crystalpine Stinger: **changed** | req.lvl 27; +4 Agility / +4 Intellect
+- 13136 Lil Timmy's Peashooter: **changed** | req.lvl 16; +4 Agility
+- 13211 Slashclaw Bracers: **changed** | req.lvl 55; +9 Spirit / +7 Agility / +7 Stamina / Equip: Increases your chance of hitting your target by 1%.
+- 13213 Smolderweb's Eye: **changed** | req.lvl 55; +5 Nature Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 13963 Voone's Vice Grips: **changed** | req.lvl 0; +15 Stamina / +9 Agility / Equip: Increases your chance of hitting your target by 1.5%.
+- 15062 Devilsaur Leggings: **changed** | req.lvl 55; +12 Stamina / Equip: +46 attack power. / Equip: Increases your critical strike chance by 1%.
+- 15063 Devilsaur Gauntlets: **changed** | req.lvl 53; +9 Stamina / Equip: +28 attack power. / Equip: Increases your critical strike chance by 1%.
+- 15411 Mark of Fordring: **changed** | req.lvl 0; Equip: Increases your critical strike chance by 1%. / Equip: +26 attack power.
+- 15444 Staff of Orgrimmar: **changed** | req.lvl 0; +6 Agility / +6 Intellect
+- 16708 Shadowcraft Spaulders: **changed** | req.lvl 55; +22 Agility / +9 Stamina / Equip: Increases your chance of hitting your target by 0.2%.
+- 16711 Shadowcraft Boots: **changed** | req.lvl 54; +21 Agility / +9 Stamina / Equip: Increases your chances of hitting your target by 0.3%.
+- 17713 Blackstone Ring: **changed** | req.lvl 49; +6 Stamina / Equip: +20 attack power. / Equip: Increases your chance of hitting your target by 1%.
+- 17728 Albino Crocscale Boots: **changed** | req.lvl 48; +20 Agility / +5 Stamina / +6 Nature Resistance
+- 17749 Phytoskin Spaulders: **changed** | req.lvl 46; +15 Agility / +9 Stamina / +10 Nature Resistance
+- 17778 Sagebrush Girdle: **changed** | req.lvl 0; +11 Agility / +9 Intellect
+- 18314 Ring of Demonic Guile: **changed** | req.lvl 54; +10 Intellect / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases your chance of hitting your target by 1%.
+- 18317 Tempest Talisman: **changed** | req.lvl 53; +6 Intellect / +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 7 and damage by 
+- 18323 Satyr's Bow: **changed** | req.lvl 53; Equip: Increases your chance of hitting your target by 1%. / Equip: + 4 attack power.
+- 18404 Onyxia Tooth Pendant: **changed** | req.lvl 0; +7 Agility / +8 Stamina / +10 Fire Resistance / Equip: Increases your chance of hitting your target by 1%. / Equip: Incr
+- 18405 Belt of the Archmage: **changed** | req.lvl 57; +16 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 20. / Equ
+- 18500 Tarnished Elven Ring: **changed** | req.lvl 56; +10 Agility / +10 Arcane Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 18706 Arena Master: **changed** | req.lvl 35; +7 Stamina / Equip: Damage taken while in the Arena or Mallet Arena area is reduced by 5%.
+- 19120 Rune of the Guard Captain: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 0.7%. / Equip: Attack power increased by 14 points. When in fores
+- 19325 Don Julio's Band: **changed** | req.lvl 55; +10 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance of hitting your target 
+- 19687 Primal Batskin Bracers: **changed** | req.lvl 60; +14 Agility / +7 Stamina / Equip: Increases your chance of hitting your target by 1%.
+- 20116 Highlander's Leather Girdle: **changed** | req.lvl 38; +4 Stamina / Equip: +30 attack power.
+- 20118 Highlander's Mail Girdle: **changed** | req.lvl 48; +8 Stamina / +10 Intellect / Equip: Increases your critical strike chance by 1%.
+- 20438 Outrunner's Bow: **changed** | req.lvl 18; +3 Stamina / +2 Agility
+- 21118 Talisman of Arathor: **changed** | req.lvl 38; +8 Stamina
+- 21565 Rune of Perfection: **changed** | req.lvl 40; +8 Stamina / Equip: Your spell penetrations grant 3 magic resistance. Spell penetrations increase by an additional 7 whe
+- 22207 Sash of the Grand Hunt: **changed** | req.lvl 55; +15 Agility / +14 Stamina / +6 Intellect / Equip: Increases your chance to hit with ranged weapons by 1.0%.
+- 23025 Seal of the Damned: **changed** | req.lvl 60; +17 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 21. / Equip: Increases yo
+- 226881 Beastmaster's Treads: **not in WCLBox**
+- 231569 General's Chain Grips: **not in WCLBox**
+- 231578 Marshal's Chain Vices: **not in WCLBox**
+- 234570 Grand Marshal's Polearm: **not in WCLBox**
+
+### Paladin
+best picks 507: {'changed': 204, 'new': 203, 'same': 92, 'not in WCLBox': 8}
+- 647 Destiny: **changed** | req.lvl 52; +10 Strength
+- 867 Gloves of Holy Might: **changed** | req.lvl 37; Equip: Increases your critical strike chance by 1%. / Equip: +10 attack power.
+- 870 Fiery War Axe: **changed** | req.lvl 35; +15 Strength
+- 888 Naga Battle Gloves: **changed** | req.lvl 22; +4 Stamina / +4 Strength / Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by
+- 1156 Lavishly Jeweled Ring: **changed** | req.lvl 17; +2 Agility / +6 Intellect
+- 1169 Blackskull Shield: **changed** | req.lvl 41; +5 Stamina / Equip: Restores 15 HP every 5 seconds. / Equip: Reduces the chance of your attacks being dodged or parried 
+- 1355 Buckskin Cape: **changed** | req.lvl 12; +3 Agility
+- 1443 Jeweled Amulet of Cainwyn: **changed** | req.lvl 55; +18 Intellect / +10 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage 
+- 1449 Minor Channeling Ring: **changed** | req.lvl 0; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 1483 Face Smasher: **changed** | req.lvl 16; +3 Strength / +3 Stamina
+- 1488 Avenger's Armor: **changed** | req.lvl 26; +15 Strength / +6 Stamina
+- 1490 Guardian Talisman: **changed** | req.lvl 0; +9 Stamina
+- 1678 Black Ogre Kickers: **changed** | req.lvl 36; +6 Strength / +14 Stamina
+- 1713 Ankh of Life: **changed** | req.lvl 40; +12 Spirit
+- 1929 Silk-threaded Trousers: **changed** | req.lvl 13; +5 Agility / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 1974 Mindthrust Bracers: **changed** | req.lvl 17; +5 Intellect / +1 Stamina / Equip: Regenerates 3 mana every 5 seconds.
+- 1980 Underworld Band: **changed** | req.lvl 38; +12 Stamina / +5 Intellect / Equip: Increases the damage dealt by Shadow spells and effects by up to 14.
+- 1981 Icemail Jerkin: **changed** | req.lvl 39; +24 Agility / +15 Stamina / +5 Frost Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 2039 Plains Ring: **changed** | req.lvl 24; +8 Stamina / +3 Intellect
+- 2246 Myrmidon's Signet: **changed** | req.lvl 53; +17 Stamina / +11 Strength / +7 Agility
+- 2262 Mark of Kern: **changed** | req.lvl 31; +4 Stamina / Equip: +20 attack power.
+- 2284 Rat Cloth Cloak: **changed** | req.lvl 12; +3 Stamina
+- 2312 Fine Leather Gloves: **changed** | req.lvl 10; +2 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 2316 Dark Leather Cloak: **changed** | req.lvl 17; +3 Agility / +2 Strength
+- 2580 Reinforced Linen Cape: **changed** | req.lvl 7; Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 2582 Green Woolen Vest: **changed** | req.lvl 12; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 2584 Woolen Cape: **changed** | req.lvl 11; +1 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 1.
+- 2721 Holy Shroud: **changed** | req.lvl 27; +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage by up to 11.
+- 2816 Death Speaker Scepter: **changed** | req.lvl 28; Equip: Restores 12 HP every 5 seconds. / Equip: Increases the healing effect of spells by up to 68. / Equip: Increases t
+- 2854 Runed Copper Bracers: **changed** | req.lvl 14; +2 Strength / +2 Stamina
+- 2865 Rough Bronze Leggings: **changed** | req.lvl 16; +5 Stamina / +4 Spirit
+- 2868 Patterned Bronze Bracers: **changed** | req.lvl 20; +5 Strength
+- 2870 Shining Silver Breastplate: **changed** | req.lvl 24; +14 Strength / +6 Stamina
+- 2915 Taran Icebreaker: **changed** | req.lvl 47; +14 Stamina / Equip: Crossbow skill increased by 1.
+- 3160 Ironplate Buckler: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 3228 Jimmied Handcuffs: **changed** | req.lvl 23; +3 Strength / +8 Stamina
+- 3414 Crested Scepter: **changed** | req.lvl 24; +6 Stamina / +2 Intellect
+- 3449 Mystic Shawl: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 3480 Rough Bronze Shoulders: **changed** | req.lvl 17; +4 Stamina / +3 Strength
+- 3844 Green Iron Hauberk: **changed** | req.lvl 31; +11 Stamina / +7 Strength
+- 4130 Smotts' Compass: **changed** | req.lvl 0; Equip: Increases your chance to dodge attacks by 1%.
+- 4197 Berylline Pads: **changed** | req.lvl 0; +5 Stamina / +10 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 7.
+- 4242 Embossed Leather Pants: **changed** | req.lvl 10; +2 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 3.
+- 4311 Heavy Woolen Cloak: **changed** | req.lvl 16; +4 Spirit / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4314 Double-Stitched Woolen Shoulders: **changed** | req.lvl 17; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 4315 Reinforced Woolen Shoulders: **changed** | req.lvl 19; +4 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 5.
+- 4438 Pugilist Bracers: **changed** | req.lvl 25; +8 Strength / +3 Stamina
+- 4768 Adept's Gloves: **changed** | req.lvl 12; +5 Intellect / +5 Stamina
+- 5187 Rhahk'Zor's Hammer: **changed** | req.lvl 16; +8 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 5257 Dark Hooded Cape: **changed** | req.lvl 34; +10 Agility / +4 Strength
+- 5443 Gold-plated Buckler: **changed** | req.lvl 17; +5 Stamina / +2 Agility / Equip: When you enter combat, the next physical damage you take in 20 seconds is reduced by 15
+- 5542 Pearl-clasped Cloak: **changed** | req.lvl 14; +3 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 5943 Rift Bracers: **changed** | req.lvl 20; +4 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 2.
+- 6087 Chausses of Westfall: **changed** | req.lvl 0; +5 Stamina / +11 Strength
+- 6189 Durable Chain Shoulders: **changed** | req.lvl 0; +6 Stamina
+- 6195 Wax-polished Armor: **changed** | req.lvl 12; +3 Strength / +4 Stamina
+- 6314 Wolfmaster Cape: **changed** | req.lvl 22; +3 Stamina / Equip: Attack power against beasts increased by 9. / Equip: +10 attack power.
+- 6320 Commander's Crest: **changed** | req.lvl 21; +3 Stamina / +5 Strength / Equip: Restores 4 HP every 5 seconds.
+- 6414 Seal of Sylvanas: **changed** | req.lvl 0; +8 Stamina / Equip: +6 attack power.
+- 6447 Worn Turtle Shell Shield: **changed** | req.lvl 16; Equip: Regenerates 2 mana every 5 seconds.
+- 6627 Mutant Scale Breastplate: **changed** | req.lvl 18; +10 Strength / +4 Stamina
+- 6632 Feyscale Cloak: **changed** | req.lvl 16; +5 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 3.
+- 6641 Haunting Blade: **changed** | req.lvl 22; Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage by up to 11.
+- 6682 Death Speaker Robes: **changed** | req.lvl 26; +4 Stamina / +11 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage 
+- 6685 Death Speaker Mantle: **changed** | req.lvl 27; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6694 Heart of Agamaggan: **changed** | req.lvl 30; +7 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by up to 5.
+- 6725 Marbled Buckler: **changed** | req.lvl 0; +5 Agility / +5 Strength / +5 Spirit / +5 Stamina
+- 6730 Ironforge Chain: **changed** | req.lvl 11; +4 Stamina
+- 6742 Stonefist Girdle: **changed** | req.lvl 0; +6 Strength / +5 Stamina
+- 6750 Snake Hoop: **changed** | req.lvl 0; +5 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 6.
+- 6751 Mourning Shawl: **changed** | req.lvl 0; +8 Stamina
+- 6829 Sword of Serenity: **changed** | req.lvl 0; +9 Stamina / +4 Spirit
+- 7002 Arctic Buckler: **changed** | req.lvl 0; +3 Spirit / +8 Stamina / +5 Frost Resistance
+- 7049 Truefaith Gloves: **changed** | req.lvl 25; +3 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by up to 5.
+- 7057 Green Silken Shoulders: **changed** | req.lvl 31; +11 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 8.
+- 7281 Light Leather Bracers: **changed** | req.lvl 9; +1 Agility / +1 Strength
+- 7348 Fletcher's Gloves: **changed** | req.lvl 20; Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance to parry attacks by-1%.
+- 7673 Talvash's Enhancing Necklace: **changed** | req.lvl 0; +1 Intellect / +10 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12.
+- 7684 Bloodmage Mantle: **changed** | req.lvl 30; +9 Intellect / Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Restores 9 H
+- 7719 Raging Berserker's Helm: **changed** | req.lvl 37; +8 Stamina / +13 Strength / Equip: Increases your critical strike chance by 1%.
+- 7726 Aegis of the Scarlet Commander: **changed** | req.lvl 39; +8 Stamina / +7 Strength / Equip: Deals 13 to 15 Holy damage per block.
+- 7753 Bloodspiller: **changed** | req.lvl 27; 
+- 7755 Flintrock Shoulders: **changed** | req.lvl 33; +5 Strength / +10 Agility / +10 Stamina
+- 7758 Ruthless Shiv: **changed** | req.lvl 34; +8 Stamina / Equip: +38 attack power.
+- 7759 Archon Chestpiece: **changed** | req.lvl 33; +12 Strength / +12 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 9.
+- 7787 Resplendent Guardian: **changed** | req.lvl 26; +7 Stamina / Equip: Increases the chance of you blocking attacks with your shield by 1%.
+- 7934 Heavy Mithril Helm: **changed** | req.lvl 42; +15 Stamina
+- 7946 Runed Mithril Hammer: **changed** | req.lvl 44; +7 Stamina / Equip: Defense increased by 4 points.
+- 9372 Sul'thraze the Lasher: **changed** | req.lvl 50; 
+- 9393 Beacon of Hope: **changed** | req.lvl 33; +4 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by up to 8.
+- 9413 The Rockpounder: **changed** | req.lvl 44; +5 Strength / Equip: Increases your critical strike chance by 2%.
+- 9448 Spidertank Oilrag: **changed** | req.lvl 29; Equip: Increases the damage and healing of all spells and magic effects by up to 9. / Equip: Regenerates 3 mana every 5 
+- 9449 Manual Crowd Pummeler: **changed** | req.lvl 29; +16 Strength / +5 Agility
+- 9459 Thermaplugg's Left Arm: **changed** | req.lvl 31; +17 Strength / +5 Stamina / +4 Intellect
+- 9474 Jinxed Hoodoo Kilt: **changed** | req.lvl 44; +19 Spirit / +10 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 24 and damage 
+- 9510 Caverndeep Trudgers: **changed** | req.lvl 27; +4 Strength / +10 Stamina
+- 9538 Talvash's Gold Ring: **changed** | req.lvl 0; +10 Stamina / Equip: Defense skills increased by 3 points.
+- 9623 Civinad Robes: **changed** | req.lvl 0; +12 Spirit / +7 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 26 points, and th
+- 10020 Stormcloth Vest: **changed** | req.lvl 40; +8 Spirit / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 58 and damage by u
+- 10330 Scarlet Leggings: **changed** | req.lvl 39; +21 Strength / +10 Stamina
+- 10331 Scarlet Gauntlets: **changed** | req.lvl 33; +12 Strength / +10 Agility
+- 10333 Scarlet Wristguards: **changed** | req.lvl 31; +11 Stamina
+- 10400 Blackened Defias Leggings: **changed** | req.lvl 14; +6 Strength / +6 Agility
+- 10403 Blackened Defias Belt: **changed** | req.lvl 17; Equip: +18 attack power.
+- 10410 Leggings of the Fang: **changed** | req.lvl 17; +5 Strength / +4 Stamina / +9 Agility
+- 10413 Gloves of the Fang: **changed** | req.lvl 14; +6 Agility / +4 Strength
+- 10553 Foreman Vest: **changed** | req.lvl 8; +3 Strength
+- 10573 Boneslasher: **changed** | req.lvl 32; +7 Stamina / +16 Strength / Equip: Attack power against undead increased by 15.
+- 10583 Quillward Harness: **changed** | req.lvl 34; +19 Agility / +8 Strength
+- 10711 Dragon's Blood Necklace: **changed** | req.lvl 0; +12 Stamina / Equip: Increases your shield's block by 8.
+- 10768 Boar Champion's Belt: **changed** | req.lvl 37; +15 Strength / +6 Stamina
+- 10769 Glowing Eye of Mordresh: **changed** | req.lvl 36; +8 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage by up to 7.
+- 10798 Atal'alarion's Tusk Ring: **changed** | req.lvl 46; +18 Strength / +8 Stamina / Equip: Restores 8 HP every 5 seconds.
+- 10835 Crest of Supremacy: **changed** | req.lvl 51; +6 Agility / +7 Intellect / +7 Stamina / +6 Strength / Equip: Defense skills increased by 5 points.
+- 10845 Warrior's Embrace: **changed** | req.lvl 49; +14 Stamina / +6 Agility / Equip: Increases your chance to dodge attacks by 1.5%. / Equip: Defense increased by 8 points
+- 10919 Apothecary Gloves: **changed** | req.lvl 0; Equip: Herbalism skill +2 points. / Equip: Increases the damage and healing of all spells and magic effects by up to 4.
+- 11262 Orb of Lorica: **changed** | req.lvl 0; +10 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage by up to 6.
+- 11302 Uther's Strength: **changed** | req.lvl 47; Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage by up to 6. / Equip: When hit
+- 11311 Emberscale Cape: **changed** | req.lvl 42; +14 Stamina / +4 Fire Resistance
+- 11626 Blackveil Cape: **changed** | req.lvl 48; +6 Strength / +14 Agility / +4 Spirit
+- 11631 Stoneshell Guard: **changed** | req.lvl 47; +7 Strength / +9 Stamina
+- 11669 Naglering: **changed** | req.lvl 54; +10 Stamina / Equip: Defense skills increased by 5 points. / Equip: Deals 3 arcane damage to the attacker after being hi
+- 11726 Savage Gladiator Chain: **changed** | req.lvl 52; +18 Stamina / +14 Agility / +16 Strength / Equip: Increases your critical strike chance by 1.5%. / Equip: Increases your
+- 11735 Ragefury Eyepatch: **changed** | req.lvl 52; +10 Stamina / +6 Strength / Equip: Increases your critical strike chance by 2%.
+- 11746 Golem Skull Helm: **changed** | req.lvl 51; +18 Stamina / +18 Strength / Equip: Defense increased by 8 points.
+- 11755 Verek's Collar: **changed** | req.lvl 51; +6 Strength / +7 Stamina / Equip: Increases your chance to dodge attacks by 1%. / Equip: Defense skills increased by 3 p
+- 11784 Arbiter's Blade: **changed** | req.lvl 48; +5 Intellect / +8 Stamina / Equip: Increases your chance of hitting your target by 0.7%.
+- 11787 Shalehusk Boots: **changed** | req.lvl 53; +10 Stamina / Equip: Increases your chance to dodge attacks by 1.5%.
+- 11819 Second Wind: **changed** | req.lvl 54; Equip: Increases the healing effect of all spells and magic effects by up to 15 and damage by up to 5.
+- 11841 Senior Designer's Pantaloons: **changed** | req.lvl 50; +18 Spirit / +8 Stamina / +7 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 37
+- 11927 Legplates of the Eternal Guardian: **changed** | req.lvl 52; Equip: Defense skills increased by 15 points. / Equip: Increases your chance to block attacks with your shield by 2%.
+- 12471 Desertwalker Cane: **changed** | req.lvl 42; +7 Intellect / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 20 and damage b
+- 12544 Thrall's Resolve: **changed** | req.lvl 0; +7 Stamina / +6 Strength
+- 12548 Magni's Will: **changed** | req.lvl 0; +7 Strength / +8 Stamina / Equip: Increases your critical strike chance by 1%.
+- 12625 Dawnbringer Shoulders: **changed** | req.lvl 53; +10 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 44 and damage by up to 15.
+- 12985 Ring of Defense: **changed** | req.lvl 17; Equip: Defense increased by 4 points.
+- 13102 Cassandra's Grace: **changed** | req.lvl 42; +9 Spirit / +7 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 44 and damage by u
+- 13178 Rosewine Circle: **changed** | req.lvl 55; Equip: Increases the healing effect of all spells and magic effects by up to 24 and damage by up to 8. / Equip: Regenera
+- 13213 Smolderweb's Eye: **changed** | req.lvl 55; +5 Nature Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 13245 Kresh's Back: **changed** | req.lvl 18; Equip: Defense skills increased by 5 points.
+- 13954 Verdant Footpads: **changed** | req.lvl 57; Equip: Increases the healing effect of all spells and magic effects by up to 38 points and the damage effect by up to 12
+- 13966 Mark of Tyranny: **changed** | req.lvl 0; Equip: Increases your chance to dodge attacks by 1%.
+- 14147 Cavedweller Bracers: **changed** | req.lvl 13; +2 Strength / +3 Spirit
+- 14149 Subterranean Cape: **changed** | req.lvl 13; +3 Strength / Equip: Restores 5 HP every 5 seconds.
+- 14549 Boots of Avoidance: **changed** | req.lvl 40; +6 Strength / +11 Stamina / Equip: Increases your chance to dodge attacks by 1.5%.
+- 14552 Stockade Pauldrons: **changed** | req.lvl 50; +20 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12. / Equip: Defense skil
+- 14616 Bloodmail Boots: **changed** | req.lvl 56; +10 Stamina / +10 Intellect / +9 Strength / +8 Agility / Equip: Increases your chance of hitting your target by 1%.
+- 15063 Devilsaur Gauntlets: **changed** | req.lvl 53; +9 Stamina / Equip: +28 attack power. / Equip: Increases your critical strike chance by 1%.
+- 15065 Warbear Woolies: **changed** | req.lvl 52; +28 Strength / +12 Stamina / +18 Agility
+- 15411 Mark of Fordring: **changed** | req.lvl 0; Equip: Increases your critical strike chance by 1%. / Equip: +26 attack power.
+- 15413 Ornate Adamantium Breastplate: **changed** | req.lvl 0; +22 Stamina / +9 Strength / Equip: Defense skill increased by 10 points.
+- 15424 Axe of Orgrimmar: **changed** | req.lvl 0; +6 Stamina / +6 Spirit
+- 16058 Fordring's Seal: **changed** | req.lvl 0; +6 Intellect / +5 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage b
+- 17007 Stonerender Gauntlets: **changed** | req.lvl 46; +20 Strength / +11 Stamina / +7 Intellect / Equip: Increases the damage and healing of all spells and magic effects by u
+- 17508 Forcestone Buckler: **changed** | req.lvl 0; +4 Stamina / +8 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage by u
+- 17694 Band of the Fist: **changed** | req.lvl 0; +4 Agility / +4 Strength
+- 17713 Blackstone Ring: **changed** | req.lvl 49; +6 Stamina / Equip: +20 attack power. / Equip: Increases your chance of hitting your target by 1%.
+- 17718 Gizlock's Hypertech Buckler: **changed** | req.lvl 48; +10 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 13 and damage by up to 5. /
+- 17721 Gloves of the Greatfather: **changed** | req.lvl 33; Equip: Increases the healing effect of all spells and magic effects by up to 26 and damage by up to 24. / Equip: Increas
+- 17734 Helm of the Mountain: **changed** | req.lvl 48; +3 Stamina / +10 Nature Resistance / Equip: Defense skill increased by 7 points.
+- 17904 Stormpike Insignia Rank 6: **changed** | req.lvl 0; +10 Frost Resistance / Equip: Restores 30 HP every 5 seconds. / Equip: Increases your chance to dodge attacks by 2%.
+- 18083 Jumanza Grips: **changed** | req.lvl 43; +7 Intellect / +10 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage 
+- 18328 Shadewood Cloak: **changed** | req.lvl 54; +13 Strength / +8 Stamina / +8 Nature Resistance
+- 18404 Onyxia Tooth Pendant: **changed** | req.lvl 0; +7 Agility / +8 Stamina / +10 Fire Resistance / Equip: Increases your chance of hitting your target by 1%. / Equip: Incr
+- 18409 Mooncloth Gloves: **changed** | req.lvl 57; +16 Intellect / +9 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage 
+- 18413 Cloak of Warding: **changed** | req.lvl 57; Equip: Defense skills increased by 5 points.
+- 18440 Sergeant's Cape: **changed** | req.lvl 30; +9 Stamina
+- 18441 Sergeant's Cape: **changed** | req.lvl 45; +14 Stamina
+- 18509 Chromatic Cloak: **changed** | req.lvl 57; +10 Stamina / +12 Fire Resistance / +12 Shadow Resistance / Equip: Increases your critical strike chance by 1%.
+- 18510 Hide of the Wild: **changed** | req.lvl 57; +10 Intellect / +8 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 42 and damage 
+- 18525 Bracers of Prosperity: **changed** | req.lvl 58; +10 Intellect / +8 Stamina / +5 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22
+- 18706 Arena Master: **changed** | req.lvl 35; +7 Stamina / Equip: Damage taken while in the Arena or Mallet Arena area is reduced by 5%.
+- 18723 Animated Chain Necklace: **changed** | req.lvl 57; +8 Stamina / +7 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 33 and damage by u
+- 19024 Arena Grand Master: **changed** | req.lvl 50; Equip: Increases your chance to dodge attacks by 1%. / Equip: Damage taken while in the Arena or Mallet Arena area is re
+- 19044 Might of the Timbermaw: **changed** | req.lvl 53; +21 Strength / +9 Stamina / +14 Agility
+- 19047 Wisdom of the Timbermaw: **changed** | req.lvl 53; +14 Intellect / +9 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 31 and damage b
+- 19120 Rune of the Guard Captain: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 0.7%. / Equip: Attack power increased by 14 points. When in fores
+- 19140 Cauterizing Band: **changed** | req.lvl 60; +12 Intellect / +9 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 46 and damage 
+- 19162 Corehound Belt: **changed** | req.lvl 60; +16 Intellect / +12 Fire Resistance / Equip: Increases the healing effect of all spells and magic effects by up to 62 an
+- 19312 Lei of the Lifegiver: **changed** | req.lvl 55; +11 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 37 and damage by up to 12. / 
+- 19323 The Unstoppable Force: **changed** | req.lvl 55; +18 Strength / +17 Stamina / Equip: Increases your critical strike chance by 2%.
+- 19325 Don Julio's Band: **changed** | req.lvl 55; +10 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance of hitting your target 
+- 19507 Inquisitor's Shawl: **changed** | req.lvl 37; +13 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by up to 7.
+- 19509 Dusty Mail Boots: **changed** | req.lvl 37; +14 Stamina
+- 19523 Lorekeeper's Ring: **changed** | req.lvl 48; +6 Stamina / Equip: Regenerates 4 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 19531 Caretaker's Cape: **changed** | req.lvl 48; +9 Stamina / +6 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 22 and damage by u
+- 19533 Caretaker's Cape: **changed** | req.lvl 28; +6 Stamina / +4 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 13 and damage by u
+- 19694 Darksoul Leggings: **changed** | req.lvl 60; +22 Stamina / Equip: Increases your chance of hitting your target by 2%.
+- 20058 Highlander's Lamellar Spaulders: **changed** | req.lvl 60; +18 Strength / +15 Stamina / +17 Agility / +10 Intellect
+- 20071 Talisman of Arathor: **changed** | req.lvl 58; +12 Stamina
+- 20428 Caretaker's Cape: **changed** | req.lvl 18; +4 Stamina / +2 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 9 and damage by up
+- 20431 Lorekeeper's Ring: **changed** | req.lvl 18; +2 Stamina / Equip: Regenerates 2 mana every 5 seconds. / Equip: Increases the damage and healing of all spells and magi
+- 20505 Chivalrous Signet: **changed** | req.lvl 0; +7 Strength / +7 Stamina / +7 Intellect / Equip: Increases the healing effect of all spells and magic effects by up to 1
+- 20512 Sanctified Orb: **changed** | req.lvl 0; Equip: Increases the damage and healing of all spells and magic effects by up to 15.
+- 20580 Hammer of Bestial Fury: **changed** | req.lvl 60; +13 Strength / +12 Stamina
+- 21117 Talisman of Arathor: **changed** | req.lvl 48; +10 Stamina
+- 21118 Talisman of Arathor: **changed** | req.lvl 38; +8 Stamina
+- 21119 Talisman of Arathor: **changed** | req.lvl 28; +6 Stamina
+- 21565 Rune of Perfection: **changed** | req.lvl 40; +8 Stamina / Equip: Your spell penetrations grant 3 magic resistance. Spell penetrations increase by an additional 7 whe
+- 21566 Rune of Perfection: **changed** | req.lvl 20; +4 Stamina / Equip: Your spell penetration increases by 2 magic resistance. Spell penetration increases by an additional
+- 22088 Soulforge Bracers: **changed** | req.lvl 0; +10 Stamina / +9 Intellect / +9 Strength / Equip: Increases the damage and healing of all spells and magic effects by up
+- 22234 Mantle of Lost Hope: **changed** | req.lvl 48; +11 Intellect / +5 Stamina / Equip: Increases the healing effect of all spells and magic effects by up to 26 points, and
+- 22383 Sageblade: **changed** | req.lvl 59; +14 Stamina / +6 Intellect / Equip: Increases your chance of hitting your target by 1%.
+- 23025 Seal of the Damned: **changed** | req.lvl 60; +17 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 21. / Equip: Increases yo
+- 226976 Soulforge Greathelm: **not in WCLBox**
+- 226981 Soulforge Crown: **not in WCLBox**
+- 226989 Soulforge Faceguard: **not in WCLBox**
+- 226990 Soulforge Handguards: **not in WCLBox**
+- 226991 Soulforge Sabatons: **not in WCLBox**
+- 231650 Marshal's Lamellar Gauntlets: **not in WCLBox**
+- 234570 Grand Marshal's Polearm: **not in WCLBox**
+- 235473 Grand Marshal's Barricade: **not in WCLBox**
+
+### Warrior
+best picks 440: {'changed': 173, 'same': 115, 'new': 143, 'not in WCLBox': 9}
+- 647 Destiny: **changed** | req.lvl 52; +10 Strength
+- 776 Vendetta: **changed** | req.lvl 26; +7 Agility
+- 867 Gloves of Holy Might: **changed** | req.lvl 37; Equip: Increases your critical strike chance by 1%. / Equip: +10 attack power.
+- 873 Staff of Jordan: **changed** | req.lvl 35; +20 Intellect / +10 Spirit / Equip: Increases your chance of hitting your target by 1.5%.
+- 1076 Defias Renegade Ring: **changed** | req.lvl 21; +6 Stamina / +4 Agility
+- 1169 Blackskull Shield: **changed** | req.lvl 41; +5 Stamina / Equip: Restores 15 HP every 5 seconds. / Equip: Reduces the chance of your attacks being dodged or parried 
+- 1264 Headbasher: **changed** | req.lvl 0; +9 Strength / +5 Stamina / +10 Intellect
+- 1292 Butcher's Cleaver: **changed** | req.lvl 20; +5 Strength / +2 Agility
+- 1355 Buckskin Cape: **changed** | req.lvl 12; +3 Agility
+- 1454 Axe of the Enforcer: **changed** | req.lvl 24; +5 Strength / +4 Stamina
+- 1488 Avenger's Armor: **changed** | req.lvl 26; +15 Strength / +6 Stamina
+- 1490 Guardian Talisman: **changed** | req.lvl 0; +9 Stamina
+- 1678 Black Ogre Kickers: **changed** | req.lvl 36; +6 Strength / +14 Stamina
+- 1981 Icemail Jerkin: **changed** | req.lvl 39; +24 Agility / +15 Stamina / +5 Frost Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 2039 Plains Ring: **changed** | req.lvl 24; +8 Stamina / +3 Intellect
+- 2098 Double-barreled Shotgun: **changed** | req.lvl 22; +3 Strength / +3 Agility
+- 2100 Precisely Calibrated Boomstick: **changed** | req.lvl 43; +7 Agility / Equip: Increases your critical strike chance by 0.5%.
+- 2164 Gut Ripper: **changed** | req.lvl 40; 
+- 2246 Myrmidon's Signet: **changed** | req.lvl 53; +17 Stamina / +11 Strength / +7 Agility
+- 2262 Mark of Kern: **changed** | req.lvl 31; +4 Stamina / Equip: +20 attack power.
+- 2284 Rat Cloth Cloak: **changed** | req.lvl 12; +3 Stamina
+- 2316 Dark Leather Cloak: **changed** | req.lvl 17; +3 Agility / +2 Strength
+- 2854 Runed Copper Bracers: **changed** | req.lvl 14; +2 Strength / +2 Stamina
+- 2868 Patterned Bronze Bracers: **changed** | req.lvl 20; +5 Strength
+- 2870 Shining Silver Breastplate: **changed** | req.lvl 24; +14 Strength / +6 Stamina
+- 2941 Prison Shank: **changed** | req.lvl 23; +6 Agility / +2 Stamina
+- 3191 Arced War Axe: **changed** | req.lvl 21; +9 Strength / +9 Stamina
+- 3228 Jimmied Handcuffs: **changed** | req.lvl 23; +3 Strength / +8 Stamina
+- 3413 Doomspike: **changed** | req.lvl 22; +3 Strength / +3 Stamina
+- 3480 Rough Bronze Shoulders: **changed** | req.lvl 17; +4 Stamina / +3 Strength
+- 3844 Green Iron Hauberk: **changed** | req.lvl 31; +11 Stamina / +7 Strength
+- 4130 Smotts' Compass: **changed** | req.lvl 0; Equip: Increases your chance to dodge attacks by 1%.
+- 4438 Pugilist Bracers: **changed** | req.lvl 25; +8 Strength / +3 Stamina
+- 5257 Dark Hooded Cape: **changed** | req.lvl 34; +10 Agility / +4 Strength
+- 5404 Serpent's Shoulders: **changed** | req.lvl 18; +7 Spirit / +5 Agility
+- 5443 Gold-plated Buckler: **changed** | req.lvl 17; +5 Stamina / +2 Agility / Equip: When you enter combat, the next physical damage you take in 20 seconds is reduced by 15
+- 6087 Chausses of Westfall: **changed** | req.lvl 0; +5 Stamina / +11 Strength
+- 6180 Slarkskin: **changed** | req.lvl 12; +4 Stamina / +3 Agility
+- 6189 Durable Chain Shoulders: **changed** | req.lvl 0; +6 Stamina
+- 6195 Wax-polished Armor: **changed** | req.lvl 12; +3 Strength / +4 Stamina
+- 6314 Wolfmaster Cape: **changed** | req.lvl 22; +3 Stamina / Equip: Attack power against beasts increased by 9. / Equip: +10 attack power.
+- 6320 Commander's Crest: **changed** | req.lvl 21; +3 Stamina / +5 Strength / Equip: Restores 4 HP every 5 seconds.
+- 6331 Howling Blade: **changed** | req.lvl 33; +4 Agility
+- 6340 Fenrus' Hide: **changed** | req.lvl 22; +4 Agility / +6 Stamina
+- 6414 Seal of Sylvanas: **changed** | req.lvl 0; +8 Stamina / Equip: +6 attack power.
+- 6447 Worn Turtle Shell Shield: **changed** | req.lvl 16; Equip: Regenerates 2 mana every 5 seconds.
+- 6449 Glowing Lizardscale Cloak: **changed** | req.lvl 18; +6 Agility / +2 Nature Resistance
+- 6460 Cobrahn's Grasp: **changed** | req.lvl 17; +7 Strength / +3 Agility
+- 6627 Mutant Scale Breastplate: **changed** | req.lvl 18; +10 Strength / +4 Stamina
+- 6629 Sporid Cape: **changed** | req.lvl 17; +6 Stamina / Equip: Deals 1 Nature damage to the attacker when hit in combat.
+- 6632 Feyscale Cloak: **changed** | req.lvl 16; +5 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 3.
+- 6681 Thornspike: **changed** | req.lvl 27; 
+- 6692 Pronged Reaver: **changed** | req.lvl 30; +5 Spirit / +5 Strength
+- 6725 Marbled Buckler: **changed** | req.lvl 0; +5 Agility / +5 Strength / +5 Spirit / +5 Stamina
+- 6730 Ironforge Chain: **changed** | req.lvl 11; +4 Stamina
+- 6742 Stonefist Girdle: **changed** | req.lvl 0; +6 Strength / +5 Stamina
+- 6802 Sword of Omen: **changed** | req.lvl 0; +9 Strength / +4 Stamina / +3 Agility
+- 6829 Sword of Serenity: **changed** | req.lvl 0; +9 Stamina / +4 Spirit
+- 7002 Arctic Buckler: **changed** | req.lvl 0; +3 Spirit / +8 Stamina / +5 Frost Resistance
+- 7230 Smite's Mighty Hammer: **changed** | req.lvl 18; +11 Strength / +4 Agility
+- 7281 Light Leather Bracers: **changed** | req.lvl 9; +1 Agility / +1 Strength
+- 7348 Fletcher's Gloves: **changed** | req.lvl 20; Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance to parry attacks by-1%.
+- 7683 Bloody Brass Knuckles: **changed** | req.lvl 29; Equip: +12 attack power.
+- 7687 Ironspine's Fist: **changed** | req.lvl 30; +7 Strength
+- 7688 Ironspine's Ribcage: **changed** | req.lvl 30; +17 Stamina / +6 Strength / +3 Agility
+- 7719 Raging Berserker's Helm: **changed** | req.lvl 37; +8 Stamina / +13 Strength / Equip: Increases your critical strike chance by 1%.
+- 7726 Aegis of the Scarlet Commander: **changed** | req.lvl 39; +8 Stamina / +7 Strength / Equip: Deals 13 to 15 Holy damage per block.
+- 7729 Chesterfall Musket: **changed** | req.lvl 28; +6 Stamina
+- 7752 Dreamslayer: **changed** | req.lvl 28; +7 Strength / +3 Spirit
+- 7753 Bloodspiller: **changed** | req.lvl 27; 
+- 7755 Flintrock Shoulders: **changed** | req.lvl 33; +5 Strength / +10 Agility / +10 Stamina
+- 7758 Ruthless Shiv: **changed** | req.lvl 34; +8 Stamina / Equip: +38 attack power.
+- 7761 Steelclaw Reaver: **changed** | req.lvl 33; +3 Agility / +8 Stamina
+- 7786 Headsplitter: **changed** | req.lvl 25; +3 Strength / +5 Stamina
+- 7787 Resplendent Guardian: **changed** | req.lvl 26; +7 Stamina / Equip: Increases the chance of you blocking attacks with your shield by 1%.
+- 7934 Heavy Mithril Helm: **changed** | req.lvl 42; +15 Stamina
+- 7946 Runed Mithril Hammer: **changed** | req.lvl 44; +7 Stamina / Equip: Defense increased by 4 points.
+- 8708 Hammer of Expertise: **changed** | req.lvl 40; 
+- 9372 Sul'thraze the Lasher: **changed** | req.lvl 50; 
+- 9378 Shovelphlange's Mining Axe: **changed** | req.lvl 35; +7 Strength / Equip: +11 Attack Power.
+- 9384 Stonevault Shiv: **changed** | req.lvl 31; +7 Agility / +3 Stamina
+- 9413 The Rockpounder: **changed** | req.lvl 44; +5 Strength / Equip: Increases your critical strike chance by 2%.
+- 9424 Ginn-su Sword: **changed** | req.lvl 36; +8 Agility / +4 Strength
+- 9426 Monolithic Bow: **changed** | req.lvl 36; +6 Strength / +3 Agility
+- 9449 Manual Crowd Pummeler: **changed** | req.lvl 29; +16 Strength / +5 Agility
+- 9459 Thermaplugg's Left Arm: **changed** | req.lvl 31; +17 Strength / +5 Stamina / +4 Intellect
+- 9490 Gizmotron Megachopper: **changed** | req.lvl 24; +14 Strength / +5 Agility
+- 9510 Caverndeep Trudgers: **changed** | req.lvl 27; +4 Strength / +10 Stamina
+- 9538 Talvash's Gold Ring: **changed** | req.lvl 0; +10 Stamina / Equip: Defense skills increased by 3 points.
+- 9625 Dual Reinforced Leggings: **changed** | req.lvl 0; +12 Strength / Equip: Defense skills increased by 5 points.
+- 10330 Scarlet Leggings: **changed** | req.lvl 39; +21 Strength / +10 Stamina
+- 10331 Scarlet Gauntlets: **changed** | req.lvl 33; +12 Strength / +10 Agility
+- 10333 Scarlet Wristguards: **changed** | req.lvl 31; +11 Stamina
+- 10400 Blackened Defias Leggings: **changed** | req.lvl 14; +6 Strength / +6 Agility
+- 10403 Blackened Defias Belt: **changed** | req.lvl 17; Equip: +18 attack power.
+- 10410 Leggings of the Fang: **changed** | req.lvl 17; +5 Strength / +4 Stamina / +9 Agility
+- 10413 Gloves of the Fang: **changed** | req.lvl 14; +6 Agility / +4 Strength
+- 10553 Foreman Vest: **changed** | req.lvl 8; +3 Strength
+- 10571 Ebony Boneclub: **changed** | req.lvl 32; +6 Strength / +6 Shadow Resistance
+- 10573 Boneslasher: **changed** | req.lvl 32; +7 Stamina / +16 Strength / Equip: Attack power against undead increased by 15.
+- 10583 Quillward Harness: **changed** | req.lvl 34; +19 Agility / +8 Strength
+- 10711 Dragon's Blood Necklace: **changed** | req.lvl 0; +12 Stamina / Equip: Increases your shield's block by 8.
+- 10798 Atal'alarion's Tusk Ring: **changed** | req.lvl 46; +18 Strength / +8 Stamina / Equip: Restores 8 HP every 5 seconds.
+- 10823 Vanquisher's Sword: **changed** | req.lvl 0; Equip: +22 attack power.
+- 10835 Crest of Supremacy: **changed** | req.lvl 51; +6 Agility / +7 Intellect / +7 Stamina / +6 Strength / Equip: Defense skills increased by 5 points.
+- 10838 Might of Hakkar: **changed** | req.lvl 49; +11 Stamina / +3 Spirit / Equip: Increases your chance of hitting your target by 0.5%.
+- 10845 Warrior's Embrace: **changed** | req.lvl 49; +14 Stamina / +6 Agility / Equip: Increases your chance to dodge attacks by 1.5%. / Equip: Defense increased by 8 points
+- 11304 Fine Longbow: **changed** | req.lvl 14; Equip: + 4 attack power.
+- 11626 Blackveil Cape: **changed** | req.lvl 48; +6 Strength / +14 Agility / +4 Spirit
+- 11703 Stonewall Girdle: **changed** | req.lvl 50; +12 Stamina / +6 Strength / Equip: Defense increased by 4 points.
+- 11726 Savage Gladiator Chain: **changed** | req.lvl 52; +18 Stamina / +14 Agility / +16 Strength / Equip: Increases your critical strike chance by 1.5%. / Equip: Increases your
+- 11731 Savage Gladiator Greaves: **changed** | req.lvl 52; +15 Agility / +9 Strength / +13 Stamina
+- 11746 Golem Skull Helm: **changed** | req.lvl 51; +18 Stamina / +18 Strength / Equip: Defense increased by 8 points.
+- 11755 Verek's Collar: **changed** | req.lvl 51; +6 Strength / +7 Stamina / Equip: Increases your chance to dodge attacks by 1%. / Equip: Defense skills increased by 3 p
+- 11784 Arbiter's Blade: **changed** | req.lvl 48; +5 Intellect / +8 Stamina / Equip: Increases your chance of hitting your target by 0.7%.
+- 11787 Shalehusk Boots: **changed** | req.lvl 53; +10 Stamina / Equip: Increases your chance to dodge attacks by 1.5%.
+- 11927 Legplates of the Eternal Guardian: **changed** | req.lvl 52; Equip: Defense skills increased by 15 points. / Equip: Increases your chance to block attacks with your shield by 2%.
+- 12548 Magni's Will: **changed** | req.lvl 0; +7 Strength / +8 Stamina / Equip: Increases your critical strike chance by 1%.
+- 12985 Ring of Defense: **changed** | req.lvl 17; Equip: Defense increased by 4 points.
+- 13137 Ironweaver: **changed** | req.lvl 29; +4 Stamina / Equip: Defense skills increased by 3 points.
+- 13213 Smolderweb's Eye: **changed** | req.lvl 55; +5 Nature Resistance / Equip: Increases your chance of hitting your target by 1%.
+- 13245 Kresh's Back: **changed** | req.lvl 18; Equip: Defense skills increased by 5 points.
+- 13966 Mark of Tyranny: **changed** | req.lvl 0; Equip: Increases your chance to dodge attacks by 1%.
+- 14147 Cavedweller Bracers: **changed** | req.lvl 13; +2 Strength / +3 Spirit
+- 14149 Subterranean Cape: **changed** | req.lvl 13; +3 Strength / Equip: Restores 5 HP every 5 seconds.
+- 14151 Chanting Blade: **changed** | req.lvl 13; +2 Agility / +3 Stamina
+- 14549 Boots of Avoidance: **changed** | req.lvl 40; +6 Strength / +11 Stamina / Equip: Increases your chance to dodge attacks by 1.5%.
+- 14552 Stockade Pauldrons: **changed** | req.lvl 50; +20 Stamina / Equip: Increases the damage and healing of all spells and magic effects by up to 12. / Equip: Defense skil
+- 15063 Devilsaur Gauntlets: **changed** | req.lvl 53; +9 Stamina / Equip: +28 attack power. / Equip: Increases your critical strike chance by 1%.
+- 15065 Warbear Woolies: **changed** | req.lvl 52; +28 Strength / +12 Stamina / +18 Agility
+- 15411 Mark of Fordring: **changed** | req.lvl 0; Equip: Increases your critical strike chance by 1%. / Equip: +26 attack power.
+- 15443 Kris of Orgrimmar: **changed** | req.lvl 0; +4 Stamina
+- 15444 Staff of Orgrimmar: **changed** | req.lvl 0; +6 Agility / +6 Intellect
+- 16886 Outlaw Sabre: **changed** | req.lvl 0; Equip: +16 attack power.
+- 17007 Stonerender Gauntlets: **changed** | req.lvl 46; +20 Strength / +11 Stamina / +7 Intellect / Equip: Increases the damage and healing of all spells and magic effects by u
+- 17508 Forcestone Buckler: **changed** | req.lvl 0; +4 Stamina / +8 Spirit / Equip: Increases the healing effect of all spells and magic effects by up to 18 and damage by u
+- 17694 Band of the Fist: **changed** | req.lvl 0; +4 Agility / +4 Strength
+- 17705 Thrash Blade: **changed** | req.lvl 0; 
+- 17713 Blackstone Ring: **changed** | req.lvl 49; +6 Stamina / Equip: +20 attack power. / Equip: Increases your chance of hitting your target by 1%.
+- 17719 Inventor's Focal Sword: **changed** | req.lvl 48; Equip: Increases your critical strike chance by 1%.
+- 17734 Helm of the Mountain: **changed** | req.lvl 48; +3 Stamina / +10 Nature Resistance / Equip: Defense skill increased by 7 points.
+- 17904 Stormpike Insignia Rank 6: **changed** | req.lvl 0; +10 Frost Resistance / Equip: Restores 30 HP every 5 seconds. / Equip: Increases your chance to dodge attacks by 2%.
+- 18323 Satyr's Bow: **changed** | req.lvl 53; Equip: Increases your chance of hitting your target by 1%. / Equip: + 4 attack power.
+- 18404 Onyxia Tooth Pendant: **changed** | req.lvl 0; +7 Agility / +8 Stamina / +10 Fire Resistance / Equip: Increases your chance of hitting your target by 1%. / Equip: Incr
+- 18440 Sergeant's Cape: **changed** | req.lvl 30; +9 Stamina
+- 18441 Sergeant's Cape: **changed** | req.lvl 45; +14 Stamina
+- 18499 Barrier Shield: **changed** | req.lvl 57; Equip: Increases your chance to block attacks with your shield by 2%. / Equip: Increases your shield's block by 23.
+- 18509 Chromatic Cloak: **changed** | req.lvl 57; +10 Stamina / +12 Fire Resistance / +12 Shadow Resistance / Equip: Increases your critical strike chance by 1%.
+- 18706 Arena Master: **changed** | req.lvl 35; +7 Stamina / Equip: Damage taken while in the Arena or Mallet Arena area is reduced by 5%.
+- 19024 Arena Grand Master: **changed** | req.lvl 50; Equip: Increases your chance to dodge attacks by 1%. / Equip: Damage taken while in the Arena or Mallet Arena area is re
+- 19044 Might of the Timbermaw: **changed** | req.lvl 53; +21 Strength / +9 Stamina / +14 Agility
+- 19049 Timbermaw Brawlers: **changed** | req.lvl 56; +21 Strength / +9 Stamina / +14 Agility
+- 19120 Rune of the Guard Captain: **changed** | req.lvl 0; Equip: Increases your chance of hitting your target by 0.7%. / Equip: Attack power increased by 14 points. When in fores
+- 19157 Chromatic Gauntlets: **changed** | req.lvl 60; +5 Fire Resistance / +5 Nature Resistance / +5 Frost Resistance / +5 Shadow Resistance / Equip: +44 attack power. / Equi
+- 19323 The Unstoppable Force: **changed** | req.lvl 55; +18 Strength / +17 Stamina / Equip: Increases your critical strike chance by 2%.
+- 19324 The Lobotomizer: **changed** | req.lvl 55; 
+- 19325 Don Julio's Band: **changed** | req.lvl 55; +10 Stamina / Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance of hitting your target 
+- 19509 Dusty Mail Boots: **changed** | req.lvl 37; +14 Stamina
+- 19686 Primal Batskin Gloves: **changed** | req.lvl 60; +10 Agility / +9 Stamina / Equip: Increases your chance of hitting your target by 2%.
+- 19687 Primal Batskin Bracers: **changed** | req.lvl 60; +14 Agility / +7 Stamina / Equip: Increases your chance of hitting your target by 1%.
+- 19694 Darksoul Leggings: **changed** | req.lvl 60; +22 Stamina / Equip: Increases your chance of hitting your target by 2%.
+- 20070 Sageclaw: **changed** | req.lvl 55; +8 Stamina / Equip: Increases your critical strike chance by 1%.
+- 20438 Outrunner's Bow: **changed** | req.lvl 18; +3 Stamina / +2 Agility
+- 20517 Razorsteel Shoulders: **changed** | req.lvl 0; +10 Strength / +10 Stamina / Equip: Increases your chance of hitting your target by 1%. / Equip: Deals 3 physical damage
+- 20521 Fury Visor: **changed** | req.lvl 0; +18 Strength / +9 Spirit / Equip: Increases your critical strike chance by 1%. / Equip: Increases your chance of hitting
+- 20580 Hammer of Bestial Fury: **changed** | req.lvl 60; +13 Strength / +12 Stamina
+- 21117 Talisman of Arathor: **changed** | req.lvl 48; +10 Stamina
+- 21118 Talisman of Arathor: **changed** | req.lvl 38; +8 Stamina
+- 21119 Talisman of Arathor: **changed** | req.lvl 28; +6 Stamina
+- 21565 Rune of Perfection: **changed** | req.lvl 40; +8 Stamina / Equip: Your spell penetrations grant 3 magic resistance. Spell penetrations increase by an additional 7 whe
+- 21566 Rune of Perfection: **changed** | req.lvl 20; +4 Stamina / Equip: Your spell penetration increases by 2 magic resistance. Spell penetration increases by an additional
+- 22383 Sageblade: **changed** | req.lvl 59; +14 Stamina / +6 Intellect / Equip: Increases your chance of hitting your target by 1%.
+- 22384 Persuader: **changed** | req.lvl 58; Equip: Increases your chance of hitting your target by 1%. / Equip: Increases your critical strike chance by 1%.
+- 226857 Battleboots of Heroism: **not in WCLBox**
+- 226869 Faceguard of Heroism: **not in WCLBox**
+- 226870 Handguards of Heroism: **not in WCLBox**
+- 226871 Sabatons of Heroism: **not in WCLBox**
+- 226872 Chestguard of Heroism: **not in WCLBox**
+- 234570 Grand Marshal's Polearm: **not in WCLBox**
+- 235473 Grand Marshal's Barricade: **not in WCLBox**
+- 235480 Grand Marshal's Bonecracker: **not in WCLBox**
+- 235481 Grand Marshal's Hacker: **not in WCLBox**

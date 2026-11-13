@@ -14,7 +14,10 @@ own level until you step it on the tab.
 2. `python bis/tools/foreverdb_segments.py` parses the pages into `raw/levels/` (wording the parser does not know stops that spec with the slot named:
    add a rule to `SOURCE_START` in `foreverdb_fetch.py` and to `parse_source` in `build_bis.py`, never a guess).
 3. `python bis/build_bis.py`: an unknown source sentence stops the build; "no source for next pick <id>" means add it to `sources.json`
-   (`python bis/tools/foreverdb_sources.py` reads the item pages and fills it in); new item ids get their rarity with `python bis/tools/wh_quality.py` (Wowhead tooltip API, into `quality.json`).
+   (`python bis/tools/foreverdb_sources.py` reads the item pages and fills it in); new item ids get their rarity by running `python bis/tools/items_build.py` (WCLBox cache, into `quality.json`), then `build_bis.py` again.
+3b. `python bis/tools/recorder_import.py` (merge the recorder files) then `python bis/tools/found_sources.py`: fills picks whose source ForeverDB leaves unknown from
+   our recordings, ForeverDungeonJournal (installed addon, read only) and `bis/own/web_sources.json` (hand-added `{"<id>": {"src": "<sentence>", "via": "<site>"}}`);
+   run it before `build_bis.py`. Credits: ForeverDungeonJournal (loot lists), ForeverDB, Wowhead, and the players whose recordings are merged.
 4. `python addon/tests/run_tests.py`, look at `bis.html` locally, bump `UPDATED` in `build_bis.py`.
 
 Credit ForeverDB (picks, weights) and Wowhead (tooltips, item pages) wherever the data shows; both lines are on the page.

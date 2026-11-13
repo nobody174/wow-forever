@@ -202,7 +202,7 @@ p.lede{color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
   function qNum(q) { return { POOR: 0, COMMON: 1, UNCOMMON: 2, RARE: 3, EPIC: 4, LEGENDARY: 5 }[String(q || "").toUpperCase()]; }
 
   // ---- name search: WCLBox's open item API (every Forever item, English or Chinese names, CORS open, 5 requests/second/IP).
-  // Every word must appear in the name. Falls back to our own ah-items.json (armor, weapons, materials) if WCLBox cannot be reached.
+  // Every word must appear in the name. Falls back to our own ah-items.json (every item) if WCLBox cannot be reached.
   var WCL = "https://wowforever.wclbox.com/api/open/v1", nameCache = {};
   function rankNames(rows, q) {
     q = q.toLowerCase();

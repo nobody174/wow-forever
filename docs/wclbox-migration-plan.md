@@ -1,6 +1,6 @@
 # Moving item data from Wowhead to WCLBox (plan, 2026-11-13)
 
-Status: **plan only, nothing changed yet.** Decision behind it: `bis/DATA_SOURCES.md` ("Decision, revised 2026-11-13").
+Status: **items done 2026-11-13** (pull, diff, items table, runtime lookups, ah-items; see CHANGELOG and `bis/own/wclbox-diff.md`, `bis/own/rerank-review.md`). Mr.BiZ picks still come from ForeverDB. Talent audit (Track B) open. Decision behind it: `bis/DATA_SOURCES.md` ("Decision, revised 2026-11-13").
 
 ## TL;DR
 - WCLBox's open item API matches our current data on everything we compared, and it is newer than our table (client build 70888 vs our 70450).

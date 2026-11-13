@@ -435,22 +435,26 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
       '" data-wowhead="item=' + id + '&amp;domain=forever" target="_blank" rel="noopener">' + esc(name) + "</a>";
   }
 
-  // ---- quality colours: Wowhead's Forever tooltip JSON (CORS ok, same as the Crafters view) ----
-  var qQueue = [], qBusy = 0, qTimer = null;
-  function wantQuality(id) { if (id && !(id in quality) && !(DATA && DATA.quality && id in DATA.quality) && qQueue.indexOf(id) === -1) { qQueue.push(id); pumpQ(); } }
+  // ---- quality colours: WCLBox open item API (CORS ok); baked-in values from bis/quality.json come first ----
+  var qQueue = [], qBusy = 0, qTimer = null, qWait = null;
+  function wantQuality(id) { if (id && !(id in quality) && !(DATA && DATA.quality && id in DATA.quality) && qQueue.indexOf(id) === -1) { qQueue.push(id); clearTimeout(qWait); qWait = setTimeout(pumpQ, 150); } }
+  // Item rarity from WCLBox's open API (wowforever.wclbox.com), up to 100 ids per request, one request at a time.
   function pumpQ() {
-    while (qBusy < 4 && qQueue.length) {
-      var id = qQueue.shift(); qBusy++;
-      fetch("https://nether.wowhead.com/forever/tooltip/item/" + id).then(function (r) { return r.ok ? r.json() : null; })
-        .then((function (id) { return function (j) { quality[id] = j && typeof j.quality === "number" ? j.quality : null; }; })(id))
-        .catch((function (id) { return function () { quality[id] = null; }; })(id))
-        .then(function () {
-          qBusy--;
-          clearTimeout(qTimer);
-          qTimer = setTimeout(function () { lset("wf-bis-quality-v1", quality); paintQuality(); }, 200);
-          pumpQ();
-        });
-    }
+    if (qBusy || !qQueue.length) return;
+    var batch = qQueue.splice(0, 100); qBusy = 1;
+    fetch("https://wowforever.wclbox.com/api/open/v1/items?limit=100&ids=" + batch.join(",")).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        var got = {};
+        ((j && j.items) || []).forEach(function (x) { got[x.id] = 1; quality[x.id] = typeof x.quality === "number" ? x.quality : null; });
+        batch.forEach(function (id) { if (!got[id]) quality[id] = null; });
+      })
+      .catch(function () { batch.forEach(function (id) { quality[id] = null; }); })
+      .then(function () {
+        qBusy = 0;
+        clearTimeout(qTimer);
+        qTimer = setTimeout(function () { lset("wf-bis-quality-v1", quality); paintQuality(); }, 200);
+        if (qQueue.length) setTimeout(pumpQ, 350);
+      });
   }
   function paintQuality() {
     document.querySelectorAll("a.wh").forEach(function (a) {
@@ -655,7 +659,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     $("sum").textContent = shown + " shown" + (bizz ? " · " + bizz + " The Bizz" : "") + (standins ? " · " + standins + " stand-in" + (standins === 1 ? "" : "s") + " (filters)" : "") + (hidden ? " · " + hidden + " hidden by filters" : "") + (empty ? " · " + empty + " empty at level " + lvl : "");
     $("foot").innerHTML = "<p><b>Stat weights</b> (" + esc(sp.name) + "): <code>" + esc(weightsAt(sp, lvl)) + "</code></p>" +
       '<p>Picks and weights from <a href="' + esc(sp.url) + '" target="_blank" rel="noopener">ForeverDB</a> (game build ' + esc(sp.build) + ", taken " + esc(DATA.updated) +
-      '). Tooltips and item pages from <a href="https://www.wowhead.com/forever" target="_blank" rel="noopener">Wowhead</a>. Wrong item? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';
+      '). Item data (rarity) from <a href="https://wowforever.wclbox.com" target="_blank" rel="noopener">新手盒子·魔兽世界无限数据库 (WCLBox)</a>. Tooltips and item pages from <a href="https://www.wowhead.com/forever" target="_blank" rel="noopener">Wowhead</a>. Wrong item? <a href="https://discord.gg/Yh2sTMZksq" target="_blank" rel="noopener">Tell us on Discord</a>.</p>';
     $("weights").innerHTML = '<span class="wlab"><b>Stat weights</b> for ' + esc(sp.name) + ": a bigger number counts more. From ForeverDB, game build " + esc(sp.build) + ".</span>" + weightChips(weightsAt(sp, lvl));
     $("weights").hidden = false;
     $("setacts").hidden = !picks.length;

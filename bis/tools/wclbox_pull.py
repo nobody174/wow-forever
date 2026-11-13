@@ -31,8 +31,8 @@ KEEP = ("id", "name", "nameEn", "quality", "itemLevel", "requiredLevel", "slot",
         "classes", "formerName", "tooltipEn")
 
 
-def get(base, path, tries=6):
-    """GET path, retrying on 429 / 5xx / network errors with growing waits. Returns parsed JSON, or None on 404 / 400."""
+def get(base, path, tries=1):
+    """GET path, stopping on 429 / 5xx / network errors (no retry loop; rerun to resume). Returns parsed JSON, or None on 404 / 400."""
     wait = 3.0
     for attempt in range(tries):
         try:
@@ -52,7 +52,7 @@ def get(base, path, tries=6):
         print("  retry %d after %.0fs: %s" % (attempt + 1, wait, path), file=sys.stderr)
         time.sleep(wait)
         wait = min(wait * 2, 120)
-    raise SystemExit("giving up on " + path + " (run again later; progress is kept)")
+    raise IOError("giving up on " + path)
 
 
 def read_jsonl(path):
@@ -73,7 +73,8 @@ def phase_list(base, meta):
     if meta.get("build") and meta["build"] != build:
         print("  note: the cached build was %s; the old cache is replaced" % meta["build"])
         for f in ("list.jsonl", "detail.jsonl"):
-            (CACHE / f).unlink(missing_ok=True)
+            if (CACHE / f).exists():
+                (CACHE / f).unlink()
     meta.update({"build": build, "buildDate": info.get("buildDate"), "items": total})
     path = CACHE / "list.jsonl"
     have = read_jsonl(path)
@@ -105,10 +106,19 @@ def phase_detail(base, items, min_quality, limit):
     print("detail: %d to fetch, %d already cached" % (len(todo), len(done)))
     if limit:
         todo = todo[:limit]
-    started, n = time.time(), 0
+    started, n, fails, failed = time.time(), 0, 0, []
     with path.open("a", encoding="utf-8") as f:
         for iid in todo:
-            d = get(base, "/items/%d" % iid)
+            try:
+                d = get(base, "/items/%d" % iid)
+                fails = 0
+            except IOError as e:
+                fails += 1
+                failed.append(iid)
+                print("  skipped %d (%s); a rerun fetches it" % (iid, e), file=sys.stderr)
+                if fails >= 5:
+                    raise SystemExit("5 failures in a row: stopping (progress is kept)")
+                continue
             n += 1
             if d is not None:
                 f.write(json.dumps({k: d.get(k) for k in KEEP}, ensure_ascii=False) + "\n")
@@ -116,12 +126,14 @@ def phase_detail(base, items, min_quality, limit):
             if n % 200 == 0:
                 rate = n / (time.time() - started)
                 print("  detail %d / %d (%.1f per second, about %d min left)" % (n, len(todo), rate, (len(todo) - n) / rate / 60))
-    print("detail done: %d fetched this run" % n)
+    print("detail done: %d fetched this run, %d skipped after an error" % (n, len(failed)))
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--list-only", action="store_true")
+    ap.add_argument("--keep-cache", action="store_true",
+                    help="finish the cached build even if WCLBox has a newer one (no list refetch, no cache wipe)")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--min-quality", type=int, default=1)
     ap.add_argument("--base", default="https://wowforever.wclbox.com/api/open/v1", help="API base (tests point it at a local mock)")
@@ -129,7 +141,11 @@ def main():
     CACHE.mkdir(parents=True, exist_ok=True)
     mp = CACHE / "meta.json"
     meta = json.loads(mp.read_text(encoding="utf-8")) if mp.exists() else {}
-    items = phase_list(a.base, meta)
+    if a.keep_cache:
+        items = read_jsonl(CACHE / "list.jsonl")
+        print("keeping the cached build %s (%d list items)" % (meta.get("build"), len(items)))
+    else:
+        items = phase_list(a.base, meta)
     if not a.list_only:
         phase_detail(a.base, items, a.min_quality, a.limit)
 

@@ -429,6 +429,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
       <p>Add enchants and kits with <b>+ Shopping list</b> in any open row. The materials add up below at the prices on this page.</p></div>
     <div class="list-body" id="list-body"></div>
   </aside>
+  <p class="credit">Item data (rarity, slot, level) from <a href="https://wowforever.wclbox.com" target="_blank" rel="noopener">新手盒子·魔兽世界无限数据库 (WCLBox)</a>, game client data.</p>
   <p class="credit" id="ahl-credit" hidden>Material costs use live auction house prices. <a href="https://ahledger.com" target="_blank" rel="noopener">Prices from AHledger</a>.</p>
 </div>
 
@@ -1363,12 +1364,13 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   // from their name, then the rest. Inside a slot: highest required level first.
   var crSort = lget("wf-prof-crafter-sort", "slot") === "az" ? "az" : "slot";
   var crOpen = lget("wf-prof-crafter-open", {}) || {};
-  var META_KEY = "wf-item-meta-v3", itemMeta = lget(META_KEY, {}) || {}, metaQueue = [], metaBusy = 0, metaTimer = null;
+  var WCL_API = "https://wowforever.wclbox.com/api/open/v1";
+  var META_KEY = "wf-item-meta-v4", itemMeta = lget(META_KEY, {}) || {}, metaQueue = [], metaBusy = 0, metaTimer = null, metaFlush = null;
   var SLOT_ORDER = ["Head", "Neck", "Shoulders", "Cloak", "Chest", "Shirt", "Bracers", "Hands", "Belt", "Legs", "Boots", "Rings", "Trinkets",
     "Weapons", "Shields & off-hands", "Ranged", "Bags & quivers", "Armor kits", "Consumables", "Materials & other"];
   var SLOT_MAP = { Head: "Head", Neck: "Neck", Shoulder: "Shoulders", Back: "Cloak", Chest: "Chest", Robe: "Chest", Shirt: "Shirt", Tabard: "Shirt",
     Wrist: "Bracers", Hands: "Hands", Waist: "Belt", Legs: "Legs", Feet: "Boots", Finger: "Rings", Trinket: "Trinkets",
-    "One-Hand": "Weapons", "Two-Hand": "Weapons", "Main Hand": "Weapons", "Off Hand": "Shields & off-hands", "Held In Off-hand": "Shields & off-hands",
+    "One-Hand": "Weapons", "Two-Hand": "Weapons", "Main Hand": "Weapons", "Off Hand": "Shields & off-hands", Shield: "Shields & off-hands", "Held In Off-hand": "Shields & off-hands",
     Ranged: "Ranged", Thrown: "Ranged", Relic: "Ranged" };
   var ENCHANT_SLOT = [[/^Enchant Necklace/, "Neck"], [/^Enchant Cloak/, "Cloak"], [/^Enchant Chest/, "Chest"], [/^Enchant Bracer/, "Bracers"],
     [/^Enchant Gloves/, "Hands"], [/^Enchant Boots/, "Boots"], [/^Enchant (2H )?Weapon/, "Weapons"], [/^Enchant Shield/, "Shields & off-hands"]];
@@ -1404,27 +1406,29 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   function queueMeta(id) {
     if (!id || itemMeta[id] || metaQueue.indexOf(id) !== -1) return;
     metaQueue.push(id);
-    pumpMeta();
+    clearTimeout(metaFlush); metaFlush = setTimeout(pumpMeta, 150);
   }
+  // Item data from WCLBox's open API (wowforever.wclbox.com), 100 ids per request, one request at a time (their limit is 5 per second).
+  // slot is null for everything that is not worn; "Bag" and "Ammo" are bags and quivers; classId 0 is a consumable (it has a "Use:" effect).
   function pumpMeta() {
-    while (metaBusy < 4 && metaQueue.length) {
-      var id = metaQueue.shift(); metaBusy++;
-      fetch("https://nether.wowhead.com/forever/tooltip/item/" + id).then(function (r) { return r.ok ? r.json() : null; }).then((function (id) {
-        return function (j) {
-          var t = (j && j.tooltip) || "";
-          var slot = /<table width="100%"><tr><td>([^<]+)<\/td>/.exec(t);
-          itemMeta[id] = { q: j && typeof j.quality === "number" ? j.quality : null, s: slot ? slot[1] : "", b: /\d+ Slot (Bag|Quiver|Ammo Pouch)/.test(t) ? 1 : 0, u: /Use: /.test(t) ? 1 : 0,
-            i: Number((/<!--ilvl-->(\d+)/.exec(t) || [])[1]) || 0, r: Number((/<!--rlvl-->(\d+)/.exec(t) || [])[1]) || 0,
-            // Weapon (disenchants into more essence than dust): weapon slots, but not shields
-            w: slot && /^(One-Hand|Two-Hand|Main Hand|Off Hand|Ranged|Thrown)$/.test(slot[1]) && !/>Shield</.test(t) ? 1 : 0 };
-        };
-      })(id)).catch((function (id) { return function () { itemMeta[id] = { s: "", b: 0, u: 0, i: 0, r: 0, x: 1 }; }; })(id)).then(function () {
-        metaBusy--;
-        if (!metaQueue.length && !metaBusy) { lset(META_KEY, itemMeta); }
-        clearTimeout(metaTimer); metaTimer = setTimeout(function () { if (!$("view-crafters").hidden) renderCrafters(); }, 250);
-        pumpMeta();
+    if (metaBusy || !metaQueue.length) return;
+    var batch = metaQueue.splice(0, 100); metaBusy = 1;
+    fetch(WCL_API + "/items?limit=100&ids=" + batch.join(",")).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      var got = {};
+      ((j && j.items) || []).forEach(function (x) {
+        got[x.id] = 1;
+        itemMeta[x.id] = { q: typeof x.quality === "number" ? x.quality : null, s: x.slot || "", b: x.slot === "Bag" || x.slot === "Ammo" ? 1 : 0,
+          u: x.classId === 0 ? 1 : 0, i: x.itemLevel || 0, r: x.requiredLevel || 0, w: x.classId === 2 ? 1 : 0 };
       });
-    }
+      batch.forEach(function (id) { if (!got[id]) itemMeta[id] = { s: "", b: 0, u: 0, i: 0, r: 0, x: 1 }; });
+    }).catch(function () {
+      batch.forEach(function (id) { itemMeta[id] = { s: "", b: 0, u: 0, i: 0, r: 0, x: 1 }; });
+    }).then(function () {
+      metaBusy = 0;
+      if (!metaQueue.length) { lset(META_KEY, itemMeta); }
+      clearTimeout(metaTimer); metaTimer = setTimeout(function () { if (!$("view-crafters").hidden) renderCrafters(); }, 250);
+      if (metaQueue.length) setTimeout(pumpMeta, 350);
+    });
   }
   function refreshTooltips() {
     try { if (window.$WowheadPower && window.$WowheadPower.refreshLinks) window.$WowheadPower.refreshLinks(); } catch (e) { /* tooltips are optional */ }

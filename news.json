@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-13",
+      "title": "Item data now comes from the live game build",
+      "text": "Item quality, levels, armor and weapon damage on the Gear and Professions pages now come from the live game data instead of the old beta numbers. Hundreds of old beta items are gone, and about 1,900 new ones are in. The Mr.BiZ gear lists themselves are not re-ranked yet.",
+      "link": "bis.html"
+    },
+    {
+      "date": "2026-11-13",
       "title": "New Auction House page",
       "text": "Search any item by name (bags, cloth, potions, ore, weapons, armor: everything in the game) and see its live auction house price: lowest buyout, median, how many are listed and how many sell per day. It uses your EU server market by default.",
       "link": "auction-house.html"

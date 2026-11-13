@@ -82,9 +82,9 @@ Notes for professions.html (enchants, costs, live prices, Crafters) and bis.html
   Card body default "By slot" (`slotSections`): collapsible `details.cr-sec` per slot
   (`SLOT_ORDER`), open state in `wf-prof-crafter-open`, sort switch in
   `wf-prof-crafter-sort`. Item slot/levels come from
-  `https://nether.wowhead.com/forever/tooltip/item/<id>` (CORS ok from the site; parsed:
-  first `<table width="100%"><tr><td>SLOT`, `<!--ilvl-->`, `<!--rlvl-->`, "N Slot
-  Bag/Quiver", "Use:"), 4 at a time, cached in localStorage `wf-item-meta-v2`; also `quality` → recipe names coloured like in game (`.q0`–`.q5`). Enchants
+  WCLBox's open API `GET https://wowforever.wclbox.com/api/open/v1/items?limit=100&ids=<up to 100>` (CORS ok;
+  fields `slot`, `itemLevel`, `requiredLevel`, `quality`, `classId`: slot "Bag"/"Ammo" = bags and quivers, classId 0 = consumable/"Use:"), one request
+  at a time, cached in localStorage `wf-item-meta-v4`; also `quality` → recipe names coloured like in game (`.q0`–`.q5`). Enchants
   (k "s") get their slot from the name (`ENCHANT_SLOT`) and keep export order.
   Recipe names are Wowhead links (`/forever/item=` for k "i", `/forever/spell=` for k "s",
   `data-wowhead="...&domain=forever"`); Wowhead's `tooltips.js` (zamimg) gives hover
@@ -110,8 +110,8 @@ Notes for professions.html (enchants, costs, live prices, Crafters) and bis.html
   your filters" (ranks 2-3 have no source in the data, so it can't fall back to them). Each row: slot, item name =
   Wowhead link `/forever/item=<id>` with `data-wowhead="item=<id>&domain=forever"` (tooltips.js, `iconizeLinks`,
   `refreshTooltips()` after each render), coloured by quality (`.q0`–`.q5`) from
-  `https://nether.wowhead.com/forever/tooltip/item/<id>` (4 at a time, cached in localStorage `wf-bis-quality-v1`, same
-  approach as the Crafters view), source label, score, confidence badge, chevron (ranks 2-3 with % behind, Wowhead /
+  WCLBox's open API (`.../items?limit=100&ids=`, up to 100 ids per request, cached in localStorage `wf-bis-quality-v1`, same
+  approach as the Crafters view; the baked `quality` from `bis/quality.json` comes first), source label, score, confidence badge, chevron (ranks 2-3 with % behind, Wowhead /
   ForeverDB links, stats), wishlist star. Wishlist aside: per character name (select + New; localStorage
   `wf-bis-wish-v1` = `{current, chars: {name: {items: {id: {name, spec, slot}}}}}`), grouped by the best pick's
   `group` (dungeon / profession / vendor...), biggest first. "Copy for the addon" / "Paste from game" use the addon's

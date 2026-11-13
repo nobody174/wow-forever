@@ -5,6 +5,14 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-13 (item data moved from Wowhead to WCLBox)
+- `bis/items.json` is now built from WCLBox's open item API: 11,622 live weapons and armor at build 1.60.1.70888 (was 12,684 beta-era ids, 19% of which no longer exist). New tools: `bis/tools/wclbox_pull.py` (resumable, ~1 request/s, no retries, skips a failed item and stops after 5 in a row, `--keep-cache` finishes the cached build), `wcl_parse.py` (tooltip -> record, WCLBox's Equip wording), `wclbox_diff.py` (`bis/own/wclbox-diff.md`). `items_build.py` rewritten (`src: "wcl"`) and also writes `bis/quality.json`.
+- Diff findings (`bis/own/wclbox-diff.md`): quality, levels and main stats agree on ~99.5%; the old armor mismatches were bonus armor stored apart (285 of 346); the old dps was computed from client tables and is a few percent off, WCLBox prints the game's value; many old spell-power staves lost it in the live build. 595 items carry Equip lines no rule maps yet (spell crit, spell hit, ranged attack power).
+- Mr.BiZ is unchanged: `build_bis.py` takes picks from ForeverDB and never read `items.json`. `bis/own/rerank-review.md` lists how many picks WCLBox flags changed/new/absent (ForeverDB lists are build 70862). A real re-rank is a separate task.
+- `bis.html` (rarity colours) and `professions.html` (slot, levels, bags, "Use:", rarity) read WCLBox in batches of 100 instead of the Wowhead tooltip endpoint; WCLBox credit added to both. localStorage `wf-item-meta-v4`. Wowhead hover tooltips (`tooltips.js`) stay.
+- `ah-items.json` (Auction House fallback) now has all 21,855 items.
+- Retired: `wh_items.py`, `wh_quality.py`, `wh_tooltip_pull.py`. `wh_quest_weapons.py` stays (own copy of the two helpers). Build 70938 exists since 2026-11-13 and is not pulled yet.
+
 ## 2026-11-13 (data-source rule changed, terms read)
 - `bis/DATA_SOURCES.md`: the "never depend on anyone / websites are checks" rule is dropped by the owner; new rule is use open sources with credit and inside their terms. Wowhead's robots.txt and the Fanbyte EULA and WCLBox's usage conventions were read in Chrome and are recorded there. `auction-house.html` credit now uses WCLBox's requested wording and links each result to its WCLBox page.
 
@@ -16,6 +24,15 @@ user-facing release notes.
 ## 2026-11-13 (Professions: beta data cleared, live prices)
 - `crafters.json`: removed the three beta characters (Falseaim, Venom Oathbreaker, Venom Falselight); only the live Wrongaim (Vipershot) export stays. `professions.html`: hand-typed `CRAFTERS` base list (Venom, beta recipes) emptied; crafters now come only from live exports.
 - `prices.json`: rescanned from AHledger `forever.normal.alliance.eu` (observed 2026-11-12); `DEFAULT_MARKET` is now the EU Normal Alliance market (visitors who picked a market keep theirs); Sulfuric Acid kept at the owner price (`LIVE_OFF`); added `sthread`.
+
+## 2026-11-12 (Mr.BiZ: sources for items ForeverDB leaves unknown)
+- New `bis/tools/found_sources.py` writes `bis/found_sources.json`: for every pick still "source not known yet" it takes our own recordings
+  (`bis/own/recorded.json`, "Seen in Forever"), then ForeverDungeonJournal's boss loot, shared dungeon loot and quest rewards and AtlasLoot Continued ("Clue"),
+  then hand-added lines in `bis/own/web_sources.json`. `build_bis.py` applies it only where the source is unknown; each line carries a
+  `via` credit. 593 -> 460 distinct items unknown (133 placed: 88 Journal, 35 recordings, 10 AtlasLoot Continued).
+- `recorder_import.py` keeps what an earlier run wrote (larger count wins), default input is now the Forever client's WTF folder; `--fresh` rebuilds.
+- Checked 2026-11-12: foreverdb.net item pages, Wowhead (404 for these ids), wowforevertalents.com, wowf.io, foreverchanges.pro: none lists a source for
+  the items ForeverDB marks "hidden item, revealed 7-8 November". Only a player who owns one can supply it.
 
 ## 2026-11-09 (Launch Plan: Green Hills page tracker)
 - `launch-plan.html`: "Green Hills pages" frame (fixed on the right at >=1260px, folded block above the page otherwise). Pages I: 1,4,6,8; II: 10,11,14,16; III: 18,20,21,24; IV: 25,26,27, checkboxes saved in localStorage `wf-green-hills-pages-v1`.

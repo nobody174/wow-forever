@@ -61,9 +61,10 @@ The first version of this section said "never depend on anyone" and "websites ar
 
 `bis/items.json` and `quality.json` (item quality, level, stats of about 11,000 older items), `TrainingData.lua` (trainer-sold spells) and the talent
 lists came partly from Wowhead's tooltip API and ability lists. The numbers are Blizzard's game data and we cross-checked them against the client,
-but Wowhead's terms are non-commercial and no-copy. Open decision: replace the Wowhead-derived fields with WCLBox (it carries each item's quality,
-levels and English tooltip under an open licence with credit). Until then: do not repeat the bulk pull (`wh_tooltip_pull.py`), and if the site ever
-carries ads or paid access, drop whatever still comes from Wowhead first.
+but Wowhead's terms are non-commercial and no-copy. Done 2026-11-13 for items: `bis/items.json` and `quality.json` now come from WCLBox (`wclbox_pull.py`, `items_build.py`), the runtime item lookups
+in bis.html and professions.html use WCLBox, and the three Wowhead item tools (`wh_tooltip_pull.py`, `wh_quality.py`, `wh_items.py`) are gone. Wowhead is
+still used for talent trees, trainer lists, enchant lists and quest-reward weapons (`wh_quest_weapons.py`). If the site ever carries ads or paid
+access, drop whatever still comes from Wowhead first.
 
 Open question for the owner: AtlasLoot's maintainers add Forever data as players report it, so its file is the best open sample of what the
 community knows; its `Factions` module for Forever is still empty. We should watch it, and our recorder's output could be offered back to it

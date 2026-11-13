@@ -52,12 +52,16 @@ Reference for what is generated, from what, and which command refreshes it. Move
   Subtlety = Rogue Combat, Discipline = Priest Holy) and `ENCHANT_SLOTS`; it stops on an unknown slot or page. So an
   enchant edit on professions.html needs `python bis/build_bis.py` (the addon tests catch a stale BiZData). bis.html
   shows them as an "Enchant:" line in an opened row (links to professions.html#bis/<class>), the addon under a slot's
-  picks. Item rarity is baked in (owner, 2026-10-13): `bis/quality.json` (`{quality: {id: 0-5}}`, read from Wowhead's
-  Forever tooltip API in a browser on the live site, since the shell can't reach Wowhead) -> a top-level `quality`
+  picks. Item rarity is baked in (owner, 2026-10-13): `bis/quality.json` (`{quality: {id: 0-5}}`, written by `bis/tools/items_build.py` from the WCLBox item list) -> a top-level `quality`
   table in both outputs; bis.html's `whLink` and the addon's `BiZ.Quality` use it when the live lookup has nothing
   (the live lookups stay as they were). The build only notes ids missing from the file; refresh it when items
-  change (in Chrome on bis.html: fetch `https://nether.wowhead.com/forever/tooltip/item/<id>` for every id,
-  field `quality`). Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
+  change (run `python bis/tools/items_build.py` after `build.py`, then `build.py` again for the new ids; it reads the WCLBox cache).
+  Item table (2026-11-13): `bis/items.json` is built from WCLBox, not from the client DB2 tables: `python bis/tools/wclbox_pull.py` fills the
+  gitignored cache `bis/own/cache/wclbox/` (list + detail of every weapon and armor, about 70-150 minutes at 1 request per second; `--keep-cache`
+  finishes the cached build even if WCLBox moved on), `bis/tools/wcl_parse.py` turns a tooltip into a record, `items_build.py` writes the table,
+  `bis/tools/wclbox_diff.py` compares a pull with the previous table (`bis/own/wclbox-diff.md`). Note: `build_bis.py` does not read `items.json`;
+  Mr.BiZ picks come from ForeverDB. `ah-items.json` (Auction House fallback) is built by `tools/build_ah_items.py` from the same WCLBox list and
+  left untouched when the cache is missing. Refreshing the data: `bis/README.md`. New source wording that the parser doesn't know raises an error on purpose:
   add a rule to `parse_source`, don't hand-edit the outputs.
 
 - `addon/art/` — the addon's art pipeline: `export_arrow3d.py` renders the waypoint arrow looks in Blender into `media/arrow3d*.tga` sprite sheets

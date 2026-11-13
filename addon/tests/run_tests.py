@@ -6477,6 +6477,52 @@ def paladin_like_tree(transform=lambda x, y: (x, y)):
     return trait_tree_lua([1100], {1100: nodes})
 
 
+def test_talent_dump(templates):
+    """Track B: /r2f debug talentdump copies the live trait tree into R2FDB.talentDump (read-only, refuses in combat)."""
+    tag = "templates" if templates else "fallbacks"
+    lua = new_runtime(templates)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    lua.execute(paladin_like_tree())
+    lua.execute("TEST.classToken = 'PALADIN'")
+    lua.execute("TEST.chat = {}")
+    lua.execute("TEST.combat = true R2F.DEBUG.talentdump() TEST.combat = false")
+    check(lua.eval("R2FDB.talentDump") is None, "%s: talentdump refuses in combat and saves nothing" % tag)
+    check(any("not in combat" in ln for ln in chat_lines(lua)), "%s: talentdump says why it refused" % tag)
+    lua.execute("TEST.chat = {}")
+    lua.execute("R2F.DEBUG.talentdump()")
+    n = lua.eval("R2FDB.talentDump.PALADIN and #R2FDB.talentDump.PALADIN.nodes")
+    check(n == 43, "%s: talentdump saved all 43 nodes of the tree (got %s)" % (tag, n))
+    check(lua.eval("R2FDB.talentDump.PALADIN.class") == "PALADIN" and lua.eval("#R2FDB.talentDump.PALADIN.treeIDs") == 1,
+          "%s: talentdump keeps class and tree ids" % tag)
+    first = lua.eval("R2FDB.talentDump.PALADIN.nodes[1]")
+    check(first.posX is not None and first.posY is not None and first.maxRanks is not None,
+          "%s: a node keeps position and max ranks" % tag)
+    check(first.entries[1].spellName is not None and lua.eval("R2FDB.talentDump.PALADIN.nodes[1].entries[1].def.spellID") is not None,
+          "%s: the entry carries its definition's spell id and name" % tag)
+    check("maxRanks" in lua.eval("R2FDB.talentDump.PALADIN.fields.node") and "spellID" in lua.eval("R2FDB.talentDump.PALADIN.fields.definition"),
+          "%s: the field lists name what the game exposes" % tag)
+    lines = chat_lines(lua)
+    check(any("talent dump saved for PALADIN" in ln for ln in lines) and any("node fields:" in ln for ln in lines),
+          "%s: talentdump prints the counts and the field names: %s" % (tag, lines[:3]))
+    # a second class is added next to the first, not over it
+    lua.execute("TEST.classToken = 'MAGE' R2F.DEBUG.talentdump()")
+    check(lua.eval("R2FDB.talentDump.PALADIN ~= nil and R2FDB.talentDump.MAGE ~= nil"), "%s: one dump per class" % tag)
+    # no config yet (login) -> nothing saved, a reason printed
+    lua.execute("R2FDB.talentDump = nil TEST.traitsReady = false TEST.chat = {} R2F.DEBUG.talentdump()")
+    check(lua.eval("R2FDB.talentDump") is None and any("no talent config" in ln for ln in chat_lines(lua)),
+          "%s: no config -> no dump, says so" % tag)
+    # secret values are skipped, not stored
+    lua.execute("TEST.traitsReady = true issecretvalue = function(v) return v == 'SECRETSPELL' end "
+                "TEST.talentDumpSecret = true")
+    check(lua.eval("R2F.Diag.BuildTalentDump({ GetConfigInfo = function() return { treeIDs = { 1 } } end, "
+                   "GetTreeNodes = function() return { 5 } end, "
+                   "GetNodeInfo = function() return { ID = 5, label = 'SECRETSPELL', maxRanks = 3, entryIDs = {}, conditionIDs = {} } end }, 9).nodes[1].label") is None,
+          "%s: a secret value is not copied" % tag)
+    lua.execute("issecretvalue = nil")
+
+
 def test_talent_traits(templates):
     """13.10: reading talents through C_Traits. The position -> row/column
     conversion is checked against REAL dumped node data, the pane split and its
@@ -8612,6 +8658,8 @@ def main():
     test_talent_learning(False)
     test_talent_traits(True)
     test_talent_traits(False)
+    test_talent_dump(True)
+    test_talent_dump(False)
     test_talent_grid_jitter(True)
     test_talent_grid_jitter(False)
     test_talent_source_writes()

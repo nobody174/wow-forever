@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-13 (addon 0.87.1: talent dump, Track B step 1)
+- `/r2f debug talentdump` (`Diagnostics.lua`): read-only copy of the live C_Traits tree into `R2FDB.talentDump[CLASS]` plus the field names the game exposes. First step of the in-game talent audit (`docs/claude-code-wclbox-handoff.md`); the owner runs it per class (`addon/dev/TESTING.md` 5.82), then `/r2f talentcheck` is built on the fields that exist. Tests: `test_talent_dump`.
+
 ## 2026-11-13 (item data moved from Wowhead to WCLBox)
 - `bis/items.json` is now built from WCLBox's open item API: 11,622 live weapons and armor at build 1.60.1.70888 (was 12,684 beta-era ids, 19% of which no longer exist). New tools: `bis/tools/wclbox_pull.py` (resumable, ~1 request/s, no retries, skips a failed item and stops after 5 in a row, `--keep-cache` finishes the cached build), `wcl_parse.py` (tooltip -> record, WCLBox's Equip wording), `wclbox_diff.py` (`bis/own/wclbox-diff.md`). `items_build.py` rewritten (`src: "wcl"`) and also writes `bis/quality.json`.
 - Diff findings (`bis/own/wclbox-diff.md`): quality, levels and main stats agree on ~99.5%; the old armor mismatches were bonus armor stored apart (285 of 346); the old dps was computed from client tables and is a few percent off, WCLBox prints the game's value; many old spell-power staves lost it in the live build. 595 items carry Equip lines no rule maps yet (spell crit, spell hit, ranged attack power).

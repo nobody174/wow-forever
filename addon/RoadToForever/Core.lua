@@ -242,6 +242,7 @@ local DEBUG = {
   here = function() R2F.Plan.Here() end,
   gear = function() R2F.GearScore.Debug() end,
   traits = function() R2F.Talents.DebugTraits() end,
+  talentdump = function() R2F.Diag.TalentDump() end,
   timers = function() R2F.Timers.Debug() end,
   recorder = function() R2F.Recorder.Debug() end,
   bars = function() R2F.ActionBars.Debug() end,

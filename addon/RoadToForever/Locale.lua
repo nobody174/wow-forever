@@ -1009,7 +1009,16 @@ R2F.L = {
     "/r2f debug recorder  the same counts as /r2f record",
     "/r2f debug bars  what the action buttons give (for the range, resource and cooldown overlays)",
     "/r2f debug corpse  what the corpse arrow can see (run it as a ghost)",
+    "/r2f debug talentdump  saves the game's talent tree (names, ranks, positions, prerequisites) to the saved file for a talent check",
   },
+
+  DIAG_TD_COMBAT = "talent dump: not in combat, try again after the fight.",
+  DIAG_TD_NOAPI = "talent dump: this game has no C_Traits talent API.",
+  DIAG_TD_NOCONFIG = "talent dump: no talent config yet (try again a few seconds after login).",
+  DIAG_TD_EMPTY = "talent dump: the config has no readable talents.",
+  DIAG_TD_DONE = "talent dump saved for %s: %d nodes in %d tree(s), %d edges, %d conditions.",
+  DIAG_TD_FIELDS = "  %s fields: %s",
+  DIAG_TD_SAVE = "It is written to the file at /reload or logout (SavedVariables, RoadToForever.lua, key talentDump). Send that file.",
 
   NAV_CORPSE_DEBUG_HEAD = "corpse arrow: option on %s, dead %s, ghost %s",
   NAV_CORPSE_DEBUG_NOAPI = "  the game gives no corpse position here",

@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.87.1 (2026-11-13)
+
+- **`/r2f debug talentdump` (new, read-only):** saves the game's own talent tree for your class (every node: name, spell id, ranks, position, prerequisite edges, conditions, the tree's point currency, and the list of fields the game exposes) into the saved file, key `talentDump`. Run it once per class (not in combat, a few seconds after login), `/reload`, and send `WTF\Account\<name>\SavedVariables\RoadToForever.lua`. It only reads; the talent check that compares the game with our data is built from what it shows.
+
 ## 0.87.0 (2026-11-12)
 
 - **Tweaks > Alerts, Flight timer (new, off until ticked):** a countdown while you ride a flight path. The game gives no flight time, so the first flight on a route counts up and the time is saved when you land; every later flight on that route counts down.

@@ -18,7 +18,7 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
 | `docs/macro-rules.md` | macros, `data.py` structure and helpers |
 | `docs/site-pages.md` | index, news, builds, launch plan, talents, saved builds, Legacy calc |
 | `docs/professions-bis.md` | `professions.html` (enchants, prices, Crafters) and `bis.html` |
-| `docs/addons-page.md` | `addons.html` and the daily version check |
+| `docs/addons-page.md` | `addons.html` (no version check: CurseForge addons are links) |
 | `docs/assets-and-meta.md` | images, link previews, manifest |
 | `addon/ARCHITECTURE.md` | any addon work (one page: layers, rules, how to add things); then `ADDON_PLAN.md` (history, by section) and `addon/HARDENING.md` |
 | `docs/maintainers.md` | releasing, data refreshes (what needs a browser), known traps |

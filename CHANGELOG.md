@@ -20,6 +20,11 @@ user-facing release notes.
 ## 2026-11-09 (Launch Plan: Green Hills page tracker)
 - `launch-plan.html`: "Green Hills pages" frame (fixed on the right at >=1260px, folded block above the page otherwise). Pages I: 1,4,6,8; II: 10,11,14,16; III: 18,20,21,24; IV: 25,26,27, checkboxes saved in localStorage `wf-green-hills-pages-v1`.
 
+## 2026-11-13 (addons page: CurseForge addons are links, daily check stopped)
+- `addons.html`: the five CurseForge addons (AtlasLoot Continued, Forever Bestiary, Leatrix Maps, Questie, ThreatMaster) are plain cards. The name button links to the CurseForge project page, and the card says to download the WoW Forever (1.60.x) file there by hand. Removed their Select box, Download button, file links, "Forever version" lines and the "Versions checked on CurseForge" line.
+- The "Addon version check" scheduled task is disabled (owner's request). Only Road to Forever is still checked, and it updates itself in the browser from GitHub releases.
+- `docs/addons-page.md` rewritten to match; `CLAUDE.md` index line updated.
+
 ## 2026-11-10 (addons page: Road to Forever fallback 0.86.1)
 - `addons.html`: Road to Forever card fallback (link, `.ver-tag`, version line, zip name) moved from 0.84.3 to 0.86.1 (tag `r2f-v0.86.1`). The CurseForge version check was blocked this run, so the "Versions checked" date was left as it was.
 

@@ -44,7 +44,21 @@ The sample is small. The full diff in phase 2 is what settles the 3+3 mismatches
 - Rate limit is 5 per second per IP (burst 20); the pull must be throttled and resumable.
 - A fan-run API can go offline. Page code keeps a fallback (already the case on the Auction House).
 
-## Decisions for the owner
-1. Rebuild the whole items table from WCLBox (recommended), or only patch the 4,990 Wowhead-derived items?
-2. Talent trees: keep Wowhead's data endpoint for now, or move to the client's own tables (wago.tools, public)?
-3. Run the pull now in Chrome as a background job, or later?
+## Decisions (owner, 2026-11-13)
+1. **Rebuild the whole items table from WCLBox.** Yes.
+2. **Talent trees:** recommendation below, awaiting a final yes.
+3. **Run the pull now.** Yes, with the downsides below. It cannot run from the cloud sandbox (WCLBox answers 403 there) and no folder of the owner's PC is connected to Claude chat, so it runs on the PC through Claude Code in the repo: `python bis/tools/wclbox_pull.py --limit 50` first, then without `--limit`.
+
+### The pull: what it costs
+- **Time:** about 220 list calls plus roughly 13,000 detail calls at about 3 per second, so around 70 minutes (about 40 if grey and white gear is skipped with `--min-quality 2`). Resumable; stopping and restarting loses nothing.
+- **Load on a fan-run server:** within their published limit (5 per second per IP), well under it at 3. It runs once, then only new or changed ids on later refreshes.
+- **Nothing goes live from the pull itself.** It only fills a gitignored cache. Mr.BiZ changes only when phase 3 and 4 run, and the rankings get reviewed before anything is pushed.
+- **A moving target:** WCLBox calls its data test data. The script records the client build and restarts the cache if the build changes mid-way, so we never mix two builds.
+- **Cache size:** roughly 5 to 10 MB on disk, not committed. Only a compact snapshot of the fields we use is committed.
+
+## Talent trees: recommended approach
+The goal is two independent sources that must agree, with the game as judge.
+1. **Keep Wowhead's talent data endpoint as the source** (what `gen_talent_data.py` reads today). It is the data its own calculator loads, one small request per refresh, and it follows the live game including server hotfixes. Credit stays on the Talents page.
+2. **Add an in-game audit to the R2F addon (the real safety net).** The addon already reads the live tree through `C_Traits`. An audit command compares every talent (name, spell id, ranks, position, prerequisite) with `TalentData.lua` and prints "matches" or the exact differences. The game itself is the one source that cannot be wrong about the game. Run it once per class; when it disagrees, the game wins. Needs scoping in Claude Code: first confirm which of those fields `C_Traits` exposes on Forever.
+3. **Keep `--drift`** before each release (already there): it catches Wowhead changing.
+4. **Optional second source:** the client's own tables (wago.tools Talent / TalentTab, public). Useful as a cross-check, not as the source: static client files can miss changes the server sends as hotfixes (we saw that with 11,103 items).

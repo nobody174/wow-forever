@@ -149,7 +149,8 @@ local announced = {}           -- guid -> time
 local function canMark()
   if R2F.InCombat and R2F.InCombat() then return false end
   if IsInGroup and IsInGroup() then
-    return (UnitIsGroupLeader and UnitIsGroupLeader("player")) or (UnitIsGroupAssistant and UnitIsGroupAssistant("player")) or false
+    return (UnitIsGroupLeader and UnitIsGroupLeader("player"))
+      or (UnitIsGroupAssistant and UnitIsGroupAssistant("player")) or false
   end
   return true
 end

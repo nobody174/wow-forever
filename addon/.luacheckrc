@@ -20,6 +20,10 @@ globals = {
 read_globals = {
   -- Lua extras WoW provides
   "time", "C_ChatInfo",
+  -- Gameplay travel / rare finder (flight paths, group rank, raid markers, minimap vignettes)
+  "NumTaxiNodes", "TaxiNodeGetType", "TaxiNodeName", "TakeTaxiNode",
+  "UnitIsGroupLeader", "UnitIsGroupAssistant", "UnitClassification", "UnitIsPlayer", "UnitIsDead",
+  "SetRaidTarget", "GetRaidTargetIndex", "C_VignetteInfo",
   -- Macros
   "GetNumMacros", "GetMacroIndexByName", "GetMacroInfo", "CreateMacro", "EditMacro",
   "DeleteMacro", "PickupMacro", "MAX_ACCOUNT_MACROS", "MAX_CHARACTER_MACROS",

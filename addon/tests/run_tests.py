@@ -6521,6 +6521,19 @@ def test_talent_check(templates):
     check(any("our data has the prerequisite" in ln for ln in lines), "%s: a missing prerequisite is reported: %s" % (tag, lines))
     set_game_talents(lua, raw, js["classes"]["warrior"], {})
 
+    # an arrow listed backwards as well (both talents "need" each other): a note, not a difference
+    lua.execute("""for _, x in ipairs(TEST.talentTabs[1]) do
+      if x.prereq then
+        for _, y in ipairs(TEST.talentTabs[1]) do
+          if y.tier == x.prereq[1] and y.column == x.prereq[2] then y.prereq = { x.tier, x.column } return end
+        end
+      end
+    end""")
+    lines = run()
+    check(any("the game matches our data" in ln for ln in lines) and any("not counted: 1 arrow" in ln for ln in lines),
+          "%s: a reversed arrow is a note, not a difference: %s" % (tag, lines))
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+
     # a talent the game has and our data lacks
     lua.execute("table.insert(TEST.talentTabs[2], { name = 'Brand New', tier = 7, column = 4, rank = 0, maxRank = 1 })")
     lines = run()

@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-13 (addon 0.87.3: talentcheck ignores backwards arrows)
+- First in-game result on the owner's Hunter: 51 talents and 7 of 8 arrows match; the one difference was the game listing Bestial Wrath -> Intimidation next to Intimidation -> Bestial Wrath (impossible as a requirement). `Talents.CompareWithData` now reports a reversed copy of one of our prerequisites as a note (`reversed`), not a difference.
+
 ## 2026-11-13 (addon 0.87.2: /r2f talentcheck and the Hunter talent read, Track B)
 - `Talents.lua`: `/r2f talentcheck` (`Talents.Check`, `CompareWithData`, `ReadEdges`) compares the live C_Traits tree with `TalentData.lua` by cell (rows and columns ranked like the reader does): name, max rank, prerequisite arrows (`visibleEdges`). The game wins; result in `R2FDB.talentCheck`. The points-needed field is not compared (the game's `spentAmountRequired` is points still missing).
 - Reader fix: nodes the game parks far off the grid (over 8 times the median coordinate: Hunter's second Lightning Reflexes at x 102800 and Improved Serpent Sting at y 39300) are skipped; before, `ReadTrees` returned nil for the Hunter. Findings: `docs/talent-audit-hunter-2026-11-13.md`. Tests: `test_talent_check` (stub now reports prerequisite edges).

@@ -452,7 +452,7 @@ local function cellText(x) return ("%s (row %d, column %d)"):format(x.name, x.ti
 -- Pure comparison (tested without a client). trees / edges: as ReadTrees / ReadEdges give them; data: TalentData.classes[class].
 -- Returns { lines = {...difference lines...}, talents = n, edges = n }.
 function Talents.CompareWithData(trees, edges, data)
-  local out, lines, nTal, nEdge = {}, {}, 0, 0
+  local out, lines, nTal, nEdge, reversed = {}, {}, 0, 0, {}
   -- Rows are shared by all panes; the reader counts rows (and columns per pane) by rank, so do the same with the data.
   local rowOf, rows = {}, {}
   for _, t in ipairs(data.trees or {}) do
@@ -507,12 +507,23 @@ function Talents.CompareWithData(trees, edges, data)
         if not live[k] then add(L.TC_EDGE_MISSING, p, v[1], v[2]) end
       end
       for k, v in pairs(live) do
-        if not want[k] then add(L.TC_EDGE_EXTRA, p, v[1], v[2]) end
+        if not want[k] then
+          -- The exact reverse of a prerequisite we have: both talents would need the other, so it cannot be a real requirement
+          -- (Forever's Hunter tree lists Bestial Wrath -> Intimidation next to Intimidation -> Bestial Wrath).
+          -- A note, not a difference.
+          local a, b = k:match("^(.-)>(.-)$")
+          if want[b .. ">" .. a] then
+            reversed[#reversed + 1] = v[1] .. " -> " .. v[2]
+          else
+            add(L.TC_EDGE_EXTRA, p, v[1], v[2])
+          end
+        end
       end
     end
   end
   table.sort(lines)
-  out.lines, out.talents, out.edges = lines, nTal, nEdge
+  table.sort(reversed)
+  out.lines, out.talents, out.edges, out.reversed = lines, nTal, nEdge, reversed
   return out
 end
 
@@ -534,6 +545,7 @@ function Talents.Check()
       R2F.Print(line)
     end
   end
+  if #res.reversed > 0 then R2F.Print(L.TC_REVERSED:format(#res.reversed, table.concat(res.reversed, ", "))) end
   local parked = {}
   for _, n in ipairs(parkedNodes) do
     parked[#parked + 1] = ("%s (x %s, y %s)"):format(n.name, tostring(n.posX), tostring(n.posY))
@@ -542,7 +554,8 @@ function Talents.Check()
   if type(_G.R2FDB) == "table" then
     if type(_G.R2FDB.talentCheck) ~= "table" then _G.R2FDB.talentCheck = {} end
     _G.R2FDB.talentCheck[name] = { time = time and time() or 0, build = GetBuildInfo and select(2, GetBuildInfo()) or nil,
-                                   differences = res.lines, parked = parked, talents = res.talents, prerequisites = res.edges }
+                                   differences = res.lines, reversed = res.reversed, parked = parked, talents = res.talents,
+                                   prerequisites = res.edges }
   end
 end
 

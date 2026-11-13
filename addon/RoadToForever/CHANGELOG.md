@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## 0.87.3 (2026-11-13)
+
+- **`/r2f talentcheck`:** an arrow the game lists backwards as well as forwards (Hunter: Bestial Wrath -> Intimidation next to Intimidation -> Bestial Wrath) is no longer a difference: both talents would need the other, so it is not a real prerequisite. It is shown as a note.
+
 ## 0.87.2 (2026-11-13)
 
 - **`/r2f talentcheck` (new, read-only):** compares your class's talent tree in the game with the Road to Forever data: names, max ranks, rows and columns, and the prerequisite arrows. It prints "matches" or the exact differences (the game is right, our data is stale there) and keeps them in the saved file (`talentCheck`).

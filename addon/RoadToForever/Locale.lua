@@ -1033,6 +1033,7 @@ R2F.L = {
   TC_RANK = "  tree %d, %s: max rank %d in the game, %d in our data",
   TC_EDGE_MISSING = "  tree %d: our data has the prerequisite %s -> %s, the game does not",
   TC_EDGE_EXTRA = "  tree %d: the game has the prerequisite %s -> %s, our data does not",
+  TC_REVERSED = "  not counted: %d arrow(s) the game lists backwards as well (both talents would need the other): %s",
   TC_PARKED = "  ignored %d talent(s) the game parks off the grid: %s",
   TC_MORE = "  ... and %d more (all of them are in R2FDB.talentCheck, saved at /reload)",
 

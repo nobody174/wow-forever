@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-13",
+      "title": "Addon 0.87.3: check your talents against the game",
+      "text": "New command /r2f talentcheck compares your class's talent tree in the game with the data on this site and tells you exactly what differs. The Hunter talent tab can be read again (the game hides a few leftover talents far off the grid). Also new for bug reports: /r2f debug talentdump.",
+      "link": "addons.html"
+    },
+    {
+      "date": "2026-11-13",
       "title": "Item data now comes from the live game build",
       "text": "Item quality, levels, armor and weapon damage on the Gear and Professions pages now come from the live game data instead of the old beta numbers. Hundreds of old beta items are gone, and about 1,900 new ones are in. The Mr.BiZ gear lists themselves are not re-ranked yet.",
       "link": "bis.html"

@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-13 (addon 0.87.3 released, tag r2f-v0.87.3)
+- Release `r2f-v0.87.3` published (pre-release, `RoadToForever-0.87.3.zip`); the first release since 0.86.1, so it also carries 0.87.0 (flight timer, rare finder), 0.87.1 (talent dump) and 0.87.2 (talentcheck, Hunter reader fix). CI had been red since the 0.87.0 work landed (undeclared API globals and two long lines): fixed in `.luacheckrc` / wrapped, green on the release commit. `addons.html` fallback moved to 0.87.3.
+
 ## 2026-11-13 (addon 0.87.3: talentcheck ignores backwards arrows)
 - First in-game result on the owner's Hunter: 51 talents and 7 of 8 arrows match; the one difference was the game listing Bestial Wrath -> Intimidation next to Intimidation -> Bestial Wrath (impossible as a requirement). `Talents.CompareWithData` now reports a reversed copy of one of our prerequisites as a note (`reversed`), not a difference.
 

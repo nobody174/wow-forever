@@ -115,7 +115,7 @@ function Library.Init()
   if type(db.gameplay) ~= "table" then db.gameplay = {} end
   for _, key in ipairs({ "repair", "sellgray", "duels", "errorfilter", "xpbar", "mailalts", "bagslots", "bagsort", "fastloot",
     "questaccept", "questturnin", "rewardvalue", "copychat", "questzone", "reactalert", "reactlock",
-    "reactblizz", "gossipshop" }) do
+    "reactblizz", "gossipshop", "flighttimer", "rarefinder" }) do
     if type(db.gameplay[key]) ~= "boolean" then db.gameplay[key] = false end
   end
   -- "Arrow follows the plan" (Plan.lua) starts ON: it only acts on your own tick of a plan step.

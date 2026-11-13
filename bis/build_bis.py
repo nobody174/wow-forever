@@ -26,6 +26,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 RAW = os.path.join(HERE, "raw")
 SOURCES = os.path.join(HERE, "sources.json")
+FOUND = os.path.join(HERE, "found_sources.json")
 SITE_OUT = os.path.join(ROOT, "bis-data.json")
 LUA_OUT = os.path.join(ROOT, "addon", "RoadToForever", "BiZData.lua")
 
@@ -134,8 +135,9 @@ def parse_source(src):
         return out
     if s.startswith("World drop"):
         rng = re.search(r"level (\d+-\d+)", s)
-        out.update(type="world", label="World drop" + (" (level %s mobs)" % rng.group(1) if rng else ""),
-                   group="World drops")
+        seen = re.search(r", seen in (.+)$", s)     # a player saw it drop there; not on the instance's loot table
+        out.update(type="world", label="World drop" + (" (level %s mobs)" % rng.group(1) if rng else "")
+                   + (", seen in %s" % seen.group(1) if seen else ""), group="World drops")
         return out
     m = re.match(r"Found in (.+)$", s)
     if m:
@@ -207,6 +209,16 @@ def source_index():
             if it.get("via"):
                 src["via"] = it["via"]   # the site we read it from, shown as a small credit
             idx.setdefault(int(iid), src)
+    # bis/found_sources.json (tools/found_sources.py): our own recordings, ForeverDungeonJournal and sites read by hand. It only fills
+    # items the sources above leave unknown, and every entry names where it was read from.
+    if os.path.exists(FOUND):
+        with open(FOUND, encoding="utf-8") as f:
+            for iid, it in json.load(f)["items"].items():
+                cur = idx.get(int(iid))
+                if cur is None or cur["type"] == "unknown":
+                    src = source_of(it["src"])
+                    src["via"] = it.get("via") or "our own data"
+                    idx[int(iid)] = src
     return idx
 
 
@@ -246,6 +258,10 @@ def slot_entries(path, raw, sources):
             best.update(src)
             if best["type"] != "unknown":
                 best["via"] = SOURCE_NAME
+            else:
+                found = sources.get(best["id"])
+                if found and found["type"] != "unknown":
+                    best.update({k: found[k] for k in NEXT_SRC_KEYS if k in found})
             if b.get("horde"):
                 best["horde"] = b["horde"]
             entry["best"] = best

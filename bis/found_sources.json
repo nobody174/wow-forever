@@ -1,0 +1,540 @@
+{
+ "items": {
+  "18316": {
+   "src": "Drops from Pusillin in Dire Maul: East (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "221344": {
+   "src": "Quest reward: A Lesson in Literacy, level 45 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "263401": {
+   "src": "Quest reward: Avenged Tenfold (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270023": {
+   "src": "Quest reward: Deathstalkers in Shadowfang (a choice), level 25 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "270036": {
+   "src": "Quest reward: The Fury Runs Deep (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270067": {
+   "src": "Quest reward: WANTED: Marez Cowl (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270068": {
+   "src": "Quest reward: WANTED: Marez Cowl (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270074": {
+   "src": "Quest reward: Solution to Doom (a choice), level 40 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "270076": {
+   "src": "Quest reward: The Curse of the Tides (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270080": {
+   "src": "Quest reward: WANTED: Otto and Falconcrest (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270081": {
+   "src": "Quest reward: Bring the End (a choice), level 42 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "270084": {
+   "src": "Quest reward: Big Game Hunter (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270097": {
+   "src": "Quest reward: Mai'Zoth (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270099": {
+   "src": "Quest reward: Divino-matic Rod (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270228": {
+   "src": "Drops from Plunder in The Hall of Thanes (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270230": {
+   "src": "Drops from Magmatus in Hall of Thanes (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "270256": {
+   "src": "Drops from Durgen Dirgehammer in Hall of Thanes (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "271716": {
+   "src": "Quest reward: Prehistoric Prism (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "271740": {
+   "src": "Quest reward: Open the Maw (a choice), level 31 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "271768": {
+   "src": "Quest reward: Fallen in the Fen (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "272186": {
+   "src": "Quest reward: Rot and Regret (a choice), level 49 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "273088": {
+   "src": "Drops from Lady Anacondra in Wailing Caverns (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "273297": {
+   "src": "Drops from Gilnid in The Deadmines (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "273646": {
+   "src": "Drops from Fenrus the Devourer in Shadowfang Keep (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "273807": {
+   "src": "Drops from Kam Deepfury in The Stockade (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "273811": {
+   "src": "Drops from Hamhock in Stormwind Stockade (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "273824": {
+   "src": "Drops from Bazil Thredd in The Stockade (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "273842": {
+   "src": "Drops from Lorgus Jett in Blackfathom Deeps (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "273846": {
+   "src": "Drops from Twilight Lord Kelris in Blackfathom Deeps (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274043": {
+   "src": "Drops from Grubbis in Gnomeregan (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274068": {
+   "src": "Drops from Crowd Pummeler 9-60 in Gnomeregan (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274078": {
+   "src": "Quest reward: Willix the Importer (a choice), level 30 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274158": {
+   "src": "Drops from Aggem Thorncurse in Razorfen Kraul (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274290": {
+   "src": "Drops from Interrogator Vishas in Scarlet Monastery: Graveyard (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274293": {
+   "src": "Drops from Arcanist Doan in Scarlet Monastery: Library (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274294": {
+   "src": "Drops from Arcanist Doan in Scarlet Monastery: Library (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274380": {
+   "src": "Drops from Plaguemaw the Rotting in Razorfen Downs (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274381": {
+   "src": "Drops from Amnennar the Coldbringer in Razorfen Downs (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274425": {
+   "src": "Drops from Obsidian Sentinel in Uldaman (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274428": {
+   "src": "Drops from Obsidian Sentinel in Uldaman (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274432": {
+   "src": "Drops from Archaedas in Uldaman (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274598": {
+   "src": "Drops from Zul'Alai in The Drowned City (Clue)",
+   "via": "AtlasLoot Continued"
+  },
+  "274599": {
+   "src": "Drops from Zul'Alai in The Drowned City (Clue)",
+   "via": "AtlasLoot Continued"
+  },
+  "274600": {
+   "src": "Drops from Zul'Alai in The Drowned City (Clue)",
+   "via": "AtlasLoot Continued"
+  },
+  "274601": {
+   "src": "Drops from Var'Taka in The Drowned City (Clue)",
+   "via": "AtlasLoot Continued"
+  },
+  "274602": {
+   "src": "Drops from Var'Taka in The Drowned City (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "274604": {
+   "src": "Drops from Captain Dreadrise in The Drowned City (Clue)",
+   "via": "AtlasLoot Continued"
+  },
+  "274605": {
+   "src": "Drops from Captain Dreadrise in The Drowned City (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "274609": {
+   "src": "Drops from Min'loth the Serpent in The Drowned City (Clue)",
+   "via": "AtlasLoot Continued"
+  },
+  "274610": {
+   "src": "Drops from Min'loth the Serpent in The Drowned City (Clue)",
+   "via": "AtlasLoot Continued"
+  },
+  "274612": {
+   "src": "Drops from Primeval Elemental in Atal'Byzal (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "274613": {
+   "src": "Drops from Var'Taka in The Drowned City (Clue)",
+   "via": "AtlasLoot Continued"
+  },
+  "274654": {
+   "src": "Drops from Ruuzlu in Zul'Farrak (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274655": {
+   "src": "Drops from Ruuzlu in Zul'Farrak (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274657": {
+   "src": "Drops from Gahz'rilla in Zul'Farrak (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274658": {
+   "src": "Drops from Zerillis in Zul'Farrak (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274659": {
+   "src": "Drops from Sandarr Dunereaver in Zul'Farrak (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274919": {
+   "src": "Quest reward: Saving Sunnyglade (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "274928": {
+   "src": "Quest reward: Helping Hands (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "274941": {
+   "src": "Quest reward: Snargl's Snout (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "274995": {
+   "src": "Drops from Slavecrusher Grox in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274996": {
+   "src": "Drops from Slavecrusher Grox in Krol'dok Stronghold (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "274997": {
+   "src": "Drops from Slavecrusher Grox in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274999": {
+   "src": "Drops from Twilight Commander Zarmok in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "275000": {
+   "src": "Drops from Twilight Commander Zarmok in Krol'dok Stronghold (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "275001": {
+   "src": "Drops from War Handler Ashka in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "275002": {
+   "src": "Drops from War Handler Ashka in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "275004": {
+   "src": "Drops from Nar'gurk in Krol'dok Stronghold (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "275005": {
+   "src": "Drops from Nar'gurk in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "275006": {
+   "src": "Drops from Nar'gurk in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "275009": {
+   "src": "Drops from Overlord Mugg in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "275010": {
+   "src": "Drops from Overlord Mugg in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "275021": {
+   "src": "Quest reward: Dunston Checks Out (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "275023": {
+   "src": "Quest reward: Dunston Checks Out (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "275025": {
+   "src": "Quest reward: Dunston Checks Out (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "275028": {
+   "src": "Quest reward: A Miner Problem (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "275052": {
+   "src": "Quest reward: The Rog'mar Situation (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "276399": {
+   "src": "Drops from Malor the Zealous in Stratholme: Living (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276732": {
+   "src": "Drops from Overseer Wrex in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276733": {
+   "src": "Drops from Overseer Wrex in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276734": {
+   "src": "Drops from Overseer Wrex in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276735": {
+   "src": "Drops from Tidemistress Ca'zass in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276737": {
+   "src": "Drops from Tidemistress Ca'zass in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276738": {
+   "src": "Drops from Katerina the Cleaner in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276739": {
+   "src": "Drops from Katerina the Cleaner in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276740": {
+   "src": "Drops from Katerina the Cleaner in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276741": {
+   "src": "Drops from The Questioner in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276742": {
+   "src": "Drops from The Questioner in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "276746": {
+   "src": "Drops from Blazeroar in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "277206": {
+   "src": "Quest reward: Strahnbrad Mystery (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "277210": {
+   "src": "Quest reward: The Horn of Xelthos, level 23 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "277246": {
+   "src": "Quest reward: The Eye of Bhossca, level 35 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "279480": {
+   "src": "Quest reward: Eye of Mugg (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "279842": {
+   "src": "Quest reward: Heart of Disruption (a choice), level 33 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "279843": {
+   "src": "Quest reward: Heart of Disruption (a choice), level 33 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "279844": {
+   "src": "Quest reward: Heart of Disruption (a choice), level 33 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "279850": {
+   "src": "Quest reward: Curios of Curiosity (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "279854": {
+   "src": "Quest reward: Tome of Twilight (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "279878": {
+   "src": "Quest reward: The Web of Magic (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "279879": {
+   "src": "Quest reward: The Web of Magic (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "279883": {
+   "src": "Quest reward: The Saltseer Captain (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "279884": {
+   "src": "Quest reward: The Saltseer Captain (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "279887": {
+   "src": "Quest reward: A Tale Spun Around the Fire (a choice), level 40 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "279889": {
+   "src": "Quest reward: The Only Good Brinescale... (a choice), level 38 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280010": {
+   "src": "Drops from Titanosaur in Shaper's Terrace (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280013": {
+   "src": "Drops from Izha'Rel and Tor'Rel in Shaper's Terrace (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280014": {
+   "src": "Drops from Izha'Rel and Tor'Rel in Shaper's Terrace (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280015": {
+   "src": "Drops from Venomridge in Shaper's Terrace (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280020": {
+   "src": "Drops from Thunderhoof in Shaper's Terrace (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280021": {
+   "src": "Drops from Direhorn Matriarch in Shaper's Terrace (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280022": {
+   "src": "Drops from Direhorn Matriarch in Shaper's Terrace (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280025": {
+   "src": "Drops from Nanaya in Shaper's Terrace (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280066": {
+   "src": "Drops from Blackmaw Behemoth in Blackmaw Hold (Clue)",
+   "via": "AtlasLoot Continued"
+  },
+  "286428": {
+   "src": "Drops from Bossman Toof in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286429": {
+   "src": "Drops from Bossman Toof in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286646": {
+   "src": "Drops from Gill in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286649": {
+   "src": "Drops from Gill in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286651": {
+   "src": "Drops from \"Pyromancer\" Braxton in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286662": {
+   "src": "Drops from Umbra in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286988": {
+   "src": "Drops from Trash Drops in City of Dalaran (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286989": {
+   "src": "Drops from Trash Drops in City of Dalaran (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286995": {
+   "src": "Drops from Trash Drops in City of Dalaran (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286997": {
+   "src": "Drops from Trash Drops in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287002": {
+   "src": "Drops from Trash Drops in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287007": {
+   "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287008": {
+   "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287010": {
+   "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287011": {
+   "src": "World drop, seen in Krol'dok Stronghold (Seen in Forever)",
+   "via": "the project owner's own find"
+  },
+  "287012": {
+   "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287013": {
+   "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287014": {
+   "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287019": {
+   "src": "Drops from Trash Drops in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287020": {
+   "src": "Drops from trash in Alcaz Prison (Clue)",
+   "via": "AtlasLoot Continued"
+  },
+  "287037": {
+   "src": "Drops from Trash Drops in Shaper's Terrace (Clue)",
+   "via": "ForeverDungeonJournal"
+  }
+ }
+}

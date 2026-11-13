@@ -5,3 +5,8 @@ bis/own/cache/
 
 # Editor workspace files
 *.code-workspace
+
+# Local secrets (never commit)
+.env
+.env.*
+!.env.example

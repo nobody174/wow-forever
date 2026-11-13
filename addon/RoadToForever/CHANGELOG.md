@@ -1,5 +1,11 @@
 # Road to Forever changelog
 
+## 0.87.0 (2026-11-12)
+
+- **Tweaks > Alerts, Flight timer (new, off until ticked):** a countdown while you ride a flight path. The game gives no flight time, so the first flight on a route counts up and the time is saved when you land; every later flight on that route counts down.
+- **Tweaks > Alerts, Rare finder (new, off until ticked):** a line on screen and a sound when a rare or rare-elite enemy shows on your minimap (with its map position when the game gives one) or comes into nameplate range, or you target or mouse over one, and the skull marker on it. The skull is only placed out of combat, alone or as leader / assist, and never over an existing marker.
+- "Skip the NPC chat before shops" was already in Tweaks > Quests.
+
 ## 0.86.1 (2026-11-10)
 
 - **Setup tab:** the page no longer starts over the window's top bar (it now uses the whole content area like Training and Home).

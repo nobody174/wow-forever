@@ -1,5 +1,10 @@
 # Road to Forever changelog
 
+## 0.87.2 (2026-11-13)
+
+- **`/r2f talentcheck` (new, read-only):** compares your class's talent tree in the game with the Road to Forever data: names, max ranks, rows and columns, and the prerequisite arrows. It prints "matches" or the exact differences (the game is right, our data is stale there) and keeps them in the saved file (`talentCheck`).
+- **Talents tab fix (Hunter):** the game keeps a few talents parked far off the tree grid (Hunter: a second Lightning Reflexes and Improved Serpent Sting), which made the tree unreadable. They are now skipped (and named by `/r2f talentcheck`).
+
 ## 0.87.1 (2026-11-13)
 
 - **`/r2f debug talentdump` (new, read-only):** saves the game's own talent tree for your class (every node: name, spell id, ranks, position, prerequisite edges, conditions, the tree's point currency, and the list of fields the game exposes) into the saved file, key `talentDump`. Run it once per class (not in combat, a few seconds after login), `/reload`, and send `WTF\Account\<name>\SavedVariables\RoadToForever.lua`. It only reads; the talent check that compares the game with our data is built from what it shows.

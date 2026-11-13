@@ -252,9 +252,21 @@ C_Traits = {
     -- = applied + staged. T.activeIncludesStaged models a client where
     -- activeRank counts staged ranks too (the risk landed() guards against).
     local r, st = nodeRank(n), nodeStaged(n)
+    -- Prerequisite arrows like the real client: the node holding the edge is the prerequisite, targetNode the dependent.
+    -- Derived from the fixture's `prereq = { tier, column }` (same pane) of the other nodes; custom trees (no src) have none.
+    local edges = {}
+    if n.src then
+      local pane = math.floor((n.id - 100000) / 1000)
+      for _, m in pairs(nodeIndex) do
+        local pr = m.src and m.src.prereq
+        if pr and math.floor((m.id - 100000) / 1000) == pane and pr[1] == n.src.tier and pr[2] == n.src.column then
+          edges[#edges + 1] = { targetNode = m.id, type = 2, isActive = true, visualStyle = 1 }
+        end
+      end
+    end
     return { ID = n.id, posX = n.posX, posY = n.posY, activeRank = T.activeIncludesStaged and r + st or r,
              ranksPurchased = r + st, currentRank = r + st, maxRanks = nodeMax(n), entryIDs = { n.id + 500000 },
-             visibleEdges = {}, isVisible = true, canPurchaseRank = T.canPurchaseRank }
+             visibleEdges = edges, isVisible = true, canPurchaseRank = T.canPurchaseRank }
   end,
   GetEntryInfo = function(configID, entryID)
     if configID ~= CONFIG_ID or not nodeIndex[entryID - 500000] then return nil end

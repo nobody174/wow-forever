@@ -6477,6 +6477,72 @@ def paladin_like_tree(transform=lambda x, y: (x, y)):
     return trait_tree_lua([1100], {1100: nodes})
 
 
+def test_talent_check(templates):
+    """Track B: /r2f talentcheck compares the live tree with TalentData.lua (name, max rank, cell, prerequisites); the game wins.
+    Also: nodes the game parks off the grid (10x coordinates, seen on the Hunter) are skipped by the reader, not fatal."""
+    tag = "templates" if templates else "fallbacks"
+    fxt = json.load(open(TALENT_FIXTURE, encoding="utf-8"))
+    raw = fxt["talents"]
+    js = talent_js()
+    lua = new_runtime(templates)
+    T = lua.eval("TEST")
+    T.fire("ADDON_LOADED", "RoadToForever")
+    T.fire("PLAYER_LOGIN")
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+    use_fixture_data(lua, raw, "warrior")
+
+    def run():
+        lua.execute("TEST.chat = {}")
+        lua.execute("SlashCmdList.R2F('talentcheck')")
+        return chat_lines(lua)
+
+    lines = run()
+    check(any("the game matches our data" in ln for ln in lines), "%s: talentcheck on identical data: matches: %s" % (tag, lines))
+    pre = lua.eval("R2FDB.talentCheck.WARRIOR.prerequisites")
+    check(pre is not None and pre > 0, "%s: the prerequisite arrows are compared (%s of them)" % (tag, pre))
+
+    # one deliberate difference: a renamed talent
+    lua.execute("TEST.talentTabs[1][1].name = 'Renamed Talent'")
+    lines = run()
+    check(any("difference" in ln for ln in lines) and any("the game has Renamed Talent" in ln for ln in lines),
+          "%s: a renamed talent is reported with the game's name: %s" % (tag, lines))
+    check(lua.eval("#R2FDB.talentCheck.WARRIOR.differences") >= 1, "%s: the differences are kept for a bug report" % tag)
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+
+    # a different max rank
+    lua.execute("TEST.talentTabs[1][1].maxRank = TEST.talentTabs[1][1].maxRank + 1")
+    lines = run()
+    check(any("max rank" in ln for ln in lines), "%s: a different max rank is reported: %s" % (tag, lines))
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+
+    # a prerequisite the game does not have
+    lua.execute("for _, x in ipairs(TEST.talentTabs[1]) do if x.prereq then x.prereq = nil break end end")
+    lines = run()
+    check(any("our data has the prerequisite" in ln for ln in lines), "%s: a missing prerequisite is reported: %s" % (tag, lines))
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+
+    # a talent the game has and our data lacks
+    lua.execute("table.insert(TEST.talentTabs[2], { name = 'Brand New', tier = 7, column = 4, rank = 0, maxRank = 1 })")
+    lines = run()
+    check(any("the game has Brand New" in ln for ln in lines) and any("talents in the game" in ln for ln in lines),
+          "%s: an extra game talent is reported, with the shifted share-code digits: %s" % (tag, lines))
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+
+    # a parked node (ten times a real row): skipped, named, the tree still reads
+    lua.execute("table.insert(TEST.talentTabs[2], { name = 'Parked One', tier = 40, column = 1, rank = 0, maxRank = 5 })")
+    lines = run()
+    check(any("the game matches our data" in ln for ln in lines), "%s: a parked node does not break the read: %s" % (tag, lines))
+    check(any("ignored 1 talent" in ln and "Parked One" in ln for ln in lines), "%s: the parked node is named: %s" % (tag, lines))
+    set_game_talents(lua, raw, js["classes"]["warrior"], {})
+
+    # not readable yet / no data
+    lua.execute("TEST.traitsReady = false")
+    check(any("can't read your talents" in ln for ln in run()), "%s: no config yet -> says so" % tag)
+    lua.execute("TEST.traitsReady = true")
+    lua.execute("TEST.classToken = 'NOCLASS'")
+    check(any("no talent data of ours" in ln for ln in run()), "%s: a class without data -> says so" % tag)
+
+
 def test_talent_dump(templates):
     """Track B: /r2f debug talentdump copies the live trait tree into R2FDB.talentDump (read-only, refuses in combat)."""
     tag = "templates" if templates else "fallbacks"
@@ -8660,6 +8726,8 @@ def main():
     test_talent_traits(False)
     test_talent_dump(True)
     test_talent_dump(False)
+    test_talent_check(True)
+    test_talent_check(False)
     test_talent_grid_jitter(True)
     test_talent_grid_jitter(False)
     test_talent_source_writes()

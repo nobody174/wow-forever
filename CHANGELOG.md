@@ -5,6 +5,10 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-13 (addon 0.87.2: /r2f talentcheck and the Hunter talent read, Track B)
+- `Talents.lua`: `/r2f talentcheck` (`Talents.Check`, `CompareWithData`, `ReadEdges`) compares the live C_Traits tree with `TalentData.lua` by cell (rows and columns ranked like the reader does): name, max rank, prerequisite arrows (`visibleEdges`). The game wins; result in `R2FDB.talentCheck`. The points-needed field is not compared (the game's `spentAmountRequired` is points still missing).
+- Reader fix: nodes the game parks far off the grid (over 8 times the median coordinate: Hunter's second Lightning Reflexes at x 102800 and Improved Serpent Sting at y 39300) are skipped; before, `ReadTrees` returned nil for the Hunter. Findings: `docs/talent-audit-hunter-2026-11-13.md`. Tests: `test_talent_check` (stub now reports prerequisite edges).
+
 ## 2026-11-13 (addon 0.87.1: talent dump, Track B step 1)
 - `/r2f debug talentdump` (`Diagnostics.lua`): read-only copy of the live C_Traits tree into `R2FDB.talentDump[CLASS]` plus the field names the game exposes. First step of the in-game talent audit (`docs/claude-code-wclbox-handoff.md`); the owner runs it per class (`addon/dev/TESTING.md` 5.82), then `/r2f talentcheck` is built on the fields that exist. Tests: `test_talent_dump`.
 

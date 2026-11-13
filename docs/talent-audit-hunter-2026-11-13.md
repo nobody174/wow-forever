@@ -31,7 +31,10 @@ exact dump, the addon's reader answers nil; with the two coordinates corrected i
 Proposed fix: ignore nodes whose posX or posY is far outside the grid (the real range is about 1000 to 11000 by 2100 to 5800). Wowhead's data does
 not list Improved Serpent Sting, which agrees with it being parked.
 
-## Next
+## Done in 0.87.2
+Parked nodes are skipped (rule: coordinate over 8 times the median; real grid at most 1.8 times, parked 10 to 17 times). `/r2f talentcheck` is built and tested; real Hunter dump through the fixed reader: 16 / 16 / 18 talents, 2 parked named. Still to do: run it in game on every class (TESTING 5.83).
+
+## Next (original plan)
 1. Decide the parked-node rule and fix `readTreesLive`, with a fixture of this dump (one deliberate difference per test).
 2. Build `/r2f talentcheck`: per class, compare the live tree with `TalentData.lua` on name, max rank, row, column and prerequisite edges (not on `p`
    unless the points spent are added back); print "matches" or the differences; the game wins, differences go to `BACKLOG.md`.

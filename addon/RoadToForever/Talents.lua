@@ -60,6 +60,13 @@ end
 -- Set while a read skipped a talent only because its spell name was not loaded yet (the usual reason for
 -- "couldn't read your talents" when the tab is opened soon after login).
 local namesPending = false
+-- Nodes the game keeps in the tree but parks far off the grid (about ten times a real coordinate: Forever's Hunter tree has
+-- Improved Serpent Sting at y 39300 and a second Lightning Reflexes at x 102800; docs/talent-audit-hunter-2026-11-13.md).
+-- They are not talents a player can take and would break the grid, so the reader skips them. The real grid is about
+-- 1000..11000 by 2100..5800 (at most 1.8 times the median coordinate); parked ones are 10 to 17 times it, so
+-- anything over 8 times the median is parked. Relative, because tests (and maybe a client) scale the grid.
+local PARKED_FACTOR = 8
+local parkedNodes = {}
 
 local function spellIcon(id)
   if C_Spell and C_Spell.GetSpellTexture then
@@ -141,6 +148,24 @@ local function snapGrid(nodes, key)
   return out
 end
 Talents.GridSnap = snapGrid  -- test hook
+
+-- Splits off the parked nodes (see PARKED_FACTOR), remembers them, returns the rest.
+local function dropParked(list)
+  if #list < 3 then return list end
+  local xs, ys = {}, {}
+  for i, n in ipairs(list) do xs[i] = n.posX; ys[i] = n.posY end
+  table.sort(xs); table.sort(ys)
+  local mx, my = xs[math.ceil(#xs / 2)], ys[math.ceil(#ys / 2)]
+  local keep = {}
+  for _, n in ipairs(list) do
+    if (mx > 0 and n.posX > PARKED_FACTOR * mx) or (my > 0 and n.posY > PARKED_FACTOR * my) then
+      parkedNodes[#parkedNodes + 1] = { nodeID = n.nodeID, posX = n.posX, posY = n.posY, name = n.name }
+    else
+      keep[#keep + 1] = n
+    end
+  end
+  return keep
+end
 
 -- Sets n[to] = the snapped value of n[from] on every node.
 local function snapNodes(nodes, from, to)
@@ -244,6 +269,7 @@ local function liveConfigID()
 end
 
 local function readTreesLive()
+  parkedNodes = {}
   local configID = liveConfigID()
   if not configID then return nil end
   local config = call(C_Traits.GetConfigInfo, configID)
@@ -257,6 +283,7 @@ local function readTreesLive()
       local x = readNode(configID, nodeID, #nodes + 1)
       if x then nodes[#nodes + 1] = x end
     end
+    nodes = dropParked(nodes)
     if #nodes == 0 then return nil end
     -- Snap X over the whole tree before the split.
     snapNodes(nodes, "posX", "gridX")
@@ -271,6 +298,7 @@ local function readTreesLive()
         local x = readNode(configID, nodeID, #panes[p] + 1)
         if x then table.insert(panes[p], x) end
       end
+      panes[p] = dropParked(panes[p])
       -- Each tree is its own X space here, so snap per pane.
       snapNodes(panes[p], "posX", "gridX")
     end
@@ -385,6 +413,137 @@ function Talents.ReadTrees()
   if trees then remember(trees); return trees end
   if namesPending then return fromCache() end
   return nil
+end
+
+-- ---------------------------------------------------------------------------
+-- /r2f talentcheck: the game against our own data (TalentData.lua)
+-- ---------------------------------------------------------------------------
+-- The game is the judge: where the live tree and TalentData.lua differ, the game is right and the data
+-- (Wowhead's snapshot) is stale. Compared per cell (row, column), so a missing talent does not shift everything
+-- after it: name, max rank, and the prerequisite arrows (node.visibleEdges: the node holding the edge is the
+-- prerequisite, targetNode the dependent). Not compared: the points needed in the tree (the game's
+-- spentAmountRequired is the points still missing, so it only equals ours on a tree with nothing spent).
+
+-- Nodes the last read skipped because the game parks them off the grid.
+function Talents.ParkedNodes() return parkedNodes end
+
+-- Prerequisite arrows of the live trees: edges[p] = { {from = position, to = position}, ... } (positions in `trees`).
+function Talents.ReadEdges(trees)
+  local configID = liveConfigID()
+  local edges = {}
+  for p, list in ipairs(trees) do
+    edges[p] = {}
+    local pos = {}
+    for i, x in ipairs(list) do pos[x.nodeID] = i end
+    for i, x in ipairs(list) do
+      local node = configID and call(C_Traits.GetNodeInfo, configID, x.nodeID)
+      if type(node) == "table" and type(node.visibleEdges) == "table" then
+        for _, e in ipairs(node.visibleEdges) do
+          if type(e) == "table" and pos[e.targetNode] then edges[p][#edges[p] + 1] = { from = i, to = pos[e.targetNode] } end
+        end
+      end
+    end
+  end
+  return edges
+end
+
+local function cellText(x) return ("%s (row %d, column %d)"):format(x.name, x.tier, x.column) end
+
+-- Pure comparison (tested without a client). trees / edges: as ReadTrees / ReadEdges give them; data: TalentData.classes[class].
+-- Returns { lines = {...difference lines...}, talents = n, edges = n }.
+function Talents.CompareWithData(trees, edges, data)
+  local out, lines, nTal, nEdge = {}, {}, 0, 0
+  -- Rows are shared by all panes; the reader counts rows (and columns per pane) by rank, so do the same with the data.
+  local rowOf, rows = {}, {}
+  for _, t in ipairs(data.trees or {}) do
+    for _, d in ipairs(t.talents or {}) do if not rowOf[d.r] then rowOf[d.r] = true; rows[#rows + 1] = d.r end end
+  end
+  table.sort(rows)
+  for i, r in ipairs(rows) do rowOf[r] = i end
+  local function add(fmt, ...) lines[#lines + 1] = fmt:format(...) end
+  for p, list in ipairs(trees) do
+    local dtree = data.trees and data.trees[p]
+    if not dtree then
+      add(L.TC_NOTREE, p)
+    else
+      local gameAt, dataAt = {}, {}
+      local dlist = dtree.talents or {}
+      local colOf, cols = {}, {}
+      for _, d in ipairs(dlist) do if not colOf[d.c] then colOf[d.c] = true; cols[#cols + 1] = d.c end end
+      table.sort(cols)
+      for i, c in ipairs(cols) do colOf[c] = i end
+      for _, x in ipairs(list) do gameAt[x.tier .. ":" .. x.column] = x end
+      for _, d in ipairs(dlist) do dataAt[rowOf[d.r] .. ":" .. colOf[d.c]] = d end
+      nTal = nTal + #list
+      if #list ~= #dlist then add(L.TC_COUNT, p, #list, #dlist) end
+      for _, x in ipairs(list) do
+        local d = dataAt[x.tier .. ":" .. x.column]
+        if not d then
+          add(L.TC_ONLY_GAME, p, cellText(x))
+        else
+          if d.n:lower() ~= x.name:lower() then add(L.TC_NAME, p, x.tier, x.column, x.name, d.n) end
+          if d.m ~= x.maxRank then add(L.TC_RANK, p, x.name, x.maxRank, d.m) end
+        end
+      end
+      for _, d in ipairs(dlist) do
+        if not gameAt[rowOf[d.r] .. ":" .. colOf[d.c]] then
+          add(L.TC_ONLY_DATA, p, ("%s (row %d, column %d)"):format(d.n, rowOf[d.r], colOf[d.c]))
+        end
+      end
+      -- prerequisite arrows, by cell: "from:to"
+      local live, want = {}, {}
+      for _, e in ipairs(edges and edges[p] or {}) do
+        local a, b = list[e.from], list[e.to]
+        if a and b then live[a.tier .. ":" .. a.column .. ">" .. b.tier .. ":" .. b.column] = { a.name, b.name } end
+      end
+      for _, d in ipairs(dlist) do
+        for _, q in ipairs(d.q or {}) do
+          local a = dlist[q[1]]
+          if a then want[rowOf[a.r] .. ":" .. colOf[a.c] .. ">" .. rowOf[d.r] .. ":" .. colOf[d.c]] = { a.n, d.n } end
+        end
+      end
+      for k, v in pairs(want) do
+        nEdge = nEdge + 1
+        if not live[k] then add(L.TC_EDGE_MISSING, p, v[1], v[2]) end
+      end
+      for k, v in pairs(live) do
+        if not want[k] then add(L.TC_EDGE_EXTRA, p, v[1], v[2]) end
+      end
+    end
+  end
+  table.sort(lines)
+  out.lines, out.talents, out.edges = lines, nTal, nEdge
+  return out
+end
+
+-- Runs the check on the logged-in class and prints the result; keeps it in R2FDB.talentCheck[CLASS] for a bug report.
+function Talents.Check()
+  local trees = Talents.ReadTrees()
+  if not trees then R2F.Print(L.TC_NOREAD) return end
+  local classId = Talents.ClassId()
+  local data = R2F.TalentData and R2F.TalentData.classes and classId and R2F.TalentData.classes[classId]
+  if not data then R2F.Print(L.TC_NODATA:format(tostring(classId))) return end
+  local res = Talents.CompareWithData(trees, Talents.ReadEdges(trees), data)
+  local name = classId:upper()
+  if #res.lines == 0 then
+    R2F.Print(L.TC_OK:format(name, res.talents, res.edges))
+  else
+    R2F.Print(L.TC_DIFF_HEAD:format(name, #res.lines))
+    for i, line in ipairs(res.lines) do
+      if i > 20 then R2F.Print(L.TC_MORE:format(#res.lines - 20)) break end
+      R2F.Print(line)
+    end
+  end
+  local parked = {}
+  for _, n in ipairs(parkedNodes) do
+    parked[#parked + 1] = ("%s (x %s, y %s)"):format(n.name, tostring(n.posX), tostring(n.posY))
+  end
+  if #parked > 0 then R2F.Print(L.TC_PARKED:format(#parked, table.concat(parked, ", "))) end
+  if type(_G.R2FDB) == "table" then
+    if type(_G.R2FDB.talentCheck) ~= "table" then _G.R2FDB.talentCheck = {} end
+    _G.R2FDB.talentCheck[name] = { time = time and time() or 0, build = GetBuildInfo and select(2, GetBuildInfo()) or nil,
+                                   differences = res.lines, parked = parked, talents = res.talents, prerequisites = res.edges }
+  end
 end
 
 -- The ~hash. MUST match talentcalc.js's treeHash() byte for byte:

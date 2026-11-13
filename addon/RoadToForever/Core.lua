@@ -224,6 +224,7 @@ local COMMANDS = {
   end,
   -- Read-only, so these work in combat.
   copybuild = function() R2F.Talents.CopyMyBuild() end,
+  talentcheck = function() R2F.Talents.Check() end,
   profs = function() R2F.Professions.Export() end,
   professions = function() R2F.Professions.Export() end,
 }

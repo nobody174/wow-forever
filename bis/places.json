@@ -5,7 +5,8 @@
     "wiki": "warcraft.wiki.gg / wowpedia: Shadowfang Keep 45,68; Gnomeregan 24,40; Illiyana Moonblaze 61.5,83.9; Samuel Hawke stands in Refuge Pointe",
     "icy-veins": "https://icy-veins.com/wow-classic/league-of-arathor-reputation-farming-guide (Refuge Pointe around 46,45)",
     "classic": "Classic (1.12) positions: Razorfen Kraul entrance in the southern Barrens, the Stockade on the canal in Stormwind, Booty Bay",
-    "dj": "ForeverDungeonJournal Data/DungeonEntrances.lua (coordinates only, read 2026-11-15, unconfirmed): bis/tools/dj_entrances.py"
+    "dj": "ForeverDungeonJournal Data/DungeonEntrances.lua (coordinates only, read 2026-11-15, unconfirmed): bis/tools/dj_entrances.py",
+    "questie": "QuestieDB forever snapshot (GPL v3), NPC spawns, read 2026-11-15: bis/tools/questie_places.py"
   },
   "places": {
     "Scarlet Monastery": {
@@ -331,6 +332,87 @@
       "label": "Zul'Farrak Entrance",
       "conf": "approx",
       "via": "ForeverDungeonJournal"
+    },
+    "Grazlix": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 62.21,
+      "y": 38.41,
+      "label": "Grazlix, The Barrens",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Halija Whitestrider": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 52.25,
+      "y": 31.86,
+      "label": "Halija Whitestrider, The Barrens",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Handor": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 62.88,
+      "y": 44.69,
+      "label": "Handor, Orgrimmar",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Kelm Hargunth": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 46.65,
+      "y": 8.38,
+      "label": "Kelm Hargunth, The Barrens",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Officer Areyn": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 76.8,
+      "y": 65.96,
+      "label": "Officer Areyn, Stormwind City",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Rallic Finn": {
+      "zone": "Elwynn Forest",
+      "mapHint": 1429,
+      "x": 83.28,
+      "y": 66.09,
+      "label": "Rallic Finn, Elwynn Forest",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Thanthaldis Snowgleam": {
+      "zone": "Alterac Mountains",
+      "mapHint": 1416,
+      "x": 39.45,
+      "y": 81.65,
+      "label": "Thanthaldis Snowgleam, Alterac Mountains",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Wenna Silkbeard": {
+      "zone": "Wetlands",
+      "mapHint": 1437,
+      "x": 25.61,
+      "y": 25.8,
+      "label": "Wenna Silkbeard, Wetlands",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "William MacGregor": {
+      "zone": "Westfall",
+      "mapHint": 1436,
+      "x": 57.71,
+      "y": 53.94,
+      "label": "William MacGregor, Westfall",
+      "conf": "classic",
+      "via": "QuestieDB"
     }
   }
 }

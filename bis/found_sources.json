@@ -1,16 +1,136 @@
 {
  "items": {
+  "870": {
+   "src": "Drops from Shore Crawler (Clue)",
+   "via": "QuestieDB"
+  },
+  "1447": {
+   "src": "Drops from Hydromancer Velratha in Zul'Farrak (Clue)",
+   "via": "QuestieDB"
+  },
+  "1981": {
+   "src": "Drops from Cinderscale Warrior (Clue)",
+   "via": "QuestieDB"
+  },
   "18316": {
    "src": "Drops from Pusillin in Dire Maul: East (Clue)",
    "via": "ForeverDungeonJournal"
+  },
+  "19024": {
+   "src": "Quest reward: Arena Grandmaster, level 55 (Clue)",
+   "via": "QuestieDB"
   },
   "221344": {
    "src": "Quest reward: A Lesson in Literacy, level 45 (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "227170": {
+   "src": "Sold by Lady Palanseer (Clue)",
+   "via": "QuestieDB"
+  },
+  "227187": {
+   "src": "Sold by Lady Palanseer (Clue)",
+   "via": "QuestieDB"
+  },
+  "227198": {
+   "src": "Sold by Captain Dirgehammer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231569": {
+   "src": "Sold by Lady Palanseer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231578": {
+   "src": "Sold by Captain Dirgehammer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231608": {
+   "src": "Sold by Captain Dirgehammer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231609": {
+   "src": "Sold by Captain Dirgehammer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231617": {
+   "src": "Sold by Captain Dirgehammer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231623": {
+   "src": "Sold by Captain Dirgehammer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231650": {
+   "src": "Sold by Captain Dirgehammer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231656": {
+   "src": "Sold by Lady Palanseer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231661": {
+   "src": "Sold by Lady Palanseer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231676": {
+   "src": "Sold by Lady Palanseer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231694": {
+   "src": "Sold by Captain Dirgehammer (Clue)",
+   "via": "QuestieDB"
+  },
+  "231700": {
+   "src": "Sold by Captain Dirgehammer (Clue)",
+   "via": "QuestieDB"
+  },
+  "234570": {
+   "src": "Sold by Captain O'Neal (Clue)",
+   "via": "QuestieDB"
+  },
+  "234576": {
+   "src": "Sold by Captain O'Neal (Clue)",
+   "via": "QuestieDB"
+  },
+  "235473": {
+   "src": "Sold by Captain O'Neal (Clue)",
+   "via": "QuestieDB"
+  },
+  "235479": {
+   "src": "Sold by Captain O'Neal (Clue)",
+   "via": "QuestieDB"
+  },
+  "235480": {
+   "src": "Sold by Captain O'Neal (Clue)",
+   "via": "QuestieDB"
+  },
+  "235481": {
+   "src": "Sold by Captain O'Neal (Clue)",
+   "via": "QuestieDB"
+  },
+  "263016": {
+   "src": "Drops from Tel'daeor the Stormspeaker (Clue)",
+   "via": "QuestieDB"
+  },
+  "263017": {
+   "src": "Drops from Tel'daeor the Stormspeaker (Clue)",
+   "via": "QuestieDB"
+  },
   "263401": {
    "src": "Quest reward: Avenged Tenfold (a choice) (Seen in Forever)",
    "via": "our own recordings"
+  },
+  "263935": {
+   "src": "Drops from Den'dralass (Clue)",
+   "via": "QuestieDB"
+  },
+  "263936": {
+   "src": "Drops from Den'dralass (Clue)",
+   "via": "QuestieDB"
+  },
+  "263937": {
+   "src": "Drops from Den'dralass (Clue)",
+   "via": "QuestieDB"
   },
   "270023": {
    "src": "Quest reward: Deathstalkers in Shadowfang (a choice), level 25 (Clue)",
@@ -56,6 +176,10 @@
    "src": "Quest reward: Divino-matic Rod (a choice) (Seen in Forever)",
    "via": "our own recordings"
   },
+  "270115": {
+   "src": "Quest reward: Jammal'an the Prophet, level 53 (Clue)",
+   "via": "QuestieDB"
+  },
   "270228": {
    "src": "Drops from Plunder in The Hall of Thanes (Seen in Forever)",
    "via": "our own recordings"
@@ -80,9 +204,45 @@
    "src": "Quest reward: Fallen in the Fen (a choice) (Seen in Forever)",
    "via": "our own recordings"
   },
+  "271800": {
+   "src": "Quest reward: Khan Jehn, level 42 (Clue)",
+   "via": "QuestieDB"
+  },
+  "271802": {
+   "src": "Quest reward: Khan Jehn, level 42 (Clue)",
+   "via": "QuestieDB"
+  },
   "272186": {
    "src": "Quest reward: Rot and Regret (a choice), level 49 (Clue)",
    "via": "ForeverDungeonJournal"
+  },
+  "272393": {
+   "src": "Sold by Pix Xizzix (Clue)",
+   "via": "QuestieDB"
+  },
+  "272394": {
+   "src": "Sold by Pix Xizzix (Clue)",
+   "via": "QuestieDB"
+  },
+  "272395": {
+   "src": "Sold by Pix Xizzix (Clue)",
+   "via": "QuestieDB"
+  },
+  "272589": {
+   "src": "Sold by Friz Frazzlespark (Forever client)",
+   "via": "the game's vendor table"
+  },
+  "272721": {
+   "src": "Sold by Nordun Steadysight in Northshire Valley -> Elwynn Forest (Forever client)",
+   "via": "the game's vendor table"
+  },
+  "272722": {
+   "src": "Sold by Nordun Steadysight in Northshire Valley -> Elwynn Forest (Forever client)",
+   "via": "the game's vendor table"
+  },
+  "272725": {
+   "src": "Sold by Nordun Steadysight in Northshire Valley -> Elwynn Forest (Forever client)",
+   "via": "the game's vendor table"
   },
   "273088": {
    "src": "Drops from Lady Anacondra in Wailing Caverns (Clue)",
@@ -91,6 +251,30 @@
   "273297": {
    "src": "Drops from Gilnid in The Deadmines (Clue)",
    "via": "ForeverDungeonJournal"
+  },
+  "273327": {
+   "src": "Sold by [DNT] Reward Vendor in Alterac Mountains (Forever client)",
+   "via": "the game's vendor table"
+  },
+  "273328": {
+   "src": "Sold by [DNT] Reward Vendor in Alterac Mountains (Forever client)",
+   "via": "the game's vendor table"
+  },
+  "273330": {
+   "src": "Sold by [DNT] Reward Vendor in Alterac Mountains (Forever client)",
+   "via": "the game's vendor table"
+  },
+  "273331": {
+   "src": "Sold by [DNT] Reward Vendor in Alterac Mountains (Forever client)",
+   "via": "the game's vendor table"
+  },
+  "273332": {
+   "src": "Sold by [DNT] Reward Vendor in Alterac Mountains (Forever client)",
+   "via": "the game's vendor table"
+  },
+  "273334": {
+   "src": "Sold by [DNT] Reward Vendor in Alterac Mountains (Forever client)",
+   "via": "the game's vendor table"
   },
   "273646": {
    "src": "Drops from Fenrus the Devourer in Shadowfang Keep (Clue)",
@@ -152,12 +336,20 @@
    "src": "Drops from Amnennar the Coldbringer in Razorfen Downs (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "274419": {
+   "src": "Sold by Dala Fairmaw (Clue)",
+   "via": "QuestieDB"
+  },
   "274425": {
    "src": "Drops from Obsidian Sentinel in Uldaman (Clue)",
    "via": "ForeverDungeonJournal"
   },
   "274428": {
    "src": "Drops from Obsidian Sentinel in Uldaman (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "274431": {
+   "src": "Drops from Ancient Stone Keeper in Uldaman (Clue)",
    "via": "ForeverDungeonJournal"
   },
   "274432": {
@@ -192,6 +384,10 @@
    "src": "Drops from Captain Dreadrise in The Drowned City (Seen in Forever)",
    "via": "our own recordings"
   },
+  "274607": {
+   "src": "Drops from Deathless Marrow (Clue)",
+   "via": "QuestieDB"
+  },
   "274609": {
    "src": "Drops from Min'loth the Serpent in The Drowned City (Clue)",
    "via": "AtlasLoot Continued"
@@ -207,6 +403,10 @@
   "274613": {
    "src": "Drops from Var'Taka in The Drowned City (Clue)",
    "via": "AtlasLoot Continued"
+  },
+  "274652": {
+   "src": "Drops from Hydromancer Velratha in Zul'Farrak (Clue)",
+   "via": "ForeverDungeonJournal"
   },
   "274654": {
    "src": "Drops from Ruuzlu in Zul'Farrak (Clue)",
@@ -227,6 +427,14 @@
   "274659": {
    "src": "Drops from Sandarr Dunereaver in Zul'Farrak (Clue)",
    "via": "ForeverDungeonJournal"
+  },
+  "274754": {
+   "src": "Sold by Rettrick (Clue)",
+   "via": "QuestieDB"
+  },
+  "274757": {
+   "src": "Sold by Zippie Fizzbolt (Clue)",
+   "via": "QuestieDB"
   },
   "274919": {
    "src": "Quest reward: Saving Sunnyglade (a choice) (Seen in Forever)",
@@ -308,6 +516,10 @@
    "src": "Quest reward: The Rog'mar Situation (Seen in Forever)",
    "via": "our own recordings"
   },
+  "275864": {
+   "src": "Drops from Lord Vyletongue in Maraudon (Clue)",
+   "via": "QuestieDB"
+  },
   "276399": {
    "src": "Drops from Malor the Zealous in Stratholme: Living (Clue)",
    "via": "ForeverDungeonJournal"
@@ -356,6 +568,30 @@
    "src": "Drops from Blazeroar in Alcaz Prison (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "276877": {
+   "src": "Drops from Plugger Spazzring (Clue)",
+   "via": "QuestieDB"
+  },
+  "276884": {
+   "src": "Drops from Verek (Clue)",
+   "via": "QuestieDB"
+  },
+  "277081": {
+   "src": "Sold by Elaria Anvilwind (Clue)",
+   "via": "QuestieDB"
+  },
+  "277203": {
+   "src": "Quest reward: Friend of the Library, level 20 (Clue)",
+   "via": "QuestieDB"
+  },
+  "277204": {
+   "src": "Quest reward: Friend of the Library, level 20 (Clue)",
+   "via": "QuestieDB"
+  },
+  "277205": {
+   "src": "Quest reward: Return to Delgren, level 30 (Clue)",
+   "via": "QuestieDB"
+  },
   "277206": {
    "src": "Quest reward: Strahnbrad Mystery (Seen in Forever)",
    "via": "our own recordings"
@@ -364,9 +600,25 @@
    "src": "Quest reward: The Horn of Xelthos, level 23 (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "277213": {
+   "src": "Drops from Dro'zem the Blasphemous (Clue)",
+   "via": "QuestieDB"
+  },
   "277246": {
    "src": "Quest reward: The Eye of Bhossca, level 35 (Clue)",
    "via": "ForeverDungeonJournal"
+  },
+  "277254": {
+   "src": "Quest reward: Greater Friend of the Library, level 45 (Clue)",
+   "via": "QuestieDB"
+  },
+  "277258": {
+   "src": "Quest reward: Greater Friend of the Library, level 45 (Clue)",
+   "via": "QuestieDB"
+  },
+  "278567": {
+   "src": "Quest reward: Ground to Keep, level 39 (Clue)",
+   "via": "QuestieDB"
   },
   "279480": {
    "src": "Quest reward: Eye of Mugg (a choice) (Seen in Forever)",
@@ -416,6 +668,18 @@
    "src": "Quest reward: The Only Good Brinescale... (a choice), level 38 (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "279902": {
+   "src": "Quest reward: Essence of Seeping Slimes, level 60 (Clue)",
+   "via": "QuestieDB"
+  },
+  "279908": {
+   "src": "Quest reward: Mapping the Way Forward, level 60 (Clue)",
+   "via": "QuestieDB"
+  },
+  "279910": {
+   "src": "Quest reward: Mapping the Way Forward, level 60 (Clue)",
+   "via": "QuestieDB"
+  },
   "280010": {
    "src": "Drops from Titanosaur in Shaper's Terrace (Clue)",
    "via": "ForeverDungeonJournal"
@@ -448,9 +712,281 @@
    "src": "Drops from Nanaya in Shaper's Terrace (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "280056": {
+   "src": "Drops from Impaan the Imprisoner in Blackmaw Hold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280060": {
+   "src": "Drops from Bonesnout the Unbroken in Blackmaw Hold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "280065": {
+   "src": "Drops from Blackmaw Behemoth in Blackmaw Hold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
   "280066": {
    "src": "Drops from Blackmaw Behemoth in Blackmaw Hold (Clue)",
-   "via": "AtlasLoot Continued"
+   "via": "ForeverDungeonJournal"
+  },
+  "280070": {
+   "src": "Drops from Elder Shaman Bloodmane in Blackmaw Hold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "281257": {
+   "src": "Quest reward: Twisting the Knife, level 16 (Clue)",
+   "via": "QuestieDB"
+  },
+  "281315": {
+   "src": "Quest reward: Arugal's Folly, level 16 (Clue)",
+   "via": "QuestieDB"
+  },
+  "281634": {
+   "src": "Quest reward: Greater Friend of the Library, level 35 (Clue)",
+   "via": "QuestieDB"
+  },
+  "281635": {
+   "src": "Quest reward: Greater Friend of the Library, level 35 (Clue)",
+   "via": "QuestieDB"
+  },
+  "281648": {
+   "src": "Drops from Gul'gash (Clue)",
+   "via": "QuestieDB"
+  },
+  "281650": {
+   "src": "Drops from Scaldaron (Clue)",
+   "via": "QuestieDB"
+  },
+  "281657": {
+   "src": "Drops from Mad Marrius (Clue)",
+   "via": "QuestieDB"
+  },
+  "281926": {
+   "src": "Drops from Seeker Aqualon (Clue)",
+   "via": "QuestieDB"
+  },
+  "282008": {
+   "src": "Drops from Lord Captain Wyrmak (Clue)",
+   "via": "QuestieDB"
+  },
+  "282014": {
+   "src": "Drops from Mojo the Twisted (Clue)",
+   "via": "QuestieDB"
+  },
+  "282019": {
+   "src": "Drops from Akubar the Seer (Clue)",
+   "via": "QuestieDB"
+  },
+  "282049": {
+   "src": "Drops from Deathmaw (Clue)",
+   "via": "QuestieDB"
+  },
+  "282094": {
+   "src": "Drops from Slave Master Blackheart (Clue)",
+   "via": "QuestieDB"
+  },
+  "282557": {
+   "src": "Drops from Broken Tooth (Clue)",
+   "via": "QuestieDB"
+  },
+  "282639": {
+   "src": "Drops from Emogg the Crusher (Clue)",
+   "via": "QuestieDB"
+  },
+  "282642": {
+   "src": "Drops from Carrodin (Clue)",
+   "via": "QuestieDB"
+  },
+  "282653": {
+   "src": "Drops from Sludginn (Clue)",
+   "via": "QuestieDB"
+  },
+  "282658": {
+   "src": "Drops from Dragonmaw Battlemaster (Clue)",
+   "via": "QuestieDB"
+  },
+  "282705": {
+   "src": "Drops from Ruul Onestone (Clue)",
+   "via": "QuestieDB"
+  },
+  "282710": {
+   "src": "Drops from Tamra Stormpike (Clue)",
+   "via": "QuestieDB"
+  },
+  "282717": {
+   "src": "Drops from Big Samras (Clue)",
+   "via": "QuestieDB"
+  },
+  "283259": {
+   "src": "Drops from Old Vicejaw (Clue)",
+   "via": "QuestieDB"
+  },
+  "283361": {
+   "src": "Drops from Gorefang (Clue)",
+   "via": "QuestieDB"
+  },
+  "283473": {
+   "src": "Drops from Ressan the Needler (Clue)",
+   "via": "QuestieDB"
+  },
+  "283480": {
+   "src": "Drops from Sri'skulk (Clue)",
+   "via": "QuestieDB"
+  },
+  "283545": {
+   "src": "Drops from Razortalon (Clue)",
+   "via": "QuestieDB"
+  },
+  "284040": {
+   "src": "Drops from Old Cliff Jumper (Clue)",
+   "via": "QuestieDB"
+  },
+  "284043": {
+   "src": "Drops from The Reak (Clue)",
+   "via": "QuestieDB"
+  },
+  "284061": {
+   "src": "Drops from Retherokk the Berserker (Clue)",
+   "via": "QuestieDB"
+  },
+  "284173": {
+   "src": "Drops from Licillin (Clue)",
+   "via": "QuestieDB"
+  },
+  "284174": {
+   "src": "Drops from Shadowclaw (Clue)",
+   "via": "QuestieDB"
+  },
+  "284185": {
+   "src": "Drops from Flagglemurk the Cruel (Clue)",
+   "via": "QuestieDB"
+  },
+  "284187": {
+   "src": "Drops from Firecaller Radison (Clue)",
+   "via": "QuestieDB"
+  },
+  "284261": {
+   "src": "Drops from Azurous (Clue)",
+   "via": "QuestieDB"
+  },
+  "284320": {
+   "src": "Drops from Death Flayer (Clue)",
+   "via": "QuestieDB"
+  },
+  "284382": {
+   "src": "Drops from Vengeful Ancient (Clue)",
+   "via": "QuestieDB"
+  },
+  "284399": {
+   "src": "Drops from Sister Riven (Clue)",
+   "via": "QuestieDB"
+  },
+  "284400": {
+   "src": "Drops from Foreman Rigger (Clue)",
+   "via": "QuestieDB"
+  },
+  "284401": {
+   "src": "Drops from Sorrow Wing (Clue)",
+   "via": "QuestieDB"
+  },
+  "284403": {
+   "src": "Drops from Sentinel Amarassan (Clue)",
+   "via": "QuestieDB"
+  },
+  "284459": {
+   "src": "Drops from Brother Ravenoak (Clue)",
+   "via": "QuestieDB"
+  },
+  "284668": {
+   "src": "Drops from Apothecary Falthis (Clue)",
+   "via": "QuestieDB"
+  },
+  "284704": {
+   "src": "Drops from Lady Vespia (Clue)",
+   "via": "QuestieDB"
+  },
+  "284708": {
+   "src": "Drops from Kaskk (Clue)",
+   "via": "QuestieDB"
+  },
+  "284712": {
+   "src": "Drops from Giggler (Clue)",
+   "via": "QuestieDB"
+  },
+  "284847": {
+   "src": "Drops from Antilus the Soarer (Clue)",
+   "via": "QuestieDB"
+  },
+  "284866": {
+   "src": "Drops from Arash-ethis (Clue)",
+   "via": "QuestieDB"
+  },
+  "285047": {
+   "src": "Drops from Bloodroar the Stalker (Clue)",
+   "via": "QuestieDB"
+  },
+  "285063": {
+   "src": "Drops from Brimgore (Clue)",
+   "via": "QuestieDB"
+  },
+  "285093": {
+   "src": "Drops from Ripscale (Clue)",
+   "via": "QuestieDB"
+  },
+  "285103": {
+   "src": "Drops from Hayoc (Clue)",
+   "via": "QuestieDB"
+  },
+  "285190": {
+   "src": "Drops from Heartrazor (Clue)",
+   "via": "QuestieDB"
+  },
+  "285192": {
+   "src": "Drops from Gibblesnik (Clue)",
+   "via": "QuestieDB"
+  },
+  "285212": {
+   "src": "Drops from Harb Foulmountain (Clue)",
+   "via": "QuestieDB"
+  },
+  "285228": {
+   "src": "Drops from Mystmane (Clue)",
+   "via": "QuestieDB"
+  },
+  "285329": {
+   "src": "Drops from Takk the Leaper (Clue)",
+   "via": "QuestieDB"
+  },
+  "285331": {
+   "src": "Drops from Humar the Pridelord (Clue)",
+   "via": "QuestieDB"
+  },
+  "285339": {
+   "src": "Drops from Rocklance (Clue)",
+   "via": "QuestieDB"
+  },
+  "285344": {
+   "src": "Drops from Captain Gerogg Hammertoe (Clue)",
+   "via": "QuestieDB"
+  },
+  "285345": {
+   "src": "Drops from Sister Rathtalon (Clue)",
+   "via": "QuestieDB"
+  },
+  "285346": {
+   "src": "Drops from Thora Feathermoon (Clue)",
+   "via": "QuestieDB"
+  },
+  "285347": {
+   "src": "Drops from Aean Swiftriver (Clue)",
+   "via": "QuestieDB"
+  },
+  "285348": {
+   "src": "Drops from Hannah Bladeleaf (Clue)",
+   "via": "QuestieDB"
+  },
+  "286427": {
+   "src": "Quest reward: Exploring the Alliance, level 13 (Clue)",
+   "via": "QuestieDB"
   },
   "286428": {
    "src": "Drops from Bossman Toof in Krol'dok Stronghold (Clue)",
@@ -459,6 +995,38 @@
   "286429": {
    "src": "Drops from Bossman Toof in Krol'dok Stronghold (Clue)",
    "via": "ForeverDungeonJournal"
+  },
+  "286533": {
+   "src": "Drops from Dishu (Clue)",
+   "via": "QuestieDB"
+  },
+  "286535": {
+   "src": "Drops from Sludge Beast (Clue)",
+   "via": "QuestieDB"
+  },
+  "286536": {
+   "src": "Drops from Snort the Heckler (Clue)",
+   "via": "QuestieDB"
+  },
+  "286540": {
+   "src": "Drops from Azzere the Skyblade (Clue)",
+   "via": "QuestieDB"
+  },
+  "286554": {
+   "src": "Drops from Warleader Krazzilak (Clue)",
+   "via": "QuestieDB"
+  },
+  "286556": {
+   "src": "Drops from Soul of Tanaris (Clue)",
+   "via": "QuestieDB"
+  },
+  "286569": {
+   "src": "Drops from Greater Firebird (Clue)",
+   "via": "QuestieDB"
+  },
+  "286572": {
+   "src": "Drops from Cyclok the Mad (Clue)",
+   "via": "QuestieDB"
   },
   "286646": {
    "src": "Drops from Gill in The Drowned City (Clue)",
@@ -476,6 +1044,22 @@
    "src": "Drops from Umbra in The Drowned City (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "286982": {
+   "src": "Drops from Trash Drops in Excavation Site: Wetlands (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286983": {
+   "src": "Drops from Trash Drops in Excavation Site: Wetlands (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286984": {
+   "src": "Drops from Trash Drops in Excavation Site: Wetlands (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286985": {
+   "src": "Drops from Trash Drops in Excavation Site: Wetlands (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
   "286988": {
    "src": "Drops from Trash Drops in City of Dalaran (Clue)",
    "via": "ForeverDungeonJournal"
@@ -484,7 +1068,31 @@
    "src": "Drops from Trash Drops in City of Dalaran (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "286990": {
+   "src": "Drops from Trash Drops in City of Dalaran (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286991": {
+   "src": "Drops from Trash Drops in City of Dalaran (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286992": {
+   "src": "Drops from Trash Drops in City of Dalaran (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286993": {
+   "src": "Drops from Trash Drops in City of Dalaran (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286994": {
+   "src": "Drops from Trash Drops in City of Dalaran (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
   "286995": {
+   "src": "Drops from Trash Drops in City of Dalaran (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286996": {
    "src": "Drops from Trash Drops in City of Dalaran (Clue)",
    "via": "ForeverDungeonJournal"
   },
@@ -529,11 +1137,19 @@
    "via": "ForeverDungeonJournal"
   },
   "287020": {
-   "src": "Drops from trash in Alcaz Prison (Clue)",
-   "via": "AtlasLoot Continued"
+   "src": "Drops from Trash Drops in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287036": {
+   "src": "Drops from Trash Drops in Blackmaw Hold (Clue)",
+   "via": "ForeverDungeonJournal"
   },
   "287037": {
    "src": "Drops from Trash Drops in Shaper's Terrace (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287068": {
+   "src": "Drops from Trash Drops in Excavation Site: Wetlands (Clue)",
    "via": "ForeverDungeonJournal"
   }
  }

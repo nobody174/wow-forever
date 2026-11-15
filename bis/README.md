@@ -20,4 +20,10 @@ own level until you step it on the tab.
    run it before `build_bis.py`. Credits: ForeverDungeonJournal (loot lists), ForeverDB, Wowhead, and the players whose recordings are merged.
 4. `python addon/tests/run_tests.py`, look at `bis.html` locally, bump `UPDATED` in `build_bis.py`.
 
+3c. Offline sources (2026-11-15): `python bis/tools/questiedb_decode.py` decodes the installed QuestieDB (Forever flavor; its data sits in the .toc as CBOR) into
+   `bis/own/cache/questiedb_live.json`; `python bis/tools/questie_places.py --write` adds vendor and quest-giver spots to `places.json` (and `--dungeons`
+   cross-checks the entrances against QuestieDB's own list); `python bis/tools/dj_entrances.py --write` adds dungeon entrances from ForeverDungeonJournal
+   (coordinates only). `found_sources.py` also reads QuestieDB's item table (GPL v3) and ForeverMyBis's items (MIT) for picks nobody else sources.
+   Run order: decode, `found_sources.py`, `questie_places.py --write`, `build_bis.py`. Credits: Questie / QuestieDB, ForeverDungeonJournal, ForeverMyBis.
+
 Credit ForeverDB (picks, weights) and Wowhead (tooltips, item pages) wherever the data shows; both lines are on the page.

@@ -2888,6 +2888,132 @@
       "label": "Wrongly Blamed, Justly Corrected, from Grunt Logmar (The Barrens)",
       "conf": "classic",
       "via": "QuestieDB"
+    },
+    "Elaria Anvilwind": {
+      "zone": "Zephras Isle",
+      "mapHint": 2521,
+      "x": 59.5,
+      "y": 76.1,
+      "label": "Elaria Anvilwind, Zephras Isle",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Rettrick": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 51.7,
+      "y": 28.3,
+      "label": "Rettrick, Tanaris",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Zippie Fizzbolt": {
+      "zone": "Winterspring",
+      "mapHint": 1452,
+      "x": 61.4,
+      "y": 38.2,
+      "label": "Zippie Fizzbolt, Winterspring",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Arena Grandmaster": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 29.6,
+      "y": 47.4,
+      "label": "Arena Grandmaster, from Short John Mithril (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Essence of Seeping Slimes": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 47.5,
+      "y": 73.3,
+      "label": "Essence of Seeping Slimes, from Chemist Fuely (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Exploring the Alliance": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 80.2,
+      "y": 38.4,
+      "label": "Exploring the Alliance, from Highlord Bolvar Fordragon (Stormwind City)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Ground to Keep": {
+      "zone": "Arathi Highlands",
+      "mapHint": 1417,
+      "x": 27.0,
+      "y": 57.2,
+      "label": "Ground to Keep, from Groundskeeper Lomar (Arathi Highlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Mapping the Way Forward": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 71.5,
+      "y": 15.7,
+      "label": "Mapping the Way Forward, from Curator Thorius (Ironforge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Twisting the Knife": {
+      "zone": "Loch Modan",
+      "mapHint": 1432,
+      "x": 81.8,
+      "y": 61.7,
+      "label": "Twisting the Knife, from Marek Ironheart (Loch Modan)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Captain O'Neal": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 74.3,
+      "y": 67.6,
+      "label": "Captain O'Neal, Stormwind City",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Dala Fairmaw": {
+      "zone": "Mount Hyjal",
+      "mapHint": 2482,
+      "x": 21.1,
+      "y": 78.5,
+      "label": "Dala Fairmaw, Mount Hyjal",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Friz Frazzlespark": {
+      "zone": "Riverglades",
+      "mapHint": 2548,
+      "x": 77.1,
+      "y": 52.9,
+      "label": "Friz Frazzlespark, Riverglades",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Nordun Steadysight": {
+      "zone": "Northshire Valley -> Elwynn Forest",
+      "mapHint": 1429,
+      "x": 42.1,
+      "y": 66.6,
+      "label": "Nordun Steadysight, Northshire Valley -> Elwynn Forest",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "[DNT] Reward Vendor": {
+      "zone": "Alterac Mountains",
+      "mapHint": 1416,
+      "x": 28.0,
+      "y": 80.4,
+      "label": "[DNT] Reward Vendor, Alterac Mountains",
+      "conf": "classic",
+      "via": "QuestieDB"
     }
   }
 }

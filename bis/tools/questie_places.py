@@ -18,6 +18,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 BIS = os.path.normpath(os.path.join(HERE, ".."))
 ROOT = os.path.normpath(os.path.join(BIS, ".."))
 LIVE = os.path.join(BIS, "own", "cache", "questiedb_live.json")
+VSPOTS = os.path.join(BIS, "own", "cache", "vendor_spots.json")
 QDIR = r"D:\World of Warcraft\_forever_\Interface\AddOns\QuestieDB\support\Forever\Zones"
 VENDOR = 4          # npcFlags bit (mangos UNIT_NPC_FLAG_VENDOR)
 SPREAD = 4.0        # an NPC that wanders within this many map percent counts as one spot
@@ -102,6 +103,13 @@ def main():
             for a, c, mapid, zone in spots(rec, areas):
                 if want[name] <= {""} or any(zone.lower() == z.lower() or z.lower() in zone.lower() for z in want[name]):
                     fits.append((npc_id, a, c, mapid, zone))
+        if not fits and os.path.exists(VSPOTS):
+            # the game's own vendor table (collectable_vendors.py): creatures QuestieDB has no spawn for
+            for v in json.load(open(VSPOTS, encoding="utf-8"))["vendors"].values():
+                if v["name"] == name and len(v["spots"]) == 1 and v["spots"][0][3]:
+                    ui, x, y, zone = v["spots"][0]
+                    if want[name] <= {""} or any(z.lower() in zone.lower() for z in want[name]):
+                        fits.append((0, 0, (x, y), ui, zone))
         if len({(f[3], f[2]) for f in fits}) == 1:
             npc_id, a, c, mapid, zone = fits[0]
             places["places"][key] = {"zone": zone, "mapHint": mapid, "x": c[0], "y": c[1], "label": name + ", " + zone,

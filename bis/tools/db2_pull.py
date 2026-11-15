@@ -25,6 +25,7 @@ TABLES = [
     "ItemEffect", "ItemXItemEffect",
     "ItemSet", "ItemSetSpell",
     # crafting (M2): which spell makes which item, with which reagents, at what skill
+    "CollectableSourceVendorSparse", "CollectableSourceInfo", "UiMapAssignment", "AreaPOI",
     "SkillLine", "SkillLineAbility", "SpellName", "SpellEffect", "SpellReagents", "Map", "Faction",
 ]
 

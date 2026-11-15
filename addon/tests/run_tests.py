@@ -3823,7 +3823,9 @@ def test_biz(templates=True):
     check(not BiZ.Passes(legs) and lua.eval("R2FCharDB.biz.types.quest") is False, "%s: quest filter off hides it (saved)" % tag)
     BiZ.SetTypeOn("quest", True)
     check(lua.eval("R2FCharDB.biz.types.quest") is None, "%s: back on clears the saved flag" % tag)
-    unk = lua.eval("R2F.BiZData.specs['hunter/beast-mastery'].slots[12].best")
+    # any pick whose source is still unknown (more sources get found over time, so no fixed slot)
+    unk = lua.eval("(function() for _, sp in pairs(R2F.BiZData.specs) do for _, sl in ipairs(sp.slots) do "
+                   "if sl.best and sl.best.type == 'unknown' then return sl.best end end end end)()")
     check(unk.type == "unknown" and BiZ.Passes(unk), "%s: unknown source shows by default" % tag)
     BiZ.SetKnownOnly(True)
     check(not BiZ.Passes(unk), "%s: Known sources hides it" % tag)

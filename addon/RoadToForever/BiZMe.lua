@@ -38,8 +38,123 @@ function M.PickScore(best, row)
   return nil
 end
 
+-- ---------------------------------------------------------------------------
+-- "Viewing as": another character (an alt, a friend you inspected). Profiles are account-wide:
+--   R2FDB.bizProfiles[name] = { class = "hunter", spec = "hunter/marksmanship", level = 38, faction = "alliance",
+--                               gear = { head = itemId, ... }, time = <seconds>, inspected = true }
+-- While one is viewed (R2FCharDB.biz.viewing = name) the worn-vs-BiZ comparison reads that character's gear.
+-- ---------------------------------------------------------------------------
+
+local function profiles()
+  local d = R2F.Library and R2F.Library.db
+  if not d then return {} end
+  d.bizProfiles = d.bizProfiles or {}
+  return d.bizProfiles
+end
+
+function M.Profiles()
+  local names = {}
+  for name in pairs(profiles()) do names[#names + 1] = name end
+  table.sort(names)
+  return names
+end
+
+function M.Viewing()
+  local c = R2F.Library and R2F.Library.cdb and R2F.Library.cdb.biz
+  local name = c and c.viewing
+  if name and profiles()[name] then return name, profiles()[name] end
+  return nil
+end
+
+-- View a saved character (nil = back to yourself). Sets the tab's class, spec and level to theirs.
+function M.View(name)
+  local c = R2F.Library.cdb.biz
+  local p = name and profiles()[name]
+  if not p then
+    c.viewing = nil
+    c.level = nil
+    c.class = nil
+    return
+  end
+  c.viewing = name
+  R2F.BiZ.SetClass(p.class)
+  if p.spec and R2F.BiZ.Spec(p.spec) then R2F.BiZ.SetSpec(p.spec) end
+  R2F.BiZ.SetLevel(p.level)
+end
+
+function M.Forget(name)
+  profiles()[name] = nil
+  if M.Viewing() == nil then M.View(nil) end
+end
+
+local SLOT_OF_INV = {}
+for key, inv in pairs(R2F.BiZ.INV_SLOT) do SLOT_OF_INV[inv] = key end
+
+-- Save a profile from gear you read: `gear` = { [inventory slot id] = item link }.
+function M.SaveProfile(name, info, gear)
+  local ids = {}
+  for inv, link in pairs(gear) do
+    local key = SLOT_OF_INV[inv]
+    local id = type(link) == "string" and tonumber(link:match("item:(%d+)"))
+    if key and id then ids[key] = id end
+  end
+  local old = profiles()[name]
+  profiles()[name] = { class = info.class, spec = (old and old.spec) or info.spec, level = info.level, faction = info.faction,
+                       gear = ids, time = time and time() or 0, inspected = info.inspected or false }
+  return profiles()[name]
+end
+
+-- Remember the spec chosen for the viewed character.
+function M.NoteSpec(specId)
+  local _, p = M.Viewing()
+  if p then p.spec = specId end
+end
+
+local inspectFrame, pending
+-- Inspect your target (a player within range, out of combat) and save them as a profile;
+-- `done(name)` or `done(nil, reason)` is called after.
+function M.Inspect(done)
+  if R2F.InCombat and R2F.InCombat() then return done(nil, "combat") end
+  if not (UnitExists and UnitExists("target") and UnitIsPlayer and UnitIsPlayer("target")) then return done(nil, "target") end
+  if not (CanInspect and CanInspect("target") and NotifyInspect) then return done(nil, "range") end
+  local name = GetUnitName and GetUnitName("target", true) or UnitName("target")
+  local token = select(2, UnitClass("target"))
+  local classKey = R2F.BiZ.ClassKeyOf and R2F.BiZ.ClassKeyOf(token)
+  if not classKey then return done(nil, "class") end
+  pending = { name = name, class = classKey, level = UnitLevel("target"),
+              faction = ((UnitFactionGroup and UnitFactionGroup("target")) or "Alliance"):lower(), done = done }
+  if not inspectFrame then
+    inspectFrame = CreateFrame("Frame")
+    inspectFrame:SetScript("OnEvent", function(self)
+      self:UnregisterEvent("INSPECT_READY")
+      local p = pending
+      pending = nil
+      if not p then return end
+      local gear = {}
+      for inv = 1, 19 do
+        gear[inv] = GetInventoryItemLink and GetInventoryItemLink("target", inv) or nil
+      end
+      if ClearInspectPlayer then ClearInspectPlayer() end
+      p.inspected = true
+      M.SaveProfile(p.name, p, gear)
+      p.done(p.name)
+    end)
+  end
+  inspectFrame:RegisterEvent("INSPECT_READY")
+  NotifyInspect("target")
+end
+
 -- What you wear in a slot: score (0 = empty slot, false = the item is not loaded yet, nil = cannot score), link.
 function M.Worn(slotKey, specId)
+  local _, prof = M.Viewing()
+  if prof then
+    local id = prof.gear[slotKey]
+    if not id then return 0, nil end
+    local link = "item:" .. id
+    local sc = R2F.GearScore and R2F.GearScore.Score(link, specId)
+    if sc == nil then return false, link end
+    return sc, link
+  end
   local inv = R2F.BiZ.INV_SLOT[slotKey]
   local link = inv and GetInventoryItemLink and GetInventoryItemLink("player", inv)
   if type(link) ~= "string" then return 0, nil end
@@ -50,6 +165,13 @@ end
 
 -- Do you already have the item (worn, bags or bank)?
 function M.Owns(id)
+  local _, prof = M.Viewing()
+  if prof then
+    for _, v in pairs(prof.gear) do
+      if v == id then return true end
+    end
+    return false
+  end
   if GetItemCount and (GetItemCount(id, true) or 0) > 0 then return true end
   for _, inv in pairs(R2F.BiZ.INV_SLOT) do
     local link = GetInventoryItemLink and GetInventoryItemLink("player", inv)
@@ -129,7 +251,9 @@ end
 function M.Upgrades(specId, lvl, ctx)
   ctx = ctx or {}
   ctx.level = ctx.level or lvl
-  ctx.faction = ctx.faction or ((UnitFactionGroup and UnitFactionGroup("player")) or "Alliance"):lower()
+  local _, viewed = M.Viewing()
+  local mine = ((UnitFactionGroup and UnitFactionGroup("player")) or "Alliance"):lower()
+  ctx.faction = ctx.faction or (viewed and viewed.faction) or mine
   local sp = data().specs[specId]
   local out, blocked = {}, {}
   if not sp then return out, blocked end
@@ -177,4 +301,29 @@ function M.Upgrades(specId, lvl, ctx)
     return a.slot < b.slot
   end)
   return out, blocked
+end
+
+-- The line on any item's tooltip: where it ranks for your spec at the level you look at
+-- ("Mr.BiZ: Bizzer for Beast Mastery (Head), on the list for 12 more levels").
+-- Returns text, r, g, b (nil when the item is on none of the spec's lists for that level).
+function M.RankLine(id, specId, lvl)
+  local BiZ = R2F.BiZ
+  specId = specId or BiZ.SpecId()
+  lvl = lvl or BiZ.Level()
+  local sp = specId and data().specs[specId]
+  local L = R2F.L
+  if not sp then return nil end
+  for i, sl in ipairs(BiZ.SlotsAt(sp, lvl)) do
+    if sl.best then
+      local picks = { sl.best }
+      for _, n in ipairs(sl.next or {}) do picks[#picks + 1] = n end
+      for rank, row in ipairs(picks) do
+        if row.id == id then
+          local left = M.Span(sp, i, id, lvl, false)
+          return L.BIZ_TIP_GAME:format(BiZ.RankName(rank), sp.name, BiZ.SlotLabel(sl.slot), left), 0.4, 0.8, 1
+        end
+      end
+    end
+  end
+  return nil
 end

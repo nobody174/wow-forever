@@ -130,6 +130,8 @@ function BiZ.ClassName(key)
   return c and c.name or key
 end
 
+function BiZ.ClassKeyOf(token) return CLASS_TOKEN[token or ""] end
+
 function BiZ.PlayerClassKey()
   local token = R2F.playerClass or select(2, UnitClass("player"))
   return CLASS_TOKEN[token or ""] or "warrior"
@@ -199,6 +201,7 @@ function BiZ.SetSpec(specId)
     cdb().class = s.class
     cdb().spec[s.class] = specId
     if R2F.GearScore and R2F.GearScore.Soon then R2F.GearScore.Soon() end   -- upgrade markers follow the spec
+    if R2F.BiZMe and R2F.BiZMe.NoteSpec then R2F.BiZMe.NoteSpec(specId) end
   end
 end
 

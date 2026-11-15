@@ -3798,6 +3798,39 @@ def test_bizme():
     check(lua.eval("(select(2, %s.Reachable({ type = 'crafted', prof = 'Tailoring', skill = 200 }, { level = 40, faction = 'alliance' })))" % M) == "skill", "%s: a recipe above your skill is not" % tag)
     check(lua.eval("(select(2, %s.Reachable({ type = 'crafted', prof = 'Leatherworking', skill = 10 }, { level = 40, faction = 'alliance' })))" % M) == "profession", "%s: a profession you do not have is not" % tag)
     check(lua.eval("%s.Reachable({ type = 'crafted', prof = 'Tailoring', skill = 100 }, { level = 40, faction = 'alliance' })" % M), "%s: a recipe within your skill is" % tag)
+    # the tooltip rank line for any item
+    rid = lua.eval("R2F.BiZ.SlotsAt(R2F.BiZ.Spec('hunter/beast-mastery'), 30)[1].best.id")
+    line = lua.eval("(R2F.BiZMe.RankLine(%d, 'hunter/beast-mastery', 30))" % rid)
+    check(line is not None and "Bizzest" in line and "Beast Mastery" in line, "%s: an item's tooltip says where it ranks: %s" % (tag, line))
+    check(lua.eval("(R2F.BiZMe.RankLine(1, 'hunter/beast-mastery', 30))") is None, "%s: no line for an item on no list" % tag)
+
+    # viewing as another character: saved profile, gear read from it, inspect flow
+    lua.execute("R2F.BiZMe.SaveProfile('Friend', { class = 'mage', spec = 'mage/frost', level = 30, faction = 'alliance' }, "
+                "{ [1] = '|cff1eff00|Hitem:777::::::::|h[Hat]|h|r' })")
+    check(lua.eval("R2F.BiZMe.Profiles()[1]") == "Friend" and lua.eval("R2F.Library.db.bizProfiles.Friend.gear.head") == 777, "%s: a profile keeps the gear by slot" % tag)
+    lua.execute("R2F.BiZMe.View('Friend')")
+    check(lua.eval("R2F.BiZ.Class()") == "mage" and lua.eval("R2F.BiZ.SpecId()") == "mage/frost" and lua.eval("R2F.BiZ.Level()") == 30,
+          "%s: viewing as sets class, spec and level" % tag)
+    check(lua.eval("select(2, R2F.BiZMe.Worn('head', 'mage/frost'))") == "item:777", "%s: worn comes from the profile" % tag)
+    lua.execute("R2F.BiZMe.Forget('Friend')")
+    check(lua.eval("R2F.BiZMe.Viewing()") is None and lua.eval("R2FCharDB.biz.level") is None, "%s: forgetting goes back to you" % tag)
+    lua.execute("""
+      UnitExists = function() return true end UnitIsPlayer = function() return true end
+      CanInspect = function() return true end NotifyInspect = function() TEST.notified = true end
+      GetUnitName = function() return 'Pal-Realm' end UnitClass = function() return 'Warrior', 'WARRIOR' end
+      UnitLevel = function() return 41 end
+      TEST.worn = { [1] = '|Hitem:888::::|h[Helm]|h', [16] = '|Hitem:999::::|h[Axe]|h' }
+      TEST.inspected = nil
+      R2F.BiZMe.Inspect(function(name, why) TEST.inspected = name or ('fail ' .. tostring(why)) end)
+    """)
+    check(lua.eval("TEST.notified") is True and lua.eval("TEST.inspected") is None, "%s: inspect asks the game and waits" % tag)
+    T.fire("INSPECT_READY")
+    check(lua.eval("TEST.inspected") == "Pal-Realm", "%s: inspect saves the target: %s" % (tag, lua.eval("TEST.inspected")))
+    check(lua.eval("R2F.Library.db.bizProfiles['Pal-Realm'].gear.mainhand") == 999 and lua.eval("R2F.Library.db.bizProfiles['Pal-Realm'].class") == "warrior",
+          "%s: with their class and gear" % tag)
+    lua.execute("UnitExists = function() return false end R2F.BiZMe.Inspect(function(name, why) TEST.inspected = 'fail ' .. tostring(why) end)")
+    check(lua.eval("TEST.inspected") == "fail target", "%s: no target says so" % tag)
+
     # the Next upgrades view (BiZMe.lua) draws its list from the data for your level
     lua.execute("R2F.BiZ.SetSpec('hunter/beast-mastery') R2F.BiZ.SetLevel(30) R2F.BiZTab.Show('up')")
     check(font_text(lua, "^Get these now") is not None, "%s: Next upgrades view lists upgrades for an empty character" % tag)

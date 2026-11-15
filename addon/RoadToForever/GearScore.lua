@@ -241,6 +241,13 @@ local function onTooltip(tip)
     tip:AddLine(text, r, g, b)
     tip:Show()
   end
+  -- Where the item ranks on your spec's list for the level in the Mr.BiZ tab (BiZMe.lua).
+  local id = tonumber(link:match("item:(%d+)"))
+  local rtext, rr, rg, rb = id and R2F.BiZMe.RankLine(id, GS.SpecId())
+  if rtext then
+    tip:AddLine(rtext, rr, rg, rb)
+    tip:Show()
+  end
   -- The Mr.BiZ enchant for this slot (pink), like the enchant line on Sixty Upgrades' gear list.
   local etext, er, eg, eb = R2F.BiZ.EnchantTipLine(link, equipLoc(link), GS.SpecId())
   if etext then

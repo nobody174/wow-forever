@@ -485,6 +485,35 @@ local function classMenu()
   UI.ContextMenu(items)
 end
 
+-- "Viewing as": yourself, a saved character, or inspect your target to add one (BiZMe.lua).
+local function viewMenu()
+  local ME = R2F.BiZMe
+  local items = { { kind = "title", text = L.BIZ_VIEWING } }
+  items[#items + 1] = { kind = "check", text = L.BIZ_VIEW_ME, isChecked = function() return ME.Viewing() == nil end,
+    func = function() ME.View(nil); scroll:SetVerticalScroll(0); Tab.Refresh() end }
+  for _, name in ipairs(ME.Profiles()) do
+    items[#items + 1] = { kind = "check", text = name, isChecked = function() return ME.Viewing() == name end,
+      func = function() ME.View(name); scroll:SetVerticalScroll(0); Tab.Refresh() end }
+  end
+  items[#items + 1] = { kind = "divider" }
+  items[#items + 1] = { kind = "button", text = L.BIZ_INSPECT, func = function()
+    ME.Inspect(function(name, why)
+      if name then
+        ME.View(name)
+        R2F.Print(L.BIZ_INSPECT_DONE:format(name))
+      else
+        R2F.Print(L["BIZ_INSPECT_" .. (why or "range"):upper()] or L.BIZ_INSPECT_RANGE)
+      end
+      Tab.Refresh()
+    end)
+  end }
+  local cur = ME.Viewing()
+  if cur then
+    items[#items + 1] = { kind = "button", text = L.BIZ_FORGET:format(cur), func = function() ME.Forget(cur); Tab.Refresh() end }
+  end
+  UI.ContextMenu(items)
+end
+
 local ROLE_ORDER = { "tank", "dps", "healer" }
 local function specMenu()
   local items = {}
@@ -534,6 +563,7 @@ local function refresh()
   ui.wishBtn:SetEnabled(view ~= "wish")
   ui.upBtn:SetEnabled(view ~= "up")
   ui.upBtn:SetText(L.BIZ_VIEW_UP)
+  ui.viewBtn:SetText(L.BIZ_VIEWING_AS:format(R2F.BiZMe.Viewing() or L.BIZ_VIEW_ME))
   ui.wishBtn:SetText(L.BIZ_VIEW_WISH:format(BiZ.WishCount()))
   for t, box in pairs(typeBoxes) do box:SetChecked(BiZ.TypeOn(t)) end
   ui.known:SetChecked(BiZ.KnownOnly())
@@ -696,6 +726,8 @@ function Tab.Build(f)
   ui.wishBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -1)
   ui.upBtn = button(f, 150, L.BIZ_VIEW_UP, function() view = "up"; scroll:SetVerticalScroll(0); refresh() end)
   ui.upBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -17)
+  ui.viewBtn = dropButton(f, 190, viewMenu)
+  ui.viewBtn:SetPoint("LEFT", ui.upBtn, "RIGHT", 6, 0)
   ui.setBtn = button(f, 100, L.BIZ_VIEW_SET, function() view = "set"; refresh() end)
   ui.setBtn:SetPoint("RIGHT", ui.wishBtn, "LEFT", -2, 0)
 

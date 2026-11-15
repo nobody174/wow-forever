@@ -12,6 +12,7 @@
 - [ ] Add ledger rows to the wow-dev-support-folder findings-ledger (EJ functions seen in ForeverDungeonJournal; licences of the BiS addons; Forever trait-tree detection by posX gaps).
 
 ## Next: Phase 1 (after approval)
+- [x] Gap lists generated: docs/phase1-data-gaps.md (158 distinct level-60 picks: 44 unknown, 108 without place).
 - [ ] Places data: extend `bis/places.json` / sources pipeline; target the level-60 best picks first.
 - [ ] Unknown-source triage list (78 level-60 best picks) for the group's recorder.
 - [ ] Measure BiZData memory; decide on the load-on-demand split.

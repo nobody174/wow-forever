@@ -202,19 +202,21 @@ end
 function Diag.BuildEJDump(api, maxInstances)
   local out = { have = {}, instances = {}, lootIds = {} }
   for name, fn in pairs(api) do out.have[name] = type(fn) == "function" end
+  -- With no tier count (0 or nil) the walk still tries tiers 0-8, dungeons and raids, so an empty answer is a real answer.
   local tiers = { 0 }
   local nt = safe(api.GetNumTiers)
-  if type(nt) == "number" and nt > 0 then
-    tiers = {}
-    for t = 1, nt do tiers[#tiers + 1] = t end
-  end
-  out.tiers = nt
-  local total = 0
+  if type(nt) ~= "number" or nt < 1 then nt = 8 end
+  tiers = { 0 }
+  for t = 1, nt do tiers[#tiers + 1] = t end
+  out.tiers = safe(api.GetNumTiers)
+  local total, seen = 0, {}
   for _, tier in ipairs(tiers) do
-    if tier > 0 then safe(api.SelectTier, tier) end
+   if tier > 0 then safe(api.SelectTier, tier) end
+   for _, raid in ipairs({ false, true }) do
     for i = 1, maxInstances do
-      local id, name = safe(api.GetInstanceByIndex, i, false)
-      if not id then break end
+      local id, name = safe(api.GetInstanceByIndex, i, raid)
+      if not id or seen[id] then break end
+      seen[id] = true
       total = total + 1
       local rec = { tier = tier, id = id, name = name, encounters = 0, loot = 0 }
       if api.GetInstanceInfo then
@@ -241,14 +243,23 @@ function Diag.BuildEJDump(api, maxInstances)
       end
       out.instances[#out.instances + 1] = rec
     end
+   end
   end
   out.total = total
   return out
 end
 
-function Diag.EJ()
+function Diag.EJ(arg)
   if R2F.InCombat() then R2F.Print(L.DIAG_COMBAT) return end
   local G, CE = _G, _G.C_EncounterJournal or {}
+  -- "/r2f debug ej load" also loads Blizzard's own Encounter Journal addon first (what opening the journal does).
+  local AO = G.C_AddOns or {}
+  local loader = AO.LoadAddOn or G.LoadAddOn
+  local isLoaded = AO.IsAddOnLoaded or G.IsAddOnLoaded
+  if arg == "load" and loader and not (isLoaded and isLoaded("Blizzard_EncounterJournal")) then
+    pcall(loader, "Blizzard_EncounterJournal")
+  end
+  R2F.Print(L.DIAG_EJ_LOADED:format(tostring(isLoaded and isLoaded("Blizzard_EncounterJournal"))))
   local api = {
     GetNumTiers = G.EJ_GetNumTiers, SelectTier = G.EJ_SelectTier, GetInstanceByIndex = G.EJ_GetInstanceByIndex,
     GetInstanceInfo = G.EJ_GetInstanceInfo, SelectInstance = G.EJ_SelectInstance,
@@ -290,8 +301,25 @@ function Diag.Mem()
   local kb = _G.GetAddOnMemoryUsage("RoadToForever")
   local rows = R2F.BiZData and #R2F.BiZData.rows or 0
   R2F.Print(L.DIAG_MEM:format(tonumber(kb) or 0, rows))
+  -- What the Mr.BiZ data weighs: copy it, see how much the collector count grows, drop the copy.
+  local dataKb
+  if R2F.BiZData and _G.collectgarbage then
+    local function copy(t)
+      local c = {}
+      for k, v in pairs(t) do c[k] = type(v) == "table" and copy(v) or v end
+      return c
+    end
+    collectgarbage("collect")
+    local before = collectgarbage("count")
+    local c = copy(R2F.BiZData)
+    local after = collectgarbage("count")
+    dataKb = after - before
+    c = nil
+    collectgarbage("collect")
+    R2F.Print(L.DIAG_MEM_DATA:format(dataKb))
+  end
   local s = probeStore()
-  if s then s.mem = { kb = kb, rows = rows, time = time and time() or 0 } end
+  if s then s.mem = { kb = kb, rows = rows, dataKb = dataKb, time = time and time() or 0 } end
 end
 
 local inspectFrame

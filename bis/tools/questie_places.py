@@ -121,6 +121,25 @@ def main():
     for s in v_skip:
         print("  vendor left:", s)
 
+    # ---- reputation: the faction's quartermaster ("<faction> Quartermaster", vendor flag) when he has exactly one spot -------------------
+    r_added, r_left = [], []
+    for fac in sorted({r["group"][len("Reputation: "):] for r in data["rows"] if r.get("type") == "reputation" and r.get("group", "").startswith("Reputation: ")}):
+        if fac in places["places"]:
+            continue
+        fits = []
+        for nid, n in npcs.items():
+            if (n.get("subName") or "") == fac + " Quartermaster" and n.get("npcFlags", 0) & VENDOR:
+                for a, c, mapid, zone in spots(n, areas):
+                    fits.append((n["name"], c, mapid, zone))
+        if len({(f[2], f[1]) for f in fits}) == 1:
+            name, c, mapid, zone = fits[0]
+            places["places"][fac] = {"zone": zone, "mapHint": mapid, "x": c[0], "y": c[1],
+                                     "label": "%s, %s quartermaster (%s)" % (name, fac, zone), "conf": "classic", "via": "QuestieDB"}
+            r_added.append(fac)
+        else:
+            r_left.append((fac, len(fits)))
+    print("reputation placed %s, left %s" % (r_added, r_left))
+
     # ---- quests -------------------------------------------------------------------------------------------------------------
     q_rows = {}
     for r in data["rows"]:
@@ -178,7 +197,7 @@ def main():
                         k, p["x"], p["y"], p.get("via", p.get("conf")), best[1], best[2], best[0], "OK" if dev < 3 else "DIFFERS"))
                     break
 
-    if write and (v_added or q_added):
+    if write and (v_added or q_added or r_added):
         places["_sources"]["questie"] = "QuestieDB forever flavor (GPL v3), NPC spawns and quest starters, read 2026-11-15: bis/tools/questiedb_decode.py + questie_places.py"
         with open(pf, "w", encoding="utf-8", newline="\n") as f:
             json.dump(places, f, indent=2, ensure_ascii=False)

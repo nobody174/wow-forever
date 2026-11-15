@@ -3104,6 +3104,15 @@
       "label": "Engineering trainer: Roxxik, Orgrimmar",
       "conf": "classic",
       "via": "QuestieDB"
+    },
+    "Gadgetzan": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 51.7,
+      "y": 28.3,
+      "label": "Rettrick, Gadgetzan quartermaster (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
     }
   }
 }

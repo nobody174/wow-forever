@@ -4,17 +4,333 @@
     "plan": "launch-plan-waypoints.json (Scarlet Monastery, Blackfathom Deeps)",
     "wiki": "warcraft.wiki.gg / wowpedia: Shadowfang Keep 45,68; Gnomeregan 24,40; Illiyana Moonblaze 61.5,83.9; Samuel Hawke stands in Refuge Pointe",
     "icy-veins": "https://icy-veins.com/wow-classic/league-of-arathor-reputation-farming-guide (Refuge Pointe around 46,45)",
-    "classic": "Classic (1.12) positions: Razorfen Kraul entrance in the southern Barrens, the Stockade on the canal in Stormwind, Booty Bay"
+    "classic": "Classic (1.12) positions: Razorfen Kraul entrance in the southern Barrens, the Stockade on the canal in Stormwind, Booty Bay",
+    "dj": "ForeverDungeonJournal Data/DungeonEntrances.lua (coordinates only, read 2026-11-15, unconfirmed): bis/tools/dj_entrances.py"
   },
   "places": {
-    "Scarlet Monastery": { "zone": "Tirisfal Glades", "mapHint": 1420, "x": 82.6, "y": 33.8, "label": "Scarlet Monastery entrance", "conf": "classic" },
-    "Blackfathom Deeps": { "zone": "Ashenvale", "mapHint": 1440, "x": 14.4, "y": 14.0, "label": "Blackfathom Deeps entrance", "conf": "classic" },
-    "Shadowfang Keep": { "zone": "Silverpine Forest", "mapHint": 1421, "x": 45.0, "y": 68.0, "label": "Shadowfang Keep entrance", "conf": "classic" },
-    "Gnomeregan": { "zone": "Dun Morogh", "mapHint": 1426, "x": 24.0, "y": 40.0, "label": "Gnomeregan entrance", "conf": "classic" },
-    "Razorfen Kraul": { "zone": "The Barrens", "mapHint": 1413, "x": 42.3, "y": 89.9, "label": "Razorfen Kraul entrance", "conf": "approx" },
-    "Stormwind Stockade": { "zone": "Stormwind City", "mapHint": 1453, "x": 40.5, "y": 55.9, "label": "The Stockade entrance (canal)", "conf": "approx" },
-    "Illiyana Moonblaze": { "zone": "Ashenvale", "mapHint": 1440, "x": 61.5, "y": 83.9, "label": "Illiyana Moonblaze, Silverwing Grove", "conf": "classic" },
-    "Samuel Hawke": { "zone": "Arathi Highlands", "mapHint": 1417, "x": 46.0, "y": 45.0, "label": "Samuel Hawke, Refuge Pointe", "conf": "approx" },
-    "Booty Bay": { "zone": "Stranglethorn Vale", "mapHint": 1434, "x": 27.0, "y": 77.0, "label": "Booty Bay", "conf": "approx" }
+    "Scarlet Monastery": {
+      "zone": "Tirisfal Glades",
+      "mapHint": 1420,
+      "x": 82.6,
+      "y": 33.8,
+      "label": "Scarlet Monastery entrance",
+      "conf": "classic"
+    },
+    "Blackfathom Deeps": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 14.4,
+      "y": 14.0,
+      "label": "Blackfathom Deeps entrance",
+      "conf": "classic"
+    },
+    "Shadowfang Keep": {
+      "zone": "Silverpine Forest",
+      "mapHint": 1421,
+      "x": 45.0,
+      "y": 68.0,
+      "label": "Shadowfang Keep entrance",
+      "conf": "classic"
+    },
+    "Gnomeregan": {
+      "zone": "Dun Morogh",
+      "mapHint": 1426,
+      "x": 24.0,
+      "y": 40.0,
+      "label": "Gnomeregan entrance",
+      "conf": "classic"
+    },
+    "Razorfen Kraul": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 42.3,
+      "y": 89.9,
+      "label": "Razorfen Kraul entrance",
+      "conf": "approx"
+    },
+    "Stormwind Stockade": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 40.5,
+      "y": 55.9,
+      "label": "The Stockade entrance (canal)",
+      "conf": "approx"
+    },
+    "Illiyana Moonblaze": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 61.5,
+      "y": 83.9,
+      "label": "Illiyana Moonblaze, Silverwing Grove",
+      "conf": "classic"
+    },
+    "Samuel Hawke": {
+      "zone": "Arathi Highlands",
+      "mapHint": 1417,
+      "x": 46.0,
+      "y": 45.0,
+      "label": "Samuel Hawke, Refuge Pointe",
+      "conf": "approx"
+    },
+    "Booty Bay": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 27.0,
+      "y": 77.0,
+      "label": "Booty Bay",
+      "conf": "approx"
+    },
+    "Alcaz Prison": {
+      "zone": "Dustwallow Marsh",
+      "mapHint": 1445,
+      "x": 75.3,
+      "y": 14.1,
+      "label": "Alcaz Prison Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Blackmaw Hold": {
+      "zone": "Azshara",
+      "mapHint": 1447,
+      "x": 38.6,
+      "y": 33.2,
+      "label": "Blackmaw Hold Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Blackrock Depths": {
+      "zone": "Searing Gorge",
+      "mapHint": 1427,
+      "x": 34.8,
+      "y": 84.0,
+      "label": "Blackrock Depths Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Blackrock Spire": {
+      "zone": "Searing Gorge",
+      "mapHint": 1427,
+      "x": 34.8,
+      "y": 84.0,
+      "label": "Lower Blackrock Spire Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "City of Dalaran": {
+      "zone": "Alterac Mountains",
+      "mapHint": 1416,
+      "x": 8.5,
+      "y": 59.3,
+      "label": "City of Dalaran Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Deadmines": {
+      "zone": "Westfall",
+      "mapHint": 1436,
+      "x": 42.5,
+      "y": 71.7,
+      "label": "The Deadmines Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Dire Maul": {
+      "zone": "Feralas",
+      "mapHint": 1444,
+      "x": 59.0,
+      "y": 45.0,
+      "label": "Dire Maul Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Dire Maul: East": {
+      "zone": "Feralas",
+      "mapHint": 1444,
+      "x": 59.0,
+      "y": 45.0,
+      "label": "Dire Maul Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Excavation Site: Wetlands": {
+      "zone": "Wetlands",
+      "mapHint": 1437,
+      "x": 47.7,
+      "y": 56.2,
+      "label": "Excavation Site: Wetlands Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Hall of Thanes": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 43.5,
+      "y": 52.0,
+      "label": "Hall of Thanes Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Maraudon": {
+      "zone": "Desolace",
+      "mapHint": 1443,
+      "x": 29.1,
+      "y": 62.5,
+      "label": "Maraudon Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Ragefire Chasm": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 52.6,
+      "y": 49.0,
+      "label": "Ragefire Chasm Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Razorfen Downs": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 50.0,
+      "y": 92.0,
+      "label": "Razorfen Downs Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Ruins of Lordaeron": {
+      "zone": "Tirisfal Glades",
+      "mapHint": 1420,
+      "x": 63.4,
+      "y": 67.4,
+      "label": "Ruins of Lordaeron Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Scarlet Monastery: Graveyard": {
+      "zone": "Tirisfal Glades",
+      "mapHint": 1420,
+      "x": 82.6,
+      "y": 33.8,
+      "label": "Scarlet Monastery Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Scarlet Monastery: Library": {
+      "zone": "Tirisfal Glades",
+      "mapHint": 1420,
+      "x": 82.6,
+      "y": 33.8,
+      "label": "Scarlet Monastery Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Scholomance": {
+      "zone": "Western Plaguelands",
+      "mapHint": 1422,
+      "x": 69.7,
+      "y": 73.2,
+      "label": "Scholomance Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Shaper's Terrace": {
+      "zone": "Un'Goro Crater",
+      "mapHint": 1449,
+      "x": 48.1,
+      "y": 6.1,
+      "label": "Shaper's Terrace Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Stratholme": {
+      "zone": "Eastern Plaguelands",
+      "mapHint": 1423,
+      "x": 30.0,
+      "y": 15.0,
+      "label": "Stratholme Main Gate",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Stratholme: Living": {
+      "zone": "Eastern Plaguelands",
+      "mapHint": 1423,
+      "x": 30.0,
+      "y": 15.0,
+      "label": "Stratholme Main Gate",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Sunken Temple": {
+      "zone": "Swamp of Sorrows",
+      "mapHint": 1435,
+      "x": 69.5,
+      "y": 53.5,
+      "label": "Sunken Temple Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "The Deadmines": {
+      "zone": "Westfall",
+      "mapHint": 1436,
+      "x": 42.5,
+      "y": 71.7,
+      "label": "The Deadmines Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "The Drowned City": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 21.4,
+      "y": 27.9,
+      "label": "The Drowned City Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "The Hall of Thanes": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 43.5,
+      "y": 52.0,
+      "label": "Hall of Thanes Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "The Stockade": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 52.4,
+      "y": 70.0,
+      "label": "The Stockade Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Uldaman": {
+      "zone": "Badlands",
+      "mapHint": 1418,
+      "x": 44.3,
+      "y": 12.0,
+      "label": "Uldaman Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Wailing Caverns": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 46.0,
+      "y": 36.4,
+      "label": "Wailing Caverns Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "Zul'Farrak": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 38.7,
+      "y": 20.0,
+      "label": "Zul'Farrak Entrance",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    }
   }
 }

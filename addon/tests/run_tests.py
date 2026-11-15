@@ -3744,6 +3744,66 @@ def biz_runtime(templates=True, token="HUNTER", preset=None):
     return lua, T
 
 
+def test_bizme():
+    """BiZMe: worn vs BiZ, reachable now, the carry rule, the ranked upgrade list (BiZMe.lua)."""
+    tag = "bizme"
+    lua, T = biz_runtime(True)
+    lua.execute("""
+      R2F.GearScore.Score = function(link, spec) return TEST.scores and TEST.scores[link] end
+      GetItemCount = function(id) return (TEST.owned and TEST.owned[id]) and 1 or 0 end
+      GetInventoryItemLink = function(unit, slot) return TEST.worn[slot] end
+      TEST.worn = {}
+    """)
+    M = "R2F.BiZMe"
+    sp = lua.eval("R2F.BiZData.specs['hunter/beast-mastery']")
+    ups = lua.eval("(function() local u = %s.Upgrades('hunter/beast-mastery', 30, { faction = 'alliance' }) TEST.ups = u return #u end)()" % M)
+    check(ups > 5, "%s: an empty character gets a list of upgrades (%d)" % (tag, ups))
+    check(lua.eval("(function() for _, u in ipairs(TEST.ups) do if u.row.type == 'unknown' or u.row.type == 'pvp' then return false end end return true end)()"),
+          "%s: unknown and PvP sources are never offered" % tag)
+    check(lua.eval("(function() local last = 1e9 for _, u in ipairs(TEST.ups) do if u.gain > last then return false end last = u.gain end return true end)()"),
+          "%s: ranked by gain" % tag)
+    check(lua.eval("(function() for _, u in ipairs(TEST.ups) do if u.row.faction == 'horde' then return false end end return true end)()"),
+          "%s: another faction's quest is left out" % tag)
+    # a slot you already fill better than the pick gets no upgrade
+    head = lua.eval("(function() for _, u in ipairs(TEST.ups) do if u.slot == 'head' then return u.row.id end end end)()")
+    lua.execute("TEST.worn[1] = '|cff1eff00|Hitem:111::::::::|h[Worn]|h|r' TEST.scores = { [TEST.worn[1]] = 100000 }")
+    check(lua.eval("(function() for _, u in ipairs(%s.Upgrades('hunter/beast-mastery', 30, { faction = 'alliance' })) do if u.slot == 'head' then return false end end return true end)()" % M),
+          "%s: a better worn item means no upgrade for that slot" % tag)
+    lua.execute("TEST.worn[1] = nil TEST.scores = nil")
+    # already owning the pick removes it from the list
+    if head:
+        lua.execute("TEST.owned = { [%d] = true }" % head)
+        check(lua.eval("(function() for _, u in ipairs(%s.Upgrades('hunter/beast-mastery', 30, { faction = 'alliance' })) do if u.slot == 'head' and u.row.id == %d then return false end end return true end)()" % (M, head)),
+              "%s: an item you own is not offered" % tag)
+        lua.execute("TEST.owned = nil")
+    # spans: how long a pick stays on the list (the carry rule)
+    check(lua.eval("%s.Span(R2F.BiZData.specs['hunter/beast-mastery'], %s.SlotIndex('head'), %d, 30, false)" % (M, M, head or 0)) >= 1 if head else True,
+          "%s: a pick on the list at the level has a span" % tag)
+    check(lua.eval("%s.Span(R2F.BiZData.specs['hunter/beast-mastery'], %s.SlotIndex('head'), 1, 30, false)" % (M, M)) == 0, "%s: an item not on the list has span 0" % tag)
+    # the carry rule: a pick replaced within CARRY_TRIP levels is not offered when it needs a trip, but a pick with no trip still is
+    lua.execute("TEST.realSpan = R2F.BiZMe.Span R2F.BiZMe.Span = function() return 2 end")
+    check(lua.eval("(function() local u = %s.Upgrades('hunter/beast-mastery', 30, { faction = 'alliance' }) for _, x in ipairs(u) do if x.trip then return false end end return #u end)()" % M) is not False,
+          "%s: replaced-soon picks that need a trip are not offered" % tag)
+    lua.execute("R2F.BiZMe.Span = function() return 50 end")
+    check(lua.eval("(function() local u = %s.Upgrades('hunter/beast-mastery', 30, { faction = 'alliance' }) for _, x in ipairs(u) do if x.trip then return true end end return false end)()" % M),
+          "%s: the same trips are offered when the pick carries many levels" % tag)
+    lua.execute("R2F.BiZMe.Span = TEST.realSpan")
+    # reachable now
+    check(lua.eval("(select(2, %s.Reachable({ type = 'unknown' }, { level = 30, faction = 'alliance' })))" % M) == "unknown", "%s: unknown source is not reachable" % tag)
+    check(lua.eval("(select(2, %s.Reachable({ type = 'quest', qlevel = 50 }, { level = 30, faction = 'alliance' })))" % M) == "level", "%s: a quest far above your level is not reachable" % tag)
+    check(lua.eval("%s.Reachable({ type = 'quest', qlevel = 31 }, { level = 30, faction = 'alliance' })" % M), "%s: a quest one level above is" % tag)
+    check(lua.eval("(select(2, %s.Reachable({ type = 'vendor', faction = 'horde' }, { level = 30, faction = 'alliance' })))" % M) == "faction", "%s: the other faction's vendor is not" % tag)
+    check(lua.eval("(select(2, %s.Reachable({ type = 'reputation' }, { level = 30, faction = 'alliance' })))" % M) == "rep", "%s: reputation is flagged as maybe" % tag)
+    lua.execute("GetNumSkillLines = function() return 2 end GetSkillLineInfo = function(i) if i == 1 then return 'Tailoring', false, false, 150 end return 'Other', true end")
+    check(lua.eval("(select(2, %s.Reachable({ type = 'crafted', prof = 'Tailoring', skill = 200 }, { level = 40, faction = 'alliance' })))" % M) == "skill", "%s: a recipe above your skill is not" % tag)
+    check(lua.eval("(select(2, %s.Reachable({ type = 'crafted', prof = 'Leatherworking', skill = 10 }, { level = 40, faction = 'alliance' })))" % M) == "profession", "%s: a profession you do not have is not" % tag)
+    check(lua.eval("%s.Reachable({ type = 'crafted', prof = 'Tailoring', skill = 100 }, { level = 40, faction = 'alliance' })" % M), "%s: a recipe within your skill is" % tag)
+    # the Next upgrades view (BiZMe.lua) draws its list from the data for your level
+    lua.execute("R2F.BiZ.SetSpec('hunter/beast-mastery') R2F.BiZ.SetLevel(30) R2F.BiZTab.Show('up')")
+    check(font_text(lua, "^Get these now") is not None, "%s: Next upgrades view lists upgrades for an empty character" % tag)
+    check(font_text(lua, "upgrades at level 30") is not None, "%s: and says how many" % tag)
+
+
 def test_biz(templates=True):
     """ADDON_PLAN 19: Mr.BiZ tab: data, spec choice, filters, wishlist, tooltips, quality, site string."""
     import subprocess
@@ -8718,6 +8778,7 @@ def main():
     test_plan(False)
     test_biz(True)
     test_biz(False)
+    test_bizme()
     test_ranks()
     test_gameplay()
     test_gameplay_extras()

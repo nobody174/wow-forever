@@ -26,7 +26,7 @@ local page, scroll, content, side
 local ui = {}
 local typeBoxes = {}
 local slotBtns = {}               -- slot key -> doll button
-local view = "set"                -- "set" | "wish"
+local view = "set"                -- "set" | "up" | "wish"
 local selected                    -- slot key selected on the doll
 
 -- The page is bigger than the old 540 x 500 book pages; MainWindow reads this.
@@ -369,6 +369,52 @@ local function layoutWish()
   return y
 end
 
+-- Next upgrades (BiZMe.lua): what to get now, ranked by gain, then the BiZ picks that are out of reach and why.
+local function layoutUp()
+  host = content
+  local specId = BiZ.SpecId()
+  local lvl = BiZ.Level()
+  local list, blocked = R2F.BiZMe.Upgrades(specId, lvl)
+  local y = 0
+  if #list == 0 then
+    local e = line("R2FBody", 8, 8, 420, L.BIZ_UP_EMPTY)
+    e:SetWordWrap(true)
+    y = 60
+  else
+    line("R2FHeading", 0, y, 330, L.BIZ_UP_HEAD)
+    y = y + 20
+    for _, u in ipairs(list) do
+      local sp = BiZ.Spec(specId)
+      placeItem(8, y, 250, u.row.id, u.row.name, L.BIZ_TIP_WISHED:format(sp.name, BiZ.SlotLabel(u.slot)))
+      local worn = u.worn and u.worn:match("%[(.-)%]")
+      local gain = ("|cff1eff00+%d%%|r"):format(math.floor(u.gain + 0.5))
+      line("R2FBodySmall", 266, y + 3, 56, gain)
+      local src = u.row.label or ""
+      if u.trip then src = src .. " · " .. L.BIZ_UP_TRIP end
+      if u.note == "rep" then src = src .. " · " .. L.BIZ_UP_REP end
+      line("R2FDimSmall", 326, y + 3, 230, src)
+      local what = BiZ.SlotLabel(u.slot) .. " · " .. (worn and L.BIZ_UP_REPLACES:format(worn) or L.BIZ_UP_EMPTYSLOT)
+      line("R2FDimSmall", 28, y + 18, 520, what .. " · " .. L.BIZ_UP_LEFT:format(u.left))
+      placeWish(560, y + 3, u.row.id, specId, u.slot)
+      y = y + 40
+    end
+  end
+  if #blocked > 0 then
+    y = y + 8
+    line("R2FHeading", 0, y, 330, L.BIZ_UP_BLOCKED)
+    y = y + 20
+    for _, b in ipairs(blocked) do
+      placeItem(8, y, 250, b.row.id, b.row.name, nil)
+      local why = L["BIZ_WHY_" .. b.why:upper()] or b.why
+      if b.detail then why = why:format(b.detail) end
+      line("R2FDimSmall", 266, y + 3, 300, BiZ.SlotLabel(b.slot) .. " · " .. why)
+      y = y + 22
+    end
+  end
+  ui.summary:SetText(L.BIZ_UP_SUMMARY:format(#list, lvl))
+  return y
+end
+
 -- ---------------------------------------------------------------------------
 -- Import dialog
 -- ---------------------------------------------------------------------------
@@ -471,8 +517,8 @@ local function setViewShown()
   ui.modelBack:SetShown(isSet)
   if ui.model then ui.model:SetShown(isSet) end
   scroll:SetShown(not isSet)
-  ui.exportBtn:SetShown(not isSet)
-  ui.importBtn:SetShown(not isSet)
+  ui.exportBtn:SetShown(view == "wish")
+  ui.importBtn:SetShown(view == "wish")
 end
 
 local function refresh()
@@ -486,6 +532,8 @@ local function refresh()
   ui.levelDown:SetEnabled(BiZ.Level() > lo)
   ui.levelUp:SetEnabled(BiZ.Level() < hi)
   ui.wishBtn:SetEnabled(view ~= "wish")
+  ui.upBtn:SetEnabled(view ~= "up")
+  ui.upBtn:SetText(L.BIZ_VIEW_UP)
   ui.wishBtn:SetText(L.BIZ_VIEW_WISH:format(BiZ.WishCount()))
   for t, box in pairs(typeBoxes) do box:SetChecked(BiZ.TypeOn(t)) end
   ui.known:SetChecked(BiZ.KnownOnly())
@@ -506,7 +554,7 @@ local function refresh()
     layoutSide()
     ui.contentHeight = 0
   else
-    local h = layoutWish()
+    local h = view == "up" and layoutUp() or layoutWish()
     content:SetHeight(math.max(h, 1))
     ui.contentHeight = h
   end
@@ -646,6 +694,8 @@ function Tab.Build(f)
   ui.specBtn:SetPoint("LEFT", ui.classBtn, "RIGHT", 6, 0)
   ui.wishBtn = button(f, 110, "", function() view = "wish"; scroll:SetVerticalScroll(0); refresh() end)
   ui.wishBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -1)
+  ui.upBtn = button(f, 150, L.BIZ_VIEW_UP, function() view = "up"; scroll:SetVerticalScroll(0); refresh() end)
+  ui.upBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -17)
   ui.setBtn = button(f, 100, L.BIZ_VIEW_SET, function() view = "set"; refresh() end)
   ui.setBtn:SetPoint("RIGHT", ui.wishBtn, "LEFT", -2, 0)
 
@@ -722,6 +772,6 @@ function Tab.Build(f)
 end
 
 function Tab.Show(which)
-  if which == "wish" or which == "set" then view = which end
+  if which == "wish" or which == "set" or which == "up" then view = which end
   R2F.MainWindow.Show("bis")
 end

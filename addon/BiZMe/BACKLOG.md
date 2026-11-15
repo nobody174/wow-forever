@@ -6,7 +6,8 @@
 - [x] Addon audit -> docs/addon-audit.md
 - [x] UI study (ForeverDungeonJournal) -> docs/ui-study.md
 - [x] Data research -> docs/data-sources.md
-- [ ] Owner: approve or change plan-review.md items 1-9 and answer its four questions.
+- [ ] Owner: approve or change plan-review.md items 1-9; four questions answered 2026-11-15 (detour numbers still to confirm).
+- [ ] Test inspect on Forever (target a player: NotifyInspect, INSPECT_READY, GetInventoryItemLink on target, range, throttle).
 - [ ] Still to test (owner or browser): `/r2f debug ej` (to be written, read-only); foreverwow.gg and forevermybis.com terms; does ForeverDB's BiS page list more than 3 alternatives; addon memory with BiZData.
 - [ ] Add ledger rows to the wow-dev-support-folder findings-ledger (EJ functions seen in ForeverDungeonJournal; licences of the BiS addons; Forever trait-tree detection by posX gaps).
 

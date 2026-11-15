@@ -13,11 +13,11 @@ mrbiz-inventory.md, plan-review.md, addon-audit.md, ui-study.md, data-sources.md
 (d) Refresh picks to the live build when ForeverDB moves (`bis/README.md`); show the data build in the tab.
 
 ## Phase 2 - BiZMe core (addon logic first, then UI)
-Worn-vs-BiZ per slot, "already have it", reachable-now filter, next-best-upgrade engine (carry rule from the runs), wishlist tracker with auto-tick, named "viewing as" profiles,
+Worn-vs-BiZ per slot, "already have it", reachable-now filter, next-best-upgrade engine (carry rule from the runs), wishlist tracker with auto-tick, named "viewing as" profiles (friends' gear read by inspecting the target, stored as a dated snapshot),
 tooltip rank line, hybrid roles in spec detection. Pure Lua functions with tests before UI.
 
 ## Phase 3 - Share
-`R2FB1:` BiZ code (class/spec, level, wishlist, optional gear), site decoder in bis.html, Discord-friendly text. `R2FW1` stays valid.
+`R2FB1:` BiZ code (class/spec, level, wishlist; no gear), site decoder in bis.html, Discord-friendly text. `R2FW1` stays valid.
 
 ## Phase 4 - Route
 Ranked upgrade list, BiZNav waypoints over the places data, Launch Plan hints. No TSP.

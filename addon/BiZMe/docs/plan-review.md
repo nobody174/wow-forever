@@ -3,6 +3,13 @@
 Reviewed against the code (`docs/mrbiz-inventory.md`), the 2026-11-13 decisions (`BACKLOG.md` 5.4, `bis/DATA_SOURCES.md`) and the research
 (`docs/addon-audit.md`, `docs/ui-study.md`, `docs/data-sources.md`). Role hats: Project Manager (order, scope), Code Reviewer (conflicts with code and hard rules), Critic.
 
+## Owner answers (2026-11-15)
+1. Upgrade gain = score difference, minimum 5% to show an arrow: yes.
+2. Detour threshold: owner asked what it means; explained (items replaced soon are not worth a trip). Numbers (5 levels on route, 10 for a trip) awaiting confirmation.
+3. Friends' gear: **read by inspecting the targeted character** at that moment, not from a pasted code. BiZ code no longer carries gear. Needs a Forever inspect test
+   (`NotifyInspect` / `INSPECT_READY`, range, throttle, out of combat only); profile stores a dated snapshot.
+4. WCLBox for stat checks: yes (credit, 5 req/s, 5 min cache).
+
 ## For you to approve (the bigger changes)
 1. **Drop "computed best-available-at-level lists" (and stat-weight list building).** Mr.BiZ already has ForeverDB's pick for every level 10-60. Computing our own
    lists is the "own ranker" you declined on 2026-11-13. Keep the existing `GearScore` only to *compare your worn item with a pick*.

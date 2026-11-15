@@ -23,7 +23,7 @@ Reviewed against the code (`docs/mrbiz-inventory.md`), the 2026-11-13 decisions 
 5. **"Character frame tab" becomes "a panel docked to the Character frame", not a real tab.** Adding a tab means calling `PanelTemplates_*` on `CharacterFrame` and writing
    `numTabs`/`Tabs` fields = writing into game-owned tables (hard rule 4). ForeverLevelingBiS and ForeverWoWBiS both dock a panel / hook slot buttons with `hooksecurefunc`
    instead. Plan: slot overlays via hooks + a docked side panel + a button. Decide after a taint test in game (TESTING item).
-6. **Split the data (load-on-demand) is no longer "optional later".** `BiZData.lua` is 3.5 MB loaded at login (the plan assumed ~440 KB). Measure memory/load time first
+6. **Split the data (load-on-demand): measured 2026-11-15: the data is 14.4 MB of the addon's 21.2 MB.** A per-class split would hold about 1.6 MB for a single-class player. Recommended in Phase 2 (not urgent); original text: **no longer "optional later".** `BiZData.lua` is 3.5 MB loaded at login (the plan assumed ~440 KB). Measure memory/load time first
    (one in-game `collectgarbage("count")` before/after, 5 minutes), then decide. Cheap first step: lazy-load by class from a `LoadOnDemand` data addon folder inside the same zip.
 7. **BiZ code = one new format, versioned, replacing `R2FW1` only by extending it** (`R2FB1:` = class/spec, level, wishlist, optional worn-gear ids). Wishlist import stays valid.
    Site gets a matching decoder so a Discord link `bis.html#code=...` opens the same state.

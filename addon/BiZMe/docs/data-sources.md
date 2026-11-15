@@ -53,3 +53,8 @@ Consequence: `GearScore` must keep reading stats from the game (it does, `C_Item
 - Check whether ForeverDB's BiS page lists more than 3 alternatives.
 - Measure addon memory with the 3.5 MB data (`collectgarbage("count")` before and after login).
 - Reputation standing API on Forever for "reachable now".
+
+## Probe results (owner, 2026-11-15)
+- **Encounter Journal (`/r2f debug ej`, twice, also on a city map):** all EJ functions exist, but 0 tiers, 0 instances, 0 entrances; Blizzard's journal addon reports not loaded. `ej load` printed the same, so Blizzard_EncounterJournal is probably missing in Forever (like Blizzard_TalentUI). One more run to confirm (TESTING 5.84). Until then: no loot or entrances from the client; places come from our own data.
+- **Memory:** 21.2 MB for the addon, 14.4 MB of it the Mr.BiZ data. (An earlier 70 MB reading was taken before a garbage collection and is not meaningful.)
+- **Inspect:** works on Forever: `CanInspect` true, answer in 0.3 s, 15 items read from a close player. Friends' gear by inspect is feasible.

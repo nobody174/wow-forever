@@ -3014,6 +3014,96 @@
       "label": "[DNT] Reward Vendor, Alterac Mountains",
       "conf": "classic",
       "via": "QuestieDB"
+    },
+    "trade:Tailoring:alliance": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 53.08,
+      "y": 81.35,
+      "label": "Tailoring trainer: Georgio Bolero, Stormwind City",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "trade:Tailoring:horde": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 70.76,
+      "y": 30.69,
+      "label": "Tailoring trainer: Josef Gregorian, Undercity",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "trade:Leatherworking:alliance": {
+      "zone": "Darnassus",
+      "mapHint": 1457,
+      "x": 64.43,
+      "y": 21.54,
+      "label": "Leatherworking trainer: Telonis, Darnassus",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "trade:Leatherworking:horde": {
+      "zone": "Thunder Bluff",
+      "mapHint": 1456,
+      "x": 41.5,
+      "y": 42.57,
+      "label": "Leatherworking trainer: Una, Thunder Bluff",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "trade:Blacksmithing:alliance": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 52.55,
+      "y": 41.46,
+      "label": "Blacksmithing trainer: Bengus Deepforge, Ironforge",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "trade:Blacksmithing:horde": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 82.35,
+      "y": 22.97,
+      "label": "Blacksmithing trainer: Saru Steelfury, Orgrimmar",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "trade:Enchanting:alliance": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 52.9,
+      "y": 74.46,
+      "label": "Enchanting trainer: Lucan Cordell, Stormwind City",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "trade:Enchanting:horde": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 53.9,
+      "y": 38.67,
+      "label": "Enchanting trainer: Godan, Orgrimmar",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "trade:Engineering:alliance": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 68.46,
+      "y": 43.54,
+      "label": "Engineering trainer: Springspindle Fizzlegear, Ironforge",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "trade:Engineering:horde": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 76.17,
+      "y": 25.17,
+      "label": "Engineering trainer: Roxxik, Orgrimmar",
+      "conf": "classic",
+      "via": "QuestieDB"
     }
   }
 }

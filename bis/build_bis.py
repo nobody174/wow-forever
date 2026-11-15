@@ -370,6 +370,9 @@ def place_key(row):
         return row["label"].split(",")[0].strip()
     if t == "reputation" and row.get("group", "").startswith("Reputation: "):
         return row["group"][len("Reputation: "):]
+    if t == "crafted" and row.get("prof"):
+        # where to learn the profession: "trade:<profession>:alliance|horde" in places.json, the addon picks your side
+        return "trade:" + row["prof"]
     if t == "quest":
         # the quest giver's spot, keyed by the quest title ("quest:<title>"; tools/questie_places.py)
         m = re.match(r"^Quest: (.+?)(?: \(a choice\))?(?: \(level \d+\))?$", row.get("label", ""))
@@ -384,6 +387,9 @@ def tag_places(rows, places):
         if key in places:
             row["place"] = key
             used.add(key)
+        elif key and key + ":alliance" in places:
+            row["place"] = key
+            used.update((key + ":alliance", key + ":horde"))
     unused = sorted(set(places) - used)
     if unused:
         raise ValueError("places.json entries no BiZ row uses: %s" % unused)

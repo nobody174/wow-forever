@@ -562,9 +562,13 @@ end
 -- BiZNav: where a source is (BiZData.places, from bis/places.json). Rows carry `place = key`.
 -- ---------------------------------------------------------------------------
 
+-- A key with no place of its own ("trade:Tailoring") has one per faction ("trade:Tailoring:alliance" / ":horde").
 function BiZ.Place(key)
   local places = R2F.BiZData.places
-  return key and places and places[key] or nil
+  if not (key and places) then return nil end
+  if places[key] then return places[key] end
+  local side = ((UnitFactionGroup and UnitFactionGroup("player")) or "Alliance"):lower()
+  return places[key .. ":" .. side]
 end
 
 -- The place of an item's source (any spec's row for that item; the source is the same item-wide).

@@ -370,6 +370,10 @@ def place_key(row):
         return row["label"].split(",")[0].strip()
     if t == "reputation" and row.get("group", "").startswith("Reputation: "):
         return row["group"][len("Reputation: "):]
+    if t == "quest":
+        # the quest giver's spot, keyed by the quest title ("quest:<title>"; tools/questie_places.py)
+        m = re.match(r"^Quest: (.+?)(?: \(a choice\))?(?: \(level \d+\))?$", row.get("label", ""))
+        return "quest:" + m.group(1) if m else None
     return None
 
 

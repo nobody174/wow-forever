@@ -6,7 +6,7 @@
     "icy-veins": "https://icy-veins.com/wow-classic/league-of-arathor-reputation-farming-guide (Refuge Pointe around 46,45)",
     "classic": "Classic (1.12) positions: Razorfen Kraul entrance in the southern Barrens, the Stockade on the canal in Stormwind, Booty Bay",
     "dj": "ForeverDungeonJournal Data/DungeonEntrances.lua (coordinates only, read 2026-11-15, unconfirmed): bis/tools/dj_entrances.py",
-    "questie": "QuestieDB forever snapshot (GPL v3), NPC spawns, read 2026-11-15: bis/tools/questie_places.py"
+    "questie": "QuestieDB forever flavor (GPL v3), NPC spawns and quest starters, read 2026-11-15: bis/tools/questiedb_decode.py + questie_places.py"
   },
   "places": {
     "Scarlet Monastery": {
@@ -411,6 +411,2481 @@
       "x": 57.71,
       "y": 53.94,
       "label": "William MacGregor, Westfall",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Gaelden Hammersmith": {
+      "zone": "Alterac Valley",
+      "mapHint": 1459,
+      "x": 44.3,
+      "y": 18.2,
+      "label": "Gaelden Hammersmith, Alterac Valley",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Pix Xizzix": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 28.5,
+      "y": 75.9,
+      "label": "Pix Xizzix, Stranglethorn Vale",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "Winklespark": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 62.7,
+      "y": 38.0,
+      "label": "Winklespark, The Barrens",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Better Ingredient": {
+      "zone": "Un'Goro Crater",
+      "mapHint": 1449,
+      "x": 71.6,
+      "y": 76.0,
+      "label": "A Better Ingredient, from Torwa Pathfinder (Un'Goro Crater)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Collection of Heads": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 15.5,
+      "label": "A Collection of Heads, from Exzhal (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Frightened Request": {
+      "zone": "Silverpine Forest",
+      "mapHint": 1421,
+      "x": 44.5,
+      "y": 43.0,
+      "label": "A Frightened Request, from Tabitha Heartweaver (Silverpine Forest)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Green Sample": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 31.5,
+      "y": 62.6,
+      "label": "A Green Sample, from Shylamiir (Stormwind City)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Hunter's Boast": {
+      "zone": "Loch Modan",
+      "mapHint": 1432,
+      "x": 83.5,
+      "y": 65.5,
+      "label": "A Hunter's Boast, from Daryl the Youngling (Loch Modan)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Hunter's Challenge": {
+      "zone": "Loch Modan",
+      "mapHint": 1432,
+      "x": 83.5,
+      "y": 65.5,
+      "label": "A Hunter's Challenge, from Daryl the Youngling (Loch Modan)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Husband's Revenge": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 62.0,
+      "y": 42.8,
+      "label": "A Husband's Revenge, from Raleigh Andrean (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Little Help From My Friends": {
+      "zone": "Un'Goro Crater",
+      "mapHint": 1449,
+      "x": 51.9,
+      "y": 49.9,
+      "label": "A Little Help From My Friends, from Ringo (Un'Goro Crater)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Little Slime Goes a Long Way": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 75.8,
+      "y": 23.4,
+      "label": "A Little Slime Goes a Long Way, from Laris Geardawdle (Ironforge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Miner Problem": {
+      "zone": "Riverglades",
+      "mapHint": 2548,
+      "x": 30.7,
+      "y": 49.1,
+      "label": "A Miner Problem, from Sergeant Riftan (Riverglades)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Recipe For Death": {
+      "zone": "Silverpine Forest",
+      "mapHint": 1421,
+      "x": 42.8,
+      "y": 40.9,
+      "label": "A Recipe For Death, from Apothecary Renferrel (Silverpine Forest)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Tale Spun Around the Fire": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 32.3,
+      "y": 27.7,
+      "label": "A Tale Spun Around the Fire, from Kin'weelay (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:A Taste of Flame": {
+      "zone": "Burning Steppes",
+      "mapHint": 1428,
+      "x": 95.1,
+      "y": 31.6,
+      "label": "A Taste of Flame, from Cyrus Therepentous (Burning Steppes)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Agmond's Fate": {
+      "zone": "Loch Modan",
+      "mapHint": 1432,
+      "x": 65.9,
+      "y": 65.6,
+      "label": "Agmond's Fate, from Prospector Ironband (Loch Modan)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Akiris by the Bundle": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 26.8,
+      "y": 76.4,
+      "label": "Akiris by the Bundle, from Privateer Bloads (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Allegiance to the Old Gods": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 11.6,
+      "y": 34.3,
+      "label": "Allegiance to the Old Gods, from Je'neu Sancrea (Ashenvale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:An Ambassador of Evil": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 77.5,
+      "y": 11.8,
+      "label": "An Ambassador of Evil, from Historian Karnik (Ironforge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:An Audience with the King": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 57.7,
+      "y": 47.9,
+      "label": "An Audience with the King, from Baros Alexston (Stormwind City)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:An Unholy Alliance": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 56.2,
+      "y": 92.2,
+      "label": "An Unholy Alliance, from Varimathras (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Ancient Spirit": {
+      "zone": "Felwood",
+      "mapHint": 1448,
+      "x": 49.6,
+      "y": 29.6,
+      "label": "Ancient Spirit, from Arei (Felwood)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Answered Questions": {
+      "zone": "Duskwood",
+      "mapHint": 1431,
+      "x": 75.3,
+      "y": 49.0,
+      "label": "Answered Questions, from Jonathan Carevin (Duskwood)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Anthion's Parting Words": {
+      "zone": "Eastern Plaguelands",
+      "mapHint": 1423,
+      "x": 26.1,
+      "y": 11.3,
+      "label": "Anthion's Parting Words, from Anthion Harmon (Eastern Plaguelands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Apothecary Zamah": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 51.4,
+      "y": 30.1,
+      "label": "Apothecary Zamah, from Apothecary Helbrim (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Armaments of War": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 49.7,
+      "y": 37.5,
+      "label": "Armaments of War, from Geologist Larksbane (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Arugal Must Die": {
+      "zone": "Silverpine Forest",
+      "mapHint": 1421,
+      "x": 44.2,
+      "y": 39.8,
+      "label": "Arugal Must Die, from Dalar Dawnweaver (Silverpine Forest)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Arugal's Folly": {
+      "zone": "Silverpine Forest",
+      "mapHint": 1421,
+      "x": 44.2,
+      "y": 39.8,
+      "label": "Arugal's Folly, from Dalar Dawnweaver (Silverpine Forest)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Assault on Fenris Isle": {
+      "zone": "Silverpine Forest",
+      "mapHint": 1421,
+      "x": 43.4,
+      "y": 40.9,
+      "label": "Assault on Fenris Isle, from High Executor Hadrec (Silverpine Forest)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Atiesh, Greatstaff of the Guardian": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 65.3,
+      "y": 50.0,
+      "label": "Atiesh, Greatstaff of the Guardian, from Anachronos (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Avenged Tenfold": {
+      "zone": "Zephras Isle",
+      "mapHint": 2521,
+      "x": 66.6,
+      "y": 79.9,
+      "label": "Avenged Tenfold, from Elaadrin Evengale (Zephras Isle)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Bartolo's Yeti Fur Cloak": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 49.4,
+      "y": 55.5,
+      "label": "Bartolo's Yeti Fur Cloak, from Bartolo Ginsetti (Hillsbrad Foothills)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Bashal'Aran": {
+      "zone": "Darkshore",
+      "mapHint": 1439,
+      "x": 44.2,
+      "y": 36.3,
+      "label": "Bashal'Aran, from Asterion (Darkshore)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Big Game Hunter": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 35.7,
+      "y": 10.8,
+      "label": "Big Game Hunter, from Hemet Nesingwary (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Bingles' Missing Supplies": {
+      "zone": "Loch Modan",
+      "mapHint": 1432,
+      "x": 63.6,
+      "y": 47.9,
+      "label": "Bingles' Missing Supplies, from Bingles Blastenheimer (Loch Modan)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Blood of Morphaz": {
+      "zone": "Azshara",
+      "mapHint": 1447,
+      "x": 42.4,
+      "y": 42.6,
+      "label": "Blood of Morphaz, from Ogtinc (Azshara)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Bloodfury Bloodline": {
+      "zone": "Stonetalon Mountains",
+      "mapHint": 1442,
+      "x": 47.2,
+      "y": 61.2,
+      "label": "Bloodfury Bloodline, from Maggran Earthbinder (Stonetalon Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Breaking the Breaker": {
+      "zone": "Zephras Isle",
+      "mapHint": 2521,
+      "x": 69.7,
+      "y": 67.1,
+      "label": "Breaking the Breaker, from Yorana Windyreed (Zephras Isle)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Bride of the Embalmer": {
+      "zone": "Duskwood",
+      "mapHint": 1431,
+      "x": 71.9,
+      "y": 46.4,
+      "label": "Bride of the Embalmer, from Lord Ello Ebonlocke (Duskwood)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Bring the End": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 74.0,
+      "y": 33.3,
+      "label": "Bring the End, from Andrew Brownell (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Celestial Power": {
+      "zone": "Dustwallow Marsh",
+      "mapHint": 1445,
+      "x": 46.1,
+      "y": 57.1,
+      "label": "Celestial Power, from Tabetha (Dustwallow Marsh)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Centaur Bounty": {
+      "zone": "Desolace",
+      "mapHint": 1443,
+      "x": 56.2,
+      "y": 59.6,
+      "label": "Centaur Bounty, from Felgur Twocuts (Desolace)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Cleansing the Eye": {
+      "zone": "Wetlands",
+      "mapHint": 1437,
+      "x": 10.6,
+      "y": 60.6,
+      "label": "Cleansing the Eye, from Glorin Steelbrow (Wetlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Cloak of Veiled Shadows": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 51.8,
+      "y": 39.5,
+      "label": "Cloak of Veiled Shadows, from Keyl Swiftclaw (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Cloak of the Gathering Storm": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 51.8,
+      "y": 39.5,
+      "label": "Cloak of the Gathering Storm, from Keyl Swiftclaw (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Cloak of the Unseen Path": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 51.8,
+      "y": 39.5,
+      "label": "Cloak of the Unseen Path, from Keyl Swiftclaw (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Collecting Memories": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 70.3,
+      "y": 40.8,
+      "label": "Collecting Memories, from Wilder Thistlenettle (Stormwind City)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Compendium of the Fallen": {
+      "zone": "Thunder Bluff",
+      "mapHint": 1456,
+      "x": 34.4,
+      "y": 46.9,
+      "label": "Compendium of the Fallen, from Sage Truthseeker (Thunder Bluff)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Confront Lorthuna": {
+      "zone": "Zephras Isle",
+      "mapHint": 2521,
+      "x": 65.2,
+      "y": 50.4,
+      "label": "Confront Lorthuna, from Valennia Stormfist (Zephras Isle)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Confront Yeh'kinya": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 66.9,
+      "y": 24.0,
+      "label": "Confront Yeh'kinya, from Prospector Ironboot (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Consumed by Hatred": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 52.0,
+      "y": 31.6,
+      "label": "Consumed by Hatred, from Mankrik (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Cracking Maury's Foot": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 27.8,
+      "y": 77.1,
+      "label": "Cracking Maury's Foot, from \"Sea Wolf\" MacKinley (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Crushridge Warmongers": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 49.5,
+      "y": 58.7,
+      "label": "Crushridge Warmongers, from Marshal Redpath (Hillsbrad Foothills)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Cry of the Thunderhawk": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 44.9,
+      "y": 59.1,
+      "label": "Cry of the Thunderhawk, from Jorn Skyseer (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Curios of Curiosity": {
+      "zone": "Riverglades",
+      "mapHint": 2548,
+      "x": 66.8,
+      "y": 81.1,
+      "label": "Curios of Curiosity, from Ashe Amberhall (Riverglades)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Da Voodoo": {
+      "zone": "Alterac Mountains",
+      "mapHint": 1416,
+      "x": 80.5,
+      "y": 66.9,
+      "label": "Da Voodoo, from Bath'rah the Windwatcher (Alterac Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Data Rescue": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 69.8,
+      "y": 48.1,
+      "label": "Data Rescue, from Master Mechanic Castpipe (Ironforge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Deadwood of the North": {
+      "zone": "Felwood",
+      "mapHint": 1448,
+      "x": 64.8,
+      "y": 8.1,
+      "label": "Deadwood of the North, from Nafien (Felwood)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Deathstalkers in Shadowfang": {
+      "zone": "Silverpine Forest",
+      "mapHint": 1421,
+      "x": 43.4,
+      "y": 40.9,
+      "label": "Deathstalkers in Shadowfang, from High Executor Hadrec (Silverpine Forest)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Deliver to MacKinley": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 67.1,
+      "y": 24.0,
+      "label": "Deliver to MacKinley, from Stoley (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Delivering the Relic": {
+      "zone": "Feralas",
+      "mapHint": 1444,
+      "x": 30.4,
+      "y": 46.2,
+      "label": "Delivering the Relic, from Latronicus Moonspear (Feralas)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Desperate Times": {
+      "zone": "Zephras Isle",
+      "mapHint": 2521,
+      "x": 66.2,
+      "y": 76.5,
+      "label": "Desperate Times, from Talaanis Shadowsong (Zephras Isle)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Destroy Morphaz": {
+      "zone": "Azshara",
+      "mapHint": 1447,
+      "x": 29.2,
+      "y": 40.2,
+      "label": "Destroy Morphaz, from Archmage Xylem (Azshara)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Deviate Eradication": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 46.0,
+      "y": 35.7,
+      "label": "Deviate Eradication, from Ebru (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Deviate Hides": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 46.0,
+      "y": 35.7,
+      "label": "Deviate Hides, from Nalpak (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Dig Rat Stew": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 55.3,
+      "y": 31.8,
+      "label": "Dig Rat Stew, from Grub (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Disharmony of Fire": {
+      "zone": "Badlands",
+      "mapHint": 1418,
+      "x": 3.3,
+      "y": 48.3,
+      "label": "Disharmony of Fire, from Thunderheart (Badlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Divino-matic Rod": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 52.5,
+      "y": 28.5,
+      "label": "Divino-matic Rod, from Chief Engineer Bilgewhizzle (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Drape of Unyielding Strength": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 51.8,
+      "y": 39.5,
+      "label": "Drape of Unyielding Strength, from Keyl Swiftclaw (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Drape of Vaulted Secrets": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 51.8,
+      "y": 39.5,
+      "label": "Drape of Vaulted Secrets, from Keyl Swiftclaw (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Dunston Checks Out": {
+      "zone": "Riverglades",
+      "mapHint": 2548,
+      "x": 68.6,
+      "y": 12.7,
+      "label": "Dunston Checks Out, from Dunston Willis (Riverglades)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Earned Reverence": {
+      "zone": "Alterac Mountains",
+      "mapHint": 1416,
+      "x": 39.5,
+      "y": 81.2,
+      "label": "Earned Reverence, from Lieutenant Haggerdin (Alterac Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Earthen Arise": {
+      "zone": "Stonetalon Mountains",
+      "mapHint": 1442,
+      "x": 47.2,
+      "y": 64.0,
+      "label": "Earthen Arise, from Mor'rogal (Stonetalon Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Earthen Echo": {
+      "zone": "Thunder Bluff",
+      "mapHint": 1456,
+      "x": 71.1,
+      "y": 34.2,
+      "label": "Earthen Echo, from Bashana Runetotem (Thunder Bluff)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Elixir of Pain": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 61.4,
+      "y": 19.1,
+      "label": "Elixir of Pain, from Apothecary Lydon (Hillsbrad Foothills)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Excelsior": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 28.3,
+      "y": 77.6,
+      "label": "Excelsior, from Drizzlik (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Exploring the Horde": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 31.7,
+      "y": 37.8,
+      "label": "Exploring the Horde, from Thrall (Orgrimmar)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Facing Negolash": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 26.7,
+      "y": 73.6,
+      "label": "Facing Negolash, from Sprogger (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Fallen Sky Lake": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 37.4,
+      "y": 51.8,
+      "label": "Fallen Sky Lake, from Pelturas Whitemoon (Ashenvale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Fiery Menace!": {
+      "zone": "Searing Gorge",
+      "mapHint": 1427,
+      "x": 38.6,
+      "y": 27.8,
+      "label": "Fiery Menace!, from Hansel Heavyhands (Searing Gorge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Filthy Paws": {
+      "zone": "Loch Modan",
+      "mapHint": 1432,
+      "x": 24.8,
+      "y": 18.4,
+      "label": "Filthy Paws, from Mountaineer Stormpike (Loch Modan)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Final Passage": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 57.8,
+      "y": 65.4,
+      "label": "Final Passage, from Parqual Fintallas (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:For All To See": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 31.7,
+      "y": 37.8,
+      "label": "For All To See, from Thrall (Orgrimmar)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:For Love Eternal": {
+      "zone": "Darkshore",
+      "mapHint": 1439,
+      "x": 35.7,
+      "y": 43.7,
+      "label": "For Love Eternal, from Cerellean Whiteclaw (Darkshore)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:For The Horde!": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 31.7,
+      "y": 37.8,
+      "label": "For The Horde!, from Thrall (Orgrimmar)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Forging the Mightstone": {
+      "zone": "Western Plaguelands",
+      "mapHint": 1422,
+      "x": 42.7,
+      "y": 84.0,
+      "label": "Forging the Mightstone, from Commander Ashlam Valorfist (Western Plaguelands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Forgotten Loa Idols": {
+      "zone": "Durotar",
+      "mapHint": 1411,
+      "x": 55.9,
+      "y": 74.4,
+      "label": "Forgotten Loa Idols, from Master Vornal (Durotar)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Foul Magics": {
+      "zone": "Arathi Highlands",
+      "mapHint": 1417,
+      "x": 74.7,
+      "y": 36.3,
+      "label": "Foul Magics, from Tor'gan (Arathi Highlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Free From the Hold": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 62.0,
+      "y": 55.0,
+      "label": "Free From the Hold, from Gilthares Firebough (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Free at Last": {
+      "zone": "Thousand Needles",
+      "mapHint": 1441,
+      "x": 38.0,
+      "y": 26.4,
+      "label": "Free at Last, from Lakota Windsong (Thousand Needles)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Free the Hollows": {
+      "zone": "Zephras Isle",
+      "mapHint": 2521,
+      "x": 54.0,
+      "y": 38.9,
+      "label": "Free the Hollows, from Strange Hermit (Zephras Isle)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Frostmaw": {
+      "zone": "Thunder Bluff",
+      "mapHint": 1456,
+      "x": 61.5,
+      "y": 80.9,
+      "label": "Frostmaw, from Melor Stonehoof (Thunder Bluff)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Furen's Armor": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 64.6,
+      "y": 37.2,
+      "label": "Furen's Armor, from Furen Longbeard (Stormwind City)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Gathering Idols": {
+      "zone": "Loch Modan",
+      "mapHint": 1432,
+      "x": 64.9,
+      "y": 66.7,
+      "label": "Gathering Idols, from Magmar Fellhew (Loch Modan)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Ghost-o-plasm Round Up": {
+      "zone": "Desolace",
+      "mapHint": 1443,
+      "x": 47.8,
+      "y": 61.8,
+      "label": "Ghost-o-plasm Round Up, from Hornizz Brimbuzzle (Desolace)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Gizelton Caravan": {
+      "zone": "Desolace",
+      "mapHint": 1443,
+      "x": 45.4,
+      "y": 75.3,
+      "label": "Gizelton Caravan, from Rigger Gizelton (Desolace)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Gleaning Our Future": {
+      "zone": "Wetlands",
+      "mapHint": 1437,
+      "x": 38.8,
+      "y": 52.4,
+      "label": "Gleaning Our Future, from Prospector Whelgar (Wetlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Gnome Improvement": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 36.4,
+      "y": 3.6,
+      "label": "Gnome Improvement, from Talvash del Kissel (Ironforge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Grimtotem Spying": {
+      "zone": "Thousand Needles",
+      "mapHint": 1441,
+      "x": 45.7,
+      "y": 50.7,
+      "label": "Grimtotem Spying, from Cliffwatcher Longhorn (Thousand Needles)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Helping Hands": {
+      "zone": "Riverglades",
+      "mapHint": 2548,
+      "x": 41.4,
+      "y": 64.5,
+      "label": "Helping Hands, from Hurley (Riverglades)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Hezrul Bloodmark": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 45.3,
+      "y": 28.4,
+      "label": "Hezrul Bloodmark, from Regthar Deathgate (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Hidden Treasures": {
+      "zone": "Eastern Plaguelands",
+      "mapHint": 1423,
+      "x": 31.1,
+      "y": 78.0,
+      "label": "Hidden Treasures, from Pamela Redpath (Eastern Plaguelands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:High Chief Winterfall": {
+      "zone": "Winterspring",
+      "mapHint": 1452,
+      "x": 31.3,
+      "y": 45.2,
+      "label": "High Chief Winterfall, from Donova Snowden (Winterspring)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Highperch Venom": {
+      "zone": "Dustwallow Marsh",
+      "mapHint": 1445,
+      "x": 66.5,
+      "y": 45.1,
+      "label": "Highperch Venom, from Fiora Longears (Dustwallow Marsh)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Hints of a New Plague?": {
+      "zone": "Arathi Highlands",
+      "mapHint": 1417,
+      "x": 60.2,
+      "y": 53.9,
+      "label": "Hints of a New Plague?, from Kinelory (Arathi Highlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Honored Amongst the Guard": {
+      "zone": "Alterac Mountains",
+      "mapHint": 1416,
+      "x": 39.5,
+      "y": 81.2,
+      "label": "Honored Amongst the Guard, from Lieutenant Haggerdin (Alterac Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Horde Presence": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 48.1,
+      "y": 5.4,
+      "label": "Horde Presence, from Kadrak (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Horrors in the Highland": {
+      "zone": "Wetlands",
+      "mapHint": 1437,
+      "x": 56.4,
+      "y": 40.4,
+      "label": "Horrors in the Highland, from Rethiel the Greenwarden (Wetlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Hurley Blackbreath": {
+      "zone": "Dun Morogh",
+      "mapHint": 1426,
+      "x": 46.8,
+      "y": 52.4,
+      "label": "Hurley Blackbreath, from Ragnar Thunderbrew (Dun Morogh)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Important Heirlooms": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 32.2,
+      "y": 44.5,
+      "label": "Important Heirlooms, from Thom Filch (Ironforge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Improved Quality": {
+      "zone": "Feralas",
+      "mapHint": 1444,
+      "x": 30.6,
+      "y": 42.7,
+      "label": "Improved Quality, from Pratt McGrubben (Feralas)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:In Defense of the King's Lands": {
+      "zone": "Loch Modan",
+      "mapHint": 1432,
+      "x": 23.2,
+      "y": 73.7,
+      "label": "In Defense of the King's Lands, from Captain Rugelfuss (Loch Modan)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:In Dreams": {
+      "zone": "Western Plaguelands",
+      "mapHint": 1422,
+      "x": 42.0,
+      "y": 14.8,
+      "label": "In Dreams, from Highlord Taelan Fordring (Western Plaguelands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:In Nightmares": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 48.2,
+      "y": 32.8,
+      "label": "In Nightmares, from Falla Sagewind (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:In the Name of the Light": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 51.5,
+      "y": 58.4,
+      "label": "In the Name of the Light, from Raleigh the Devout (Hillsbrad Foothills)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Into The Scarlet Monastery": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 56.2,
+      "y": 92.2,
+      "label": "Into The Scarlet Monastery, from Varimathras (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Isha Awak": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 65.8,
+      "y": 43.9,
+      "label": "Isha Awak, from Mahren Skyseer (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:It's Dangerous to Go Alone": {
+      "zone": "Un'Goro Crater",
+      "mapHint": 1449,
+      "x": 44.7,
+      "y": 8.1,
+      "label": "It's Dangerous to Go Alone, from Linken (Un'Goro Crater)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Jammal'an the Prophet": {
+      "zone": "The Hinterlands",
+      "mapHint": 1425,
+      "x": 33.8,
+      "y": 75.2,
+      "label": "Jammal'an the Prophet, from Atal'ai Exile (The Hinterlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Jarl Needs a Blade": {
+      "zone": "Dustwallow Marsh",
+      "mapHint": 1445,
+      "x": 55.4,
+      "y": 26.3,
+      "label": "Jarl Needs a Blade, from \"Swamp Eye\" Jarl (Dustwallow Marsh)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Je'neu of the Earthen Ring": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 73.7,
+      "y": 60.0,
+      "label": "Je'neu of the Earthen Ring, from Mastok Wrilehiss (Ashenvale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Jin'Zil's Forest Magic": {
+      "zone": "Stonetalon Mountains",
+      "mapHint": 1442,
+      "x": 74.5,
+      "y": 97.9,
+      "label": "Jin'Zil's Forest Magic, from Witch Doctor Jin'Zil (Stonetalon Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Just Compensation": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 43.5,
+      "y": 52.6,
+      "label": "Just Compensation, from Deliana (Ironforge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:King of the Foulweald": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 11.9,
+      "y": 34.5,
+      "label": "King of the Foulweald, from Karang Amakkar (Ashenvale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Kirtonos the Herald": {
+      "zone": "Western Plaguelands",
+      "mapHint": 1422,
+      "x": 70.2,
+      "y": 73.7,
+      "label": "Kirtonos the Herald, from Eva Sarkhoff (Western Plaguelands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Kodo Roundup": {
+      "zone": "Desolace",
+      "mapHint": 1443,
+      "x": 60.9,
+      "y": 61.9,
+      "label": "Kodo Roundup, from Smeed Scrabblescrew (Desolace)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Kroshius' Infernal Core": {
+      "zone": "Felwood",
+      "mapHint": 1448,
+      "x": 41.4,
+      "y": 45.0,
+      "label": "Kroshius' Infernal Core, from Impsy (Felwood)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Leaders of the Fang": {
+      "zone": "Thunder Bluff",
+      "mapHint": 1456,
+      "x": 75.7,
+      "y": 31.6,
+      "label": "Leaders of the Fang, from Nara Wildmane (Thunder Bluff)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Leonid's Letter": {
+      "zone": "Tirisfal Glades",
+      "mapHint": 1420,
+      "x": 22.0,
+      "y": 44.7,
+      "label": "Leonid's Letter, from Leonid Barthalomew the Revered (Tirisfal Glades)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Lethtendris's Web": {
+      "zone": "Feralas",
+      "mapHint": 1444,
+      "x": 30.4,
+      "y": 46.2,
+      "label": "Lethtendris's Web, from Latronicus Moonspear (Feralas)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Light's Justice": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 58.1,
+      "y": 89.5,
+      "label": "Light's Justice, from Morbin Lightbane (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Look To The Stars": {
+      "zone": "Duskwood",
+      "mapHint": 1431,
+      "x": 79.8,
+      "y": 48.0,
+      "label": "Look To The Stars, from Viktori Prism'Antras (Duskwood)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Mage's Wand": {
+      "zone": "Dustwallow Marsh",
+      "mapHint": 1445,
+      "x": 46.1,
+      "y": 57.1,
+      "label": "Mage's Wand, from Tabetha (Dustwallow Marsh)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Mai'Zoth": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 37.8,
+      "y": 3.6,
+      "label": "Mai'Zoth, from Brother Nimetz (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Making Repairs": {
+      "zone": "Tirisfal Glades",
+      "mapHint": 1420,
+      "x": 22.7,
+      "y": 44.7,
+      "label": "Making Repairs, from Jorin Croge (Tirisfal Glades)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Morganth": {
+      "zone": "Elwynn Forest",
+      "mapHint": 1429,
+      "x": 65.2,
+      "y": 69.7,
+      "label": "Morganth, from Theocritus (Elwynn Forest)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Mura Runetotem": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 52.3,
+      "y": 31.9,
+      "label": "Mura Runetotem, from Tonga Runetotem (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Mythology of the Titans": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 75.0,
+      "y": 12.5,
+      "label": "Mythology of the Titans, from Librarian Mae Paledust (Ironforge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:News for Fizzle": {
+      "zone": "Badlands",
+      "mapHint": 1418,
+      "x": 42.2,
+      "y": 52.7,
+      "label": "News for Fizzle, from Martek the Exiled (Badlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Old Ironforge Incursion": {
+      "zone": "Dun Morogh",
+      "mapHint": 1426,
+      "x": 64.9,
+      "y": 58.5,
+      "label": "Old Ironforge Incursion, from Earthseer Farsen (Dun Morogh)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Oran's Gratitude": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 73.1,
+      "y": 32.9,
+      "label": "Oran's Gratitude, from Oran Snakewrithe (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Ormer's Revenge": {
+      "zone": "Wetlands",
+      "mapHint": 1437,
+      "x": 38.2,
+      "y": 50.9,
+      "label": "Ormer's Revenge, from Ormer Ironbraid (Wetlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Augur's Bracers": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.0,
+      "label": "Paragons of Power: The Augur's Bracers, from Maywiki of Zuldazar (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Augur's Hauberk": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.0,
+      "label": "Paragons of Power: The Augur's Hauberk, from Maywiki of Zuldazar (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Confessor's Bindings": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.1,
+      "label": "Paragons of Power: The Confessor's Bindings, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Confessor's Mantle": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.1,
+      "label": "Paragons of Power: The Confessor's Mantle, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Confessor's Wraps": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.1,
+      "label": "Paragons of Power: The Confessor's Wraps, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Demoniac's Robes": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.1,
+      "label": "Paragons of Power: The Demoniac's Robes, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Demoniac's Wraps": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.1,
+      "label": "Paragons of Power: The Demoniac's Wraps, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Haruspex's Bracers": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.0,
+      "label": "Paragons of Power: The Haruspex's Bracers, from Maywiki of Zuldazar (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Haruspex's Tunic": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.0,
+      "label": "Paragons of Power: The Haruspex's Tunic, from Maywiki of Zuldazar (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Illusionist's Robes": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.1,
+      "label": "Paragons of Power: The Illusionist's Robes, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Illusionist's Wraps": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 16.1,
+      "label": "Paragons of Power: The Illusionist's Wraps, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Madcap's Mantle": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 14.1,
+      "y": 13.7,
+      "label": "Paragons of Power: The Madcap's Mantle, from Falthir the Sightless (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Madcap's Tunic": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 14.1,
+      "y": 13.7,
+      "label": "Paragons of Power: The Madcap's Tunic, from Falthir the Sightless (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Predator's Belt": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 14.1,
+      "y": 13.7,
+      "label": "Paragons of Power: The Predator's Belt, from Falthir the Sightless (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Predator's Mantle": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 14.1,
+      "y": 13.7,
+      "label": "Paragons of Power: The Predator's Mantle, from Falthir the Sightless (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Vindicator's Armguards": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 14.4,
+      "label": "Paragons of Power: The Vindicator's Armguards, from Jin'rokh the Breaker (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Vindicator's Belt": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 14.4,
+      "label": "Paragons of Power: The Vindicator's Belt, from Jin'rokh the Breaker (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Paragons of Power: The Vindicator's Breastplate": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 15.3,
+      "y": 14.4,
+      "label": "Paragons of Power: The Vindicator's Breastplate, from Jin'rokh the Breaker (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Past Due": {
+      "zone": "Alterac Mountains",
+      "mapHint": 1416,
+      "x": 9.5,
+      "y": 62.2,
+      "label": "Past Due, from Magus Olvek (Alterac Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Portals of the Legion": {
+      "zone": "Desolace",
+      "mapHint": 1443,
+      "x": 25.8,
+      "y": 68.2,
+      "label": "Portals of the Legion, from Taiga Wisemane (Desolace)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Power Stones": {
+      "zone": "Badlands",
+      "mapHint": 1418,
+      "x": 42.4,
+      "y": 52.9,
+      "label": "Power Stones, from Rigglefuzz (Badlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Prehistoric Prism": {
+      "zone": "Wetlands",
+      "mapHint": 1437,
+      "x": 38.8,
+      "y": 52.4,
+      "label": "Prehistoric Prism, from Prospector Whelgar (Wetlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Protect Kanati Greycloud": {
+      "zone": "Thousand Needles",
+      "mapHint": 1441,
+      "x": 21.2,
+      "y": 32.1,
+      "label": "Protect Kanati Greycloud, from Kanati Greycloud (Thousand Needles)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Pyrewood Ambush": {
+      "zone": "Silverpine Forest",
+      "mapHint": 1421,
+      "x": 46.5,
+      "y": 74.4,
+      "label": "Pyrewood Ambush, from Deathstalker Faerleia (Silverpine Forest)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Ramstein": {
+      "zone": "Eastern Plaguelands",
+      "mapHint": 1423,
+      "x": 22.2,
+      "y": 63.5,
+      "label": "Ramstein, from Nathanos Blightcaller (Eastern Plaguelands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Rare Books": {
+      "zone": "Elwynn Forest",
+      "mapHint": 1429,
+      "x": 42.1,
+      "y": 65.9,
+      "label": "Rare Books, from Marshal Dughan (Elwynn Forest)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Reagents for Reclaimers Inc.": {
+      "zone": "Desolace",
+      "mapHint": 1443,
+      "x": 66.2,
+      "y": 9.6,
+      "label": "Reagents for Reclaimers Inc., from Kreldig Ungor (Desolace)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Reclaiming the Charred Vale": {
+      "zone": "Stonetalon Mountains",
+      "mapHint": 1442,
+      "x": 37.1,
+      "y": 8.1,
+      "label": "Reclaiming the Charred Vale, from Keeper Albagorm (Stonetalon Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Red Leather Bandanas": {
+      "zone": "Westfall",
+      "mapHint": 1436,
+      "x": 54.0,
+      "y": 53.0,
+      "label": "Red Leather Bandanas, from Scout Galiaan (Westfall)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Red Silk Bandanas": {
+      "zone": "Westfall",
+      "mapHint": 1436,
+      "x": 56.7,
+      "y": 47.4,
+      "label": "Red Silk Bandanas, from Scout Riell (Westfall)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Remember That I Love You": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 56.3,
+      "y": 54.0,
+      "label": "Remember That I Love You, from Orphan Matron Nightingale (Stormwind City)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Rescue OOX-17/TN!": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 60.2,
+      "y": 64.7,
+      "label": "Rescue OOX-17/TN!, from Homing Robot OOX-17/TN (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Rescue OOX-22/FE!": {
+      "zone": "Feralas",
+      "mapHint": 1444,
+      "x": 53.4,
+      "y": 55.7,
+      "label": "Rescue OOX-22/FE!, from Homing Robot OOX-22/FE (Feralas)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Researching the Corruption": {
+      "zone": "Darkshore",
+      "mapHint": 1439,
+      "x": 38.3,
+      "y": 43.0,
+      "label": "Researching the Corruption, from Gershala Nightwhisper (Darkshore)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Restoring the Necklace": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 36.4,
+      "y": 3.6,
+      "label": "Restoring the Necklace, from Talvash del Kissel (Ironforge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Retrieval for Mauren": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 53.0,
+      "y": 86.6,
+      "label": "Retrieval for Mauren, from Collin Mauren (Stormwind City)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Return the Statuette": {
+      "zone": "Wetlands",
+      "mapHint": 1437,
+      "x": 8.3,
+      "y": 58.6,
+      "label": "Return the Statuette, from Karl Boran (Wetlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Return to Valanaar": {
+      "zone": "Zephras Isle",
+      "mapHint": 2521,
+      "x": 69.7,
+      "y": 67.1,
+      "label": "Return to Valanaar, from Yorana Windyreed (Zephras Isle)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Rig Wars": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 76.0,
+      "y": 25.4,
+      "label": "Rig Wars, from Nogg (Orgrimmar)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Ring of Unspoken Names": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 52.0,
+      "y": 38.2,
+      "label": "Ring of Unspoken Names, from Windcaller Yessendra (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Rise, Obsidion!": {
+      "zone": "Searing Gorge",
+      "mapHint": 1427,
+      "x": 41.1,
+      "y": 25.6,
+      "label": "Rise, Obsidion!, from Dying Archaeologist (Searing Gorge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Rites of the Earthmother": {
+      "zone": "Thunder Bluff",
+      "mapHint": 1456,
+      "x": 60.3,
+      "y": 51.7,
+      "label": "Rites of the Earthmother, from Cairne Bloodhoof (Thunder Bluff)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Rot and Regret": {
+      "zone": "Shen'dralas",
+      "mapHint": 2652,
+      "x": 69.7,
+      "y": 71.8,
+      "label": "Rot and Regret, from Woodwyrd (Shen'dralas)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Runecloth": {
+      "zone": "Felwood",
+      "mapHint": 1448,
+      "x": 65.7,
+      "y": 2.8,
+      "label": "Runecloth, from Meilosh (Felwood)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Samophlange Manual": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 76.5,
+      "y": 24.4,
+      "label": "Samophlange Manual, from Rilli Greasygob (Orgrimmar)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Sample for Helbrim": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 50.1,
+      "y": 68.0,
+      "label": "Sample for Helbrim, from Apothecary Zinge (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Saving Sunnyglade": {
+      "zone": "Riverglades",
+      "mapHint": 2548,
+      "x": 66.7,
+      "y": 81.0,
+      "label": "Saving Sunnyglade, from Demar Brant (Riverglades)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Scrounging": {
+      "zone": "Badlands",
+      "mapHint": 1418,
+      "x": 53.8,
+      "y": 43.3,
+      "label": "Scrounging, from Sigrun Ironhew (Badlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Separation Anxiety": {
+      "zone": "The Hinterlands",
+      "mapHint": 1425,
+      "x": 79.2,
+      "y": 79.5,
+      "label": "Separation Anxiety, from Huntsman Markhor (The Hinterlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Serena Bloodfeather": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 51.6,
+      "y": 30.9,
+      "label": "Serena Bloodfeather, from Darsok Swiftdagger (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Serpentbloom": {
+      "zone": "Thunder Bluff",
+      "mapHint": 1456,
+      "x": 22.8,
+      "y": 20.9,
+      "label": "Serpentbloom, from Apothecary Zamah (Thunder Bluff)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Shadowshard Fragments": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 39.2,
+      "y": 86.3,
+      "label": "Shadowshard Fragments, from Uthel'nay (Orgrimmar)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Shroud of Infinite Wisdom": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 51.8,
+      "y": 39.5,
+      "label": "Shroud of Infinite Wisdom, from Keyl Swiftclaw (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Shroud of Unspoken Names": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 51.8,
+      "y": 39.5,
+      "label": "Shroud of Unspoken Names, from Keyl Swiftclaw (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Skull Rock": {
+      "zone": "Durotar",
+      "mapHint": 1411,
+      "x": 56.4,
+      "y": 20.0,
+      "label": "Skull Rock, from Margoz (Durotar)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Solution to Doom": {
+      "zone": "Badlands",
+      "mapHint": 1418,
+      "x": 51.4,
+      "y": 76.9,
+      "label": "Solution to Doom, from Theldurin the Lost (Badlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Southsea Shakedown": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 67.1,
+      "y": 23.9,
+      "label": "Southsea Shakedown, from Security Chief Bilgewhizzle (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Souvenirs of Death": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 62.1,
+      "y": 19.7,
+      "label": "Souvenirs of Death, from Deathguard Samsa (Hillsbrad Foothills)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Stolen Booty": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 62.7,
+      "y": 36.2,
+      "label": "Stolen Booty, from Gazlowe (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Stolen Silver": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 51.9,
+      "y": 30.3,
+      "label": "Stolen Silver, from Gazrog (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Stopping the Cycle": {
+      "zone": "Wetlands",
+      "mapHint": 1437,
+      "x": 49.4,
+      "y": 42.1,
+      "label": "Stopping the Cycle, from Howin Kindfeather (Wetlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Sweet Amber": {
+      "zone": "Westfall",
+      "mapHint": 1436,
+      "x": 44.6,
+      "y": 80.2,
+      "label": "Sweet Amber, from Grimbooze Thunderbrew (Westfall)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Tharnariun's Hope": {
+      "zone": "Darkshore",
+      "mapHint": 1439,
+      "x": 38.8,
+      "y": 43.4,
+      "label": "Tharnariun's Hope, from Tharnariun Treetender (Darkshore)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Argent Hold": {
+      "zone": "Eastern Plaguelands",
+      "mapHint": 1423,
+      "x": 71.9,
+      "y": 48.4,
+      "label": "The Argent Hold, from Lord Maxwell Tyrosus (Eastern Plaguelands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Azure Key": {
+      "zone": "Azshara",
+      "mapHint": 1447,
+      "x": 29.2,
+      "y": 40.2,
+      "label": "The Azure Key, from Archmage Xylem (Azshara)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Blackwood Corrupted": {
+      "zone": "Darkshore",
+      "mapHint": 1439,
+      "x": 37.4,
+      "y": 40.1,
+      "label": "The Blackwood Corrupted, from Thundris Windweaver (Darkshore)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Book of Ur": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 53.7,
+      "y": 54.5,
+      "label": "The Book of Ur, from Keeper Bel'dugur (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Branch of Cenarius": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 78.3,
+      "y": 44.8,
+      "label": "The Branch of Cenarius, from Anilia (Ashenvale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Coastal Menace": {
+      "zone": "Westfall",
+      "mapHint": 1436,
+      "x": 30.0,
+      "y": 86.0,
+      "label": "The Coastal Menace, from Captain Grayson (Westfall)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Completed Orb of Dar'Orahil": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 62.5,
+      "y": 35.5,
+      "label": "The Completed Orb of Dar'Orahil, from Menara Voidrender (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Completed Orb of Noh'Orahil": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 62.5,
+      "y": 35.5,
+      "label": "The Completed Orb of Noh'Orahil, from Menara Voidrender (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Crone of the Kraul": {
+      "zone": "Feralas",
+      "mapHint": 1444,
+      "x": 89.6,
+      "y": 46.6,
+      "label": "The Crone of the Kraul, from Falfindel Waywarder (Feralas)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Crown of Will": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 62.6,
+      "y": 20.6,
+      "label": "The Crown of Will, from Melisara (Hillsbrad Foothills)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Curse of the Tides": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 27.3,
+      "y": 77.5,
+      "label": "The Curse of the Tides, from Catelyn the Blade (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Defias Brotherhood": {
+      "zone": "Westfall",
+      "mapHint": 1436,
+      "x": 56.3,
+      "y": 47.5,
+      "label": "The Defias Brotherhood, from Gryan Stoutmantle (Westfall)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Den": {
+      "zone": "Stonetalon Mountains",
+      "mapHint": 1442,
+      "x": 45.9,
+      "y": 60.4,
+      "label": "The Den, from Braelyn Firehand (Stonetalon Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Disruption Ends": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 51.5,
+      "y": 30.9,
+      "label": "The Disruption Ends, from Thork (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Escape": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 56.5,
+      "y": 7.5,
+      "label": "The Escape, from Wizzlecrank's Shredder (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Everstill Bridge": {
+      "zone": "Redridge Mountains",
+      "mapHint": 1433,
+      "x": 27.1,
+      "y": 48.6,
+      "label": "The Everstill Bridge, from Foreman Oslow (Redridge Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Eye of Command": {
+      "zone": "Alterac Mountains",
+      "mapHint": 1416,
+      "x": 39.5,
+      "y": 81.2,
+      "label": "The Eye of Command, from Lieutenant Haggerdin (Alterac Mountains)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Fury Runs Deep": {
+      "zone": "Wetlands",
+      "mapHint": 1437,
+      "x": 49.7,
+      "y": 18.2,
+      "label": "The Fury Runs Deep, from Motley Garmason (Wetlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The God Hakkar": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 67.0,
+      "y": 22.4,
+      "label": "The God Hakkar, from Yeh'kinya (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Grand Invoker": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 65.3,
+      "y": 50.0,
+      "label": "The Grand Invoker, from Anachronos (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Grave Knight": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 62.6,
+      "y": 20.6,
+      "label": "The Grave Knight, from Melisara (Hillsbrad Foothills)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Green Drake": {
+      "zone": "Azshara",
+      "mapHint": 1447,
+      "x": 42.4,
+      "y": 42.6,
+      "label": "The Green Drake, from Ogtinc (Azshara)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Guns of Northwatch": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 62.3,
+      "y": 39.0,
+      "label": "The Guns of Northwatch, from Captain Thalo'thas Brightsun (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Hunt Completed": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 73.8,
+      "y": 61.5,
+      "label": "The Hunt Completed, from Senani Thunderheart (Ashenvale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Killing Fields": {
+      "zone": "Westfall",
+      "mapHint": 1436,
+      "x": 56.0,
+      "y": 31.2,
+      "label": "The Killing Fields, from Farmer Saldean (Westfall)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Last Element": {
+      "zone": "Badlands",
+      "mapHint": 1418,
+      "x": 2.9,
+      "y": 47.8,
+      "label": "The Last Element, from Shadowmage Vivian Lagrave (Badlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Legend of Stalvan": {
+      "zone": "Duskwood",
+      "mapHint": 1431,
+      "x": 73.5,
+      "y": 46.8,
+      "label": "The Legend of Stalvan, from Commander Althea Ebonlocke (Duskwood)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Lord of Blackrock": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 80.2,
+      "y": 38.4,
+      "label": "The Lord of Blackrock, from Highlord Bolvar Fordragon (Stormwind City)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Lost Pages": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 70.0,
+      "y": 71.2,
+      "label": "The Lost Pages, from Gurda Ragescar (Ashenvale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Maelstrom's Tendril": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 14.1,
+      "y": 13.7,
+      "label": "The Maelstrom's Tendril, from Falthir the Sightless (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Nightmare Manifests": {
+      "zone": "Moonglade",
+      "mapHint": 1450,
+      "x": 36.2,
+      "y": 41.8,
+      "label": "The Nightmare Manifests, from Keeper Remulos (Moonglade)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Only Good Brinescale...": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 32.2,
+      "y": 28.9,
+      "label": "The Only Good Brinescale..., from Commander Aggro'gosh (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Only Song I Know...": {
+      "zone": "Eastern Plaguelands",
+      "mapHint": 1423,
+      "x": 71.2,
+      "y": 49.9,
+      "label": "The Only Song I Know..., from Craftsman Wilhelm (Eastern Plaguelands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Orb of Soran'ruk": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 49.3,
+      "y": 57.2,
+      "label": "The Orb of Soran'ruk, from Doan Karhan (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Path of the Conqueror": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 65.3,
+      "y": 50.0,
+      "label": "The Path of the Conqueror, from Anachronos (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Path of the Protector": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 65.3,
+      "y": 50.0,
+      "label": "The Path of the Protector, from Anachronos (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The People's Militia": {
+      "zone": "Westfall",
+      "mapHint": 1436,
+      "x": 56.3,
+      "y": 47.5,
+      "label": "The People's Militia, from Gryan Stoutmantle (Westfall)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Perfect Poison": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 52.1,
+      "y": 39.1,
+      "label": "The Perfect Poison, from Dirk Thunderwood (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Power to Destroy...": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 56.2,
+      "y": 92.2,
+      "label": "The Power to Destroy..., from Varimathras (Undercity)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Protector of Kalimdor": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 65.3,
+      "y": 50.0,
+      "label": "The Protector of Kalimdor, from Anachronos (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Qiraji Conqueror": {
+      "zone": "Tanaris",
+      "mapHint": 1446,
+      "x": 65.3,
+      "y": 50.0,
+      "label": "The Qiraji Conqueror, from Anachronos (Tanaris)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Restless Dead": {
+      "zone": "Ironforge",
+      "mapHint": 1455,
+      "x": 33.2,
+      "y": 48.0,
+      "label": "The Restless Dead, from Afadra Dunwall (Ironforge)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Rise of the Machines": {
+      "zone": "Badlands",
+      "mapHint": 1418,
+      "x": 25.9,
+      "y": 44.9,
+      "label": "The Rise of the Machines, from Lotwil Veriatus (Badlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Rog'mar Situation": {
+      "zone": "Riverglades",
+      "mapHint": 2548,
+      "x": 59.5,
+      "y": 64.0,
+      "label": "The Rog'mar Situation, from Watcher Cornelius (Riverglades)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Saltseer Captain": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 26.9,
+      "y": 77.2,
+      "label": "The Saltseer Captain, from Krazek (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Scarlet Oracle, Demetria": {
+      "zone": "Eastern Plaguelands",
+      "mapHint": 1423,
+      "x": 22.2,
+      "y": 63.5,
+      "label": "The Scarlet Oracle, Demetria, from Nathanos Blightcaller (Eastern Plaguelands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Temple of Atal'Hakkar": {
+      "zone": "Swamp of Sorrows",
+      "mapHint": 1435,
+      "x": 47.9,
+      "y": 54.8,
+      "label": "The Temple of Atal'Hakkar, from Fel'zerul (Swamp of Sorrows)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Test of Righteousness": {
+      "zone": "Dun Morogh",
+      "mapHint": 1426,
+      "x": 52.5,
+      "y": 36.9,
+      "label": "The Test of Righteousness, from Jordan Stilwell (Dun Morogh)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Web of Magic": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 50.6,
+      "y": 57.1,
+      "label": "The Web of Magic, from Loremaster Dibbs (Hillsbrad Foothills)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:The Wrath of Rath'mael": {
+      "zone": "Tirisfal Glades",
+      "mapHint": 1420,
+      "x": 65.2,
+      "y": 60.2,
+      "label": "The Wrath of Rath'mael, from Deathguard Kristof (Tirisfal Glades)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Threat from Below": {
+      "zone": "Durotar",
+      "mapHint": 1411,
+      "x": 52.2,
+      "y": 43.1,
+      "label": "Threat from Below, from Orgnil Soulscar (Durotar)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Tiara of the Deep": {
+      "zone": "Dustwallow Marsh",
+      "mapHint": 1445,
+      "x": 46.1,
+      "y": 57.1,
+      "label": "Tiara of the Deep, from Tabetha (Dustwallow Marsh)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Tiger Mastery": {
+      "zone": "Stranglethorn Vale",
+      "mapHint": 1434,
+      "x": 35.6,
+      "y": 10.6,
+      "label": "Tiger Mastery, from Ajeck Rouack (Stranglethorn Vale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Tower Defense": {
+      "zone": "Zephras Isle",
+      "mapHint": 2521,
+      "x": 66.1,
+      "y": 76.6,
+      "label": "Tower Defense, from Valennia Stormfist (Zephras Isle)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Treasure of the Timeless One": {
+      "zone": "Silithus",
+      "mapHint": 1451,
+      "x": 25.9,
+      "y": 91.0,
+      "label": "Treasure of the Timeless One, from Jonathan the Revelator (Silithus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Tremors of the Earth": {
+      "zone": "Badlands",
+      "mapHint": 1418,
+      "x": 61.9,
+      "y": 54.3,
+      "label": "Tremors of the Earth, from Garek (Badlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Trolls of a Feather": {
+      "zone": "Felwood",
+      "mapHint": 1448,
+      "x": 41.4,
+      "y": 45.0,
+      "label": "Trolls of a Feather, from Impsy (Felwood)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Twilight Falls": {
+      "zone": "Darnassus",
+      "mapHint": 1457,
+      "x": 55.2,
+      "y": 24.0,
+      "label": "Twilight Falls, from Argent Guard Manados (Darnassus)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Twisted Evils": {
+      "zone": "Desolace",
+      "mapHint": 1443,
+      "x": 62.2,
+      "y": 39.6,
+      "label": "Twisted Evils, from Willow (Desolace)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Underground Assault": {
+      "zone": "Stormwind City",
+      "mapHint": 1453,
+      "x": 62.6,
+      "y": 34.1,
+      "label": "Underground Assault, from Shoni the Shilent (Stormwind City)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Unfortunate News": {
+      "zone": "Zephras Isle",
+      "mapHint": 2521,
+      "x": 56.2,
+      "y": 59.0,
+      "label": "Unfortunate News, from Dead Cultist (Zephras Isle)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Unwelcome Guests": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 42.0,
+      "y": 11.4,
+      "label": "Unwelcome Guests, from Walton (The Barrens)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Voodoo Feathers": {
+      "zone": "Swamp of Sorrows",
+      "mapHint": 1435,
+      "x": 34.3,
+      "y": 66.1,
+      "label": "Voodoo Feathers, from Fallen Hero of the Horde (Swamp of Sorrows)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Vyletongue Corruption": {
+      "zone": "Desolace",
+      "mapHint": 1443,
+      "x": 23.2,
+      "y": 70.3,
+      "label": "Vyletongue Corruption, from Vark Battlescar (Desolace)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Warlord's Command": {
+      "zone": "Badlands",
+      "mapHint": 1418,
+      "x": 5.8,
+      "y": 47.5,
+      "label": "Warlord's Command, from Warlord Goretooth (Badlands)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Warsong Supplies": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 71.4,
+      "y": 67.6,
+      "label": "Warsong Supplies, from Locke Okarr (Ashenvale)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Watching the Roads": {
+      "zone": "Silverpine Forest",
+      "mapHint": 1421,
+      "x": 44.0,
+      "y": 40.9,
+      "label": "Watching the Roads, from Shadow Priest Allister (Silverpine Forest)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Winterfall Activity": {
+      "zone": "Winterspring",
+      "mapHint": 1452,
+      "x": 27.7,
+      "y": 34.5,
+      "label": "Winterfall Activity, from Salfa (Winterspring)",
+      "conf": "classic",
+      "via": "QuestieDB"
+    },
+    "quest:Wrongly Blamed, Justly Corrected": {
+      "zone": "The Barrens",
+      "mapHint": 1413,
+      "x": 44.6,
+      "y": 59.3,
+      "label": "Wrongly Blamed, Justly Corrected, from Grunt Logmar (The Barrens)",
       "conf": "classic",
       "via": "QuestieDB"
     }

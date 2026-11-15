@@ -3911,8 +3911,8 @@ def test_biz(templates=True):
               "%s: every place from bis/places.json is in the addon" % tag)
         tagged = [r for r in site["rows"] if "place" in r]
         check(len(tagged) > 300 and all(r["place"] in places for r in tagged), "%s: %d rows point at a known place" % (tag, len(tagged)))
-        check(lua.eval("R2F.BiZ.PlaceOfItem(7684)") == "Scarlet Monastery" and lua.eval("R2F.BiZ.PlaceOfItem(6720)") is None,
-              "%s: an item's place comes from its source (dungeon yes, quest no)" % tag)
+        check(lua.eval("R2F.BiZ.PlaceOfItem(7684)") == "Scarlet Monastery" and lua.eval("R2F.BiZ.PlaceOfItem(2580)") is None,
+              "%s: an item's place comes from its source (dungeon yes, a crafted item no)" % tag)
         lua.execute("for _, b in ipairs(DOLL) do if b.slotKey == 'shoulder' then b:Click() end end")
         find_frames(lua, "f.__kind == 'Button' and f.optRank ~= nil and f.place ~= nil and f.__shown", "PLACED")
         check(lua.eval("#PLACED") >= 1, "%s: the shoulder list has a row with a place" % tag)

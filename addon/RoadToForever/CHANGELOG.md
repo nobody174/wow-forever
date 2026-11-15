@@ -10,6 +10,7 @@
 - **Data:** places for dungeon entrances, vendors, quest givers and profession trainers (BiZNav / Alt + click on far more picks: level-60 picks that can point the arrow 12 -> 195 of 433), 288 picks that were "source not known yet" now have a source (QuestieDB, the game's vendor table, ForeverMyBis, ForeverDungeonJournal); credits on the page.
 - **Character slot marks (new Tweak, off until ticked):** green / yellow squares on the Character window's gear slots for the Mr.BiZ pick and the next two picks, a green arrow where an upgrade waits. New file `CharMarks.lua`.
 - **Wishlist:** items you already own are marked "you have it".
+- **Recorder:** a vendor window now also notes the map spot where you stood (about where the vendor is); `bis/tools/recorder_import.py` carries it and `questie_places.py` turns it into a place for vendors nobody else lists.
 - **Debug probes:** `/r2f debug ej`, `mem`, `inspect` (read-only research tools).
 
 ## 0.87.3 (2026-11-13)

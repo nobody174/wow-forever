@@ -51,6 +51,8 @@ def merge(files):
         for npc, v in (r.get("vendors") or {}).items():
             o = out["vendors"].setdefault(npc, {"z": v.get("z"), "i": {}})
             o["i"].update(v.get("i") or {})
+            if v.get("pos") and not o.get("pos"):
+                o["pos"] = v["pos"]
         for q, v in (r.get("quests") or {}).items():
             out["quests"].setdefault(q, v)
     return out
@@ -71,6 +73,8 @@ def keep_previous(out):
                 o["i"][item] = max(o["i"].get(item, 0), n)
     for npc, v in (old.get("vendors") or {}).items():
         o = out["vendors"].setdefault(npc, {"z": v.get("z"), "i": {}})
+        if v.get("pos") and not o.get("pos"):
+            o["pos"] = v["pos"]
         for item, n in (v.get("i") or {}).items():
             o["i"].setdefault(item, n)
     for q, v in (old.get("quests") or {}).items():

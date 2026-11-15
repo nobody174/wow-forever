@@ -3835,6 +3835,21 @@ def test_bizme():
     check(lua.eval("(R2F.CharMarks.RankOf(R2F.BiZ.Spec('hunter/beast-mastery'), 30, 'head', 1))") is None, "%s: an item on no list has no rank" % tag)
     lua.execute("R2F.Gameplay.SetOn('charmarks', false) R2F.CharMarks.Update() TEST.worn = {}")
 
+    # the recorder notes where you stood at a vendor, so Forever-new vendors can be placed
+    lua.execute("""
+      R2F.Library.db.recorder = R2F.Library.db.recorder or {} R2F.Library.db.recorder.on = true
+      R2F.Library.db.recorder.vendors = {} R2F.Library.db.recorder.drops = R2F.Library.db.recorder.drops or {}
+      R2F.Library.db.recorder.objects = R2F.Library.db.recorder.objects or {} R2F.Library.db.recorder.quests = R2F.Library.db.recorder.quests or {}
+      UnitGUID = function() return 'Creature-0-1465-0-4-227853-000012AB34' end
+      GetMerchantNumItems = function() return 1 end GetMerchantItemLink = function() return '|Hitem:228175::::|h[Lib]|h' end
+      GetMerchantItemInfo = function() return 'x', 1, 100, 1 end
+      C_Map = { GetBestMapForUnit = function() return 1434 end,
+                GetPlayerMapPosition = function() return { GetXY = function() return 0.285, 0.7586 end } end }
+      R2F.Recorder.OnMerchant()
+    """)
+    check(lua.eval("R2F.Library.db.recorder.vendors[227853].pos.m") == 1434 and lua.eval("R2F.Library.db.recorder.vendors[227853].pos.x") == 28.5
+          and lua.eval("R2F.Library.db.recorder.vendors[227853].pos.y") == 75.9, "%s: the recorder notes where you stood at a vendor" % tag)
+
     # viewing as another character: saved profile, gear read from it, inspect flow
     lua.execute("R2F.BiZMe.SaveProfile('Friend', { class = 'mage', spec = 'mage/frost', level = 30, faction = 'alliance' }, "
                 "{ [1] = '|cff1eff00|Hitem:777::::::::|h[Hat]|h|r' })")

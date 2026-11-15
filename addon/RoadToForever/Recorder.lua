@@ -15,7 +15,8 @@
 --   on, since, version
 --   drops   = { [npcId] = { k = corpses looted, z = zone, lv = level or nil, i = { [itemId] = times seen } } }
 --   objects = { [objectId] = { k, z, i } }                       -- chests, nodes
---   vendors = { [npcId] = { z, i = { [itemId] = { p = copper price, q = stack, e = 1 if it costs more than gold } } } }
+--   vendors = { [npcId] = { z, pos = { m = map id, x, y in map percent where you stood },
+--                           i = { [itemId] = { p = copper price, q = stack, e = 1 if it costs more than gold } } } }
 --   quests  = { [questId] = { t = title, n = npc id, z = zone, c = { choice item ids }, r = { reward item ids } } }
 
 local _, R2F = ...
@@ -112,6 +113,19 @@ function Rec.OnLoot()
   if seenCount > 3000 then seenGuids, seenCount = {}, 0 end
 end
 
+-- Where you stand (map id, x, y in map percent), or nil: with a vendor window open that is within a few yards
+-- of him, so it places Forever-new vendors on the map (bis/tools/recorder_import.py carries it into the data).
+local function position()
+  if not (_G.C_Map and C_Map.GetBestMapForUnit and C_Map.GetPlayerMapPosition) then return nil end
+  local ok, map = pcall(C_Map.GetBestMapForUnit, "player")
+  if not (ok and map) then return nil end
+  local ok2, pos = pcall(C_Map.GetPlayerMapPosition, map, "player")
+  if not (ok2 and pos and pos.GetXY) then return nil end
+  local x, y = pos:GetXY()
+  if type(x) ~= "number" or type(y) ~= "number" or x <= 0 or y <= 0 then return nil end
+  return { m = map, x = math.floor(x * 1000 + 0.5) / 10, y = math.floor(y * 1000 + 0.5) / 10 }
+end
+
 -- A vendor window: what is for sale and at what price.
 function Rec.OnMerchant()
   local d = db()
@@ -123,6 +137,7 @@ function Rec.OnMerchant()
   if not rec then return end
   rec.i = rec.i or {}
   rec.z = rec.z or zone()
+  rec.pos = rec.pos or position()
   for index = 1, _G.GetMerchantNumItems() do
     local id = itemId(_G.GetMerchantItemLink and _G.GetMerchantItemLink(index))
     if id then

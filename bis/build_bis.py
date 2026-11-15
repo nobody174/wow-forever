@@ -354,7 +354,7 @@ def load_places():
         places = json.load(f)["places"]
     for key, p in places.items():
         missing = [k for k in ("zone", "x", "y", "label", "conf") if k not in p]
-        if missing or p["conf"] not in ("exact", "classic", "approx"):
+        if missing or p["conf"] not in ("exact", "classic", "approx", "seen"):
             raise ValueError("places.json %r: missing %s or bad conf" % (key, missing))
         if not (0 <= p["x"] <= 100 and 0 <= p["y"] <= 100):
             raise ValueError("places.json %r: x / y must be map percent" % key)

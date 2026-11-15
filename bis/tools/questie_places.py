@@ -19,6 +19,7 @@ BIS = os.path.normpath(os.path.join(HERE, ".."))
 ROOT = os.path.normpath(os.path.join(BIS, ".."))
 LIVE = os.path.join(BIS, "own", "cache", "questiedb_live.json")
 VSPOTS = os.path.join(BIS, "own", "cache", "vendor_spots.json")
+RECORDED = os.path.join(BIS, "own", "recorded.json")
 QDIR = r"D:\World of Warcraft\_forever_\Interface\AddOns\QuestieDB\support\Forever\Zones"
 VENDOR = 4          # npcFlags bit (mangos UNIT_NPC_FLAG_VENDOR)
 SPREAD = 4.0        # an NPC that wanders within this many map percent counts as one spot
@@ -110,10 +111,18 @@ def main():
                     ui, x, y, zone = v["spots"][0]
                     if want[name] <= {""} or any(z.lower() in zone.lower() for z in want[name]):
                         fits.append((0, 0, (x, y), ui, zone))
+        via = "QuestieDB"
+        if not fits and os.path.exists(RECORDED):
+            # a spot our own recorder saw (Recorder.lua notes where you stood at the vendor): bis/own/recorded.json
+            for nid, v in (json.load(open(RECORDED, encoding="utf-8")).get("vendors") or {}).items():
+                pos = v.get("pos")
+                if pos and (npcs.get(nid) or {}).get("name") == name:
+                    fits.append((int(nid), 0, (pos["x"], pos["y"]), pos["m"], v.get("z") or ""))
+                    via = "our own recordings"
         if len({(f[3], f[2]) for f in fits}) == 1:
             npc_id, a, c, mapid, zone = fits[0]
             places["places"][key] = {"zone": zone, "mapHint": mapid, "x": c[0], "y": c[1], "label": name + ", " + zone,
-                                     "conf": "classic", "via": "QuestieDB"}
+                                     "conf": "seen" if via == "our own recordings" else "classic", "via": via}
             v_added.append((name, zone, c))
         else:
             v_skip.append((name, sorted(want[name]), len(fits)))

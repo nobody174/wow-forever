@@ -1,23 +1,31 @@
 # BiZMe! roadmap (inside Mr.BiZ)
 
-## Phase 0 — Inventory, plan review, research
-(a) Inventory current Mr.BiZ (BiZ.lua, GearScore.lua, QuestWeapons.lua, Plan.lua, Nav.lua, bis/ pipeline, bis.html) -> docs/mrbiz-inventory.md.
-(b) Review this plan against the code -> docs/plan-review.md (changes welcome).
-(c) Audit BIS, ForeverBiS, ForeverCompanion, ForeverLevelingBiS, ForeverMyBis, ForeverWoWBiS, SpecBisTooltip + UI study of ForeverDungeonJournal -> docs/addon-audit.md, docs/ui-study.md.
-(d) Forever data research (item stat changes vs Classic, dungeon/encounter journal API, trusted source data) -> docs/data-sources.md.
-Exit: gaps vs current Mr.BiZ known, plan adjusted, owner approves.
+Revised 2026-11-15 after the code review (`docs/plan-review.md`; the bigger changes await owner approval). Mr.BiZ already has per-level lists (10-60),
+spec auto-detect, filters, wishlist, upgrade arrows and a BiZNav arrow: see `docs/mrbiz-inventory.md`.
 
-## Phase 1 — Data additions
-Pre-BiZ and per-phase lists, stat weights per spec (computed level lists), richer source data for routing, unknown/unverified flags. Extend bis/build_bis.py; no hand-edited generated files.
+## Phase 0 - Inventory, plan review, research (done 2026-11-15, awaiting approval)
+mrbiz-inventory.md, plan-review.md, addon-audit.md, ui-study.md, data-sources.md. Exit: owner approves plan-review.md.
 
-## Phase 2 — Viewer and look
-Auto-detect + override + "viewing as", per-slot top alternatives, source chips, native Blizzard look (Character frame tab). Site bis.html stays in step.
+## Phase 1 - Data and measurements (no new ranking)
+(a) Places: grow `bis/places.json` and source coverage so level-60 picks can be routed (12 of 433 today); unknown-source triage list.
+(b) Measure the 3.5 MB BiZData in game; decide on a load-on-demand split.
+(c) `/r2f debug ej` read-only test (does the client's Encounter Journal give loot / entrances?).
+(d) Refresh picks to the live build when ForeverDB moves (`bis/README.md`); show the data build in the tab.
 
-## Phase 3 — BiZMe: wishlist and upgrade engine
-Per-character wishlist, gear vs BiZ compare, tooltip lines, upgrade arrows, BiZ GearScore, "next best upgrade obtainable now".
+## Phase 2 - BiZMe core (addon logic first, then UI)
+Worn-vs-BiZ per slot, "already have it", reachable-now filter, next-best-upgrade engine (carry rule from the runs), wishlist tracker with auto-tick, named "viewing as" profiles,
+tooltip rank line, hybrid roles in spec detection. Pure Lua functions with tests before UI.
 
-## Phase 4 — Route
-Source -> location/quest/dungeon mapping, ranked route list, BiZNav waypoints, Launch Plan hints.
+## Phase 3 - Share
+`R2FB1:` BiZ code (class/spec, level, wishlist, optional gear), site decoder in bis.html, Discord-friendly text. `R2FW1` stays valid.
 
-## Phase 5 — Polish
-3D character preview with slot icons around it, skins, BiZ code sharing, user-reported data flow.
+## Phase 4 - Route
+Ranked upgrade list, BiZNav waypoints over the places data, Launch Plan hints. No TSP.
+
+## Phase 5 - Look
+Docked Character-frame panel + slot overlays via hooks (not a real tab: hard rule 4), Blizzard templates per `docs/ui-study.md`, after a taint test.
+
+## Parked
+- Pre-BiZ / BiZ / per-phase lists: ForeverDB level 60 has no raids, so level 60 is already Pre-BiZ; build the split when raids or phases exist (reserve a `phase` field).
+- Computed best-at-level lists / own stat weights: dropped (owner decision 2026-11-13, no own ranker).
+- 3D preview: already built.

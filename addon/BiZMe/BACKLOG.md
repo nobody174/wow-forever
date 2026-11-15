@@ -1,12 +1,20 @@
 # BiZMe! Backlog (top = next)
 
-## Now: Phase 0
-- [ ] FIRST: inventory the existing Mr.BiZ (see CLAUDE.md) -> docs/mrbiz-inventory.md: features, data coverage, known gaps, what BiZMe should reuse.
-- [ ] Review ROADMAP.md/BACKLOG.md against the code and write suggested changes to docs/plan-review.md; update the plan files after owner OK.
-- [ ] Audit addons in D:\World of Warcraft\_forever_\Interface\AddOns: BIS, ForeverBiS, ForeverCompanion, ForeverLevelingBiS, ForeverMyBis, ForeverWoWBiS, SpecBisTooltip. Follow docs/RESEARCH-PLAN.md. Write docs/addon-audit.md.
-- [ ] UI study: ForeverDungeonJournal (design the owner likes) -> docs/ui-study.md (pros/cons, which Blizzard templates it uses).
-- [ ] Forever data research: which item stats differ from Classic, whether an encounter/dungeon journal API exists in the client, where the item->source data can be trusted (ForeverDB, Wowhead Forever). Write docs/data-sources.md. Check each source's terms.
-- [ ] Propose the Phase 1 data additions in docs/data-model.md (on top of the existing bis/ data) and wait for owner approval.
+## Now: Phase 0 (reports delivered 2026-11-15; waiting for owner approval of docs/plan-review.md)
+- [x] Inventory -> docs/mrbiz-inventory.md
+- [x] Plan review -> docs/plan-review.md (bigger changes listed at its top)
+- [x] Addon audit -> docs/addon-audit.md
+- [x] UI study (ForeverDungeonJournal) -> docs/ui-study.md
+- [x] Data research -> docs/data-sources.md
+- [ ] Owner: approve or change plan-review.md items 1-9 and answer its four questions.
+- [ ] Still to test (owner or browser): `/r2f debug ej` (to be written, read-only); foreverwow.gg and forevermybis.com terms; does ForeverDB's BiS page list more than 3 alternatives; addon memory with BiZData.
+- [ ] Add ledger rows to the wow-dev-support-folder findings-ledger (EJ functions seen in ForeverDungeonJournal; licences of the BiS addons; Forever trait-tree detection by posX gaps).
+
+## Next: Phase 1 (after approval)
+- [ ] Places data: extend `bis/places.json` / sources pipeline; target the level-60 best picks first.
+- [ ] Unknown-source triage list (78 level-60 best picks) for the group's recorder.
+- [ ] Measure BiZData memory; decide on the load-on-demand split.
+- [ ] Show the data build and date in the Mr.BiZ tab.
 
 ## Later
-- [ ] Phase 1-5 items per ROADMAP.md (break down after Phase 0).
+- [ ] Phase 2-5 per ROADMAP.md (break down after approval).

@@ -6600,6 +6600,18 @@ def test_talent_dump(templates):
                    "GetNodeInfo = function() return { ID = 5, label = 'SECRETSPELL', maxRanks = 3, entryIDs = {}, conditionIDs = {} } end }, 9).nodes[1].label") is None,
           "%s: a secret value is not copied" % tag)
     lua.execute("issecretvalue = nil")
+    # Encounter Journal probe (BiZMe): counts instances, encounters and loot from the functions it is given; missing ones are reported
+    lua.execute("TEST.ej = R2F.Diag.BuildEJDump({ GetNumTiers = function() return 1 end, SelectTier = function() end, "
+                "GetInstanceByIndex = function(i) if i <= 2 then return 100 + i, 'Dungeon' .. i end end, "
+                "SelectInstance = function() end, "
+                "GetEncounterInfoByIndex = function(e) if e <= 3 then return 'Boss' .. e, '', e end end, "
+                "SelectEncounter = function() end, GetNumLoot = function() return 4 end, "
+                "GetLootInfoByIndex = function() return nil, nil, nil, nil, 555 end }, 200)")
+    check(lua.eval("TEST.ej.total == 2 and TEST.ej.instances[1].encounters == 3 and TEST.ej.instances[1].loot == 12 "
+                   "and TEST.ej.have.GetNumLoot == true and TEST.ej.have.GetDungeonEntrancesForMap == nil"),
+          "%s: Encounter Journal probe counts instances, encounters and loot" % tag)
+    lua.execute("TEST.ej2 = R2F.Diag.BuildEJDump({ GetInstanceByIndex = function() return nil end }, 200)")
+    check(lua.eval("TEST.ej2.total == 0 and TEST.ej2.have.GetNumLoot == nil"), "%s: Encounter Journal probe with no loot functions" % tag)
 
 
 def test_talent_traits(templates):

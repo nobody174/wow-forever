@@ -248,6 +248,9 @@ local DEBUG = {
   recorder = function() R2F.Recorder.Debug() end,
   bars = function() R2F.ActionBars.Debug() end,
   corpse = function() R2F.Nav.DebugCorpse() end,
+  ej = function() R2F.Diag.EJ() end,
+  mem = function() R2F.Diag.Mem() end,
+  inspect = function() R2F.Diag.Inspect() end,
 }
 local DEBUG_ALIASES = { rankdebug = "rank", profdebug = "profs" }
 R2F.DEBUG = DEBUG

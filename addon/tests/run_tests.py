@@ -3804,6 +3804,16 @@ def test_bizme():
     check(line is not None and "Bizzest" in line and "Beast Mastery" in line, "%s: an item's tooltip says where it ranks: %s" % (tag, line))
     check(lua.eval("(R2F.BiZMe.RankLine(1, 'hunter/beast-mastery', 30))") is None, "%s: no line for an item on no list" % tag)
 
+    # BiZ code: spec, level and wishlist in one string
+    lua.execute("R2F.BiZ.SetSpec('hunter/marksmanship') R2F.BiZ.SetLevel(38) R2FCharDB.biz.wish = { [4224] = { spec = 'hunter/marksmanship', slot = 'head' } }")
+    code = lua.eval("R2F.BiZ.ExportCode()")
+    check(code == "R2FB1:hunter/marksmanship:38:4224:hunter/marksmanship:head", "%s: BiZ code: %s" % (tag, code))
+    lua.execute("R2FCharDB.biz.wish = {} R2F.BiZ.SetSpec('hunter/beast-mastery') R2F.BiZ.SetLevel(20)")
+    check(lua.eval("select(3, R2F.BiZ.ImportCode(%r))" % code) == 1 and lua.eval("R2F.BiZ.SpecId()") == "hunter/marksmanship" and lua.eval("R2F.BiZ.Level()") == 38,
+          "%s: importing a BiZ code shows the spec and level and adds the wishlist" % tag)
+    check(lua.eval("(R2F.BiZ.ImportCode('R2FB1:nonsense'))") is None, "%s: a bad code is refused" % tag)
+    lua.execute("R2FCharDB.biz.wish = {} R2F.BiZ.SetLevel(nil)")
+
     # viewing as another character: saved profile, gear read from it, inspect flow
     lua.execute("R2F.BiZMe.SaveProfile('Friend', { class = 'mage', spec = 'mage/frost', level = 30, faction = 'alliance' }, "
                 "{ [1] = '|cff1eff00|Hitem:777::::::::|h[Hat]|h|r' })")

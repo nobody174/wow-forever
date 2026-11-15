@@ -24,6 +24,7 @@ local BiZ = {}
 R2F.BiZ = BiZ
 
 local WISH_PREFIX = "R2FW1:"
+local CODE_PREFIX = "R2FB1:"
 
 -- In-game item quality colours (0 poor .. 5 legendary); used when the client's
 -- ITEM_QUALITY_COLORS table isn't there.
@@ -477,9 +478,33 @@ function BiZ.Export()
   return WISH_PREFIX .. table.concat(parts, ",")
 end
 
+-- A BiZ code for Discord: "R2FB1:<class/spec>:<level>:<wishlist items as in R2FW1>".
+-- It carries what you look at (spec and level) and your wishlist; the site reads and writes the same text
+-- (bis.html, "Copy this set").
+function BiZ.ExportCode()
+  return CODE_PREFIX .. BiZ.SpecId() .. ":" .. BiZ.Level() .. ":" .. BiZ.Export():sub(#WISH_PREFIX + 1)
+end
+
+-- Reads a BiZ code: shows that spec at that level and adds its items to the wishlist.
+-- Returns spec id, level, number of new items; or nil and a message.
+function BiZ.ImportCode(text)
+  local spec, lvl, rest = (text or ""):match("R2FB1:([%w%-]+/[%w%-]+):(%d+):(%S*)")
+  if not (spec and data().specs[spec]) then return nil, R2F.L.BIZ_IMPORT_BAD end
+  BiZ.SetSpec(spec)
+  BiZ.SetLevel(tonumber(lvl))
+  local added = 0
+  if rest ~= "" then added = BiZ.Import(WISH_PREFIX .. rest) or 0 end
+  return spec, BiZ.Level(), added
+end
+
 -- Adds the string's items to the wishlist. Returns the number of new items, or nil and
--- an error message if the text isn't a wishlist string.
+-- an error message if the text isn't a wishlist string. A BiZ code (R2FB1:) works too and also switches the view.
 function BiZ.Import(text)
+  if (text or ""):find("R2FB1:", 1, true) then
+    local spec, _, added = BiZ.ImportCode(text)
+    if not spec then return nil, R2F.L.BIZ_IMPORT_BAD end
+    return added
+  end
   local body = (text or ""):match("R2FW1:(%S*)")
   if not body then return nil, R2F.L.BIZ_IMPORT_BAD end
   local added = 0

@@ -412,7 +412,9 @@ local function layoutUp()
     end
   end
   ui.summary:SetText(L.BIZ_UP_SUMMARY:format(#list, lvl))
-  return y
+  local spec = BiZ.Spec(specId)
+  line("R2FDimSmall", 0, y + 10, 600, L.BIZ_DATA_FROM:format(tostring(spec and spec.build or "?"), tostring(R2F.BiZData.updated)))
+  return y + 30
 end
 
 -- ---------------------------------------------------------------------------
@@ -548,6 +550,7 @@ local function setViewShown()
   scroll:SetShown(not isSet)
   ui.exportBtn:SetShown(view == "wish")
   ui.importBtn:SetShown(view == "wish")
+  ui.codeBtn:SetShown(view == "wish")
 end
 
 local function refresh()
@@ -798,8 +801,11 @@ function Tab.Build(f)
   ui.exportBtn:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 0, 4)
   ui.importBtn = button(f, 110, L.BIZ_IMPORT, showImport)
   ui.importBtn:SetPoint("LEFT", ui.exportBtn, "RIGHT", 6, 0)
+  ui.codeBtn = button(f, 130, L.BIZ_CODE, function() UI.ShowCopy(BiZ.ExportCode(), L.BIZ_CODE_HINT) end)
+  ui.codeBtn:SetPoint("LEFT", ui.importBtn, "RIGHT", 6, 0)
   ui.exportBtn:Hide()
   ui.importBtn:Hide()
+  ui.codeBtn:Hide()
   return f
 end
 

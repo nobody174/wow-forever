@@ -711,7 +711,15 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     var items = wishItems();
     return "R2FW1:" + Object.keys(items).map(function (id) { return id + ":" + items[id].spec + ":" + items[id].slot; }).join(",");
   }
+  // R2FB1:<class>/<spec>:<level>:<wishlist items as above>: a BiZ code, also shows that spec at that level
   function applyWishString(text) {
+    var b = /R2FB1:([\w-]+\/[\w-]+):(\d+):([^\s]*)/.exec(text || "");
+    if (b && DATA.specs[b[1]]) {
+      prefs.cls = DATA.specs[b[1]].class; prefs.specOf[prefs.cls] = b[1];
+      level = String(Math.max(DATA.levels.min, Math.min(DATA.levels.max, +b[2])));
+      dd.level.set(LEVELS, level); fillClass(); fillSpec();
+      text = "R2FW1:" + b[3];
+    }
     var m = /R2FW1:([^\s]*)/.exec(text || "");
     if (!m) return -1;
     var items = wishItems(), n = 0;
@@ -778,10 +786,10 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
     else $("wish-msg").textContent = "Press Ctrl+C to copy the text above.";
   });
   $("set-copy").addEventListener("click", function () {
-    var s = "R2FW1:" + lastPicks.join(",");
+    var s = "R2FB1:" + currentSpecId() + ":" + level + ":" + lastPicks.join(",");
     $("wish-io").hidden = false; $("wish-text").value = s; $("wish-text").select();
     $("wish-apply").hidden = true;
-    var done = function () { $("wish-msg").textContent = "Copied " + lastPicks.length + " picks. In game: /biz, Wishlist, Import, then paste."; };
+    var done = function () { $("wish-msg").textContent = "Copied a BiZ code (" + lastPicks.length + " picks). Paste it in Discord, or in game: /biz, Wishlist, Import."; };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s).then(done, function () { $("wish-msg").textContent = "Press Ctrl+C to copy the text above."; });
     else $("wish-msg").textContent = "Press Ctrl+C to copy the text above.";
   });
@@ -791,7 +799,7 @@ a.wh.q0{color:#9d9d9d}a.wh.q1{color:#ffffff}a.wh.q2{color:#1eff00}a.wh.q3{color:
   });
   $("wish-apply").addEventListener("click", function () {
     var n = applyWishString($("wish-text").value);
-    $("wish-msg").textContent = n < 0 ? "That isn't a Mr.BiZ wishlist (it starts with R2FW1:)." : n + " new item" + (n === 1 ? "" : "s") + " added to " + store.current + "'s wishlist.";
+    $("wish-msg").textContent = n < 0 ? "That isn't a Mr.BiZ wishlist or BiZ code (it starts with R2FW1: or R2FB1:)." : n + " new item" + (n === 1 ? "" : "s") + " added to " + store.current + "'s wishlist.";
     if (n >= 0) { $("wish-io").hidden = true; render(); renderWish(); }
   });
   $("wish-close").addEventListener("click", function () { $("wish-io").hidden = true; $("wish-msg").textContent = ""; });

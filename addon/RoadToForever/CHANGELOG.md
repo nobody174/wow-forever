@@ -1,5 +1,17 @@
 # Road to Forever changelog
 
+## Unreleased (BiZMe, 2026-11-15; in the repo and the owner's AddOns folder, no tag yet)
+
+- **Mr.BiZ, Next upgrades (new view):** per slot the best pick you can get now that beats what you wear by 5% or more, ranked by gain, with where it comes from, how long it stays on the list and the owner's carry rule (no trip for a pick replaced within 10 levels, 5 when its source is in the zone you stand in). Picks out of reach are listed with the reason (source unknown, PvP rank, other faction, quest or skill level, replaced soon). Items you already own are left out. New file `BiZMe.lua`.
+- **Viewing as:** pick yourself, a saved character, or "Inspect my target" (a player within range, out of combat: their worn gear is read and saved as a dated profile). The upgrades view then compares against their gear.
+- **Guide me:** points the BiZNav arrow at the next upgrade that has a known place, one after the other.
+- **Item tooltips:** a line says where the item ranks on your spec's list for the level in the tab ("Bizzer for Beast Mastery (Head), on the list for 12 more levels"). Same switch as the upgrade arrows.
+- **BiZ code:** `R2FB1:<spec>:<level>:<wishlist>`: "Share as a BiZ code" in the wishlist view; Import and the site's "Paste" read it (the site's "Copy this set" writes one).
+- **Data:** places for dungeon entrances, vendors, quest givers and profession trainers (BiZNav / Alt + click on far more picks: level-60 picks that can point the arrow 12 -> 195 of 433), 288 picks that were "source not known yet" now have a source (QuestieDB, the game's vendor table, ForeverMyBis, ForeverDungeonJournal); credits on the page.
+- **Character slot marks (new Tweak, off until ticked):** green / yellow squares on the Character window's gear slots for the Mr.BiZ pick and the next two picks, a green arrow where an upgrade waits. New file `CharMarks.lua`.
+- **Wishlist:** items you already own are marked "you have it".
+- **Debug probes:** `/r2f debug ej`, `mem`, `inspect` (read-only research tools).
+
 ## 0.87.3 (2026-11-13)
 
 - **`/r2f talentcheck`:** an arrow the game lists backwards as well as forwards (Hunter: Bestial Wrath -> Intimidation next to Intimidation -> Bestial Wrath) is no longer a difference: both talents would need the other, so it is not a real prerequisite. It is shown as a note.

@@ -316,6 +316,8 @@ R2F.L = {
   TRAIN_TITLE_TIP = "On level-up, says in chat which spells your class trainer now offers. Uses the list read the last " ..
     "time you opened your trainer.",
   -- GearScore (GearScore.lua)
+  CM_TITLE = "Character slot marks",
+  CM_TITLE_TIP = "Small marks on your Character window's gear slots: a green square when you wear the Mr.BiZ pick for that slot, yellow for one of the next two picks, and a green arrow when an upgrade you can get now is on the Next upgrades list.",
   GS_TITLE = "Upgrade arrows",
   GS_TITLE_TIP = "A green arrow on bag items that are better than what you wear (red: worse), and the item's BiZ " ..
     "score in tooltips. Scored with the stat weights of the spec you picked in Mr.BiZ for your class.",
@@ -620,6 +622,10 @@ R2F.L = {
   BIZ_DATA_FROM = "The picks are ForeverDB's for game build %s (taken %s): a newer build can change them.",
   BIZ_CODE = "Share as a BiZ code",
   BIZ_CODE_HINT = "Press Ctrl+C to copy, then paste it in Discord. Anyone with Mr.BiZ (or the site) can import it: it shows your spec and level and adds your wishlist.",
+  BIZ_ROUTE = "Guide me",
+  BIZ_ROUTE_TO = "Mr.BiZ: the arrow points at where to get %s (%d more places on your list: press the button again for the next).",
+  BIZ_ROUTE_NONE = "Mr.BiZ: none of your upgrades has a known place yet.",
+  BIZ_WISH_OWNED = "you have it",
   BIZ_VIEW_UP = "Next upgrades",
   BIZ_UP_EMPTY = "Nothing to upgrade right now: what you wear is as good as the reachable picks for this level, or the better picks are out of reach (below).",
   BIZ_UP_HEAD = "Get these now",

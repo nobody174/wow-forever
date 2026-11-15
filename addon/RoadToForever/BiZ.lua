@@ -450,7 +450,8 @@ function BiZ.WishGroups()
     local info = itemIndex()[id] or {}
     local g = info.group or R2F.L.BIZ_GROUP_NEXT
     if not byName[g] then byName[g] = {}; order[#order + 1] = g end
-    table.insert(byName[g], { id = id, name = BiZ.ItemName(id), label = info.label, spec = w.spec, slot = w.slot })
+    table.insert(byName[g], { id = id, name = BiZ.ItemName(id), label = info.label, spec = w.spec, slot = w.slot,
+      owned = R2F.BiZMe and R2F.BiZMe.Owns(id) or false })
   end
   table.sort(order, function(a, b)
     if a == R2F.L.BIZ_GROUP_NEXT then return false end

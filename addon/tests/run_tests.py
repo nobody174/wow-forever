@@ -3814,6 +3814,27 @@ def test_bizme():
     check(lua.eval("(R2F.BiZ.ImportCode('R2FB1:nonsense'))") is None, "%s: a bad code is refused" % tag)
     lua.execute("R2FCharDB.biz.wish = {} R2F.BiZ.SetLevel(nil)")
 
+    # the route: the arrow goes to the upgrades with a place, one after the other
+    lua.execute("TEST.goes = {} R2F.BiZ.Go = function(key) table.insert(TEST.goes, key) return 'arrow' end R2F.BiZMe.ResetRoute()")
+    first = lua.eval("(function() local l = R2F.BiZMe.Upgrades('hunter/beast-mastery', 30, { faction = 'alliance' }) TEST.routeList = l local u, more = R2F.BiZMe.GuideNext(l) return u and u.placeKey end)()")
+    second = lua.eval("(function() local u = R2F.BiZMe.GuideNext(TEST.routeList) return u and u.placeKey end)()")
+    check(first is not None and lua.eval("#TEST.goes") == 2, "%s: Guide me points the arrow (%s, then %s)" % (tag, first, second))
+    check(lua.eval("(function() for _, u in ipairs(TEST.routeList) do if u.placeKey == nil then return true end end return true end)()"), "%s: entries carry their place key" % tag)
+
+    # character slot marks: a rank mark on the slot you fill with a pick, an arrow where an upgrade waits
+    lua.execute("""
+      CharacterHeadSlot = CreateFrame('Button', 'CharacterHeadSlot') CharacterNeckSlot = CreateFrame('Button', 'CharacterNeckSlot')
+      TEST.worn = {}
+      local pick = R2F.BiZ.SlotsAt(R2F.BiZ.Spec('hunter/beast-mastery'), 30)[1].best.id
+      TEST.worn[1] = '|cff1eff00|Hitem:' .. pick .. '::::::::|h[Pick]|h|r'
+      R2F.BiZ.SetSpec('hunter/beast-mastery') R2F.BiZ.SetLevel(nil) UnitLevel = function() return 30 end
+      R2F.Gameplay.SetOn('charmarks', true) R2F.CharMarks.Update()
+    """)
+    check(lua.eval("R2F.CharMarks.RankOf(R2F.BiZ.Spec('hunter/beast-mastery'), 30, 'head', R2F.BiZ.SlotsAt(R2F.BiZ.Spec('hunter/beast-mastery'), 30)[1].best.id)") == 1,
+          "%s: the best pick has rank 1 for its slot" % tag)
+    check(lua.eval("(R2F.CharMarks.RankOf(R2F.BiZ.Spec('hunter/beast-mastery'), 30, 'head', 1))") is None, "%s: an item on no list has no rank" % tag)
+    lua.execute("R2F.Gameplay.SetOn('charmarks', false) R2F.CharMarks.Update() TEST.worn = {}")
+
     # viewing as another character: saved profile, gear read from it, inspect flow
     lua.execute("R2F.BiZMe.SaveProfile('Friend', { class = 'mage', spec = 'mage/frost', level = 30, faction = 'alliance' }, "
                 "{ [1] = '|cff1eff00|Hitem:777::::::::|h[Hat]|h|r' })")

@@ -271,7 +271,8 @@ function M.Upgrades(specId, lvl, ctx)
           if score and not taken[row.id] and not M.Owns(row.id) then
             local gain = wornScore > 0 and (score - wornScore) / wornScore * 100 or 100
             if gain >= M.MIN_GAIN then
-              local place = R2F.BiZ.Place(R2F.BiZ.PlaceOfItem(row.id))
+              local placeKey = R2F.BiZ.PlaceOfItem(row.id)
+              local place = R2F.BiZ.Place(placeKey)
               local trip = TRIP_TYPES[row.type] and not (place and M.OnRoute(place)) or false
               local threshold = (place and M.OnRoute(place)) and M.CARRY_ROUTE or M.CARRY_TRIP
               local left = M.Span(sp, i, row.id, lvl, false)
@@ -279,7 +280,7 @@ function M.Upgrades(specId, lvl, ctx)
               local soon = trip and lvl < hi and left < threshold
               if ok and not soon then
                 choice = { slot = sl.slot, row = row, rank = rank, gain = gain, worn = wornLink, wornScore = wornScore,
-                           score = score, left = left, trip = trip, place = place, note = (why == "rep") and "rep" or nil }
+                           score = score, left = left, trip = trip, place = place, placeKey = placeKey, note = (why == "rep") and "rep" or nil }
                 break
               elseif rank == 1 then
                 -- the BiZ pick itself is out of reach: say why ("soon" = replaced within the carry rule's levels)
@@ -327,3 +328,24 @@ function M.RankLine(id, specId, lvl)
   end
   return nil
 end
+
+-- The route: point the BiZNav arrow at the next upgrade (in the list's order) that has a known place.
+-- Each call moves on to the one after the last; returns that entry and how many more places are in the list, or nil with none.
+local routeAt = 0
+function M.GuideNext(list)
+  local n = #list
+  for step = 1, n do
+    local i = (routeAt + step - 1) % n + 1
+    local u = list[i]
+    if u.placeKey and R2F.BiZ.Go(u.placeKey) then
+      routeAt = i
+      local more = 0
+      for _, x in ipairs(list) do
+        if x.placeKey and x ~= u then more = more + 1 end
+      end
+      return u, more
+    end
+  end
+  return nil
+end
+function M.ResetRoute() routeAt = 0 end

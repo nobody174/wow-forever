@@ -12,7 +12,21 @@
 - [ ] Still to test (owner or browser): `/r2f debug ej` (to be written, read-only); foreverwow.gg and forevermybis.com terms; does ForeverDB's BiS page list more than 3 alternatives; addon memory with BiZData.
 - [ ] Add ledger rows to the wow-dev-support-folder findings-ledger (EJ functions seen in ForeverDungeonJournal; licences of the BiS addons; Forever trait-tree detection by posX gaps).
 
-## Next: Phase 1 (after approval)
+## Done 2026-11-15 (see ROADMAP status; owner tests 5.87-5.91)
+- [x] BiZMe.lua: worn vs BiZ, reachable now, carry rule (5 / 10 levels), owned items, ranked upgrades, tooltip rank line, profiles + inspect, Guide me.
+- [x] UI: Next upgrades view, Viewing as menu, Guide me button, BiZ code button, wishlist owned marks, data build line.
+- [x] BiZ code R2FB1 in the addon and on the site; CharMarks.lua (Character slot marks, off until ticked); trainer places for crafted picks.
+
+## Next (in this order)
+- [ ] Owner tests 5.87-5.91; fix what they find. Taint test (5.91) decides the docked Character panel (Phase 5).
+- [ ] Docked panel beside the Character window (only if the taint test is clean), Blizzard look per docs/ui-study.md.
+- [ ] Wishlist on-screen tracker (small movable frame: top wished items, source, click = arrow).
+- [ ] Places: reputation vendors (faction quartermasters), quest givers without a spot (ForeverMyBis ql, QuestMaps coordinates), Ruins of Lordaeron / Hall of Thanes / Stratholme entrances to settle.
+- [ ] Unknown sources left (967 rows): more tiers in found_sources.py (ForeverWoWBiS Sources, ForeverCompanion Loot), recorder positions.
+- [ ] Pre-BiZ / BiZ / phases when raids exist (no data now).
+- [ ] Load-on-demand data split: decide after the memory use is felt (14.4 MB).
+
+## (old) Phase 1
 - [x] Gap lists generated: docs/phase1-data-gaps.md (158 distinct level-60 picks: 44 unknown, 108 without place).
 - [x] 28 dungeon entrances added from ForeverDungeonJournal (coordinates only, `bis/tools/dj_entrances.py`): routable level-60 picks 12 -> 43 of 433. Left: vendors, rep vendors, quest givers, entrances the journal lacks (Onyxia, AQ, Atal'Byzal, Krol'dok map id 2548).
 - [x] 9 vendors placed from the QuestieDB forever snapshot (GPL, `bis/tools/questie_places.py`). Not placed: Pix Xizzix (28 rows) and Winklespark (9), Forever-new vendors QuestieDB does not know; Gaelden Hammersmith (Alterac Valley), Lhara (Darkmoon Faire, two spots); the 'N vendors' rows. Idea: have the recorder save the player's map position when a vendor window opens, so the group can place Forever-new vendors.

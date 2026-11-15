@@ -359,6 +359,7 @@ local function layoutWish()
       local sp = it.spec and BiZ.Spec(it.spec)
       placeItem(8, y, 300, it.id, it.name, sp and L.BIZ_TIP_WISHED:format(sp.name, BiZ.SlotLabel(it.slot or "")) or nil)
       local detail = BiZ.SlotLabel(it.slot or "") .. (sp and (" · " .. sp.name) or "")
+      if it.owned then detail = "|cff1eff00" .. L.BIZ_WISH_OWNED .. "|r · " .. detail end
       line("R2FDimSmall", 330, y + 3, 200, detail)
       placeWish(560, y + 3, it.id, it.spec, it.slot)
       y = y + 22
@@ -565,6 +566,7 @@ local function refresh()
   ui.levelUp:SetEnabled(BiZ.Level() < hi)
   ui.wishBtn:SetEnabled(view ~= "wish")
   ui.upBtn:SetEnabled(view ~= "up")
+  ui.routeBtn:SetShown(view == "up")
   ui.upBtn:SetText(L.BIZ_VIEW_UP)
   ui.viewBtn:SetText(L.BIZ_VIEWING_AS:format(R2F.BiZMe.Viewing() or L.BIZ_VIEW_ME))
   ui.wishBtn:SetText(L.BIZ_VIEW_WISH:format(BiZ.WishCount()))
@@ -731,6 +733,16 @@ function Tab.Build(f)
   ui.upBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -17)
   ui.viewBtn = dropButton(f, 190, viewMenu)
   ui.viewBtn:SetPoint("LEFT", ui.upBtn, "RIGHT", 6, 0)
+  ui.routeBtn = button(f, 130, L.BIZ_ROUTE, function()
+    local list = R2F.BiZMe.Upgrades(BiZ.SpecId(), BiZ.Level())
+    local u, more = R2F.BiZMe.GuideNext(list)
+    if u then
+      R2F.Print(L.BIZ_ROUTE_TO:format(u.row.name, more))
+    else
+      R2F.Print(L.BIZ_ROUTE_NONE)
+    end
+  end)
+  ui.routeBtn:SetPoint("LEFT", ui.viewBtn, "RIGHT", 6, 0)
   ui.setBtn = button(f, 100, L.BIZ_VIEW_SET, function() view = "set"; refresh() end)
   ui.setBtn:SetPoint("RIGHT", ui.wishBtn, "LEFT", -2, 0)
 

@@ -5,6 +5,10 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-15 (BiZMe: Mr.BiZ for you, offline data research; addon changes unreleased)
+- Plan, inventory, audit and research in `addon/BiZMe/docs/`. Addon: Next upgrades view, Viewing as, Guide me, tooltip rank line, BiZ codes (details in `addon/RoadToForever/CHANGELOG.md`, "Unreleased").
+- Data (`bis/`): places 9 -> 335 plus profession trainers; QuestieDB decoded from its `.toc` (`questiedb_decode.py`), the client's vendor table + map bounds (`collectable_vendors.py`), ForeverMyBis and QuestieDB as source tiers in `found_sources.py`; unknown-source rows 1,718 -> 967. Site: BiZ code import ("Paste") and export ("Copy this set"), credits for Questie, ForeverDungeonJournal, ForeverMyBis.
+
 ## 2026-11-13 (addon 0.87.3 released, tag r2f-v0.87.3)
 - Release `r2f-v0.87.3` published (pre-release, `RoadToForever-0.87.3.zip`); the first release since 0.86.1, so it also carries 0.87.0 (flight timer, rare finder), 0.87.1 (talent dump) and 0.87.2 (talentcheck, Hunter reader fix). CI had been red since the 0.87.0 work landed (undeclared API globals and two long lines): fixed in `.luacheckrc` / wrapped, green on the release commit. `addons.html` fallback moved to 0.87.3.
 

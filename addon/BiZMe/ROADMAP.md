@@ -3,6 +3,10 @@
 Revised 2026-11-15 after the code review (`docs/plan-review.md`; the bigger changes await owner approval). Mr.BiZ already has per-level lists (10-60),
 spec auto-detect, filters, wishlist, upgrade arrows and a BiZNav arrow: see `docs/mrbiz-inventory.md`.
 
+## Status 2026-11-15 (owner: "follow the plan until all are done")
+Done and in the repo (unreleased, tests 5.84-5.91 in addon/dev/TESTING.md): Phase 1 data (places, sources), Phase 2 core (Next upgrades, Viewing as with inspect, tooltip rank line, wishlist owned marks), Phase 3 BiZ code, Phase 4 first route (Guide me), Phase 5 first step (Character slot marks).
+Open: taint test of the Character marks, docked panel, wishlist on-screen tracker, load-on-demand split (measured 14.4 MB of 21 MB; deferred), Pre-BiZ/phases (no data), more places (reputation vendors, quest givers without a spot).
+
 ## Phase 0 - Inventory, plan review, research (done 2026-11-15, awaiting approval)
 mrbiz-inventory.md, plan-review.md, addon-audit.md, ui-study.md, data-sources.md. Exit: owner approves plan-review.md.
 

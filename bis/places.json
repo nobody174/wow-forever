@@ -3113,6 +3113,159 @@
       "label": "Rettrick, Gadgetzan quartermaster (Tanaris)",
       "conf": "classic",
       "via": "QuestieDB"
+    },
+    "quest:Arachnophobia": {
+      "zone": "Stonetalon Mountains",
+      "mapHint": 1442,
+      "x": 47.0,
+      "y": 61.0,
+      "label": "Arachnophobia, from Maggran Earthbinder (Stonetalon Mountains)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:Baron Aquanis": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 12.0,
+      "y": 34.1,
+      "label": "Baron Aquanis, from Je'neu Sancrea (Ashenvale)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:Dangerous!": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 62.0,
+      "y": 20.0,
+      "label": "Dangerous!, from High Executor Darthalia (Hillsbrad Foothills)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:Job Opening: Guard Captain of Revantusk Village": {
+      "zone": "The Hinterlands",
+      "mapHint": 1425,
+      "x": 78.3,
+      "y": 79.5,
+      "label": "Job Opening: Guard Captain of Revantusk Village, from Primal Torntusk (The Hinterlands)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:Mortality Wanes": {
+      "zone": "Darnassus",
+      "mapHint": 1457,
+      "x": 69.0,
+      "y": 67.0,
+      "label": "Mortality Wanes, from Treshala Fallowbrook (Darnassus)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:Open the Maw": {
+      "zone": "The Drunken Dwarf -> Wetlands",
+      "mapHint": 1437,
+      "x": 51.4,
+      "y": 59.2,
+      "label": "Open the Maw, from Deathstalker Agent (The Drunken Dwarf -> Wetlands)",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "quest:Return to Delgren": {
+      "zone": "Ashenvale",
+      "mapHint": 1440,
+      "x": 26.0,
+      "y": 38.0,
+      "label": "Return to Delgren, from Delgren the Purifier (Ashenvale)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:STOLEN: Smithing Tuyere and Lookout's Spyglass": {
+      "zone": "Searing Gorge",
+      "mapHint": 1427,
+      "x": 38.0,
+      "y": 28.6,
+      "label": "STOLEN: Smithing Tuyere and Lookout's Spyglass, from Taskmaster Scrange (Searing Gorge)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:WANTED: Baron Vardus": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 62.0,
+      "y": 20.0,
+      "label": "WANTED: Baron Vardus, from High Executor Darthalia (Hillsbrad Foothills)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:WANTED: Chok'sul": {
+      "zone": "Loch Modan",
+      "mapHint": 1432,
+      "x": 37.2,
+      "y": 46.4,
+      "label": "WANTED: Chok'sul, from WANTED (Loch Modan)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:WANTED: Overseer Maltorius": {
+      "zone": "Searing Gorge",
+      "mapHint": 1427,
+      "x": 3.7,
+      "y": 26.7,
+      "label": "WANTED: Overseer Maltorius, from Lookout Captain Lolo Longstriker (Searing Gorge)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:WANTED: Syndicate Personnel": {
+      "zone": "Hillsbrad Foothills",
+      "mapHint": 1424,
+      "x": 62.0,
+      "y": 20.0,
+      "label": "WANTED: Syndicate Personnel, from High Executor Darthalia (Hillsbrad Foothills)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:Wand to Bethor": {
+      "zone": "Undercity",
+      "mapHint": 1458,
+      "x": 84.1,
+      "y": 17.4,
+      "label": "Wand to Bethor, from Bethor Iceshard (Undercity)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:Wanted: Vile Priestess Hexx and Her Minions": {
+      "zone": "The Hinterlands",
+      "mapHint": 1425,
+      "x": 78.3,
+      "y": 79.5,
+      "label": "Wanted: Vile Priestess Hexx and Her Minions, from Primal Torntusk (The Hinterlands)",
+      "conf": "approx",
+      "via": "ForeverMyBis"
+    },
+    "quest:Heart of Disruption": {
+      "zone": "The Great Sea -> Silverpine Forest",
+      "mapHint": 1421,
+      "x": 68.4,
+      "y": 45.2,
+      "label": "Heart of Disruption, from Image of Archmage Modera (The Great Sea -> Silverpine Forest)",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "quest:Hidden Enemies": {
+      "zone": "Orgrimmar",
+      "mapHint": 1454,
+      "x": 31.7,
+      "y": 37.8,
+      "label": "Hidden Enemies, from Thrall (Orgrimmar)",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
+    },
+    "quest:Starving Arcane": {
+      "zone": "The Great Sea -> Silverpine Forest",
+      "mapHint": 1421,
+      "x": 68.4,
+      "y": 45.2,
+      "label": "Starving Arcane, from Image of Archmage Modera (The Great Sea -> Silverpine Forest)",
+      "conf": "approx",
+      "via": "ForeverDungeonJournal"
     }
   }
 }

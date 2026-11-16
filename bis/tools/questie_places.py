@@ -187,6 +187,40 @@ def main():
             q_amb.append(title)
         else:
             q_none.append(title)
+    # second opinion for the titles QuestieDB gave no spot: ForeverMyBis `ql` (MIT: map, x, y, giver, quest title) and the Dungeon
+    # Journal's quest-giver coordinates (facts only, keyed by quest id -> title through QuestieDB). Placed only when all agree on one spot.
+    AD = r"D:\World of Warcraft\_forever_\Interface\AddOns"
+    zone_of = {v[0]: v[1] for v in areas.values()}
+    found = {}
+    mybis = os.path.join(AD, "ForeverMyBis", "Data", "Items.lua")
+    if os.path.exists(mybis):
+        for m in re.finditer(r'\{m=(\d+),z="([^"]*)",x=([\d.]+),y=([\d.]+),l="([^"]*)",q="([^"]*)"', open(mybis, encoding="utf-8").read()):
+            mapid, zone, x, y, giver, title = m.groups()
+            found.setdefault(title, set()).add((int(mapid), zone, round(float(x), 1), round(float(y), 1), giver, "ForeverMyBis"))
+    qm = os.path.join(AD, "ForeverDungeonJournal", "Data", "QuestMaps.lua")
+    if os.path.exists(qm):
+        id_title = {int(i): q["name"] for i, q in live["quest"].items() if q.get("name")}
+        for m in re.finditer(r'\[(\d+)\]\s*=\s*\{\s*mapID\s*=\s*(\d+),\s*x\s*=\s*([\d.]+),\s*y\s*=\s*([\d.]+)(?:,\s*label\s*=\s*"([^"]*)")?', open(qm, encoding="utf-8").read()):
+            qid, mapid, x, y, label = m.groups()
+            title = id_title.get(int(qid))
+            if title:
+                found.setdefault(title, set()).add((int(mapid), zone_of.get(int(mapid), ""), round(float(x) * 100, 1), round(float(y) * 100, 1),
+                                                    (label or "").split(" — ")[0], "ForeverDungeonJournal"))
+    q2 = []
+    for title in list(q_none) + list(q_amb):
+        key = "quest:" + title
+        spots_ = found.get(title)
+        if key in places["places"] or not spots_:
+            continue
+        near = {(a, round(c / 3), round(d / 3)) for a, _z, c, d, _g, _s in spots_}
+        if len(near) != 1:
+            continue
+        mapid, zone, x, y, giver, src = sorted(spots_)[0]
+        places["places"][key] = {"zone": zone or zone_of.get(mapid, ""), "mapHint": mapid, "x": x, "y": y,
+                                 "label": "%s, from %s (%s)" % (title, giver, zone or zone_of.get(mapid, "")), "conf": "approx", "via": src}
+        q2.append(title)
+        q_added.append(title)
+    print("quests placed from ForeverMyBis / Dungeon Journal: %d %s" % (len(q2), q2[:8]))
     print("quests placed %d, ambiguous %d, no giver spot %d (of %d titles)" % (len(q_added), len(q_amb), len(q_none), len(q_rows)))
     print("  ambiguous (first 10):", q_amb[:10])
     print("  no spot (first 10):", q_none[:10])

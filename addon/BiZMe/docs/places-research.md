@@ -57,3 +57,6 @@ Blackrock Spire / Depths, Scholomance, Maraudon, Ragefire Chasm, Dire Maul (east
 - **Unnamed vendors**: Captain Dirgehammer and Lady Palanseer (PvP rank vendors) have several spots; the two "N vendors" rows name no vendor.
 - Raids and phases: no source has them yet either.
 - Recheck after each patch: Journal tables on wago, `CollectableSource*Sparse` hotfix tables, `C_EncounterJournal.GetDungeonEntrancesForMap` (the owner's `/r2f debug ej`).
+
+## Update 2026-11-16
+- `questie_places.py` has a second pass for quest titles QuestieDB gives no spot: ForeverMyBis `ql` entries (MIT) and the Dungeon Journal `QuestMaps.lua` coordinates (facts only; quest id -> title through QuestieDB). A title is placed only when all sources agree on one spot (within 3 map percent); conf is `approx`, `via` names the source. 17 more quest places.

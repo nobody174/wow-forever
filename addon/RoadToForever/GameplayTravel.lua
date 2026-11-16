@@ -142,18 +142,8 @@ Gameplay.Register({
 -- Rare finder
 -- ---------------------------------------------------------------------------
 
-local SKULL = 8
 local REMEMBER = 300           -- seconds before the same rare may be announced again
 local announced = {}           -- guid -> time
-
-local function canMark()
-  if R2F.InCombat and R2F.InCombat() then return false end
-  if IsInGroup and IsInGroup() then
-    return (UnitIsGroupLeader and UnitIsGroupLeader("player"))
-      or (UnitIsGroupAssistant and UnitIsGroupAssistant("player")) or false
-  end
-  return true
-end
 
 -- Says it once per rare (per REMEMBER seconds). Returns true when it did.
 local function announce(guid, name, where)
@@ -179,11 +169,9 @@ local function inspect(unit)
   if not okG or type(guid) ~= "string" or isSecret(guid) then return end
   local okN, name = pcall(UnitName, unit)
   if not okN or type(name) ~= "string" or isSecret(name) then name = nil end
-  if not announce(guid, name, nil) then return end
-
-  if canMark() and SetRaidTarget and GetRaidTargetIndex and not GetRaidTargetIndex(unit) then
-    pcall(SetRaidTarget, unit, SKULL)
-  end
+  -- Announce only. Marking it with the skull (SetRaidTarget) is a restricted function: calling it from our code made the game
+  -- show "Road to Forever has been blocked from an action only available to the Blizzard UI" (0.87.4 fix).
+  announce(guid, name, nil)
 end
 Gameplay.InspectRare = inspect
 

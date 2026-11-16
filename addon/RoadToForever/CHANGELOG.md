@@ -8,6 +8,7 @@
 - **Minimap menu, Tracking foldout:** the right-click menu gets a "Tracking" foldout with the Track spells the character knows (Hunter: Beasts, Hidden, Humanoids, Elementals, Undead, ...); a click switches the minimap tracking.
 - **Character window upgrades panel (Tweaks > Bags, off until ticked):** a read-only panel docked on the right edge of the Character window listing the Next upgrades; a click points the arrow. New file `CharPanel.lua`.
 - **Quick settings: Keep colour as a ghost** (`ffxDeath 0`, the game's death desaturation): no black-and-white screen while you run back as a ghost.
+- **Fix, Rare finder:** it no longer calls the restricted SetRaidTarget (the skull on a rare), which made the game show an "action blocked" popup naming Road to Forever. The alert and sound stay.
 - **Viewing as:** pick yourself, a saved character, or "Inspect my target" (a player within range, out of combat: their worn gear is read and saved as a dated profile). The upgrades view then compares against their gear.
 - **Guide me:** points the BiZNav arrow at the next upgrade that has a known place, one after the other.
 - **Item tooltips:** a line says where the item ranks on your spec's list for the level in the tab ("Bizzer for Beast Mastery (Head), on the list for 12 more levels"). Same switch as the upgrade arrows.

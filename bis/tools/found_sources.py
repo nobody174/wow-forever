@@ -228,6 +228,14 @@ def read_fmb(addons):
             if out[int(iid)] is None:
                 del out[int(iid)]
             continue
+        m = re.match(r"^World drop: creatures near level (\d+)", src)
+        if m:
+            out[int(iid)] = "World drop: creatures near level %s (Clue)" % m.group(1)
+            continue
+        m = re.match(r"^(.+), (Friendly|Honored|Revered|Exalted)$", src)
+        if m:
+            out[int(iid)] = "Needs %s with %s (Clue)" % (m.group(2), m.group(1))
+            continue
         m = re.match(r"^Sold by (.+?), ([^,]+)$", src)
         if m:
             out[int(iid)] = "Sold by %s in %s (Clue)" % m.groups()

@@ -21,7 +21,7 @@
 - [ ] Owner tests 5.87-5.91; fix what they find. Taint test (5.91) decides the docked Character panel (Phase 5).
 - [ ] Owner tests 5.92-5.94 (wishlist tracker, tracking foldout, docked panel); polish the panel look per docs/ui-study.md.
 - [ ] Places: reputation vendors (Theramore two spots, The Watchers, Powderfuse: none in the data), 57 quest titles still without a spot (17 more placed from ForeverMyBis ql and the Dungeon Journal QuestMaps on 2026-11-16; 20 ambiguous), Ruins of Lordaeron / Hall of Thanes / Stratholme entrances to settle.
-- [ ] Unknown sources left (967 rows): more tiers in found_sources.py (ForeverWoWBiS Sources, ForeverCompanion Loot), recorder positions.
+- [ ] Unknown sources left (see the count in bis-data.json; 30 more items resolved 2026-11-16 from ForeverMyBis world drops and reputation lines). What is left needs recorder data: ForeverMyBis itself says "Drop: not known yet" for 129 of them; ForeverWoWBiS / ForeverCompanion state no licence, so they stay unused.
 - [ ] Pre-BiZ / BiZ / phases when raids exist (no data now).
 - [ ] Load-on-demand data split: decide after the memory use is felt (14.4 MB).
 

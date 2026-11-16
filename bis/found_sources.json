@@ -1,16 +1,80 @@
 {
  "items": {
+  "867": {
+   "src": "World drop: creatures near level 42 (Clue)",
+   "via": "ForeverMyBis"
+  },
   "870": {
    "src": "Drops from Shore Crawler (Clue)",
    "via": "QuestieDB"
+  },
+  "873": {
+   "src": "World drop: creatures near level 40 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "940": {
+   "src": "World drop: creatures near level 47 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "942": {
+   "src": "World drop: creatures near level 52 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "1169": {
+   "src": "World drop: creatures near level 46 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "1204": {
+   "src": "World drop: creatures near level 41 (Clue)",
+   "via": "ForeverMyBis"
   },
   "1447": {
    "src": "Drops from Hydromancer Velratha in Zul'Farrak (Clue)",
    "via": "QuestieDB"
   },
+  "1980": {
+   "src": "World drop: creatures near level 43 (Clue)",
+   "via": "ForeverMyBis"
+  },
   "1981": {
    "src": "Drops from Cinderscale Warrior (Clue)",
    "via": "QuestieDB"
+  },
+  "2100": {
+   "src": "World drop: creatures near level 48 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "2824": {
+   "src": "World drop: creatures near level 53 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "2825": {
+   "src": "World drop: creatures near level 42 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "2915": {
+   "src": "World drop: creatures near level 52 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "3041": {
+   "src": "World drop: creatures near level 31 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "5971": {
+   "src": "World drop: creatures near level 28 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "14549": {
+   "src": "World drop: creatures near level 45 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "14552": {
+   "src": "World drop: creatures near level 55 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "17007": {
+   "src": "World drop: creatures near level 51 (Clue)",
+   "via": "ForeverMyBis"
   },
   "18316": {
    "src": "Drops from Pusillin in Dire Maul: East (Clue)",
@@ -211,6 +275,50 @@
   "271802": {
    "src": "Quest reward: Khan Jehn, level 42 (Clue)",
    "via": "QuestieDB"
+  },
+  "271903": {
+   "src": "Needs Friendly with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "271905": {
+   "src": "Needs Friendly with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "271906": {
+   "src": "Needs Friendly with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "271909": {
+   "src": "Needs Honored with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "271910": {
+   "src": "Needs Honored with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "271916": {
+   "src": "Needs Honored with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "271918": {
+   "src": "Needs Honored with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "271919": {
+   "src": "Needs Honored with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "271920": {
+   "src": "Needs Honored with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "271940": {
+   "src": "Needs Exalted with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "271946": {
+   "src": "Needs Exalted with Theramore Expeditionary Force (Clue)",
+   "via": "ForeverMyBis"
   },
   "272186": {
    "src": "Quest reward: Rot and Regret (a choice), level 49 (Clue)",
@@ -518,7 +626,19 @@
   },
   "275864": {
    "src": "Drops from Lord Vyletongue in Maraudon (Clue)",
-   "via": "QuestieDB"
+   "via": "ForeverDungeonJournal"
+  },
+  "275979": {
+   "src": "Needs Revered with The Watchers (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "275980": {
+   "src": "Needs Revered with The Watchers (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "275981": {
+   "src": "Needs Exalted with The Watchers (Clue)",
+   "via": "ForeverMyBis"
   },
   "276399": {
    "src": "Drops from Malor the Zealous in Stratholme: Living (Clue)",
@@ -580,6 +700,10 @@
    "src": "Sold by Elaria Anvilwind (Clue)",
    "via": "QuestieDB"
   },
+  "277117": {
+   "src": "Drops from Grizzle in Blackrock Depths (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
   "277203": {
    "src": "Quest reward: Friend of the Library, level 20 (Clue)",
    "via": "QuestieDB"
@@ -603,6 +727,10 @@
   "277213": {
    "src": "Drops from Dro'zem the Blasphemous (Clue)",
    "via": "QuestieDB"
+  },
+  "277236": {
+   "src": "Quest reward: Aeonas the Vindicated, level 40 (Clue)",
+   "via": "ForeverDungeonJournal"
   },
   "277246": {
    "src": "Quest reward: The Eye of Bhossca, level 35 (Clue)",
@@ -1112,6 +1240,10 @@
    "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "287009": {
+   "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
   "287010": {
    "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
    "via": "ForeverDungeonJournal"
@@ -1129,6 +1261,10 @@
    "via": "ForeverDungeonJournal"
   },
   "287014": {
+   "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287015": {
    "src": "Drops from Trash Drops in Krol'dok Stronghold (Clue)",
    "via": "ForeverDungeonJournal"
   },

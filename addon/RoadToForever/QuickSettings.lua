@@ -42,6 +42,10 @@ QuickSettings.ITEMS = {
   -- No site macro either. Off = the game's own default density (read from the client, like the zoom).
   { key = "weather", cvar = "weatherDensity", on = "0", off = nil,
     label = L.QS_WEATHER, tip = L.QS_WEATHER_TIP },
+  -- No site macro. ffxDeath is the game's "full screen death desat effect" (found in the client): the black-and-white
+  -- screen while you are a ghost. Ticked = no black and white (0); untick = the game's own setting back (1).
+  { key = "ghostcolor", cvar = "ffxDeath", on = "0", off = "1",
+    label = L.QS_GHOST, tip = L.QS_GHOST_TIP },
 }
 
 local byMacro = {}

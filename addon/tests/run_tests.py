@@ -784,7 +784,7 @@ def test_settings_tab(templates, fx):
     check(lua.eval("R2F.Home.SlotLine()") == "%d of %d character slots, %d of %d account slots used" % (char_n, char_max, acc_n, acc_max),
           "slot line helper: %r" % lua.eval("R2F.Home.SlotLine()"))
     find_frames(lua, "f.qsItem ~= nil", "QSB")
-    check(lua.eval("#QSB") == 5 and lua.eval("QSB[1]:IsVisible()") is True,
+    check(lua.eval("#QSB") == 6 and lua.eval("QSB[1]:IsVisible()") is True,
           "%s: Quick settings switches are on the Home page" % tag)
     for key in ("QS_TITLE", "SETTINGS_MINIMAP", "HOME_SHARE"):
         check(font_text(lua, "^" + lua.eval("R2F.L.%s" % key) + "$") is not None, "Home has the %s heading" % key)
@@ -8206,7 +8206,7 @@ def test_quick_settings(templates, fx):
     items = [(lua.eval("R2F.QuickSettings.ITEMS[%d].macro" % i), lua.eval("R2F.QuickSettings.ITEMS[%d].cvar" % i),
               lua.eval("R2F.QuickSettings.ITEMS[%d].on" % i), lua.eval("R2F.QuickSettings.ITEMS[%d].off" % i))
              for i in range(1, lua.eval("#R2F.QuickSettings.ITEMS") + 1)]
-    check([i[0] for i in items] == ["ANY/Zoom", "ANY/HideGuild", "ANY/HidePvP", None, None],
+    check([i[0] for i in items] == ["ANY/Zoom", "ANY/HideGuild", "ANY/HidePvP", None, None, None],
           "the three macro ids, then the 24-hour clock and the weather box with no site macro: %s" % items)
     check(items[3][1:] == ("timeMgrUseMilitaryTime", "1", "0"), "24-hour clock = timeMgrUseMilitaryTime 1 / 0")
     check(lua.eval("R2F.QuickSettings.HidesMacro(nil)") in (None, False), "an item with no macro hides no macro")
@@ -8217,6 +8217,7 @@ def test_quick_settings(templates, fx):
           "24-hour clock box turns the game clock to 24 hours: %s" % writes())
     lua.execute("R2F.QuickSettings.Toggle(R2F.QuickSettings.ITEMS[4])")
     check(lua.eval("TEST.cvars.timeMgrUseMilitaryTime") == "0", "and back to 12 hours")
+    check(items[5][1:] == ("ffxDeath", "0", "1"), "keep colour as a ghost = ffxDeath 0, off = 1 (the game's death desaturation)")
     check(items[4][1:] == ("weatherDensity", "0", None), "no weather = weatherDensity 0, off = the game's own default")
     clear()
     lua.execute("R2F.QuickSettings.Toggle(R2F.QuickSettings.ITEMS[5])")
@@ -8248,7 +8249,7 @@ def test_quick_settings(templates, fx):
     lua.execute('SlashCmdList.R2F("settings")')
     check(lua.eval("R2F.MainWindow.CurrentTab()") == "home", "%s: /r2f settings opens Home (settings live there)" % tag)
     n = find_frames(lua, "f.qsItem ~= nil", "QSB")
-    check(n == 5, "%s: five Quick settings boxes on the Settings tab (%d)" % (tag, n))
+    check(n == 6, "%s: six Quick settings boxes on the Settings tab (%d)" % (tag, n))
     check([lua.eval("QSB[%d].qsItem.key" % i) for i in (1, 2, 3)] == ["zoom", "guild", "pvp"], "boxes in item order")
     check([lua.eval("QSB[%d].r2fLabel.__text" % i) for i in (1, 2, 3)] == [L.QS_ZOOM, L.QS_GUILD, L.QS_PVP],
           "box labels: %s / %s / %s" % (L.QS_ZOOM, L.QS_GUILD, L.QS_PVP))

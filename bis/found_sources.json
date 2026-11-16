@@ -260,6 +260,10 @@
    "src": "Quest reward: Prehistoric Prism (a choice) (Seen in Forever)",
    "via": "our own recordings"
   },
+  "271718": {
+   "src": "Drops from Min'loth the Serpent in The Drowned City (Clue)",
+   "via": "ForeverCompanion"
+  },
   "271740": {
    "src": "Quest reward: Open the Maw (a choice), level 31 (Clue)",
    "via": "ForeverDungeonJournal"
@@ -419,6 +423,10 @@
   "274078": {
    "src": "Quest reward: Willix the Importer (a choice), level 30 (Clue)",
    "via": "ForeverDungeonJournal"
+  },
+  "274084": {
+   "src": "Quest reward: The Crone of the Kraul (Clue)",
+   "via": "ForeverCompanion"
   },
   "274158": {
    "src": "Drops from Aggem Thorncurse in Razorfen Kraul (Clue)",
@@ -748,9 +756,21 @@
    "src": "Quest reward: Ground to Keep, level 39 (Clue)",
    "via": "QuestieDB"
   },
+  "279474": {
+   "src": "Drops from Thrall Needs to Know (Horde) in Alcaz Prison (Clue)",
+   "via": "ForeverCompanion"
+  },
   "279480": {
    "src": "Quest reward: Eye of Mugg (a choice) (Seen in Forever)",
    "via": "our own recordings"
+  },
+  "279831": {
+   "src": "Drops from Thrall Needs to Know (Horde) in Alcaz Prison (Clue)",
+   "via": "ForeverCompanion"
+  },
+  "279833": {
+   "src": "Drops from Thrall Needs to Know (Horde) in Alcaz Prison (Clue)",
+   "via": "ForeverCompanion"
   },
   "279842": {
    "src": "Quest reward: Heart of Disruption (a choice), level 33 (Clue)",
@@ -795,6 +815,10 @@
   "279889": {
    "src": "Quest reward: The Only Good Brinescale... (a choice), level 38 (Clue)",
    "via": "ForeverDungeonJournal"
+  },
+  "279892": {
+   "src": "Quest reward: The Twin Bears (Clue)",
+   "via": "ForeverCompanion"
   },
   "279902": {
    "src": "Quest reward: Essence of Seeping Slimes, level 60 (Clue)",

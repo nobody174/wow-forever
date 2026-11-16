@@ -249,6 +249,28 @@ def read_fmb(addons):
     return out
 
 
+def read_companion(addons):
+    """-> {item id: sentence} from ForeverCompanion's Data/Loot.lua (installed addon, read only; the owner agreed to use its loot facts,
+    2026-11-16): boss loot per dungeon and quest rewards. Only item id -> boss / quest title / dungeon is taken, no text or code."""
+    p = addons / "ForeverCompanion" / "Data" / "Loot.lua"
+    if not p.exists():
+        return {}
+    lua = lupa.LuaRuntime(unpack_returned_tuples=True)
+    dungeons = lua.eval("function(src) ForeverCompanionData = nil assert(load(src))() return ForeverCompanionData.dungeons end")(
+        p.read_text(encoding="utf-8", errors="replace"))
+    out = {}
+    for k in dungeons.keys():
+        d = dungeons[k]
+        dname = d["n"]
+        for _, boss in (d["b"] or {}).items():
+            for _, it in (boss["i"] or {}).items():
+                out.setdefault(int(it["id"]), "Drops from %s in %s (Clue)" % (boss["n"], dname))
+        for _, q in (d["q"] or {}).items():
+            for _, it in (q["i"] or {}).items():
+                out.setdefault(int(it["id"]), "Quest reward: %s (Clue)" % q["n"])
+    return out
+
+
 def main():
     addons = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT
     unknown = unknown_ids()
@@ -263,6 +285,7 @@ def main():
     q_items = read_questiedb()
     f_items = read_fmb(addons)
     c_items = read_collectable()
+    k_items = read_companion(addons)
     web = json.loads(WEB.read_text(encoding="utf-8")) if WEB.exists() else {}
 
     found = {}
@@ -281,6 +304,8 @@ def main():
             found[iid] = {"src": q_items[iid], "via": "QuestieDB"}
         elif iid in f_items:
             found[iid] = {"src": f_items[iid], "via": "ForeverMyBis"}
+        elif iid in k_items:
+            found[iid] = {"src": k_items[iid], "via": "ForeverCompanion"}
     OUT.write_text(json.dumps({"items": {str(k): v for k, v in found.items()}}, indent=1, ensure_ascii=False) + "\n",
                    encoding="utf-8")
 

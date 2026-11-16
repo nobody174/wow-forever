@@ -40,7 +40,7 @@ Tab.PAGES = {
   { key = "vendors", label = "GP_PAGE_VENDORS",
     features = { "repair", "sellgray", "fastloot", "mailalts" } },
   { key = "screen", label = "GP_PAGE_SCREEN", features = { "errorfilter", "xpbar", "copychat", "duels", "updatecheck" } },
-  { key = "bags", label = "GP_PAGE_BAGS", features = { "bagslots", "bagsort", "upgrades", "charmarks" } },
+  { key = "bags", label = "GP_PAGE_BAGS", features = { "bagslots", "bagsort", "upgrades", "charmarks", "wishtracker" } },
   { key = "alerts", label = "GP_PAGE_ALERTS",
     features = { "reactalert", "reactlock", "reactblizz", "training", "flighttimer", "rarefinder" } },
   { key = "arrow", label = "GP_PAGE_ARROW", features = { "navfollow", "corpsearrow" } },

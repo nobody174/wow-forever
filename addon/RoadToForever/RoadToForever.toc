@@ -63,6 +63,7 @@ BiZ.lua
 GearScore.lua
 BiZMe.lua
 CharMarks.lua
+WishTracker.lua
 QuestWeaponData.lua
 QuestWeapons.lua
 TrainingData.lua

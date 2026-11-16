@@ -20,7 +20,6 @@
 ## Next (in this order)
 - [ ] Owner tests 5.87-5.91; fix what they find. Taint test (5.91) decides the docked Character panel (Phase 5).
 - [ ] Docked panel beside the Character window (only if the taint test is clean), Blizzard look per docs/ui-study.md.
-- [ ] Wishlist on-screen tracker (small movable frame: top wished items, source, click = arrow).
 - [ ] Places: reputation vendors (faction quartermasters), quest givers without a spot (ForeverMyBis ql, QuestMaps coordinates), Ruins of Lordaeron / Hall of Thanes / Stratholme entrances to settle.
 - [ ] Unknown sources left (967 rows): more tiers in found_sources.py (ForeverWoWBiS Sources, ForeverCompanion Loot), recorder positions.
 - [ ] Pre-BiZ / BiZ / phases when raids exist (no data now).

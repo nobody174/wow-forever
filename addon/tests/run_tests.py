@@ -3835,6 +3835,23 @@ def test_bizme():
     check(lua.eval("(R2F.CharMarks.RankOf(R2F.BiZ.Spec('hunter/beast-mastery'), 30, 'head', 1))") is None, "%s: an item on no list has no rank" % tag)
     lua.execute("R2F.Gameplay.SetOn('charmarks', false) R2F.CharMarks.Update() TEST.worn = {}")
 
+    # wishlist tracker: unowned wished items, grouped, a click points the arrow
+    lua.execute("""
+      R2FCharDB.biz.wish = {}
+      TEST.wid = R2F.BiZ.SlotsAt(R2F.BiZ.Spec('hunter/beast-mastery'), 30)[1].best.id
+      R2F.BiZ.ToggleWish(TEST.wid, 'hunter/beast-mastery', 'head')
+      TEST.goes = {} R2F.BiZ.Go = function(key) table.insert(TEST.goes, key) return 'arrow' end
+      R2F.BiZMe.Owns = function(id) return false end
+      R2F.Gameplay.SetOn('wishtracker', true) R2F.WishTracker.Update()
+    """)
+    check(lua.eval("#R2F.WishTracker.Rows()") == 1, "%s: the tracker lists a wished item" % tag)
+    check(lua.eval("R2FWishTrackerFrame ~= nil and R2FWishTrackerFrame:IsShown()"), "%s: the tracker frame shows" % tag)
+    lua.execute("R2F.BiZMe.Owns = function(id) return id == TEST.wid end")
+    check(lua.eval("#R2F.WishTracker.Rows()") == 0, "%s: an owned wished item is left out" % tag)
+    lua.execute("R2F.WishTracker.Update()")
+    check(not lua.eval("R2FWishTrackerFrame:IsShown()"), "%s: the tracker hides when nothing is left" % tag)
+    lua.execute("R2F.Gameplay.SetOn('wishtracker', false) R2F.WishTracker.Update() R2FCharDB.biz.wish = {}")
+
     # the recorder notes where you stood at a vendor, so Forever-new vendors can be placed
     lua.execute("""
       R2F.Library.db.recorder = R2F.Library.db.recorder or {} R2F.Library.db.recorder.on = true

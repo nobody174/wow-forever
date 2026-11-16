@@ -412,6 +412,7 @@ function BiZ.ToggleWish(id, specId, slot)
   else
     cdb().wish[id] = { spec = specId, slot = slot }
   end
+  if R2F.WishTracker then R2F.WishTracker.Soon() end
 end
 
 function BiZ.WishCount()
@@ -517,6 +518,7 @@ function BiZ.Import(text)
       cdb().wish[id] = { spec = spec, slot = slot ~= "" and slot or nil }
     end
   end
+  if R2F.WishTracker then R2F.WishTracker.Soon() end
   return added
 end
 

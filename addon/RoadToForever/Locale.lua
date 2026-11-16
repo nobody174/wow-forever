@@ -316,6 +316,13 @@ R2F.L = {
   TRAIN_TITLE_TIP = "On level-up, says in chat which spells your class trainer now offers. Uses the list read the last " ..
     "time you opened your trainer.",
   -- GearScore (GearScore.lua)
+  WT_FEATURE = "Wishlist tracker",
+  WT_FEATURE_TIP = "A small movable list of the wishlist items you do not own yet, with where each comes from. Click a row to point the BiZNav arrow at its source; drag the title to move it.",
+  WT_TITLE = "Wishlist (%d)",
+  WT_MORE = "+%d more",
+  WT_CLICK = "Click: point the arrow at its source",
+  WT_NO_PLACE = "No known place for %s yet.",
+  WT_NO_PLACE_TIP = "No known place for this source yet.",
   CM_TITLE = "Character slot marks",
   CM_TITLE_TIP = "Small marks on your Character window's gear slots: a green square when you wear the Mr.BiZ pick for that slot, yellow for one of the next two picks, and a green arrow when an upgrade you can get now is on the Next upgrades list.",
   GS_TITLE = "Upgrade arrows",

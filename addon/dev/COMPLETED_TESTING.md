@@ -4,6 +4,17 @@ The record of what the owner has tested and confirmed. Open tasks are in `TESTIN
 confirmed it is deleted from that file and added here in the same pass (newest round first). Numbers are the
 `section.item` numbers of TESTING.md at the time.
 
+## 2026-11-16 (BiZMe round)
+- 5.75 Combat banner with a pet (0.83.0)
+- 5.81 Slim minimap menu and the Setup tab (0.86.0)
+- 5.83 Talent check and the Hunter tree (0.87.2)
+- 5.84 BiZMe probe: Encounter Journal (`/r2f debug ej`), out of combat, any zone
+- 5.87 BiZMe: Next upgrades (`/biz`, the "Next upgrades" button under the class button)
+- 5.88 BiZMe: Guide me
+- 5.90 BiZMe: item tooltip line and BiZ code
+- 5.91 BiZMe: Character slot marks (Tweaks > Bags > "Character slot marks", off until ticked)
+- 5.84 result: the Encounter Journal is empty on Forever (0 tiers, 0 entrances on the map), so entrances and sources come from files, not the journal. 5.91: no taint reported, so the docked Character panel is allowed.
+
 ## 2026-11-15 (0.87.3 + BiZMe probes)
 - 5.85 memory: the addon uses 21.2 MB at login, the Mr.BiZ data alone 14.4 MB of it (12,543 rows). 5.86 inspect: a targeted player within range can be inspected, 15 worn items read in 0.3 s.
 

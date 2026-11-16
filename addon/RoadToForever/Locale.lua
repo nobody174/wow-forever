@@ -316,6 +316,11 @@ R2F.L = {
   TRAIN_TITLE_TIP = "On level-up, says in chat which spells your class trainer now offers. Uses the list read the last " ..
     "time you opened your trainer.",
   -- GearScore (GearScore.lua)
+  CP_FEATURE = "Character window upgrades panel",
+  CP_FEATURE_TIP = "A small panel on the right edge of the Character window listing your Next upgrades from Mr.BiZ (item, slot, gain, where it comes from). Click a row to point the BiZNav arrow at it.",
+  CP_TITLE = "Mr.BiZ upgrades",
+  CP_SUB = "%s, level %d: %d upgrades",
+  CP_OPEN = "Open Mr.BiZ",
   WT_FEATURE = "Wishlist tracker",
   WT_FEATURE_TIP = "A small movable list of the wishlist items you do not own yet, with where each comes from. Click a row to point the BiZNav arrow at its source; drag the title to move it.",
   WT_TITLE = "Wishlist (%d)",

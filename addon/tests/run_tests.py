@@ -3835,6 +3835,18 @@ def test_bizme():
     check(lua.eval("(R2F.CharMarks.RankOf(R2F.BiZ.Spec('hunter/beast-mastery'), 30, 'head', 1))") is None, "%s: an item on no list has no rank" % tag)
     lua.execute("R2F.Gameplay.SetOn('charmarks', false) R2F.CharMarks.Update() TEST.worn = {}")
 
+    # docked Character window panel: the upgrades list beside the Character window, only while it is open and the tweak is on
+    lua.execute("""
+      CharacterFrame = CharacterFrame or CreateFrame('Frame', 'CharacterFrame') CharacterFrame:Show()
+      R2F.BiZ.SetSpec('hunter/beast-mastery') R2F.BiZ.SetLevel(30) TEST.worn = {}
+      R2F.Gameplay.SetOn('charpanel', true) R2F.CharPanel.Update()
+    """)
+    check(lua.eval("#R2F.CharPanel.Rows()") >= 1, "%s: the Character panel lists upgrades" % tag)
+    check(lua.eval("R2FCharPanelFrame ~= nil and R2FCharPanelFrame:IsShown()"), "%s: the Character panel shows beside the open Character window" % tag)
+    lua.execute("CharacterFrame:Hide() R2F.CharPanel.Update()")
+    check(not lua.eval("R2FCharPanelFrame:IsShown()"), "%s: the Character panel hides with the Character window" % tag)
+    lua.execute("R2F.Gameplay.SetOn('charpanel', false) R2F.CharPanel.Update() R2F.BiZ.SetLevel(nil)")
+
     # wishlist tracker: unowned wished items, grouped, a click points the arrow
     lua.execute("""
       R2FCharDB.biz.wish = {}

@@ -151,6 +151,37 @@ function Minimap_.ToggleThreatMaster()
   if Minimap_.ThreatMasterAvailable() then pcall(_G.SlashCmdList.THREATMASTER, "") end
 end
 
+-- Hunter tracking (Track Beasts, Track Hidden, ...): the game's own tracking list, so it follows what the character
+-- knows. C_Minimap.SetTracking is not protected; one tracking is active at a time (the game switches between them).
+function Minimap_.TrackingTypes()
+  local out = {}
+  local ns = _G.C_Minimap
+  if not (ns and ns.GetNumTrackingTypes and ns.GetTrackingInfo) then return out end
+  pcall(function()
+    for i = 1, ns.GetNumTrackingTypes() or 0 do
+      local info = ns.GetTrackingInfo(i)
+      if type(info) == "table" and type(info.name) == "string" and info.name:find("^Track ") then
+        out[#out + 1] = { index = i, name = info.name, active = info.active == true }
+      end
+    end
+  end)
+  return out
+end
+
+local function trackingItem(name)
+  local function find()
+    for _, t in ipairs(Minimap_.TrackingTypes()) do
+      if t.name == name then return t end
+    end
+  end
+  return { kind = "check", text = name,
+    isChecked = function() local t = find() return t and t.active or false end,
+    func = function()
+      local t = find()
+      if t and _G.C_Minimap and C_Minimap.SetTracking then pcall(C_Minimap.SetTracking, t.index, not t.active) end
+    end }
+end
+
 -- The setup entry shows only for a class that has a setup, a character with its Edit Mode layout, and one that has not run it
 -- yet (Setup.IsDone; undoing the setup brings it back). The Setup tab always offers it again.
 function Minimap_.SetupDef()
@@ -182,10 +213,17 @@ function Minimap_.MenuItems()
     meters[#meters + 1] = { kind = "check", text = L.MENU_THREATMASTER, isChecked = Minimap_.ThreatMasterOn,
                             func = Minimap_.ToggleThreatMaster }
   end
+  local tracking = {}
+  local types = Minimap_.TrackingTypes()
+  if #types > 0 then
+    local sub = {}
+    for _, t in ipairs(types) do sub[#sub + 1] = trackingItem(t.name) end
+    tracking[1] = { kind = "submenu", text = L.MENU_TRACKING, items = sub }
+  end
   -- /reload without typing it (ReloadUI is not a protected function).
   local bottom = { { kind = "button", text = L.MENU_RELOAD, func = function() ReloadUI() end } }
   local items = {}
-  for _, section in ipairs({ top, meters, bottom }) do
+  for _, section in ipairs({ top, meters, tracking, bottom }) do
     if #section > 0 then
       if #items > 0 then items[#items + 1] = { kind = "divider" } end
       for _, it in ipairs(section) do items[#items + 1] = it end
@@ -211,6 +249,9 @@ function Minimap_.OpenMenu(owner)
           root:CreateDivider()
         elseif it.kind == "check" then
           root:CreateCheckbox(it.text, it.isChecked, it.func)
+        elseif it.kind == "submenu" then
+          local sub = root:CreateButton(it.text)
+          for _, si in ipairs(it.items) do sub:CreateCheckbox(si.text, si.isChecked, si.func) end
         else
           root:CreateButton(it.text, it.func)
         end
@@ -218,7 +259,17 @@ function Minimap_.OpenMenu(owner)
     end)
     return "MenuUtil"
   end
-  UI.ContextMenu(items)
+  -- our own menu has no foldouts: a submenu becomes a title and its items
+  local flat = {}
+  for _, it in ipairs(items) do
+    if it.kind == "submenu" then
+      flat[#flat + 1] = { kind = "title", text = it.text }
+      for _, si in ipairs(it.items) do flat[#flat + 1] = si end
+    else
+      flat[#flat + 1] = it
+    end
+  end
+  UI.ContextMenu(flat)
   return "own"
 end
 

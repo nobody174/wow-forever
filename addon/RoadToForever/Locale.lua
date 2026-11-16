@@ -942,6 +942,7 @@ R2F.L = {
   MM_DRAG = "Drag to move.",
   MENU_OPEN = "Open Road to Forever",
   MENU_DAMAGEMETER = "Damage meter (Blizzard)",
+  MENU_TRACKING = "Tracking",
   MENU_THREATMASTER = "ThreatMaster (/threatmaster)",
   MENU_SETUP = "Setup %s",
   MENU_SETUP_UNDO = "Undo last setup",

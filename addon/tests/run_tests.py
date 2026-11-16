@@ -4770,6 +4770,20 @@ def test_step6_ui(templates, fx):
     lua.execute("DMI.func()")
     check(lua.eval("TEST.dm") == "0", "menu: and off again")
     lua.execute("GetCVar, SetCVar = OLDGET, OLDSET")
+    # Tracking foldout: the character's "Track ..." types from the game's list; a click flips one through C_Minimap.SetTracking
+    check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.kind == 'submenu' then return true end end return false end)()") is False,
+          "menu: no tracking foldout without tracking spells")
+    lua.execute("""OLDCM = C_Minimap TEST.tr = { { name = 'Track Beasts', active = false }, { name = 'Find Herbs', active = false }, { name = 'Track Undead', active = true } }
+      C_Minimap = { GetNumTrackingTypes = function() return #TEST.tr end, GetTrackingInfo = function(i) return TEST.tr[i] end,
+        SetTracking = function(i, on) for j, t in ipairs(TEST.tr) do t.active = (j == i) and on end end }
+      TRK = nil for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.kind == 'submenu' then TRK = it end end""")
+    check(lua.eval("TRK ~= nil and #TRK.items") == 2, "menu: the tracking foldout lists only the Track spells")
+    check(lua.eval("TRK.items[2].isChecked()") is True and lua.eval("TRK.items[1].isChecked()") is False, "menu: the active tracking is ticked")
+    lua.execute("TRK.items[1].func()")
+    check(lua.eval("TRK.items[1].isChecked()") is True and lua.eval("TRK.items[2].isChecked()") is False, "menu: a click switches tracking")
+    lua.execute("TRK.items[1].func()")
+    check(lua.eval("TRK.items[1].isChecked()") is False, "menu: a second click switches it off")
+    lua.execute("C_Minimap = OLDCM")
     # ThreatMaster toggle: only when its /tm command exists; it calls that command with no argument (what typing /tm does).
     check(lua.eval("(function() for _, it in ipairs(R2F.Minimap.MenuItems()) do if it.text == R2F.L.MENU_THREATMASTER then return true end end return false end)()") is False,
           "menu: no ThreatMaster entry when the addon is not there")

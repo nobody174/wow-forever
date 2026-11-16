@@ -1,6 +1,6 @@
 # Road to Forever: open tests
 
-Reply with the number: `5.25 done`, `5.38 needs more testing`, `5.41 not working: <what you saw>`. Numbers never change (gaps are fine).
+Reply with the number: `5.25 done`, `5.38 needs more testing`, `5.41 not working: <what you saw>`. Numbers never change (gaps are fine). A checklist page with boxes and comment fields is built from this file: `python tools/testing_html.py`, then open `addon/dev/TESTING.html`.
 **Only open tasks live here.** A confirmed test moves to `COMPLETED_TESTING.md`.
 Checked against release 0.84.2 on 2026-11-09 (labels updated).
 

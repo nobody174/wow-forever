@@ -403,7 +403,17 @@ local function inRange(x, y) return x and y and x >= 0 and x <= 100 and y >= 0 a
 function Nav.WayCommand(rest)
   rest = (rest or ""):gsub("^%s+", ""):gsub("%s+$", "")
   local lower = rest:lower()
-  if lower == "clear" then
+  -- TomTom-style "#<mapId> x y [label]" from web links
+  local hashMap, hashRest = rest:match("^#(%d+)%s+(.+)$")
+  if hashMap then
+    local hx, hy, hl = hashRest:match("^([%d%.]+)[%s,]+([%d%.]+)%s*(.*)$")
+    local x, y = tonumber(hx), tonumber(hy)
+    if inRange(x, y) then
+      if hl == "" then hl = ("%.1f, %.1f"):format(x, y) end
+      return setAndSay(tonumber(hashMap), x, y, hl, nil)
+    end
+  end
+  if lower == "clear" or lower == "reset" then
     if not Nav.Clear() then R2F.Print(L.NAV_NONE) end
     return true
   end

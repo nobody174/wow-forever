@@ -337,7 +337,7 @@ R2F.L = {
   NAV_NO_MAP = "this game has no map called %s. Here is the /way line instead:",
   NAV_NO_WORLD = "this map can't be placed in the world, so there is no arrow for it.",
   NAV_WAY_USAGE = "usage: /bizway <x> <y> [label] (the zone you are in), /bizway <zone> <x> <y> [label], " ..
-    "/bizway clear, /bizway size small|medium|large. Alt + right-click on the world map also sets the arrow.",
+    "/bizway clear, /bizway size small|medium|large (also /way when no other addon has it). Alt + right-click on the world map also sets the arrow.",
   NAV_PIN_TIP = "BiZNav target. /bizway clear removes it.",
   NAV_SIZE_SET = "arrow size: %s",
   NAV_SIZE = "Waypoint arrow size",
@@ -935,7 +935,7 @@ R2F.L = {
   MM_DRAG = "Drag to move.",
   MENU_OPEN = "Open Road to Forever",
   MENU_DAMAGEMETER = "Damage meter (Blizzard)",
-  MENU_THREATMASTER = "ThreatMaster (/tm)",
+  MENU_THREATMASTER = "ThreatMaster (/threatmaster)",
   MENU_SETUP = "Setup %s",
   MENU_SETUP_UNDO = "Undo last setup",
   SETUP_UNKNOWN = "no setup called \"%s\" (try /r2f setup hunter).",

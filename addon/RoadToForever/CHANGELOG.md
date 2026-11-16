@@ -3,6 +3,7 @@
 ## Unreleased (BiZMe, 2026-11-15; in the repo and the owner's AddOns folder, no tag yet)
 
 - **Mr.BiZ, Next upgrades (new view):** per slot the best pick you can get now that beats what you wear by 5% or more, ranked by gain, with where it comes from, how long it stays on the list and the owner's carry rule (no trip for a pick replaced within 10 levels, 5 when its source is in the zone you stand in). Picks out of reach are listed with the reason (source unknown, PvP rank, other faction, quest or skill level, replaced soon). Items you already own are left out. New file `BiZMe.lua`.
+- **BiZNav answers to `/way`** (web coordinate links) when no other addon, such as TomTom, owns it; also `/way #<mapId> x y [label]` and `/way reset`. The right-click menu now names ThreatMaster's `/threatmaster` (its `/tm` clashed with the game's target marker).
 - **Viewing as:** pick yourself, a saved character, or "Inspect my target" (a player within range, out of combat: their worn gear is read and saved as a dated profile). The upgrades view then compares against their gear.
 - **Guide me:** points the BiZNav arrow at the next upgrade that has a known place, one after the other.
 - **Item tooltips:** a line says where the item ranks on your spec's list for the level in the tab ("Bizzer for Beast Mastery (Head), on the list for 12 more levels"). Same switch as the upgrade arrows.

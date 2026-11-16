@@ -315,6 +315,19 @@ end
 _G.SLASH_R2FWAY1 = "/bizway"
 SlashCmdList.R2FWAY = function(msg) R2F.Nav.WayCommand(msg) end
 
+-- "/way" is what coordinate links on the web use. Take it only when no other addon (TomTom, ...) has it,
+-- checked at login after every addon has loaded.
+do
+  local f = CreateFrame("Frame")
+  f:RegisterEvent("PLAYER_LOGIN")
+  f:SetScript("OnEvent", function()
+    for k, v in pairs(_G) do
+      if type(k) == "string" and k:find("^SLASH_") and v == "/way" and k ~= "SLASH_R2FWAY2" then return end
+    end
+    _G.SLASH_R2FWAY2 = "/way"
+  end)
+end
+
 _G.SLASH_R2FT1 = "/r2ft"
 SlashCmdList.R2FT = function() R2F.MainWindow.Show("talents") end
 

@@ -4364,7 +4364,7 @@ def test_ui_smoke(templates, fx):
       local out = {}
       for k in pairs(_G) do if not BEFORE[k] then table.insert(out, k) end end
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
-    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1",
+    allowed_exact = {"R2F", "R2FDB", "R2FCharDB", "SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "SLASH_R2FWAY2",
                      "TomTom"} | BINDING_GLOBALS  # TomTom = BiZNav's stand-in for Questie
     test_vars = {"EDIT", "PREVIEW", "IMPORTBTN", "BADTEXT", "TABS", "SLOTS", "PAGETEXT", "TIDY", "BOOKIMPORT",
                  "COMBATTEXT", "OTHER", "NS"}
@@ -4604,7 +4604,7 @@ def test_step5_ui(templates, fx):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"SETBTN", "CHECKS", "REMOVEALL", "L", "APPLIED", "NS", "REAL_MM"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "TomTom") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "SLASH_R2FWAY2", "TomTom") and not g.startswith("R2F")]
     check(not bad, "%s: step 5 adds no globals besides R2F* frames and the binding labels: %s" % (tag, bad))
 
 
@@ -6034,7 +6034,7 @@ def test_talent_preview(templates):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     test_vars = {"NS", "TBTN", "PH", "SUM1", "S21", "CON", "BAD", "ERR", "INV", "PO"}
     bad = [g for g in new_globals if g and g not in test_vars and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "TomTom") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "SLASH_R2FWAY2", "TomTom") and not g.startswith("R2F")]
     check(not bad, "%s: step 9 adds no globals besides R2F* frames: %s" % (tag, bad))
 
     # ---- The last board comes back in a new session (lastTalentLink) -------------------
@@ -6581,7 +6581,7 @@ def test_talent_learning(templates):
     bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST", "NOTE", "BZ", "PREV", "GetCVarBool")
            and not g.startswith("TalentFrame")
            and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "TomTom") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "SLASH_R2FWAY2", "TomTom") and not g.startswith("R2F")]
     check(not bad, "%s: step 10 adds no globals of its own: %s" % (tag, bad))
 
 
@@ -7605,7 +7605,7 @@ def test_talent_traits_learning(templates):
       table.sort(out) return table.concat(out, ",") end)()""").split(",")
     bad = [g for g in new_globals if g and g not in ("NS", "LBTN", "LHINT", "LST")
            and not g.startswith("TalentFrame") and g not in BINDING_GLOBALS
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "TomTom") and not g.startswith("R2F")]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "SLASH_R2FWAY2", "TomTom") and not g.startswith("R2F")]
     check(not bad, "%s: traits mode adds no globals: %s" % (tag, bad))
 
 
@@ -8720,7 +8720,7 @@ def test_class_picker(templates, fx):
     lua.execute("NEWG = {} for k in pairs(_G) do if not BEFORE[k] then NEWG[#NEWG + 1] = k end end")
     test_vars = {"EDIT", "IMPORTBTN", "BTABS", "PICKS", "BSLOTS", "FT", "NS", "NEWG", "CONFIRMSHOWN", "ENSURES"}
     bad = [g for g in lua_table_to_list(lua.eval("NEWG")) if g not in test_vars and not g.startswith("R2F")
-           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "TomTom") and g not in BINDING_GLOBALS]
+           and g not in ("SLASH_R2F1", "SLASH_R2FT1", "SLASH_R2FBIZ1", "SLASH_R2FBIZ2", "SLASH_R2FWAY1", "SLASH_R2FWAY2", "TomTom") and g not in BINDING_GLOBALS]
     check(not bad, "%s: the class picker adds no globals: %s" % (tag, bad))
 
 

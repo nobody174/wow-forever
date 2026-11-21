@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-21",
+      "title": "Level 30 cheat sheets re-checked",
+      "text": "The level 30 cheat sheets were compared with Wowhead's leveling guides and a number of rotations were corrected, for example Fire Mage, Arms Warrior and Restoration Shaman.",
+      "link": "builds.html"
+    },
+    {
+      "date": "2026-11-21",
       "title": "Cheat sheets for every level 60 spec",
       "text": "Discipline, Demonology, Arcane, Assassination, Subtlety, Balance, Cat Druid, Survival and Arms now have a cheat sheet with stats, rotation and cooldowns, taken from Wowhead's Forever guides.",
       "link": "builds.html"

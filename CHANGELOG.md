@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-21 (level 30 cheat sheets re-checked)
+- Builds: the 26 level 30 cheat sheets were checked against Wowhead's Forever leveling guides (rotations only: Wowhead gives no level 30 stat order). Changed: Discipline (Penance from 30, wand-first), Demonology (Searing Pain for Demonic Brand), Destruction (do not open with Immolate), Restoration Shaman (Riptide), Arms (Mortal Strike, Victory Rush, Spearing Strike), Fury and Protection Warrior, Protection and Holy Paladin, Fire Mage (Blast Wave removed, Heating Up rotation), Arcane Mage (2 Blast stacks), Balance and Restoration Druid, and the Hunters (Arcane Shot every third rotation with Summon Hawk). Every intro notes the check.
+
 ## 2026-11-21 (nine new level 60 cheat sheets)
 - Builds: cheat sheets written for the nine level 60 specs that had none (Discipline, Demonology, Arcane, Assassination, Subtlety, Balance, Feral Cat, Survival, Arms): stat order from Wowhead's stat priority pages, rotation, opener and cooldowns from its rotation pages, in `GUIDES` (builds.html). Confidence medium; ability icons resolve from each class's talents and rotations, so a few may show as text chips.
 

@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-21 (level 60 cheat sheets re-checked)
+- Builds: all 18 level 60 cheat sheets in `builds.html` (`GUIDES`) plus the Druid Feral bear one now use the stat order from Wowhead's Forever stat priority pages instead of the Classic order (new caps such as 17% Hit for casters, 8% / 6.5% Expertise for melee, 440 Defense; Spell Piercing and Haste added). Tanks use Wowhead's Balanced list. Intro text says the source and that Wowhead calls level 60 numbers a best estimate. Rotations untouched.
+
 ## 2026-11-21 (Professions BiS re-scrape)
 - Professions: re-read ForeverChanges' BiS pages (build 71037, now 21 PvE spec pages; its PvP lists are gone) and its Enchanting recipe data. Every BiS enchant is still on the lists; skill levels all match. Fixed values: Bracer Lesser Intellect +5 -> +3, Cloak Defense +60 -> +30 armor, Cloak Lesser Protection +20 armor, Chest Minor Stats +2 -> +1. Because of that Cloak Defense and Chest Minor Stats are no longer "same bonus" stand-ins in `LADDER`. "Checked" date on the page is now 21 Nov 2026.
 

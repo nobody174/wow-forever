@@ -34863,16 +34863,16 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -34881,7 +34881,7 @@ R2F.BiZData = {
             alts = {
               {name = "Enchant Bracer - Minor Healing Power", eff = "Healing +8, Damage Spells +3", prof = "Enchanting",
                 skill = 90, ids = { 8208 } },
-              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
                 ids = { 723 } },
             } },
         },
@@ -35111,16 +35111,16 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -35129,7 +35129,7 @@ R2F.BiZData = {
             alts = {
               {name = "Enchant Bracer - Minor Healing Power", eff = "Healing +8, Damage Spells +3", prof = "Enchanting",
                 skill = 90, ids = { 8208 } },
-              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
                 ids = { 723 } },
             } },
         },
@@ -35374,20 +35374,20 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
             ids = { 723 },
             alts = {
               {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
@@ -35637,20 +35637,20 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
             ids = { 723 },
             alts = {
               {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
@@ -35913,20 +35913,20 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
             ids = { 723 },
             alts = {
               {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
@@ -36181,20 +36181,20 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
             ids = { 723 },
             alts = {
               {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
@@ -36465,20 +36465,20 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
             ids = { 723 },
             alts = {
               {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
@@ -36738,20 +36738,20 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
             ids = { 723 },
             alts = {
               {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
@@ -37012,20 +37012,20 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
             ids = { 723 },
             alts = {
               {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
@@ -37374,8 +37374,8 @@ R2F.BiZData = {
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -37713,8 +37713,8 @@ R2F.BiZData = {
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -38061,8 +38061,8 @@ R2F.BiZData = {
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -38338,9 +38338,9 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
@@ -38619,20 +38619,20 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
             ids = { 723 },
             alts = {
               {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
@@ -38869,16 +38869,16 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -38887,7 +38887,7 @@ R2F.BiZData = {
             alts = {
               {name = "Enchant Bracer - Minor Healing Power", eff = "Healing +8, Damage Spells +3", prof = "Enchanting",
                 skill = 90, ids = { 8208 } },
-              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
                 ids = { 723 } },
             } },
         },
@@ -39150,20 +39150,20 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
-          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+          {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
             ids = { 723 },
             alts = {
               {name = "Enchant Bracer - Minor Intellect", eff = "+3 Intellect", prof = "Enchanting", skill = 70,
@@ -39455,8 +39455,8 @@ R2F.BiZData = {
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -39707,16 +39707,16 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -39725,7 +39725,7 @@ R2F.BiZData = {
             alts = {
               {name = "Enchant Bracer - Minor Healing Power", eff = "Healing +8, Damage Spells +3", prof = "Enchanting",
                 skill = 90, ids = { 8208 } },
-              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
                 ids = { 723 } },
             } },
         },
@@ -40052,8 +40052,8 @@ R2F.BiZData = {
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -40378,8 +40378,8 @@ R2F.BiZData = {
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -40705,8 +40705,8 @@ R2F.BiZData = {
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -41024,9 +41024,9 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
@@ -41345,8 +41345,8 @@ R2F.BiZData = {
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -41584,16 +41584,16 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -41602,7 +41602,7 @@ R2F.BiZData = {
             alts = {
               {name = "Enchant Bracer - Minor Healing Power", eff = "Healing +8, Damage Spells +3", prof = "Enchanting",
                 skill = 90, ids = { 8208 } },
-              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +5", prof = "Enchanting", skill = 150,
+              {name = "Enchant Bracer - Lesser Intellect", eff = "Intellect +3", prof = "Enchanting", skill = 150,
                 ids = { 723 } },
             } },
         },
@@ -41943,9 +41943,9 @@ R2F.BiZData = {
         back = {
           {name = "Enchant Cloak - Greater Defense", eff = "Armor +60", prof = "Enchanting", skill = 205, ids = { 884 },
             alts = {
-              {name = "Enchant Cloak - Defense", eff = "+60 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
-              {name = "Enchant Cloak - Lesser Protection", eff = "Extra armor (Classic: +20)", prof = "Enchanting",
-                skill = 115, ids = { 744 } },
+              {name = "Enchant Cloak - Defense", eff = "+30 Armor", prof = "Enchanting", skill = 155, ids = { 848 } },
+              {name = "Enchant Cloak - Lesser Protection", eff = "+20 Armor", prof = "Enchanting", skill = 115,
+                ids = { 744 } },
             } },
         },
         chest = {
@@ -42272,8 +42272,8 @@ R2F.BiZData = {
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {
@@ -42615,8 +42615,8 @@ R2F.BiZData = {
         chest = {
           {name = "Enchant Chest - Lesser Stats", eff = "All Stats +2", prof = "Enchanting", skill = 200, ids = { 866 },
             alts = {
-              {name = "Enchant Chest - Minor Stats", eff = "+2 All Stats (per Wowhead; was +1 in Classic)",
-                prof = "Enchanting", skill = 150, ids = { 847 } },
+              {name = "Enchant Chest - Minor Stats", eff = "+1 All Stats", prof = "Enchanting", skill = 150,
+                ids = { 847 } },
             } },
         },
         wrist = {

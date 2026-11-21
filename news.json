@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-21",
+      "title": "Level 60 cheat sheets updated",
+      "text": "The stat priorities on the level 60 cheat sheets now follow Wowhead's Forever guides, with the new hit, expertise and defense numbers.",
+      "link": "builds.html"
+    },
+    {
+      "date": "2026-11-21",
       "title": "Professions enchant values re-checked",
       "text": "A few enchant values on the Professions page were corrected against the newest game data (Bracer Lesser Intellect, Cloak Defense, Chest Minor Stats).",
       "link": "professions.html"

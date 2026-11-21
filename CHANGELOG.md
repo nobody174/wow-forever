@@ -5,6 +5,10 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-21 (owner test round: macros trimmed, Builds page grouped)
+- Macros: removed the universal macros nobody uses: Smart target enemy, Assist mouseover / friendly target, Clear dead target, and the whole Focus group (Set focus, Clear focus, Target focus, Assist focus). Class macros with focus are untouched.
+- Builds page: one heading and one spec button per spec (Arms, not Arms Arms Arms); its builds (PvE, PvP, Raid, Dungeon ...) sit under it with the cheat sheet once at the end.
+
 ## 2026-11-21 (level 30 cheat sheets re-checked)
 - Builds: the 26 level 30 cheat sheets were checked against Wowhead's Forever leveling guides (rotations only: Wowhead gives no level 30 stat order). Changed: Discipline (Penance from 30, wand-first), Demonology (Searing Pain for Demonic Brand), Destruction (do not open with Immolate), Restoration Shaman (Riptide), Arms (Mortal Strike, Victory Rush, Spearing Strike), Fury and Protection Warrior, Protection and Holy Paladin, Fire Mage (Blast Wave removed, Heating Up rotation), Arcane Mage (2 Blast stacks), Balance and Restoration Druid, and the Hunters (Arcane Shot every third rotation with Summon Hawk). Every intro notes the check.
 

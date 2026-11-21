@@ -221,6 +221,9 @@ h2{font:400 21px/1.2 var(--serif);color:var(--accent);margin:0 0 4px;letter-spac
 .guide .g-foot{color:var(--muted);font-size:12.5px;margin:18px 0 0;padding-top:14px;border-top:1px solid var(--edge);line-height:1.45}
 .guide .g-title-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 0;margin-bottom:2px}
 .guide .confidence{display:inline-block;font:600 10px/1 var(--sans);text-transform:uppercase;letter-spacing:.04em;padding:3px 7px;border-radius:3px;margin-left:10px;vertical-align:3px}
+.spec-group{flex:0 0 100%;display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:24px}
+.spec-head{flex:0 0 100%;margin:28px 0 0;font-size:1.25rem;border-bottom:1px solid var(--line,#2a3550);padding-bottom:6px}
+.spec-head span{font-size:.8rem;font-weight:400;opacity:.7;margin-left:6px}
 </style>
 <link rel="stylesheet" href="talentcalc.css?v=20261109a">
 </head>
@@ -1210,8 +1213,8 @@ function renderRoster(){
   }).join("");
 }
 function renderSpecs(builds){
-  if(!builds || builds.length < 2){ specs.innerHTML = ""; return; }
-  const opts = ["All", ...builds.map(b=>b.spec)];
+  if(!builds || new Set(builds.map(b=>b.spec)).size < 2){ specs.innerHTML = ""; return; }
+  const opts = ["All", ...new Set(builds.map(b=>b.spec))];
   specs.innerHTML = opts.map(s=>`<button aria-pressed="${s===spec}" data-s="${s}">${esc(s)}</button>`).join("");
 }
 function renderLevels(){
@@ -1235,8 +1238,17 @@ function render(){
     out.innerHTML = `<p class="no-build">No level-${level} build for ${esc(cls)} yet.</p>`;
     return;
   }
-  const shown = spec==="All" ? builds : builds.filter(b=>b.spec===spec);
-  out.innerHTML = shown.map((b,i)=>buildHTML(b,i) + guideHTML(b)).join("");
+  const pick = spec==="All" ? builds : builds.filter(b=>b.spec===spec);
+  // One section per spec: its builds (Raid, Dungeon, PvP ...) together, the cheat sheet once at the end.
+  const order = [...new Set(pick.map(b=>b.spec))];
+  const shown = order.flatMap(sp=>pick.filter(b=>b.spec===sp));
+  out.innerHTML = order.map(sp=>{
+    const group = shown.filter(b=>b.spec===sp);
+    const body = group.map(b=>buildHTML(b, shown.indexOf(b))).join("");
+    const head = order.length > 1 || group.length > 1
+      ? `<h2 class="spec-head">${esc(sp)}${group.length > 1 ? ` <span>${group.length} builds</span>` : ""}</h2>` : "";
+    return `<section class="spec-group">${head}${body}${guideHTML(group[0])}</section>`;
+  }).join("");
   mountCalcs(shown);
 }
 roster.addEventListener("click", e=>{

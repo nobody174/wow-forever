@@ -59,51 +59,14 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 
 ### Targeting helpers
 
-**Smart target enemy** (`SmartTarget`) — Only grabs a new enemy if you have no live hostile target.
-```
-/targetenemy [noharm][dead]
-```
-
 **Grab TT (take the mob off your friend)** (`GrabTT`)
 ```
 /target [@targettarget, harm, exists]
 ```
 
-**Assist mouseover / friendly target** (`Assist@`)
-```
-/assist [@mouseover, help, exists][help]
-```
-
-**Clear dead target** (`ClearDead`)
-```
-/cleartarget [dead]
-```
-
 **Skull mark mouseover / target** (`SkullMark`) — 8 = skull, 7 = cross, 5 = moon, 6 = square. Uses the full /targetmarker name, not the /tm shorthand — the ThreatMaster addon claims /tm for itself, which silently breaks this macro if you use the short form.
 ```
 /targetmarker [@mouseover, exists][] 8
-```
-
-### Focus
-
-**Set focus (mouseover first)** (`SetFocus`)
-```
-/focus [@mouseover, exists][]
-```
-
-**Clear focus** (`ClearFocus`)
-```
-/clearfocus
-```
-
-**Target focus** (`TargetFoc`)
-```
-/target focus
-```
-
-**Assist focus (set tank as focus)** (`AssistFoc`)
-```
-/assist focus
 ```
 
 ### Misc / UI

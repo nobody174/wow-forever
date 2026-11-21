@@ -4,6 +4,12 @@ The record of what the owner has tested and confirmed. Open tasks are in `TESTIN
 confirmed it is deleted from that file and added here in the same pass (newest round first). Numbers are the
 `section.item` numbers of TESTING.md at the time.
 
+## 2026-11-21 (owner round)
+- 5.69 Swing timer, 5.99 Home after the planner was removed (Gear upgrades card), 5.101 Talents tab with the many new builds.
+- 5.100 Three new macros: working. Owner asked to drop unused universal macros; done (Smart target enemy, Assist mouseover, Clear dead target and the whole Focus group of four).
+- 5.82 Talent dump (Paladin only so far): `/r2f debug talentdump` printed 51 nodes in 1 tree, 8 edges, 45 conditions, and the field lists for node, entry, definition, condition and currency. Other classes are still unsampled; the talent audit (BACKLOG) uses these.
+- 5.98 (login with Util.lua) was not answered; still to confirm by simply logging in without a Lua error.
+
 ## 2026-11-17 (owner round)
 - 5.32 Recorder (owner's numbers kept), 5.68 General settings, 5.73 /bizway from the site, 5.89 BiZMe Viewing as, 5.92 Wishlist tracker, 5.93 Minimap Tracking foldout, 5.94 Character window upgrades panel, 5.95 Keep colour as a ghost, 5.96 Rare finder no longer blocked, 5.97 Planner removed.
 - Scrapped, not tested: 5.65 route log, 5.70 Plan follows race and class, 5.71 Follow the plan, 5.72 Duo progress. The owner is done levelling, so the Plan tab and the leveling route were only needed at the start.

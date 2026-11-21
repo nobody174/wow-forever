@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-21",
+      "title": "Builds page tidied",
+      "text": "Each spec now has one heading with all its builds (PvE, PvP, Raid, Dungeon) under it instead of repeating the name.",
+      "link": "builds.html"
+    },
+    {
+      "date": "2026-11-21",
       "title": "Level 30 cheat sheets re-checked",
       "text": "The level 30 cheat sheets were compared with Wowhead's leveling guides and a number of rotations were corrected, for example Fire Mage, Arms Warrior and Restoration Shaman.",
       "link": "builds.html"

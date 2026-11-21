@@ -170,36 +170,15 @@ DPS, HEAL, CLEAN, AUTO, BUFF, PANIC, TARGET, QOL, FOCUS, MISC = (
 # =============================================================================
 UNIVERSAL = [
     G(TARGET, [
-        M("Smart target enemy",
-          "/targetenemy [noharm][dead]",
-          "Only grabs a new enemy if you have no live hostile target.",
-          short="SmartTarget", icon="Ability_Hunter_SniperShot"),
         M("Grab TT (take the mob off your friend)",
           "/target [@targettarget, harm, exists]",
           short="GrabTT", icon="Ability_Hunter_MasterMarksman"),
-        M("Assist mouseover / friendly target",
-          "/assist [@mouseover, help, exists][help]",
-          short="Assist@", icon="Ability_Warrior_Challange"),
-        M("Clear dead target",
-          "/cleartarget [dead]",
-          short="ClearDead", icon="Spell_Shadow_SoulLeech_3"),
         M("Skull mark mouseover / target",
           "/targetmarker [@mouseover, exists][] 8",
           "8 = skull, 7 = cross, 5 = moon, 6 = square. Uses the full /targetmarker "
           "name, not the /tm shorthand — the ThreatMaster addon claims /tm for "
           "itself, which silently breaks this macro if you use the short form.",
           short="SkullMark", icon="INV_Misc_Bone_HumanSkull_01"),
-    ]),
-
-    G(FOCUS, [
-        M("Set focus (mouseover first)", "/focus [@mouseover, exists][]",
-          short="SetFocus", icon="Ability_Hunter_SniperShot"),
-        M("Clear focus", "/clearfocus",
-          short="ClearFocus", icon="Spell_Shadow_SoulLeech_3"),
-        M("Target focus", "/target focus",
-          short="TargetFoc", icon="Ability_Hunter_MasterMarksman"),
-        M("Assist focus (set tank as focus)", "/assist focus",
-          short="AssistFoc", icon="Ability_Warrior_Challange"),
     ]),
 
     G(MISC, [

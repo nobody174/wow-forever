@@ -15,7 +15,7 @@ The one page to follow: [docs/launch-day.md](docs/launch-day.md).
 3. **Hover preview** in the gallery (the mockup previews on hover; ours previews on click with Keep / Revert).
 
 ## 1. Bugs
-1. **Rotation notes vs the new level 60 builds (2026-11-21):** the 19 level 60 codes now come from Wowhead's guides (`builds_from_wowhead.py`); the `rotation` text in `builds.html` was written for older picks. Re-read each against its build. RankedBoost has also moved since 0.84.2 (11 level 30/60 builds differ on a dry run of `builds_from_rankedboost.py`; level 30 not applied).
+1. **RankedBoost has moved since 0.84.2:** 11 level 30 / 60 builds differ on a dry run of `builds_from_rankedboost.py` (level 30 not applied; level 60 now follows Wowhead, rotations rewritten 2026-11-21).
 None else open (talent-tree drift fixed 2026-11-07; before each release run `python addon/tools/gen_talent_data.py --drift`).
 
 ## 2. Addon

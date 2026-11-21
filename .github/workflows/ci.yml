@@ -8,26 +8,16 @@ on:
     branches: [main]
     paths:
       - "addon/**"
-      - "launch-plan.html"
-      - "launch-plan-waypoints.json"
-      - "launch-plan-steps.json"
-      - "launch-plan-steps.schema.json"
       - "bis/**"
       - "bis-data.json"
       - "talentcalc.js"
-      - "progresscodec.js"
       - ".github/workflows/ci.yml"
   pull_request:
     paths:
       - "addon/**"
-      - "launch-plan.html"
-      - "launch-plan-waypoints.json"
-      - "launch-plan-steps.json"
-      - "launch-plan-steps.schema.json"
       - "bis/**"
       - "bis-data.json"
       - "talentcalc.js"
-      - "progresscodec.js"
       - ".github/workflows/ci.yml"
   workflow_call:
 

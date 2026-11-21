@@ -8,7 +8,7 @@ What it checks, per page (*.html):
   * href / src / content / fetch() targets that are local files: the file exists (query strings ignored).
   * "#id" links: the id exists on that page, or the fragment is a route the page itself understands (bis.html#hunter/survival,
     professions.html#bis/hunter, talents.html#legacy ...); routes are validated against the data behind them.
-  * launch-plan.html?plan= / ?race= / ?class= / ?level= values name a real plan, race, class and level.
+  * no page reads a query string: a link with one is reported.
   * duplicate ids within one page, and manifest.webmanifest icon files.
 Standard library only.
 """
@@ -50,10 +50,6 @@ def block_keys(src, var):
     return re.findall(r"^    (\w+):", m.group(1), flags=re.M)
 
 
-LP = SOURCES["launch-plan.html"]
-LP_RACES = block_keys(LP, "RACES") or []
-LP_PRESETS = block_keys(LP, "PRESETS") or []
-LP_CLASSES = [c.lower() for c in (block_keys(LP, "CLASSES") or [])]
 BIS_SPECS = set(json.loads(read("bis-data.json"))["specs"])
 PROF_VIEWS = re.search(r"var VIEWS = \[([^\]]*)\]", SOURCES["professions.html"])
 PROF_VIEWS = re.findall(r'"([^"]+)"', PROF_VIEWS.group(1)) if PROF_VIEWS else []
@@ -72,34 +68,8 @@ def route_ok(page, frag):
     if page == "talents.html":
         parts = f.split("/")
         return parts[0] == "legacy" or parts[0] in CLASSES
-    if page == "launch-plan.html" and f == "buyable":
-        return True  # opens the buyable quests drawer
     return None
 
-
-def check_query(page, q, where, problems):
-    """Only launch-plan.html has query routes."""
-    qs = parse_qs(q)
-    for k in qs:
-        if k not in ("plan", "race", "class", "level", "mode"):
-            problems.append("%s: %s has an unknown query key '%s'" % (page, where, k))
-    if "plan" in qs and qs["plan"][0] not in LP_PRESETS and ":" not in qs["plan"][0]:
-        problems.append("%s: %s ?plan=%s is not a plan preset" % (page, where, qs["plan"][0]))
-    if "race" in qs and qs["race"][0] not in LP_RACES:
-        problems.append("%s: %s ?race=%s is not a race" % (page, where, qs["race"][0]))
-    if "class" in qs:
-        if qs["class"][0] not in LP_CLASSES:
-            problems.append("%s: %s ?class=%s is not a class" % (page, where, qs["class"][0]))
-        elif "race" in qs and qs["race"][0] in LP_RACES:
-            allowed = [c.lower() for c in re.findall(r'"(\w+)"', re.search(
-                r"%s:\s*\{[^}]*?classes:\s*\[([^\]]*)\]" % qs["race"][0], LP, flags=re.S).group(1))]
-            if qs["class"][0] not in allowed:
-                problems.append("%s: %s a %s cannot be a %s (the page would fall back to another class)" % (
-                    page, where, qs["race"][0], qs["class"][0]))
-    if "level" in qs and not (qs["level"][0].isdigit() and 0 <= int(qs["level"][0]) <= 60):
-        problems.append("%s: %s ?level=%s is not 0-60" % (page, where, qs["level"][0]))
-    if "mode" in qs and qs["mode"][0] != "night":
-        problems.append("%s: %s ?mode=%s is not 'night'" % (page, where, qs["mode"][0]))
 
 
 # --- collecting the links -------------------------------------------------------------------------------------------------
@@ -162,10 +132,7 @@ def main():
             if kind == "fetch" and (frag or query):
                 continue
             if query and target.endswith(".html"):
-                if target == "launch-plan.html":
-                    check_query(page, query, where, problems)
-                else:
-                    problems.append("%s: %s has a query string but %s does not read one" % (page, where, target))
+                problems.append("%s: %s has a query string but %s does not read one" % (page, where, target))
             if frag and target.endswith(".html"):
                 if frag == "":
                     continue

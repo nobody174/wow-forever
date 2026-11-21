@@ -80,6 +80,16 @@ local function fill()
   countText:SetText(hidden > 0 and L.CC_COUNT_HIDDEN:format(n, hidden) or L.CC_COUNT:format(n))
   edit:HighlightText()
   edit:SetFocus()
+  -- Some clients draw nothing until the box has a size and the window is laid out: set it again a frame later.
+  if _G.C_Timer and _G.C_Timer.After then
+    _G.C_Timer.After(0, function()
+      if not (win and win:IsShown()) then return end
+      if edit.SetTextColor then edit:SetTextColor(1, 1, 1) end
+      edit:SetHeight(250)
+      edit:SetText(text)
+      edit:HighlightText()
+    end)
+  end
 end
 
 local function build()

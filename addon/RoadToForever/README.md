@@ -11,14 +11,9 @@ Made by nobody174. All Rights Reserved (see `LICENSE`).
 
 Open it with `/r2f` (or the minimap button). It has these pages:
 
-- **Home**: the countdown to launch, the next step of your launch plan, what to train next,
+- **Home**: the countdown to launch, a shortcut to Mr.BiZ, what to train next,
   a share card for your professions, and the quick settings (a few game options, the minimap
   button). The **Theme** button opens the "Choose a look" gallery (see Looks below).
-- **Launch plan**: the launch-day checklist from the site for your own race and class (Alliance: Human, Dwarf, Gnome,
-  Night Elf, Skyborne), with tick boxes. "Preview another combination" shows another race and class. Each step can
-  point the built-in arrow (BiZNav) at its spot; `/bizway` and Alt + right-click on the world
-  map do the same for any spot. A **Quest shopping list** button swaps the steps for the
-  quests whose items you can buy instead of farm, with a tick box for each.
 - **Builds & talents**: a talent calculator for every class. Click freely without spending
   anything, pick any class by its icon (try your friend's Warrior while you play a Priest),
   save the build, share it with teammates who also have the addon, start from our
@@ -52,13 +47,6 @@ a gallery: click a card to try that look on your window, then **Keep this look**
 **Revert** (it also goes back by itself after eight seconds). "Surprise me" tries a random one.
 The size and opacity of the window are set at the top (or in the sidebar, in Ember & Iron).
 
-### The route log
-
-Off until you start it (`/r2f route start`). It writes down your route as you play (quests
-and the order you did them, levels, the NPCs you opened windows with, your path and your own
-notes) in your saved variables only, for working out the best way to start a new character.
-`/r2f route note <text>` adds a note, `/r2f route stop` ends it. No character name is stored.
-
 ### The recorder
 
 On by default, it writes down in your own saved variables what loot windows, vendors and quest
@@ -72,7 +60,7 @@ resolve to a rank you haven't learned, so the addon writes in the highest rank y
 
 Unzip into the `Interface/AddOns/` folder of your WoW Forever installation so you get
 `Interface/AddOns/RoadToForever/RoadToForever.toc`, then restart the game (or `/reload`).
-The addon is for WoW Forever only (the game folder is `_forever_`; Alliance characters for the launch plan, English client). It loads no other addons and contacts no servers:
+The addon is for WoW Forever only (the game folder is `_forever_`; English client). It loads no other addons and contacts no servers:
 everything moves between the site and the game by copy and paste.
 
 **One thing it sends:** by default it tells your guild and group, through the game's
@@ -97,7 +85,7 @@ screen). It sends nothing else about you.
 | --- | --- |
 | `/r2f` | open or close the window (`/r2f open` only opens it) |
 | `/bizway <x> <y> [label]`, `/r2f way`, `/r2f clear` | point the arrow at a spot; clear it (`/bizway size large` resizes) |
-| `/r2f macros`, `/r2f talents` (`/r2ft`), `/r2f plan`, `/r2f gameplay`, `/r2f settings` | open that tab (`gameplay` = Tweaks, `settings` = Home) |
+| `/r2f macros`, `/r2f talents` (`/r2ft`), `/r2f gameplay`, `/r2f settings` | open that tab (`gameplay` = Tweaks, `settings` = Home) |
 | `/biz`, `/mrbiz`, `/r2f bis` | best in slot (`/biz wish` opens the wishlist) |
 | `/r2f import` | paste a macro import string from the site |
 | `/r2f copybuild` | your talents as a link for the site |
@@ -106,7 +94,6 @@ screen). It sends nothing else about you.
 | `/r2f stance`, `/r2f ammo`, `/r2f repair`, `/r2f pet`, `/r2f aspect`, `/r2f rested` | show or hide that icon (add `lock` to lock it, except rested) |
 | `/r2f reminders` | the reminders settings |
 | `/r2f record`, `/r2f record on` / `off` | what the recorder has seen; switch it |
-| `/r2f route start`, `/r2f route note <text>`, `/r2f route stop` | the route log |
 | `/r2f update` | is there a newer version (as heard from guild and group) |
 | `/r2f minimap` | show or hide the minimap button |
 | `/r2f debug` | troubleshooting tools; paste what they print into a report |
@@ -148,8 +135,7 @@ your report. `/r2f copychat` is handy for copying Lua errors out of chat.
 ## Credits
 
 Best in slot data comes from [ForeverDB](https://foreverdb.net/) and Wowhead; the addon
-shows the source next to each pick. The quest-reward weapons on the Launch plan tab (and the
-item rarity colours) come from [Wowhead](https://www.wowhead.com/forever)'s Forever item data.
+shows the source next to each pick. The item rarity colours come from [Wowhead](https://www.wowhead.com/forever)'s Forever item data.
 
 The window looks use free fonts bundled with the addon (each with its licence file in
 `media/fonts`): Cinzel, Alegreya Sans, Barlow, Barlow Condensed, Chakra Petch, Space Grotesk,

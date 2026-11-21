@@ -1,4 +1,4 @@
-# Site pages: landing, news, builds, launch plan, talents
+# Site pages: landing, news, builds, talents
 
 Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
 
@@ -51,37 +51,6 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
   stats[], statTip, pull[abilities], pullLoop, pullTip}], foot}`. Used by Druid Level 30 Feral (bear tank
   stat order + pack pull) at Level 30 and Level 60; a mode can add `extra: [{label, abilities, loop, tip}]` rows. Hand-edit directly.
 
-- `launch-plan.html` — hand-written launch plan for the 28 Alliance race and class combinations (Human, Dwarf, Gnome,
-  Night Elf, Skyborne), picked with two dropdowns (race, then class; the class list is rebuilt on every race change and
-  falls back to the race's first class). A side button, "2 Hunters" (preset `hunter` = Skyborne Hunter plus the duo
-  tactics card), sits next to them. Every class is treated as damage: no tank or healer text, dungeon steps say "needs
-  a group". Data lives in the first `<script>` block: `CLASSES` / `CLASS_ORDER`, `RACES` / `RACE_ORDER` (label, start,
-  valid classes, `draft` = start steps not written yet), `PRESETS`, `TIPS`, `WAYPOINTS`; the steps (`PHASES`) are in
-  `launch-plan-steps.json`, which the page fetches after the first paint (rules: `launch-plan-steps.schema.json`; the
-  steps appear once it has loaded, a failed load says so in each section). A step resolves in
-  this order: its own fields, `race.<race>`, `cls.<CLASS>`, `preset.<id>`; an object replaces the fields it names,
-  `false` hides the step for good; a key may list several names ("dwarf gnome"). `only: { race: [...], cls: [...] }`
-  shows a step to those only (class steps carry a coloured class tag). Nothing is thrown away when a plan goes: the old
-  group-plan text now lives in class steps (`only.cls`) and race overrides. Checklists (before-launch / launch-night /
-  12→20 / 20→30 / 30→60 / test-in-beta) and the Tips cards are rendered by JS. The addon's `gen_plan_data.js` evaluates
-  `CLASSES`, `RACES`, `PRESETS` and `planId` / `parsePlan` / `allPlans` / `allowed` / `override` / `resolve`, so
-  keep those as top-level two-space-indented `var`s and `function`s. Selection comes from `?race=gnome&class=mage` or
-  `?plan=hunter`, then localStorage `wf-launch-plan-sel` (a plan id, `race:CLASS` or the preset), then Skyborne Hunter.
-  Checkboxes persist per browser in localStorage (key `wf-launch-plan-v1`, keyed by item id — keep ids stable; steps
-  shared by several races or classes share one checkbox, so progress survives switching). **Weapons:** each step with a
-  level and a zone in its title gets the best quest-reward weapons for the class, strongest dps first (top two melee and
-  top two ranged; Priest, Mage and Warlock show "check stats" unranked; "No quest weapon data past level 32" on later
-  steps; dual wield is not modelled). Data: `launch-plan-weapons.json`, written by `bis/build_quest_weapons.py` (the same
-  rows as the addon's `QuestWeaponData.lua` plus dps, Alliance and both-faction only, and the class weapon table
-  `CLASS_USE`, the one copy of it). The page fetches it after the first paint. A start-zone step must name its zone in
-  its title (for example "Coldridge Valley (Dun Morogh)") or it gets no weapon line. Subzone names inside Elwynn, Dun
-  Morogh and Teldrassil are Classic knowledge: tag them `unv`. Legacy path cards are static HTML with `data-race`. A
-  floating "Buyable quests" button (top-right, just under the sticky top bar) (and a TOC link, or `#buyable` in the URL)
-  opens a right-hand sidebar listing quests whose objectives are tradeable AH/vendor items, switchable between "Along our
-  route" (grouped p1/p2/p3/off) and "By zone". Its data is the `QUESTS` array in the second `<script>` block (quest level,
-  items, route phase, status forever/classic/verify); its checkboxes use their own localStorage key
-  `wf-launch-plan-buy-v1` (ids `bq-*`). Steps past level 30 are tagged `unverified` until beta/launch confirms them. Launch
-  time uses the same `2026-11-04T23:00:00Z` target as index.html. Hand-edit directly (except the weapons JSON).
 - `talentcalc.js` + `talentcalc.css` — shared calculator engine used by `talents.html`
   (full mode: all three trees) and `builds.html` (compact mode, one per build card:
   tree tabs, "Reset to build", "Copy link", "Open in Talent Calc"). API:
@@ -154,15 +123,8 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
   sheet with −/+/Close. Test locally by routing the Wowhead URL to a fixture in the
   same `WH.setPageData(...)` format (the cloud session can't reach Wowhead).
 
-## Duo progress (launch plan)
-`progresscodec.js` (loaded before the page script, `?v=` on change) writes and reads the `R2FP1:` progress string; the addon's `Progress.lua` is the same format (see its header). The panel under the weapon note makes my string from `state` (launch-day phases only: night, p1, p2, p3), reads a partner's, compares over the current selection's resolved steps, and can replace my launch-day ticks with theirs. Partner string and name are kept in `wf-launch-plan-duo`. Change the format in both files and `test_progress` in `addon/tests/run_tests.py`.
-
 ## Hunter hub (`hunter.html`)
-A page of cards that only link to the pages that hold the data (launch plan `?plan=hunter` / `?race=&class=hunter`, `builds.html`, `talents.html#hunter`, `bis.html#hunter/<spec>`, `professions.html#bis/hunter`, `macros.html`, the external pet database, `addons.html`). No Hunter facts are repeated on it, so nothing can drift. It is in `tools/sync_topbar.py`'s page list; it has no top bar entry (class pages do not belong in the shared nav), the Home page's Tools list links to it.
+A page of cards that only link to the pages that hold the data (`builds.html`, `talents.html#hunter`, `bis.html#hunter/<spec>`, `professions.html#bis/hunter`, `macros.html`, the external pet database, `addons.html`). No Hunter facts are repeated on it, so nothing can drift. It is in `tools/sync_topbar.py`'s page list; it has no top bar entry (class pages do not belong in the shared nav), the Home page's Tools list links to it.
 
-## Launch night mode (launch plan)
-`body.night` (button `#night-btn`, `?mode=night`, `wf-launch-plan-night`) hides every direct child of `.wrap` that has no `data-night` attribute (and is not `#night`, whose heading text the addon generator reads, so it must stay `<h2 id="night">`). To keep another element in the mode, give it `data-night`.
-
-## Home start-here strip (2026-11-02)
-`index.html` has a `.start` section in `.hero-content`: three step cards (launch plan, builds, addons) and a "Launching tonight?" link to `launch-plan.html?mode=night`. `#start-continue` is filled by a small script that reads `wf-launch-plan-sel` (the plan id the launch plan saves: `skyborne:HUNTER`, or the preset `hunter`) and `wf-launch-plan-level`; it stays hidden when the value is missing or not a known plan, and a bad level only drops the level. Layout: from 761px `.hero-content` gets a width and offset worked out from the side panels' width (see the CSS comment) so it never sits under them; at 760px and below it comes first (`order:-1`). `node tools/rehearse.js --only home` checks all of it.
-- `auction-house.html` — hand-written, JS-rendered. Names: WCLBox open API `GET https://wowforever.wclbox.com/api/open/v1/items?q=<words>&limit=100&offset=` (all words must appear, English or Chinese names; `ids=` batch lookup; max 100 per page, 5 requests/second/IP; up to 3 pages, 300 matches). If WCLBox fails, it falls back to `ah-items.json` (GENERATED by `tools/build_ah_items.py` from the full WCLBox list in `bis/own/cache/wclbox/list.jsonl`: all 21,855 items; the file is left untouched when that cache is missing). Prices: AHledger `/v1/tooltip/<market>?items=<ids>` (100 ids per call, cached 5 min). A numeric query looks up that item id. Market in `wf-prof-market` (shared with Professions). Credits stay on the page: WCLBox, in the wording it asks for (新手盒子·魔兽世界无限数据库) plus a link to each item's WCLBox page; cache 5 min, 5 requests/s/IP and "Prices from AHledger" (hard rule 6).
+## Home start-here strip
+`index.html` has a `.start` section in `.hero-content`: two step cards (builds, addons). The launch plan page and its "Continue your plan" / launch-night links were removed on 2026-11-17.

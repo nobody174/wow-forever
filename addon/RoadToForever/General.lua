@@ -87,12 +87,22 @@ end
 -- The swing timer switch (Options > Advanced Options > "Enable Swing Timer") is a game setting whose CVar name we are not
 -- sure of, so the client's own list of console variables is searched for names with "swing" in them.
 -- Returns { { name, value }, ... } sorted by name; empty when the client cannot list them.
+General.SWING_GUESSES = { "enableSwingTimer", "swingTimer", "showSwingTimer", "displaySwingTimer", "SwingTimer",
+  "enableSwingTimerBar", "showSwingTimerBar", "enableMeleeSwingTimer" }
+
 function General.SwingCVars()
   local out = {}
   local c = _G.C_Console
-  if not (c and c.GetAllCommands) then return out end
-  local ok, list = pcall(c.GetAllCommands)
-  if not (ok and type(list) == "table") then return out end
+  local ok, list = false, nil
+  if c and c.GetAllCommands then ok, list = pcall(c.GetAllCommands) end
+  if not (ok and type(list) == "table") then
+    -- The client cannot list its settings: probe likely names directly (a name the client does not know reads as nil).
+    for _, name in ipairs(General.SWING_GUESSES) do
+      local v = R2F.QuickSettings.Read(name)
+      if v ~= nil then out[#out + 1] = { name = name, value = v } end
+    end
+    return out
+  end
   for _, info in ipairs(list) do
     local name = type(info) == "table" and info.command
     -- commandType 0 = a console variable (the others are commands, macros and scripts)
@@ -218,6 +228,13 @@ local function applyCVars(g)
       if R2F.QuickSettings.Write(name, value) then set = set + 1 else skipped[#skipped + 1] = name end
     end
   end
+  -- A profile saved before the swing setting could be found does not hold it: the setup wants it on, so switch it on.
+  for _, sc in ipairs(General.SwingCVars()) do
+    if g.cvars[sc.name] == nil and sc.value == "0" and R2F.QuickSettings.Write(sc.name, "1") then
+      set = set + 1
+      say(L.SETUP_DONE_SWING)
+    end
+  end
   table.sort(skipped)
   say(L.GENERAL_DONE_CVARS:format(set))
   if #skipped > 0 then say(L.GENERAL_NOT_TAKEN:format(table.concat(skipped, ", "))) end
@@ -307,6 +324,22 @@ function General.Command(rest)
   if rest == "save" then General.Save()
   elseif rest == "apply" then General.Apply()
   elseif rest == "clear" then General.Clear()
+  elseif rest == "swing on" or rest == "swing off" then
+    -- Diagnostic: write the swing setting, read it straight back, and say what the game did with it.
+    local want = rest == "swing on" and "1" or "0"
+    local list = General.SwingCVars()
+    if #list == 0 then say(L.GENERAL_SWING_NONE) end
+    for _, sc in ipairs(list) do
+      local took = R2F.QuickSettings.Write(sc.name, want)
+      local now = R2F.QuickSettings.Read(sc.name)
+      say(("swing test: %s was %s, wrote %s (call %s), reads %s now"):format(sc.name, tostring(sc.value), want,
+        took and "ok" or "refused", tostring(now)))
+      if _G.C_Timer and _G.C_Timer.After then
+        _G.C_Timer.After(2, function()
+          say(("swing test: %s reads %s two seconds later"):format(sc.name, tostring(R2F.QuickSettings.Read(sc.name))))
+        end)
+      end
+    end
   elseif rest == "swing" then
     local list = General.SwingCVars()
     if #list == 0 then say(L.GENERAL_SWING_NONE) end

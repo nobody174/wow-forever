@@ -16,5 +16,5 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "20"
-      - name: Pages, countdown, all plans, night mode, Mr.BiZ
+      - name: Pages, countdown, Mr.BiZ, home, accessibility
         run: node tools/rehearse.js

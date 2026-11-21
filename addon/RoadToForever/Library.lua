@@ -118,8 +118,6 @@ function Library.Init()
     "reactblizz", "gossipshop", "flighttimer", "rarefinder" }) do
     if type(db.gameplay[key]) ~= "boolean" then db.gameplay[key] = false end
   end
-  -- "Arrow follows the plan" (Plan.lua) starts ON: it only acts on your own tick of a plan step.
-  if db.gameplay.navfollow == nil then db.gameplay.navfollow = true end
   -- "Arrow to corpse when you die" (Nav.lua) starts ON as well: it only acts when you die.
   if db.gameplay.corpsearrow == nil then db.gameplay.corpsearrow = true end
   -- The 3D arrow (Nav.lua) starts ON; switching it off gives the flat dart.
@@ -227,11 +225,6 @@ function Library.Init()
     if type(rc[key]) ~= "table" then rc[key] = {} end
   end
   rc.version = 1
-  -- Route log (RouteLog.lua): the runs written with /r2f route start. Off until started.
-  if type(db.route) ~= "table" then db.route = {} end
-  if type(db.route.runs) ~= "table" then db.route.runs = {} end
-  db.route.version = 1
-  if db.route.active ~= nil and not db.route.runs[db.route.active] then db.route.active = nil end
   rc.since = rc.since or (_G.date and _G.date("%Y-%m-%d") or nil)
   -- Buff countdown reminders (Timers.lua): one table per tracked buff.
   if type(db.timers) ~= "table" then db.timers = {} end
@@ -262,7 +255,7 @@ function Library.Init()
   -- windowPos (the window's saved spot) is written by UI.Window when moved.
   -- Any tab of the main window (MainWindow.TABS), so a window last left on
   -- Plan / Gameplay / Settings reopens there.
-  local TABS = { home = true, macros = true, talents = true, plan = true, bis = true, gameplay = true, training = true,
+  local TABS = { home = true, macros = true, talents = true, bis = true, gameplay = true, training = true,
                  setup = true }
   if not TABS[s.lastTab] then s.lastTab = "home" end   -- includes the retired "settings"
   -- The Setup undo data used to live here, account wide (another character could undo it). It cannot be attributed to a
@@ -293,14 +286,6 @@ function Library.Init()
   if type(cdb.bags.lock) ~= "boolean" then cdb.bags.lock = false end
   if type(cdb.bags.bags) ~= "table" then cdb.bags.bags = {} end
   if type(cdb.bags.combined) ~= "table" then cdb.bags.combined = nil end
-  -- Launch Plan tab (Plan.lua): the previewed race / class (nil = your own) and the ticked step ids.
-  -- Per character: ticks are about THIS character's progress.
-  if type(cdb.plan) ~= "table" then cdb.plan = {} end
-  if type(cdb.plan.done) ~= "table" then cdb.plan.done = {} end
-  if type(cdb.plan.noauto) ~= "table" then cdb.plan.noauto = {} end   -- steps unticked by hand (Follow the plan skips them)
-  if type(cdb.plan.follow) ~= "boolean" then cdb.plan.follow = false end   -- "Follow the plan" switch
-  if type(cdb.plan.bought) ~= "table" then cdb.plan.bought = {} end   -- ticked quests of the shopping list
-  if type(cdb.plan.selected) ~= "string" then cdb.plan.selected = nil end   -- a previewed combination; nil = the character's own
   -- Mr.BiZ tab (BiZ.lua): class / spec shown, source filters, the wishlist.
   -- Per character: the wishlist is this character's gear goals.
   if type(cdb.biz) ~= "table" then cdb.biz = {} end

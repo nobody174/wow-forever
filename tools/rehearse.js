@@ -2,8 +2,8 @@
 // Launch-day rehearsal: opens the real pages in headless Chrome with a faked clock and checks what a visitor would see.
 //
 //   node tools/rehearse.js              everything (about 3 minutes)
-//   node tools/rehearse.js --quick      pages, countdown and 4 plans only
-//   node tools/rehearse.js --only plans (pages | countdown | plans | night | bis | home | a11y)
+//   node tools/rehearse.js --quick      pages and countdown only
+//   node tools/rehearse.js --only home (pages | countdown | bis | home | a11y)
 //   CHROME=/path/to/chrome node tools/rehearse.js     when Chrome is not found in the usual places
 //
 // How: a tiny local server serves this folder and, for HTML pages only, injects a script before the page's own scripts. The
@@ -13,11 +13,9 @@
 //
 // Checks (each names the page / plan that failed):
 //   pages      every page loads, no script error, has a title, and the same top bar links
-//   countdown  index.html at T-2d3h4m5s, T-1s, T+0 and T+1h shows the right tiles and then "live"; launch-plan shows the date
-//   plans      all 29 launch-plan plans: each phase draws exactly the step ids tools/plan_snapshot.js resolves, no load error
-//   night      launch night mode (?mode=night): only the night phase shows, with its steps
+//   countdown  index.html at T-2d3h4m5s, T-1s, T+0 and T+1h shows the right tiles and then "live"
 //   bis        Mr.BiZ: every one of the 27 specs draws rows and the new panels
-//   home       Home: the start-here steps, the saved-plan link (also with broken storage), no overlap from 800px to 1920px
+//   home       Home: the start-here steps, no overlap from 800px to 1920px
 //   a11y       accessibility audit of every page on desktop and phone (names, labels, alt, contrast, tap size, landmarks);
 //              add --report to list every finding instead of failing on them
 // Exit code 1 when anything failed. External resources (YouTube, Wowhead ...) are ignored: only this site's own files count.
@@ -64,26 +62,11 @@ const PROBES = {
   home: `function () {
     var hc = document.querySelector(".hero-content").getBoundingClientRect(), sl = document.querySelector(".side-links").getBoundingClientRect();
     var st = document.querySelector(".start"), steps = Array.prototype.map.call(document.querySelectorAll(".start ol a"), function (a) { return a.getAttribute("href"); });
-    var cont = document.getElementById("start-continue");
     var overlap = !(hc.right <= sl.left || hc.left >= sl.right || hc.bottom <= sl.top || hc.top >= sl.bottom);
     var cr = document.querySelector(".start").getBoundingClientRect();
     return { w: innerWidth, steps: steps, startVisible: !!st && st.getBoundingClientRect().height > 0,
-      contHidden: cont.hidden, contBox: cont.getBoundingClientRect().width, contText: cont.textContent, overlap: overlap, heroTop: hc.top, sideTop: sl.top, heroLeft: hc.left, heroRight: hc.right,
+      overlap: overlap, heroTop: hc.top, sideTop: sl.top, heroLeft: hc.left, heroRight: hc.right,
       sideRight: sl.right, startRight: cr.right, vw: innerWidth, hScroll: document.documentElement.scrollWidth > innerWidth + 1 };
-  }`,
-  launchplan: `function () {
-    var out = {};
-    document.querySelectorAll(".phase[data-phase]").forEach(function (p) {
-      out[p.getAttribute("data-phase")] = Array.prototype.map.call(p.querySelectorAll("ul.check input[data-id]"), function (i) { return i.getAttribute("data-id"); });
-    });
-    var failed = /could not be loaded/.test(document.body.innerText);
-    var visible = 0;
-    document.querySelectorAll("ul.check input[data-id]").forEach(function (i) { if (i.offsetParent !== null) visible++; });
-    var lvl = document.getElementById("pick-level");
-    var prov = document.getElementById("provenance");
-    return { phases: out, failed: failed, night: document.body.classList.contains("night"), visible: visible,
-      level: !!lvl, prov: prov ? prov.textContent.trim() : "", chip: (document.getElementById("launch-chip") || {}).textContent || "",
-      nowbar: !!document.getElementById("now-bar") };
   }`,
   a11y: `function () {
     var out = { vw: innerWidth, noName: [], noAlt: [], noLabel: [], contrast: [], small: [], misc: [] };
@@ -291,10 +274,6 @@ async function main() {
     if (r.errors.length) console.log("errors: " + r.errors.join(" | "));
     srv.close(); return;
   }
-  const snap = JSON.parse(execFileSync("node", [path.join(ROOT, "tools", "plan_snapshot.js"), "--steps", path.join(ROOT, "launch-plan-steps.json")],
-    { maxBuffer: 64 * 1024 * 1024 }).toString());
-  const plans = Object.keys(snap.plans);
-
   if (want("pages")) {
     section("pages load without errors");
     const pages = fs.readdirSync(ROOT).filter((f) => f.endsWith(".html") && f !== "template.html").sort();
@@ -337,72 +316,20 @@ async function main() {
         check(t.slice(0, 3).join() === c.tiles.slice(0, 3).join(), "index at " + c.label + ": days/hours/minutes " + c.tiles.slice(0, 3).join(":") + " (got " + t.join(":") + ")");
         check(!p.live, "index at " + c.label + ": not live yet");
       }
-      // Before launch the page shows the launch time in the visitor's time; once live it clears that line (and hides the launch-night link).
+      // Before launch the page shows the launch time in the visitor's time; once live it clears that line.
       if (c.live) check(!p.local, "index at " + c.label + ": the launch-time line is cleared once live (got '" + (p.local || "") + "')");
       else check(!!p.local && /Launches/.test(p.local), "index at " + c.label + ": shows the launch time in the visitor's time (got '" + (p.local || "") + "')");
       check(!p.ribbon, "index at " + c.label + ": no Beta ribbon");
     });
-    const lp = await runPage(base, "launch-plan.html?__probe=launchplan&__now=" + encodeURIComponent(at(0)));
-    noErrors(lp, "launch-plan after launch");
-    check(/Launch:/.test((lp.probe || {}).chip || ""), "launch-plan: the launch chip shows the date");
-  }
-
-  if (want("plans")) {
-    section("launch plan: all " + plans.length + " plans draw what the data says");
-    const list = QUICK ? plans.filter((_, i) => i % 8 === 0) : plans;
-    const urlFor = (id) => id.includes(":") ? "race=" + id.split(":")[0] + "&class=" + id.split(":")[1].toLowerCase() : "plan=" + id;
-    const rs = await pool(list.map((id) => () => runPage(base, "launch-plan.html?" + urlFor(id) + "&__probe=launchplan")));
-    list.forEach((id, i) => {
-      const r = rs[i], p = r.probe || {};
-      noErrors(r, "plan " + id);
-      check(p.failed === false, "plan " + id + ": the steps loaded");
-      check(p.level && p.nowbar, "plan " + id + ": level box and Now/Next bar are there");
-      let drawn = 0, bad = [];
-      snap.phases.forEach((ph) => {
-        const want = snap.plans[id][ph].map((s) => s.id), got = (p.phases || {})[ph] || [];
-        drawn += got.length;
-        if (want.join() !== got.join()) bad.push(ph + " (want " + want.length + ", drew " + got.length + ")");
-      });
-      check(bad.length === 0, "plan " + id + ": every phase draws its steps in order" + (bad.length ? " | " + bad.join(", ") : " (" + drawn + " steps)"));
-      check(/across all races and classes|steps/i.test(p.prov || "") || (p.prov || "").length > 0, "plan " + id + ": data-as-of strip shows");
-    });
-  }
-
-  if (want("night")) {
-    section("launch night mode");
-    for (const id of QUICK ? ["hunter"] : ["hunter", "human:PRIEST", "gnome:MAGE"]) {
-      const q = id.includes(":") ? "race=" + id.split(":")[0] + "&class=" + id.split(":")[1].toLowerCase() : "plan=" + id;
-      const r = await runPage(base, "launch-plan.html?" + q + "&mode=night&__probe=launchplan", { mobile: true });
-      const p = r.probe || {};
-      noErrors(r, "night " + id);
-      check(p.night === true, "night " + id + ": body is in night mode");
-      const nightSteps = ((snap.plans[id] || snap.plans["skyborne:HUNTER"]).night || []).length;
-      check(p.visible === nightSteps || (id === "hunter" && p.visible > 0), "night " + id + ": only the night steps are visible (" + p.visible + " of " + nightSteps + ")");
-    }
   }
 
   if (want("home")) {
-    section("Home: start here, continue link, no overlap");
+    section("Home: start here, no overlap");
     const q = (ls) => "index.html?__probe=home" + (ls ? "&__ls=" + encodeURIComponent(JSON.stringify(ls)) : "");
     const fresh = await runPage(base, q(), { width: 1280 });
     noErrors(fresh, "home (fresh browser)");
     let p = fresh.probe || {};
-    check(p.startVisible && p.steps.join() === "launch-plan.html,builds.html,addons.html", "home: the three steps show and point at the plan, builds and addons (" + (p.steps || []).join() + ")");
-    check(p.contHidden === true && p.contBox === 0, "home: no continue link (and no empty box) in a fresh browser");
-    const saved = await runPage(base, q({ "wf-launch-plan-sel": JSON.stringify("nightelf:DRUID"), "wf-launch-plan-level": "14" }), { width: 1280 });
-    noErrors(saved, "home (saved plan)");
-    p = saved.probe || {};
-    check(p.contHidden === false && p.contText === "Continue your plan: Night Elf Druid, level 14 →", "home: continue link names the saved plan and level (got '" + p.contText + "')");
-    const duo = await runPage(base, q({ "wf-launch-plan-sel": JSON.stringify("hunter") }), { width: 1280 });
-    p = duo.probe || {};
-    check(p.contHidden === false && p.contText === "Continue your plan: 2 Hunters →", "home: the 2 Hunters preset reads right (got '" + p.contText + "')");
-    for (const junk of [{ "wf-launch-plan-sel": "{bad" }, { "wf-launch-plan-sel": JSON.stringify("elf:WIZARD") }, { "wf-launch-plan-sel": "null" }, { "wf-launch-plan-sel": JSON.stringify("human:MAGE"), "wf-launch-plan-level": "abc" }]) {
-      const r = await runPage(base, q(junk), { width: 1280 });
-      noErrors(r, "home (storage " + JSON.stringify(junk) + ")");
-      p = r.probe || {};
-      const okJunk = junk["wf-launch-plan-level"] ? p.contText === "Continue your plan: Human Mage →" : p.contHidden === true;
-      check(okJunk, "home: odd saved values never break the page or show a wrong plan (" + JSON.stringify(junk) + " -> '" + p.contText + "')");
-    }
+    check(p.startVisible && p.steps.join() === "builds.html,addons.html", "home: the two steps show and point at builds and addons (" + (p.steps || []).join() + ")");
     for (const w of [800, 1024, 1180, 1280, 1366, 1440, 1536, 1920]) {
       const r = await runPage(base, q(), { width: w });
       noErrors(r, "home at " + w + "px");

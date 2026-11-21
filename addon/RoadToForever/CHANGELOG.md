@@ -2,6 +2,7 @@
 
 ## Unreleased (BiZMe, 2026-11-15; in the repo and the owner's AddOns folder, no tag yet)
 
+- **Removed the launch planner (2026-11-17):** the Plan tab, Follow the plan, Duo progress, the route log (`/r2f route`, `/r2f plan`), the quest weapons on the plan and the "Arrow follows the plan" tweak. BiZNav and the map lookup stay (`Waypoint.lua`). Home's plan card is now a "Gear upgrades" card that opens Mr.BiZ.
 - **Mr.BiZ, Next upgrades (new view):** per slot the best pick you can get now that beats what you wear by 5% or more, ranked by gain, with where it comes from, how long it stays on the list and the owner's carry rule (no trip for a pick replaced within 10 levels, 5 when its source is in the zone you stand in). Picks out of reach are listed with the reason (source unknown, PvP rank, other faction, quest or skill level, replaced soon). Items you already own are left out. New file `BiZMe.lua`.
 - **BiZNav answers to `/way`** (web coordinate links) when no other addon, such as TomTom, owns it; also `/way #<mapId> x y [label]` and `/way reset`. The right-click menu now names ThreatMaster's `/threatmaster` (its `/tm` clashed with the game's target marker).
 - **Wishlist tracker (Tweaks > Bags, off until ticked):** a small movable list of the wished items you do not own yet; a click points the BiZNav arrow at the source. New file `WishTracker.lua`.

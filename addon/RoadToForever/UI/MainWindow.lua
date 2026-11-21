@@ -1,15 +1,13 @@
 -- UI/MainWindow.lua: the one Road to Forever window.
 --
 -- Flat 820 x 600 window (UI.FlatWindow): a top bar (logo + name, Size and
--- Opacity sliders, Reload UI, close), a sidebar on the left (Home; Journey:
--- Plan / Talents / BiZ; Tools: Macros / Gameplay) and the
+-- Opacity sliders, Reload UI, close), a sidebar on the left (Home; Character:
+-- Talents / BiZ; Tools: Macros / Gameplay) and the
 -- page on the right. Each tab is a page frame; the window shows one at a time:
 --   Home    -> UI/Home.lua builds into it
 --   Macros  -> UI/MacroBook.lua builds into it
 --   Talents -> UI/TalentPanel.lua builds into it (link, preview, Copy my build,
 --              Learn talents)
---   Plan    -> UI/Plan.lua builds into it (the launch-day checklist per group
---              plan, tick boxes, waypoint arrow)
 --   BiS     -> UI/BiZ.lua builds into it (Mr.BiZ: best in slot per class / spec
 --              from the site's BiS data, item tooltips, the wishlist)
 --   Gameplay-> UI/Gameplay.lua builds into it (features that act for you or
@@ -30,15 +28,15 @@ local UI = R2F.UI
 local MainWindow = {}
 R2F.MainWindow = MainWindow
 
-MainWindow.TABS = { "home", "macros", "talents", "plan", "bis", "gameplay", "training", "setup" }
-local TAB_INDEX = { home = 1, macros = 2, talents = 3, plan = 4, bis = 5, gameplay = 6, training = 7,
-                   setup = 8 }  -- membership check
+MainWindow.TABS = { "home", "macros", "talents", "bis", "gameplay", "training", "setup" }
+local TAB_INDEX = { home = 1, macros = 2, talents = 3, bis = 4, gameplay = 5, training = 6,
+                   setup = 7 }  -- membership check
 -- Tabs that were folded into another one (the Settings tab became part of Home).
 local ALIAS = { settings = "home" }
-local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS", plan = "TITLE_PLAN",
+local TITLES = { home = "TITLE_HOME", macros = "TITLE_MACROS", talents = "TITLE_TALENTS",
                  bis = "TITLE_BIS", gameplay = "TITLE_GAMEPLAY", training = "TITLE_TRAINING",
                  setup = "TITLE_SETUP" }
-local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS", plan = "TAB_PLAN",
+local LABELS = { home = "TAB_HOME", macros = "TAB_MACROS", talents = "TAB_TALENTS",
                  bis = "TAB_BIS", gameplay = "TAB_GAMEPLAY", training = "TAB_TRAINING",
                  setup = "TAB_SETUP" }
 local LOGO = "Interface\\AddOns\\RoadToForever\\media\\logo128"
@@ -58,8 +56,6 @@ local function refreshPage(key)
     R2F.MacroBook.Refresh()
   elseif key == "talents" then
     R2F.TalentPanel.Refresh()
-  elseif key == "plan" then
-    R2F.PlanTab.Refresh()
   elseif key == "bis" then
     R2F.BiZTab.Refresh()
   elseif key == "gameplay" then
@@ -94,7 +90,6 @@ local curW = WIN_W          -- the window's width now: a theme can ask for a wid
 -- Sidebar order: a group heading (or none) and the tabs under it.
 MainWindow.NAV = {
   { tabs = { "home" } },
-  { heading = "NAV_JOURNEY", tabs = { "plan" } },
   { heading = "NAV_CHARACTER", tabs = { "talents", "training", "bis", "setup" } },
   { heading = "NAV_UI", tabs = { "macros", "gameplay" } },
 }
@@ -301,10 +296,10 @@ end
 -- The sidebar as a list of wide buttons (the usual look), as a 2 x 3 grid of 64 px tiles (Ember & Iron, "grid") or as a row
 -- of tabs under the top bar (Obsidian Night, "top"): the same buttons, moved. In the tab layout the window is 44 px taller
 -- and the pages move up and sideways into the space the sidebar left.
-local GRID_ORDER = { "home", "plan", "talents", "training", "bis", "setup", "macros", "gameplay" }
-local TOP_W = { home = 84, plan = 112, talents = 96, training = 88, bis = 84, setup = 70, macros = 92,
+local GRID_ORDER = { "home", "talents", "training", "bis", "setup", "macros", "gameplay" }
+local TOP_W = { home = 84, talents = 96, training = 88, bis = 84, setup = 70, macros = 92,
                  gameplay = 92 }
-local TOP_SEPARATORS_AFTER = { plan = true, setup = true }
+local TOP_SEPARATORS_AFTER = { home = true, setup = true }
 local navSeps = {}
 local tocY = {}
 local STRIP = 44
@@ -652,7 +647,6 @@ local function build()
   R2F.Home.Build(pages.home)
   R2F.MacroBook.Build(pages.macros)
   R2F.TalentPanel.Build(pages.talents)
-  R2F.PlanTab.Build(pages.plan)
   R2F.BiZTab.Build(pages.bis)
   R2F.GameplayTab.Build(pages.gameplay)
   R2F.TrainingTab.Build(pages.training)

@@ -2,7 +2,7 @@
 
 Static site (GitHub Pages, `main` / root, https://nobody174.github.io/wow-forever/) plus the in-game addon
 `addon/RoadToForever/` for WoW Forever (Classic+, Interface 16001, vanilla spell names, level cap 60).
-Pages: `index` (countdown), `launch-plan`, `builds`, `talents` (+ Legacy), `bis` (Mr.BiZ), `professions`,
+Pages: `index` (countdown), `builds`, `talents` (+ Legacy), `bis` (Mr.BiZ), `professions`,
 `auction-house`, `macros` (generated), `addons`, `news`, `library-books`, `hunter`.
 
 General WoW knowledge (taint rules, macro patterns, data sources, addon checklist, roles) lives in the
@@ -14,9 +14,9 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
 
 | Doc | Read when you touch |
 |---|---|
-| `docs/pipeline.md` | `data.py`, `build.py`, anything generated, `launch-plan-steps.json`, `bis/`, addon art |
+| `docs/pipeline.md` | `data.py`, `build.py`, anything generated, `bis/`, addon art |
 | `docs/macro-rules.md` | macros, `data.py` structure and helpers |
-| `docs/site-pages.md` | index, news, builds, launch plan, talents, saved builds, Legacy calc |
+| `docs/site-pages.md` | index, news, builds, talents, saved builds, Legacy calc |
 | `docs/professions-bis.md` | `professions.html` (enchants, prices, Crafters) and `bis.html` |
 | `docs/addons-page.md` | `addons.html` (no version check: CurseForge addons are links) |
 | `docs/assets-and-meta.md` | images, link previews, manifest |
@@ -28,7 +28,7 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
 
 ## Hard rules
 1. **Never hand-edit generated files**: `macros.html`, `wow-forever-macros.md`, `bis-data.json`, and the addon's
-   `MacroData.lua`, `PlanData.lua`, `BiZData.lua`, `TalentData.lua`. Edit the source, run `python build.py`
+   `MacroData.lua`, `BiZData.lua`, `TalentData.lua`. Edit the source, run `python build.py`
    (it also runs `bis/build_bis.py`). Addon tests fail if generated files are stale.
 2. Macros: edit `data.py` only. Every macro <= 255 characters, no ranks, `/targetmarker` never `/tm`.
 3. The top bar CSS must stay identical on every page (hand-written pages each carry a copy between `/* topbar:begin */`
@@ -53,7 +53,7 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
 
 ## Project conventions
 - Class order everywhere: Priest, Warlock, Mage, Rogue, Druid, Shaman, Hunter, Paladin, Warrior.
-- Nav order follows the player's path: launch plan, character (builds, talents, gear, professions), UI
+- Nav order follows the player's path: character (builds, talents, gear, professions), UI
   (macros, addons). New pages go in their group and need the shared `<head>` block (meta, icons, manifest).
-- Launch was `2026-11-04T23:00:00Z` (index and launch-plan agree); the home page switches to its live state by itself.
+- Launch was `2026-11-04T23:00:00Z` (index shows it); the home page switches to its live state by itself.
 - Sandbox cannot reach Wowhead, CurseForge or AHledger: use a browser or WebFetch and commit the result.

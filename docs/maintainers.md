@@ -3,7 +3,7 @@
 Everything here also lives in more detail elsewhere (`CLAUDE.md`, `docs/pipeline.md`, `addon/HARDENING.md`); this is the gathered short version.
 
 ## Daily loop
-1. Change the **source** (never a generated file): `data.py`, `builds.html`, `launch-plan-steps.json`, `bis/raw/`, `professions.html` ...
+1. Change the **source** (never a generated file): `data.py`, `builds.html`, `bis/raw/`, `professions.html` ...
 2. `python build.py`, then `python addon/tests/run_tests.py` (look for the "checks passed" line; a crash hides it).
 3. Site: look at it locally (`python -m http.server`, then the page). Addon: the owner tests in game (`addon/dev/TESTING.md`).
 4. Commit and push to `main`. Pages redeploys in about a minute.
@@ -25,7 +25,7 @@ there). Then `git tag r2f-vX.Y.Z` and push the tag (one or two tags at a time). 
 A browser from a Claude session: a `claude -p --allowedTools "mcp__claude-in-chrome__*"` subprocess (see the project memory note).
 
 ## Traps that cost time before
-- **Never hand-edit generated files** (`macros.html`, `wow-forever-macros.md`, `bis-data.json`, `MacroData.lua`, `PlanData.lua`, `BiZData.lua`, `TalentData.lua`, `TrainingData.lua`).
+- **Never hand-edit generated files** (`macros.html`, `wow-forever-macros.md`, `bis-data.json`, `MacroData.lua`, `BiZData.lua`, `TalentData.lua`, `TrainingData.lua`).
 - A Python heredoc in the shell collapses double backslashes: put regexes with backslashes in a file, or use `chr(92)`.
 - Bump `?v=` on `talentcalc.js`, `talentcalc.css`, `talentsaved.js`, `legacycalc.js` **together**.
 - Top bar CSS: edit `tools/sync_topbar.py`, run it, then `python build.py`.

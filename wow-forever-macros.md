@@ -123,6 +123,14 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /console UnitNamePlayerPVPTitle 0
 ```
 
+**Deeprun Rat Catcher's Flute** (`RatFlute`) — Targets a Deeprun Tram rat, marks it with a star, then plays the flute (you need the item). Change the 1 to 3 for a diamond or 8 for a skull.
+```
+#showtooltip Rat Catcher's Flute
+/target Deeprun Rat
+/targetmarker 1
+/cast Rat Catcher's Flute
+```
+
 **Weapon swap: 1H+offhand ↔ 2H** (`WeaponSwap`) — Swap the item names for your own gear. Toggles between 1H+offhand and 2H each press — slot 16 = main hand, 17 = off hand/shield.
 ```
 /equipslot 16 Durgen's Crescent Axe
@@ -1407,6 +1415,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 /castsequence reset=2 Lightning Shield, Windfury Weapon
 ```
 
+**Rockbiter Weapon** (`Rockbiter`) — Reapply the weapon buff in one press.
+```
+#showtooltip Rockbiter Weapon
+/cast Rockbiter Weapon
+```
+
 ## Hunter
 
 ### Hunter — Shared (all specs)
@@ -1467,6 +1481,12 @@ Copy/paste macros for Priest, Shaman, Paladin, Warlock, Hunter and Warrior. Each
 ```
 #showtooltip Aspect of the Hawk
 /cast [combat] Aspect of the Hawk; Aspect of the Cheetah
+```
+
+**Aspect: Hawk in combat, Pack out** (`HawkPack`) — Pack also speeds up your group, so it suits a party on the move.
+```
+#showtooltip Aspect of the Hawk
+/cast [combat] Aspect of the Hawk; Aspect of the Pack
 ```
 
 **Aspect of the Monkey** (`AspMonkey`) — Always Monkey (no Hawk / Cheetah swap).

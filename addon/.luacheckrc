@@ -48,7 +48,7 @@ read_globals = {
   "C_AddOns", "GetAddOnMetadata",
   -- Talent import preview (read-only)
   "GetTalentTabInfo", "GetLocale", "GetBuildInfo",
-  -- Dungeon entrances the game's world map knows (Plan.lua), read only
+  -- Dungeon entrances the game's world map knows (Waypoint.lua), read only
   "C_EncounterJournal", "C_DeathInfo",
   -- Talent learning (the one talent write: LearnTalent), preview-API detection, guided
   -- mode (Blizzard talent window, read only)
@@ -97,6 +97,5 @@ read_globals = {
 -- third-party code to exclude; LibStub is only read through _G in Minimap.lua.
 
 -- Generated and long-text files: long lines are expected there.
-files["**/PlanData.lua"] = { ignore = { "631" } }
 files["**/TalentData.lua"] = { ignore = { "631" } }
 files["**/Locale.lua"] = { ignore = { "631" } }

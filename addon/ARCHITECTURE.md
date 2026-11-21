@@ -14,14 +14,14 @@ It sits outside `RoadToForever/`, so it never ships.
 
 ## Layers (load order)
 1. **Plumbing**: `Locale`, `ItemApi`, `Base64`, `Library` (DB, macro library), `Import`.
-2. **Generated data** (never hand-edit, see `docs/pipeline.md`): `MacroData`, `PlanData`, `BiZData`, `TalentData`, `TrainingData`, `QuestWeaponData`.
-3. **Features**: macros (`Ranks`, `Macros`, `Setup`, `General`, `Bundle`), talents (`Talents`, `TalentCalc`), `Professions`, plan (`Plan`, `Progress`, `Nav`),
-   Mr.BiZ (`BiZ`, `GearScore`, `QuestWeapons`), `Training`.
+2. **Generated data** (never hand-edit, see `docs/pipeline.md`): `MacroData`, `BiZData`, `TalentData`, `TrainingData`.
+3. **Features**: macros (`Ranks`, `Macros`, `Setup`, `General`, `Bundle`), talents (`Talents`, `TalentCalc`), `Professions`, waypoints (`Waypoint`, `Nav`),
+   Mr.BiZ (`BiZ`, `GearScore`), `Training`.
 4. **Tweaks and reminders**: `Gameplay` (the registry: `R2F.Gameplay.Register{key, group, title, tip}`), `GameplayExtras/Quests/Chat`, `ActionBars`, `Bags`,
    and the reminder family on `R2F.Reminders.NewIcon` (`Stance`, `Ammo`, `Repair`, `Pet`, `Aspect`, `Timers`, `Rested`, `CombatBanner`, `Tracking`, `Buffs`);
    `QuickSettings` holds every CVar read and write.
-5. **Observation**: `Recorder`, `RouteLog`, `Diagnostics`, `Version` (addon-message version check).
-6. **UI**: `UI/Widgets`, one file per tab (`Plan`, `BiZ`, `Gameplay`, `Training`, `Settings`, `MacroBook`, `Home`, `TalentPanel`), the theme system
+5. **Observation**: `Recorder`, `Diagnostics`, `Version` (addon-message version check).
+6. **UI**: `UI/Widgets`, one file per tab (`BiZ`, `Gameplay`, `Training`, `Settings`, `MacroBook`, `Home`, `TalentPanel`), the theme system
    (`Images`, `UI/Deco`, `DecoBook`, `DecoToy`, `ThemePicker`), then `MainWindow`.
 
 ## Rules that hold everywhere

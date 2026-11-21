@@ -43,7 +43,7 @@ Tab.PAGES = {
   { key = "bags", label = "GP_PAGE_BAGS", features = { "bagslots", "bagsort", "upgrades", "charmarks", "charpanel", "wishtracker" } },
   { key = "alerts", label = "GP_PAGE_ALERTS",
     features = { "reactalert", "reactlock", "reactblizz", "training", "flighttimer", "rarefinder" } },
-  { key = "arrow", label = "GP_PAGE_ARROW", features = { "navfollow", "corpsearrow" } },
+  { key = "arrow", label = "GP_PAGE_ARROW", features = { "corpsearrow" } },
   { key = "icons", label = "GP_PAGE_ICONS", features = {} },
   { key = "bars", label = "GP_PAGE_BARS", features = { "barrange", "barresource", "barcd", "barcdbig" } },
 }

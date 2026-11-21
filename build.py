@@ -221,7 +221,6 @@ html = (
     .replace("__PAGE_MACROS__", 'aria-current="page"')
     .replace("__PAGE_BUILDS__", "")
     .replace("__PAGE_ADDONS__", "")
-    .replace("__PAGE_LAUNCH__", "")
 )
 
 with open("macros.html", "w", encoding="utf-8") as f:
@@ -230,24 +229,12 @@ with open("macros.html", "w", encoding="utf-8") as f:
 print("built")
 
 
-# =============================================================================
-# Addon data (ADDON_PLAN 15.5): the in-game Launch Plan, generated from
-# launch-plan.html + launch-plan-waypoints.json into addon/RoadToForever/PlanData.lua.
-# Needs node (the page's own override()/resolve() code is evaluated, not re-implemented).
-# =============================================================================
-import shutil
 import subprocess
 
-_node = shutil.which("node")
-if _node:
-    subprocess.run([_node, "addon/tools/gen_plan_data.js"], check=True)
-else:
-    print("warning: node not found, addon/RoadToForever/PlanData.lua was not regenerated")
-
 # =============================================================================
-# data-version.json: what provenance.js shows on the launch plan, Mr.BiZ, Builds and Macros pages.
+# data-version.json: what provenance.js shows on the Mr.BiZ, Builds and Macros pages.
 # CLIENT_VERSION is the one place the game client version is written down; change it when the release
-# client number is known. The step counts come from the plan itself (gen_plan_data.js --stats).
+# client number is known.
 # =============================================================================
 import datetime
 import json
@@ -256,9 +243,6 @@ CLIENT_VERSION = "1.60.x"
 DATA_STATE = "live client"   # a page can override the label with data-state="..." on its #provenance div
 
 _version = {"client": CLIENT_VERSION, "state": DATA_STATE, "updated": datetime.date.today().isoformat()}
-if _node:
-    _version["plan"] = json.loads(subprocess.run([_node, "addon/tools/gen_plan_data.js", "--stats"],
-                                                 check=True, capture_output=True, text=True).stdout)
 # "updated" moves only when something else in the file changed, so a build on a new day leaves git clean.
 try:
     with open("data-version.json", encoding="utf-8") as f:
@@ -282,5 +266,4 @@ with open(MACRO_DATA_PATH, "w", encoding="utf-8", newline="\n") as f:
     f.write(macro_data_lua())
 print("MacroData.lua written")
 subprocess.run([sys.executable, "addon/tools/check_macro_spells.py"], check=False)   # warnings only
-subprocess.run([sys.executable, "bis/build_quest_weapons.py"], check=True)
 subprocess.run([sys.executable, "tools/build_ah_items.py"], check=True)

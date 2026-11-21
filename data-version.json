@@ -1,9 +1,5 @@
 {
   "client": "1.60.x",
   "state": "live client",
-  "updated": "2026-11-09",
-  "plan": {
-    "steps": 97,
-    "unverified": 33
-  }
+  "updated": "2026-11-09"
 }

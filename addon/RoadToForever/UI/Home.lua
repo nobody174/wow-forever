@@ -1,8 +1,8 @@
 -- UI/Home.lua: the Home tab of the main window.
 --
--- A headline (name + one line), the launch plan's next step as one large entry (spellbook-slot
+-- A headline (name + one line), a Mr.BiZ card as one large entry (spellbook-slot
 -- style: big icon in the quick-slot border, gold name, white line under it; click opens the
--- Plan tab), then the game and minimap options (UI/Settings.lua builds them into this page)
+-- Gear tab), then the game and minimap options (UI/Settings.lua builds them into this page)
 -- and a "Share with the site" card (Export professions). Macro import, slots and Remove all
 -- live on the Macros page; the free talent points on the Talents page.
 -- At the very bottom, a version/author footer, so the addon's version and
@@ -43,15 +43,6 @@ end
 function Home.SlotLine()
   local acc, maxAcc, char, maxChar = Macros.Counts()
   return L.HOME_SLOTS_LINE:format(char, maxChar, acc, maxAcc)
-end
-
--- The next unticked step of your launch plan, "Next: [12] Skycutter to Dalaran".
-function Home.PlanLine()
-  local planId = R2F.Plan.Selected()
-  if not planId then return L.HOME_PLAN_NONE end
-  local s = R2F.Plan.Next(planId)
-  if not s then return L.HOME_PLAN_DONE end
-  return L.HOME_PLAN_NEXT:format(s.lvl and s.lvl ~= "" and ("[" .. s.lvl .. "] " .. s.t) or s.t)
 end
 
 function Home.MacroLine()
@@ -184,7 +175,7 @@ local function build(f)
     Home.UpdateCountdown()
   end)
 
-  ui.plan = entry(f, -52, "INV_Misc_Map_01", L.HOME_PLAN, "plan", 420)
+  ui.plan = entry(f, -52, "INV_Misc_Gem_01", L.HOME_BIZ_CARD, "bis", 420)
 
   -- What to train next (Training.lua), right column.
   ui.trainHead = f:CreateFontString(nil, "ARTWORK", "R2FHeadingLarge")
@@ -275,7 +266,7 @@ local function placeClassic()
   R2F.Settings.Place(nil, 300)
 end
 
--- Frost & Void: glass cards. Countdown ring left, then launch plan and training on the right, the settings along the bottom.
+-- Frost & Void: glass cards. Countdown ring left, then gear card and training on the right, the settings along the bottom.
 local FROST_CARDS = {
   { 0, 0, 400, 262 }, { 416, 0, 374, 72, "highlight" }, { 416, -84, 374, 178 },
   { 0, -274, 400, 224 }, { 416, -274, 374, 98 }, { 416, -384, 374, 118 },
@@ -341,7 +332,7 @@ local function placeFrost()
   R2F.Settings.Place({ quick = { 16, -286 }, minimap = { 428, -286 }, theme = { 558, -282 } }, 360)
 end
 
--- Ember & Iron: the countdown on one wide plate, then "work orders" (rows: launch plan, training, next talent, share with the
+-- Ember & Iron: the countdown on one wide plate, then "work orders" (rows: gear card, training, next talent, share with the
 -- site), then the settings in two columns. The page is 690 x 580.
 local EMBER_ROWS = 4
 local ROW_Y, ROW_STEP, ROW_H = -150, 46, 40
@@ -352,7 +343,7 @@ local function buildEmber()
   em.head = page:CreateFontString(nil, "ARTWORK", "R2FHeadingSmall")
   em.head:SetText(L.HOME_WORK_ORDERS)
   R2F.Theme.PaintText(em.head, "heading")
-  local titles = { L.HOME_PLAN, L.TRAIN_HEAD, L.HOME_NEXT_TALENT, L.HOME_SHARE }
+  local titles = { L.HOME_BIZ_CARD, L.TRAIN_HEAD, L.HOME_NEXT_TALENT, L.HOME_SHARE }
   for i = 1, EMBER_ROWS do
     local row = CreateFrame("Button", nil, page)
     row:SetSize(690, ROW_H)
@@ -376,7 +367,7 @@ local function buildEmber()
     row:Hide()
     em.rows[i] = row
   end
-  em.rows[1]:SetScript("OnClick", function() R2F.MainWindow.SelectTab("plan") end)
+  em.rows[1]:SetScript("OnClick", function() R2F.MainWindow.SelectTab("bis") end)
   em.rows[1]:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
   return em
 end
@@ -405,7 +396,7 @@ local function bigCardNumber(card, size)
   if face and card.num.SetFont then pcall(card.num.SetFont, card.num, face, size or 54, "") end
 end
 
--- Gnomish Workshop: coloured toy cards. Blue: the countdown in digit boxes. Yellow: launch plan and next talent. Green: training.
+-- Gnomish Workshop: coloured toy cards. Blue: the countdown in digit boxes. Yellow: gear card and next talent. Green: training.
 -- Pink: share with the site. White: a tip from the sun, the quick settings and the minimap options. The page is 920 x 540.
 local GN_CARDS = {
   { 0, 0, 548, 224, "blue" }, { 564, 0, 348, 224, "yellow" },
@@ -472,7 +463,7 @@ local function placeGnomish()
     { quickCols = 2, quickColW = 260, quickStart = -52 })
 end
 
--- Scribe's Tome: the countdown as three wax seals (red, red, green) with the numbers on them, the launch plan beside them, the
+-- Scribe's Tome: the countdown as three wax seals (red, red, green) with the numbers on them, the gear card beside them, the
 -- usual columns below. The page is the classic 650 x 540, set one block lower.
 local SEAL_ART = { "seal_red", "seal_red", "seal_green" }
 local SEAL_INK = { 0.96, 0.9, 0.78 }
@@ -518,7 +509,7 @@ local function placeScribe()
   R2F.Settings.Place({ quick = { 0, -232 }, minimap = { 0, -452 }, theme = { 130, -448 } }, 300)
 end
 
--- Azeroth Reforged: a nested gold-dashed panel behind the page, "Forever launches in" over three big stone boxes, the launch plan
+-- Azeroth Reforged: a nested gold-dashed panel behind the page, "Forever launches in" over three big stone boxes, the gear card
 -- under them; training, next talent and the share card in a right column; the settings along the bottom. The page is 760 x 560.
 local function buildAzeroth()
   local az = {}
@@ -822,7 +813,7 @@ end
 
 function Home.Refresh()
   if not page or not page:IsVisible() then return end
-  ui.plan.sub:SetText(Home.PlanLine())
+  ui.plan.sub:SetText(L.HOME_BIZ_CARD_SUB)
   local now, nxt = R2F.Training.Lines()
   ui.trainNow:SetText(now)
   ui.trainNext:SetText(nxt or "")

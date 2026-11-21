@@ -283,61 +283,6 @@ function BiZ.EnchantTipLine(link, loc, specId)
   return L.BIZ_TIP_ENCHANT:format(best.name, best.eff), 1, 0.5, 0.85
 end
 
--- ---------------------------------------------------------------------------
--- On-route weapons: Mr.BiZ weapon picks you can get at a launch-plan step
--- ---------------------------------------------------------------------------
-
-BiZ.WEAPON_SLOTS = { "mainhand", "offhand", "ranged" }
-
--- The words a step's TITLE must contain for a row's source to be "at" that step: the dungeon, or the
--- vendor's zone. Quests, world drops and crafting name no place, so they never match.
-function BiZ.RouteKey(row)
-  if (row.type == "dungeon" or row.type == "raid") and row.instance then return row.instance end
-  if row.type == "vendor" and row.label then
-    local zone = row.label:match("^[^,]+,%s*([^%(]+)")
-    return zone and zone:gsub("%s+$", "") or nil
-  end
-  return nil
-end
-
--- stepId -> { { slot =, rank =, row =, best = true|nil }, ... } for a spec and plan. `best` marks, per
--- weapon slot, the highest-ranked pick found on the route (the earliest step on a tie).
-function BiZ.RouteWeapons(specId, planId)
-  local sp = specId and data().specs[specId]
-  local out = {}
-  if not sp then return out end
-  local steps = R2F.Plan.Steps(planId)
-  local lo, hi = BiZ.Levels()
-  for _, key in ipairs(BiZ.WEAPON_SLOTS) do
-    local best
-    for si, st in ipairs(steps) do
-      -- The picks that fit the step: Mr.BiZ's list for the level the step is played at (its first number, "12-20" = 12).
-      local lvl = math.max(lo, math.min(hi, tonumber(tostring(st.lvl or ""):match("%d+")) or lo))
-      local sl
-      for _, x in ipairs(BiZ.SlotsAt(sp, lvl)) do if x.slot == key then sl = x end end
-      if sl and sl.best then
-        local rows = { sl.best }
-        for _, n in ipairs(sl.next or {}) do rows[#rows + 1] = n end
-        -- Titles only: notes often mention a place you are not going to yet ("City of Dalaran opens at 28").
-        local text = st.t or ""
-        for rank, row in ipairs(rows) do
-          local where = BiZ.RouteKey(row)
-          -- A dungeon drop is not "at" the step that only collects the dungeon's quests.
-          local questStep = row.type ~= "vendor" and text:lower():find("quests", 1, true)
-          if where and not questStep and text:find(where, 1, true) then
-            local m = { slot = key, rank = rank, row = row, step = si }
-            out[st.id] = out[st.id] or {}
-            table.insert(out[st.id], m)
-            if not best or rank < best.rank or (rank == best.rank and si < best.step) then best = m end
-          end
-        end
-      end
-    end
-    if best then best.best = true end
-  end
-  return out
-end
-
 -- Biz rank names (the site uses the same): 1 Bizzest, 2 Bizzer, 3 Biz, lower Almost biz.
 BiZ.THE_BIZZ_GAP = 20
 function BiZ.RankName(rank)
@@ -583,7 +528,7 @@ function BiZ.ShowTooltip(owner, id, rankLine, place)
   end
   local pt = BiZ.Place(place)
   if pt then
-    local moved = R2F.Plan.MayHaveMoved(pt) and (" (" .. L.PLAN_MAY_MOVE .. ")") or ""
+    local moved = R2F.Waypoint.MayHaveMoved(pt) and (" (" .. L.PLAN_MAY_MOVE .. ")") or ""
     GameTooltip:AddLine(L.BIZ_GO_TIP:format(pt.label) .. moved, 0.4, 0.8, 1, true)
   end
   GameTooltip:Show()
@@ -619,7 +564,7 @@ end
 function BiZ.Go(key)
   local pt = BiZ.Place(key)
   if not pt then return nil end
-  return R2F.Plan.Waypoint(pt)
+  return R2F.Waypoint.Go(pt)
 end
 
 -- Shift-click: the item's link in the chat box (like clicking a bag item). An item the client

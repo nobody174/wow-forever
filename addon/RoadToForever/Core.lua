@@ -37,7 +37,6 @@ handlers.PLAYER_LOGIN = function()
   R2F.Aspect.Init()
   R2F.Timers.Init()
   R2F.Recorder.Init()
-  R2F.RouteLog.Init()
   R2F.Rested.Init()
   R2F.CombatBanner.Init()
   R2F.Version.Init()
@@ -102,7 +101,6 @@ handlers.CHARACTER_POINTS_CHANGED = function()
   if R2F.GearScore and R2F.GearScore.Soon then R2F.GearScore.Soon() end
   R2F.Talents.OnPointsChanged()
   R2F.MainWindow.RequestRefresh()
-  R2F.Plan.AutoTick()   -- Follow the plan: catch up on what was done while the addon was off
 end
 -- WoW Forever stores talents as a trait config: applying talents in
 -- Blizzard's window fires TRAIT_CONFIG_UPDATED (WeakAuras Forever listens to
@@ -122,12 +120,9 @@ handlers.CONFIG_COMMIT_FAILED = function(configID)
 end
 handlers.PLAYER_LEVEL_UP = function(level)
   R2F.MainWindow.RequestRefresh()
-  R2F.Plan.OnLevelUp(level)   -- Follow the plan
 end
--- Follow the plan: a quest handed in may finish a step.
-handlers.QUEST_TURNED_IN = function(id) R2F.Plan.OnQuestTurnedIn(id) end
 -- Mr.BiZ: an item the tab asked the client for has loaded (quality, icon).
-handlers.GET_ITEM_INFO_RECEIVED = function() R2F.BiZTab.OnItemInfo() R2F.PlanTab.OnItemInfo() end
+handlers.GET_ITEM_INFO_RECEIVED = function() R2F.BiZTab.OnItemInfo() end
 -- Professions: the game only lists recipes while a profession window
 -- is open. Most professions use the trade skill window; Enchanting (and Beast
 -- Training) used the older "craft" window in Classic. Both are read.
@@ -197,7 +192,6 @@ local COMMANDS = {
   settings = function() R2F.MainWindow.Show("settings") end,
   gameplay = function() R2F.MainWindow.Show("gameplay") end,
   reminders = function() R2F.MainWindow.Show("gameplay") end,   -- the tab's former name
-  plan = function() R2F.MainWindow.Show("plan") end,
   -- BiZNav arrow
   way = function() R2F.Print(L.NAV_WAY_USAGE) end,
   clear = function() if not R2F.Nav.Clear() then R2F.Print(L.NAV_NONE) end end,
@@ -240,7 +234,7 @@ local DEBUG = {
   reactlog = function() R2F.Gameplay.PrintReactLog() end,
   gossip = function() R2F.Gameplay.PrintGossip() end,
   who = function() R2F.Gameplay.PrintWho() end,
-  here = function() R2F.Plan.Here() end,
+  here = function() R2F.Waypoint.Here() end,
   gear = function() R2F.GearScore.Debug() end,
   traits = function() R2F.Talents.DebugTraits() end,
   talentdump = function() R2F.Diag.TalentDump() end,
@@ -297,9 +291,6 @@ SlashCmdList.R2F = function(msg)
     elseif not runDebug(tool, arg) then
       R2F.Print(L.UNKNOWN_DEBUG:format(tool))
     end
-  elseif word == "route" then
-    -- /r2f route start [name]  |  stop  |  note <text>  |  (status)
-    R2F.RouteLog.Command(rest)
   elseif word == "setup" then
     -- /r2f setup hunter   |   /r2f setup undo   |   /r2f setup (your class)
     local which = rest ~= "" and rest or (R2F.Setup.ForClass() and R2F.Setup.ForClass().key) or ""

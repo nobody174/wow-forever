@@ -40,7 +40,6 @@ Pet.lua
 Aspect.lua
 Timers.lua
 Recorder.lua
-RouteLog.lua
 Rested.lua
 CombatBanner.lua
 Tracking.lua
@@ -54,9 +53,7 @@ GameplayTravel.lua
 GameplayChat.lua
 Version.lua
 Bags.lua
-PlanData.lua
-Plan.lua
-Progress.lua
+Waypoint.lua
 Nav.lua
 BiZData.lua
 BiZ.lua
@@ -65,14 +62,11 @@ BiZMe.lua
 CharMarks.lua
 CharPanel.lua
 WishTracker.lua
-QuestWeaponData.lua
-QuestWeapons.lua
 TrainingData.lua
 Training.lua
 Theme.lua
 UI\Widgets.lua
 UI\ImportFrame.lua
-UI\Plan.lua
 UI\BiZ.lua
 UI\Reminders.lua
 UI\Gameplay.lua

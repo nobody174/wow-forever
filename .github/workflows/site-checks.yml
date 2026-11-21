@@ -37,5 +37,5 @@ jobs:
           python-version: "3.12"
       - name: Top bar identical on every page
         run: python tools/sync_topbar.py --check
-      - name: Internal links, anchors and plan URLs resolve
+      - name: Internal links and anchors resolve
         run: python tools/check_links.py

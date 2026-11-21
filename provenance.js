@@ -1,6 +1,6 @@
-/* Shared data-provenance strip: "Client 1.60.x · updated <date> · live client" (plus plan step counts on the launch plan).
+/* Shared data-provenance strip: "Client 1.60.x · updated <date> · live client".
    Content comes from data-version.json, which build.py writes; nothing here is typed by hand.
-   Put <div id="provenance"></div> (add data-plan on the launch plan) where the strip should go and load this file with `defer`. */
+   Put <div id="provenance"></div> where the strip should go and load this file with `defer`. */
 (function () {
   "use strict";
   var host = document.getElementById("provenance");
@@ -16,10 +16,6 @@
     strip.setAttribute("role", "note");
     strip.appendChild(part("Client <b>" + v.client + "</b>"));
     strip.appendChild(part("updated <b>" + v.updated + "</b>"));
-    if (host.hasAttribute("data-plan") && v.plan) {
-      var ok = v.plan.steps - v.plan.unverified;
-      strip.appendChild(part("<b>" + ok + "</b> verified / <b>" + v.plan.unverified + "</b> unverified (across all races and classes)"));
-    }
     var state = host.getAttribute("data-state") || v.state;
     if (state) strip.appendChild(part('<span class="beta">' + state + "</span>"));
     host.appendChild(strip);

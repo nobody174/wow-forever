@@ -215,6 +215,11 @@ UNIVERSAL = [
           "/console UnitNamePlayerPVPTitle 0",
           "Removes PvP rank titles from nameplates and unit frames.",
           short="HidePvP", icon="INV_BannerPVP_02"),
+        M("Deeprun Rat Catcher's Flute",
+          "#showtooltip Rat Catcher's Flute\n/target Deeprun Rat\n"
+          "/targetmarker 1\n/cast Rat Catcher's Flute",
+          "Targets a Deeprun Tram rat, marks it with a star, then plays the flute (you need the item). Change the 1 to 3 for a diamond or 8 for a skull.",
+          short="RatFlute", icon="INV_Misc_Flute_01"),
         M("Weapon swap: 1H+offhand ↔ 2H",
           "/equipslot 16 Durgen's Crescent Axe\n"
           "/equipslot 17 Veteran Shield\n"
@@ -761,6 +766,8 @@ CLASSES = [
                   "#showtooltip Lightning Shield\n/castsequence reset=2 Lightning Shield, Windfury Weapon",
                   "Press twice to reapply both buffs; resets after 2 sec so it doesn't get stuck mid-sequence.",
                   short="WF+LSRefresh"),
+                M("Rockbiter Weapon", plain("Rockbiter Weapon"), "Reapply the weapon buff in one press.",
+                  short="Rockbiter"),
             ]),
         ]},
     ]},
@@ -798,6 +805,10 @@ CLASSES = [
                 M("Aspect: Hawk in combat, Cheetah out",
                   "#showtooltip Aspect of the Hawk\n/cast [combat] Aspect of the Hawk; Aspect of the Cheetah",
                   short="AspectHawk"),
+                M("Aspect: Hawk in combat, Pack out",
+                  "#showtooltip Aspect of the Hawk\n"
+                  "/cast [combat] Aspect of the Hawk; Aspect of the Pack",
+                  "Pack also speeds up your group, so it suits a party on the move.", short="HawkPack"),
                 M("Aspect of the Monkey", plain("Aspect of the Monkey"), "Always Monkey (no Hawk / Cheetah swap).",
                   short="AspMonkey"),
                 M("Aspect of the Hawk", plain("Aspect of the Hawk"), "Always Hawk, also out of combat.", short="AspHawk"),

@@ -1,6 +1,6 @@
 # Road to Forever
 
-Companion site and in-game addon for **World of Warcraft: Forever** (Classic+): launch plan, builds, talent calculator, Mr.BiZ best-in-slot
+Companion site and in-game addon for **World of Warcraft: Forever** (Classic+): builds, talent calculator, Mr.BiZ best-in-slot
 gear, professions, macros and addon list. Site: https://nobody174.github.io/wow-forever/ . The addon lives in `addon/RoadToForever/`.
 
 Developer notes are in `CLAUDE.md`, `ADDON_PLAN.md`, `BACKLOG.md`, `ROADMAP.md` and `CHANGELOG.md`.

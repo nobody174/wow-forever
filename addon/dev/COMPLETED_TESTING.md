@@ -4,6 +4,10 @@ The record of what the owner has tested and confirmed. Open tasks are in `TESTIN
 confirmed it is deleted from that file and added here in the same pass (newest round first). Numbers are the
 `section.item` numbers of TESTING.md at the time.
 
+## 2026-11-17 (owner round)
+- 5.32 Recorder (owner's numbers kept), 5.68 General settings, 5.73 /bizway from the site, 5.89 BiZMe Viewing as, 5.92 Wishlist tracker, 5.93 Minimap Tracking foldout, 5.94 Character window upgrades panel, 5.95 Keep colour as a ghost, 5.96 Rare finder no longer blocked, 5.97 Planner removed.
+- Scrapped, not tested: 5.65 route log, 5.70 Plan follows race and class, 5.71 Follow the plan, 5.72 Duo progress. The owner is done levelling, so the Plan tab and the leveling route were only needed at the start.
+
 ## 2026-11-16 (BiZMe round)
 - 5.75 Combat banner with a pet (0.83.0)
 - 5.81 Slim minimap menu and the Setup tab (0.86.0)

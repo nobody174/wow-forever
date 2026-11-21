@@ -5,6 +5,16 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-21 (level 60 builds from Wowhead, three macros)
+- Builds: the 19 level 60 builds in `builds.html` now use the first (standard PvE) build of Wowhead's Forever guide for their spec (`addon/tools/builds_from_wowhead.py`, dry run / `--apply`; ranks capped at the live maximum, all 19 legal 51-point fills). Level 30 builds unchanged (still RankedBoost, 0.84.2). The `rotation` text was not rewritten and may not match the new picks. Comparison: `docs/reviews/builds-recheck-2026-11-21.md`.
+- Macros (`data.py`): Rockbiter Weapon (Shaman buffs), "Aspect: Hawk in combat, Pack out" (Hunter buffs), Deeprun Rat Catcher's Flute with a star mark (Misc / UI, all classes).
+
+## 2026-11-17 (the launch planner is gone, addon changes unreleased)
+- Removed because levelling is done: the site's Launch plan page (`launch-plan.html`, its steps / waypoints / weapons / schema data, `progresscodec.js`, `tools/plan_snapshot.js`) and its links (top bar on every page, home start-here strip, Hunter hub, Addons page text).
+- Addon: the Plan tab, Follow the plan, Duo progress, the route log (`/r2f route`), the quest weapons on the plan and the "Arrow follows the plan" tweak, with `Plan.lua`, `PlanData.lua`, `Progress.lua`, `RouteLog.lua`, `QuestWeapons.lua`, `QuestWeaponData.lua`, `UI/Plan.lua`. Kept: BiZNav and the map / dungeon-entrance lookup Mr.BiZ uses, now in `Waypoint.lua`. Home's plan card became a "Gear upgrades" card that opens Mr.BiZ.
+- Build and checks: `build.py` no longer runs `gen_plan_data.js` or `build_quest_weapons.py`; `check_links.py`, `rehearse.js`, CI paths and the tests were trimmed to match. Saved plan / route data in old SavedVariables files is ignored.
+- Left on purpose: `bis/quest-weapons.json` and its Wowhead tool (research data, no longer built into anything), and old news entries and CHANGELOG lines that mention the plan.
+
 ## 2026-11-15 (BiZMe: Mr.BiZ for you, offline data research; addon changes unreleased)
 - Plan, inventory, audit and research in `addon/BiZMe/docs/`. Addon: Next upgrades view, Viewing as, Guide me, tooltip rank line, BiZ codes (details in `addon/RoadToForever/CHANGELOG.md`, "Unreleased").
 - Data (`bis/`): places 9 -> 335 plus profession trainers; QuestieDB decoded from its `.toc` (`questiedb_decode.py`), the client's vendor table + map bounds (`collectable_vendors.py`), ForeverMyBis and QuestieDB as source tiers in `found_sources.py`; unknown-source rows 1,718 -> 967. Site: BiZ code import ("Paste") and export ("Copy this set"), credits for Questie, ForeverDungeonJournal, ForeverMyBis.

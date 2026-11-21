@@ -1,4 +1,4 @@
--- Nav.lua: BiZNav, our own waypoint arrow (replaces TomTom for the Plan tab).
+-- Nav.lua: BiZNav, our own waypoint arrow (replaces TomTom).
 --
 -- One target at a time: { mapID, x, y (map percent 0-100), label, zone }. Nav.SetTarget
 -- shows a small movable arrow that points at it, with the distance in yards and the label.
@@ -440,7 +440,7 @@ function Nav.WayCommand(rest)
     R2F.Print(L.NAV_WAY_USAGE)
     return false
   end
-  local mapID = R2F.Plan.ResolveMap(words)
+  local mapID = R2F.Waypoint.ResolveMap(words)
   if mapID then
     if label == "" then label = ("%s %.1f, %.1f"):format(words, x, y) end
     return setAndSay(mapID, x, y, label, words)

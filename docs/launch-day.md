@@ -13,14 +13,9 @@ The order matters: settings first, then the addon, then the walk. Everything her
 
 ## On the first Skyborne Hunter
 1. Run **Setup Hunter** before anything else is placed (needs the Edit Mode layout "Hunter" restored first).
-2. `/r2f route start hunter-1`, play the start slowly: talk to everyone, take and hand in quests in the order you like.
-3. Open the Plan tab: it should say "Alliance Skyborne Hunter" (if not, `/dump UnitRace("player")`, TESTING 5.70). Tick **Follow the plan**
-   and watch the steps tick as quests are handed in (TESTING 5.71).
-4. Afterwards `python addon/tools/route_report.py`, then correct order, givers, coordinates and gates in `launch-plan-steps.json`
-   and `launch-plan-waypoints.json`, and drop the `unv` tags that held up (TESTING 5.65).
 
 ## First days
-- Re-check the unverified launch-plan steps past level 30, the level-60 builds and the cheat sheets (BACKLOG 5.3).
+- Re-check the level-60 builds and the cheat sheets (BACKLOG 5.3).
 - Professions BiS from ForeverChanges' level-60 lists; AH market when AHledger lists EU (BACKLOG 5.1, 5.2).
 - Ground markers in a group (BACKLOG 0.4).
 

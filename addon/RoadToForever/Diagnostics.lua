@@ -17,9 +17,7 @@ local function yn(v)
   return v and "yes" or "no"
 end
 
-local function isSecret(v)
-  return type(_G.issecretvalue) == "function" and _G.issecretvalue(v) == true
-end
+local isSecret = R2F.Util.isSecret
 
 -- How many helpful auras can be read on `unit`, and how many of those have a readable spell id.
 local function probe(unit)

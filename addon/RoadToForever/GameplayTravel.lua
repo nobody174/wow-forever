@@ -14,9 +14,7 @@ local _, R2F = ...
 local L = R2F.L
 local Gameplay = R2F.Gameplay
 
-local function isSecret(v)
-  return type(_G.issecretvalue) == "function" and _G.issecretvalue(v) == true
-end
+local isSecret = R2F.Util.isSecret
 
 local function now()
   return GetTime and GetTime() or 0

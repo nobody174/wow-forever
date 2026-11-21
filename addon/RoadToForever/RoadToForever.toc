@@ -17,6 +17,7 @@
 # folder on its own.
 
 Locale.lua
+Util.lua
 ItemApi.lua
 Base64.lua
 Library.lua

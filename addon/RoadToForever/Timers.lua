@@ -45,9 +45,7 @@ local frames = {}     -- key -> icon frame
 local active = {}     -- key -> true while the throttled countdown loop runs
 local THROTTLE = 0.1
 
-local function isSecret(v)
-  return type(_G.issecretvalue) == "function" and _G.issecretvalue(v) == true
-end
+local isSecret = R2F.Util.isSecret
 
 local function settings(def)
   local t = R2F.Library.db.timers

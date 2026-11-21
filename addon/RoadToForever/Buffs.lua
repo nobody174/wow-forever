@@ -64,9 +64,7 @@ local function db()
 end
 Buffs.Db = db
 
-local function isSecret(v)
-  return type(_G.issecretvalue) == "function" and _G.issecretvalue(v) == true
-end
+local isSecret = R2F.Util.isSecret
 
 -- The classes in your group (you included): { PRIEST = true, ... }. Empty when you are alone.
 function Buffs.GroupClasses()

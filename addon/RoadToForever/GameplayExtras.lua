@@ -394,9 +394,7 @@ local function now()
   return GetTime and GetTime() or 0
 end
 
-local function isSecret(v)
-  return type(_G.issecretvalue) == "function" and _G.issecretvalue(v) == true
-end
+local isSecret = R2F.Util.isSecret
 
 -- A short log of what the game announced (the last few entries), for /r2f reactlog.
 local reactLog = {}

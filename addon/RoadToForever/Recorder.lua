@@ -31,9 +31,7 @@ local MAX_NPCS = 6000            -- a safety cap per table; a few thousand creat
 local seenGuids = {}             -- corpses counted this session (a corpse reopened is one kill)
 local seenCount = 0
 
-local function isSecret(v)
-  return type(_G.issecretvalue) == "function" and _G.issecretvalue(v) == true
-end
+local isSecret = R2F.Util.isSecret
 
 local function db()
   return R2F.Library.db.recorder

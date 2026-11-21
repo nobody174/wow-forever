@@ -67,9 +67,7 @@ local POLL, WAIT_MAX = 0.25, 4
 local waiting, announced, waitToken = false, false, 0
 
 -- In combat this client can hand back "secret" values: comparing or even testing them raises an error. Treat them as unknown.
-local function isSecret(v)
-  return type(_G.issecretvalue) == "function" and _G.issecretvalue(v) == true
-end
+local isSecret = R2F.Util.isSecret
 
 local function safe(fn, ...)
   if not fn then return nil end

@@ -7,6 +7,7 @@ user-facing release notes.
 
 ## 2026-11-21 (level 60 builds from Wowhead, three macros)
 - Builds: the 19 level 60 builds in `builds.html` now use the first (standard PvE) build of Wowhead's Forever guide for their spec (`addon/tools/builds_from_wowhead.py`, dry run / `--apply`; ranks capped at the live maximum, all 19 legal 51-point fills). Level 30 builds unchanged (still RankedBoost, 0.84.2). The `rotation` text was not rewritten and may not match the new picks. Comparison: `docs/reviews/builds-recheck-2026-11-21.md`.
+- Addon housekeeping: new `Util.lua` (loaded after Locale) holds one `R2F.Util.isSecret`; the eight private copies (ActionBars, Buffs, CombatBanner, Diagnostics, GameplayExtras, GameplayTravel, Recorder, Timers) now use it. The `safe` helpers differ per file and stay. Unreleased.
 - Macros (`data.py`): Rockbiter Weapon (Shaman buffs), "Aspect: Hawk in combat, Pack out" (Hunter buffs), Deeprun Rat Catcher's Flute with a star mark (Misc / UI, all classes).
 
 ## 2026-11-17 (the launch planner is gone, addon changes unreleased)

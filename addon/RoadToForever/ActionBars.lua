@@ -31,9 +31,7 @@ local buttons = {}                    -- every action button this client has
 local driver                          -- the timer frame
 local elapsed = 0
 
-local function isSecret(v)
-  return type(_G.issecretvalue) == "function" and _G.issecretvalue(v) == true
-end
+local isSecret = R2F.Util.isSecret
 
 local function on(key)
   return Gameplay.IsOn(key)

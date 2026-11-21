@@ -1,8 +1,8 @@
 """Builds addon/dev/TESTING.html (a checklist page) from addon/dev/TESTING.md.
 
 Each open test gets its number, title, the steps, a status (not tested / done / needs more testing / not working) and a comment box.
-Answers are kept in the browser (localStorage) and "Copy my answers" puts them in the reply format TESTING.md asks for
-(`5.87 done`, `5.41 not working: <what you saw>`), ready to paste to Claude. Open the file by double-clicking it.
+Answers are kept in the browser (localStorage) and "Save answers" writes them to TESTING-answers.json (a save dialog,
+or your Downloads folder); Claude reads that file, nothing to paste. Open the file by double-clicking it.
 Run again after TESTING.md changes (a changed list keeps the answers of numbers that still exist).
 
 Usage (repo root):  python tools/testing_html.py
@@ -87,7 +87,7 @@ textarea{flex:1;min-width:220px;resize:vertical}.rest{margin-top:24px;color:var(
 <h1>Road to Forever: open tests</h1>
 <div class="meta">%(meta)s</div>
 <div class="bar"><span class="count" id="count"></span><span class="toast" id="toast"></span>
-<button id="hide">Hide finished</button><button id="clear">Clear all answers</button><button class="primary" id="copy">Copy my answers</button></div>
+<button id="hide">Hide finished</button><button id="clear">Clear all answers</button><button class="primary" id="copy">Save answers</button></div>
 %(cards)s
 <div class="rest"><h2>Cannot be tested yet</h2>%(rest)s</div>
 </main>
@@ -118,16 +118,15 @@ function toast(t){var e=document.getElementById("toast");e.textContent=t;setTime
 document.getElementById("hide").onclick=function(){hide=!hide;this.textContent=hide?"Show finished":"Hide finished";paint()};
 document.getElementById("clear").onclick=function(){if(confirm("Clear every answer?")){data={};save();tests.forEach(function(el){el.querySelector("select").value="";el.querySelector("textarea").value=""});paint()}};
 document.getElementById("copy").onclick=function(){
-  var out=[];
+  var out={saved:new Date().toISOString(),answers:{}},n=0;
   tests.forEach(function(el){
     var d=data[el.dataset.num];if(!d||(!d.s&&!d.c))return;
-    var s=d.s||"comment",c=(d.c||"").replace(/\\s+/g," ").trim();
-    out.push(el.dataset.num+" "+s+(c?(s==="not working"||s==="comment"?": ":" - ")+c:""));
+    out.answers[el.dataset.num]={status:d.s||"comment",comment:(d.c||"").trim()};n++;
   });
-  var text=out.join("\\n")||"(no answers yet)";
-  function done(){toast("Copied "+out.length+" line(s)")}
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,function(){prompt("Copy:",text)})}
-  else prompt("Copy:",text);
+  var text=JSON.stringify(out,null,2);
+  function viaDownload(){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"application/json"}));a.download="TESTING-answers.json";document.body.appendChild(a);a.click();a.remove();toast("Saved "+n+" answer(s) to your Downloads folder")}
+  if(window.showSaveFilePicker){window.showSaveFilePicker({suggestedName:"TESTING-answers.json",types:[{description:"JSON",accept:{"application/json":[".json"]}}]}).then(function(h){return h.createWritable().then(function(w){return w.write(text).then(function(){return w.close()})})}).then(function(){toast("Saved "+n+" answer(s)")},function(e){if(!e||e.name!=="AbortError")viaDownload()})}
+  else viaDownload();
 };
 paint();
 })();

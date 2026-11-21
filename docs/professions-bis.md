@@ -22,7 +22,7 @@ Notes for professions.html (enchants, costs, live prices, Crafters) and bis.html
     listed (Shield Stamina +7 and Cloak Lesser Agility drop from level 38+ mobs; Bracer
     Agility, 2H Lesser Agility/Strength have no source in Forever yet — left out).
     Forever values differ from Classic (e.g. Bracer Minor/Lesser Stamina +3/+4, Chest Minor
-    Stats listed as +2 all stats) — take values from Wowhead's Forever spell pages, never
+    Stats was +2 until the 2026-11-21 re-check, ForeverChanges now says +1; the 11-21 re-read also found PvP lists gone, only 21 PvE spec pages left, so the faded PvP tags are unverifiable) — take values from Wowhead's Forever spell pages, never
     from Classic. `CRAFTERS` = `[{name, color, knows: [recipe names]}]`: who in the group
     makes what (emptied 2026-11-12: beta recipes removed, live exports in crafters.json fill it). Edit it only for hand-typed extras; "Our crafts"
     lists only known recipes that appear in some ladder (BiS or stand-in), so junk like

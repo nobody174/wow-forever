@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-21",
+      "title": "Professions enchant values re-checked",
+      "text": "A few enchant values on the Professions page were corrected against the newest game data (Bracer Lesser Intellect, Cloak Defense, Chest Minor Stats).",
+      "link": "professions.html"
+    },
+    {
+      "date": "2026-11-21",
       "title": "Mr.BiZ gear lists refreshed",
       "text": "All gear lists were re-read from the newest game data (build 70959): new item sources, updated drop chances and a few picks that changed.",
       "link": "bis.html"

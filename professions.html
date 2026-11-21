@@ -389,7 +389,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
       <div class="legend" aria-hidden="true"><span><i class="medal m1">1</i>BiS</span><span><i class="medal m2">2</i>2nd</span><span><i class="medal m3">3</i>3rd</span></div>
     </div>
     <div id="bis-list"></div>
-    <p class="note">BiS picks come from <a href="https://foreverchanges.pro/bis" target="_blank" rel="noopener">ForeverChanges' level 30 BiS lists</a> (all 36 class and spec pages, checked 6 Oct 2026). Second and third best, effects and where to get each recipe come from Wowhead's WoW Forever data (beta, same day). Faded spec tags are PvP lists.</p>
+    <p class="note">BiS picks come from <a href="https://foreverchanges.pro/bis" target="_blank" rel="noopener">ForeverChanges' level 30 BiS lists</a> (all 36 class and spec pages, spec pages re-read 21 Nov 2026). Second and third best, effects and where to get each recipe come from Wowhead's WoW Forever data (beta, same day). Faded spec tags are PvP lists.</p>
   </section>
 
   <section class="view" id="view-ours" hidden>
@@ -523,7 +523,7 @@ body.list-open .list-drawer{transform:none;visibility:visible}
     { name: "Enchant Bracer - Minor Agility", prof: "Enchanting", skill: 80, slot: "Wrist", eff: "Agility +3", have: true,
       src: "trainer", how: "Taught by any Enchanting trainer.", mats: [["Strange Dust", 1], ["Lesser Magic Essence", 2]],
       specs: AGI_MELEE },
-    { name: "Enchant Bracer - Lesser Intellect", prof: "Enchanting", skill: 150, slot: "Wrist", eff: "Intellect +5",
+    { name: "Enchant Bracer - Lesser Intellect", prof: "Enchanting", skill: 150, slot: "Wrist", eff: "Intellect +3",
       src: "trainer", how: "Taught by the Expert Enchanters in the capitals: Gimble Thistlefuzz (Ironforge), Lucan Cordell (Stormwind), Taladan (Darnassus), Xylinnia Starshine (Feralas); Horde: Godan (Orgrimmar), Teg Dawnstrider (Thunder Bluff), Lavinia Crowe (Undercity). The Artisan trainers teach it too. Training cost 25s.", mats: [["Greater Astral Essence", 1]],
       specs: CASTERS_PVE },
     { name: "Enchant Bracer - Stamina", prof: "Enchanting", skill: 170, slot: "Wrist", eff: "Stamina +5",
@@ -605,9 +605,9 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   var CITY = "Taught by the city Enchanting trainers (Expert or higher)";
   var ARTISAN = "Not at city trainers in Forever: only Kitta Firewind (Elwynn), Vanessa Sellers (Alterac), Melanie Sable (Riverglades) or Annora (Uldaman); Horde: Hgarth (Stonetalon)";
   var ALT = [
-    { name: "Enchant Cloak - Defense", skill: 155, eff: "+60 Armor", src: "artisan", how: ARTISAN + ". Training 26s.", mats: [["Small Glowing Shard", 1], ["Soul Dust", 1]] },
-    { name: "Enchant Cloak - Lesser Protection", skill: 115, eff: "Extra armor (Classic: +20)", src: "trainer", how: CITY + ". Training 8s.", mats: [["Strange Dust", 3], ["Small Glimmering Shard", 1]] },
-    { name: "Enchant Chest - Minor Stats", skill: 150, eff: "+2 All Stats (per Wowhead; was +1 in Classic)", src: "trainer", how: CITY + ". Training 25s.", mats: [["Lesser Astral Essence", 1], ["Soul Dust", 1], ["Large Glimmering Shard", 1]] },
+    { name: "Enchant Cloak - Defense", skill: 155, eff: "+30 Armor", src: "artisan", how: ARTISAN + ". Training 26s.", mats: [["Small Glowing Shard", 1], ["Soul Dust", 1]] },
+    { name: "Enchant Cloak - Lesser Protection", skill: 115, eff: "+20 Armor", src: "trainer", how: CITY + ". Training 8s.", mats: [["Strange Dust", 3], ["Small Glimmering Shard", 1]] },
+    { name: "Enchant Chest - Minor Stats", skill: 150, eff: "+1 All Stats", src: "trainer", how: CITY + ". Training 25s.", mats: [["Lesser Astral Essence", 1], ["Soul Dust", 1], ["Large Glimmering Shard", 1]] },
     { name: "Enchant Chest - Greater Stamina", skill: 160, eff: "+6 Stamina", src: "artisan", how: ARTISAN + ". Training 27s.", mats: [["Soul Dust", 2]] },
     { name: "Enchant Chest - Stamina", skill: 120, eff: "+4 Stamina", src: "trainer", how: CITY + ". Training 10s.", mats: [["Strange Dust", 2], ["Lesser Astral Essence", 1]] },
     { name: "Enchant Bracer - Lesser Agility", skill: 140, eff: "+4 Agility", src: "rep", how: "Desolace: quest “Mysterious Mysticism”, or Molkar (15 Carved Centaur Totems) or Gorhak (60 totems).", mats: [["Lesser Mystic Essence", 1]] },
@@ -631,8 +631,8 @@ body.list-open .list-drawer{transform:none;visibility:visible}
   ];
   // BiS recipe -> [2nd best, 3rd best]; up = stronger than the list's pick; same = equal bonus, easier to get.
   var LADDER = {
-    "Enchant Cloak - Greater Defense": { alts: ["Enchant Cloak - Defense", "Enchant Cloak - Lesser Protection"], same: ["Enchant Cloak - Defense"] },
-    "Enchant Chest - Lesser Stats": { alts: ["Enchant Chest - Minor Stats"], same: ["Enchant Chest - Minor Stats"] },
+    "Enchant Cloak - Greater Defense": { alts: ["Enchant Cloak - Defense", "Enchant Cloak - Lesser Protection"] },
+    "Enchant Chest - Lesser Stats": { alts: ["Enchant Chest - Minor Stats"] },
     "Enchant Chest - Superior Stamina": { alts: ["Enchant Chest - Greater Stamina", "Enchant Chest - Stamina"] },
     "Enchant Bracer - Minor Agility": { up: ["Enchant Bracer - Lesser Agility"] },
     "Enchant Bracer - Stamina": { alts: ["Enchant Bracer - Lesser Stamina", "Enchant Bracer - Minor Stamina"] },

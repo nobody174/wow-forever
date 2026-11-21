@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-21 (Professions BiS re-scrape)
+- Professions: re-read ForeverChanges' BiS pages (build 71037, now 21 PvE spec pages; its PvP lists are gone) and its Enchanting recipe data. Every BiS enchant is still on the lists; skill levels all match. Fixed values: Bracer Lesser Intellect +5 -> +3, Cloak Defense +60 -> +30 armor, Cloak Lesser Protection +20 armor, Chest Minor Stats +2 -> +1. Because of that Cloak Defense and Chest Minor Stats are no longer "same bonus" stand-ins in `LADDER`. "Checked" date on the page is now 21 Nov 2026.
+
 ## 2026-11-21 (Mr.BiZ refreshed to ForeverDB build 70959)
 - Mr.BiZ data refreshed (`bis/README.md` steps 1-4): all 27 specs x 51 levels re-downloaded (build 1.60.1.70862 -> 70959), parsed, 245 new item sources read, `found_sources.py` and `items_build.py` re-run, `UPDATED` 2026-11-21; 9,505 runs, 12,974 rows. ForeverDB's lists dropped some picks (the "Paragons of Power" and Atiesh quests among them); the 52 `places.json` entries nothing uses any more are parked in `bis/own/places_parked.json` (build_bis refuses unused places; move one back if its item returns). Some sources moved (Petrolspill Leggings is now a Mechano-Frostwalker world drop, Barbaric Cloth Gloves drop in Ragefire Chasm); four addon tests that pinned the old ones were updated.
 

@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-21",
+      "title": "Cheat sheets for every level 60 spec",
+      "text": "Discipline, Demonology, Arcane, Assassination, Subtlety, Balance, Cat Druid, Survival and Arms now have a cheat sheet with stats, rotation and cooldowns, taken from Wowhead's Forever guides.",
+      "link": "builds.html"
+    },
+    {
+      "date": "2026-11-21",
       "title": "Level 60 cheat sheets updated",
       "text": "The stat priorities on the level 60 cheat sheets now follow Wowhead's Forever guides, with the new hit, expertise and defense numbers.",
       "link": "builds.html"

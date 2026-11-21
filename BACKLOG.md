@@ -43,7 +43,7 @@ None else open (talent-tree drift fixed 2026-11-07; before each release run `pyt
 
 ## 5. Launch-day refresh (launch 2026-11-04)
 1. **Professions BiS**: re-scraped 2026-11-21 (ForeverChanges still has only level 30 lists, so nothing at 60 to scrape). Left: Wowhead Forever spell pages (blocked from the shell today) to double-check the changed Cloak Defense / Minor Stats values, and the faded PvP spec tags (FC dropped its PvP pages, cannot be re-verified).
-3. **Cheat sheets**: level 60 sheets re-checked against Wowhead's stat priority guides 2026-11-21. Left: the level 30 sheets (Icy Veins, October; Icy Veins blocks the shell so they were not re-read), and 9 level 60 specs with no cheat sheet yet (Discipline, Demonology, Arcane, Assassination, Subtlety, Balance, Feral Cat, Survival, Arms).
+3. **Cheat sheets**: all level 60 specs now have one (re-checked / written from Wowhead 2026-11-21). Left: the level 30 sheets (Icy Veins, October; Icy Veins blocks the shell so they were not re-read).
 
 4. **Mr.BiZ picks vs the live build** (ForeverDB lists refreshed to build 70959 on 2026-11-21; the WCLBox comparison below is older): WCLBox flags about 1,100 of 1,384 best picks as changed or new compared with ForeverDB's lists (build 70862); list in `bis/own/rerank-review.md`. Owner decision 2026-11-13: **Mr.BiZ keeps picking from ForeverDB** (no own ranker); when ForeverDB's lists move to a newer build, refresh with `bis/README.md` and use the review as a checklist of stale picks. Also: 595 items with Equip lines no rule maps (spell crit/hit, ranged attack power), and pull build 70938 (`wclbox_pull.py`, ~2.5 h).
 5. **Talent audit in game (Track B)**: read-only C_Traits dump command first, then `/r2f talentcheck`; see `docs/claude-code-wclbox-handoff.md`.

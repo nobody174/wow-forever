@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-21 (nine new level 60 cheat sheets)
+- Builds: cheat sheets written for the nine level 60 specs that had none (Discipline, Demonology, Arcane, Assassination, Subtlety, Balance, Feral Cat, Survival, Arms): stat order from Wowhead's stat priority pages, rotation, opener and cooldowns from its rotation pages, in `GUIDES` (builds.html). Confidence medium; ability icons resolve from each class's talents and rotations, so a few may show as text chips.
+
 ## 2026-11-21 (level 60 cheat sheets re-checked)
 - Builds: all 18 level 60 cheat sheets in `builds.html` (`GUIDES`) plus the Druid Feral bear one now use the stat order from Wowhead's Forever stat priority pages instead of the Classic order (new caps such as 17% Hit for casters, 8% / 6.5% Expertise for melee, 440 Defense; Spell Piercing and Haste added). Tanks use Wowhead's Balanced list. Intro text says the source and that Wowhead calls level 60 numbers a best estimate. Rotations untouched.
 

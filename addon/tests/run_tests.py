@@ -3665,7 +3665,7 @@ def test_biz(templates=True):
               "%s: every place from bis/places.json is in the addon" % tag)
         tagged = [r for r in site["rows"] if "place" in r]
         check(len(tagged) > 300 and all(r["place"] in places or r["place"] + ":alliance" in places for r in tagged), "%s: %d rows point at a known place" % (tag, len(tagged)))
-        check(lua.eval("R2F.BiZ.PlaceOfItem(7684)") == "Scarlet Monastery" and lua.eval("R2F.BiZ.PlaceOfItem(3308)") is None,
+        check(lua.eval("R2F.BiZ.PlaceOfItem(7684)") == "Scarlet Monastery" and lua.eval("R2F.BiZ.PlaceOfItem(9509)") is None,
               "%s: an item's place comes from its source (dungeon yes, a world drop no)" % tag)
         # crafted picks point at the profession trainer of your faction
         lua.execute("BIZ_FACTION = 'Alliance'")
@@ -3715,13 +3715,13 @@ def test_biz(templates=True):
     find_frames(lua, "f.__kind == 'CheckButton' and f.r2fLabel and f.r2fLabel.__text == R2F.L.BIZ_TYPE_QUEST", "QBOX")
     lua.execute("QBOX[1]:SetChecked(false); QBOX[1]:Fire('OnClick')")
     find_frames(lua, "f.__kind == 'Button' and f.slotKey == 'legs'", "LEGSBTN")
-    check(lua.eval("LEGSBTN[1].itemId") == 9509, "%s: Legs falls back to the rank 2 dungeon pick (Petrolspill Leggings)" % tag)
+    check(lua.eval("LEGSBTN[1].itemId") == 6690, "%s: Legs falls back to the rank 2 dungeon pick (Ferine Leggings)" % tag)
     lua.execute("LEGSBTN[1]:Click()")
-    find_frames(lua, "f.__kind == 'Button' and f.optRank == 2 and f.itemId == 9509 and f.__shown", "STAND")
+    find_frames(lua, "f.__kind == 'Button' and f.optRank == 2 and f.itemId == 6690 and f.__shown", "STAND")
     check(lua.eval("#STAND") == 1, "%s: the legs panel lists the stand-in" % tag)
     lua.execute("STAND[1]:Fire('OnEnter')")
     lines = lua_table_to_list(lua.eval("GameTooltip.lines"))
-    check(any("From: Gnomeregan" in (l or "") for l in lines), "%s: tooltip says where it comes from: %s" % (tag, lines))
+    check(any("From: Razorfen Kraul" in (l or "") for l in lines), "%s: tooltip says where it comes from: %s" % (tag, lines))
     lua.execute("QBOX[1]:SetChecked(true); QBOX[1]:Fire('OnClick')")
     # wishlist view
     find_frames(lua, "f.__kind == 'Button' and f.__text and f.__text:find('Wishlist', 1, true)", "WBTN")

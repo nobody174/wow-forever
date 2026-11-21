@@ -3,6 +3,12 @@
   "news": [
     {
       "date": "2026-11-21",
+      "title": "Mr.BiZ gear lists refreshed",
+      "text": "All gear lists were re-read from the newest game data (build 70959): new item sources, updated drop chances and a few picks that changed.",
+      "link": "bis.html"
+    },
+    {
+      "date": "2026-11-21",
       "title": "Level 60 builds now follow Wowhead (every variant); three new macros",
       "text": "The Builds page now has every level 60 build from Wowhead's Forever guides, labelled Raid, Dungeon, PvP and so on, for all 27 specs. New macros: Rockbiter Weapon (Shaman), Hawk in combat / Pack out (Hunter) and the Deeprun Rat Catcher's Flute (every class, marks the rat with a star).",
       "link": "builds.html"

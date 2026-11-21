@@ -8,20 +8,12 @@
    "src": "Drops from Shore Crawler (Clue)",
    "via": "QuestieDB"
   },
-  "873": {
-   "src": "World drop: creatures near level 40 (Clue)",
-   "via": "ForeverMyBis"
-  },
   "940": {
    "src": "World drop: creatures near level 47 (Clue)",
    "via": "ForeverMyBis"
   },
   "942": {
    "src": "World drop: creatures near level 52 (Clue)",
-   "via": "ForeverMyBis"
-  },
-  "1169": {
-   "src": "World drop: creatures near level 46 (Clue)",
    "via": "ForeverMyBis"
   },
   "1204": {
@@ -64,14 +56,6 @@
    "src": "World drop: creatures near level 28 (Clue)",
    "via": "ForeverMyBis"
   },
-  "14549": {
-   "src": "World drop: creatures near level 45 (Clue)",
-   "via": "ForeverMyBis"
-  },
-  "14552": {
-   "src": "World drop: creatures near level 55 (Clue)",
-   "via": "ForeverMyBis"
-  },
   "17007": {
    "src": "World drop: creatures near level 51 (Clue)",
    "via": "ForeverMyBis"
@@ -87,6 +71,186 @@
   "221344": {
    "src": "Quest reward: A Lesson in Literacy, level 45 (Clue)",
    "via": "ForeverDungeonJournal"
+  },
+  "226772": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226774": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226777": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226781": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226783": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226784": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226786": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226795": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226799": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226801": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226802": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226803": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226804": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226828": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226831": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226857": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226860": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226866": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226869": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226870": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226871": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226872": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226881": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226883": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226930": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226931": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226950": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226955": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226957": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226958": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226959": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226960": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226976": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226981": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226984": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226989": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226990": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226991": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "226992": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "227007": {
+   "src": "Quest reward: Anthion's Parting Words, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "227013": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "227016": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "227021": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "227022": {
+   "src": "Quest reward: Just Compensation, level 58 (Clue)",
+   "via": "ForeverMyBis"
+  },
+  "227024": {
+   "src": "Quest reward: Saving the Best for Last, level 58 (Clue)",
+   "via": "ForeverMyBis"
   },
   "227170": {
    "src": "Sold by Lady Palanseer (Clue)",
@@ -232,6 +396,14 @@
    "src": "Quest reward: Big Game Hunter (a choice) (Seen in Forever)",
    "via": "our own recordings"
   },
+  "270090": {
+   "src": "Quest reward: Cracking Maury's Foot (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270091": {
+   "src": "Quest reward: Cracking Maury's Foot (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
   "270097": {
    "src": "Quest reward: Mai'Zoth (a choice) (Seen in Forever)",
    "via": "our own recordings"
@@ -240,9 +412,37 @@
    "src": "Quest reward: Divino-matic Rod (a choice) (Seen in Forever)",
    "via": "our own recordings"
   },
+  "270112": {
+   "src": "Quest reward: Saving Sharpbeak (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270113": {
+   "src": "Quest reward: WANTED: Overseer Maltorius (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
   "270115": {
-   "src": "Quest reward: Jammal'an the Prophet, level 53 (Clue)",
-   "via": "QuestieDB"
+   "src": "Quest reward: Jammal'an the Prophet (a choice), level 53 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "270117": {
+   "src": "Quest reward: The God Hakkar (a choice), level 53 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "270119": {
+   "src": "Quest reward: The Last Element (a choice), level 54 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "270123": {
+   "src": "Quest reward: Hurley Blackbreath (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270127": {
+   "src": "Quest reward: Pusillin and the Elder Azj'Tordin (a choice), level 58 (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "270225": {
+   "src": "Quest reward: Job Opening: Guard Captain of Revantusk Village (Clue)",
+   "via": "ForeverMyBis"
   },
   "270228": {
    "src": "Drops from Plunder in The Hall of Thanes (Seen in Forever)",
@@ -256,13 +456,17 @@
    "src": "Drops from Durgen Dirgehammer in Hall of Thanes (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "270275": {
+   "src": "Quest reward: Saving Sharpbeak (Seen in Forever)",
+   "via": "our own recordings"
+  },
+  "270276": {
+   "src": "Quest reward: Saving Sharpbeak (Seen in Forever)",
+   "via": "our own recordings"
+  },
   "271716": {
    "src": "Quest reward: Prehistoric Prism (a choice) (Seen in Forever)",
    "via": "our own recordings"
-  },
-  "271718": {
-   "src": "Drops from Min'loth the Serpent in The Drowned City (Clue)",
-   "via": "ForeverCompanion"
   },
   "271740": {
    "src": "Quest reward: Open the Maw (a choice), level 31 (Clue)",
@@ -425,8 +629,8 @@
    "via": "ForeverDungeonJournal"
   },
   "274084": {
-   "src": "Quest reward: The Crone of the Kraul (Clue)",
-   "via": "ForeverCompanion"
+   "src": "Quest reward: The Crone of the Kraul, level 23 (Clue)",
+   "via": "ForeverMyBis"
   },
   "274158": {
    "src": "Drops from Aggem Thorncurse in Razorfen Kraul (Clue)",
@@ -521,8 +725,8 @@
    "via": "AtlasLoot Continued"
   },
   "274652": {
-   "src": "Drops from Hydromancer Velratha in Zul'Farrak (Clue)",
-   "via": "ForeverDungeonJournal"
+   "src": "Drops from Hydromancer Velratha in Zul'Farrak (Seen in Forever)",
+   "via": "our own recordings"
   },
   "274654": {
    "src": "Drops from Ruuzlu in Zul'Farrak (Clue)",
@@ -632,6 +836,10 @@
    "src": "Quest reward: The Rog'mar Situation (Seen in Forever)",
    "via": "our own recordings"
   },
+  "275837": {
+   "src": "Quest reward: A Revenge Now Bitter (a choice) (Seen in Forever)",
+   "via": "our own recordings"
+  },
   "275864": {
    "src": "Drops from Lord Vyletongue in Maraudon (Clue)",
    "via": "ForeverDungeonJournal"
@@ -644,9 +852,9 @@
    "src": "Needs Revered with The Watchers (Clue)",
    "via": "ForeverMyBis"
   },
-  "275981": {
-   "src": "Needs Exalted with The Watchers (Clue)",
-   "via": "ForeverMyBis"
+  "276339": {
+   "src": "Quest reward: Prey and Predator (Seen in Forever)",
+   "via": "our own recordings"
   },
   "276399": {
    "src": "Drops from Malor the Zealous in Stratholme: Living (Clue)",
@@ -673,8 +881,8 @@
    "via": "ForeverDungeonJournal"
   },
   "276738": {
-   "src": "Drops from Katerina the Cleaner in Alcaz Prison (Clue)",
-   "via": "ForeverDungeonJournal"
+   "src": "Drops from Katerina the Cleaner in Alcaz Prison (Seen in Forever)",
+   "via": "our own recordings"
   },
   "276739": {
    "src": "Drops from Katerina the Cleaner in Alcaz Prison (Clue)",
@@ -685,20 +893,20 @@
    "via": "ForeverDungeonJournal"
   },
   "276741": {
-   "src": "Drops from The Questioner in Alcaz Prison (Clue)",
-   "via": "ForeverDungeonJournal"
+   "src": "Drops from The Questioner in Alcaz Prison (Seen in Forever)",
+   "via": "our own recordings"
   },
   "276742": {
    "src": "Drops from The Questioner in Alcaz Prison (Clue)",
    "via": "ForeverDungeonJournal"
   },
   "276746": {
-   "src": "Drops from Blazeroar in Alcaz Prison (Clue)",
-   "via": "ForeverDungeonJournal"
+   "src": "Drops from Blazeroar in Alcaz Prison (Seen in Forever)",
+   "via": "our own recordings"
   },
   "276877": {
-   "src": "Drops from Plugger Spazzring (Clue)",
-   "via": "QuestieDB"
+   "src": "Drops from Plugger Spazzring in Blackrock Depths (Clue)",
+   "via": "ForeverDungeonJournal"
   },
   "276884": {
    "src": "Drops from Verek (Clue)",
@@ -757,20 +965,20 @@
    "via": "QuestieDB"
   },
   "279474": {
-   "src": "Drops from Thrall Needs to Know (Horde) in Alcaz Prison (Clue)",
-   "via": "ForeverCompanion"
+   "src": "Quest reward: Shaw Needs To Know (a choice) (Seen in Forever)",
+   "via": "our own recordings"
   },
   "279480": {
    "src": "Quest reward: Eye of Mugg (a choice) (Seen in Forever)",
    "via": "our own recordings"
   },
   "279831": {
-   "src": "Drops from Thrall Needs to Know (Horde) in Alcaz Prison (Clue)",
-   "via": "ForeverCompanion"
+   "src": "Quest reward: Shaw Needs To Know (a choice) (Seen in Forever)",
+   "via": "our own recordings"
   },
   "279833": {
-   "src": "Drops from Thrall Needs to Know (Horde) in Alcaz Prison (Clue)",
-   "via": "ForeverCompanion"
+   "src": "Quest reward: Shaw Needs To Know (a choice) (Seen in Forever)",
+   "via": "our own recordings"
   },
   "279842": {
    "src": "Quest reward: Heart of Disruption (a choice), level 33 (Clue)",
@@ -816,21 +1024,21 @@
    "src": "Quest reward: The Only Good Brinescale... (a choice), level 38 (Clue)",
    "via": "ForeverDungeonJournal"
   },
-  "279892": {
-   "src": "Quest reward: The Twin Bears (Clue)",
-   "via": "ForeverCompanion"
+  "279901": {
+   "src": "Quest reward: Digestible Research (a choice) (Seen in Forever)",
+   "via": "our own recordings"
   },
   "279902": {
    "src": "Quest reward: Essence of Seeping Slimes, level 60 (Clue)",
    "via": "QuestieDB"
   },
   "279908": {
-   "src": "Quest reward: Mapping the Way Forward, level 60 (Clue)",
-   "via": "QuestieDB"
+   "src": "Quest reward: Mapping the Way Forward (a choice) (Seen in Forever)",
+   "via": "our own recordings"
   },
   "279910": {
-   "src": "Quest reward: Mapping the Way Forward, level 60 (Clue)",
-   "via": "QuestieDB"
+   "src": "Quest reward: Mapping the Way Forward (a choice) (Seen in Forever)",
+   "via": "our own recordings"
   },
   "280010": {
    "src": "Drops from Titanosaur in Shaper's Terrace (Clue)",
@@ -845,12 +1053,12 @@
    "via": "ForeverDungeonJournal"
   },
   "280015": {
-   "src": "Drops from Venomridge in Shaper's Terrace (Clue)",
-   "via": "ForeverDungeonJournal"
+   "src": "Drops from Venomridge in The Shaper's Terrace (Seen in Forever)",
+   "via": "our own recordings"
   },
   "280020": {
-   "src": "Drops from Thunderhoof in Shaper's Terrace (Clue)",
-   "via": "ForeverDungeonJournal"
+   "src": "Drops from Thunderhoof in The Shaper's Terrace (Seen in Forever)",
+   "via": "our own recordings"
   },
   "280021": {
    "src": "Drops from Direhorn Matriarch in Shaper's Terrace (Clue)",
@@ -1252,7 +1460,35 @@
    "src": "Drops from Trash Drops in The Drowned City (Clue)",
    "via": "ForeverDungeonJournal"
   },
+  "286998": {
+   "src": "Drops from Trash Drops in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "286999": {
+   "src": "Drops from Trash Drops in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287000": {
+   "src": "Drops from Trash Drops in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287001": {
+   "src": "Drops from Trash Drops in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
   "287002": {
+   "src": "Drops from Trash Drops in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287003": {
+   "src": "Drops from Trash Drops in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287004": {
+   "src": "Drops from Trash Drops in The Drowned City (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287006": {
    "src": "Drops from Trash Drops in The Drowned City (Clue)",
    "via": "ForeverDungeonJournal"
   },
@@ -1297,6 +1533,14 @@
    "via": "ForeverDungeonJournal"
   },
   "287020": {
+   "src": "Drops from Trash Drops in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287022": {
+   "src": "Drops from Trash Drops in Alcaz Prison (Clue)",
+   "via": "ForeverDungeonJournal"
+  },
+  "287023": {
    "src": "Drops from Trash Drops in Alcaz Prison (Clue)",
    "via": "ForeverDungeonJournal"
   },

@@ -1,6 +1,6 @@
 {
  "_about": "Item quality (0 poor .. 5 legendary) for every Mr.BiZ item, so names are coloured before the game has the item cached. Read from the WCLBox open item API (wowforever.wclbox.com) by bis/tools/items_build.py. build_bis.py adds `q` to each row and warns about ids missing here (run items_build.py again after a re-rank).",
- "updated": "1.60.1.70888",
+ "updated": "1.60.1.70938",
  "quality": {
   "647": 4,
   "720": 3,

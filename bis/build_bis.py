@@ -31,7 +31,7 @@ SITE_OUT = os.path.join(ROOT, "bis-data.json")
 LUA_OUT = os.path.join(ROOT, "addon", "RoadToForever", "BiZData.lua")
 
 LEVEL = 30
-UPDATED = "2026-10-17"
+UPDATED = "2026-11-21"
 SOURCE_NAME = "ForeverDB"
 SOURCE_URL = "https://foreverdb.net/bis"
 

@@ -1,0 +1,472 @@
+{
+ "_about": "Places parked 2026-11-21: no pick in ForeverDB build 70959 uses them (build_bis.py refuses unused places). Move one back into places.json if its item returns.",
+ "places": {
+  "Booty Bay": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 27.0,
+   "y": 77.0,
+   "label": "Booty Bay",
+   "conf": "approx"
+  },
+  "Captain O'Neal": {
+   "zone": "Stormwind City",
+   "mapHint": 1453,
+   "x": 74.3,
+   "y": 67.6,
+   "label": "Captain O'Neal, Stormwind City",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "Dire Maul: East": {
+   "zone": "Feralas",
+   "mapHint": 1444,
+   "x": 59.0,
+   "y": 45.0,
+   "label": "Dire Maul Entrance",
+   "conf": "approx",
+   "via": "ForeverDungeonJournal"
+  },
+  "Gadgetzan": {
+   "zone": "Tanaris",
+   "mapHint": 1446,
+   "x": 51.7,
+   "y": 28.3,
+   "label": "Rettrick, Gadgetzan quartermaster (Tanaris)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "Rallic Finn": {
+   "zone": "Elwynn Forest",
+   "mapHint": 1429,
+   "x": 83.28,
+   "y": 66.09,
+   "label": "Rallic Finn, Elwynn Forest",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "The Deadmines": {
+   "zone": "Westfall",
+   "mapHint": 1436,
+   "x": 42.5,
+   "y": 71.7,
+   "label": "The Deadmines Entrance",
+   "conf": "approx",
+   "via": "ForeverDungeonJournal"
+  },
+  "William MacGregor": {
+   "zone": "Westfall",
+   "mapHint": 1436,
+   "x": 57.71,
+   "y": 53.94,
+   "label": "William MacGregor, Westfall",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "Zippie Fizzbolt": {
+   "zone": "Winterspring",
+   "mapHint": 1452,
+   "x": 61.4,
+   "y": 38.2,
+   "label": "Zippie Fizzbolt, Winterspring",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "[DNT] Reward Vendor": {
+   "zone": "Alterac Mountains",
+   "mapHint": 1416,
+   "x": 28.0,
+   "y": 80.4,
+   "label": "[DNT] Reward Vendor, Alterac Mountains",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Atiesh, Greatstaff of the Guardian": {
+   "zone": "Tanaris",
+   "mapHint": 1446,
+   "x": 65.3,
+   "y": 50.0,
+   "label": "Atiesh, Greatstaff of the Guardian, from Anachronos (Tanaris)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Cloak of Veiled Shadows": {
+   "zone": "Silithus",
+   "mapHint": 1451,
+   "x": 51.8,
+   "y": 39.5,
+   "label": "Cloak of Veiled Shadows, from Keyl Swiftclaw (Silithus)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Cloak of the Gathering Storm": {
+   "zone": "Silithus",
+   "mapHint": 1451,
+   "x": 51.8,
+   "y": 39.5,
+   "label": "Cloak of the Gathering Storm, from Keyl Swiftclaw (Silithus)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Cloak of the Unseen Path": {
+   "zone": "Silithus",
+   "mapHint": 1451,
+   "x": 51.8,
+   "y": 39.5,
+   "label": "Cloak of the Unseen Path, from Keyl Swiftclaw (Silithus)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Drape of Unyielding Strength": {
+   "zone": "Silithus",
+   "mapHint": 1451,
+   "x": 51.8,
+   "y": 39.5,
+   "label": "Drape of Unyielding Strength, from Keyl Swiftclaw (Silithus)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Drape of Vaulted Secrets": {
+   "zone": "Silithus",
+   "mapHint": 1451,
+   "x": 51.8,
+   "y": 39.5,
+   "label": "Drape of Vaulted Secrets, from Keyl Swiftclaw (Silithus)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Essence of Seeping Slimes": {
+   "zone": "Undercity",
+   "mapHint": 1458,
+   "x": 47.5,
+   "y": 73.3,
+   "label": "Essence of Seeping Slimes, from Chemist Fuely (Undercity)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Exploring the Horde": {
+   "zone": "Orgrimmar",
+   "mapHint": 1454,
+   "x": 31.7,
+   "y": 37.8,
+   "label": "Exploring the Horde, from Thrall (Orgrimmar)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:For All To See": {
+   "zone": "Orgrimmar",
+   "mapHint": 1454,
+   "x": 31.7,
+   "y": 37.8,
+   "label": "For All To See, from Thrall (Orgrimmar)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:High Chief Winterfall": {
+   "zone": "Winterspring",
+   "mapHint": 1452,
+   "x": 31.3,
+   "y": 45.2,
+   "label": "High Chief Winterfall, from Donova Snowden (Winterspring)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:In Nightmares": {
+   "zone": "The Barrens",
+   "mapHint": 1413,
+   "x": 48.2,
+   "y": 32.8,
+   "label": "In Nightmares, from Falla Sagewind (The Barrens)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Job Opening: Guard Captain of Revantusk Village": {
+   "zone": "The Hinterlands",
+   "mapHint": 1425,
+   "x": 78.3,
+   "y": 79.5,
+   "label": "Job Opening: Guard Captain of Revantusk Village, from Primal Torntusk (The Hinterlands)",
+   "conf": "approx",
+   "via": "ForeverMyBis"
+  },
+  "quest:Paragons of Power: The Augur's Bracers": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.0,
+   "label": "Paragons of Power: The Augur's Bracers, from Maywiki of Zuldazar (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Augur's Hauberk": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.0,
+   "label": "Paragons of Power: The Augur's Hauberk, from Maywiki of Zuldazar (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Confessor's Bindings": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.1,
+   "label": "Paragons of Power: The Confessor's Bindings, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Confessor's Mantle": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.1,
+   "label": "Paragons of Power: The Confessor's Mantle, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Confessor's Wraps": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.1,
+   "label": "Paragons of Power: The Confessor's Wraps, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Demoniac's Robes": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.1,
+   "label": "Paragons of Power: The Demoniac's Robes, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Demoniac's Wraps": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.1,
+   "label": "Paragons of Power: The Demoniac's Wraps, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Haruspex's Bracers": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.0,
+   "label": "Paragons of Power: The Haruspex's Bracers, from Maywiki of Zuldazar (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Haruspex's Tunic": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.0,
+   "label": "Paragons of Power: The Haruspex's Tunic, from Maywiki of Zuldazar (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Illusionist's Robes": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.1,
+   "label": "Paragons of Power: The Illusionist's Robes, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Illusionist's Wraps": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 16.1,
+   "label": "Paragons of Power: The Illusionist's Wraps, from Al'tabim the All-Seeing (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Madcap's Mantle": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 14.1,
+   "y": 13.7,
+   "label": "Paragons of Power: The Madcap's Mantle, from Falthir the Sightless (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Madcap's Tunic": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 14.1,
+   "y": 13.7,
+   "label": "Paragons of Power: The Madcap's Tunic, from Falthir the Sightless (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Predator's Belt": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 14.1,
+   "y": 13.7,
+   "label": "Paragons of Power: The Predator's Belt, from Falthir the Sightless (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Predator's Mantle": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 14.1,
+   "y": 13.7,
+   "label": "Paragons of Power: The Predator's Mantle, from Falthir the Sightless (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Vindicator's Armguards": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 14.4,
+   "label": "Paragons of Power: The Vindicator's Armguards, from Jin'rokh the Breaker (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Vindicator's Belt": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 14.4,
+   "label": "Paragons of Power: The Vindicator's Belt, from Jin'rokh the Breaker (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Paragons of Power: The Vindicator's Breastplate": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 15.3,
+   "y": 14.4,
+   "label": "Paragons of Power: The Vindicator's Breastplate, from Jin'rokh the Breaker (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Rescue OOX-17/TN!": {
+   "zone": "Tanaris",
+   "mapHint": 1446,
+   "x": 60.2,
+   "y": 64.7,
+   "label": "Rescue OOX-17/TN!, from Homing Robot OOX-17/TN (Tanaris)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Ring of Unspoken Names": {
+   "zone": "Silithus",
+   "mapHint": 1451,
+   "x": 52.0,
+   "y": 38.2,
+   "label": "Ring of Unspoken Names, from Windcaller Yessendra (Silithus)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Shroud of Infinite Wisdom": {
+   "zone": "Silithus",
+   "mapHint": 1451,
+   "x": 51.8,
+   "y": 39.5,
+   "label": "Shroud of Infinite Wisdom, from Keyl Swiftclaw (Silithus)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:Shroud of Unspoken Names": {
+   "zone": "Silithus",
+   "mapHint": 1451,
+   "x": 51.8,
+   "y": 39.5,
+   "label": "Shroud of Unspoken Names, from Keyl Swiftclaw (Silithus)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:The Argent Hold": {
+   "zone": "Eastern Plaguelands",
+   "mapHint": 1423,
+   "x": 71.9,
+   "y": 48.4,
+   "label": "The Argent Hold, from Lord Maxwell Tyrosus (Eastern Plaguelands)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:The Grand Invoker": {
+   "zone": "Tanaris",
+   "mapHint": 1446,
+   "x": 65.3,
+   "y": 50.0,
+   "label": "The Grand Invoker, from Anachronos (Tanaris)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:The Lord of Blackrock": {
+   "zone": "Stormwind City",
+   "mapHint": 1453,
+   "x": 80.2,
+   "y": 38.4,
+   "label": "The Lord of Blackrock, from Highlord Bolvar Fordragon (Stormwind City)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:The Maelstrom's Tendril": {
+   "zone": "Stranglethorn Vale",
+   "mapHint": 1434,
+   "x": 14.1,
+   "y": 13.7,
+   "label": "The Maelstrom's Tendril, from Falthir the Sightless (Stranglethorn Vale)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:The Path of the Conqueror": {
+   "zone": "Tanaris",
+   "mapHint": 1446,
+   "x": 65.3,
+   "y": 50.0,
+   "label": "The Path of the Conqueror, from Anachronos (Tanaris)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:The Path of the Protector": {
+   "zone": "Tanaris",
+   "mapHint": 1446,
+   "x": 65.3,
+   "y": 50.0,
+   "label": "The Path of the Protector, from Anachronos (Tanaris)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:The Perfect Poison": {
+   "zone": "Silithus",
+   "mapHint": 1451,
+   "x": 52.1,
+   "y": 39.1,
+   "label": "The Perfect Poison, from Dirk Thunderwood (Silithus)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:The Protector of Kalimdor": {
+   "zone": "Tanaris",
+   "mapHint": 1446,
+   "x": 65.3,
+   "y": 50.0,
+   "label": "The Protector of Kalimdor, from Anachronos (Tanaris)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  },
+  "quest:The Qiraji Conqueror": {
+   "zone": "Tanaris",
+   "mapHint": 1446,
+   "x": 65.3,
+   "y": 50.0,
+   "label": "The Qiraji Conqueror, from Anachronos (Tanaris)",
+   "conf": "classic",
+   "via": "QuestieDB"
+  }
+ }
+}

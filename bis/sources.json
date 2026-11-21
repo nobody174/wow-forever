@@ -7552,6 +7552,1231 @@
    "name": "Serrated Knife",
    "src": "Sold by 5 vendors (Seen in Forever).",
    "via": "ForeverDB"
+  },
+  "791": {
+   "name": "Gnarled Ash Staff",
+   "src": "Drops from Dalaran Summoner (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "1263": {
+   "name": "Brain Hacker",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "2040": {
+   "name": "Troll Protector",
+   "src": "Drops from Chief Ukorz Sandscalp in Zul'Farrak, 0.02% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "2245": {
+   "name": "Helm of Narv",
+   "src": "Drops from Scholomance Adept (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "3566": {
+   "name": "Raptorbane Armor",
+   "src": "Quest reward: Ormer's Revenge (a choice), level 29 · Alliance (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "4255": {
+   "name": "Green Leather Armor",
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
+  },
+  "4454": {
+   "name": "Talon of Vultros",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "6094": {
+   "name": "Piercing Axe",
+   "src": "Quest reward: Red Silk Bandanas (a choice), level 17 · Alliance (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "7358": {
+   "name": "Pilferer's Gloves",
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
+  },
+  "7552": {
+   "name": "Falcon's Hook",
+   "src": "Drops from Sandfury Blood Drinker (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "8203": {
+   "name": "Tough Scorpid Breastplate",
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
+  },
+  "8209": {
+   "name": "Tough Scorpid Boots",
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
+  },
+  "8251": {
+   "name": "Imperial Red Pants",
+   "src": "World drop level 50-55 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "9491": {
+   "name": "Hotshot Pilot's Gloves",
+   "src": "Drops from Caverndeep Burrower, 0.03% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "10629": {
+   "name": "Mistwalker Boots",
+   "src": "World drop level 47-55 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "10633": {
+   "name": "Silvershell Leggings",
+   "src": "World drop level 47-55 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "10847": {
+   "name": "Dragon's Call",
+   "src": "Drops from Shade of Eranikus in Sunken Temple, 0.5% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "11677": {
+   "name": "Graverot Cape",
+   "src": "Drops from Anub'shiah, 42% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "11684": {
+   "name": "Ironfoe",
+   "src": "Drops from Emperor Dagran Thaurissan in Blackrock Depths, 1% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "11702": {
+   "name": "Grizzle's Skinner",
+   "src": "Drops from Grizzle, 35% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "11731": {
+   "name": "Savage Gladiator Greaves",
+   "src": "Drops from Anub'shiah, 15% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "11735": {
+   "name": "Ragefury Eyepatch",
+   "src": "Drops from Hurley Blackbreath in Blackrock Depths, 9% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "11862": {
+   "name": "White Bone Band",
+   "src": "Quest reward: Bone-Bladed Weapons (a choice), level 52 · Horde (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "11925": {
+   "name": "Ghostshroud",
+   "src": "Found in Chest of The Seven, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "11931": {
+   "name": "Dreadforge Retaliator",
+   "src": "Drops from Emperor Dagran Thaurissan in Blackrock Depths, 20% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "12038": {
+   "name": "Lagrave's Seal",
+   "src": "Quest reward: The Last Element, level 54 · Horde (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12059": {
+   "name": "Conqueror's Medallion",
+   "src": "Quest reward: Operation: Death to Angerforge, level 58 · Horde (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12103": {
+   "name": "Star of Mystaria",
+   "src": "Drops from Balnazzar in Stratholme, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12462": {
+   "name": "Embrace of the Wind Serpent",
+   "src": "Drops from Avatar of Hakkar in Sunken Temple, 0.5% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12549": {
+   "name": "Braincage",
+   "src": "World drop level 48-59 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12552": {
+   "name": "Blisterbane Wrap",
+   "src": "World drop level 48-59 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12553": {
+   "name": "Swiftwalker Boots",
+   "src": "Drops from Princess Moira Bronzebeard in Blackrock Depths, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12557": {
+   "name": "Ebonsteel Spaulders",
+   "src": "Drops from Princess Moira Bronzebeard in Blackrock Depths, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12604": {
+   "name": "Starfire Tiara",
+   "src": "Drops from Jed Runewatcher in Blackrock Spire, 33% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12793": {
+   "name": "Mixologist's Tunic",
+   "src": "Drops from Plugger Spazzring in Blackrock Depths, 33% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "12895": {
+   "name": "Breastplate of the Chromatic Flight",
+   "src": "Quest reward: Breastplate of the Chromatic Flight, level 60 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12903": {
+   "name": "Legguards of the Chromatic Defier",
+   "src": "Quest reward: Legplates of the Chromatic Defier (a choice), level 60 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12929": {
+   "name": "Emberfury Talisman",
+   "src": "Drops from Pyroguard Emberseer in Blackrock Spire, 20% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "12935": {
+   "name": "Warmaster Legguards",
+   "src": "Drops from Warchief Rend Blackhand in Blackrock Spire, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12945": {
+   "name": "Legplates of the Chromatic Defier",
+   "src": "Quest reward: Legplates of the Chromatic Defier (a choice), level 60 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12965": {
+   "name": "Spiritshroud Leggings",
+   "src": "Drops from The Beast in Blackrock Spire, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12966": {
+   "name": "Blackmist Armguards",
+   "src": "Drops from The Beast in Blackrock Spire, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "12968": {
+   "name": "Frostweaver Cape",
+   "src": "Drops from The Beast in Blackrock Spire, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13023": {
+   "name": "Eaglehorn Long Bow",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13036": {
+   "name": "Assassination Blade",
+   "src": "Drops from Colossus of Zora, 10% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13044": {
+   "name": "Demonslayer",
+   "src": "Drops from Mushgog, 5.2% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13098": {
+   "name": "Painweaver Band",
+   "src": "Drops from General Drakkisath in Blackrock Spire, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13101": {
+   "name": "Wolfrunner Shoes",
+   "src": "Drops from Mushgog, 5.2% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13141": {
+   "name": "Tooth of Gnarr",
+   "src": "Drops from General Drakkisath in Blackrock Spire, 25% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "13142": {
+   "name": "Brigam Girdle",
+   "src": "Drops from General Drakkisath in Blackrock Spire, 25% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "13211": {
+   "name": "Slashclaw Bracers",
+   "src": "Drops from Halycon in Blackrock Spire, 29% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13261": {
+   "name": "Globe of D'sak",
+   "src": "Drops from Spirestone Lord Magus in Blackrock Spire, 33% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "13282": {
+   "name": "Ogreseer Tower Boots",
+   "src": "Drops from Spirestone Lord Magus in Blackrock Spire, 33% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13284": {
+   "name": "Swiftdart Battleboots",
+   "src": "Drops from Spirestone Battle Lord in Blackrock Spire, 40% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13314": {
+   "name": "Alanna's Embrace",
+   "src": "Drops from Ras Frostwhisper in Scholomance, 2% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "13349": {
+   "name": "Scepter of the Unholy",
+   "src": "Drops from Baron Rivendare in Stratholme, 14% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13353": {
+   "name": "Book of the Dead",
+   "src": "Drops from Balnazzar in Stratholme, 1% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13368": {
+   "name": "Bonescraper",
+   "src": "Drops from Baron Rivendare in Stratholme, 14% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13378": {
+   "name": "Songbird Blouse",
+   "src": "Drops from Hearthsinger Forresten in Stratholme, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13383": {
+   "name": "Woollies of the Prancing Minstrel",
+   "src": "Drops from Hearthsinger Forresten in Stratholme, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13388": {
+   "name": "The Postmaster's Tunic",
+   "src": "Drops from Postmaster Malown in Stratholme, 19% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13389": {
+   "name": "The Postmaster's Trousers",
+   "src": "Drops from Postmaster Malown in Stratholme, 19% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13390": {
+   "name": "The Postmaster's Band",
+   "src": "Drops from Postmaster Malown in Stratholme, 3% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13395": {
+   "name": "Skul's Fingerbone Claws",
+   "src": "Drops from Skul in Stratholme, 33% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13397": {
+   "name": "Stoneskin Gargoyle Cape",
+   "src": "Drops from Stonespine in Stratholme, 33% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13400": {
+   "name": "Vambraces of the Sadist",
+   "src": "Drops from Timmy the Cruel in Stratholme, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13498": {
+   "name": "Handcrafted Mastersmith Leggings",
+   "src": "Drops from Goraluk Anvilcrack in Blackrock Spire, 14% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13505": {
+   "name": "Runeblade of Baron Rivendare",
+   "src": "Drops from Baron Rivendare in Stratholme, 1% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13535": {
+   "name": "Coldtouch Phantom Wraps",
+   "src": "Drops from Baroness Anastari in Stratholme, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13870": {
+   "name": "Frostweave Gloves",
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
+  },
+  "13944": {
+   "name": "Tombstone Breastplate",
+   "src": "Drops from Darkmaster Gandling in Scholomance, 14% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "13960": {
+   "name": "Heart of the Fiend",
+   "src": "Drops from Kirtonos the Herald, 11% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13963": {
+   "name": "Voone's Vice Grips",
+   "src": "Quest reward: Warlord's Command (a choice), level 60 · Horde (Classic data).",
+   "via": "ForeverDB"
+  },
+  "13965": {
+   "name": "Blackhand's Breadth",
+   "src": "Quest reward: For The Horde! (a choice), level 60 · Horde (Classic data).",
+   "via": "ForeverDB"
+  },
+  "14002": {
+   "name": "Darrowshire Strongguard",
+   "src": "Quest reward: The Lich, Ras Frostwhisper, level 60 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "14108": {
+   "name": "Felcloth Boots",
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
+  },
+  "14503": {
+   "name": "Death's Clutch",
+   "src": "Drops from Ras Frostwhisper in Scholomance, 17% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "14545": {
+   "name": "Ghostloom Leggings",
+   "src": "Drops from Jandice Barov in Scholomance, 12% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "14554": {
+   "name": "Cloudkeeper Legplates",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "14555": {
+   "name": "Alcor's Sunrazor",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "14557": {
+   "name": "The Lion Horn of Stormwind",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "14626": {
+   "name": "Necropile Robe",
+   "src": "Drops from Lord Alexei Barov in Scholomance, 3.7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "14636": {
+   "name": "Cadaverous Belt",
+   "src": "Drops from Lord Alexei Barov in Scholomance, 3.7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "14637": {
+   "name": "Cadaverous Armor",
+   "src": "Drops from Lord Alexei Barov in Scholomance, 3.7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "14638": {
+   "name": "Cadaverous Leggings",
+   "src": "Drops from Lord Alexei Barov in Scholomance, 3.7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "15108": {
+   "name": "Orb of Dar'Orahil",
+   "src": "Quest reward: The Completed Orb of Dar'Orahil (a choice), level 40 (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "16996": {
+   "name": "Gorewood Bow",
+   "src": "Quest reward: The Scarlet Oracle, Demetria (a choice), level 60 · Horde (Classic data).",
+   "via": "ForeverDB"
+  },
+  "17719": {
+   "name": "Inventor's Focal Sword",
+   "src": "Drops from Tinkerer Gizlock in Maraudon, 33% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "17749": {
+   "name": "Phytoskin Spaulders",
+   "src": "Drops from Razorlash in Maraudon, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "17751": {
+   "name": "Brusslehide Leggings",
+   "src": "Drops from Razorlash in Maraudon, 25% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "17778": {
+   "name": "Sagebrush Girdle",
+   "src": "Quest reward: Vyletongue Corruption (a choice), level 47 · Alliance (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "18102": {
+   "name": "Dragonrider Boots",
+   "src": "Drops from Warchief Rend Blackhand in Blackrock Spire, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18238": {
+   "name": "Shadowskin Gloves",
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
+  },
+  "18298": {
+   "name": "Unbridled Leggings",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18310": {
+   "name": "Fiendish Machete",
+   "src": "Drops from Alzzin the Wildshaper in Dire Maul, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18349": {
+   "name": "Gauntlets of Accuracy",
+   "src": "Drops from Illyanna Ravenoak in Dire Maul, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18385": {
+   "name": "Robe of Everlasting Night",
+   "src": "Drops from Immol'thar in Dire Maul, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18391": {
+   "name": "Eyestalk Cord",
+   "src": "Drops from Immol'thar in Dire Maul, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18393": {
+   "name": "Warpwood Binding",
+   "src": "Drops from Tendris Warpwood in Dire Maul, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18450": {
+   "name": "Robe of Combustion",
+   "src": "Drops from Guard Fengus in Dire Maul, 12% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18459": {
+   "name": "Gallant's Wristguards",
+   "src": "Drops from Guard Fengus in Dire Maul, 12% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "18465": {
+   "name": "Royal Seal of Eldre'Thalas",
+   "src": "Quest reward: Garona: A Study on Stealth and Treachery, level 60 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18494": {
+   "name": "Denwatcher's Shoulders",
+   "src": "Drops from Guard Slip'kik in Dire Maul, 7.7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18497": {
+   "name": "Sublime Wristguards",
+   "src": "Drops from Guard Slip'kik in Dire Maul, 7.7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18499": {
+   "name": "Barrier Shield",
+   "src": "Found in Gordok Tribute, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18503": {
+   "name": "Kromcrush's Chestplate",
+   "src": "Drops from Captain Kromcrush in Dire Maul, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18507": {
+   "name": "Boots of the Full Moon",
+   "src": "Drops from Captain Kromcrush in Dire Maul, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18537": {
+   "name": "Counterattack Lodestone",
+   "src": "Found in Gordok Tribute, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18673": {
+   "name": "Avalanchion's Stony Hide",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18680": {
+   "name": "Ancient Bone Bow",
+   "src": "Drops from Lord Alexei Barov in Scholomance, 3.7% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "18681": {
+   "name": "Burial Shawl",
+   "src": "Drops from Lord Alexei Barov in Scholomance, 3.7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18682": {
+   "name": "Ghoul Skin Leggings",
+   "src": "Drops from Lord Alexei Barov in Scholomance, 3.7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18683": {
+   "name": "Hammer of the Vesper",
+   "src": "Drops from Lord Alexei Barov in Scholomance, 3.7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18689": {
+   "name": "Phantasmal Cloak",
+   "src": "Drops from Jandice Barov in Scholomance, 12% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18691": {
+   "name": "Dark Advisor's Pendant",
+   "src": "Drops from Vectus in Scholomance, 7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18697": {
+   "name": "Coldstone Slippers",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18700": {
+   "name": "Malefic Bracers",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18702": {
+   "name": "Belt of the Ordained",
+   "src": "World drop (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18711": {
+   "name": "Arena Bands",
+   "src": "Found in Arena Treasure Chest, 7% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18720": {
+   "name": "Shroud of the Nathrezim",
+   "src": "Drops from Balnazzar in Stratholme, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18721": {
+   "name": "Barrage Girdle",
+   "src": "Drops from Cannon Master Willey in Stratholme, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18742": {
+   "name": "Stratholme Militia Shoulderguard",
+   "src": "World drop level 56-61 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18743": {
+   "name": "Gracious Cape",
+   "src": "World drop level 55-61 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18745": {
+   "name": "Sacred Cloth Leggings",
+   "src": "World drop level 55-61 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18754": {
+   "name": "Fel Hardened Bracers",
+   "src": "Drops from Lord Hel'nurath in Dire Maul, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "18761": {
+   "name": "Oblivion's Touch",
+   "src": "Drops from Death Knight Darkreaver, 25% (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "19094": {
+   "name": "Stormpike Cloth Girdle",
+   "src": "Sold by Thanthaldis Snowgleam (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "19148": {
+   "name": "Dark Iron Helm",
+   "src": "Crafted: Blacksmithing (Forever client).",
+   "via": "ForeverDB"
+  },
+  "19576": {
+   "name": "Strength of Mugamba",
+   "src": "Quest reward: Strength of Mount Mugamba, level 60 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "19578": {
+   "name": "Berserker Bracers",
+   "src": "Sold by 2 vendors (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "19990": {
+   "name": "Blessed Prayer Beads",
+   "src": "Quest reward: Blood of Morphaz (a choice), level 52 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "19991": {
+   "name": "Devilsaur Eye",
+   "src": "Quest reward: The Green Drake (a choice), level 52 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "20058": {
+   "name": "Highlander's Lamellar Spaulders",
+   "src": "Sold by Samuel Hawke (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "20093": {
+   "name": "Highlander's Chain Greaves",
+   "src": "Sold by Samuel Hawke (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "20118": {
+   "name": "Highlander's Mail Girdle",
+   "src": "Sold by Samuel Hawke (Classic data).",
+   "via": "ForeverDB"
+  },
+  "20134": {
+   "name": "Skyfury Helm",
+   "src": "Quest reward: The Darkreaver Menace, level 60 · Horde (Classic data).",
+   "via": "ForeverDB"
+  },
+  "20622": {
+   "name": "Dragonheart Necklace",
+   "src": "Drops from Emeriss, 14% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "20682": {
+   "name": "Elemental Focus Band",
+   "src": "Drops from Prince Skaldrenox, 34% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "21312": {
+   "name": "Belt of the Den Watcher",
+   "src": "Quest reward: Timbermaw Ally (a choice), level 48 (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "21318": {
+   "name": "Earth Warder's Gloves",
+   "src": "Quest reward: Winterfall Activity (a choice), level 58 (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "21521": {
+   "name": "Runesword of the Red",
+   "src": "Quest reward: Treasure of the Timeless One (a choice), level 60 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "21523": {
+   "name": "Fang of Korialstrasz",
+   "src": "Quest reward: Treasure of the Timeless One (a choice), level 60 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "21531": {
+   "name": "Drake Tooth Necklace",
+   "src": "Quest reward: The Nightmare Manifests (a choice), level 60 (Classic data).",
+   "via": "ForeverDB"
+  },
+  "21994": {
+   "name": "Belt of Heroism",
+   "src": "Quest reward: Just Compensation, level 60 · Alliance (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22013": {
+   "name": "Beastmaster's Cap",
+   "src": "Quest reward: Saving the Best for Last, level 60 · Alliance (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22225": {
+   "name": "Dragonskin Cowl",
+   "src": "Drops from Gyth, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22245": {
+   "name": "Soot Encrusted Footwear",
+   "src": "Drops from Panzor the Invincible in Blackrock Depths, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22253": {
+   "name": "Tome of the Lost",
+   "src": "Drops from General Drakkisath in Blackrock Spire, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22256": {
+   "name": "Mana Shaping Handwraps",
+   "src": "Drops from Watchman Doomgrip, 1.9% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22269": {
+   "name": "Shadow Prowler's Cloak",
+   "src": "Drops from General Drakkisath in Blackrock Spire, 25% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22318": {
+   "name": "Malgen's Long Bow",
+   "src": "Drops from Dredge Worm, 0.03% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22319": {
+   "name": "Tome of Divine Right",
+   "src": "Drops from Mor Grayhoof, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22325": {
+   "name": "Belt of the Trickster",
+   "src": "Drops from Mor Grayhoof, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22328": {
+   "name": "Legplates of Vigilance",
+   "src": "Drops from Jarien, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22331": {
+   "name": "Band of the Steadfast Hero",
+   "src": "Drops from Kormok in Scholomance, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22336": {
+   "name": "Draconian Aegis of the Legion",
+   "src": "Drops from Lord Valthalak in Blackrock Spire, 37% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22337": {
+   "name": "Shroud of Domination",
+   "src": "Drops from Lord Valthalak in Blackrock Spire, 41% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22409": {
+   "name": "Tunic of the Crescent Moon",
+   "src": "Drops from Baron Rivendare in Stratholme, 20% (Classic data).",
+   "via": "ForeverDB"
+  },
+  "22750": {
+   "name": "Sentinel's Lizardhide Pants",
+   "src": "Sold by Illiyana Moonblaze (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "226782": {
+   "name": "Feralheart Bindings",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "226796": {
+   "name": "Feralheart Wristguards",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "226798": {
+   "name": "Feralheart Pauldrons",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "226865": {
+   "name": "Wristguards of Heroism",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "226868": {
+   "name": "Legguards of Heroism",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "226976": {
+   "name": "Soulforge Greathelm",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "226985": {
+   "name": "Soulforge Wristguards",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "226987": {
+   "name": "Soulforge Pauldrons",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "227935": {
+   "name": "Hammer of the Fallen Thane",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "249385": {
+   "name": "Brilliant Wand",
+   "src": "Crafted: Enchanting (Forever client).",
+   "via": "ForeverDB"
+  },
+  "250614": {
+   "name": "Thorium Cestus",
+   "src": "Crafted: Blacksmithing (Forever client).",
+   "via": "ForeverDB"
+  },
+  "254013": {
+   "name": "Earthen Silk Slippers",
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
+  },
+  "254099": {
+   "name": "Fiery Gloves",
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
+  },
+  "254101": {
+   "name": "Black Gloves",
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
+  },
+  "260185": {
+   "name": "Hippogryph Hide Boots",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "260217": {
+   "name": "Eagle's Head Signet",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "260219": {
+   "name": "Engraved Band",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "267090": {
+   "name": "Semblance of Twilight",
+   "src": "Quest reward: Quest 94975, level 42 (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "270024": {
+   "name": "Bronzed Shoulderguards",
+   "src": "Quest reward: Deathstalkers in Shadowfang (a choice), level 25 · Horde (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "270059": {
+   "name": "Restorer's Fine Gloves",
+   "src": "Quest reward: Agmond's Fate (a choice), level 38 · Alliance (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "270102": {
+   "name": "Projectile Redirectors",
+   "src": "Quest reward: Quest 648 (a choice), level 48 (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "270120": {
+   "name": "Boots of Requite",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "270125": {
+   "name": "Satyrhide Armbands",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "270127": {
+   "name": "Incanter's Pantaloons",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "271959": {
+   "name": "Theramore Spaulders",
+   "src": "Sold by Bryanna Embreeze (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272059": {
+   "name": "Darkspear Voodoo Seal",
+   "src": "Sold by Creeg Bothunk (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272066": {
+   "name": "Insurgent's Band",
+   "src": "Sold by Creeg Bothunk (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272084": {
+   "name": "Darkspear Insurgent's Spellblade",
+   "src": "Sold by Creeg Bothunk (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272085": {
+   "name": "Darkspear Insurgent's Spellblade",
+   "src": "Sold by Creeg Bothunk (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272095": {
+   "name": "Raider Gauntlets",
+   "src": "Sold by Creeg Bothunk (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272096": {
+   "name": "Raider Gauntlets",
+   "src": "Sold by Creeg Bothunk (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272099": {
+   "name": "Raider Gloves",
+   "src": "Sold by Creeg Bothunk (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272100": {
+   "name": "Raider Gloves",
+   "src": "Sold by Creeg Bothunk (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272105": {
+   "name": "Darkspear Pauldrons",
+   "src": "Sold by Creeg Bothunk (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272107": {
+   "name": "Darkspear Mantle",
+   "src": "Sold by Creeg Bothunk (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272397": {
+   "name": "Ranger's Belt",
+   "src": "Sold by Pix Xizzix (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272404": {
+   "name": "Vindicator's Belt",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "272409": {
+   "name": "Ring of Awareness",
+   "src": "Sold by Pix Xizzix (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272440": {
+   "name": "Defender's Grip Stabilizer",
+   "src": "Sold by Pix Xizzix (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272459": {
+   "name": "Premier Magus Robes",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "272496": {
+   "name": "Premier Chain Boots",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "272548": {
+   "name": "Premier Felweave Robe",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "272578": {
+   "name": "Premier Sergeant's Cloak",
+   "src": "Sold by Brave Stonehide (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272693": {
+   "name": "Premier Grand Marshal's Longsword",
+   "src": "Sold by 2 vendors (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272839": {
+   "name": "Premier Grand Marshal's Handaxe",
+   "src": "Sold by 2 vendors (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272843": {
+   "name": "Premier Grand Marshal's Dirk",
+   "src": "Sold by 2 vendors (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "272849": {
+   "name": "Premier Grand Marshal's Glaive",
+   "src": "Sold by 2 vendors (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "273647": {
+   "name": "Worgpelt Leggings",
+   "src": "Drops from Wolf Master Nandos (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "273817": {
+   "name": "Graverobber's Shovel",
+   "src": "Drops from Dextren Ward (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "274639": {
+   "name": "Sacrificial Chain Vest",
+   "src": "Drops from Theka the Martyr (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "274644": {
+   "name": "Undying Headdress",
+   "src": "Drops from Nekrum Gutchewer (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "274742": {
+   "name": "Ratchet Wristwraps",
+   "src": "Sold by Winklespark (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "274748": {
+   "name": "Booty Bay Bruiser's Buckshot",
+   "src": "Sold by Gezzy Gunkgear (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "274749": {
+   "name": "Souvenir Sea Shell",
+   "src": "Sold by Gezzy Gunkgear (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "275612": {
+   "name": "Bileblister Boots",
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
+  },
+  "275737": {
+   "name": "Hermit's Pauldron",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "275741": {
+   "name": "Ketharas' Linked Belt",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "275972": {
+   "name": "Tracker's Signet of Ferocity",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "275975": {
+   "name": "Tracker's Signet of Vigilance",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "275976": {
+   "name": "Watcher's Signet of Ferocity",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "275982": {
+   "name": "Warden's Signet of Brilliance",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "276337": {
+   "name": "Thaelemaches' Talisman",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "276540": {
+   "name": "Spiritcaller Mantle",
+   "src": "Crafted: Leatherworking (Forever client).",
+   "via": "ForeverDB"
+  },
+  "278468": {
+   "name": "Premier Grand Marshal's Barricade",
+   "src": "Sold by 2 vendors (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "279259": {
+   "name": "Ironwood Blade",
+   "src": "Crafted: Blacksmithing (Forever client).",
+   "via": "ForeverDB"
+  },
+  "279261": {
+   "name": "Greenhammer",
+   "src": "Crafted: Blacksmithing (Forever client).",
+   "via": "ForeverDB"
+  },
+  "279266": {
+   "name": "Robes of Fiery Devastation",
+   "src": "Crafted: Tailoring (Forever client).",
+   "via": "ForeverDB"
+  },
+  "280029": {
+   "name": "Cinderedge Crescent",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "280072": {
+   "name": "Cowl of Dark Ambition",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "280077": {
+   "name": "Fist of Revelation",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "280082": {
+   "name": "Staff of Sorrow",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "280085": {
+   "name": "Tunnelweb Pincer",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "280086": {
+   "name": "Octofinger Gauntlets",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "280604": {
+   "name": "Rage of the Storm",
+   "src": "Quest reward: The Tempest's Weapons (a choice), level 40 (Seen in Forever).",
+   "via": "ForeverDB"
+  },
+  "281587": {
+   "name": "Greatflank Flayer",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "281636": {
+   "name": "Museum Keeper's Chain",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "282009": {
+   "name": "Ravaged Leather Leggings",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "284065": {
+   "name": "Crown of Maldazzar",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "284197": {
+   "name": "Hide of Mongress",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "284215": {
+   "name": "Ancient Lichen Vestments",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "284270": {
+   "name": "Ancient Giant's Gaze",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "286408": {
+   "name": "Sword of Mourning",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "286597": {
+   "name": "Calm Air Band",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "287026": {
+   "name": "Escape Plan",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "287034": {
+   "name": "Grove Subjugator's Blade",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
+  },
+  "287035": {
+   "name": "Demon Worshipper's Necklace",
+   "src": "Where it comes from isn't known yet.",
+   "via": "ForeverDB"
   }
  }
 }

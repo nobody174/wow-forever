@@ -24,7 +24,7 @@ and once more on the last beta day.
    rewrites these files when it closes).
 2. Run `python addon/tools/restore_wtf.py` (it only shows the plan), then `python addon/tools/restore_wtf.py --apply` with the game
    closed. It copies bindings, Edit Mode layouts, macros and account settings into the release client (`D:\World of Warcraft\_forever_`),
-   keeps what it replaces in `wow-beta-backupefore-restore-<time>`, refuses while Wow.exe runs, and never touches `Config.wtf`,
+   keeps what it replaces in `wow-beta-backup\before-restore-<time>`, refuses while Wow.exe runs, and never touches `Config.wtf`,
    SavedVariables or the character folders. **The account folder is NOT the same id** (beta `575003#3`, release `IZAK04`): a copy by
    hand into the beta's id lands nowhere. (Found 2026-11-05: the release client had rewritten these files empty at its first start.)
 3. Start the game. Check Edit Mode (layouts), Options > Key Bindings, `/macro`, and the addon's Home page.

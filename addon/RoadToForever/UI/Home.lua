@@ -723,6 +723,7 @@ function Home.Layout()
     for _, bar in ipairs(ui.gn.digits) do bar.show(gnomish) end
   end
   D.ShowCards("frost", frost)
+  D.ShowTabPanels(azeroth)
   D.ShowCards("obsidian", obsidian)
   if ui.ob then
     ui.ob.head:SetShown(obsidian)

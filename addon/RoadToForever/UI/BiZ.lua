@@ -760,6 +760,13 @@ function Tab.Build(f)
   ui.levelDown = button(f, 22, "-", function() BiZ.SetLevel(BiZ.Level() - 1); Tab.Refresh() end)
   ui.levelDown:SetPoint("RIGHT", ui.levelBtn, "LEFT", -2, 0)
 
+  -- Themed panels behind the paper doll + filters and behind the slot panel (Deco.TabPanel: drawn only by the looks that
+  -- have card art; the others keep their plain page).
+  local filterRows = math.ceil((#BiZ.Types() + 1) / 2)
+  local dollBottom = DOLL_Y + 7 * DOLL_STEP + 4 + SLOT + 12 + filterRows * 28 + 4
+  R2F.Deco.TabPanel(f, -8, -(DOLL_Y - 8), 324, dollBottom - DOLL_Y + 12)
+  R2F.Deco.TabPanel(f, 324, -(DOLL_Y - 8), 330, 456)
+
   -- Paper doll: model in the middle, slots in two columns, weapons under it.
   buildModel(f, 50, DOLL_Y, MODEL_W, DOLL_STEP * 7 - 6)
   for i, key in ipairs(LEFT_SLOTS) do buildSlotButton(f, key, 0, DOLL_Y + (i - 1) * DOLL_STEP) end

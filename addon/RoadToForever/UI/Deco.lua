@@ -868,6 +868,25 @@ function Deco.NestedPanel(parent, x, y, w, h)
   return np
 end
 
+-- A themed panel behind a region of any tab (the Gear tab uses two): Frost & Void glass, Obsidian Night info card, Gnomish
+-- Workshop white toy card, Azeroth Reforged nested stone panel. Other looks draw nothing (their window art is the panel).
+-- x, y = top left from the page's top left (y negative downwards), like the Home cards. Shown by Home.Layout after every
+-- look change (Deco.ShowCards for the card sets, Deco.ShowTabPanels for the Azeroth ones).
+local tabPanels = {}
+function Deco.TabPanel(parent, x, y, w, h)
+  local p = {}
+  Deco.GlassCard(parent, x, y, w, h, "normal")
+  Deco.ObsidianCard(parent, x, y, w, h, "info")
+  if Deco.ToyCard then Deco.ToyCard(parent, x, y, w, h, "white") end
+  p.azeroth = Deco.NestedPanel(parent, x, y, w, h)
+  tabPanels[#tabPanels + 1] = p
+  return p
+end
+
+function Deco.ShowTabPanels(azeroth)
+  for _, p in ipairs(tabPanels) do p.azeroth.show(azeroth == true) end
+end
+
 -- The page name and its one-line description on the title card of Ember & Iron's sidebar.
 function Deco.SetPageInfo(title, desc)
   local d = Deco.frame and Deco.frame.r2fDeco

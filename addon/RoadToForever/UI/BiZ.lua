@@ -41,7 +41,7 @@ local CONF_COLOR = {
 local LEFT_SLOTS = { "head", "neck", "shoulder", "back", "chest", "wrist", "hands" }
 local RIGHT_SLOTS = { "waist", "legs", "feet", "finger1", "finger2", "trinket1", "trinket2" }
 local WEAPON_SLOTS = { "mainhand", "offhand", "ranged" }
-local DOLL_Y, DOLL_STEP, DOLL_RIGHT_X, MODEL_W = 40, 46, 264, 204
+local DOLL_Y, DOLL_STEP, DOLL_RIGHT_X, MODEL_W = 58, 46, 264, 204
 local QUALITY_RGB = {
   [0] = { 0.62, 0.62, 0.62 }, { 1, 1, 1 }, { 0.12, 1, 0 }, { 0, 0.44, 0.87 }, { 0.64, 0.21, 0.93 }, { 1, 0.5, 0 },
 }
@@ -730,7 +730,7 @@ function Tab.Build(f)
   ui.wishBtn = button(f, 110, "", function() view = "wish"; scroll:SetVerticalScroll(0); refresh() end)
   ui.wishBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -1)
   ui.upBtn = button(f, 150, L.BIZ_VIEW_UP, function() view = "up"; scroll:SetVerticalScroll(0); refresh() end)
-  ui.upBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -17)
+  ui.upBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -28)
   ui.viewBtn = dropButton(f, 190, viewMenu)
   ui.viewBtn:SetPoint("LEFT", ui.upBtn, "RIGHT", 6, 0)
   ui.routeBtn = button(f, 130, L.BIZ_ROUTE, function()

@@ -769,9 +769,13 @@ function Deco.ShowCards(theme, on)
       elseif bar.kind == "dark" then bar.set(FR .. "card_dark")
       else bar.set(FR .. "card_normal") end
     end
-    for _, t in ipairs(bar.parts) do
-      t:SetAlpha(Deco.alpha or 1)
-      t:SetShown(mine and on == true)
+    -- Only this theme's cards are touched: Home.Layout calls this once per card set, and a later call for another set
+    -- used to hide the cards the earlier call had just shown.
+    if mine then
+      for _, t in ipairs(bar.parts) do
+        t:SetAlpha(Deco.alpha or 1)
+        t:SetShown(on == true)
+      end
     end
   end
 end

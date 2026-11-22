@@ -1,6 +1,8 @@
 # Taking your settings from the beta to the release client
 
-Why: the beta client (`_classic_beta_`) and the release client (`_classic_`) keep separate settings. Your Edit Mode layouts, key
+Status 2026-11-22: done once, at launch (2026-11-05). Kept for the next client move or a lost WTF.
+
+Why: the beta client (`_classic_beta_`) and the release client (`_forever_`) keep separate settings. Your Edit Mode layouts, key
 bindings, macros and graphics settings do not follow you. Copy them over once.
 
 ## Make the copy

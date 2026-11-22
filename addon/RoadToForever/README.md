@@ -30,10 +30,11 @@ Open it with `/r2f` (or the minimap button). It has these pages:
   one to your bars to create the real game macro. New addon versions update the macros the
   addon made, but never one you edited yourself. The Options button holds which slots new
   macros use, Import (for a custom pick from the site) and Remove all.
+- **Mr.BiZ upgrades (BiZMe)**: the Gear tab also shows your next upgrades (worn vs best, where each comes from), can view another character's gear, and marks slots on the Character window.
 - **Tweaks**: small optional helpers, grouped on eight pages (Quests, Vendors & loot,
   Chat & screen, Bags, Alerts, Waypoint arrow, Class icons, Action bars), all **off until you tick them**:
   auto-repair, sell grey items, quest auto-accept and turn-in, fast looting, free bag slots,
-  movable bags, a copy-chat box, an "ability ready" alert, and on-screen icons and reminders
+  movable bags, a copy-chat box, a flight timer (counts down known flights; ships with times for many routes and learns the rest), an "ability ready" alert, and on-screen icons and reminders
   (Warrior stance, Hunter ammo, pet, Hunter aspect, gear repair, rested XP, missing tracking, missing group
   buffs, Walk on Air, Seal and Slice and Dice timers, food, a combat banner), and on the
   action bars a red veil when a spell is out of range or you lack the mana, rage or energy,

@@ -41,6 +41,9 @@ None else open (talent-tree drift fixed 2026-11-07; before each release run `pyt
 5. **Paladin "Crusade" talent**: missing from Wowhead's Forever data; when it appears, re-check the level-30 Ret build (`DATA30` code shifts by one talent).
 6. **`/console` combat lockdown**: unconfirmed which CVars are blocked in combat (low priority).
 
+## 4b. Flight timer
+1. `FlightData.lua` holds 72 Alliance routes (shipped 0.88.1). Horde routes and unflown ones are learned in game; when someone flies them, copy `R2FDB.flightTimes` from their account file and extend the table (see `docs/maintainers.md`).
+
 ## 5. Launch-day refresh (launch 2026-11-04)
 1. **Professions BiS**: re-scraped 2026-11-21 (ForeverChanges still has only level 30 lists, so nothing at 60 to scrape). Left: Wowhead Forever spell pages (blocked from the shell today) to double-check the changed Cloak Defense / Minor Stats values, and the faded PvP spec tags (FC dropped its PvP pages, cannot be re-verified).
 3. **Cheat sheets**: all level 30 and 60 sheets re-checked against Wowhead 2026-11-21. Left: level 30 stat orders (Icy Veins, October; Wowhead has no level 30 stat order and Icy Veins blocks the shell).

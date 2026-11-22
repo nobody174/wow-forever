@@ -38,7 +38,7 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
   "Enchants for <Class> →" link to `professions.html#bis/<class>`. A class-icon roster (same pattern
   as `macros.html`) picks one class at a time; classes with more than one build
   (Mage: Arcane/Frost Ice Lance/Frost Piercing Ice/Fire; Paladin: Retribution/
-  Protection; Warrior: Tank/Fury) get a second spec-picker row. All build+talent+
+  Protection; Warrior: Tank/Fury) get a second spec-picker row. Since 2026-11-21 each spec appears once (one heading, one spec button) with all its builds (PvE, PvP, Raid, Dungeon ...) under it and its cheat sheet once at the end (`render()` groups by `b.spec`). All build+talent+
   rotation content lives in the `DATA30` / `DATA60` objects in the page's script (level 20 builds removed 2026-10-12) — edit builds
   there, not as hand-written HTML. Each build has a talent row (icons + hover
   tooltips, arrows between picks) and a Rotation section (single-target/AoE ability

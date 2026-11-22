@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-22 (addon 0.88.1 released, tag r2f-v0.88.1)
+- Release `r2f-v0.88.1` published (pre-release, `RoadToForever-0.88.1.zip`): the flight timer ships 72 learned flight times (`FlightData.lua`, read from the owner's account file; times are account-wide in `R2FDB.flightTimes`), so those routes count down from the first flight. All Alliance; Horde and unflown routes are still learned in game. `addons.html` fallback moved to 0.88.1.
+
 ## 2026-11-22 (addon 0.88.0 released, tag r2f-v0.88.0)
 - Release `r2f-v0.88.0` published (pre-release, `RoadToForever-0.88.0.zip`): BiZMe, Util.lua, planner removal, macro trims. CI was red on luacheck (undeclared API globals, long lines); fixed, green on the release commit. Real bug found by it: the Mr.BiZ rank line in item tooltips never got its colour (GearScore.lua).  `addons.html` fallback moved to 0.88.0.
 

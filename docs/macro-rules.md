@@ -50,7 +50,7 @@ stance(..., attack=True) adds the same /startattack line. Never add /startattack
 to fears or other breakable CC (Intimidating Shout, Repentance). Macro types:
 Damage / offensive, Mouseover healing / utility, Cleanse / dispel, Wand / auto-attack,
 Buffs, Panic / defensive, Targeting helpers, Class QoL, Focus, Misc / UI.
-Misc / UI lives only in the UNIVERSAL block (camera/UI console commands, target
+The universal Smart target, Assist mouseover, Clear dead target and Focus group were removed 2026-11-21 (unused); class macros with `foc()` stay. Misc / UI lives only in the UNIVERSAL block (camera/UI console commands, target
 marking, gear-swap macros — not spell-specific, so not part of any class section).
 Classes: Priest, Shaman, Paladin, Warlock, Hunter, Warrior, Rogue, Mage, Druid (added 2026-10-14).
 Druid: spec sections Shared / Balance / Feral (Bear + Cat) / Restoration. Forever macros stop after the first GCD

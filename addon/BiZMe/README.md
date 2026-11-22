@@ -1,7 +1,7 @@
 # BiZMe! (planning folder)
 
 BiZMe! is the "for Me" mode of **Mr.BiZ**: BiZ = best in slot, Me = your character. It builds on the existing Mr.BiZ
-(R2F BiS tab, site `bis.html`, `bis/` data pipeline). This folder holds the plan only; code lives in `addon/RoadToForever/`.
+(R2F BiS tab, site `bis.html`, `bis/` data pipeline). This folder holds the plan and research; code lives in `addon/RoadToForever/` (`BiZMe.lua`, `CharMarks.lua`, `CharPanel.lua`, `WishTracker.lua`), shipped since addon 0.88.0.
 
 - CLAUDE.md: how to start and what is decided
 - ROADMAP.md / BACKLOG.md: phases and next tasks

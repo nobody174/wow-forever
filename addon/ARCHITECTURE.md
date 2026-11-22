@@ -13,10 +13,10 @@ It sits outside `RoadToForever/`, so it never ships.
   forbids hard-coded text colours in `UI/*.lua`.
 
 ## Layers (load order)
-1. **Plumbing**: `Locale`, `ItemApi`, `Base64`, `Library` (DB, macro library), `Import`.
-2. **Generated data** (never hand-edit, see `docs/pipeline.md`): `MacroData`, `BiZData`, `TalentData`, `TrainingData`.
+1. **Plumbing**: `Locale`, `Util` (shared helpers such as `isSecret`), `ItemApi`, `Base64`, `Library` (DB, macro library), `Import`.
+2. **Data**: generated, never hand-edit (see `docs/pipeline.md`): `MacroData`, `BiZData`, `TalentData`, `TrainingData`. Hand-kept: `FlightData` (flight times learned by the flight timer, shipped as a fallback).
 3. **Features**: macros (`Ranks`, `Macros`, `Setup`, `General`, `Bundle`), talents (`Talents`, `TalentCalc`), `Professions`, waypoints (`Waypoint`, `Nav`),
-   Mr.BiZ (`BiZ`, `GearScore`), `Training`.
+   Mr.BiZ (`BiZ`, `GearScore`, `BiZMe` = worn vs best, Next upgrades, Viewing as; `CharMarks`, `CharPanel`, `WishTracker` on the Character window and screen), `Training`.
 4. **Tweaks and reminders**: `Gameplay` (the registry: `R2F.Gameplay.Register{key, group, title, tip}`), `GameplayExtras/Quests/Chat`, `ActionBars`, `Bags`,
    and the reminder family on `R2F.Reminders.NewIcon` (`Stance`, `Ammo`, `Repair`, `Pet`, `Aspect`, `Timers`, `Rested`, `CombatBanner`, `Tracking`, `Buffs`);
    `QuickSettings` holds every CVar read and write.

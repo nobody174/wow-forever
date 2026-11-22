@@ -21,6 +21,7 @@ there). Then `git tag r2f-vX.Y.Z` and push the tag (one or two tags at a time). 
 | Trainer list | console snippet in `gen_training_data.py`'s docstring saves `wh_all.json`, then run the script | **yes** (Wowhead blocks plain downloads) |
 | Mr.BiZ | `bis/README.md`: ForeverDB pages into `bis/raw/`, `python bis/build_bis.py`; item quality via Wowhead tooltip API | **yes** |
 | Professions enchants / prices | `docs/professions-bis.md` (ForeverChanges lists, Wowhead Forever spell pages, `prices.json`) | **yes** |
+| Flight times (`FlightData.lua`) | copy `flightTimes` from the account file `WTF/Account/<name>/SavedVariables/RoadToForever.lua` (all characters share it), regenerate the Lua table, release | no |
 | Addon versions on addons.html | `docs/addons-page.md` (CurseForge check; blocked from the sandbox) | **yes** |
 A browser from a Claude session: a `claude -p --allowedTools "mcp__claude-in-chrome__*"` subprocess (see the project memory note).
 

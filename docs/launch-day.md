@@ -14,9 +14,9 @@ The order matters: settings first, then the addon, then the walk. Everything her
 ## On the first Skyborne Hunter
 1. Run **Setup Hunter** before anything else is placed (needs the Edit Mode layout "Hunter" restored first).
 
-## First days
-- Re-check the level-60 builds and the cheat sheets (BACKLOG 5.3).
-- Professions BiS from ForeverChanges' level-60 lists; AH market when AHledger lists EU (BACKLOG 5.1, 5.2).
+## First days (launch was 2026-11-04; status 2026-11-22)
+- Level-60 builds and cheat sheets: re-checked against Wowhead 2026-11-21 (BACKLOG 5.3 has what is left).
+- Professions BiS: re-scraped 2026-11-21; ForeverChanges still has only level 30 lists (BACKLOG 5.1).
 - Ground markers in a group (BACKLOG 0.4).
 
 ## luacheck without installing it

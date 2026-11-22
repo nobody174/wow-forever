@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-22 (addon 0.88.0 released, tag r2f-v0.88.0)
+- Release `r2f-v0.88.0` published (pre-release, `RoadToForever-0.88.0.zip`): BiZMe, Util.lua, planner removal, macro trims. CI was red on luacheck (undeclared API globals, long lines); fixed, green on the release commit. Real bug found by it: the Mr.BiZ rank line in item tooltips never got its colour (GearScore.lua).  `addons.html` fallback moved to 0.88.0.
+
 ## 2026-11-21 (owner test round: macros trimmed, Builds page grouped)
 - Macros: removed the universal macros nobody uses: Smart target enemy, Assist mouseover / friendly target, Clear dead target, and the whole Focus group (Set focus, Clear focus, Target focus, Assist focus). Class macros with focus are untouched.
 - Builds page: one heading and one spec button per spec (Arms, not Arms Arms Arms); its builds (PvE, PvP, Raid, Dungeon ...) sit under it with the cheat sheet once at the end.

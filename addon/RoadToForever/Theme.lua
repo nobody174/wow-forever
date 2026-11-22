@@ -113,7 +113,7 @@ Theme.LIST = {
     font = { heading = "Interface\\AddOns\\RoadToForever\\media\\fonts\\CormorantGaramond-SemiBold.ttf",
              body = "Interface\\AddOns\\RoadToForever\\media\\fonts\\CormorantGaramond-SemiBold.ttf",
              number = "Interface\\AddOns\\RoadToForever\\media\\fonts\\CormorantGaramond-SemiBold.ttf", bodyBump = 3 },
-    win = { w = 1060, extraH = 40 }, pageDy = 14, sideW = 400, close = "square", controls = "pill", home = "scribe",
+    win = { w = 1100, extraH = 40 }, pageDy = 14, sideW = 400, close = "square", controls = "pill", home = "scribe",
     compact = true, barPad = { 24, 10 },
     titleColor = { 0.96, 0.9, 0.76 }, barText = { 0.95, 0.89, 0.74 },
     on = { 0.247, 0.42, 0.294 }, off = { 0.9, 0.83, 0.66 }, swRim = { 0.4, 0.3, 0.2 },

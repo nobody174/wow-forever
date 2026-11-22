@@ -4726,7 +4726,7 @@ def test_step6_ui(templates, fx):
     # Scribe's Tome (light): leather cover, two pages, the sidebar as a table of contents.
     lua.execute("R2F.Images.scribe = true R2F.Theme.Set('scribe')")
     SCI = "R2FMain.r2fDeco.sc"
-    check(lua.eval("R2FMain:GetWidth()") == 1060 and lua.eval("R2FMain.r2fSide:GetWidth()") == 396
+    check(lua.eval("R2FMain:GetWidth()") == 1100 and lua.eval("R2FMain.r2fSide:GetWidth()") == 396
           and lua.eval("R2FMain.r2fSide:IsShown()") is False, "scribe: a book-wide window, no sidebar background")
     check(all(lua.eval("%s.cover.parts[%d]:IsShown()" % (SCI, k)) is True for k in range(1, 9))
           and all(lua.eval("%s.pageL.parts[%d]:IsShown()" % (SCI, k)) is True for k in range(1, 10))

@@ -10,7 +10,7 @@ The one page to follow: [docs/launch-day.md](docs/launch-day.md).
 4. **Ground markers (`/wm`)**: confirmed working by the owner 2026-11-22 (`/wm 8` = skull; other numbers too). Left: add macros/coordinates for the Hunter trainer and the general goods vendor in the Skyborne starting zone.
 
 ## 0b. Themes: follow-ups after the 0.76.0 test
-1. **Other tabs per theme** (Talents, Gear, Macros, Tweaks): they sit on each theme's page plate but are still the old layouts. Redesign each to match its theme's Home once the Home layouts are confirmed in game.
+1. **Other tabs per theme** (Talents, Gear, Macros, Tweaks): pilot on Gear started 2026-11-22 (`Deco.TabPanel`, TESTING 5.103); Talents, Macros and Tweaks wait for the owner's feedback. Original note: they sit on each theme's page plate but are still the old layouts. Redesign each to match its theme's Home once the Home layouts are confirmed in game.
 2. **Frost & Void**: the ring only shows the last 30 days; the "Your journey" checklist and extra sidebar entries (Professions, Reminders, Settings) of the mockups are not built (no matching pages). Theme settings panel (effects level, text size, high contrast, profiles, day / night) of theme_picker.png is not built either.
 3. **Hover preview** in the gallery (the mockup previews on hover; ours previews on click with Keep / Revert).
 

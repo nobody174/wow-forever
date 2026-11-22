@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## Unreleased
+
+- **Theme redesign, pilot on the Gear tab:** Frost & Void, Obsidian Night, Gnomish Workshop and Azeroth Reforged draw their card art behind the paper doll and the slot list (`Deco.TabPanel`); the other looks are unchanged. If it works, the same helper goes onto Talents, Macros and Tweaks.
+
 ## 0.88.1 (2026-11-22)
 
 - **Flight timer:** ships with 72 learned flight times (`FlightData.lua`, from the owner's account), so those routes count down from the first flight on any account; your own learned time still wins.

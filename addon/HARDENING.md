@@ -8,6 +8,8 @@ Privacy / Identity check (published as nobody174).
 
 This file sits outside `addon/RoadToForever/`, so it never ships in the addon zip.
 
+**Status 2026-11-22:** historical record of the October 2026 hardening round plus the release decisions. Since then: the addon is at 0.88.1 (pre-release tags only; 1.0.0 and CurseForge still wait for the owner), the Plan tab (H5) was removed 2026-11-17, `isSecret` is now shared in `Util.lua` (L2 partly done; `safe` / throttle copies remain, BACKLOG 5b.6), and luacheck gates every release in CI (it runs only there).
+
 Decisions (owner, 2026-10-12):
 - Author nobody174, name "Road to Forever" (R2F), license All Rights Reserved.
 - H5 Plan tab: make it generic (no names, plans read as example setups).

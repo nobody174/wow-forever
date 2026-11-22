@@ -1,13 +1,13 @@
 # Addon plan: Road to Forever (macros + talents)
 
-Status: **built** (scoped 2026-10-01, every planned step shipped 2026-10-02). Steps
+Status: **built and in use** (scoped 2026-10-01, every planned step shipped 2026-10-02; later work is in section 21 and 22, released as 0.88.1 on 2026-11-22). Steps
 1 (data), 2 (site export), 3 (addon MVP, v0.1.0), 4 (updates, v0.2.0), 5 (Tidy up,
 Settings, Remove all, key bindings, v0.3.0), 6 (main window, minimap button, logo,
 v0.4.0), 7 (release zip on GitHub Releases, v0.5.0), 8 (talent export + the site's
 `~hash`, v0.6.0), 9 (talent import preview, v0.7.0), 10 (talent learning, v0.8.0)
 and Quick settings (Home tab, v0.9.0, 12.4.1) shipped. No addon version has been
-tested in the game yet: what's left is the in-game checks (section 11,
-`addon/dev/TESTING.md`); see `the root CHANGELOG.md (addon section)`.
+tested in the game when this header was written (2026-10-02); since then the owner has tested in game, and what is left is in
+`addon/dev/TESTING.md`; see `the root CHANGELOG.md (addon section)`.
 Target: usable before the Nov 4 launch.
 
 | | |
@@ -2862,7 +2862,7 @@ ForeverPlus already tracks buffs, so nothing here duplicates it.
   needed (durability under X%), bags almost full, rested-XP state.
 - One shared look: same framed icon as the stance icon, draggable, lockable, size slider.
 
-### 15.5 Launch Plan checklist in game (+ TomTom waypoints) -- built as v0.18.0, 2026-10-09
+### 15.5 Launch Plan checklist in game (+ TomTom waypoints) -- built as v0.18.0, 2026-10-09 -- REMOVED 2026-11-17 (history only)
 (As built, v0.18.0; reworked in v0.81.0 from four group plans to race + class, 2026-10-24:
 `addon/tools/gen_plan_data.js` (run by `build.py`, needs node) evaluates the page's own `RACES`,
 `CLASSES`, `PRESETS`, `PHASES`, `allowed()`, `override()` and `resolve()` and writes `PlanData.lua`;
@@ -3251,3 +3251,16 @@ stance and ammo icons. Level-30 builds for every missing spec were added to `bui
 **Release discipline (owner, 2026-10-14):** every check green before a tag (`run_tests.py`, `check_release_tree.py`, luacheck in CI, the
 Actions run on the tagged commit); any red = stop, find the cause, fix, run again. luacheck is not installed locally: CI is the gate, so push
 the commit, wait for the "Addon checks" run on that exact commit, then tag.
+
+## 22. Since 0.62 (2026-10-15 to 2026-11-22, v0.63 - v0.88.1): short map, details live in the CHANGELOGs
+
+Design history stops being kept section by section here; the per-version detail is in `addon/RoadToForever/CHANGELOG.md` and the root
+`CHANGELOG.md`, the one-page picture in `addon/ARCHITECTURE.md`. What changed in shape:
+- **Looks:** seven window looks and the "Choose a look" gallery (0.76.0, per-theme layouts); art pipeline in `addon/art/`.
+- **Planner removed (2026-11-17):** the Plan tab, Follow the plan, Duo progress, the route log and `PlanData.lua` are gone (section 15.5 is history only); BiZNav and the map lookup stay (`Waypoint.lua`).
+- **Mr.BiZ and BiZMe (0.88.0):** `BiZMe.lua` (worn vs best, Next upgrades, Viewing as with inspect, tooltip rank line, BiZ code `R2FB1`), `CharMarks.lua`, `CharPanel.lua`, `WishTracker.lua`; plans and research in `addon/BiZMe/`.
+- **Talent audit:** `/r2f debug talentdump` and `/r2f talentcheck` (0.87.1-0.87.3), notes in `docs/talent-audit-hunter-2026-11-13.md`.
+- **Flight timer** (0.87.0): learns each route into `R2FDB.flightTimes`; `FlightData.lua` ships 72 known routes (0.88.1).
+- **Shared helpers:** `Util.lua` (`R2F.Util.isSecret`) replaced eight private copies.
+- **Macros:** the unused universal Smart target, Assist mouseover, Clear dead target and Focus group were removed (2026-11-21).
+- Numbering note: this file has two sections numbered 17 and 18 (older 17.x / 18 and the BiZNav ones); they were never renumbered so links stay valid.

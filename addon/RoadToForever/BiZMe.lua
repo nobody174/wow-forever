@@ -280,7 +280,8 @@ function M.Upgrades(specId, lvl, ctx)
               local soon = trip and lvl < hi and left < threshold
               if ok and not soon then
                 choice = { slot = sl.slot, row = row, rank = rank, gain = gain, worn = wornLink, wornScore = wornScore,
-                           score = score, left = left, trip = trip, place = place, placeKey = placeKey, note = (why == "rep") and "rep" or nil }
+                           score = score, left = left, trip = trip, place = place, placeKey = placeKey,
+                           note = (why == "rep") and "rep" or nil }
                 break
               elseif rank == 1 then
                 -- the BiZ pick itself is out of reach: say why ("soon" = replaced within the carry rule's levels)

@@ -30,6 +30,8 @@ read_globals = {
   -- Action bars, spells, items
   "GetActionInfo", "GetActionText", "GetSpellTexture", "GetItemInfo", "C_Spell", "C_Item",
   -- State
+  "CanInspect", "NotifyInspect", "ClearInspectPlayer", "GetItemCount", "GetNumSkillLines", "GetSkillLineInfo",
+  "CharacterFrame", "C_Minimap",
   "InCombatLockdown", "GetServerTime", "GetComboPoints", "UnitClass", "IsShiftKeyDown", "IsAltKeyDown", "GetCursorPosition",
   -- Frames / UI
   "CreateFrame", "UIParent", "GameTooltip", "UIErrorsFrame", "DEFAULT_CHAT_FRAME",

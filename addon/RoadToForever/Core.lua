@@ -118,7 +118,7 @@ handlers.CONFIG_COMMIT_FAILED = function(configID)
   R2F.Talents.OnCommitFailed(configID)
   R2F.MainWindow.RequestRefresh()
 end
-handlers.PLAYER_LEVEL_UP = function(level)
+handlers.PLAYER_LEVEL_UP = function()
   R2F.MainWindow.RequestRefresh()
 end
 -- Mr.BiZ: an item the tab asked the client for has loaded (quality, icon).

@@ -134,9 +134,9 @@ function Minimap_.ToggleDamageMeter()
   end
 end
 
--- ThreatMaster (the threat meter addon): its own /threatmaster command shows and hides its window. We call that command's handler,
--- the same thing typing /threatmaster does; nothing of its window is touched here. The tick follows its saved "shown" option (shown
--- unless it says no).
+-- ThreatMaster (the threat meter addon): its own /threatmaster command shows and hides its window. We call that
+-- command's handler, the same thing typing /threatmaster does; nothing of its window is touched here. The tick
+-- follows its saved "shown" option (shown unless it says no).
 function Minimap_.ThreatMasterAvailable()
   local cmds = _G.SlashCmdList
   return type(cmds) == "table" and type(cmds.THREATMASTER) == "function"

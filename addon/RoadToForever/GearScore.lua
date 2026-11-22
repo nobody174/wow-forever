@@ -243,7 +243,8 @@ local function onTooltip(tip)
   end
   -- Where the item ranks on your spec's list for the level in the Mr.BiZ tab (BiZMe.lua).
   local id = tonumber(link:match("item:(%d+)"))
-  local rtext, rr, rg, rb = id and R2F.BiZMe.RankLine(id, GS.SpecId())
+  local rtext, rr, rg, rb
+  if id then rtext, rr, rg, rb = R2F.BiZMe.RankLine(id, GS.SpecId()) end
   if rtext then
     tip:AddLine(rtext, rr, rg, rb)
     tip:Show()

@@ -201,10 +201,9 @@ function Diag.BuildEJDump(api, maxInstances)
   local out = { have = {}, instances = {}, lootIds = {} }
   for name, fn in pairs(api) do out.have[name] = type(fn) == "function" end
   -- With no tier count (0 or nil) the walk still tries tiers 0-8, dungeons and raids, so an empty answer is a real answer.
-  local tiers = { 0 }
   local nt = safe(api.GetNumTiers)
   if type(nt) ~= "number" or nt < 1 then nt = 8 end
-  tiers = { 0 }
+  local tiers = { 0 }
   for t = 1, nt do tiers[#tiers + 1] = t end
   out.tiers = safe(api.GetNumTiers)
   local total, seen = 0, {}
@@ -309,10 +308,10 @@ function Diag.Mem()
     end
     collectgarbage("collect")
     local before = collectgarbage("count")
-    local c = copy(R2F.BiZData)
+    local c = copy(R2F.BiZData) -- luacheck: ignore c
     local after = collectgarbage("count")
     dataKb = after - before
-    c = nil
+    c = nil -- luacheck: ignore c
     collectgarbage("collect")
     R2F.Print(L.DIAG_MEM_DATA:format(dataKb))
   end

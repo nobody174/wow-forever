@@ -25,7 +25,8 @@ function WT.Rows()
       if not it.owned then
         if #rows < WT.MAX_ROWS then
           local key = R2F.BiZ.PlaceOfItem(it.id)
-          rows[#rows + 1] = { id = it.id, name = it.name, group = g.name, place = key, go = key and R2F.BiZ.Place(key) and true or false }
+          rows[#rows + 1] = { id = it.id, name = it.name, group = g.name, place = key,
+                              go = key and R2F.BiZ.Place(key) and true or false }
         else
           extra = extra + 1
         end

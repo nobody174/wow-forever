@@ -2,6 +2,12 @@
   "discord": "https://discord.gg/Yh2sTMZksq",
   "news": [
     {
+      "date": "2026-11-22",
+      "title": "Addon 0.88.1",
+      "text": "New release: Mr.BiZ upgrades (BiZMe), fewer macros, and the flight timer now knows 72 routes from the first flight.",
+      "link": "addons.html"
+    },
+    {
       "date": "2026-11-21",
       "title": "Builds page tidied",
       "text": "Each spec now has one heading with all its builds (PvE, PvP, Raid, Dungeon) under it instead of repeating the name.",

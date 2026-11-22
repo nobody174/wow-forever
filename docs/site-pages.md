@@ -64,7 +64,7 @@ Per-page notes for the hand-written pages. Moved out of CLAUDE.md 2026-10-16.
 - `talentsaved.js` — "Saved builds" sidebar on `talents.html` and `builds.html` (load
   after `talentcalc.js`; styles are the `ts-` block at the end of `talentcalc.css`).
   Floating gold button under the top bar (bottom-right on narrow screens) opens a
-  right-hand drawer, same look as launch-plan's Buyable quests. Two tabs:
+  right-hand drawer, same look as the Professions page's shopping-list drawer. Two tabs:
   **My builds** (per browser, localStorage `wf-talent-builds-v1`: `{id, code, name,
   note, ts}`; save from any calculator's "Save build", update the build you last
   opened, import a pasted talents.html link, edit/delete, copy one or all links) and

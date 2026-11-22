@@ -48,8 +48,8 @@ Notes for professions.html (enchants, costs, live prices, Crafters) and bis.html
     252453, Mystic 252452, Thick 8173); the live fetch includes them and kit rows show
     craft cost vs AH price (`cobTag`/`cobLine`). Enchants can't be sold, so kits only.
   - Shopping list: `list` = `{recipeName: qty}` in localStorage `wf-prof-list-v1`;
-    `addBtn(name)` in every open row, drawer `#list-drawer` (same look as launch-plan's
-    Buyable quests), `#list` hash opens it.
+    `addBtn(name)` in every open row, drawer `#list-drawer` (same look as the Saved builds
+    drawer), `#list` hash opens it.
   - Prices: site-wide prices in `prices.json` (`{updated, by, prices: {matId: copper|null}}`),
     fetched no-store; `MATS` prices are only the fallback. Visitors' own edits are per
     browser (localStorage `wf-prof-prices-v1`) with "Use site prices". The owner signs in

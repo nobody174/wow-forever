@@ -1,5 +1,7 @@
 # Where Forever item and loot data comes from (research, 2026-10-17)
 
+**Status 2026-11-22:** research from 2026-10-17, revised 2026-11-13 (see "Decision" below). Since then: item data moved to WCLBox (2026-11-13), places and sources were added from QuestieDB, ForeverDungeonJournal, ForeverMyBis and ForeverCompanion (2026-11-15/16), and ForeverDB's lists were refreshed on 2026-11-21. The "result at level 30" numbers below are historical.
+
 Question: which databases and addons carry the most up-to-date WoW Forever loot, vendor and quest data, what are they allowed to be used for,
 and how do we, a group of three, get as much of it as possible without depending on anyone staying alive. Method: read the pages, licenses and
 repositories (not the marketing text), then test each source against the 133 best picks of Mr.BiZ at level 30.

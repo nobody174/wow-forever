@@ -1,5 +1,7 @@
 # Weapon upgrades along the route: research (2026-10-13)
 
+**Status 2026-11-22: archived.** The Plan tab it describes was removed on 2026-11-17, so the route weapons work is no longer in the addon. `bis/quest-weapons.json` is no longer read by `build.py` or `build_bis.py` (kept for reference).
+
 The owner's point: the Plan tab's "Weapon:" lines only appear for 9 of 27 specs, but a Hunter (for one) clearly gets weapons from quests
 on the way. He was right. The reason for the gap is how it was built, not that there is nothing to find.
 

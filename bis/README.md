@@ -1,5 +1,7 @@
 # Mr.BiZ data
 
+**Status 2026-11-22:** the data was last refreshed to ForeverDB build 70959 on 2026-11-21 (steps below). Item quality and stats come from WCLBox. The owner decided on 2026-11-13 that Mr.BiZ keeps picking from ForeverDB (no own ranker); `bis/own/` is the cross-check and `places.json` / `sources.json` carry our own places and sources.
+
 `raw/levels/<class>-<spec>.json` holds one spec's best-in-slot picks for **every level from 10 to 60** (PvE), as runs of levels with the same pick,
 read from ForeverDB's public pages (`https://foreverdb.net/bis/<class>/<spec>?lvl=<level>`). `build_bis.py` turns the 27 files into
 `../bis-data.json` (the site's `bis.html`) and `../addon/RoadToForever/BiZData.lua` (the addon's BiS tab). Both keep per spec and slot the runs

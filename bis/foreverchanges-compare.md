@@ -1,5 +1,7 @@
 # ForeverChanges vs our Mr.BiZ data (2026-10-13)
 
+**Status 2026-11-22:** a 2026-10-13 snapshot. ForeverChanges later dropped its PvP pages and now has only 21 PvE spec pages at level 30 (re-read 2026-11-21); it is used for the Professions page's enchant list, not as a Mr.BiZ source.
+
 Question: should ForeverChanges (https://foreverchanges.pro/bis) be a second Mr.BiZ source next to ForeverDB?
 Method: the index page and four spec pages were read (fetched through a page summariser, so item ids were copied from its
 answer, not scraped; treat the numbers as indicative). Compared with `bis-data.json` (ForeverDB, level 30).

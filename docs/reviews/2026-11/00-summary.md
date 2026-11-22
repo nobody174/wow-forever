@@ -1,5 +1,12 @@
 # Project review, November 2026: summary
 
+**Status 2026-11-22 (these reports are a point-in-time record of 2026-11-09; this block says what happened since):**
+1. Post-launch pass on the site: done (beta ribbon, launch copy and the BETA DATA badge are gone; `DATA_STATE = "live client"`; the addons page names `_forever_`).
+2. Mage Remove Lesser Curse: done (`data.py`); the Shaman Elemental Mastery and Paladin Salvation / Light / Sanctuary macros stay "Test in beta" (BACKLOG 5b.3).
+3. Data refresh: Mr.BiZ refreshed to ForeverDB build 70959 and professions re-scraped (2026-11-21); ForeverChanges still has only level 30 lists.
+4. Addon README now lists what Setup writes. 5. RankedBoost / Wowhead conversion scripts are committed in `addon/tools/`.
+Medium list: tests closed by the owner in rounds up to 2026-11-22 (none open now); `check_macro_spells.py` added; `R2F.Util.isSecret` shared (other helpers still BACKLOG 5b.6); `docs/maintainers.md` and `addon/ARCHITECTURE.md` exist. Still open: Rehearsal workflow run, remember last class on Builds, `run_tests.py` split, SavedVariables migration test (BACKLOG 5b).
+
 Date 2026-11-09, addon 0.84.2. Six read-only reviews, run one after the other. Nothing in the project was changed except these report files.
 
 | # | Role(s) | Report |

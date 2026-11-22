@@ -1,5 +1,7 @@
 # Our own Mr.BiZ database: research and plan (2026-10-17)
 
+**Status 2026-11-22: parked.** The owner's decision of 2026-11-13 is that Mr.BiZ keeps picking from ForeverDB, so the own ranker described here (weights, ranks) is not being built. The M0 item pool exists (WCLBox now supplies items) and the cross-check tools live in `bis/own/`. Kept as the plan to pick up if ForeverDB stops being usable.
+
 Owner's question: stop depending on ForeverDB (and credits / permission). Where do the numbers come from, what would it take to make our own
 item database and score, how big is it, and how does a ranking know what is Biz, Bizzer and Bizzest?
 Everything marked **measured** was checked on 2026-10-17 against the beta build 1.60.1.70450; **estimate** is a planning number.

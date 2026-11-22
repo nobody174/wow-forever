@@ -1,5 +1,7 @@
 # Level 60 builds: ours vs Wowhead Forever guides (2026-11-21)
 
+**Status 2026-11-22:** this comparison is what drove the rewrite of the level 60 builds and cheat sheets on 2026-11-21 (all Wowhead variants, stat orders, nine new sheets, level 30 rotations re-checked). Only the level 30 stat orders stay unverified (BACKLOG 5.3).
+
 Overlap = talent points shared with the closest Wowhead build (of 51). Split = points per tree.
 
 | Build | Ours (split) | Closest Wowhead (split) | Shared |

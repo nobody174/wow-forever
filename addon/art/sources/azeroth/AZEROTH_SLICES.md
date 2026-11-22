@@ -1,5 +1,7 @@
 # Azeroth Reforged: slice notes, round 2
 
+Status 2026-11-22: these PNGs are in the addon (`media/`) and the owner has seen the looks in game ("the themes look good", 2026-11-09), so "nothing has been seen in WoW" below is history from the first export. The Plan tab icon (`azeroth_icon_plan.png`) is unused since the planner was removed 2026-11-17.
+
 34 PNGs, 32-bit RGBA, transparent where not stated otherwise. `source/` regenerates all of them
 (`python make_azeroth_r2.py <out_dir> <Cinzel-700.ttf>`).
 All structural checks pass: exact sizes, seamless tiles, corner matches the strips, middles plain, icons pure white.

@@ -1,4 +1,6 @@
 # Frost & Void: slice notes (24 requested PNGs + 1 optional extra, 32-bit RGBA)
+
+Status 2026-11-22: these PNGs are in the addon (`media/`) and the owner has seen the looks in game ("the themes look good", 2026-11-09), so "nothing has been seen in WoW" below is history from the first export.
 Regenerate: `python make_frost.py <out_dir>`. Art is for default gamma. Nothing has been seen in WoW.
 Checks passed: exact sizes, plain 9-slice middles, mirror-symmetric frame brackets, seamless panel, glows inside the canvas (edge alpha at most 8/255), colours vs board.
 

@@ -1,4 +1,6 @@
 # Obsidian Night: slice notes (20 PNGs, 32-bit RGBA)
+
+Status 2026-11-22: these PNGs are in the addon (`media/`) and the owner has seen the looks in game ("the themes look good", 2026-11-09), so "nothing has been seen in WoW" below is history from the first export.
 Regenerate: `python make_obsidian.py <out_dir>`. Art is for default gamma (no pre-darkening). Nothing has been seen in WoW.
 Checks passed: exact sizes, plain 9-slice middles (max diff 0), glows inside the canvas, colours vs board.
 

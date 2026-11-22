@@ -1,5 +1,7 @@
 # Mr.BiZ cross-check: our own scoring next to ForeverDB's (started 2026-10-15)
 
+**Status 2026-11-22:** a 2026-10-15 snapshot of the cross-check. `tooltips.py` still reads Wowhead; the item table itself now comes from WCLBox (2026-11-13, `bis/DATA_SOURCES.md`), so do not start new bulk Wowhead pulls with it. Mr.BiZ keeps picking from ForeverDB (owner, 2026-11-13); the "Next" list below was written before launch and is only a sketch. The reports here (`report.md`, `found_report.md`, `rerank-review.md`, `wclbox-diff.md`) are generated or dated snapshots: regenerate rather than edit.
+
 Owner decision (2026-10-15): do NOT replace ForeverDB yet. Build the machinery now at level 30 so it can be extended to level 60 at launch, and
 use it as a cross-check. ForeverDB's weights (`bis/raw/*.json` `weights`) and its sources stay; Wowhead is the item data.
 

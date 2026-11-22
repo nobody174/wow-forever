@@ -1,4 +1,6 @@
 # Ember & Iron: slice notes (24 PNGs, 32-bit RGBA)
+
+Status 2026-11-22: these PNGs are in the addon (`media/`) and the owner has seen the looks in game ("the themes look good", 2026-11-09), so "nothing has been seen in WoW" below is history from the first export.
 Regenerate: `python make_ember.py <out_dir>`. Colours are the board's CSS values. Nothing has been seen in WoW.
 Cut shape: top-left and bottom-right corners chamfered, the other two square (as on the board).
 

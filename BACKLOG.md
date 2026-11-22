@@ -15,7 +15,7 @@ The one page to follow: [docs/launch-day.md](docs/launch-day.md).
 3. **Hover preview** in the gallery (the mockup previews on hover; ours previews on click with Keep / Revert).
 
 ## 1. Bugs
-1. **RankedBoost has moved since 0.84.2:** 11 level 30 / 60 builds differ on a dry run of `builds_from_rankedboost.py` (level 30 not applied; level 60 now follows Wowhead, rotations rewritten 2026-11-21).
+1. **RankedBoost has moved on 5 level 30 builds** (checked 2026-11-22; level 60 is skipped now because it follows Wowhead and a dry run of `builds_from_wowhead.py` shows 0 changes). Owner-confirmed builds, so NOT applied; owner decides each: Arcane Mage (Wand Specialization, Arcane Geometry out; Improved Channeling, Arcane Meditation up), Fire Mage (Burning Soul out, Accelerant in), Assassination Rogue (Venom -> Relentless Strikes), Restoration Druid (Tranquil Spirit out; Improved Rejuvenation, Swiftmend, Subtlety in), Beast Mastery Hunter (Deadly Aspects, Ferocity up; Improved Aspect of the Monkey, Improved Mend Pet, Spirit Bond out).
 None else open (talent-tree drift fixed 2026-11-07; before each release run `python addon/tools/gen_talent_data.py --drift`).
 
 ## 2. Addon

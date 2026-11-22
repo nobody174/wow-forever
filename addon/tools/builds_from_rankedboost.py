@@ -164,6 +164,8 @@ def main():
         _spec, title, code = m.groups()
         cls = title.split()[0].lower()
         lvl = int(re.search(r"Level (\d+)", title).group(1))
+        if lvl == 60:   # level 60 follows Wowhead (builds_from_wowhead.py); RankedBoost lags it
+            continue
         slug = MAP.get((cls, lvl, re.sub(r"^.*?Level \d+\s*", "", title)))
         if not slug:
             continue

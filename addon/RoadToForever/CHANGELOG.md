@@ -1,6 +1,6 @@
 # Road to Forever changelog
 
-## Unreleased
+## 0.88.1 (2026-11-22)
 
 - **Flight timer:** ships with 72 learned flight times (`FlightData.lua`, from the owner's account), so those routes count down from the first flight on any account; your own learned time still wins.
 

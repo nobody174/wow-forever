@@ -142,6 +142,7 @@ def prefix(trees, ranks, n):
 
 def main():
     apply = "--apply" in sys.argv
+    only = sys.argv[sys.argv.index("--only") + 1].split(",") if "--only" in sys.argv else []   # title substrings
     trees = parse_trees()
     if "--json" in sys.argv:
         rb = json.load(open(sys.argv[sys.argv.index("--json") + 1], encoding="utf-8"))
@@ -191,6 +192,8 @@ def main():
         new = encode(final)
         if lvl == 60 and n < 51:
             print("   short: %s has %d of 51 points" % (slug, n))
+        if only and not any(o in title for o in only):
+            continue
         if new != code:
             print("%-50s %s -> %s" % (title, code, new))
             edits.append((m.start(), m.end(), title, code, new, final))

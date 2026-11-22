@@ -5,6 +5,9 @@ version log is at the bottom. Working
 history for whoever builds this next (including a future Claude session) — not
 user-facing release notes.
 
+## 2026-11-22 (level 30 builds from RankedBoost: two applied)
+- Restoration Druid and Beast Mastery Hunter level 30 talent codes now follow RankedBoost (owner's choice); Arcane Mage, Fire Mage and Assassination Rogue left as they were. `builds_from_rankedboost.py` skips level 60 (Wowhead owns it) and takes `--only`. `TalentData.lua` regenerated. The rotation text of those two builds was not rewritten. `/wm` ground markers confirmed working by the owner (`/wm 8` = skull).
+
 ## 2026-11-22 (addon 0.88.1 released, tag r2f-v0.88.1)
 - Release `r2f-v0.88.1` published (pre-release, `RoadToForever-0.88.1.zip`): the flight timer ships 72 learned flight times (`FlightData.lua`, read from the owner's account file; times are account-wide in `R2FDB.flightTimes`), so those routes count down from the first flight. All Alliance; Horde and unflown routes are still learned in game. `addons.html` fallback moved to 0.88.1.
 

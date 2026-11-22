@@ -7,7 +7,7 @@ Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md
 The one page to follow: [docs/launch-day.md](docs/launch-day.md).
 1. The launch-day data refresh did not happen: see section 5 (overdue since 2026-11-04). (Beta backup / Setup Hunter: done, owner is playing on the release client.)
 
-4. **Ground markers (`/wm`)**: do not work solo; test in a group, then add macros/coordinates for the Hunter trainer and the general goods vendor in the Skyborne starting zone.
+4. **Ground markers (`/wm`)**: confirmed working by the owner 2026-11-22 (`/wm 8` = skull; other numbers too). Left: add macros/coordinates for the Hunter trainer and the general goods vendor in the Skyborne starting zone.
 
 ## 0b. Themes: follow-ups after the 0.76.0 test
 1. **Other tabs per theme** (Talents, Gear, Macros, Tweaks): they sit on each theme's page plate but are still the old layouts. Redesign each to match its theme's Home once the Home layouts are confirmed in game.
@@ -15,7 +15,7 @@ The one page to follow: [docs/launch-day.md](docs/launch-day.md).
 3. **Hover preview** in the gallery (the mockup previews on hover; ours previews on click with Keep / Revert).
 
 ## 1. Bugs
-1. **RankedBoost has moved on 5 level 30 builds** (checked 2026-11-22; level 60 is skipped now because it follows Wowhead and a dry run of `builds_from_wowhead.py` shows 0 changes). Owner-confirmed builds, so NOT applied; owner decides each: Arcane Mage (Wand Specialization, Arcane Geometry out; Improved Channeling, Arcane Meditation up), Fire Mage (Burning Soul out, Accelerant in), Assassination Rogue (Venom -> Relentless Strikes), Restoration Druid (Tranquil Spirit out; Improved Rejuvenation, Swiftmend, Subtlety in), Beast Mastery Hunter (Deadly Aspects, Ferocity up; Improved Aspect of the Monkey, Improved Mend Pet, Spirit Bond out).
+1. **RankedBoost, level 30:** applied 2026-11-22 for Restoration Druid and Beast Mastery Hunter; the owner left Arcane Mage, Fire Mage and Assassination Rogue as they are (RankedBoost would swap Wand Specialization / Arcane Geometry, Burning Soul -> Accelerant, Venom -> Relentless Strikes). Level 60 is skipped by `builds_from_rankedboost.py` (Wowhead owns it). `--only "<title part>,..."` applies a subset.
 None else open (talent-tree drift fixed 2026-11-07; before each release run `python addon/tools/gen_talent_data.py --drift`).
 
 ## 2. Addon

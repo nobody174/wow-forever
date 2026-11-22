@@ -4,6 +4,9 @@ The record of what the owner has tested and confirmed. Open tasks are in `TESTIN
 confirmed it is deleted from that file and added here in the same pass (newest round first). Numbers are the
 `section.item` numbers of TESTING.md at the time.
 
+## 2026-11-22 (owner, in chat)
+- `/wm` ground markers: `/wm 8` (skull) and other numbers work in a group.
+
 ## 2026-11-21 (owner round)
 - 5.69 Swing timer, 5.99 Home after the planner was removed (Gear upgrades card), 5.101 Talents tab with the many new builds.
 - 5.100 Three new macros: working. Owner asked to drop unused universal macros; done (Smart target enemy, Assist mouseover, Clear dead target and the whole Focus group of four).

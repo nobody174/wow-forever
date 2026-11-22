@@ -50,6 +50,7 @@ Gameplay.lua
 GameplayExtras.lua
 ActionBars.lua
 GameplayQuests.lua
+FlightData.lua
 GameplayTravel.lua
 GameplayChat.lua
 Version.lua

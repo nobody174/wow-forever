@@ -88,7 +88,8 @@ local function takeoff()
   pendingFrom, pendingTo = nil, nil
   ensureTimer()
   local key = (from and to) and (from .. "|" .. to) or nil
-  flight = { key = key, to = to or "?", start = now(), known = key and flightTimes()[key] or nil }
+  local known = key and (flightTimes()[key] or (R2F.FlightData or {})[key]) or nil
+  flight = { key = key, to = to or "?", start = now(), known = known }
   timerFrame:Show()
   local acc = 0
   timerFrame:SetScript("OnUpdate", function(_, dt)

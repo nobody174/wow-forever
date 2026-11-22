@@ -1,5 +1,9 @@
 # Road to Forever changelog
 
+## Unreleased
+
+- **Flight timer:** ships with 72 learned flight times (`FlightData.lua`, from the owner's account), so those routes count down from the first flight on any account; your own learned time still wins.
+
 ## 0.88.0 (2026-11-22)
 
 - **Macros:** three new macros; removed the universal Smart target enemy, Assist mouseover / friendly target, Clear dead target and the whole Focus group (class macros with focus stay).

@@ -252,6 +252,8 @@ local function buildTrees(f)
   linkFrame:EnableMouse(false)
   for t = 1, TREES do
     local x0 = 10 + (t - 1) * TREE_W
+    -- Themed card behind the whole tree (drawn only by the looks that have panels).
+    R2F.Deco.TabPanel(f, x0 + 2, TREE_TOP - 12, TREE_W - 4, 30 + ROWS * STEP_Y + 24)
     local name = f:CreateFontString(nil, "ARTWORK", "R2FHeading")
     name:SetPoint("TOPLEFT", f, "TOPLEFT", x0 + 6, TREE_TOP)
     name:SetJustifyH("LEFT")

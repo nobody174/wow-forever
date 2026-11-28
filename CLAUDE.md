@@ -57,3 +57,6 @@ reusable turns up, add a ledger row there (generalized, no duplication). Role de
   (macros, addons). New pages go in their group and need the shared `<head>` block (meta, icons, manifest).
 - Launch was `2026-11-04T23:00:00Z` (index shows it); the home page switches to its live state by itself.
 - Sandbox cannot reach Wowhead, CurseForge or AHledger: use a browser or WebFetch and commit the result.
+
+## Planning files
+Planning files: Shape B. `BACKLOG.md` = active todo list, `ROADMAP.md` = someday ideas and locked decisions, `CHANGELOG.md` = shipped history. Move items to CHANGELOG the moment they are done.

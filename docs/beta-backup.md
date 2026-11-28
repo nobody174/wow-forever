@@ -6,7 +6,7 @@ Why: the beta client (`_classic_beta_`) and the release client (`_forever_`) kee
 bindings, macros and graphics settings do not follow you. Copy them over once.
 
 ## Make the copy
-`python addon/tools/backup_wtf.py` copies the files below into `D:\Claude AI Projects\wow-beta-backup\<date>\` (outside the git
+`python addon/tools/backup_wtf.py` copies the files below into `wow-beta-backup/<date>/` (the folder set in the script) (outside the git
 repository on purpose: character names and keys do not belong in git). Run it again whenever you change something worth keeping,
 and once more on the last beta day.
 

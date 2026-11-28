@@ -3,7 +3,7 @@
 Open work only (Shape B: the active todo list). Done items live in [CHANGELOG.md](CHANGELOG.md); someday ideas in
 [ROADMAP.md](ROADMAP.md); what needs in-game testing in [addon/dev/TESTING.md](addon/dev/TESTING.md).
 
-## 0. Launch-day reminders (launch was 2026-11-04; still open ones only)
+## 0. Launch follow-ups (launch was 2026-11-04; open ones only)
 The one page to follow: [docs/launch-day.md](docs/launch-day.md).
 1. The launch-day data refresh did not happen: see section 5 (overdue since 2026-11-04). (Beta backup / Setup Hunter: done, owner is playing on the release client.)
 
